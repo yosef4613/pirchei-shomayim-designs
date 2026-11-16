@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#452d3e">
+<title>שאלון אפיון | קייטרינג בוטיק ובר פטיפורים</title>
+<style>
+:root{--bg:#f8f5f1;--paper:#fffdfb;--ink:#2e2630;--muted:#706770;--wine:#61384c;--wine-deep:#452b3c;--gold:#c9a778;--line:#e8dcd7;--glow:#f6ece5;--focus:#9f6a7c;--green:#37765b;--radius:18px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,"Noto Sans Hebrew","Segoe UI",sans-serif;line-height:1.65}button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.hero{background:radial-gradient(circle at 15% 8%,#816179 0,transparent 32%),radial-gradient(circle at 93% 110%,#8f5e73 0,transparent 31%),linear-gradient(130deg,#382839,#56374a);color:white;padding:42px 20px 35px;position:relative;overflow:hidden}.hero:before,.hero:after{content:"";position:absolute;border:1px solid #cbb5b53b;width:360px;height:360px;border-radius:50%;left:-130px;top:-210px}.hero:after{width:250px;height:250px;left:-75px;top:-155px}.hero-inner{max-width:1080px;margin:auto;position:relative;z-index:1}.eyebrow{display:inline-flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:2px;font-size:12px;font-weight:700;color:#ecd3bc}.dot{width:7px;height:7px;background:#e5c39e;border-radius:50%;display:inline-block}.hero h1{margin:14px 0 9px;font-weight:750;font-size:clamp(29px,4.3vw,46px);line-height:1.23}.hero p{font-size:16px;color:#f7edf1;max-width:720px;margin:0 0 24px}.quick-facts{display:flex;flex-wrap:wrap;gap:9px}.quick-facts span{border:1px solid #ffffff45;padding:6px 13px;background:#ffffff14;border-radius:100px;font-size:13px}
+.page{max-width:1080px;margin:25px auto 70px;padding:0 18px}.notice{background:#fffaf0;border:1px solid #edddc4;padding:15px 19px;border-radius:15px;font-size:14px;color:#574631;margin-bottom:20px}.notice strong{color:#443329}.two-col{display:grid;grid-template-columns:minmax(0,1fr) 236px;gap:24px;align-items:start}.main{min-width:0}.sidebar{position:sticky;top:16px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:0 8px 22px #4c34340a}.side-title{font-weight:750;color:var(--wine);font-size:15px;margin-bottom:8px}.progress-text{font-size:26px;font-weight:800;color:var(--wine);line-height:1.4}.progress-text small{font-size:13px;font-weight:500;color:var(--muted)}.meter{height:8px;background:#f0e7e3;border-radius:10px;overflow:hidden;margin:12px 0 20px}.meter-fill{height:100%;width:0;background:linear-gradient(90deg,#aa7189,var(--wine));border-radius:10px;transition:width .25s}.section-nav a{display:flex;gap:9px;color:#584d54;align-items:center;text-decoration:none;padding:8px 6px;border-radius:9px;font-size:13px}.section-nav a:hover{background:#f8f1ee}.nav-count{font-size:11px;color:#877880;white-space:nowrap;margin-right:auto}.side-help{font-size:12px;color:var(--muted);margin:16px 2px 0;border-top:1px solid var(--line);padding-top:13px}
+.section{background:var(--paper);border:1px solid var(--line);box-shadow:0 8px 25px #493a3409;border-radius:var(--radius);margin-bottom:22px;padding:25px 27px 21px;scroll-margin-top:16px}.section-head{display:flex;align-items:start;gap:13px;padding-bottom:17px;border-bottom:1px solid #ece2dd;margin-bottom:17px}.section-icon{width:43px;height:43px;background:#f3e7e5;color:var(--wine);display:grid;place-items:center;border-radius:13px;font-size:21px;flex:none}.section h2{font-size:22px;line-height:1.35;margin:0;color:#4b2e3d}.section-desc{font-size:13px;color:var(--muted);margin:4px 0 0}.question{border:0;padding:0;margin:0 0 21px;min-width:0}.question:last-child{margin-bottom:2px}.q-label{font-size:15px;font-weight:700;margin:0 0 9px;display:flex;align-items:baseline;gap:9px}.q-number{font-size:11px;display:inline-flex;align-items:center;justify-content:center;background:#f6eeea;color:var(--wine);min-width:27px;height:27px;border-radius:8px;flex:none}.q-hint{font-size:12px;color:var(--muted);margin:-4px 0 10px}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.choice{border:1px solid #e7dad5;border-radius:11px;display:flex;gap:10px;padding:10px 12px;align-items:flex-start;min-height:46px;background:#fff;color:#463d44;font-size:13px;cursor:pointer;transition:background .12s,border-color .12s,box-shadow .12s}.choice:hover{border-color:#bfa2a7;background:#fff9f7}.choice:has(input:checked){background:#faf0f3;border-color:#9c607c;box-shadow:inset 0 0 0 1px #9c607c}.choice input{margin:4px 0 0;accent-color:var(--wine);width:16px;height:16px;flex:none}.choice span{flex:1}.field{display:block;width:100%;border:1px solid #dacbc9;border-radius:11px;padding:12px 14px;background:white;color:#332a30;min-height:46px;resize:vertical}.field::placeholder{color:#988a92}.field:focus{border-color:#9c607c;outline:3px solid #9c607c24}.field-short{max-width:460px}.other-line{margin:9px 0 0}.other-line[hidden]{display:none}.other-line .field{font-size:13px;min-height:40px}.section-footer{font-size:12px;color:#7b6f70;margin:12px 0 0;padding-top:13px;border-top:1px dashed #e8ddda}.summary-panel{background:linear-gradient(155deg,#fcf9f4,#fffdfb);border:2px solid #cdb28f;border-radius:var(--radius);padding:26px;scroll-margin-top:20px;margin-top:27px;box-shadow:0 15px 32px #4a322d0d}.summary-panel h2{font-size:27px;color:var(--wine-deep);margin:0 0 6px}.summary-panel p{font-size:14px;color:#5f535a;margin:0 0 13px}.recipient-wrap{display:flex;align-items:center;gap:12px;margin:12px 0 18px;flex-wrap:wrap}.recipient-wrap label{font-size:14px;font-weight:700}.recipient-wrap input{flex:1;min-width:210px;border:1px solid #dccac6;border-radius:10px;padding:10px 13px;direction:ltr;text-align:left;background:white}.summary-text{width:100%;height:335px;padding:17px;border:1px solid #d6c2b6;border-radius:12px;background:#fff;resize:vertical;line-height:1.85;font-size:13px;color:#342a2f;white-space:pre-wrap;direction:rtl;text-align:right}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}.btn{border-radius:11px;padding:12px 18px;font-size:14px;font-weight:750;border:1px solid #cdb6be;background:white;color:var(--wine);display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:45px;text-decoration:none}.btn:hover{filter:brightness(.96)}.btn.primary{background:var(--wine);color:white;border-color:var(--wine)}.btn.secondary{background:#f5e8ec}.btn.clear{font-size:12px;color:#81757c;border-color:#e0d6d6;padding:8px 11px}.feedback{min-height:27px;font-size:13px;margin-top:12px;color:var(--green);font-weight:700}.fine-print{font-size:12px!important;color:#7a7073!important;margin-top:11px!important}.footer{font-size:13px;text-align:center;color:#82777d;margin-top:20px}.mobile-progress{display:none}.skip{position:absolute;right:-99999px}.skip:focus{right:12px;top:12px;z-index:100;background:white;color:#3c2634;padding:8px}
+@media(max-width:860px){.two-col{grid-template-columns:minmax(0,1fr)}.sidebar{display:none}.mobile-progress{display:block;margin-bottom:18px;padding:15px 20px;background:white;border:1px solid var(--line);border-radius:14px}.mobile-progress .meter{margin:9px 0 0}.mobile-prog-line{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px}.mobile-prog-line a{color:var(--wine);font-weight:700}}
+@media(max-width:560px){.hero{padding:32px 19px}.hero h1{font-size:32px}.hero p{font-size:14px}.page{padding:0 11px;margin-top:15px}.section{padding:19px 16px 16px}.section h2{font-size:20px}.choices{grid-template-columns:1fr}.choice{padding:11px 12px}.section-icon{width:36px;height:36px;font-size:17px}.summary-panel{padding:20px 15px}.summary-panel h2{font-size:23px}.actions .btn{width:100%}.summary-text{height:330px}.quick-facts span{font-size:12px}}
+@media print{.hero{background:white!important;color:#242!important;padding:10px 0}.hero p,.hero .eyebrow,.sidebar,.mobile-progress,.notice,.actions,.recipient-wrap,.fine-print,.feedback,.footer{display:none!important}.page{max-width:none;padding:0}.two-col{display:block}.section{break-inside:avoid;border:1px solid #aaa;box-shadow:none;padding:12px}.summary-panel{break-before:page;border:0;box-shadow:none;padding:0}.summary-text{height:auto;overflow:visible;white-space:pre-wrap;border:0}.print-hint{display:none}}
+</style>
+</head>
+<body>
+<a href="#first-section" class="skip">דלג לשאלון</a>
+<header class="hero"><div class="hero-inner">
+  <div class="eyebrow"><span class="dot"></span> אפיון אתר בוטיק • שאלון לבעלי העסק</div>
+  <h1>מכינים את האתר החדש שלכם</h1>
+  <p>שאלון פשוט שיעזור לנו לעצב אתר מרשים וקל להזמנה עבור קייטרינג בוטיק ובר פטיפורים. מסמנים אפשרויות, עונים רק על מה שיודעים — ובסיום מעתיקים את כל התשובות למייל.</p>
+  <div class="quick-facts"><span>עד 50 מוצרים באתר</span><span>הכנה אישית בעקבות הזמנה</span><span>אין צורך בידע טכני</span><span>התשובות נשמרות בדפדפן</span></div>
+</div></header>
+<main class="page">
+<div class="notice"><strong>איך ממלאים?</strong> מסמנים את האפשרויות שמתאימות לכם. בשאלות שמאפשרות זאת אפשר לבחור כמה תשובות. אם משהו עדיין לא הוחלט — מסמנים "לא הוחלט / אשמח להמלצה". בסוף הדף מחכה סיכום מסודר עם כפתור העתקה. אין צורך להדפיס או להתקין דבר.</div>
+<div class="mobile-progress"><div class="mobile-prog-line"><strong id="mobile-progress-text">0 שאלות נענו</strong><a href="#answers">לסיכום התשובות ↓</a></div><div class="meter"><div class="meter-fill" id="mobile-fill"></div></div></div>
+<div class="two-col">
+  <div class="main" id="questions"><div id="first-section"></div></div>
+  <aside class="sidebar" aria-label="התקדמות וניווט">
+    <div class="side-title">ההתקדמות שלכם</div><div class="progress-text"><span id="progress-count">0</span> <small>מתוך <span id="progress-total">0</span> שאלות</small></div><div class="meter"><div class="meter-fill" id="side-fill"></div></div>
+    <nav class="section-nav" id="section-navigation" aria-label="חלקי השאלון"></nav>
+    <p class="side-help">טיפ: גם תשובות חלקיות עוזרות. אפשר לחזור ולשנות כל בחירה.</p>
+  </aside>
+</div>
+<section class="summary-panel" id="answers" aria-labelledby="answers-title">
+  <h2 id="answers-title">כל התשובות שלכם, במקום אחד</h2>
+  <p>הסיכום כאן מתעדכן אוטומטית בזמן שממלאים. בסיום לחצו על <strong>"העתק את כל התשובות"</strong>, פתחו מייל, והדביקו אותו במייל — בטלפון בלחיצה ארוכה על גוף ההודעה ובחירה ב״הדבק״, ובמחשב עם <strong>Ctrl+V</strong>.</p>
+  <div class="recipient-wrap"><label for="recipient">כתובת המייל שאליה שולחים (לא חובה):</label><input type="email" id="recipient" name="recipient" placeholder="name@example.com" autocomplete="off" inputmode="email"></div>
+  <textarea id="summary" class="summary-text" readonly aria-label="ריכוז התשובות להעתקה"></textarea>
+  <div class="actions">
+    <button type="button" class="btn primary" id="copyBtn">📋 העתק את כל התשובות</button>
+    <button type="button" class="btn secondary" id="mailBtn">✉ העתק ופתח מייל</button>
+    <button type="button" class="btn" id="saveBtn">↓ הורד תשובות כקובץ טקסט</button>
+    <button type="button" class="btn clear" id="clearBtn">נקה את כל התשובות</button>
+  </div>
+  <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+  <p class="fine-print">חשוב: השאלון פועל בדפדפן במחשב או בטלפון, ושומר את התשובות במכשיר שבו מילאתם אותו. התשובות אינן נשלחות אוטומטית לאף אחד. כפתור המייל פותח הודעה חדשה; צריך להדביק בה את התשובות וללחוץ על שליחה. אם פתיחת מייל אינה פועלת במכשיר, השתמשו בכפתור ההעתקה ושלחו את הטקסט דרך המייל הרגיל שלכם.</p>
+</section>
+<div class="footer">שאלון אפיון אתר • קייטרינג בוטיק ובר פטיפורים</div>
+</main>
+<script>
+"use strict";
+const undecided = 'לא הוחלט – נשמח להמלצה';
+const sections = [
+  {title:'על העסק והחזון',icon:'✦',desc:'קצת היכרות: מה העסק מציע ומה חשוב לכם שהלקוחות ירגישו.',questions:[
+    {id:'q1',title:'מה שם העסק כפי שתרצו שיופיע באתר?',type:'text',placeholder:'שם העסק / שם הבוטיק'},
+    {id:'q2',title:'מה הכיוון לגבי השם והלוגו הקיימים?',type:'single',options:['משאירים את השם והלוגו','משאירים את השם, מחדשים את הלוגו','רוצים מיתוג חדש לגמרי',undecided]},
+    {id:'q3',title:'מה תרצו שהלקוח יחשוב כשהוא נכנס לאתר?',type:'multi',options:['זה נראה יוקרתי ומיוחד','המוצרים נראים טעימים ומוקפדים','כאן אפשר ליצור אירוע מרשים','יש כאן שירות אישי ומקצועי','קל להזמין כאן',undecided]},
+    {id:'q4',title:'מי קהל הלקוחות המרכזי?',type:'multi',options:['משפחות ואנשים פרטיים','מארגני אירועים','עסקים וחברות','מוסדות וארגונים','מפיקי אירועים ואנשי מקצוע',undecided]},
+    {id:'q5',title:'מה לדעתכם הדבר הכי מיוחד בבוטיק שלכם?',type:'textarea',placeholder:'למשל: עיצוב יוצא דופן, טעם, עבודת יד, שירות אישי... אפשר גם להשאיר ריק'}
+  ]},
+  {title:'המוצרים והקטלוג',icon:'◈',desc:'ידוע מראש: קטלוג קטן ומוקפד של עד 50 מוצרים, שמכינים בעקבות הזמנה.',questions:[
+    {id:'q6',title:'מה תרצו להציג באתר?',type:'multi',options:['בר פטיפורים מעוצב','קייטרינג בוטיק לאירועים','מגשי פטיפורים וקינוחים','מארזים ומתנות מעוצבים','עוגות ומוצרי בוטיק','קינוחים אישיים','שולחנות קינוחים מעוצבים',undecided],other:true},
+    {id:'q7',title:'איך עדיף לסדר את המוצרים?',type:'single',options:['לפי סוג מוצר (מגשים, קינוחים, מארזים...)','לפי סוג אירוע (שמחות, אירועים עסקיים...)','לפי מחיר וגודל','שילוב בין כמה סוגי חלוקה',undecided]},
+    {id:'q8',title:'איך תרצו להציג מחירים?',type:'single',options:['מחיר ברור לכל מוצר','מחיר התחלתי – משתנה לפי ההתאמה','טווח מחירים','הצעת מחיר אישית בלבד',undecided]},
+    {id:'q9',title:'מה הלקוחות יוכלו להתאים אישית בהזמנה?',type:'multi',options:['מספר מנות / כמות','טעמים','צבעים ועיצוב','כיתוב או שם על המוצר','סוגי קינוחים בתוך המארז','גודל המגש או הבר','ללא התאמה אישית',undecided],other:true},
+    {id:'q10',title:'האם יהיו חבילות מוכנות או אפשרות להרכיב מארז?',type:'multi',options:['מארזים מוכנים לבחירה','הרכבת מארז לפי בחירת הלקוח','חבילות לאירוע לפי מספר משתתפים','כל הזמנה תתוכנן אישית',undecided]},
+    {id:'q11',title:'האם תרצו להוסיף בהמשך מוצרים או קולקציות מיוחדות?',type:'single',options:['כן, מפעם לפעם','כן, באופן קבוע','כנראה שלא',undecided]}
+  ]},
+  {title:'איך הלקוח יזמין?',icon:'▣',desc:'כדי שהאתר יהיה פשוט ללקוח, וגם לכם יהיה קל לטפל בהזמנות.',questions:[
+    {id:'q12',title:'איך תרצו לקבל הזמנות דרך האתר?',type:'single',options:['בחירת מוצר ותשלום ישירות באתר','שליחת בקשה להצעת מחיר','שליחת פרטים והמשך שיחה בוואטסאפ','שילוב: הזמנה ישירה למוצרים קבועים והצעה לאירועים',undecided]},
+    {id:'q13',title:'אילו פרטים צריך הלקוח למלא בהזמנה?',type:'multi',options:['שם ומספר טלפון','תאריך האירוע או האיסוף','מספר משתתפים','כתובת האירוע / המשלוח','העדפות טעם ועיצוב','תמונה לדוגמה או קובץ','הערות חופשיות',undecided]},
+    {id:'q14',title:'האם תרצו לקבוע מינימום להזמנה?',type:'single',options:['כן, סכום מינימום','כן, כמות מינימלית של מוצרים','מינימום שונה לפי המוצר','לא',undecided],other:true},
+    {id:'q15',title:'כמה זמן מראש בדרך כלל צריך להזמין?',type:'single',options:['יום–יומיים','3–4 ימים','כשבוע','שבועיים או יותר','משתנה לפי גודל ההזמנה',undecided]},
+    {id:'q16',title:'האם תרצו לאפשר הזמנה דחופה?',type:'single',options:['כן, בהתאם לזמינות','כן, בתוספת תשלום','לא',undecided]},
+    {id:'q17',title:'האם נדרש אישור סופי לפני שמתחילים להכין?',type:'single',options:['כן, לכל הזמנה','רק להזמנות מותאמות אישית / לאירועים','אין צורך',undecided]}
+  ]},
+  {title:'אירועים, בר פטיפורים ואספקה',icon:'♧',desc:'החלק שעוזר להבין איזה שירות אתם מציעים מעבר לבחירת מוצרים.',questions:[
+    {id:'q18',title:'איזה שירותים תרצו להציע לאירועים?',type:'multi',options:['אספקת מגשים ומארזים בלבד','הקמת בר פטיפורים במקום האירוע','עיצוב שולחן קינוחים','קייטרינג בוטיק הכולל כמה סוגי מנות','שירות במקום האירוע עם אנשי צוות',undecided],other:true},
+    {id:'q19',title:'באילו סוגי אירועים אתם רוצים להתמקד?',type:'multi',options:['אירועים משפחתיים','אירועים קטנים וביתיים','אירועים גדולים','אירועי חברות ועסקים','אירועי מוסדות וארגונים','מתנות ואירוח ביתי',undecided]},
+    {id:'q20',title:'לאיזה גודל אירוע אתם יכולים לספק שירות?',type:'text',placeholder:'למשל: 20–200 משתתפים / תלוי בהזמנה / עוד לא הוחלט'},
+    {id:'q21',title:'איך הלקוחות מקבלים את ההזמנה?',type:'multi',options:['איסוף עצמי','משלוח עד הבית / האירוע','הקמה ועיצוב במקום האירוע','צוות שירות שמגיע לאירוע',undecided]},
+    {id:'q22',title:'באילו אזורים אתם מספקים שירות או משלוחים?',type:'text',placeholder:'למשל: עיר מסוימת, אזור מסוים, כל הארץ...'},
+    {id:'q23',title:'האם יש מידע שחשוב לציין ליד כל מוצר?',type:'multi',options:['מספר מנות / משקל','מידות המגש או הבר','רכיבים ומידע על אלרגנים','הוראות אחסון וקירור','זמן הכנה','אזורי משלוח',undecided]}
+  ]},
+  {title:'מראה האתר והתמונות',icon:'✧',desc:'לא חייבים להבין בעיצוב. מספיק לסמן מה מוצא חן בעיניכם.',questions:[
+    {id:'q24',title:'איזה סגנון הייתם רוצים לאתר?',type:'multi',options:['יוקרתי ואלגנטי','נקי, עדין ומינימליסטי','חמים, ביתי ומזמין','מודרני ומרשים','צבעוני, עשיר וחגיגי','בוטיק אומנותי וייחודי',undecided]},
+    {id:'q25',title:'איזה צבעים מתאימים בעיניכם?',type:'single',options:['שמנת, לבן וזהב','שחור / בורדו / זהב – יוקרתי ודרמטי','ורוד עדין וגווני פסטל','גווני חום, בז׳ ואדמה','יש צבעי מותג קיימים','פתוחים להצעת המעצב'],other:true},
+    {id:'q26',title:'האם כבר יש לוגו ומיתוג מסודר?',type:'single',options:['כן, והכול מוכן','יש לוגו, אבל רוצים לשפר','אין עדיין לוגו',undecided]},
+    {id:'q27',title:'מה מצב תמונות המוצרים?',type:'single',options:['יש תמונות מקצועיות שאפשר להשתמש בהן','יש תמונות, אך נדרשת עריכה','צריך לצלם את רוב המוצרים מחדש','אין כמעט תמונות',undecided]},
+    {id:'q28',title:'איזה סוג תנועה ואנימציות תרצו באתר?',type:'single',options:['אנימציות עדינות ומעודנות','אנימציות בולטות ומושקעות','מעדיפים אתר רגוע בלי הרבה תנועה','נשאיר את ההחלטה למעצב']},
+    {id:'q29',title:'יש אתר, מותג או תמונה שהעיצוב שלהם מוצא חן בעיניכם?',type:'textarea',placeholder:'אפשר להדביק כאן קישורים או לתאר במילים. אם אין – לא נורא'}
+  ]},
+  {title:'עמודים, תשלום וניהול',icon:'▤',desc:'מחליטים מה הלקוחות יראו ומה אתם רוצים לנהל לבד.',questions:[
+    {id:'q30',title:'אילו עמודים או אזורים חשוב לכם שיהיו באתר?',type:'multi',options:['עמוד בית מרשים','קטלוג מוצרים','בר פטיפורים וקייטרינג לאירועים','גלריית עבודות ואירועים','על העסק / הסיפור שלנו','המלצות לקוחות','שאלות ותשובות','יצירת קשר ווואטסאפ',undecided]},
+    {id:'q31',title:'מה צריך להיות הדבר הבולט ביותר בעמוד הבית?',type:'single',options:['תמונה מרשימה של בר פטיפורים','תמונות המוצרים היפים ביותר','הצגת השירות והייחודיות של הבוטיק','כפתור ברור להזמנת אירוע / הצעת מחיר',undecided]},
+    {id:'q32',title:'אילו אפשרויות תשלום תרצו לאפשר?',type:'multi',options:['אשראי באתר','ביט','העברה בנקאית','תשלום רק אחרי אישור הזמנה','תשלום במקום בעת קבלה',undecided]},
+    {id:'q33',title:'האם צריך תשלום מקדמה להזמנות?',type:'single',options:['כן, מקדמה קבועה','כן, אחוז מסכום ההזמנה','תשלום מלא מראש','תשלום רק לאחר אישור מול הלקוח',undecided]},
+    {id:'q34',title:'מה חשוב שתוכלו לעשות באזור הניהול של האתר?',type:'multi',options:['להוסיף ולערוך מוצרים ותמונות','לשנות מחירים וזמינות','לראות הזמנות חדשות','לשנות מצב הזמנה (בהכנה / מוכן / נמסר)','לראות פרטי לקוחות','להוסיף תמונות לגלריה','לנהל קופונים או מבצעים',undecided]},
+    {id:'q35',title:'איך תרצו לקבל עדכון כשנכנסת הזמנה?',type:'multi',options:['במייל','בוואטסאפ','בהתראה בתוך אזור הניהול','מספיק לראות את רשימת ההזמנות באתר',undecided]}
+  ]},
+  {title:'האתר הקיים ומה חשוב לכם',icon:'♡',desc:'כמה פרטים אחרונים, ואז כל התשובות מחכות למטה להעתקה.',questions:[
+    {id:'q36',title:'האם קיים כבר אתר לעסק?',type:'single',options:['כן, רוצים לשדרג אותו','כן, אבל רוצים להתחיל מחדש','אין אתר קיים',undecided]},
+    {id:'q37',title:'אם יש אתר קיים – מה הכתובת שלו ומה חשוב לשמור ממנו?',type:'textarea',placeholder:'קישור לאתר, תמונות, תוכן, כתובת דומיין, הזמנות קודמות...'},
+    {id:'q38',title:'מה הכי חשוב לכם בשלב הראשון?',type:'multi',options:['עיצוב יוקרתי שמרשים לקוחות','להציג את המוצרים בצורה ברורה','לקבל פניות והזמנות בקלות','אפשרות תשלום באתר','ניהול מוצרים והזמנות עצמאית','להשאיר אפשרות לשדרוגים בהמשך',undecided]},
+    {id:'q39',title:'מתי תרצו להעלות את האתר?',type:'single',options:['בהקדם האפשרי','בתוך חודש–חודשיים','לקראת אירוע או תאריך מסוים','אין כרגע תאריך קבוע',undecided],other:true},
+    {id:'q40',title:'יש משהו נוסף שחשוב לכם, או בקשה מיוחדת?',type:'textarea',placeholder:'כל רעיון, התלבטות או בקשה. אפשר גם לכתוב כאן שאלות למעצב'}
+  ]}
+];
+const STORE_KEY='boutique_catering_questionnaire_v1';
+const questions=sections.flatMap(s=>s.questions);
+const qContainer=document.getElementById('questions');
+const sectionNav=document.getElementById('section-navigation');
+const escapeHtml=(s)=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){
+  sections.forEach((s,idx)=>{
+    const section=document.createElement('section');section.className='section';section.id='section-'+idx;
+    section.innerHTML=`<div class="section-head"><div class="section-icon" aria-hidden="true">${s.icon}</div><div><h2>${escapeHtml(s.title)}</h2><p class="section-desc">${escapeHtml(s.desc)}</p></div></div>`;
+    s.questions.forEach(q=>{
+      let markup=`<fieldset class="question" data-question="${q.id}"><legend class="q-label"><span class="q-number">${Number(q.id.slice(1))}</span><span>${escapeHtml(q.title)}</span></legend>`;
+      if(q.type==='text'||q.type==='textarea'){
+        const tag=q.type==='text'?'input':'textarea';
+        markup+=tag==='input'?`<input type="text" class="field field-short" name="${q.id}" placeholder="${escapeHtml(q.placeholder||'התשובה שלכם...')}" autocomplete="off">`:`<textarea rows="3" class="field" name="${q.id}" placeholder="${escapeHtml(q.placeholder||'התשובה שלכם...')}"></textarea>`;
+      }else{
+        markup+=q.type==='multi'?'<div class="q-hint">אפשר לבחור כמה תשובות</div>':'';
+        markup+='<div class="choices">';
+        const type=q.type==='multi'?'checkbox':'radio';
+        q.options.forEach((value,i)=>{
+          markup+=`<label class="choice"><input type="${type}" name="${q.id}" value="${escapeHtml(value)}"><span>${escapeHtml(value)}</span></label>`;
+        });
+        if(q.other){markup+=`<label class="choice"><input type="${type}" name="${q.id}" value="אחר"><span>אחר / רוצה לפרט</span></label>`}
+        markup+='</div>';
+        if(q.other)markup+=`<div class="other-line" id="${q.id}-other-wrap" hidden><input type="text" class="field" name="${q.id}_other" placeholder="כאן אפשר לפרט במילים שלכם..."></div>`;
+      }
+      markup+='</fieldset>';section.insertAdjacentHTML('beforeend',markup);
+    });
+    section.insertAdjacentHTML('beforeend','<p class="section-footer">אפשר להשאיר שאלות פתוחות ולהמשיך לחלק הבא.</p>');
+    qContainer.appendChild(section);
+    const a=document.createElement('a');a.href='#section-'+idx;a.innerHTML=`<span>${idx+1}. ${escapeHtml(s.title)}</span><span class="nav-count" id="nav-count-${idx}">0/${s.questions.length}</span>`;sectionNav.appendChild(a);
+  });
+  document.getElementById('progress-total').textContent=questions.length;
+}
+function allInputs(){return document.querySelectorAll('input[name],textarea[name]')}
+function key(input){return(input.type==='checkbox'||input.type==='radio')?input.name+'::'+input.value:input.name}
+function store(){
+  try{const state={};allInputs().forEach(el=>state[key(el)]=(el.type==='checkbox'||el.type==='radio')?el.checked:el.value);localStorage.setItem(STORE_KEY,JSON.stringify(state));}
+  catch(e){/* חוסמי אחסון לא ימנעו מילוי */}
+}
+function restore(){
+  try{const saved=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');allInputs().forEach(el=>{const k=key(el);if(Object.prototype.hasOwnProperty.call(saved,k)){if(el.type==='radio'||el.type==='checkbox')el.checked=Boolean(saved[k]);else el.value=String(saved[k]);}})}catch(e){}
+}
+function syncOthers(){questions.filter(q=>q.other).forEach(q=>{const chosen=[...document.querySelectorAll(`input[name="${q.id}"]:checked`)].some(el=>el.value==='אחר');const wrapper=document.getElementById(q.id+'-other-wrap');wrapper.hidden=!chosen;});}
+function answer(q){
+  if(q.type==='text'||q.type==='textarea')return(document.querySelector(`[name="${q.id}"]`)?.value||'').trim();
+  const values=[...document.querySelectorAll(`input[name="${q.id}"]:checked`)].map(el=>el.value==='אחר'?'אחר: '+(document.querySelector(`[name="${q.id}_other"]`)?.value.trim()||'ללא פירוט'):el.value);
+  return values.join(' | ');
+}
+function buildSummary(){
+  const businessName=answer(questions[0]);
+  const done=questions.filter(q=>answer(q)).length;
+  const lines=['שאלון אפיון אתר – קייטרינג בוטיק ובר פטיפורים'];
+  if(businessName)lines.push('שם העסק: '+businessName);
+  lines.push('','פרטים שכבר ידועים:','• האתר יכלול עד 50 מוצרים בשלב הראשון.','• המוצרים יוכנו רק בעקבות הזמנה.','• תחום העסק: קייטרינג בוטיק ובר פטיפורים.','','נענו '+done+' מתוך '+questions.length+' שאלות.');
+  sections.forEach((s,i)=>{lines.push('','━━━━━━━━━━━━━━━━━━━━',String(i+1)+'. '+s.title,'━━━━━━━━━━━━━━━━━━━━');s.questions.forEach(q=>{lines.push(q.title);lines.push('תשובה: '+(answer(q)||'לא נענה'));lines.push('');});});
+  lines.push('---','סוף השאלון');
+  return {text:lines.join('\n'),answered:done};
+}
+function update(){
+  syncOthers();const {text,answered}=buildSummary();
+  document.getElementById('summary').value=text;
+  document.getElementById('progress-count').textContent=answered;
+  document.getElementById('mobile-progress-text').textContent=`${answered} מתוך ${questions.length} שאלות נענו`;
+  const percentage=questions.length?answered/questions.length*100:0;
+  document.getElementById('side-fill').style.width=percentage+'%';
+  document.getElementById('mobile-fill').style.width=percentage+'%';
+  sections.forEach((s,i)=>{document.getElementById('nav-count-'+i).textContent=s.questions.filter(q=>answer(q)).length+'/'+s.questions.length;});
+}
+function refresh(){store();update()}
+function setFeedback(message,error=false){const el=document.getElementById('feedback');el.textContent=message;el.style.color=error?'#9d3c4b':'#327057';}
+async function copySummary(){
+  const text=document.getElementById('summary').value;
+  try{
+    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return true;}
+  }catch(e){}
+  const helper=document.createElement('textarea');helper.value=text;helper.setAttribute('readonly','');helper.style.cssText='position:fixed;top:-10000px;right:-10000px;opacity:0';document.body.appendChild(helper);helper.focus();helper.select();helper.setSelectionRange(0,helper.value.length);
+  let worked=false;try{worked=document.execCommand('copy')}catch(e){}
+  helper.remove();return worked;
+}
+function downloadText(){const blob=new Blob(['\ufeff',document.getElementById('summary').value],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='תשובות_שאלון_קייטרינג_בוטיק.txt';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);setFeedback('קובץ התשובות נוצר. אפשר לצרף אותו למייל.');}
+render();restore();update();
+qContainer.addEventListener('input',refresh);qContainer.addEventListener('change',refresh);
+document.getElementById('recipient').addEventListener('input',store);
+document.getElementById('copyBtn').addEventListener('click',async()=>{const ok=await copySummary();if(ok)setFeedback('✓ כל התשובות הועתקו! כעת פתחו מייל והדביקו: בטלפון לחיצה ארוכה ו״הדבק״, או במחשב Ctrl+V.');else{document.getElementById('summary').focus();document.getElementById('summary').select();setFeedback('לא ניתן היה להעתיק אוטומטית. הטקסט מסומן — העתיקו אותו בתפריט העריכה או עם Ctrl+C, ואז הדביקו במייל.',true);}});
+document.getElementById('mailBtn').addEventListener('click',async()=>{
+  const ok=await copySummary();
+  if(!ok){document.getElementById('summary').focus();document.getElementById('summary').select();setFeedback('ההעתקה האוטומטית נחסמה. העתיקו את הטקסט המסומן, ואז פתחו מייל והדביקו.',true);return;}
+  const recipient=document.getElementById('recipient').value.trim();
+  if(recipient&&!(document.getElementById('recipient').checkValidity())){setFeedback('כתובת המייל אינה נראית תקינה. תקנו אותה או השאירו את השדה ריק.',true);return;}
+  setFeedback('✓ התשובות הועתקו. כשתיפתח הודעת המייל, הדביקו אותו בגוף ההודעה (בטלפון בלחיצה ארוכה) ואז שלחו.');
+  const subject='תשובות לשאלון אתר קייטרינג בוטיק'+(answer(questions[0])?' – '+answer(questions[0]):'');
+  window.location.href='mailto:'+encodeURIComponent(recipient)+'?subject='+encodeURIComponent(subject);
+});
+document.getElementById('saveBtn').addEventListener('click',downloadText);
+document.getElementById('clearBtn').addEventListener('click',()=>{if(!confirm('למחוק את כל התשובות שסימנתם? אי אפשר לבטל את הפעולה.'))return;allInputs().forEach(el=>{if(el.type==='checkbox'||el.type==='radio')el.checked=false;else el.value='';});try{localStorage.removeItem(STORE_KEY)}catch(e){}update();setFeedback('כל התשובות נוקו. אפשר להתחיל מחדש.');window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+</body>
+</html>
