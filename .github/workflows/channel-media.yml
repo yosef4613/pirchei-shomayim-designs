@@ -15,27 +15,41 @@ jobs:
         shell: python
         run: |
           import json, pathlib, urllib.request, time
+          from urllib.parse import quote
           ids = ["-4sE-rfQI1k", "rWHE6woblu4", "aFhQjhm1if8", "yjBQLelJDKw", "sAeFaXlxv0E", "n6tLDS_ioYk", "s_CNJzzsA8g", "_eX_k4H5WHo"]
           directory = pathlib.Path("channel-media")
           directory.mkdir()
           manifest = []
           for video in ids:
-              url = f"https://i.ytimg.com/vi/{video}/hqdefault.jpg"
-              for attempt in range(3):
+              entry = {"id": video, "video": f"https://www.youtube.com/watch?v={video}", "channel": "UCNBe0QyCp3F_w21GROAjkxQ"}
+              try:
+                  with urllib.request.urlopen("https://www.youtube.com/oembed?url="+quote(entry["video"], safe="")+"&format=json", timeout=15) as response:
+                      info = json.load(response)
+                  if "Pirchei Shomayim" not in info.get("author_name", ""):
+                      raise ValueError("Unexpected channel: "+info.get("author_name", ""))
+                  entry["title"] = info["title"]
+                  entry["author_url"] = info["author_url"]
+                  print(info["title"], info["author_url"])
+              except ValueError:
+                  raise
+              except Exception as error:
+                  print("oEmbed unavailable:", type(error).__name__)
+              for quality in ["maxresdefault", "hqdefault"]:
+                  url = f"https://i.ytimg.com/vi/{video}/{quality}.jpg"
                   try:
                       request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
                       with urllib.request.urlopen(request, timeout=25) as response:
                           content = response.read()
-                      if len(content) < 4000 or not content.startswith(bytes.fromhex("ffd8")):
+                      if len(content) < 5000 or not content.startswith(bytes.fromhex("ffd8")):
                           raise ValueError(f"Invalid cover for {video}")
                       (directory / f"{video}.jpg").write_bytes(content)
-                      manifest.append({"id": video, "source": url, "video": f"https://www.youtube.com/watch?v={video}", "channel": "UCNBe0QyCp3F_w21GROAjkxQ"})
-                      print(f"Downloaded {video}: {len(content)} bytes")
+                      entry["source"] = url
+                      manifest.append(entry)
+                      print(f"Downloaded {video}: {len(content)} bytes ({quality})")
                       break
                   except Exception:
-                      if attempt == 2:
+                      if quality == "hqdefault":
                           raise
-                      time.sleep(2)
           (directory / "sources.json").write_text(json.dumps(manifest, indent=2))
       - uses: actions/upload-artifact@v4
         with:
