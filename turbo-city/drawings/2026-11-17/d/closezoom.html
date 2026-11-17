@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>זום קרוב ברגל</title>
+<style>
+:root{--bg:#f4f1ea;--card:#ffffff;--ink:#1d232b;--mute:#5b6570;--line:#d9d3c7;--acc:#2f6fd0;--good:#2f8a4a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161a1f;--card:#20262d;--ink:#eef1f4;--mute:#a3adb8;--line:#38414b;--acc:#6ea2f0;--good:#5cc07a}}
+:root[data-theme="dark"]{--bg:#161a1f;--card:#20262d;--ink:#eef1f4;--mute:#a3adb8;--line:#38414b;--acc:#6ea2f0;--good:#5cc07a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Segoe UI",Arial,sans-serif}
+header{padding:20px 16px 8px;max-width:1180px;margin:0 auto}
+h1{font-size:22px;margin:0 0 6px}
+header p{margin:4px 0;color:var(--mute);max-width:900px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
+.ctl button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+.ctl button.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+main{max-width:1180px;margin:0 auto;padding:0 16px 32px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:14px 0}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.por{width:84px;height:84px;border-radius:50%;overflow:hidden;flex:0 0 auto;border:2px solid var(--line)}
+.head h2{margin:0;font-size:18px}
+.head .sub{color:var(--mute);font-size:13px}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cell{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#0000}
+.cell canvas{display:block;width:100%;height:340px}
+.cap{padding:6px 10px;font-size:13px;color:var(--mute);border-top:1px solid var(--line)}
+.cap b{color:var(--ink)}
+.cap.new b{color:var(--good)}
+.notes{margin:8px 0 0;padding:0 18px;color:var(--mute);font-size:13.5px}
+.notes li{margin:2px 0}
+@media (max-width:760px){.row{grid-template-columns:1fr}.cell canvas{height:300px}}
+</style>
+</head>
+<body><a href="../" style="position:fixed;top:10px;right:10px;z-index:2147483647;background:#1d5f8c;color:#fff;padding:7px 14px;border-radius:8px;font:600 15px Arial,sans-serif;text-decoration:none;box-shadow:0 2px 8px #0004" dir="rtl">→ חזרה לרשימת הציורים</a>
+<header>
+<h1>זום קרוב ברגל — האנשים בסגנון הדיוקן שלהם</h1>
+<p>ניסוי נפרד, לא המשחק. מצויר בקוד של המשחק עצמו: צייר האנשים של 3/4, הדיוקן של הטלפון, והתוספת החדשה. אותו אדם בשלוש עמודות: הזום של היום (5.5 — המקסימום), וזום חדש קרוב יותר — 11 ו-16, רק כשהשחקן ברגל. המצלמה הולכת עם האיש, כמו במשחק.</p>
+<p>בזום החדש: הפנים כמו בדיוקן (עיניים עם אישון וברק, גבות בצבע השיער, אף, חיוך, סומק, קמטים), הכיפה / הכובע, המשקפיים, השפם או הזקן — והחולצה בצבע של הדמות.</p>
+<div class="ctl" id="ctl">
+ <button data-m="walk" class="on">הליכה ופניות</button>
+ <button data-m="front">עמידה מול המצלמה</button>
+ <button data-m="turn">סיבוב במקום</button>
+ <button data-m="pause">עצירה</button>
+</div>
+</header>
+<main id="main"></main>
+<script>
+(function (G) {
+'use strict';
+const K = 0.6, SCALE = 1.125, PXM = 10;   // p440b: × 1.125 real, the game size of everything that moves (was × 1.45)
+// p670 (people v2): the people's own camera — the depth of the body drawn at KYC (about 34° from above instead of the cars' 59°), the
+// height the same (K): the face and the front read.  The feet keep the world depth (KW: standing and walking — the planted foot does
+// not slide); who sits (bench, table) is all in the people's camera.
+const KYC = .4; let KW = false, LOD = 0, RIDE = false;   // W17: RIDE — a rider on a vehicle: the cars' camera (the depth 1:1), so the hands meet the bars and the feet the pegs
+const ky = z => { if (RIDE) return 1; if (!KW || z >= .55) return KYC; if (z <= .1) return 1; const t = (z - .1) / .45; return 1 + (KYC - 1) * t * t * (3 - 2 * t) };
+const FR = { walk: 12, drag: 12, carry: 12, stand: 1, wait: 8, eat: 8, marshal: 8, stop: 1, bench: 1, f1: 8, f2: 8, f3: 8, f4: 8, f5: 8 };   // p641: the fishing activities, one per rod   // p581: bench — sitting on a bench
+// ---- vectors ----
+const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const crs = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const nrm = v => { const n = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / n, v[1] / n, v[2] / n] };
+const lrp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+const comb = (o, f, a, l, s, z) => [o[0] + f[0] * a + l[0] * s, o[1] + f[1] * a + l[1] * s, o[2] + z];
+const Z = [0, 0, 1];
+// ---- light (the cars' sun) ----
+const LD = nrm([-0.42, -0.55, 0.72]), VW = nrm([0, K, KYC]), HV = nrm(add(LD, VW));   // p670: VW — the people's camera
+const AMB = .62, DIF = .38, TOPB = AMB + DIF * LD[2];
+const MAT = { cloth: { s: .05, p: 4 }, denim: { s: .06, p: 5 }, wool: { s: .03, p: 3 }, skin: { s: .13, p: 9, glow: .2 }, hair: { s: .3, p: 12 },
+  leather: { s: .55, p: 20 }, sole: { s: .05, p: 4 }, plastic: { s: .42, p: 16 }, hivis: { s: .08, p: 5, glow: .2 }, refl: { s: .7, p: 6, glow: .35 },
+  metal: { s: .7, p: 24 }, paper: { s: .04, p: 4 }, wood: { s: .12, p: 8 }, glow: { s: 0, p: 1, glow: .85 } };
+let LIFT = 0;   // 29.10 02:25: the small pictures (under ~30 px) — the shadows lifted toward the lit tone, so the clothes read
+function bri(n, m, occ) {
+  let b = (AMB + DIF * Math.max(0, dot(n, LD))) / TOPB; if (n[2] < 0) b *= 1 + .3 * n[2]; if (LIFT && b < 1.04) b += (1.04 - b) * .45;
+  if (m) { if (m.s) b += m.s * Math.pow(Math.max(0, dot(n, HV)), m.p); if (m.glow) b = b * (1 - m.glow) + 1.12 * m.glow }
+  return b * (occ || 1);
+}
+const hexC = h => { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255] };
+const HEXM = new Map();
+function col(h, b) {   // the cars' ramp: darker toward a cool dark, lighter toward white
+  let c = HEXM.get(h); if (!c) { c = hexC(h); HEXM.set(h, c) }
+  if (b <= 1) return `rgb(${c[0] * b + 14 * (1 - b) | 0},${c[1] * b + 17 * (1 - b) | 0},${c[2] * b + 22 * (1 - b) | 0})`;
+  const k = Math.min(1, (b - 1) * .6); return `rgb(${c[0] + (255 - c[0]) * k | 0},${c[1] + (255 - c[1]) * k | 0},${c[2] + (255 - c[2]) * k | 0})`;
+}
+// ---- projection: world metres (around the ground point) → screen metres (× SCALE) ----
+const P = p => [p[0] * SCALE, (p[1] * ky(p[2]) - K * p[2]) * SCALE];
+const PD = n => [n[0], n[1] * KYC - K * n[2]];
+const PV = v => [v[0] * SCALE, (v[1] * KYC - K * v[2]) * SCALE];   // p670: a direction on the body → the screen
+function hull(p) {
+  if (p.length < 3) return p.slice();
+  p = p.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]); const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = [], up = []; for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q) }
+  for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q) }
+  return lo.slice(0, -1).concat(up.slice(0, -1));
+}
+const polyPath = pts => c => { c.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]); c.closePath() };
+const circ2 = (c, r, n) => { const o = []; for (let i = 0; i < n; i++) { const t = i / n * Math.PI * 2; o.push([c[0] + Math.cos(t) * r, c[1] + Math.sin(t) * r]) } return o };
+
+// ---- shapes → parts.  A part: { L layer, d depth (world y toward the camera), pts (screen), path(c), paint(c) } ----
+function limbPart(L, d, A, B, ra, rb, hex, mat, occ) {
+  const pts = hull(circ2(P(A), ra * SCALE, 14).concat(circ2(P(B), rb * SCALE, 14))), path = polyPath(pts);
+  return { L, d, pts, path, ol: 'side', oc: hex, sA: P(A), sB: P(B), ra: ra * SCALE, rb: rb * SCALE, paint: c => {
+    const a = nrm(sub(B, A)), t = Math.abs(a[2]) < .9 ? Z : [1, 0, 0], e1 = nrm(crs(a, t)), e2 = crs(a, e1);
+    const ax = PD(a); let q = [-ax[1], ax[0]]; const ql = Math.hypot(q[0], q[1]); q = ql < 1e-6 ? [1, 0] : [q[0] / ql, q[1] / ql];
+    const st = []; for (let i = 0; i < 24; i++) { const th = i / 24 * Math.PI * 2, n = add(mul(e1, Math.cos(th)), mul(e2, Math.sin(th))); if (dot(n, VW) <= 0) continue; const pd = PD(n); st.push([pd[0] * q[0] + pd[1] * q[1], bri(n, mat, occ)]) }
+    c.beginPath(); path(c);
+    if (st.length < 2) { c.fillStyle = col(hex, .8 * (occ || 1)); c.fill(); return }
+    st.sort((u, v) => u[0] - v[0]); const o0 = st[0][0], o1 = st[st.length - 1][0], r = (ra + rb) / 2 * SCALE, m = P(lrp(A, B, .5));
+    const g = c.createLinearGradient(m[0] + q[0] * r * o0, m[1] + q[1] * r * o0, m[0] + q[0] * r * o1, m[1] + q[1] * r * o1);
+    for (const [o, b] of st) g.addColorStop(Math.min(1, Math.max(0, (o - o0) / ((o1 - o0) || 1))), col(hex, b));
+    c.fillStyle = g; c.fill();
+  } };
+}
+// an ellipsoid (centre, unit axes, radii), optionally cut by half-spaces {n, d}: n·(p − c) ≥ d is kept.  Samples on the unit sphere,
+// plus the exact cut circles; the picture is the convex hull of the projected points, shaded radially from the brightest visible point.
+function ellipSamples(cen, ax, rad, cuts, nLat, nLon) {
+  const cs = (cuts || []).map(k => { const m = [rad[0] * dot(ax[0], k.n), rad[1] * dot(ax[1], k.n), rad[2] * dot(ax[2], k.n)], mm = Math.hypot(m[0], m[1], m[2]) || 1; return { m: [m[0] / mm, m[1] / mm, m[2] / mm], dl: k.d / mm } });
+  const ok = s => { for (const k of cs) if (k.m[0] * s[0] + k.m[1] * s[1] + k.m[2] * s[2] < k.dl - 1e-7) return false; return true };
+  const out = [], put = s => out.push({ p: [cen[0] + ax[0][0] * rad[0] * s[0] + ax[1][0] * rad[1] * s[1] + ax[2][0] * rad[2] * s[2], cen[1] + ax[0][1] * rad[0] * s[0] + ax[1][1] * rad[1] * s[1] + ax[2][1] * rad[2] * s[2], cen[2] + ax[0][2] * rad[0] * s[0] + ax[1][2] * rad[1] * s[1] + ax[2][2] * rad[2] * s[2]],
+    n: nrm([ax[0][0] * s[0] / rad[0] + ax[1][0] * s[1] / rad[1] + ax[2][0] * s[2] / rad[2], ax[0][1] * s[0] / rad[0] + ax[1][1] * s[1] / rad[1] + ax[2][1] * s[2] / rad[2], ax[0][2] * s[0] / rad[0] + ax[1][2] * s[1] / rad[1] + ax[2][2] * s[2] / rad[2]]) });
+  for (let i = 0; i <= nLat; i++) { const ph = -Math.PI / 2 + Math.PI * i / nLat, cp = Math.cos(ph), sp = Math.sin(ph); const nl = i === 0 || i === nLat ? 1 : nLon;
+    for (let j = 0; j < nl; j++) { const th = j / nl * Math.PI * 2, s = [cp * Math.cos(th), cp * Math.sin(th), sp]; if (ok(s)) put(s) } }
+  for (const k of cs) { if (Math.abs(k.dl) >= 1) continue; const r = Math.sqrt(1 - k.dl * k.dl), u = nrm(crs(k.m, Math.abs(k.m[2]) < .9 ? Z : [1, 0, 0])), v = crs(k.m, u);
+    for (let j = 0; j < 28; j++) { const t = j / 28 * Math.PI * 2, s = [k.m[0] * k.dl + r * (u[0] * Math.cos(t) + v[0] * Math.sin(t)), k.m[1] * k.dl + r * (u[1] * Math.cos(t) + v[1] * Math.sin(t)), k.m[2] * k.dl + r * (u[2] * Math.cos(t) + v[2] * Math.sin(t))]; if (ok(s)) put(s) } }
+  return out;
+}
+function ellipPart(L, d, cen, ax, rad, cuts, hex, mat, occ, extra) {
+  const sm = ellipSamples(cen, ax, rad, cuts, 9, 18); if (sm.length < 3) return null;
+  const pts = hull(sm.map(q => P(q.p))), path = polyPath(pts);
+  return { L, d, pts, path, sm, ol: 'full', oc: hex, paint: c => {
+    c.beginPath(); path(c);
+    const vis = sm.filter(q => dot(q.n, VW) > .02);
+    if (!vis.length) { c.fillStyle = col(hex, .75 * (occ || 1)); c.fill(); if (extra) extra(c); return }
+    let best = vis[0], bb = -1; for (const q of vis) { q.b = bri(q.n, mat, occ); if (q.b > bb) { bb = q.b; best = q } }
+    const p0 = P(best.p); let R = 1e-4; for (const p of pts) R = Math.max(R, Math.hypot(p[0] - p0[0], p[1] - p0[1]));
+    const bin = [0, 0, 0, 0], cnt = [0, 0, 0, 0]; for (const q of vis) { const pp = P(q.p), t = Math.min(.999, Math.hypot(pp[0] - p0[0], pp[1] - p0[1]) / R); const k = t * 4 | 0; bin[k] += q.b; cnt[k]++ }
+    const g = c.createRadialGradient(p0[0], p0[1], 0, p0[0], p0[1], R); g.addColorStop(0, col(hex, bb));
+    let last = bb; for (let k = 0; k < 4; k++) { if (cnt[k]) last = bin[k] / cnt[k]; g.addColorStop((k + .6) / 4, col(hex, last)) }
+    c.fillStyle = g; c.fill(); if (extra) extra(c);
+  } };
+}
+// a box (centre, unit axes, half sizes): the visible faces, each flat-lit, with a darker edge
+function boxPart(L, d, cen, ax, hs, hex, mat, opt) {
+  const cr = []; for (const a of [-1, 1]) for (const b of [-1, 1]) for (const e of [-1, 1]) cr.push(add(cen, add(mul(ax[0], a * hs[0]), add(mul(ax[1], b * hs[1]), mul(ax[2], e * hs[2])))));
+  const pts = hull(cr.map(P)), path = polyPath(pts);
+  const faces = []; for (let i = 0; i < 3; i++) for (const s of [-1, 1]) { const n = mul(ax[i], s); if (dot(n, VW) <= .01) continue;
+    const j = (i + 1) % 3, k = (i + 2) % 3, fc = add(cen, mul(ax[i], s * hs[i]));
+    faces.push({ n, i, s, q: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([u, v]) => P(add(fc, add(mul(ax[j], u * hs[j]), mul(ax[k], v * hs[k]))))) }) }
+  return { L, d, pts, path, paint: c => {
+    for (const f of faces) { c.beginPath(); polyPath(f.q)(c); c.fillStyle = col(hex, bri(f.n, mat) * (opt && opt.face ? opt.face(f) : 1)); c.fill() }
+    if (opt && opt.deco) opt.deco(c, faces);
+    c.beginPath(); path(c); c.strokeStyle = col(hex, .45); c.lineWidth = .012 * SCALE; c.stroke();
+  } };
+}
+function linePart(L, d, list, hex, w, mat, cap) {   // a polyline of world points (straps, handles, cane, fork)
+  const pts2 = list.map(P), half = w * SCALE / 2;
+  const pts = []; for (const p of pts2) pts.push([p[0] - half, p[1] - half], [p[0] + half, p[1] + half]);
+  return { L, d, pts: hull(pts), path: c => { c.moveTo(pts2[0][0], pts2[0][1]); for (let i = 1; i < pts2.length; i++) c.lineTo(pts2[i][0], pts2[i][1]) }, stroke: true, w: w * SCALE,
+    paint: c => { c.beginPath(); c.moveTo(pts2[0][0], pts2[0][1]); for (let i = 1; i < pts2.length; i++) c.lineTo(pts2[i][0], pts2[i][1]); c.lineCap = cap || 'round'; c.lineJoin = 'round'; c.strokeStyle = col(hex, mat ? bri(Z, mat) : 1); c.lineWidth = w * SCALE; c.stroke() } };
+}
+function discPart(L, d, cen, r, th, hexTop, hexSide, mat) {   // a horizontal disc (table top, plate): side band, then the top
+  const a = P(cen), b = P([cen[0], cen[1], cen[2] - th]), R = r * SCALE, Ry = R * ky(cen[2]);   // p670: a flat disc is an ellipse in the people's camera
+  const el = (c0, n) => { const o = []; for (let i = 0; i < n; i++) { const t = i / n * Math.PI * 2; o.push([c0[0] + Math.cos(t) * R, c0[1] + Math.sin(t) * Ry]) } return o };
+  const pts = hull(el(a, 24).concat(el(b, 24)));
+  return { L, d, pts, path: polyPath(pts), ol: 'full', oc: hexSide, paint: c => {
+    c.beginPath(); polyPath(pts)(c); c.fillStyle = col(hexSide, .78); c.fill();
+    const g = c.createRadialGradient(a[0] - R * .35, a[1] - Ry * .45, R * .05, a[0], a[1], R * 1.05); g.addColorStop(0, col(hexTop, bri(Z, mat) * 1.06)); g.addColorStop(1, col(hexTop, bri(Z, mat) * .9));
+    c.beginPath(); c.ellipse(a[0], a[1], R, Ry, 0, 0, Math.PI * 2); c.fillStyle = g; c.fill();
+  } };
+}
+
+// ---- the body ----
+function dims(L) {
+  const h = L.h || 1.76, hs = h / 1.76, w = L.w || 1, bel = L.belly || 1, kid = h < 1.5, hk = kid ? Math.pow(hs, .45) : hs;
+  return { h, hs, w, bel, kid, hk,
+    hipZ: .53 * h, hipS: .08 * w * hs, thigh: .245 * h, shin: .243 * h, ankZ: .045 * h,
+    armS: .166 * w * hs, shZ: .79 * h, uarm: .168 * h, farm: .146 * h,   // p670: the shoulders
+    rT: .068 * hs * (.88 + .12 * w), rK: .05 * hs, rA: .036 * hs, rU: .044 * hs * (.9 + .1 * w), rE: .036 * hs, rW: .029 * hs, rHd: .045 * hs,
+    neck0: .812 * h, neck1: .875 * h, rN: .051 * hs, headZ: .93 * h, head: [.077 * hk, .094 * hk, .114 * hk] };   // p670: the head of a man (15 × 19 × 23 cm), the neck, the hand
+}
+// the torso cross-sections (z, half width, half depth) by the kind of top; the hem decides how low the cloth goes
+function torsoRings(D, top) {
+  const h = D.h, w = D.w * D.hs, dd = D.hs, b = D.bel;
+  const R = [[.6 * h, .136 * w * (1 + (b - 1) * .6), .093 * dd * (1 + (b - 1) * 1.6)], [.7 * h, .156 * w, .104 * dd * (1 + (b - 1) * .5)], [.76 * h, .165 * w * (top === 'suit' ? 1.04 : 1), .098 * dd],
+    [.795 * h, .168 * w * (top === 'suit' ? 1.05 : 1), .088 * dd], [.82 * h, .118 * w, .066 * dd]];   // p670: the chest, the shoulder line, the trapezius (the neck shows)
+  const hem = { tee: [.49 * h, .146 * w * (1 + (b - 1) * .5), .098 * dd * (1 + (b - 1) * 1.2)], shirt: [.525 * h, .14 * w * (1 + (b - 1) * .5), .095 * dd * (1 + (b - 1) * 1.3)],
+    suit: [.43 * h, .162 * w * (1 + (b - 1) * .4), .104 * dd * (1 + (b - 1) * 1.1)], coat: [.3 * h, .2 * w, .135 * dd], labcoat: [.33 * h, .19 * w, .128 * dd], kid: [.5 * h, .148 * w, .1 * dd] }[top] || [.5 * h, .145 * w, .098 * dd];
+  const out = [hem]; if (top === 'coat' || top === 'labcoat') out.push([.45 * h, .17 * w, .112 * dd]); return out.concat(R);
+}
+function gaitFoot(u, side, step, h) {   // the planted-foot gait: stance 60 % (the foot moves back linearly — no slide), swing 40 %
+  const q = ((u + (side > 0 ? .5 : 0)) % 1 + 1) % 1;
+  if (q < .6) return { a: step * (.6 - 2 * q), lift: 0, heel: q > .44 ? (q - .44) / .16 : 0, q };
+  const t = (q - .6) / .4, sm = t * t * (3 - 2 * t); return { a: step * (-.6 + 1.2 * sm), lift: .04 * h * Math.sin(Math.PI * t), heel: Math.max(0, 1 - t * 2.5), q };
+}
+function ik(H, A, L1, L2, bend) {
+  let dv = sub(A, H), d = Math.hypot(dv[0], dv[1], dv[2]); const mx = (L1 + L2) * .9995;
+  if (d > mx) { dv = mul(dv, mx / d); A = add(H, dv); d = mx }
+  const u = mul(dv, 1 / d), a = (L1 * L1 - L2 * L2 + d * d) / (2 * d), hh = Math.sqrt(Math.max(0, L1 * L1 - a * a));
+  const n = nrm(sub(bend, mul(u, dot(bend, u))));
+  return { knee: add(add(H, mul(u, a)), mul(n, hh)), ank: A };
+}
+const STEP = (D, item) => .216 * D.h * (item === 'shopping' || item === 'toolbox' ? .9 : 1);   // 29.10 02:25 — 28 % shorter than the first sample (.3 h): the body is drawn at 0.6, the ground is not
+
+const PX34 = { comb, ik, add, sub, mul, nrm, dot, crs, lrp, Z, gaitFoot };   // W17: the helpers for the riders' pose (074zd_w17_kit.js — G.P34X.pose)
+function pose(look, act, dir, fr) {
+  const L = look, D = dims(look), k = act.k, F = FR[k] || 1, u = F > 1 ? fr / F : 0, item = (look.item && look.item.k) || '';
+  const hd = dir * Math.PI / 4, f = [Math.cos(hd), Math.sin(hd), 0], l = [Math.sin(hd), -Math.cos(hd), 0];
+  const walking = k === 'walk' || k === 'drag' || k === 'carry';
+  // the upper body turns a little toward the camera in the side views (E / W) so that both arms read; the hips half of that
+  const tw = .3 * Math.cos(hd), rot = (v, a) => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a), 0];
+  const swing = walking ? Math.sin(u * Math.PI * 2) : 0;
+  const fU = rot(f, tw - .06 * swing), lU = rot(l, tw - .06 * swing), fH = rot(f, tw * .5 + .07 * swing), lH = rot(l, tw * .5 + .07 * swing);
+  const O = [0, 0, 0], step = STEP(D, item);
+  const S = { D, f, l, fU, lU, k, item, sit: k === 'eat' || k === 'bench', table: k === 'eat', u, dir, props: [] };
+  // ---- legs and pelvis ----
+  let pelZ = D.hipZ, shift = 0, lean = 0, pitch = 0;
+  if (walking) pelZ -= .02 * D.h * (1 + Math.cos(u * Math.PI * 4)) / 2;
+  if (k === 'wait') shift = .022 * Math.sin(u * Math.PI * 2);
+  if (k === 'eat') { pelZ = .5 * D.h * .52 + .08 * D.hs; lean = .12 }
+  else if (k === 'bench') { pelZ = .46 + .08 * D.hs; lean = -.04 }   // p581: the bench seat at 0.46 for everyone
+  const pel = comb(O, l, 0, l, shift, pelZ);
+  S.pel = pel; S.legs = [];
+  for (const side of [1, -1]) {   // +1 left, −1 right
+    const hip = comb(pel, fH, 0, lH, side * D.hipS, 0);
+    let ank, bend = f, heelZ = 0, toeA = (L.shoes && L.shoes.t === 'leather' ? .082 : .072) * D.hs;
+    if (S.sit) { ank = comb(O, f, S.table ? D.thigh * .93 + .09 * D.hs : D.thigh * .6 + .04 * D.hs, l, side * D.hipS * 1.15, D.ankZ); bend = nrm(add(f, mul(Z, 2.2))) }
+    else if (walking) { const g = gaitFoot(u, side, step, D.h); ank = comb(O, f, g.a, l, side * D.hipS * .9, D.ankZ + g.lift + g.heel * .05 * D.hs); heelZ = g.heel * .05 * D.hs }
+    else { ank = comb(O, f, side > 0 ? .02 : -.01, l, side * (D.hipS + .02) - shift * .2, D.ankZ) }
+    const j = ik(hip, ank, D.thigh, D.shin, bend);
+    const toe = add(j.ank, add(mul(f, toeA), [0, 0, -D.ankZ + .028 - heelZ * .6])), heel = add(j.ank, add(mul(f, -.028 * D.hs), [0, 0, -D.ankZ + .03]));
+    toe[2] = Math.max(.025, toe[2]); heel[2] = Math.max(.028, heel[2]);
+    S.legs.push({ side, hip, knee: j.knee, ank: j.ank, toe, heel, y: dot(lH, [0, 1, 0]) * side });
+  }
+  // ---- torso, neck, head ----
+  const tc = comb(O, fU, lean * .25, lU, shift * .6, 0);   // the torso's ground centre
+  S.torsoAt = z => comb(tc, fU, lean * (z - pelZ), lU, 0, 0);
+  S.pelZ = pelZ; S.lean = lean;
+  const bob = walking ? pelZ - D.hipZ : (S.sit ? pelZ - D.hipZ : 0);
+  S.dz = bob;   // the torso rides on the pelvis
+  if (k === 'wait') pitch = u > .45 && u < .8 ? .45 : .05;
+  if (k === 'eat') pitch = .25 + .12 * Math.sin(u * Math.PI * 2);
+  if (k === 'bench') pitch = .08;
+  const nb = add(S.torsoAt(D.neck0 + bob), [0, 0, D.neck0 + bob]), nt = add(S.torsoAt(D.neck1 + bob), [fU[0] * .012, fU[1] * .012, D.neck1 + bob]);
+  S.neck = [nb, nt];
+  const ef = nrm(add(mul(fU, Math.cos(pitch)), mul(Z, -Math.sin(pitch)))), ez = nrm(add(mul(Z, Math.cos(pitch)), mul(fU, Math.sin(pitch))));
+  S.head = { c: add(add(S.torsoAt(D.headZ + bob), [0, 0, D.headZ + bob]), add(mul(fU, .016 * D.hs), mul(ef, .01 * D.hs))), ax: [lU, ef, ez], r: D.head };
+  // ---- arms: the upper arm and forearm directions in the upper-body frame (a forward, s outward, z up) ----
+  S.arms = [];
+  const amp = .34, fwdOf = side => { if (!walking) return 0; const g = gaitFoot(u, -side, step, D.h); return g.a / (.6 * step) };
+  for (const side of [1, -1]) {
+    let d1, d2, hold = null;
+    const right = side < 0;
+    if (walking) {
+      const s = fwdOf(side); let A = amp * s, out = .06, flex = .18 + .26 * Math.max(0, s);
+      if (k === 'drag' && right) { A = -.34; out = .13; flex = .06 }
+      else if (k === 'carry' || ((item === 'briefcase' || item === 'toolbox') && right) || item === 'shopping') { A = .13 * s; out = item === 'shopping' ? .2 : .14; flex = .04 }
+      d1 = [Math.sin(A), out, -Math.cos(A)]; d2 = [Math.sin(A + flex), out * .6, -Math.cos(A + flex)];
+    } else if (k === 'marshal') {
+      const w = Math.sin(u * Math.PI * 2);   // "come ahead": the wands beat from overhead toward the face
+      d1 = [.3, .6, .74]; d2 = [.18 + .3 * (w * .5 + .5), .26 - .7 * (w * .5 + .5), .95 - .4 * (w * .5 + .5)];
+    } else if (k === 'stop') { d1 = [.22, .52, .82]; d2 = [.22, -.8, .55] }
+    else if (k === 'bench') { d1 = [.3, .16, -.94]; d2 = [.96, -.1, -.26] }   // p581: the hands rest on the thighs
+    else if (k === 'eat') {
+      if (right) { const t = .5 - .5 * Math.cos(u * Math.PI * 2);   // the fork: from the plate up to the mouth and back
+        d1 = [.55 - .1 * t, .22, -.8 + .55 * t]; d2 = [.95 - .55 * t, -.05 - .2 * t, .05 + .85 * t] }
+      else { d1 = [.5, .25, -.82]; d2 = [.97, -.18, .05] }
+    } else if (k === 'wait') {
+      if (!right && u > .4 && u < .85) { d1 = [.22, .2, -.95]; d2 = [.55, -.82, .25] }   // looks at the watch
+      else if (right && item === 'cane') { d1 = [.28, .16, -.95]; d2 = [.5, .05, -.86] }
+      else { d1 = [.04, .08, -1]; d2 = [.12, .04, -1] }
+    } else if (k.length === 2 && k[0] === 'f' && G.FISHX) { const q = G.FISHX.armsFor(k, fr, right); d1 = q[0]; d2 = q[1] }   // p641
+    else { d1 = [.03, .07, -1]; d2 = [.1, .03, -1] }
+    const W = v => nrm(add(add(mul(fU, v[0]), mul(lU, v[1] * side)), mul(Z, v[2])));
+    const sh = add(add(S.torsoAt(D.shZ + bob), [0, 0, D.shZ + bob]), add(mul(lU, side * D.armS), mul(fU, -.008)));
+    const el = add(sh, mul(W(d1), D.uarm)), wd = W(d2), wr = add(el, mul(wd, D.farm)), hand = add(wr, mul(wd, .052 * D.hs));   // p670: the hand of a man
+    S.arms.push({ side, sh, el, wr, hand, wd });
+  }
+  if (G.P34X && G.P34X.pose) try { G.P34X.pose(S, L, act, fr, PX34) } catch (e) { G.P34X.err = String(e && e.message || e) }   // W17: the riders (k 'ride')
+  return S;
+}
+
+// ---- the looks: colours and kinds ----
+const DEF = { h: 1.76, w: 1, belly: 1, skin: '#d9a57f', hair: { t: 'short', c: '#3b2a1f' }, top: { t: 'tee', c: '#3d7fc4' }, legs: { t: 'trousers', c: '#2d3a4f' }, shoes: { t: 'sneaker', c: '#e9ecef' } };
+
+// ---- the parts of one person in one pose ----
+function parts(look, act, dir, fr, small, lod) {
+  KW = act.k !== 'bench' && act.k !== 'eat'; LOD = lod || 0; RIDE = !!(G.P34X && G.P34X.cam && G.P34X.cam(act));   // W17
+  try { return parts0(look, act, dir, fr, small, LOD) } finally { KW = false; LOD = 0; RIDE = false }
+}
+function parts0(look, act, dir, fr, small, lod) {
+  const L = small ? smallLook(Object.assign({}, DEF, look)) : Object.assign({}, DEF, look), S = pose(L, act, dir, fr), D = S.D, out = [], F = S.f, fU = S.fU, lU = S.lU;
+  const yv = p => p[1];   // the depth key: the world y (south = toward the camera)
+  const torsoY = S.torsoAt(1)[1], headD = Math.max(S.head.c[1], torsoY + .02);
+  const top = L.top || {}, legs = L.legs || {}, shoes = L.shoes || {}, item = L.item || {};
+  const legMat = legs.t === 'jeans' ? MAT.denim : (legs.t === 'suit' ? MAT.wool : MAT.cloth);
+  const legBias = S.sit ? -.02 - .3 : -.15;
+  // legs: thigh, shin, the shoe (sole and upper)
+  for (const g of S.legs) {
+    const far = g.y < -.02 ? .86 : 1, base = (g.hip[1] + g.ank[1]) / 2 + legBias + g.y * .01;
+    /* D‑593: the cuts of the wardrobe (legs.cut, shoes.cut, shoes.shaft) — a look without them is drawn exactly as before */
+    const shortLeg = legs.t === 'shorts', kneeCut = lrp(g.hip, g.knee, 1.08), lcut = legs.cut || '', sportS = shortLeg && lcut === 'sport', cargo = !shortLeg && lcut === 'cargo', jogger = !shortLeg && lcut === 'jogger', sandal = shoes.t === 'sandal', scut = shoes.cut || '';
+    if (sportS) { out.push(limbPart('body', base - .0004, lrp(g.hip, g.knee, .42), g.knee, D.rT * .9, D.rK * .93, L.skin, MAT.skin, far)); out.push(limbPart('body', base, g.hip, lrp(g.hip, g.knee, .6), D.rT * 1.03, D.rT * 1.02, legs.c, legMat, far)) }   // short sport shorts: the cloth to the middle of the thigh
+    else out.push(limbPart('body', base, g.hip, g.knee, cargo ? D.rT * 1.05 : D.rT, cargo ? D.rK * 1.12 : D.rK, legs.c, legMat, far));
+    if (shortLeg) { out.push(limbPart('body', base + .001, sportS ? g.knee : kneeCut, g.ank, D.rK * .86, D.rA, L.skin, MAT.skin, far)); if (!sandal) out.push(limbPart('body', base + .002, lrp(kneeCut, g.ank, sportS ? .9 : .8), g.ank, D.rA * 1.12, D.rA * 1.1, L.socks || '#f1f2f4', MAT.cloth, far)) }
+    const st_ = shoes.t || 'sneaker', boot = st_ === 'boot' && (!shortLeg || !!shoes.shaft);
+    // a boot: the trouser leg ends at the top of the shaft and is drawn over it (the leg goes into the boot)
+    if (lod >= 2 && !shortLeg && !lcut && legs.t !== 'jeans' && dot(F, VW) > -.15) { const cp = linePart('body', base + (boot ? .0063 : .0013), [add(lrp(g.hip, g.knee, .2), mul(F, D.rT * .9)), add(g.knee, mul(F, D.rK * .97)), add(lrp(g.knee, g.ank, boot ? .62 : .86), mul(F, D.rA * 1.12))], col2hex(legs.c, 1.2), .0042 * D.hs, null), c0 = cp.paint; cp.paint = c => { c.globalAlpha = .5; c0(c); c.globalAlpha = 1 }; out.push(cp) }   // p670: the crease
+    if (!shortLeg) out.push(limbPart('body', base + (boot ? .006 : .001), g.knee, boot ? add(g.ank, [0, 0, .095 * D.hs]) : g.ank, cargo ? D.rK * 1.12 : D.rK, D.rA * (cargo ? 1.36 : 1.12), legs.c, legMat, far));
+    if (cargo) { const sd = mul(lU, g.side); if (sd[1] > -.2) { const pc = add(lrp(g.hip, g.knee, .66), mul(sd, D.rT * .74));   // D‑593: the side pocket of cargo trousers, its flap
+        out.push(linePart('body', base + .0066, [add(pc, [0, 0, .042 * D.hs]), add(pc, [0, 0, -.042 * D.hs])], col2hex(legs.c, .84), .056 * D.hs, null, 'butt'));
+        out.push(linePart('body', base + .0067, [add(pc, [0, 0, .044 * D.hs]), add(pc, [0, 0, .02 * D.hs])], col2hex(legs.c, .68), .06 * D.hs, null, 'butt')) } }
+    if (jogger) { out.push(limbPart('body', base + (boot ? .0061 : .0012), lrp(g.knee, g.ank, boot ? .5 : .85), lrp(g.knee, g.ank, boot ? .6 : .98), D.rA * 1.22, D.rA * 1.17, col2hex(legs.c, .68), legMat, far));   // D‑593: joggers — the ribbed cuff, the stripe down the side
+      if (D.hs * SCALE > .9) { const sd = mul(lU, g.side * .9); out.push(linePart('body', base + .0065, [add(lrp(g.hip, g.knee, .12), mul(sd, D.rT * .97)), add(g.knee, mul(sd, D.rK * .97)), add(lrp(g.knee, g.ank, boot ? .52 : .83), mul(sd, D.rA * 1.08))], legs.c2 || '#f1f1ee', .012 * D.hs, null)) } }
+    if (sportS && D.hs * SCALE > .9) { const sd = mul(lU, g.side * .9); out.push(linePart('body', base + .0065, [add(lrp(g.hip, g.knee, .08), mul(sd, D.rT * 1.0)), add(lrp(g.hip, g.knee, .57), mul(sd, D.rT * 1.0))], legs.c2 || '#f1f1ee', .012 * D.hs, null)) }
+    if (legs.t === 'jeans' && D.hs * SCALE > .9) { const sd = mul(lU, g.side * .9); out.push(linePart('body', base + .0065, [add(lrp(g.hip, g.knee, .15), mul(sd, D.rT * .95)), add(g.knee, mul(sd, D.rK * .95)), add(lrp(g.knee, g.ank, .9), mul(sd, D.rA * 1.05))], '#7f9cc4', .006, null)) }
+    // the shoe (29.10 02:25): 0.6 of a real shoe like the body (~16 cm); a thin sole rim; a toe box (low) and a heel counter (higher),
+    // so it reads as a shoe and not a capsule; a shape per kind; a main colour (c) and a second one (c2)
+    const c1 = shoes.c || '#e9ecef', c2 = shoes.c2 || (st_ === 'sneaker' ? '#c0392b' : st_ === 'leather' ? '#2a1a10' : '#26211c'), hs_ = D.hs;
+    const f3 = nrm(sub(g.toe, g.heel)), lat = nrm(crs(Z, f3)), up3 = nrm(crs(f3, lat)), outer = mul(lat, -g.side);   // lat points to the foot's right; the outer side of the left foot (+1) is its left
+    const ax3 = [lat, f3, up3], at3 = (p, a, u) => add(add(p, mul(f3, a)), mul(up3, u));
+    const solC = st_ === 'sneaker' ? '#eef0f2' : c2, upMat = st_ === 'sneaker' ? MAT.plastic : (st_ === 'boot' ? { s: .3, p: 14 } : MAT.leather);
+    const lea = st_ === 'leather', mid = lrp(g.heel, g.toe, .5);
+    const sole = sandal ? ellipPart('body', base + .003, at3(mid, .004 * hs_, .001), ax3, [.034 * hs_, .088 * hs_, .0075 * hs_], null, c2, MAT.sole, far)   // D‑593: a sandal — the foot in skin on a flat sole
+      : ellipPart('body', base + .003, at3(mid, .002 * hs_, .002), ax3, [(lea ? .029 : .033) * hs_, .082 * hs_, (boot ? .011 : .008) * hs_], null, solC, MAT.sole, far);
+    const toeBox = sandal ? ellipPart('body', base + .004, at3(g.toe, -.027 * hs_, .017 * hs_), ax3, [.0265 * hs_, .056 * hs_, .0155 * hs_], null, L.skin, MAT.skin, far)
+      : ellipPart('body', base + .004, at3(g.toe, -.022 * hs_, .016 * hs_), ax3, [(lea ? .024 : .029) * hs_, (lea ? .062 : .054) * hs_, (lea ? .016 : .02) * hs_], null, c1, upMat, far);
+    const heelC = boot ? null : sandal ? ellipPart('body', base + .004 + (dot(f3, [0, 1, 0]) < 0 ? .0002 : -.0002), at3(g.heel, .012 * hs_, .024 * hs_), ax3, [.026 * hs_, .036 * hs_, .026 * hs_], null, L.skin, MAT.skin, far)
+      : ellipPart('body', base + .004 + (dot(f3, [0, 1, 0]) < 0 ? .0002 : -.0002), at3(g.heel, .012 * hs_, .028 * hs_), ax3, [.03 * hs_, .042 * hs_, .032 * hs_], null, c1, upMat, far);
+    for (const p_ of [sole, toeBox, heelC]) if (p_) out.push(p_);
+    const outerVis = outer[1] > -.3;
+    if (sandal) {   // D‑593: two straps across the foot, one behind the heel
+      for (const [t, hg] of [[.4, .047], [.7, .035]]) { const b0 = lrp(g.heel, g.toe, t), m = add(b0, mul(up3, hg * hs_));
+        out.push(linePart('body', base + .0046, [add(add(b0, mul(lat, .031 * hs_)), mul(up3, .009 * hs_)), add(m, mul(lat, .017 * hs_)), add(m, mul(lat, -.017 * hs_)), add(add(b0, mul(lat, -.031 * hs_)), mul(up3, .009 * hs_))], c1, .014 * hs_, MAT.leather, 'butt')) }
+      out.push(linePart('body', base + .004 + (dot(f3, [0, 1, 0]) < 0 ? .0007 : -.0007), [add(at3(g.heel, .014 * hs_, .03 * hs_), mul(lat, .027 * hs_)), at3(g.heel, -.024 * hs_, .037 * hs_), add(at3(g.heel, .014 * hs_, .03 * hs_), mul(lat, -.027 * hs_))], c1, .011 * hs_, MAT.leather, 'round'));
+    } else if (st_ === 'sneaker' && scut === 'hightop') {   // D‑593: a canvas high-top — the collar round the ankle (under a long trouser leg), the white rubber toe cap, three lace bars, the round patch
+      const cd = shortLeg ? .005 : .0008;
+      out.push(limbPart('body', base + cd, add(g.ank, [0, 0, -.014]), add(g.ank, [0, 0, .066 * hs_]), .04 * hs_, .0385 * hs_, c1, MAT.cloth, far));
+      out.push(limbPart('body', base + cd + .0002, add(g.ank, [0, 0, .052 * hs_]), add(g.ank, [0, 0, .066 * hs_]), .0395 * hs_, .039 * hs_, c2, MAT.cloth, far));
+      { const cap = ellipPart('body', base + .0043, at3(g.toe, -.008 * hs_, .013 * hs_), ax3, [.0275 * hs_, .027 * hs_, .0165 * hs_], null, '#f1f1ee', MAT.plastic, far); if (cap) out.push(cap) }
+      for (const t of [.5, .63, .76]) { const m = add(lrp(g.heel, g.toe, t), mul(up3, .037 * hs_)); out.push(linePart('body', base + .0046, [add(m, mul(lat, .012 * hs_)), add(m, mul(lat, -.012 * hs_))], '#f7f7f5', .005 * hs_, { s: 0, p: 1 }, 'butt')) }
+      if (outerVis && shortLeg && lod >= 1) { const e = ellipPart('body', base + .0054, add(add(g.ank, [0, 0, .03 * hs_]), mul(outer, .037 * hs_)), ax3, [.008 * hs_, .013 * hs_, .013 * hs_], null, '#f4f4f2', MAT.plastic, far); if (e) out.push(e) }
+    } else if (st_ === 'sneaker' && scut === 'runner') {   // D‑593: a running shoe — the thick wedge under the heel in the second colour, a curved stripe, a heel tab, three lace bars
+      { const wedge = ellipPart('body', base + .0032, at3(g.heel, .024 * hs_, .008 * hs_), ax3, [.0345 * hs_, .052 * hs_, .018 * hs_], null, c2, MAT.plastic, far); if (wedge) out.push(wedge) }
+      if (outerVis) out.push(linePart('body', base + .0045, [add(at3(g.heel, 0, .02 * hs_), mul(outer, .03 * hs_)), add(at3(mid, -.004 * hs_, .041 * hs_), mul(outer, .026 * hs_)), add(at3(mid, .036 * hs_, .015 * hs_), mul(outer, .029 * hs_))], c2, .0105 * hs_, { s: 0, p: 1 }, 'round'));
+      for (const t of [.52, .64, .76]) { const m = add(lrp(g.heel, g.toe, t), mul(up3, .036 * hs_)); out.push(linePart('body', base + .0046, [add(m, mul(lat, .012 * hs_)), add(m, mul(lat, -.012 * hs_))], c2, .005 * hs_, { s: 0, p: 1 }, 'butt')) }
+      out.push(linePart('body', base + .004 + (dot(f3, [0, 1, 0]) < 0 ? .0007 : -.0007), [at3(g.heel, -.02 * hs_, .03 * hs_), at3(g.heel, -.024 * hs_, .06 * hs_)], c2, .012 * hs_, { s: 0, p: 1 }, 'round'));
+    } else if (st_ === 'sneaker') {
+      if (outerVis) out.push(linePart('body', base + .0045, [add(at3(g.heel, -.004 * hs_, .03 * hs_), mul(outer, .029 * hs_)), add(at3(mid, .028 * hs_, .02 * hs_), mul(outer, .028 * hs_))], c2, .009 * hs_, { s: 0, p: 1 }, 'round'));
+      for (const t of [.55, .72]) { const m = add(lrp(g.heel, g.toe, t), mul(up3, .036 * hs_)); out.push(linePart('body', base + .0046, [add(m, mul(lat, .012 * hs_)), add(m, mul(lat, -.012 * hs_))], '#f7f7f5', .0055 * hs_, { s: 0, p: 1 }, 'butt')) }
+    } else if (boot) {
+      out.push(limbPart('body', base + .005, add(g.ank, [0, 0, -.012]), add(g.ank, [0, 0, .11 * hs_]), .041 * hs_, .04 * hs_, c1, upMat, far));
+      out.push(limbPart('body', base + .0052, add(g.ank, [0, 0, .07 * hs_]), add(g.ank, [0, 0, .088 * hs_]), .0418 * hs_, .0415 * hs_, c2, MAT.leather, far));
+    }
+  }
+  if (lod >= 2 && legs.t === 'jeans' && dot(S.f, VW) < -.3) for (const s of [1, -1]) {   // p670: the back pockets of jeans, orange stitches
+    const q = (u, dz) => add(S.pel, add(add(mul(S.f, -.093 * D.hs), mul(S.l, s * u * D.hs)), [0, 0, dz * D.hs])), o = [q(.03, .035), q(.115, .035), q(.11, -.055), q(.072, -.075), q(.035, -.055), q(.03, .035)];
+    const sp = linePart('body', torsoY - .02, o, '#c99a52', .0042 * D.hs, null), s0 = sp.paint; sp.paint = c => { c.globalAlpha = .85; s0(c); c.globalAlpha = 1 }; out.push(sp) }
+  // the pelvis (the trousers between the legs and the shirt)
+  { const pc = S.pel, a = [], hw = (D.hipS + D.rT * .95), hd = .09 * D.hs * (1 + (D.bel - 1) * .8);
+    for (const dz of [-.07 * D.hs, .06 * D.hs]) for (let i = 0; i < 16; i++) { const t = i / 16 * Math.PI * 2; a.push(P(add(pc, add(add(mul(S.f, Math.cos(t) * hd), mul(S.l, Math.sin(t) * hw)), [0, 0, dz])))) }
+    const pts = hull(a); out.push({ L: 'body', d: torsoY - .05, pts, path: polyPath(pts), paint: c => { c.beginPath(); polyPath(pts)(c); const g = c.createLinearGradient(pts.reduce((m, p) => Math.min(m, p[0]), 9), 0, pts.reduce((m, p) => Math.max(m, p[0]), -9), 0); g.addColorStop(0, col(legs.c, .84)); g.addColorStop(.5, col(legs.c, .74)); g.addColorStop(1, col(legs.c, .64)); c.fillStyle = g; c.fill() } }) }
+  // arms (skin) and hands; sleeves are in the top layer
+  const longSl = top.t === 'suit' || top.t === 'coat' || top.t === 'labcoat' || top.long;
+  for (const a of S.arms) {
+    const d = (a.el[1] + a.wr[1]) / 2, dU = (a.sh[1] + a.el[1]) / 2, far = (a.el[1] - torsoY) < -.04 && a.side * dot(lU, [0, 1, 0]) < -.2 ? .85 : 1;
+    const dd = Math.max(d, dU);
+    a.dd = dd + .01; a.far = far;
+    { const up = limbPart('body', dU + .008, a.sh, a.el, D.rU, D.rE, L.skin, MAT.skin, far); up.olFrom = .35; out.push(up) }
+    const fa = limbPart('body', dd + .009, a.el, a.wr, D.rE, D.rW, L.skin, MAT.skin, far); fa.arm = 'fore'; out.push(fa);
+    const hp_ = ellipPart('body', Math.max(dd, a.hand[1]) + .012, a.hand, [lU, a.wd, nrm(crs(lU, a.wd))], [D.rHd * .52, D.rHd * 1.25, D.rHd * .9], null, L.gloves || L.skin, L.gloves ? MAT.cloth : MAT.skin, far); if (hp_) { hp_.arm = 'fore'; out.push(hp_) }
+    if (lod >= 1) { const fw = nrm(sub(fU, mul(a.wd, dot(fU, a.wd)))), tp = ellipPart('body', Math.max(dd, a.hand[1]) + .0125, add(add(a.hand, mul(fw, D.rHd * .72)), mul(a.wd, -D.rHd * .3)), [lU, a.wd, fw], [D.rHd * .34, D.rHd * .66, D.rHd * .32], null, L.gloves || L.skin, L.gloves ? MAT.cloth : MAT.skin, far); if (tp) { tp.arm = 'fore'; out.push(tp) } }   // p670: the thumb
+    if (L.gloves) { const gc = limbPart('body', dd + .0095, lrp(a.el, a.wr, .84), lrp(a.el, a.wr, 1.03), D.rW * 1.36, D.rW * 1.3, col2hex(L.gloves, .76), MAT.cloth, far); gc.arm = 'fore'; out.push(gc) }   // D‑593: work gloves — the hand and a cuff
+    if (L.watch && a.side > 0) { const w0 = longSl ? .975 : .88, wb = limbPart('top', dd + .0104, lrp(a.el, a.wr, w0), lrp(a.el, a.wr, w0 + .1), D.rW * 1.2, D.rW * 1.2, L.watch.b || '#1d1f22', MAT.leather, far),   // D‑593: a watch on the left wrist — the strap and the case
+        wf = limbPart('top', dd + .0105, lrp(a.el, a.wr, w0 + .028), lrp(a.el, a.wr, w0 + .072), D.rW * 1.44, D.rW * 1.44, L.watch.c || '#c9ced3', MAT.metal, far); wb.arm = wf.arm = 'fore'; out.push(wb, wf) }
+  }
+  // neck and head (skin); p670: the face is painted on the head (lod 1: the eyes and the brows; lod 2: the nose, the mouth, the glasses)
+  out.push(limbPart('body', headD - .004, S.neck[0], S.neck[1], D.rN, D.rN * .92, L.skin, MAT.skin, .9));
+  const capT = (L.hair && L.hair.t) || 'short', cap = capT !== 'none' && capT !== 'bald';   // with hair: the face is the head below the hairline, over the hair
+  const H = S.head, headP = ellipPart('body', headD, H.c, H.ax, H.r, null, L.skin, MAT.skin, 1, lod >= 1 && !cap ? faceOf(H, L, lod) : null);
+  out.push(headP);
+  if (lod >= 1 && dot(H.ax[1], VW) > -.3) { const np = ellipPart(cap ? 'hair' : 'body', cap ? headD + .0106 : headD + .0004, add(H.c, add(mul(H.ax[1], H.r[1] * .93), mul(H.ax[2], -H.r[2] * .1))), H.ax, [.012 * D.hk, .017 * D.hk, .024 * D.hk], null, L.skin, MAT.skin, 1);
+    if (np) { np.ol = lod >= 2 && Math.abs(H.ax[1][0]) > .55 ? 'full' : null; out.push(np) } }   // p670: the nose (its line only in profile)
+  // ears (when the side of the head shows)
+  for (const s of [1, -1]) { const ep = add(H.c, add(mul(H.ax[0], s * H.r[0] * .97), mul(H.ax[2], -.012))); if (dot(mul(H.ax[0], s), VW) > -.15) out.push(ellipPart('body', headD + .001 * (s * dot(H.ax[0], [0, 1, 0]) > 0 ? 1 : -1), ep, H.ax, [.012 * D.hk, .02 * D.hk, .028 * D.hk], null, L.skin, MAT.skin, .95)) }
+
+  // ---- the top layer: the torso by bands, sleeves, collar, belt, placket, lapels, tie, the vest ----
+  /* D‑593: the cuts of the wardrobe (top.cut): polo — untucked, a short placket of two buttons; tank — no sleeves; sweater, hoodie — a little wider, knitted bands */
+  const tcut = top.cut || '', polo = tcut === 'polo', knit = tcut === 'sweater' || tcut === 'hoodie';
+  const tKind = top.t === 'polo' || top.t === 'shirt' ? 'shirt' : (top.t || 'tee'), rings = (rg => knit ? rg.map((r, i) => i < rg.length - 1 ? [r[0], r[1] * 1.045, r[2] * 1.075] : r) : rg)(torsoRings(D, D.kid ? 'kid' : polo ? 'tee' : tKind));
+  const ringPts = (rg, n) => { const [z, hw, hd] = rg, cc = add(S.torsoAt(z + S.dz), [0, 0, z + S.dz]), o = []; for (let i = 0; i < n; i++) { const t = i / n * Math.PI * 2; o.push(add(cc, add(mul(fU, Math.cos(t) * hd), mul(lU, Math.sin(t) * hw)))) } return o };
+  const tMat = tKind === 'suit' ? MAT.wool : (tKind === 'coat' ? MAT.wool : MAT.cloth), tc = top.c || '#3d7fc4', hs = D.hs;
+  const bandParts = (rgs, hex, mat, Lr, d0) => { for (let i = 0; i < rgs.length - 1; i++) {
+    const r0 = rgs[i], r1 = rgs[i + 1], pts = hull(ringPts(r0, 20).concat(ringPts(r1, 20)).map(P)), path = polyPath(pts);
+    out.push({ L: Lr, d: d0 + i * .0005, pts, path, paint: c => {
+      const st = [], dz = (r1[0] - r0[0]) || 1;
+      for (let j = 0; j < 28; j++) { const t = j / 28 * Math.PI * 2, hw = (r0[1] + r1[1]) / 2, hd = (r0[2] + r1[2]) / 2;
+        const nh = nrm(add(mul(fU, Math.cos(t) / hd), mul(lU, Math.sin(t) / hw))), rr0 = Math.hypot(r0[2] * Math.cos(t), r0[1] * Math.sin(t)), rr1 = Math.hypot(r1[2] * Math.cos(t), r1[1] * Math.sin(t));
+        const n = nrm(add(nh, [0, 0, -(rr1 - rr0) / dz])); if (dot(n, VW) <= 0) continue;
+        const px = (fU[0] * Math.cos(t) * hd + lU[0] * Math.sin(t) * hw) * SCALE; st.push([px, bri(n, mat)]) }
+      c.beginPath(); path(c); if (st.length < 2) { c.fillStyle = col(hex, .8); c.fill(); return }
+      st.sort((a, b) => a[0] - b[0]); const cx = P(add(S.torsoAt((r0[0] + r1[0]) / 2), [0, 0, (r0[0] + r1[0]) / 2 + S.dz])), x0 = cx[0] + st[0][0], x1 = cx[0] + st[st.length - 1][0];
+      const g = c.createLinearGradient(x0, cx[1], x1, cx[1]); for (const [px, b] of st) g.addColorStop(Math.min(1, Math.max(0, (cx[0] + px - x0) / ((x1 - x0) || 1))), col(hex, b));
+      c.fillStyle = g; c.fill();
+    } });
+  } };
+  { const bp = []; for (let i = 0; i < rings.length - 1; i++) bp.push(hull(ringPts(rings[i], 20).concat(ringPts(rings[i + 1], 20)).map(P)));   // p670: the line of the torso — under its bands
+    out.push({ L: 'top', d: torsoY - .0002, pts: hull(bp.flat()), path: c => { for (const q of bp) polyPath(q)(c) }, paint: c => { if (!OWM) return; c.beginPath(); for (const q of bp) polyPath(q)(c); c.lineWidth = OWM * 2; c.strokeStyle = col(tc, .34); c.globalAlpha = .85; c.stroke(); c.globalAlpha = 1 } }) }
+  bandParts(rings, tc, tMat, 'top', torsoY);
+  // the top of the shoulders, lit (the cap of the highest ring)
+  { const rt = rings[rings.length - 1], pts = hull(ringPts(rt, 20).map(P)); out.push({ L: 'top', d: torsoY + .003, pts, path: polyPath(pts), paint: c => { c.beginPath(); polyPath(pts)(c); c.fillStyle = col(tc, bri(Z, tMat) * 1.02); c.fill() } }) }
+  const front = dot(fU, [0, 1, 0]), fz = z => add(S.torsoAt(z + S.dz), [0, 0, z + S.dz]);
+  const onFront = (z, s, out_) => { const rr = rings.reduce((b, r) => Math.abs(r[0] - z) < Math.abs(b[0] - z) ? r : b, rings[0]); return add(fz(z), add(mul(fU, rr[2] * (out_ || 1.0) * Math.sqrt(Math.max(0, 1 - (s / rr[1]) ** 2))), mul(lU, s))) };
+  const frontD = torsoY + front * .1, backD = torsoY - front * .1;
+  // the collar: a ring around the neck base; its front half and back half sit at their own depths
+  { const z = D.neck0 + S.dz - .004, cc = fz(D.neck0 - .004), rN = D.rN * 1.35, half = sgn => { const o = []; for (let i = 0; i <= 10; i++) { const t = (i / 10 - .5) * Math.PI; const v = add(mul(fU, sgn * Math.cos(t) * rN), mul(lU, Math.sin(t) * rN * 1.1)); o.push(add([cc[0], cc[1], z], v)) } return o };
+    void cc;
+    const plain = tKind === 'tee' || D.kid;
+    const cFront = plain ? col2hex(tc, .74) : tKind === 'suit' ? (top.c2 || '#f3f4f6') : tKind === 'coat' || tKind === 'labcoat' ? col2hex(tc, .86) : (top.c2 || col2hex(tc, 1.12));
+    const cBack = plain ? col2hex(tc, .74) : tKind === 'suit' || tKind === 'coat' ? col2hex(tc, .82) : (top.c2 || col2hex(tc, 1.12));
+    if (tcut !== 'tank') for (const sg of [1, -1]) { const hp = half(sg), dd = dot(mul(fU, sg), [0, 1, 0]) > 0 ? headD + .002 : headD - .02;
+      out.push(linePart('top', dd, hp, sg > 0 ? cFront : cBack, plain ? (knit ? (tcut === 'hoodie' ? .046 : .03) : .018) * D.hs : (tKind === 'coat' ? .04 : .03) * D.hs, plain ? { s: 0, p: 1 } : MAT.cloth)) }
+  }
+  if (L.scarf) {   // D‑593: a scarf — a thick ring round the neck, its end hanging in front
+    const zs = D.neck0 + S.dz + .014 * D.hs, rS = D.rN * 1.5, c0 = fz(D.neck0), sc = L.scarf;
+    for (const sg of [1, -1]) { const o = []; for (let i = 0; i <= 10; i++) { const t = (i / 10 - .5) * Math.PI; o.push(add([c0[0], c0[1], zs], add(mul(fU, sg * Math.cos(t) * rS), mul(lU, Math.sin(t) * rS * 1.08)))) }
+      out.push(linePart('top', dot(mul(fU, sg), [0, 1, 0]) > 0 ? headD + .0025 : headD - .019, o, sc, .052 * D.hs, MAT.wool)) }
+    if (front > -.25) { out.push(linePart('top', frontD + .0085, [onFront(D.neck0 - .012, .034 * D.hs, 1.14), onFront(.7 * D.h, .05 * D.hs, 1.1)], sc, .05 * D.hs, MAT.wool, 'butt'));
+      out.push(linePart('top', frontD + .0086, [onFront(.712 * D.h, .05 * D.hs, 1.1), onFront(.7 * D.h, .05 * D.hs, 1.1)], col2hex(sc, .68), .05 * D.hs, MAT.wool, 'butt')) }
+  }
+  // shirt / polo: placket and buttons, tucked in with a belt
+  if (tKind === 'shirt' && front > -.2) { const pl = [onFront(D.neck0 - .03 * D.hs, 0, 1.02), onFront((polo ? .712 : .6) * D.h, 0, 1.02)]; out.push(linePart('top', frontD + .003, pl, polo ? col2hex(tc, .8) : tc, (polo ? .022 : .012) * D.hs, { s: 0, p: 1 }, polo ? 'butt' : undefined));
+    const bz = i => (polo ? .782 - i * .038 : .78 - i * .07) * D.h;
+    for (let i = 0; i < (polo ? 2 : 3); i++) out.push(linePart('top', frontD + .004, [onFront(bz(i), 0, 1.04), onFront(bz(i) - .002, 0, 1.04)], '#f4f4f2', .012 * D.hs, MAT.plastic)) }
+  if (((tKind === 'shirt' && !polo) || top.belt) && !D.kid) {   // the belt: a band all round at the hem, the buckle in front
+    const z = rings[0][0] + .012 * D.hs, hw = rings[0][1] * 1.03, hd = rings[0][2] * 1.05, cc = fz(z);
+    for (const sg of [1, -1]) { const o = []; for (let i = 0; i <= 12; i++) { const t = (i / 12 - .5) * Math.PI; o.push(add(cc, add(mul(fU, sg * Math.cos(t) * hd), mul(lU, Math.sin(t) * hw)))) }
+      out.push(linePart('top', torsoY + sg * front * .1 + .003, o, L.belt || '#2a211b', .024 * D.hs, MAT.leather)) }
+    if (front > -.1) out.push(boxPart('top', frontD + .006, onFront(z, 0, 1.08), [fU, lU, Z], [.006, .02 * D.hs, .014 * D.hs], '#c9b27a', MAT.metal));
+  }
+  // the suit: the V of the shirt and the tie in front, lapels
+  if (tKind === 'suit' && front > -.25) { const zt = D.neck0 - .01, zb = .66 * D.h;
+    const vL = onFront(zt, .055 * D.hs, 1.02), vR = onFront(zt, -.055 * D.hs, 1.02), vB = onFront(zb, 0, 1.03), pts = [vL, vR, vB].map(P);
+    out.push({ L: 'top', d: frontD + .004, pts: hull(pts), path: polyPath(pts), paint: c => { c.beginPath(); polyPath(pts)(c); c.fillStyle = col(top.c2 || '#f3f4f6', .9); c.fill() } });
+    if (!top.noTie) out.push(linePart('top', frontD + .005, [onFront(zt - .02, 0, 1.04), onFront(zb + .01, 0, 1.06)], top.tie || '#8c1d2a', .026 * D.hs, MAT.cloth));   /* D‑593: a suit without a tie — the open collar */
+    for (const s of [1, -1]) out.push(linePart('top', frontD + .0055, [onFront(zt, s * .06 * D.hs, 1.03), onFront(zb + .012, s * .012, 1.05)], tc, .016 * D.hs, { s: .1, p: 6 }));
+  }
+  // p670: the details of the clothes, the apron, the stethoscope
+  clothes(out, { L, D, S, top, tKind, tc, hs, rings, fz, onFront, frontD, backD, front, torsoY, fU, lU, lod });
+  // the coat: two rows of buttons
+  if (tKind === 'coat' && front > -.2) for (const s of [1, -1]) for (let i = 0; i < 3; i++) { const z = (.72 - i * .09) * D.h; out.push(linePart('top', frontD + .004, [onFront(z, s * .05 * D.hs, 1.04), onFront(z - .002, s * .05 * D.hs, 1.04)], '#1d1a17', .016 * D.hs, MAT.plastic)) }
+  // a hi-vis vest over the top: its own torso from the waist to the shoulders, two silver bands round, braces over the shoulders
+  if (L.vest) { const vr = torsoRings(D, 'tee').slice(0, 4).map((r, i) => [i === 0 ? .56 * D.h : r[0], r[1] * 1.07, r[2] * 1.1]);
+    bandParts(vr, L.vest, L.vestK === 'fish' ? MAT.cloth : MAT.hivis, 'top', torsoY + .0065);
+    if (L.vestK === 'fish') { if (front > -.3) for (const s of [1, -1]) for (const zz of [.7, .615]) { const z = zz * D.h;   // p641: the fishing vest — four pockets with flaps
+      out.push(linePart('top', frontD + .012, [onFront(z, s * .062 * D.hs, 1.16), onFront(z - .05 * D.h, s * .062 * D.hs, 1.16)], col2hex(L.vest, .72), .058 * D.hs, MAT.cloth));
+      out.push(linePart('top', frontD + .013, [onFront(z + .004 * D.h, s * .062 * D.hs, 1.17), onFront(z - .012 * D.h, s * .062 * D.hs, 1.17)], col2hex(L.vest, .55), .062 * D.hs, MAT.cloth)) } }
+    else for (const zz of [.62, .69]) { const z = zz * D.h, hw = vr[1][1] * 1.02, hd = vr[1][2] * 1.03, cc = fz(z);
+      for (const sg of [1, -1]) { const o = []; for (let i = 0; i <= 12; i++) { const t = (i / 12 - .5) * Math.PI; o.push(add(cc, add(mul(fU, sg * Math.cos(t) * hd), mul(lU, Math.sin(t) * hw)))) }
+        out.push(linePart('top', torsoY + sg * front * .1 + .008, o, '#d8dde2', .03 * D.hs, MAT.refl)) } }
+    if (L.vestK !== 'fish') for (const s of [1, -1]) for (const sg of [1, -1]) { const o = [fz(.6 * D.h), fz(.77 * D.h), fz(.805 * D.h)].map((p, i) => add(p, add(mul(fU, sg * (i === 2 ? .03 : .1) * D.hs), mul(lU, s * .085 * D.hs))));
+      out.push(linePart('top', torsoY + sg * front * .1 + .009, o, '#d8dde2', .026 * D.hs, MAT.refl)) }
+  }
+  // sleeves
+  for (const a of S.arms) {
+    if (tcut === 'tank') { const sk_ = ellipPart('top', a.dd - .001, add(a.sh, [0, 0, -.008]), [lU, fU, Z], [D.rU * 1.2, D.rU * 1.24, D.rU * 1.3], null, L.skin, MAT.skin, a.far); if (sk_) out.push(sk_); continue }   // D‑593: sleeveless — the bare shoulder over the cloth
+    const sl = longSl ? 1 : (top.sleeve != null ? top.sleeve : .5), end = lrp(a.sh, a.el, Math.min(1, sl * 1.0));
+    const r0 = D.rU * 1.25, r1 = D.rE * 1.22, rm = r0 + (r1 - r0) * Math.min(1, sl);
+    { const sp = limbPart('top', a.dd - .001, add(a.sh, [0, 0, -.006]), end, r0 * .9, rm, tc, tMat, a.far); sp.olFrom = .35; out.push(sp) }   // p670: the sleeve from the shoulder; its line below the cap
+    if (longSl) { const s1 = limbPart('top', a.dd + .0001, a.el, lrp(a.el, a.wr, .92), r1, D.rW * 1.32, tc, tMat, a.far), s2 = limbPart('top', a.dd + .0002, lrp(a.el, a.wr, .86), lrp(a.el, a.wr, .97), D.rW * 1.36, D.rW * 1.32, col2hex(tc, .78), tMat, a.far); s1.arm = s2.arm = 'fore'; out.push(s1, s2) }
+    else out.push(limbPart('top', a.dd - .0005, lrp(a.sh, a.el, sl * .88), end, rm * 1.02, rm * 1.03, col2hex(tc, .82), tMat, a.far));
+  }
+  // ---- the hair layer: hair, beard, hat, ear defenders ----
+  const hair = L.hair && /^(long|curly|side)$/.test(L.hair.t) ? Object.assign({}, L.hair, { t: 'short' }) : (L.hair || {}), hat = L.hat || null, beard = L.beard || null;   // p583: short hair for everyone
+  const ef = H.ax[1], ez = H.ax[2], el = H.ax[0];
+  const hr = (k) => H.r.map(v => v * k);
+  if (beard) {   // the beard: the ellipsoid below the cheekbones in front; what the rest of the head hides is erased in the same layer
+    const nb = nrm(add(mul(ef, .62), mul(ez, -.78))), cut = { n: nb, d: .012 * D.hk };
+    const bp = ellipPart('hair', headD + (dot(nb, VW) < 0 ? .006 : .0108), H.c, H.ax, hr(1.07), [cut], beard.c || hair.c || '#3b2a1f', MAT.hair, .92); if (bp) out.push(bp);
+    const rest = ellipSamples(H.c, H.ax, H.r, [{ n: mul(nb, -1), d: -cut.d }], 8, 16).map(q => P(q.p));
+    if (rest.length > 2 && dot(nb, VW) < 0) { const pts = hull(rest); out.push({ L: 'hair', d: headD + .0065, pts, path: polyPath(pts), erase: true, paint: c => { c.globalCompositeOperation = 'destination-out'; c.beginPath(); polyPath(pts)(c); c.fill(); c.globalCompositeOperation = 'source-over' } }) }
+  }
+  if (hair.t && hair.t !== 'none' && hair.t !== 'bald') {
+    const style = ({ short: [1.05, -.74, .67, -.004], crop: [1.03, -.74, .67, .004], curly: [1.12, -.66, .75, -.02], side: [1.07, -.72, .69, -.01], long: [1.1, -.5, .87, -.05] }[hair.t] || [1.05, -.74, .67, -.004]).slice();   // p670: the hairline higher — the forehead shows
+    if (small) { style[0] = 1 + (style[0] - 1) * .4; style[3] += .022 }   // less hair seen from above in the small pictures
+    const nh = nrm(add(mul(ef, style[1]), mul(ez, style[2]))), hp = ellipPart('hair', headD + .01, H.c, H.ax, hr(style[0]), [{ n: nh, d: style[3] * D.hk }], hair.c, MAT.hair, 1,
+      hair.t === 'curly' ? c => { c.save(); c.clip(); c.fillStyle = 'rgba(255,255,255,.07)'; const p0 = P(H.c); for (let i = 0; i < 7; i++) { const a = i * 2.4; c.beginPath(); c.arc(p0[0] + Math.cos(a) * .05 * SCALE * D.hk, p0[1] + Math.sin(a) * .05 * SCALE * D.hk - .04 * SCALE, .022 * SCALE * D.hk, 0, Math.PI * 2); c.fill() } c.restore() } : (lod >= 2 ? strands(H, hair.c, style[0]) : null));
+    if (hp) { if (hair.t === 'curly') { const p0 = hp.pts; hp.pts = hull(p0.flatMap(p => circ2(p, .012 * SCALE * D.hk, 6))); hp.path = polyPath(hp.pts) } out.push(hp) }
+    // p670: the face — the head below the hairline, over the hair where it faces the camera (the cap of hair is convex: its edge would cross the forehead)
+    const fb = ellipPart('hair', dot(ef, VW) > -.05 ? headD + .0105 : headD + .0095, H.c, H.ax, H.r, [{ n: mul(nh, -1), d: -style[3] * D.hk }, { n: ef, d: -.15 * H.r[1] }], L.skin, MAT.skin, 1, lod >= 1 ? faceOf(H, L, lod) : null); if (fb) out.push(fb);
+  } else if (hair.t === 'bald' && !hat) {   // the fringe above the ears and round the back
+    for (const s of [1, -1]) { const ctr = add(H.c, add(add(mul(el, s * H.r[0] * .93), mul(ef, -H.r[1] * .25)), mul(ez, .01))); if (dot(mul(el, s), VW) > -.3) out.push(ellipPart('hair', headD + .01 + (s * dot(el, [0, 1, 0]) > 0 ? .002 : -.03), ctr, H.ax, [.022 * D.hk, .06 * D.hk, .035 * D.hk], null, hair.c || '#bdbdbd', MAT.hair, .95)) }
+    if (dot(mul(ef, -1), VW) > -.2) out.push(ellipPart('hair', headD + .009, add(H.c, add(mul(ef, -H.r[1] * .9), mul(ez, -.005))), H.ax, [.06 * D.hk, .02 * D.hk, .035 * D.hk], null, hair.c || '#bdbdbd', MAT.hair, .95));
+  }
+  if (hat && G.P34X && G.P34X.hat && G.P34X.hat[hat.t]) try { G.P34X.hat[hat.t](out, { H, ef, ez, el, headD, D, hat, lod, L, ellipPart, discPart, linePart, P, MAT, col, hull, polyPath, add, sub, mul, nrm, dot, SCALE, VW }) } catch (e) { G.P34X.err = String(e && e.message || e) }   // W17: the riders' helmets
+  else if (hat) {
+    if (hat.t === 'hat') {   // a brimmed hat: the brim (a disc), then the crown with its band
+      const sun = hat.cut === 'sun', bz = H.c[2] + H.r[2] * (sun ? .6 : .52), bc = [H.c[0], H.c[1], bz], hc = hat.c || '#16181b';   /* D‑593: the wide sun hat — a wider brim, a low round crown, a ribbon (hat.b) */
+      out.push(discPart('hair', headD + .02, bc, (sun ? .17 : .148) * D.hk, .008, hc, hc, MAT.wool));
+      const cr = (sun ? [[0, .088, .1], [.05, .084, .096], [.088, .06, .07]] : [[0, .088, .1], [.07, .085, .098], [.12, .07, .082]]).map(([dz, a, b]) => { const o = []; for (let i = 0; i < 20; i++) { const t = i / 20 * Math.PI * 2; o.push(P([bc[0] + (ef[0] * Math.cos(t) * b + el[0] * Math.sin(t) * a) * D.hk, bc[1] + (ef[1] * Math.cos(t) * b + el[1] * Math.sin(t) * a) * D.hk, bz + dz * D.hk])) } return o });
+      const pts = hull(cr.flat()); out.push({ L: 'hair', d: headD + .021, pts, path: polyPath(pts), paint: c => { c.beginPath(); polyPath(pts)(c); const x0 = Math.min(...pts.map(p => p[0])), x1 = Math.max(...pts.map(p => p[0]));
+        const g = c.createLinearGradient(x0, 0, x1, 0); g.addColorStop(0, col(hc, 1.05)); g.addColorStop(.5, col(hc, .86)); g.addColorStop(1, col(hc, .7)); c.fillStyle = g; c.fill();
+        c.beginPath(); polyPath(hull(cr[2]))(c); c.fillStyle = col(hc, 1.12); c.fill();
+        c.beginPath(); polyPath(hull(cr[0].concat(cr[0].map(p => [p[0], p[1] - .022 * SCALE * D.hk]))))(c); c.save(); c.clip(); c.beginPath(); polyPath(pts)(c); c.fillStyle = 'rgba(0,0,0,.35)'; if (!hat.b) c.fill(); c.restore();
+        if (hat.b) { const lift = cr[0].map(p => [p[0], p[1] - .02 * SCALE * D.hk]);   // D‑593: a ribbon in its own colour — a band at the foot of the crown, the crown above it drawn again
+          c.beginPath(); polyPath(hull(cr[0].concat(lift)))(c); c.fillStyle = col(hat.b, .95); c.fill();
+          c.beginPath(); polyPath(hull(lift.concat(cr[1], cr[2])))(c); c.fillStyle = g; c.fill(); c.beginPath(); polyPath(hull(cr[2]))(c); c.fillStyle = col(hc, 1.12); c.fill() } } });
+    } else if (hat.t === 'bucket') {   // D‑593: a bucket hat — a soft crown with a flat top and a short brim that slopes down
+      const bz = H.c[2] + H.r[2] * .54, bc = [H.c[0], H.c[1], bz], hc = hat.c || '#a89a6a';
+      const ring = (dz, a, b) => { const o = []; for (let i = 0; i < 20; i++) { const t = i / 20 * Math.PI * 2; o.push(P([bc[0] + (ef[0] * Math.cos(t) * b + el[0] * Math.sin(t) * a) * D.hk, bc[1] + (ef[1] * Math.cos(t) * b + el[1] * Math.sin(t) * a) * D.hk, bz + dz * D.hk])) } return o };
+      const sets = [[ring(-.016, .118, .127), ring(.014, .09, .101)], [ring(.014, .088, .099), ring(.088, .08, .09)]];
+      sets.forEach((rr, k) => { const pts = hull(rr.flat()); out.push({ L: 'hair', d: headD + .02 + k * .001, pts, path: polyPath(pts), ol: 'full', oc: hc, paint: c => { c.beginPath(); polyPath(pts)(c);
+        const x0 = Math.min(...pts.map(p => p[0])), x1 = Math.max(...pts.map(p => p[0])), g = c.createLinearGradient(x0, 0, x1, 0); g.addColorStop(0, col(hc, k ? 1.08 : .97)); g.addColorStop(.55, col(hc, k ? .9 : .8)); g.addColorStop(1, col(hc, k ? .74 : .66)); c.fillStyle = g; c.fill();
+        if (k) { c.beginPath(); polyPath(hull(rr[1]))(c); c.fillStyle = col(hc, 1.14); c.fill() } } }) });
+    } else if (hat.t === 'beanie') {   // D‑593: a knitted cap — the dome, the turned-up band, a pompom
+      const hc = hat.c || '#7a7f87', nb = nrm(add(mul(ef, -.2), mul(ez, .98)));
+      { const dome = ellipPart('hair', headD + .021, H.c, H.ax, [H.r[0] * 1.1, H.r[1] * 1.1, H.r[2] * 1.17], [{ n: nb, d: .2 * H.r[2] }], hc, MAT.wool, 1); if (dome) out.push(dome) }
+      { const band = ellipPart('hair', headD + .0215, H.c, H.ax, hr(1.14), [{ n: nb, d: .13 * H.r[2] }, { n: mul(nb, -1), d: -.43 * H.r[2] }], col2hex(hc, .78), MAT.wool, 1); if (band) out.push(band) }
+      { const pom = ellipPart('hair', headD + .022, add(H.c, mul(ez, H.r[2] * 1.22)), H.ax, [.03 * D.hk, .03 * D.hk, .028 * D.hk], null, hat.b || col2hex(hc, 1.3), MAT.wool, 1); if (pom) out.push(pom) }
+    } else if (hat.t === 'chef') {   // p670: the chef's hat — a band and the puff
+      const hc = hat.c || '#f6f6f2'; out.push(limbPart('hair', headD + .02, add(H.c, mul(H.ax[2], H.r[2] * .45)), add(H.c, mul(H.ax[2], H.r[2] * 1.3)), .084 * D.hk, .088 * D.hk, hc, MAT.cloth, 1));
+      const pf = ellipPart('hair', headD + .021, add(H.c, mul(H.ax[2], H.r[2] * 1.55)), H.ax, [.108 * D.hk, .104 * D.hk, .068 * D.hk], null, hc, MAT.cloth, 1, lod >= 2 ? c => { c.save(); c.clip(); c.strokeStyle = col(hc, .78); c.lineWidth = .004 * SCALE; for (const u of [-.6, -.2, .2, .6]) { const a = P(add(H.c, add(mul(H.ax[0], u * .1 * D.hk), mul(H.ax[2], H.r[2] * 1.3)))), b = P(add(H.c, add(mul(H.ax[0], u * .11 * D.hk), mul(H.ax[2], H.r[2] * 1.75)))); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke() } c.restore() } : null); if (pf) out.push(pf);
+    } else if (hat.t === 'peak') {   // p670: the peaked cap of a uniform — the band, the crown (wider than the head), the black visor, the badge
+      const hc = hat.c || '#1b2b45', bc = hat.b || col2hex(hc, .55), fr = dot(ef, [0, 1, 0]) > -.3;
+      out.push(discPart('hair', headD + .02, add(H.c, mul(ez, H.r[2] * .84)), .086 * D.hk, H.r[2] * .4, bc, bc, MAT.cloth));
+      out.push(discPart('hair', headD + .0205, add(H.c, add(mul(ez, H.r[2] * .84 + .022 * D.hk), mul(ef, H.r[1] * .1))), .106 * D.hk, .022 * D.hk, hc, col2hex(hc, .78), MAT.wool));
+      { const vc = add(H.c, add(mul(ef, H.r[1] * .9), mul(ez, H.r[2] * .5))), o = []; for (let i = 0; i <= 12; i++) { const t = (i / 12 - .5) * Math.PI; o.push(P(add(vc, add(mul(ef, Math.cos(t) * .036 * D.hk), add(mul(el, Math.sin(t) * .062 * D.hk), mul(ez, -Math.cos(t) * .006 * D.hk)))))) }
+        const pts = hull(o); out.push({ L: 'hair', d: headD + (fr ? .0215 : -.05), pts, path: polyPath(pts), ol: 'full', oc: '#0e1012', paint: c => { c.beginPath(); polyPath(pts)(c); c.fillStyle = col('#16181b', fr ? 1.25 : .9); c.fill() } }) }
+      if (lod >= 1 && dot(ef, [0, 1, 0]) > -.15) out.push(ellipPart('hair', headD + .0222, add(H.c, add(mul(ef, H.r[1] * .99), mul(ez, H.r[2] * .66))), H.ax, [.016 * D.hk, .006 * D.hk, .015 * D.hk], null, hat.e || '#d4af37', MAT.metal, 1));
+    } else if (hat.t === 'garrison') {   // p670: the side cap of a steward — long, folded, tilted to one side, the company's pin
+      const hc = hat.c || '#1b2b45';
+      out.push(ellipPart('hair', headD + .021, add(H.c, add(mul(ez, H.r[2] * .9), mul(el, H.r[0] * .16))), H.ax, [.042 * D.hk, .102 * D.hk, .036 * D.hk], [{ n: ez, d: -.011 * D.hk }], hc, MAT.wool, 1));
+      if (lod >= 1 && Math.abs(dot(el, [0, 1, 0])) < .95) out.push(ellipPart('hair', headD + .0215, add(H.c, add(add(mul(ez, H.r[2] * .9), mul(el, H.r[0] * (dot(el, [0, 1, 0]) > 0 ? .5 : -.2))), mul(ef, H.r[1] * .45))), H.ax, [.008 * D.hk, .012 * D.hk, .01 * D.hk], null, hat.e || '#d4af37', MAT.metal, 1));
+    } else if (hat.t === 'helmet' || hat.t === 'cap') {
+      const isH = hat.t === 'helmet', hc = hat.c || '#f2c418';
+      if (isH) out.push(discPart('hair', headD + .02, add(H.c, mul(ez, H.r[2] * .36)), .108 * D.hk, .006, hc, hc, MAT.plastic));   // p670: the hat sits on the head, the eyes show under it
+      const dome = ellipPart('hair', headD + .021, H.c, H.ax, hr(isH ? 1.13 : 1.08), [{ n: nrm(add(mul(ef, isH ? -.05 : -.35), mul(ez, .95))), d: (isH ? .3 : .06) * H.r[2] }], hc, isH ? MAT.plastic : MAT.cloth, 1,
+        isH && lod >= 2 ? c => { c.beginPath(); for (let i = 0; i <= 10; i++) { const a = -1.15 + i * .21, q = P(add(H.c, add(mul(ef, H.r[1] * 1.14 * Math.sin(a)), mul(ez, H.r[2] * 1.14 * Math.cos(a))))); i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]) } c.lineWidth = .014 * SCALE * D.hk; c.strokeStyle = col(hc, 1.18); c.stroke(); c.lineWidth = .004 * SCALE; c.strokeStyle = col(hc, .7); c.stroke() } : null); if (dome) out.push(dome);
+      if (!isH) { const vc = add(H.c, add(mul(ef, H.r[1] * 1.0), mul(ez, H.r[2] * .52))), o = []; for (let i = 0; i <= 12; i++) { const t = (i / 12 - .5) * Math.PI; o.push(P(add(vc, add(mul(ef, Math.cos(t) * .052 * D.hk), mul(el, Math.sin(t) * .066 * D.hk))))) }
+        const pts = hull(o); out.push({ L: 'hair', d: headD + (dot(ef, [0, 1, 0]) > -.3 ? .022 : -.05), pts, path: polyPath(pts), paint: c => { c.beginPath(); polyPath(pts)(c); c.fillStyle = col(hc, .92); c.fill() } }) }
+    }
+  }
+  if (L.earmuff) {   // the ear defenders of the ramp: two cups and the band over the head
+    for (const s of [1, -1]) { const ctr = add(H.c, add(mul(el, s * H.r[0] * 1.15), mul(ez, -.008))); out.push(ellipPart('hair', headD + .015 + s * dot(el, [0, 1, 0]) * .05, ctr, H.ax, [.022 * D.hk, .04 * D.hk, .045 * D.hk], null, L.earmuff, MAT.plastic, 1)) }
+    const arc = []; for (let i = 0; i <= 10; i++) { const t = (i / 10) * Math.PI; arc.push(add(H.c, add(mul(el, Math.cos(t) * H.r[0] * 1.18), mul(ez, Math.sin(t) * H.r[2] * 1.12 - .008)))) }
+    out.push(linePart('hair', headD + .016, arc, '#2a2d31', .018 * D.hk, MAT.plastic));
+  }
+  // ---- items ----
+  const R = S.arms.find(a => a.side < 0), Lf = S.arms.find(a => a.side > 0);
+  const hang = (a, hs, hex, mat, deco) => { const top = add(a.hand, [0, 0, -.05 * D.hs - hs[2]]); return boxPart('item', a.hand[1] + .015 + (a.side * dot(lU, [0, 1, 0]) > 0 ? .02 : -.02), top, [fU, lU, Z], hs, hex, mat, deco) };
+  const handle = (a, b, w, hex) => linePart('item', (a[1] + b[1]) / 2 + .02, [a, b], hex, w, MAT.plastic);
+  const it = item.k;
+  if (it === 'suitcase') {   // dragged on its wheels, tilted toward the hand
+    const grip = R.hand, back = mul(S.f, -1), Wg = add(add(grip, mul(back, .3 * D.hs)), [0, 0, 0]); Wg[2] = .035;   // 29.10 02:25: a cabin case, close behind the hand
+    const axis = nrm(sub(grip, Wg)), cl = .5 * D.hs, side = nrm(crs(axis, S.l)), cen = add(Wg, mul(axis, cl / 2));
+    const hs = [.085 * D.hs, .15 * D.hs, cl / 2], ax = [nrm(crs(S.l, axis)), S.l, axis];
+    const dep = cen[1]; void side;
+    out.push(boxPart('item', dep, cen, ax, hs, item.c || '#24406b', MAT.plastic, { deco: (c, faces) => { for (const f of faces) if (f.i === 0) { const q = f.q; c.strokeStyle = 'rgba(255,255,255,.18)'; c.lineWidth = .008 * SCALE; c.beginPath(); for (let j = 1; j < 4; j++) { const t = j / 4; c.moveTo(q[0][0] + (q[1][0] - q[0][0]) * t, q[0][1] + (q[1][1] - q[0][1]) * t); c.lineTo(q[3][0] + (q[2][0] - q[3][0]) * t, q[3][1] + (q[2][1] - q[3][1]) * t) } c.stroke() } } }));
+    const topC = add(cen, mul(axis, cl / 2)); for (const s of [1, -1]) out.push(linePart('item', (topC[1] + grip[1]) / 2 + .001, [add(topC, mul(S.l, s * .06 * D.hs)), add(grip, mul(S.l, s * .05 * D.hs))], '#9aa3ad', .012 * D.hs, MAT.metal));
+    { const gc = P(add(Wg, mul(axis, .0))), gt = P([cen[0], cen[1], 0]), rr = .17 * SCALE * D.hs, pts = hull(circ2(gc, rr, 10).concat(circ2(gt, rr, 10)));
+      out.push({ L: 'item', d: -9, pts, path: polyPath(pts), under: true, paint: c => { const m = [(gc[0] + gt[0]) / 2 + .05 * SCALE, (gc[1] + gt[1]) / 2 + .04 * SCALE], g = c.createRadialGradient(m[0], m[1], 0, m[0], m[1], rr * 1.5); g.addColorStop(0, 'rgba(10,13,18,.36)'); g.addColorStop(1, 'rgba(10,13,18,0)'); c.fillStyle = g; c.beginPath(); c.arc(m[0], m[1], rr * 1.5, 0, Math.PI * 2); c.fill() } }) }
+    for (const s of [1, -1]) out.push(ellipPart('item', Wg[1] - .01, add(Wg, mul(S.l, s * .12 * D.hs)), [S.f, S.l, Z], [.033 * D.hs, .016 * D.hs, .033 * D.hs], null, '#1d2024', MAT.plastic, 1));
+  }
+  if (it === 'backpack') {
+    const cen = add(fz(.66 * D.h), mul(fU, -(.11 * D.hs + .08 * D.hs))), hs = [.075 * D.hs, .135 * D.hs, .17 * D.hs];
+    out.push(boxPart('item', torsoY - front * .2, cen, [fU, lU, Z], hs, item.c || '#e0662a', MAT.cloth, { deco: (c, faces) => { const f = faces.find(q => q.i === 0 && q.s < 0); if (!f) return; const q = f.q; c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = .01 * SCALE; c.beginPath(); c.moveTo((q[0][0] + q[3][0]) / 2, (q[0][1] + q[3][1]) / 2); c.lineTo((q[1][0] + q[2][0]) / 2, (q[1][1] + q[2][1]) / 2); c.stroke() } }));
+    for (const s of [1, -1]) { const o = [onFront(.6 * D.h, s * .085 * D.hs, 1.06), onFront(.74 * D.h, s * .09 * D.hs, 1.07), add(fz(.81 * D.h), mul(lU, s * .08 * D.hs)), add(fz(.79 * D.h), add(mul(fU, -.1 * D.hs), mul(lU, s * .08 * D.hs)))];
+      out.push(linePart('item', frontD + .01, o.slice(0, 3), col2hex(item.c || '#e0662a', .7), .024 * D.hs, MAT.cloth)) }
+  }
+  if (it === 'shoulderbag') {
+    const cen = add(fz(.5 * D.h), add(mul(lU, .2 * D.hs), mul(fU, .02))), side = dot(lU, [0, 1, 0]);
+    out.push(boxPart('item', torsoY + side * .2, cen, [fU, lU, Z], [.12 * D.hs, .035 * D.hs, .1 * D.hs], item.c || '#5a3b26', MAT.leather));
+    out.push(linePart('item', frontD + .011, [add(cen, [0, 0, .1 * D.hs]), onFront(.72 * D.h, .02, 1.06), add(fz(.815 * D.h), mul(lU, -.09 * D.hs))], col2hex(item.c || '#5a3b26', .7), .018 * D.hs, MAT.leather));
+  }
+  if (it === 'briefcase') { out.push(hang(R, [.19 * D.hs, .045 * D.hs, .14 * D.hs], item.c || '#3a2618', MAT.leather)); out.push(handle(add(R.hand, mul(fU, -.05)), add(R.hand, mul(fU, .05)), .014 * D.hs, '#1c140e')) }
+  if (it === 'toolbox') { out.push(hang(R, [.17 * D.hs, .075 * D.hs, .075 * D.hs], item.c || '#c43a2a', MAT.plastic, { deco: (c, faces) => { for (const f of faces) if (f.i === 2 && f.s > 0) { c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = .008 * SCALE; c.beginPath(); c.moveTo((f.q[0][0] + f.q[1][0]) / 2, (f.q[0][1] + f.q[1][1]) / 2); c.lineTo((f.q[2][0] + f.q[3][0]) / 2, (f.q[2][1] + f.q[3][1]) / 2); c.stroke() } } }));
+    out.push(handle(add(R.hand, mul(fU, -.06)), add(R.hand, mul(fU, .06)), .016 * D.hs, '#222')) }
+  if (it === 'shopping') { const cs = item.c || ['#d84a3a', '#c9a46a']; for (const [i, a] of [R, Lf].entries()) { out.push(hang(a, [.12 * D.hs, .055 * D.hs, .15 * D.hs], cs[i % cs.length], MAT.paper)); for (const s of [1, -1]) out.push(handle(a.hand, add(a.hand, add(mul(fU, s * .07 * D.hs), [0, 0, -.06 * D.hs])), .008 * D.hs, '#2b2b2b')) } }
+  if (it === 'cane') { const top = R.hand, foot = add(comb([0, 0, 0], fU, .26 * D.hs, lU, -.22 * D.hs, 0), [0, 0, .01]); out.push(linePart('item', top[1] + .02, [add(top, mul(fU, -.04)), add(top, [0, 0, .02]), foot], '#3b2a1f', .02 * D.hs, MAT.wood)) }
+  if (it === 'wands') { for (const a of S.arms) { const tip = add(a.hand, mul(a.wd, .36 * D.hs)); const glow = P(lrp(a.hand, tip, .6)), gr = .16 * SCALE * D.hs;
+      out.push({ L: 'item', d: a.hand[1] + .02, pts: hull(circ2(glow, gr, 10)), path: polyPath(hull(circ2(glow, gr, 10))), noRim: true, paint: c => { const g = c.createRadialGradient(glow[0], glow[1], 0, glow[0], glow[1], gr); g.addColorStop(0, 'rgba(255,170,60,.42)'); g.addColorStop(1, 'rgba(255,140,40,0)'); c.fillStyle = g; c.beginPath(); c.arc(glow[0], glow[1], gr, 0, Math.PI * 2); c.fill() } });
+      out.push(limbPart('item', a.hand[1] + .021, add(a.hand, mul(a.wd, .02)), tip, .018 * D.hs, .015 * D.hs, '#ff7a1a', MAT.glow, 1)); out.push(limbPart('item', a.hand[1] + .022, add(a.hand, mul(a.wd, -.03)), add(a.hand, mul(a.wd, .05)), .02 * D.hs, .02 * D.hs, '#222', MAT.plastic, 1)) } }
+  if (S.table) {   // the table set: chair, table, plate, glass, the fork in the right hand.  The table top goes over the legs and the
+    // lower torso; what rests on it or above it (the forearms, the hands, the plate) goes over the table.
+    const ch = comb([0, 0, 0], S.f, -.06, S.l, 0, 0), sz = .46 * D.hs, legMax = Math.max(...out.filter(p => p.L === 'body' && p.d < torsoY - .1).map(p => p.d), torsoY - .2);
+    const td = Math.max(torsoY, legMax) + .03;
+    out.push(boxPart('item', ch[1] - .3, add(ch, [0, 0, sz]), [S.f, S.l, Z], [.2 * D.hs, .21 * D.hs, .015], '#6b6f75', MAT.metal));
+    const bk = add(add(ch, mul(S.f, -.22 * D.hs)), [0, 0, sz + .2 * D.hs]);
+    out.push(boxPart('item', bk[1] > torsoY ? torsoY + .04 : bk[1] - .2, bk, [S.f, S.l, Z], [.015, .2 * D.hs, .19 * D.hs], '#6b6f75', MAT.metal));
+    for (const [a, s] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) { const b = add(ch, add(mul(S.f, a * .18 * D.hs), mul(S.l, s * .19 * D.hs))); out.push(linePart('item', b[1] - .45, [b, add(b, [0, 0, sz])], '#4d5157', .02 * D.hs, MAT.metal)) }
+    const tcn = comb([0, 0, 0], S.f, .56 * D.hs, S.l, 0, .75 * D.hs), tdd = tcn[1] < torsoY - .2 ? tcn[1] - .5 : td;
+    out.push(linePart('item', tdd - .002, [add(tcn, [0, 0, -.73 * D.hs]), tcn], '#3a3d42', .05 * D.hs, MAT.metal));
+    out.push(discPart('item', tdd, tcn, .36 * D.hs, .03, '#e8e2d6', '#b5ab98', MAT.wood));
+    const pl = comb([0, 0, 0], S.f, .33 * D.hs, S.l, -.03, .755 * D.hs);
+    out.push(discPart('item', tdd + .004, pl, .11 * D.hs, .012, '#fbfbf8', '#d6d6d2', MAT.plastic));
+    out.push(ellipPart('item', tdd + .005, add(pl, [0, 0, .012]), [S.f, S.l, Z], [.05 * D.hs, .06 * D.hs, .018], null, '#c9773a', MAT.cloth, 1));
+    const gl = comb([0, 0, 0], S.f, .45 * D.hs, S.l, .18 * D.hs, .755 * D.hs); out.push(limbPart('item', tdd + .006, gl, add(gl, [0, 0, .12 * D.hs]), .03 * D.hs, .034 * D.hs, '#b8d6e6', MAT.metal, 1));
+    // the forearms and hands rest on the table or above it — they go over it (when the table is not behind the person)
+    if (tdd === td) for (const p of out) if ((p.L === 'body' || p.L === 'top') && p.arm === 'fore' && p.d < td + .01) p.d = td + .01 + (p.d - torsoY) * .001 + (p.L === 'top' ? .0005 : 0);
+    out.push(linePart('item', Math.max(R.hand[1] + .03, tdd + .02), [R.hand, add(R.hand, mul(R.wd, .12 * D.hs))], '#c8cdd2', .008 * D.hs, MAT.metal));
+  }
+  return { parts: out.filter(Boolean), S };
+}
+// the small pictures: stronger, lighter clothes and lighter hair (the owner, 29.10 02:25: "at the game zoom the people read as dark spots")
+function hsl(hex) { const c = hexC(hex).map(v => v / 255), mx = Math.max(...c), mn = Math.min(...c), l = (mx + mn) / 2; let h = 0, s = 0;
+  if (mx !== mn) { const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === c[0] ? (c[1] - c[2]) / d + (c[1] < c[2] ? 6 : 0) : mx === c[1] ? (c[2] - c[0]) / d + 2 : (c[0] - c[1]) / d + 4; h /= 6 } return [h, s, l] }
+function hex3(h, s, l) { const f = n => { const k = (n + h * 12) % 12, a = s * Math.min(l, 1 - l), v = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); return Math.round(v * 255).toString(16).padStart(2, '0') }; return '#' + f(0) + f(8) + f(4) }
+function vivid(hex, k) { if (!hex || hex[0] !== '#') return hex; const [h, s, l] = hsl(hex); return hex3(h, Math.min(1, s * 1.3 + .05), l + (.6 - l) * (k || .32)) }
+function smallLook(L) { const o = Object.assign({}, L);
+  o.top = Object.assign({}, L.top, { c: vivid(L.top.c), c2: L.top.c2 }); o.legs = Object.assign({}, L.legs, { c: vivid(L.legs.c, .22) }); o.shoes = Object.assign({}, L.shoes, { c: vivid(L.shoes.c, .2) });
+  if (L.vest) o.vest = vivid(L.vest, .15);
+  if (L.hair) o.hair = Object.assign({}, L.hair, { c: vivid(L.hair.c, .3) });
+  if (L.hat) o.hat = Object.assign({}, L.hat, { c: vivid(L.hat.c, .28) });
+  if (L.item && L.item.c) o.item = Object.assign({}, L.item, { c: Array.isArray(L.item.c) ? L.item.c.map(c => vivid(c, .2)) : vivid(L.item.c, .2) });
+  return o }
+// ---- p670: the face — on the head ellipsoid, where it faces the camera: the eyes (white, iris, pupil, the upper lid), the brows (the
+// colour of the hair), the nostrils, the mouth, a little warmth on the cheeks, glasses.  lod 1 — the eyes as dark dots and the brows.
+function faceOf(H, L, lod) { return c => {
+  const at = (u, f, v) => { const s = nrm([u, f, v]), p = add(H.c, add(add(mul(H.ax[0], H.r[0] * s[0]), mul(H.ax[1], H.r[1] * s[1])), mul(H.ax[2], H.r[2] * s[2])));
+    const n = nrm(add(add(mul(H.ax[0], s[0] / H.r[0]), mul(H.ax[1], s[1] / H.r[1])), mul(H.ax[2], s[2] / H.r[2]))); return { p, n, v: dot(n, VW) } };
+  const ell = (q, ru, rv, fill, a, stroke) => { const tu = nrm(sub(H.ax[0], mul(q.n, dot(H.ax[0], q.n)))), tv = nrm(sub(H.ax[2], mul(q.n, dot(H.ax[2], q.n)))), A = PV(tu), B = PV(tv), o = P(q.p);
+    c.save(); c.transform(A[0] * ru, A[1] * ru, B[0] * rv, B[1] * rv, o[0], o[1]); c.beginPath(); c.arc(0, 0, 1, 0, Math.PI * 2); c.restore();
+    c.globalAlpha = a == null ? 1 : a; if (stroke) { c.lineWidth = stroke; c.strokeStyle = fill; c.stroke() } else { c.fillStyle = fill; c.fill() } c.globalAlpha = 1 };
+  const k = H.r[2] / .114, sk = L.skin || '#d9a57f', hairC = (L.hair && L.hair.c) || '#3b2a1f', brow = mixHex(hairC, '#000000', .15), fine = lod >= 2;
+  if (fine && G.P34X && G.P34X.face) try { if (G.P34X.face(c, { H, L, lod, at, ell, P, PV, VW, SCALE, k, sk, hairC, brow, mixHex, nrm, add, sub, mul, dot }) === true) return } catch (e) { G.P34X.err = String(e && e.message || e) }   /* closezoom 17.11: פנים בסגנון הדיוקן כשהראש גדול (P34X.face — 074zz5_closezoom) */
+  if (fine) for (const s of [1, -1]) { const q = at(s * .5, .74, -.22); if (q.v > .2) ell(q, .02 * k, .013 * k, '#d0604a', .1) }
+  for (const s of [1, -1]) { const q = at(s * .37, .87, .08); if (q.v < .1) continue;
+    if (fine) { ell(q, .016 * k, .0086 * k, '#f1ebe3'); ell(at(s * .35, .9, .08), .0079 * k, .0083 * k, L.eyes || '#3d2b1d'); ell(at(s * .35, .91, .085), .0036 * k, .0038 * k, '#0e0a08');
+      ell(at(s * .37, .86, .155), .017 * k, .0038 * k, mixHex(sk, '#1a0f0a', .62)) }
+    else ell(q, .0105 * k, .0085 * k, '#2a1d15', .92);
+    const b = at(s * .38, .81, .33); if (b.v > .05) ell(b, .021 * k, (fine ? .0056 : .0062) * k, brow, .95) }
+  if (fine) { const n = at(0, .97, -.25); if (n.v > .1) ell(n, .0115 * k, .0042 * k, mixHex(sk, '#2a140c', .45), .85);
+    const m = at(0, .9, -.47); if (m.v > .1) { ell(m, .019 * k, .0043 * k, mixHex(sk, '#6a2a22', .62), .95); ell(at(0, .89, -.54), .012 * k, .003 * k, mixHex(sk, '#ffffff', .18), .6) } }
+  if (L.glasses) { let e = []; for (const s of [1, -1]) { const q = at(s * .37, .9, .08); if (q.v > .12) { if (L.shades) { ell(q, .0225 * k, .0165 * k, '#14171b', .94); if (fine) ell(at(s * .33, .9, .12), .007 * k, .0035 * k, '#ffffff', .28) }   /* D‑593: sunglasses — dark lenses */ ell(q, .022 * k, .016 * k, L.glasses, .95, .0045 * SCALE * k); e.push(q) } }
+    if (e.length === 2) { const a = P(e[0].p), b = P(e[1].p); c.beginPath(); c.moveTo(a[0] + (b[0] - a[0]) * .3, a[1]); c.lineTo(a[0] + (b[0] - a[0]) * .7, b[1]); c.lineWidth = .004 * SCALE * k; c.strokeStyle = L.glasses; c.stroke() } }
+} }
+
+// ---- p670: the hair — strands from the crown toward the forehead and the sides, lighter and darker, inside the hair
+function strands(H, hc, m) { return c => { c.save(); c.clip(); const at = (u, f, v) => { const s = nrm([u, f, v]); return P(add(H.c, add(add(mul(H.ax[0], H.r[0] * m * s[0]), mul(H.ax[1], H.r[1] * m * s[1])), mul(H.ax[2], H.r[2] * m * s[2])))) };
+  c.lineCap = 'round'; c.lineWidth = .0042 * SCALE * H.r[2] / .114;
+  for (let i = -3; i <= 3; i++) { const u = i * .26; c.strokeStyle = i % 2 ? col(hc, 1.3) : col(hc, .72); c.globalAlpha = .3; c.beginPath();
+    const p = [at(u * .25, -.75, .7), at(u * .55, -.25, 1), at(u * .85, .35, .9), at(u * 1.1, .8, .5)]; c.moveTo(p[0][0], p[0][1]); for (let j = 1; j < 4; j++) c.lineTo(p[j][0], p[j][1]); c.stroke() }
+  c.globalAlpha = 1; c.restore() } }
+// ---- p670: the details of the clothes — the collar points, the breast pocket, the folds over the belt, the back yoke (shirt); the zipper, the
+// pockets and the hem band (jacket); the pockets (coat); the lab coat (the V of the scrubs, the lapels, the buttons, the pocket with pens); the
+// V-neck; the stethoscope; the apron (front panel, neck strap, ties).  lod 1 — the zipper, the collar points, the apron; lod 2 — all.
+function clothes(out, o) {
+  const { L, D, top, tKind, tc, hs, rings, fz, onFront, frontD, backD, front, torsoY, fU, lU, lod } = o, h = D.h;
+  if (D.kid && !L.apron) return;
+  const onBack = (z, s) => { const rr = rings.reduce((b, r) => Math.abs(r[0] - z) < Math.abs(b[0] - z) ? r : b, rings[0]); return add(fz(z), add(mul(fU, -rr[2] * 1.03 * Math.sqrt(Math.max(0, 1 - (s / rr[1]) ** 2))), mul(lU, s))) };
+  const seam = (list, hex, w, d, a, mat) => { const p = linePart('top', d, list, hex, w, mat || null); if (a != null && a < 1) { const p0 = p.paint; p.paint = c => { c.globalAlpha = a; p0(c); c.globalAlpha = 1 } } out.push(p); return p };
+  const poly = (list, d, hex, b, ol) => { const pts = list.map(P); out.push({ L: 'top', d, pts: hull(pts), path: polyPath(pts), ol: ol ? 'full' : null, oc: hex, paint: c => { c.beginPath(); polyPath(pts)(c); c.fillStyle = col(hex, b); c.fill() } }) };
+  const dk = k => col2hex(tc, k), F = front > -.2, B = front < -.25, fine = lod >= 2, hem = rings[0][0];
+  if (lod < 1 && !L.apron) return;
+  if (tKind === 'shirt' && F) {
+    if (front > .4) for (const s of [1, -1]) poly([onFront(D.neck0 + .004, s * .052 * hs, 1.05), onFront(D.neck0 - .052 * hs, s * .03 * hs, 1.07), onFront(D.neck0 - .014, s * .005, 1.07)], frontD + .0062, top.c2 || col2hex(tc, 1.06), 1.08, fine);
+    if (fine && top.cut !== 'polo') { const pk = [[.735, .035], [.735, .095], [.668, .095], [.66, .065], [.668, .035], [.735, .035]].map(([z, s]) => onFront(z * h, s * hs, 1.04));
+      seam(pk, dk(.6), .0042 * hs, frontD + .0045, .9); seam([onFront(.72 * h, .035 * hs, 1.045), onFront(.72 * h, .095 * hs, 1.045)], dk(.6), .0038 * hs, frontD + .0046, .8);
+      if (top.long || L.belt) for (const s of [1, -1]) for (const [z0, z1, s0, s1] of [[.538, .6, .125, .085], [.54, .62, .07, .045]]) seam([onFront(z0 * h, s * s0 * hs, 1.03), onFront(z1 * h, s * s1 * hs, 1.03)], dk(.66), .0048 * hs, frontD + .0042, .6) }
+  }
+  // D‑593: the cuts of the wardrobe — a tie on a buttoned shirt; the knitted hem of a sweater and of a hoodie; the hood, the pocket and the strings of a hoodie; the neckline of a sleeveless top
+  { const cut = top.cut || '';
+    if (tKind === 'shirt' && cut !== 'polo' && top.tie && F) { seam([onFront(D.neck0 - .016, 0, 1.08), onFront(.61 * h, 0, 1.09)], top.tie, .024 * hs, frontD + .0052, 1, MAT.cloth);
+      out.push(boxPart('top', frontD + .0054, onFront(D.neck0 - .02 * hs, 0, 1.1), [fU, lU, Z], [.005, .013 * hs, .012 * hs], top.tie, MAT.cloth)) }
+    if (cut === 'sweater' || cut === 'hoodie') { const hb = dk(.74), hw = rings[0][1] * .98;
+      if (front > -.3) { const o = []; for (let i = -6; i <= 6; i++) o.push(onFront(hem + .016 * hs, i / 6 * hw, 1.02)); seam(o, hb, .03 * hs, frontD + .0043, 1, MAT.cloth) }
+      if (front < .3) { const o = []; for (let i = -6; i <= 6; i++) o.push(onBack(hem + .016 * hs, i / 6 * hw)); seam(o, hb, .03 * hs, backD + .0043, 1, MAT.cloth) } }
+    if (cut === 'hoodie') { const hd = ellipPart('top', B ? backD + .0066 : backD - .0012, add(fz(D.neck0 + .008 * hs), mul(fU, -.072 * hs)), [lU, fU, Z], [.098 * hs, .062 * hs, .072 * hs], null, tc, MAT.cloth, B ? 1 : .9); if (hd) out.push(hd);
+      if (B) { const ho = ellipPart('top', backD + .0068, add(fz(D.neck0 + .03 * hs), mul(fU, -.066 * hs)), [lU, fU, Z], [.066 * hs, .036 * hs, .026 * hs], null, col2hex(tc, .66), MAT.cloth, 1); if (ho) { ho.ol = null; out.push(ho) } }   // the opening of the hood, darker
+      if (F) { const pk = [[.612, -.085], [.635, -.045], [.635, .045], [.612, .085], [.548, .1], [.548, -.1], [.612, -.085]].map(([z, s]) => onFront(z * h, s * hs, 1.045)); poly(pk, frontD + .0041, tc, .9, false); seam(pk, dk(.6), .0045 * hs, frontD + .0045, .9);
+        for (const s of [1, -1]) seam([onFront(D.neck0 - .01, s * .03 * hs, 1.08), onFront(.715 * h, s * .036 * hs, 1.08)], '#eef0ee', .0075 * hs, frontD + .0056, 1, MAT.cloth) } }
+    if (cut === 'tank') { const sk = L.skin || '#d9a57f';
+      if (front > -.2) poly([onFront(D.neck0, .078 * hs, 1.03), onFront(D.neck0, -.078 * hs, 1.03), onFront(.765 * h, -.062 * hs, 1.04), onFront(.742 * h, -.03 * hs, 1.045), onFront(.742 * h, .03 * hs, 1.045), onFront(.765 * h, .062 * hs, 1.04)], frontD + .0042, sk, .97, false);
+      if (front < .2) poly([onBack(D.neck0, .075 * hs), onBack(D.neck0, -.075 * hs), onBack(.775 * h, -.055 * hs), onBack(.762 * h, 0), onBack(.775 * h, .055 * hs)], backD + .0042, sk, .9, false) } }
+  if (tKind === 'jacket' && F) {
+    seam([onFront(D.neck0 - .006, 0, 1.07), onFront(hem + .012, 0, 1.07)], '#c3c9cf', .0062 * hs, frontD + .0062, 1, MAT.metal);
+    out.push(boxPart('top', frontD + .0064, onFront(D.neck0 - .03 * hs, 0, 1.1), [fU, lU, Z], [.004, .006 * hs, .013 * hs], '#d5dade', MAT.metal));
+    if (fine) { for (const s of [1, -1]) seam([onFront(.6 * h, s * .07 * hs, 1.04), onFront(.535 * h, s * .118 * hs, 1.03)], dk(.5), .0068 * hs, frontD + .0045, .9);
+      const band = []; for (let i = -6; i <= 6; i++) band.push(onFront(hem + .014 * hs, i / 6 * .142 * hs, 1.03)); seam(band, dk(.72), .02 * hs, frontD + .0043, 1, MAT.cloth) }
+  }
+  if (tKind === 'coat' && F && fine) for (const s of [1, -1]) seam([onFront(.47 * h, s * .07 * hs, 1.03), onFront(.47 * h, s * .15 * hs, 1.02)], dk(.55), .01 * hs, frontD + .0045, .9);
+  if (tKind === 'labcoat' && F) { const zt = D.neck0 - .006, zb = .655 * h, sc = top.c2 || '#3aa39a';
+    poly([onFront(zt, .056 * hs, 1.02), onFront(zt, -.056 * hs, 1.02), onFront(zb, 0, 1.03)], frontD + .004, sc, .92, false);
+    for (const s of [1, -1]) seam([onFront(zt, s * .062 * hs, 1.03), onFront(zb + .012, s * .012, 1.05)], dk(.82), .016 * hs, frontD + .0055, 1, MAT.cloth);
+    seam([onFront(zb, 0, 1.05), onFront(rings[0][0] + .01, 0, 1.06)], dk(.62), .0045 * hs, frontD + .005, .9);
+    for (let i = 0; i < 3; i++) out.push(linePart('top', frontD + .0057, [onFront((.61 - i * .07) * h, -.012, 1.06), onFront((.61 - i * .07) * h - .002, -.012, 1.06)], '#dcdfe2', .012 * hs, MAT.plastic));
+    if (fine) { const pk = [[.735, .045], [.735, .11], [.67, .11], [.67, .045], [.735, .045]].map(([z, s]) => onFront(z * h, s * hs, 1.04)); seam(pk, dk(.66), .0042 * hs, frontD + .0045, .9);
+      for (const [s, c_] of [[.06, '#2a5bd7'], [.075, '#c0392b']]) seam([onFront(.745 * h, s * hs, 1.05), onFront(.71 * h, s * hs, 1.05)], c_, .006 * hs, frontD + .0047, 1, MAT.plastic);
+      for (const s of [1, -1]) { const q = [[.46, .05], [.46, .13], [.39, .13], [.39, .05], [.46, .05]].map(([z, u]) => add(fz(z * h), add(mul(fU, .13 * hs), mul(lU, s * u * hs)))); seam(q, dk(.66), .0042 * hs, frontD + .0045, .9) } }
+  }
+  if (top.vneck && F) { const zt = D.neck0 - .004, zb = .735 * h; poly([onFront(zt, .05 * hs, 1.03), onFront(zt, -.05 * hs, 1.03), onFront(zb, 0, 1.04)], frontD + .0042, L.skin || '#d9a57f', .95, false);
+    for (const s of [1, -1]) seam([onFront(zt, s * .052 * hs, 1.04), onFront(zb, 0, 1.05)], dk(.7), .009 * hs, frontD + .0046, 1, MAT.cloth) }
+  if (B && fine && tKind !== 'coat' && tKind !== 'labcoat' && tKind !== 'suit') { seam([-.15, -.08, 0, .08, .15].map(s => onBack(.77 * h, s * hs)), dk(.66), .0045 * hs, backD + .004, .75);
+    if (tKind === 'shirt') seam([onBack(.765 * h, 0), onBack(.62 * h, 0)], dk(.7), .004 * hs, backD + .004, .55) }
+  if (B && fine && tKind === 'labcoat') seam([onBack(.5 * h, 0), onBack(rings[0][0] + .01, 0)], dk(.62), .0045 * hs, backD + .004, .9);
+  if (L.steth) { const sc = '#2a2c30';
+    if (F) { const nk = s => add(fz(D.neck0 - .01), add(mul(lU, s * .062 * hs), mul(fU, .03 * hs)));
+      seam([nk(1), onFront(.775 * h, .062 * hs, 1.1), onFront(.71 * h, .045 * hs, 1.12)], sc, .0085 * hs, frontD + .0075, 1, MAT.plastic);
+      seam([nk(-1), onFront(.775 * h, -.062 * hs, 1.1), onFront(.7 * h, -.055 * hs, 1.13)], sc, .0085 * hs, frontD + .0075, 1, MAT.plastic);
+      out.push(ellipPart('top', frontD + .0078, onFront(.69 * h, -.055 * hs, 1.16), [lU, fU, Z], [.016 * hs, .008 * hs, .016 * hs], null, '#c9ced3', MAT.metal, 1)) }
+    else { const o = []; for (let i = 0; i <= 10; i++) { const t = (i / 10 - .5) * Math.PI; o.push(add(fz(D.neck0 - .005), add(mul(fU, -Math.cos(t) * .065 * hs), mul(lU, Math.sin(t) * .07 * hs)))) } seam(o, sc, .0085 * hs, backD + .006, 1, MAT.plastic) } }
+  // p670: the uniforms — the badge on the left of the chest (wings of a pilot, the company's pin, the star of the police, a name tag),
+  // the reflective stripes round the body (fire, refinery, road), the shoulder boards with their bars (pilots)
+  if (L.badge && F && front > .05) { const b = L.badge, z = (b.z || .735) * h, s0 = -.078 * hs, bc = b.c || '#d4af37';
+    if (b.k === 'wings') { seam([onFront(z + .006 * h, s0 - .046 * hs, 1.07), onFront(z, s0 - .012 * hs, 1.08), onFront(z, s0 + .012 * hs, 1.08), onFront(z + .006 * h, s0 + .046 * hs, 1.07)], bc, .011 * hs, frontD + .0066, 1, MAT.metal);
+      out.push(ellipPart('top', frontD + .0068, onFront(z, s0, 1.1), [lU, fU, Z], [.012 * hs, .006 * hs, .012 * hs], null, b.c2 || bc, MAT.metal, 1)) }
+    else if (b.k === 'tag') { const a = onFront(z, s0 - .03 * hs, 1.07), c_ = onFront(z, s0 + .03 * hs, 1.07); seam([a, c_], '#f4f5f2', .026 * hs, frontD + .0064, 1, MAT.plastic); seam([onFront(z + .009 * h, s0 - .03 * hs, 1.08), onFront(z + .009 * h, s0 + .03 * hs, 1.08)], bc, .008 * hs, frontD + .0066, 1, MAT.plastic) }
+    else out.push(ellipPart('top', frontD + .0066, onFront(z, s0, 1.09), [lU, fU, Z], [(b.k === 'star' ? .017 : .013) * hs, .006 * hs, (b.k === 'star' ? .019 : .013) * hs], null, bc, MAT.metal, 1, b.c2 ? c => { c.save(); c.clip(); const p = P(onFront(z, s0, 1.1)); c.beginPath(); c.arc(p[0], p[1], .006 * SCALE * hs, 0, Math.PI * 2); c.fillStyle = b.c2; c.fill(); c.restore() } : null)) }
+  if (L.stripe) { const sc = L.stripe; for (const zz of (L.stripeZ || [.52, .62])) { const z = zz * h; if (z < hem + .01) continue;
+    if (front > -.3) { const o = []; for (let i = -6; i <= 6; i++) o.push(onFront(z, i / 6 * .15 * hs, 1.03)); seam(o, sc, .022 * hs, frontD + .0052, 1, MAT.refl) }
+    if (front < .3) { const o = []; for (let i = -6; i <= 6; i++) o.push(onBack(z, i / 6 * .15 * hs)); seam(o, sc, .022 * hs, backD + .0052, 1, MAT.refl) } } }
+  if (L.epau && fine) { const e = L.epau; for (const s of [1, -1]) { const a = add(fz(D.shZ + .004), mul(lU, s * .06 * hs)), b = add(fz(D.shZ + .002), mul(lU, s * .13 * hs));
+    seam([a, b], e.b || '#14181f', .026 * hs, torsoY + .0035, 1, MAT.wool); for (let k = 0; k < (e.n || 0); k++) { const u = .45 + k * .14, q = add(a, mul(sub(b, a), u)); seam([add(q, mul(fU, -.012 * hs)), add(q, mul(fU, .012 * hs))], e.c || '#d4af37', .006 * hs, torsoY + .0037, 1, MAT.metal) } } }
+  if (L.apron) { const ac = L.apron.c || '#f2f2ee', zt = .745 * h, zw = .6 * h, zb = (L.apron.low || .33) * h, wt = .085 * hs, ww = .15 * hs, wb = .17 * hs;
+    const pt = (z, s) => z >= .55 * h ? onFront(z, s, 1.06) : add(fz(z), add(mul(fU, .128 * hs), mul(lU, s)));
+    if (front > -.3) { const pl = [pt(zt, -wt), pt(zt, wt), pt(zw, ww), pt(.53 * h, ww * 1.06), pt(zb, wb), pt(zb, -wb), pt(.53 * h, -ww * 1.06), pt(zw, -ww)], pts = pl.map(P);
+      const x0 = Math.min(...pts.map(p => p[0])), x1 = Math.max(...pts.map(p => p[0]));
+      out.push({ L: 'top', d: frontD + .007, pts: hull(pts), path: polyPath(pts), ol: 'full', oc: ac, paint: c => { c.beginPath(); polyPath(pts)(c); const g = c.createLinearGradient(x0, 0, x1, 0);
+        g.addColorStop(0, col(ac, bri(mul(fU, 1), MAT.cloth) * 1.06)); g.addColorStop(1, col(ac, bri(mul(fU, 1), MAT.cloth) * .86)); c.fillStyle = g; c.fill();
+        if (lod >= 2) { const a = P(pt(.5 * h, -.09 * hs)), b = P(pt(.5 * h, .09 * hs)); c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.lineWidth = .0045 * SCALE; c.strokeStyle = col(ac, .6); c.stroke() } } });
+      for (const s of [1, -1]) { seam([pt(zt, s * wt * .9), add(fz(D.neck0 + .01), add(mul(lU, s * .055 * hs), mul(fU, .01)))], col2hex(ac, .85), .012 * hs, frontD + .0072, 1, MAT.cloth);
+        seam([pt(zw, s * ww), onFront(zw, s * .145 * hs, 1.02), add(fz(zw), add(mul(lU, s * .13 * hs), mul(fU, -.06 * hs)))], col2hex(ac, .85), .012 * hs, frontD + .0071, 1, MAT.cloth) } }
+    else { const c0 = onBack(zw, 0); for (const s of [1, -1]) { out.push(ellipPart('top', backD + .006, add(c0, mul(lU, s * .03 * hs)), [lU, fU, Z], [.028 * hs, .012 * hs, .018 * hs], null, col2hex(ac, .9), MAT.cloth, 1));
+        seam([add(c0, mul(lU, s * .01)), add(c0, add(mul(lU, s * .04 * hs), [0, 0, -.09 * hs]))], col2hex(ac, .85), .012 * hs, backD + .0062, 1, MAT.cloth) }
+      seam([onBack(zw, -.14 * hs), onBack(zw, .14 * hs)], col2hex(ac, .85), .012 * hs, backD + .0058, 1, MAT.cloth) } }
+}
+function mixHex(a, b, t) { const x = hexC(a), y = hexC(b); return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('') }
+function col2hex(h, b) { const c = hexC(h); const f = v => Math.max(0, Math.min(255, Math.round(v * b))).toString(16).padStart(2, '0'); return '#' + f(c[0]) + f(c[1]) + f(c[2]) }
+
+// ---- rendering: a list of parts (and erasers) into a canvas at pxm device px per screen metre, with the thin dark rim ----
+const LAYERS = ['body', 'top', 'hair', 'item'];
+const mk = (w, h) => { if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h); const c = document.createElement('canvas'); c.width = w; c.height = h; return c };
+// p670: the line of the parts — stroked over the fill ('side': the two long sides of a limb; 'full': the outline), in the part's darker
+// colour, from lod 1; OWM — its width in screen metres while a picture is made
+let OWM = 0;
+function olStroke(c, p) { c.lineWidth = OWM; c.strokeStyle = col(p.oc, .36); c.globalAlpha = .82; c.beginPath();
+  if (p.ol === 'side') { const dx = p.sB[0] - p.sA[0], dy = p.sB[1] - p.sA[1], l = Math.hypot(dx, dy); if (l < 1e-6) { c.globalAlpha = 1; return } const nx = -dy / l, ny = dx / l, t = p.olFrom || 0;
+    const ax = p.sA[0] + dx * t, ay = p.sA[1] + dy * t, ra = p.ra + (p.rb - p.ra) * t;
+    for (const s of [1, -1]) { c.moveTo(ax + nx * ra * s, ay + ny * ra * s); c.lineTo(p.sB[0] + nx * p.rb * s, p.sB[1] + ny * p.rb * s) } }
+  else p.path(c);
+  c.stroke(); c.globalAlpha = 1 }
+function render(seq, pxm, rim, small, lod, owm) {   /* D‑593: owm — the width of the line in screen metres, for a big picture (the dressing room) */
+  LIFT = small ? 1 : 0; OWM = owm > 0 ? owm : (lod >= 1 ? Math.min(1.6, .35 + pxm * .0085) / pxm : 0);
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const e of seq) if (!e.er) for (const p of e.p.pts) { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1] }
+  if (!isFinite(x0)) return null;
+  const pad = 3, ox = Math.ceil(-x0 * pxm) + pad, oy = Math.ceil(-y0 * pxm) + pad, W = Math.max(1, ox + Math.ceil(x1 * pxm) + pad), Hh = Math.max(1, oy + Math.ceil(y1 * pxm) + pad);   // p670: the origin on a whole pixel
+  const cv = mk(W, Hh), c = cv.getContext('2d'); c.setTransform(pxm, 0, 0, pxm, ox, oy); c.lineJoin = 'round'; c.lineCap = 'round';
+  const glow = [], under = [];
+  for (const e of seq) {
+    if (e.er) { c.globalCompositeOperation = 'destination-out'; c.beginPath(); e.p.path(c); if (e.p.stroke) { c.lineWidth = e.p.w; c.stroke() } else c.fill(); c.globalCompositeOperation = 'source-over'; continue }
+    if (e.p.noRim) { glow.push(e.p); continue }
+    if (e.p.under) { under.push(e.p); continue }
+    e.p.paint(c); if (OWM && e.p.ol) olStroke(c, e.p);
+  }
+  let out = cv;
+  if (rim && !small) {   // the rim: the picture's alpha, spread by w device px, filled dark, under the picture
+    const w = Math.max(1, Math.round(pxm * .0085)), q = Math.max(1, Math.round(w * .7)), t = mk(W, Hh), g = t.getContext('2d');   // p670: whole pixels, darker
+    for (const [dx, dy] of [[w, 0], [-w, 0], [0, w], [0, -w], [q, q], [-q, q], [q, -q], [-q, -q]]) g.drawImage(cv, dx, dy);
+    g.globalCompositeOperation = 'source-in'; g.fillStyle = pxm < 40 ? 'rgba(16,20,26,.68)' : 'rgba(16,20,26,.84)'; g.fillRect(0, 0, W, Hh);
+    g.globalCompositeOperation = 'source-over'; g.drawImage(cv, 0, 0); out = t;
+  }
+  if (under.length) { const g = out.getContext('2d'); g.setTransform(pxm, 0, 0, pxm, ox, oy); g.globalCompositeOperation = 'destination-over'; for (const p of under) p.paint(g); g.globalCompositeOperation = 'source-over' }
+  if (glow.length) { const g = out.getContext('2d'); g.setTransform(pxm, 0, 0, pxm, ox, oy); g.globalCompositeOperation = 'lighter'; for (const p of glow) p.paint(g); g.globalCompositeOperation = 'source-over' }
+  LIFT = 0; OWM = 0;
+  return { cv: out, ox, oy, bytes: W * Hh * 4 };
+}
+// the sequence of one layer: its parts by depth, with the parts of the earlier layers that stand in front of them as erasers
+function layerSeq(all, li) {
+  const own = all.filter(p => p.L === LAYERS[li]).sort((a, b) => a.d - b.d); if (!own.length) return null;
+  const dmin = own[0].d, ers = all.filter(p => LAYERS.indexOf(p.L) < li && p.d > dmin && !p.noRim && !p.under);
+  const seq = own.map(p => ({ p, d: p.d, er: false })).concat(ers.map(p => ({ p, d: p.d, er: true })));
+  seq.sort((a, b) => a.d - b.d || (a.er ? -1 : 1));
+  return seq;
+}
+// ---- the cache ----
+const CACHE = new Map(); let BYTES = 0, MADE = 0, MADE_MS = 0, HITS = 0, EVICT = 0;
+const P34 = G.P34 = { K, SCALE, FR, KYC, lodPx: [30, 80], budgetMB: 24, rim: true, smallPx: 30, partsKeepMs: 600, dpr: typeof devicePixelRatio !== 'undefined' ? Math.min(2, devicePixelRatio || 1) : 1 };
+const lk0 = L => { const o = Object.assign({}, DEF, L); return { body: [o.h, o.w, o.belly, o.skin, o.legs.t, o.legs.c, o.shoes.t, o.shoes.c, o.socks || '', o.glasses || '', o.eyes || '', o.hair.c].join(','),
+  top: [o.h, o.w, o.belly, o.top.t, o.top.c, o.top.c2 || '', o.top.tie || '', o.top.sleeve, o.top.long ? 1 : 0, (o.vest || '') + (o.vestK || ''), o.belt || '', o.apron ? o.apron.c + (o.apron.low || '') : '', o.steth ? 1 : 0, o.top.vneck ? 1 : 0, o.skin, o.badge ? o.badge.k + o.badge.c + (o.badge.c2 || '') + (o.badge.z || '') : '', (o.stripe || '') + (o.stripeZ || ''), o.epau ? o.epau.n + o.epau.c + o.epau.b : ''].join(','),   /* p670: the uniforms */
+  hair: [o.h, o.hair.t, o.hair.c, o.hat ? o.hat.t + o.hat.c + (o.hat.b || '') + (o.hat.e || '') : '', o.beard ? o.beard.c : '', o.earmuff || '', o.skin, o.glasses || ''].join(','),   /* p670: the band and the badge of the cap */
+  item: [o.h, o.w, o.item ? o.item.k + (o.item.c || '') : ''].join(',') } };
+/* D‑593: the fields of the wardrobe (the cuts of the top, the legs, the shoes and the hat; gloves, a watch, a scarf, dark lenses) are part of the key — only when a look has them */
+const lk = L => { const k = lk0(L), t = L.top || {}, g = L.legs || {}, s = L.shoes || {}, h = L.hat || {};
+  const b = [g.cut || '', g.c2 || '', s.cut || '', s.shaft ? 1 : '', L.gloves || '', L.shades ? 1 : ''].join('~'), tt = [t.cut || '', t.noTie ? 1 : '', L.scarf || '', L.watch ? (L.watch.c || '') + (L.watch.b || '') : ''].join('~'), hh = [h.cut || '', L.shades ? 1 : ''].join('~');
+  if (b !== '~~~~~') k.body += '|' + b; if (tt !== '~~~') k.top += '|' + tt; if (hh !== '~') k.hair += '|' + hh; return k };
+const PCACHE = new Map();
+/* mem (R-89): הגאומטריה של תנוחה (כ-300 ק״ב לכל אחת, עד 64) נדרשת רק כשנוצרות תמונות חדשות של אותה תנוחה — בשכבה אחרת באותה קריאה,
+   או בזום אחר (בזמן תנועת זום — פריים אחרי פריים). התמונות עצמן נשארות במטמון שלהן; תנוחה שלא נגעו בה P34.partsKeepMs (‏0.6 שנייה) —
+   יוצאת, ונבנית מחדש אם תידרש (אותו חישוב, אותו ציור). בהליכה רגילה כל תמונה חדשה היא תנוחה חדשה, כך שהמטמון כמעט לא נקרא שוב. */
+let PC_CALLS = 0, PC_SWEPT = 0, PC_FREED = 0;
+function partsOf(look, act, dir, fr, key, small, lod) { const now = performance.now(); let e = PCACHE.get(key); if (e) { e.t = now; return e.p }
+  pcSweep(); const p = parts(look, act, dir, fr, small, lod).parts; PCACHE.set(key, { p, t: now }); if (PCACHE.size > 64) PCACHE.delete(PCACHE.keys().next().value); return p }
+function pcSweep() { const now = performance.now(); if (now - PC_SWEPT < 250) return; PC_SWEPT = now; const keep = P34.partsKeepMs; if (!(keep > 0) || !PCACHE.size) return;
+  for (const [k, e] of PCACHE) if (now - e.t > keep) { PCACHE.delete(k); PC_FREED++ } }
+if (typeof setInterval === 'function') setInterval(() => { try { pcSweep() } catch (e) { } }, 500);
+function put(key, e) { CACHE.set(key, e); BYTES += e ? e.bytes : 0; if (P34.budgetMB > 0) while (BYTES > P34.budgetMB * 1048576 && CACHE.size > 1) { const [k0, e0] = CACHE.entries().next().value; if (k0 === key) break; CACHE.delete(k0); BYTES -= e0 ? e0.bytes : 0; EVICT++ } }
+function get(key) { const e = CACHE.get(key); if (e !== undefined) { if (++HITS % 8 === 0) { CACHE.delete(key); CACHE.set(key, e) } return e } return undefined }
+const dirOf = h => ((Math.round(h / (Math.PI / 4)) % 8) + 8) % 8;
+const frOf = (k, ph) => { const F = FR[k] || 1; return F > 1 ? ((Math.floor(ph * F) % F) + F) % F : 0 };
+// the height of a look standing, in screen metres (once per look) → is its picture small (under P34.smallPx css px)?
+function hmOf(look) { if (look.__hm == null) { let y0 = Infinity, y1 = -Infinity; for (const p of parts(look, { k: 'stand' }, 2, 0).parts) for (const q of p.pts) { y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]) } look.__hm = y1 - y0 } return look.__hm }
+P34.sprites = function (look, act, heading, phase, res, mode) {
+  if ((++PC_CALLS & 255) === 0) pcSweep();
+  const small = hmOf(look) * PXM * res / P34.dpr < P34.smallPx;
+  const hd = hmOf(look) * PXM * res, lod = small || hd < P34.lodPx[0] ? 0 : hd < P34.lodPx[1] ? 1 : 2;   // p670: the detail by the height in device px
+  const d = dirOf(heading), fr = frOf(act.k, phase), keys = look.__k || (look.__k = lk(look)), pk = act.k + '/' + d + '/' + fr + '/' + (look.item ? look.item.k : '') + (small ? '/s' : '') + '/l' + lod;
+  const pxm = PXM * res, all = () => partsOf(look, act, d, fr, JSON.stringify(keys) + pk, small, lod);
+  if (mode === 'flat') { const key = 'F|' + keys.body + '|' + keys.top + '|' + keys.hair + '|' + keys.item + '|' + pk + '|' + res; let e = get(key);
+    if (e === undefined) { const t0 = performance.now(); const A = all().slice().sort((a, b) => a.d - b.d); e = render(A.map(p => ({ p, d: p.d, er: false })), pxm, P34.rim, small, lod); MADE_MS += performance.now() - t0; MADE++; put(key, e) } return e ? [e] : [] }
+  const out = [];
+  for (let li = 0; li < 4; li++) { const key = LAYERS[li] + '|' + keys[LAYERS[li]] + '|' + pk + '|' + res; let e = get(key);
+    if (e === undefined) { const t0 = performance.now(); const seq = layerSeq(all(), li); e = seq ? render(seq, pxm, P34.rim, small, lod) : null; MADE_MS += performance.now() - t0; MADE++; put(key, e) }
+    if (e) out.push(e) }
+  return out;
+};
+// the contact shadow: a dark core under the feet and a soft short cast toward the lower right (the sun up-left); one picture per density
+const SH = new Map();
+function shadow(res, kind) { const key = kind + '|' + res; let e = SH.get(key); if (e) return e;
+  const pxm = PXM * res, R = (kind === 'sit' ? .5 : .34) * SCALE, W = Math.ceil(R * 3.2 * pxm), Hh = Math.ceil(R * 2 * pxm), cv = mk(W, Hh), c = cv.getContext('2d'), ox = W * .3, oy = Hh * .42;
+  c.setTransform(pxm, 0, 0, pxm, ox, oy);
+  c.save(); c.translate(.32 * SCALE, .16 * SCALE); c.rotate(.6); c.scale(1, .42); let g = c.createRadialGradient(0, 0, 0, 0, 0, R * 1.25); g.addColorStop(0, 'rgba(12,16,22,.24)'); g.addColorStop(.6, 'rgba(12,16,22,.12)'); g.addColorStop(1, 'rgba(12,16,22,0)'); c.fillStyle = g; c.beginPath(); c.arc(0, 0, R * 1.25, 0, Math.PI * 2); c.fill(); c.restore();
+  c.save(); c.scale(1, .5); g = c.createRadialGradient(0, 0, 0, 0, 0, R * .78); g.addColorStop(0, 'rgba(10,13,18,.55)'); g.addColorStop(.55, 'rgba(10,13,18,.34)'); g.addColorStop(1, 'rgba(10,13,18,0)'); c.fillStyle = g; c.beginPath(); c.arc(0, 0, R * .78, 0, Math.PI * 2); c.fill(); c.restore();
+  e = { cv, ox, oy }; SH.set(key, e); return e }
+P34.draw = function (ctx, x, y, look, act, heading, phase, res, mode) {
+  const sh = shadow(res, act.k === 'eat' || act.k === 'bench' ? 'sit' : 'stand'); ctx.drawImage(sh.cv, x - sh.ox / res, y - sh.oy / res, sh.cv.width / res, sh.cv.height / res);
+  let X = x, Y = y;   // p670: on a canvas at the picture's own density — the anchor on a whole device pixel (no resampling, no blur)
+  try { const T = ctx.getTransform(); if (Math.abs(T.b) < 1e-9 && Math.abs(T.c) < 1e-9 && Math.abs(T.a - res) < res * 1e-3 && Math.abs(T.d - res) < res * 1e-3) { const u = T.a * x + T.e, v = T.d * y + T.f; X = x + (Math.round(u) - u) / T.a; Y = y + (Math.round(v) - v) / T.d } } catch (e) { }
+  for (const s of P34.sprites(look, act, heading, phase, res, mode)) ctx.drawImage(s.cv, X - s.ox / res, Y - s.oy / res, s.cv.width / res, s.cv.height / res);
+};
+P34.cycle = (look) => { const D = dims(Object.assign({}, DEF, look)); return 2 * SCALE * STEP(D, look.item && look.item.k) };
+P34.stats = () => ({ sprites: CACHE.size, MB: +(BYTES / 1048576).toFixed(2), poses: PCACHE.size, posesFreed: PC_FREED, made: MADE, makeMs: +MADE_MS.toFixed(1), makeAvg: MADE ? +(MADE_MS / MADE).toFixed(2) : 0, evicted: EVICT, budgetMB: P34.budgetMB });
+P34.clear = () => { CACHE.clear(); PCACHE.clear(); BYTES = 0; MADE = 0; MADE_MS = 0; HITS = 0; EVICT = 0 };
+// the height on the screen (px) of a look standing, at a zoom (world px per metre = 10 × zoom)
+P34.heightPx = (look, zoom) => { const A = parts(look, { k: 'stand' }, 2, 0).parts; let y0 = Infinity, y1 = -Infinity; for (const p of A) for (const q of p.pts) { y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]) } return { top: y0 * PXM * zoom, bottom: y1 * PXM * zoom, px: (y1 - y0) * PXM * zoom } };
+P34.parts = parts; P34.DEF = DEF; P34.lk = lk;   /* p670: the game's cache key from the generator's own */
+// p670: the pose for the layers outside (FISHX: the rod from the hand) — the hands where they are drawn (their depth in the people's camera)
+P34.pose = function (look, act, dir, fr) { const S = pose(look, act, dir, fr); KW = !!act && act.k !== 'bench' && act.k !== 'eat';
+  for (const a of S.arms) a.hand = [a.hand[0], a.hand[1] * ky(a.hand[2]), a.hand[2]]; KW = false; return S };
+// D‑593: one whole person at any heading and any phase (a continuous turn, a continuous step) — the same parts and the same rendering as the game's
+// pictures, not cached (the turntable of the dressing room, the pictures of the shop).  owm — the line's width in screen metres (a big picture).
+P34.spriteAt = function (look, act, heading, phase, res, owm) { const k = (act && act.k) || 'stand', F = FR[k] || 1, u = ((phase % 1) + 1) % 1, fr = F > 1 ? (k.length === 2 && k[0] === 'f' ? Math.floor(u * F) % F : u * F) : 0;
+  const A = parts(look, { k }, heading / (Math.PI / 4), fr, false, 2).parts.slice().sort((a, b) => a.d - b.d); return render(A.map(p => ({ p, d: p.d, er: false })), PXM * res, P34.rim, false, 2, owm) };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+'use strict';
+/*@@POR-CORE@@*/
+var TCPOR={v:1,err:'',n:{svg:0,hit:0},cache:new Map(),
+ SKIN:['#f3d3b5','#ebc19c','#dfab83','#cc9468','#b07a50','#8d5b38'],
+ HAIR:['#2a1d14','#3b2a1e','#5a3b22','#7a4f2a','#161616','#8b5a2b','#4a3626'],
+ GREY:['#e4e4e4','#cfcfcf','#bdbdbd','#f2f2f2'],
+ KIP:['#1f2a44','#111418','#3a3f8f','#2f5f3a','#6b2a2a','#ffffff'],
+ /* the story people (TC_STORY / the zones) — a fixed look: age (boy / man / elder), hair, beard, hat, glasses, skin */
+ LOOK:{
+  'st-aharon':{age:'elder',hair:'bald',beard:'full',hat:'kippah',hatCol:'#111418',glasses:1,skin:1},
+  'st-shimon':{age:'man',hair:'short',beard:'mustache',hat:'cap',hatCol:'#f2b705',skin:2,hairCol:'#3b2a1e',grey:1},
+  'st-shmulik':{age:'boy',hair:'curly',beard:'none',hat:'kippah',hatCol:'#3a3f8f',skin:0,hairCol:'#7a4f2a'},
+  'st-david':{age:'man',hair:'side',beard:'short',hat:'kippah',hatCol:'#111418',skin:1,hairCol:'#2a1d14'},
+  'st-naftali':{age:'boy',hair:'side',beard:'none',hat:'kippah',hatCol:'#2f5f3a',glasses:1,skin:1,hairCol:'#161616'},
+  'st-eliyahu':{age:'man',hair:'short',beard:'full',hat:'kippah',hatCol:'#111418',skin:3,hairCol:'#161616'},
+  'st-mendi':{age:'boy',hair:'wavy',beard:'none',hat:'cap',hatCol:'#e07b2f',skin:2,hairCol:'#5a3b22'},
+  's9-yossi':{age:'man',hair:'buzz',beard:'stubble',hat:'hard',skin:3,hairCol:'#161616'},
+  's9-avi':{age:'man',hair:'short',beard:'goatee',hat:'bucket',hatCol:'#4aa3c7',skin:2},
+  's9-moshe':{age:'elder',hair:'short',beard:'full',hat:'bucket',hatCol:'#2f6b45',skin:4},
+  'st-mech':{age:'man',hair:'short',beard:'stubble',hat:'cap',hatCol:'#55606b',skin:3},
+  'st-mall':{age:'man',hair:'side',beard:'none',hat:'none',glasses:1,skin:1},
+  'st-wh':{age:'man',hair:'bald',beard:'short',hat:'hard',skin:4},
+  'st-tourist':{age:'man',hair:'short',beard:'none',hat:'straw',hatCol:'#8a7a5a',glasses:1,skin:0},
+  'st-farmer':{age:'elder',hair:'short',beard:'stubble',hat:'straw',hatCol:'#5a7a2e',skin:4},
+  'st-test':{age:'man',hair:'short',beard:'none',hat:'none',glasses:1,skin:1}},
+ /* not a person: an icon in place of a face (the places of 055 have C.place) */
+ THING:{'st-letter':'letter','st-post':'post','st-refinery':'factory','st-dealer':'car','st-lot':'truck','st-hadassah':'voice','s9-portctl':'port'},
+ /* a hat by the role in the name */
+ ROLE:[[/מכונאי|מוסך|גרר/,'cap','#55606b'],[/נמל|מנוף|מחסן|גוררת|זיקוק|מסוף|רציף|מכולות|מפעל|אתר|בנאי|חשמלאי/,'hard','#f2c230'],[/מציל/,'cap','#d42a2a'],
+  [/כבאי|כיבוי/,'helmet','#c62f2a'],[/שוטר|משטרה|סייר|שומר|מאבטח/,'police','#1d2f5a'],[/טייס|מגדל|בקר|דיילת?|נוסע/,'pilot','#1a2440'],[/שף|מטבח|טבח|אופה|מאפייה/,'chef','#ffffff'],
+  [/דייג|ספן|שייט|סירה|סירות|מעגן|מרינה|(^|\s)ה?ים(\s|$)|חוף|מפרץ|מצוף/,'bucket',null],[/חקלאי|חווה|כפר|יערן|שדה|כרם|מטע|רועה|קוטף/,'straw',null],[/נהג|מונית|רכבת|אוטובוס/,'cap',null],[/תייר|צלם/,'straw','#8a7a5a']]};
+function tcPorHash(s){let h=2166136261;s=String(s);for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function tcPorHex(c){c=String(c||'#4f7be0').trim();if(/^#[0-9a-f]{3}$/i.test(c))c='#'+c[1]+c[1]+c[2]+c[2]+c[3]+c[3];return /^#[0-9a-f]{6}$/i.test(c)?c.toLowerCase():'#4f7be0'}
+/* k > 0 — toward white, k < 0 — toward black */
+function tcPorShade(c,k){c=tcPorHex(c);const n=parseInt(c.slice(1),16),f=v=>Math.round(k>=0?v+(255-v)*k:v*(1+k));const r=f(n>>16&255),g=f(n>>8&255),b=f(n&255);return '#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1)}
+function tcPorEsc(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}
+/* the look of a person: fixed (LOOK), else from the id (the same id — the same face) and the role in the name */
+/* the role of a person of a zone story: the name and the badge of the story (S9STORY) — "עובד נמל", "חבר המצילים", "דייג החוף" → the hat */
+function tcPorRole(id){try{if(typeof S9STORY==='undefined')return '';const ST=S9STORY.ST,n=Object.keys(ST).length;if(TCPOR.roleN!==n){TCPOR.roleN=n;TCPOR.roleOf={};for(const S of Object.values(ST))for(const k of Object.keys(S.chars||{}))if(!TCPOR.roleOf[k])TCPOR.roleOf[k]=(S.name||'')+' '+(S.badge||'')}return TCPOR.roleOf[id]||''}catch(e){return ''}}
+function tcPorLook(id,C){C=C||{};id=String(id==null?'':id);const name=String(C.name||'')+' '+tcPorRole(id),R=tcPorHash(id+'|'+name),rr=k=>((R>>>(k*3))&1023)/1023,L=TCPOR.LOOK[id]||{};
+ if(L.thing||TCPOR.THING[id]||C.place)return{thing:L.thing||TCPOR.THING[id]||C.icon||'city',color:tcPorHex(C.color)};
+ let age=L.age||(/סבא|זקן|הוותיק|ותיק/.test(name)?'elder':/נער|הילד|הבן של|הקטן/.test(name)?'boy':rr(0)<.17?'boy':rr(0)>.86?'elder':'man');
+ const hairs=age==='elder'?['bald','short','short','side']:age==='boy'?['curly','side','wavy','short']:['short','side','curly','buzz','wavy','bald'];
+ const beards=age==='boy'?['none']:age==='elder'?['full','full','short','mustache','none']:['none','none','stubble','short','full','mustache','goatee'];
+ let hat=L.hat,hatCol=L.hatCol;if(!hat){for(const [re,h,col] of TCPOR.ROLE)if(re.test(name)){hat=h;hatCol=col;break}}
+ if(!hat)hat=rr(5)<.45?'kippah':'none';if(!hatCol)hatCol=hat==='kippah'?TCPOR.KIP[Math.floor(rr(6)*TCPOR.KIP.length)%TCPOR.KIP.length]:hat==='hard'?'#f2c230':tcPorShade(C.color,-.15);
+ const grey=age==='elder'||L.grey;
+ return{age,skin:TCPOR.SKIN[(L.skin!=null?L.skin:Math.floor(rr(1)*TCPOR.SKIN.length))%TCPOR.SKIN.length],
+  hair:L.hair||hairs[Math.floor(rr(2)*hairs.length)%hairs.length],
+  hairCol:age==='elder'?TCPOR.GREY[Math.floor(rr(3)*4)%4]:(L.hairCol||TCPOR.HAIR[Math.floor(rr(3)*TCPOR.HAIR.length)%TCPOR.HAIR.length]),
+  beardCol:age==='elder'?TCPOR.GREY[Math.floor(rr(4)*4)%4]:grey?'#8a8580':null,
+  beard:L.beard||beards[Math.floor(rr(4)*beards.length)%beards.length],hat,hatCol:tcPorHex(hatCol),
+  glasses:L.glasses!=null?!!L.glasses:rr(7)<(age==='elder'?.5:.16),shirt:tcPorHex(C.color),grey:!!L.grey}}
+/* the icons of a thing / a place (24 × 24, a line); the places of 055 (g77MsgIco) first */
+function tcPorIco(k){let s='';try{s=typeof g77MsgIco==='function'?g77MsgIco(k):''}catch(e){}if(s)return s;return({
+ letter:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 7l9 6 9-6"/>',
+ post:'<path d="M4 9h16v10H4z"/><path d="M4 9l8 5 8-5"/><path d="M8 5h8v4"/>',
+ factory:'<path d="M3 21V11l5 3V11l5 3V8l5 3v10z"/><path d="M17 8V3h3v8M7 18h2M12 18h2"/>',
+ car:'<path d="M4 15l2-5h12l2 5v4H4z"/><circle cx="8" cy="19" r="1.6"/><circle cx="16" cy="19" r="1.6"/><path d="M7 10l1.5-3h7L17 10"/>',
+ truck:'<path d="M2 7h11v10H2zM13 10h5l3 4v3h-8z"/><circle cx="6" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',
+ voice:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/>',
+ city:'<path d="M3 21h18M5 21V9l5-3v15M10 21V4l9 4v13M13 10h3M13 13h3M13 16h3M7 12h1M7 15h1"/>'})[k]||'<circle cx="12" cy="12" r="6"/>'}
+/* the portrait: SVG 64 × 64; the container cuts the circle (border-radius + overflow) */
+function tcPorDraw(P){const S=[],a=(t)=>S.push(t);
+ if(P.thing){const c=P.color;a('<rect width="64" height="64" fill="'+tcPorShade(c,-.12)+'"/><circle cx="32" cy="26" r="30" fill="'+tcPorShade(c,.12)+'" opacity=".65"/>');
+  a('<g transform="translate(14 14) scale(1.5)" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+tcPorIco(P.thing)+'</g>');return S.join('')}
+ const sk=P.skin,skD=tcPorShade(sk,-.16),skL=tcPorShade(sk,.1),hc=P.hairCol,sh=P.shirt,boy=P.age==='boy',eld=P.age==='elder';
+ a('<rect width="64" height="64" fill="'+tcPorShade(sh,.58)+'"/><circle cx="32" cy="22" r="28" fill="'+tcPorShade(sh,.78)+'" opacity=".7"/>');
+ // the shirt and the neck
+ a(boy?'<path d="M9 64C10 53.5 19 48.5 32 48.5S54 53.5 55 64Z" fill="'+sh+'"/>':'<path d="M5 64C6 52 16.5 46.5 32 46.5S58 52 59 64Z" fill="'+sh+'"/>');
+ a('<path d="M24.5 '+(boy?48.6:46.6)+'L32 56L39.5 '+(boy?48.6:46.6)+'Z" fill="'+tcPorShade(sh,.42)+'"/><path d="M27 37h10v10.5c-2.6 2.6-7.4 2.6-10 0z" fill="'+skD+'"/>');
+ a('<path d="M8 64C9.5 57 13 53 17 51" stroke="'+tcPorShade(sh,-.22)+'" stroke-width="2" fill="none" opacity=".5"/>');
+ // the head (a boy — a little smaller and lower)
+ a('<g'+(boy?' transform="translate(32 31) scale(.93) translate(-32 -29)"':'')+'>');
+ a('<ellipse cx="19.6" cy="30.5" rx="2.7" ry="3.7" fill="'+skD+'"/><ellipse cx="44.4" cy="30.5" rx="2.7" ry="3.7" fill="'+skD+'"/>');
+ a('<ellipse cx="32" cy="29" rx="12.6" ry="14.6" fill="'+sk+'"/><ellipse cx="28" cy="23" rx="6" ry="5" fill="'+skL+'" opacity=".45"/>');
+ // the hair
+ const H=P.hair,hairTop=!(P.hat==='hard'||P.hat==='helmet'||P.hat==='chef'||P.hat==='police'||P.hat==='pilot'||P.hat==='bucket'||P.hat==='straw'||P.hat==='beanie');
+ if(H==='bald'){a('<path d="M19.6 32C18.8 26 19.6 22.5 21.4 21L22.4 30.5Z" fill="'+hc+'"/><path d="M44.4 32C45.2 26 44.4 22.5 42.6 21L41.6 30.5Z" fill="'+hc+'"/>')}
+ else if(H==='curly'){if(hairTop)for(const [x,y,r] of [[20.5,24,3.6],[22.5,19,4.2],[27,15.6,4.6],[32.5,14.4,4.8],[38,15.6,4.6],[42,19.2,4.2],[43.8,24,3.4]])a('<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+hc+'"/>');else a('<circle cx="20.3" cy="26.5" r="3" fill="'+hc+'"/><circle cx="43.7" cy="26.5" r="3" fill="'+hc+'"/>')}
+ else{const op=H==='buzz'?' opacity=".62"':'';
+  a('<path d="M19.4 28C18.4 17.5 24 13.4 32 13.4S45.6 17.5 44.6 28C43.4 23 40.4 20 32 20S20.6 23 19.4 28Z" fill="'+hc+'"'+op+'/>');
+  if(hairTop&&H==='side')a('<path d="M20.2 24.5C22 17 28 14.2 34 14.4C40 14.6 44 18 44.6 24C41 19.6 36 19.4 31 21.6C27 23.2 23 23 20.2 24.5Z" fill="'+tcPorShade(hc,.12)+'"/>');
+  if(hairTop&&H==='wavy')a('<path d="M20 23C21 16.5 26 13.8 32 13.8S43 16.5 44 23C42 20.5 40 21.2 38 19.6C36 21.4 33.4 20.4 32 19.4C30.4 20.6 28 21.4 26 19.8C24 21.4 22 20.6 20 23Z" fill="'+tcPorShade(hc,.1)+'"/>')}
+ // the beard (under the mouth)
+ const bc=P.beardCol||tcPorShade(hc,0),B=P.beard;
+ if(B==='full'||B==='short'||B==='stubble'){const lo=B==='full'?45.6:42.6;a('<path d="M19.8 30.5C19.8 '+(lo-6)+' 25 '+lo+' 32 '+lo+'S44.2 '+(lo-6)+' 44.2 30.5C42.6 35.4 40 37.4 36.5 38.4C34.5 37.2 29.5 37.2 27.5 38.4C24 37.4 21.4 35.4 19.8 30.5Z" fill="'+bc+'"'+(B==='stubble'?' opacity=".3"':'')+'/>')}
+ if(B==='mustache'||B==='full'||B==='short')a('<path d="M27.2 35.4C29.4 33.4 31 34 32 34.7C33 34 34.6 33.4 36.8 35.4C34.6 36 33 35.7 32 35.2C31 35.7 29.4 36 27.2 35.4Z" fill="'+tcPorShade(bc,-.06)+'"/>');
+ if(B==='goatee')a('<path d="M28.6 38.6Q32 40 35.4 38.6L34.4 43.2Q32 44.8 29.6 43.2Z" fill="'+bc+'"/><path d="M28 35.4C30 34.2 31 34.6 32 35C33 34.6 34 34.2 36 35.4C34 35.8 33 35.6 32 35.4C31 35.6 30 35.8 28 35.4Z" fill="'+bc+'"/>');
+ // the face
+ const bw=eld?tcPorShade(hc,-.1):hc;a('<path d="M24.4 25.2Q27 23.6 29.6 25M34.4 25Q37 23.6 39.6 25.2" stroke="'+bw+'" stroke-width="'+(eld?2:1.7)+'" fill="none" stroke-linecap="round"/>');
+ const er=boy?1.35:1.15;a('<ellipse cx="27" cy="28.6" rx="2.1" ry="1.6" fill="#fff"/><ellipse cx="37" cy="28.6" rx="2.1" ry="1.6" fill="#fff"/><circle cx="27.3" cy="28.7" r="'+er+'" fill="#2b1d12"/><circle cx="37.3" cy="28.7" r="'+er+'" fill="#2b1d12"/><circle cx="27.7" cy="28.2" r=".4" fill="#fff"/><circle cx="37.7" cy="28.2" r=".4" fill="#fff"/>');
+ a('<path d="M32 29.6Q30.2 33.4 32.4 34.2" stroke="'+tcPorShade(sk,-.34)+'" stroke-width="1.2" fill="none" stroke-linecap="round"/>');
+ a('<path d="M28.4 '+(B==='full'||B==='short'||B==='mustache'?37.2:36.4)+'Q32 '+(B==='full'||B==='short'||B==='mustache'?39.4:39.2)+' 35.6 '+(B==='full'||B==='short'||B==='mustache'?37.2:36.4)+'" stroke="#8a3b2e" stroke-width="1.4" fill="none" stroke-linecap="round"/>');
+ if(B!=='full')a('<circle cx="23.8" cy="33.4" r="2.2" fill="#e0706a" opacity=".2"/><circle cx="40.2" cy="33.4" r="2.2" fill="#e0706a" opacity=".2"/>');
+ if(eld)a('<path d="M26.5 20.4h11M27.5 22h9" stroke="'+tcPorShade(sk,-.3)+'" stroke-width=".7" opacity=".55" fill="none"/><path d="M22.6 29.6l1.6-.6M41.4 29.6l-1.6-.6" stroke="'+tcPorShade(sk,-.3)+'" stroke-width=".7" opacity=".6"/>');
+ if(boy&&tcPorHash(P.shirt+P.hairCol)%3===0)for(const [x,y] of [[24.6,31.6],[26,32.6],[39.4,31.6],[38,32.6]])a('<circle cx="'+x+'" cy="'+y+'" r=".45" fill="'+tcPorShade(sk,-.35)+'" opacity=".7"/>');
+ if(P.glasses)a('<g stroke="#26231f" stroke-width="1.2" fill="#ffffff" fill-opacity=".12"><circle cx="27" cy="28.7" r="3.7"/><circle cx="37" cy="28.7" r="3.7"/></g><path d="M30.7 28.4Q32 27.6 33.3 28.4M23.3 28.2L20.6 27.4M40.7 28.2L43.4 27.4" stroke="#26231f" stroke-width="1.1" fill="none"/>');
+ // the hat
+ const hc2=P.hatCol,hd=tcPorShade(hc2,-.25);
+ switch(P.hat){
+  case 'kippah':a('<ellipse cx="33.5" cy="15.2" rx="7" ry="2.7" fill="'+hc2+'"'+(hc2==='#ffffff'?' stroke="#c9c9c9" stroke-width=".6"':'')+'/><path d="M27.4 15.6Q33.5 13.2 39.6 15.6" stroke="'+tcPorShade(hc2,hc2==='#ffffff'?-.2:.3)+'" stroke-width=".7" fill="none"/>');break;
+  case 'cap':a('<path d="M18.9 24.2C18.6 13.6 25 10.4 32 10.4S45.4 13.6 45.1 24.2Z" fill="'+hc2+'"/><path d="M18.4 23.4Q32 20.4 47.4 24.2Q51 26.2 46.4 26.8Q32 24.2 18.4 25.6Z" fill="'+hd+'"/><circle cx="32" cy="10.8" r="1.3" fill="'+hd+'"/><path d="M26 15.5h12" stroke="#fff" stroke-width="1" opacity=".35"/>');break;
+  case 'hard':a('<path d="M18 25C18 12 24.6 8.8 32 8.8S46 12 46 25Z" fill="'+hc2+'"/><path d="M15.4 24.4h33.2a1.6 1.6 0 0 1 0 3.2H15.4a1.6 1.6 0 0 1 0-3.2z" fill="'+hd+'"/><path d="M32 9v15" stroke="'+hd+'" stroke-width="2"/><path d="M23 16q2-4 6-5" stroke="#fff" stroke-width="1.2" opacity=".45" fill="none"/>');break;
+  case 'helmet':a('<path d="M17.6 25C17.6 11.6 24.6 8.6 32 8.6S46.4 11.6 46.4 25Z" fill="'+hc2+'"/><path d="M14 24.6Q32 21.6 50 24.6Q52 28 47 28Q32 25.6 17 28Q12 28 14 24.6Z" fill="'+hd+'"/><rect x="28.6" y="13" width="6.8" height="7" rx="1.2" fill="#f2c230"/>');break;
+  case 'police':a('<path d="M19 22L17.4 14.4Q32 7.6 46.6 14.4L45 22Z" fill="'+hc2+'"/><path d="M18.6 21.4h26.8v3H18.6z" fill="#111"/><path d="M19.4 24.2Q32 28 44.6 24.2L43 26.6Q32 29 21 26.6Z" fill="#111"/><circle cx="32" cy="16.4" r="2.4" fill="#e8c34a"/>');break;
+  case 'pilot':a('<path d="M19 22L17.4 14.6Q32 8 46.6 14.6L45 22Z" fill="#f4f4f4"/><path d="M18.6 21.2h26.8v3.2H18.6z" fill="'+hc2+'"/><path d="M19.4 24.2Q32 28 44.6 24.2L43 26.6Q32 29 21 26.6Z" fill="#111"/><path d="M27 17.6q5-3 10 0q-5 1.4-10 0z" fill="#e8c34a"/>');break;
+  case 'chef':a('<path d="M21 23V15.4C16.8 14.4 17.6 7 23.4 8.6C25 4.2 30 4.2 32 6.8C34 4.2 39 4.2 40.6 8.6C46.4 7 47.2 14.4 43 15.4V23Z" fill="#fafafa" stroke="#d4d4d4" stroke-width=".7"/><path d="M21 19.6h22" stroke="#d4d4d4" stroke-width=".8"/>');break;
+  case 'bucket':a('<path d="M20.4 22.4C20.4 13.2 25.2 11 32 11S43.6 13.2 43.6 22.4Z" fill="'+hc2+'"/><path d="M14.6 24.6Q32 17.4 49.4 24.6Q46.4 27.4 32 25.4Q17.6 27.4 14.6 24.6Z" fill="'+hd+'"/><path d="M20.6 20.4h22.8" stroke="#fff" stroke-width="1.1" opacity=".4"/>');break;
+  case 'straw':a('<path d="M8.6 25Q32 15.2 55.4 25Q50.6 29 32 26.8Q13.4 29 8.6 25Z" fill="#e2c17a"/><path d="M21 23.4C21 14.4 26 12 32 12S43 14.4 43 23.4Z" fill="#ecd08e"/><path d="M21.2 20.4Q32 22.4 42.8 20.4V22.8Q32 24.8 21.2 22.8Z" fill="'+hc2+'"/>');break;
+  case 'beanie':a('<path d="M19.4 24C19.4 12 25 10 32 10S44.6 12 44.6 24Z" fill="'+hc2+'"/><rect x="18.8" y="21" width="26.4" height="4.4" rx="2" fill="'+hd+'"/><circle cx="32" cy="9.6" r="2.2" fill="'+hd+'"/>');break}
+ a('</g>');return S.join('')}
+function tcPorSvg(id,C,o){try{C=C||(typeof g77S==='function'&&g77S().chars[id])||{name:id,color:'#4f7be0'};const k=String(id)+'|'+(C.name||'')+'|'+(C.color||'')+'|'+(C.place?1:0)+'|'+(C.icon||''),Q=TCPOR.cache.get(k);if(Q){TCPOR.n.hit++;return Q}
+  const P=tcPorLook(id,C),s='<svg class="tcPorSvg" viewBox="0 0 64 64" style="width:100%;height:100%;display:block;fill:none;stroke:none" role="img" aria-label="'+tcPorEsc(C.name||'')+'">'+tcPorDraw(P)+'</svg>';
+  TCPOR.cache.set(k,s);TCPOR.n.svg++;return s}catch(e){TCPOR.err=TCPOR.err||String(e&&e.stack||e).slice(0,200);return ''}}
+/* the families of the cards: [color, the name, the icon (24 × 24)] */
+var TCPOR_FAM={
+ taxi:['#f2b705','מונית','<path d="M4 15l2-5h12l2 5v4H4z"/><path d="M9 10V7h6v3"/><circle cx="8" cy="19" r="1.6"/><circle cx="16" cy="19" r="1.6"/>'],
+ delivery:['#e07b2f','משלוחים','<path d="M3 8l9-4 9 4v9l-9 4-9-4z"/><path d="M3 8l9 4 9-4M12 12v9M7.5 6l9 4"/>'],
+ errand:['#9a6fe0','שליחויות','<path d="M6 8h12l-1 13H7z"/><path d="M9 8a3 3 0 0 1 6 0"/>'],
+ route:['#2fa37a','סיורים','<circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6"/>'],
+ bus:['#3a7bd5','אוטובוס','<rect x="4" y="3" width="16" height="15" rx="3"/><path d="M4 11h16M8 21v-3M16 21v-3"/><circle cx="8" cy="14.5" r="1"/><circle cx="16" cy="14.5" r="1"/>'],
+ warehouse:['#c9822b','מחסן','<path d="M3 21V9l9-5 9 5v12"/><path d="M7 21v-7h10v7M7 17h10"/>'],
+ logistics:['#1f8a9e','נמל ולוגיסטיקה','<path d="M4 21V4h3l9 4M7 4v17M16 8v4"/><rect x="12" y="12" width="8" height="5"/><path d="M2 21h20"/>'],
+ airport:['#5b8def','שדה התעופה','<path d="M21 15l-8-4V5a1.5 1.5 0 0 0-3 0v6l-8 4v2l8-2v4l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-4l8 2z"/>'],
+ sports:['#e04f5f','ספורט','<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'],
+ municipal:['#d63b2f','חירום','<path d="M6 18a6 6 0 0 1 12 0z"/><path d="M4 21h16M12 4v3M5 8l2 1.5M19 8l-2 1.5"/>'],
+ sea:['#1d9ad6','ים ושייט','<path d="M12 3v12M12 4l7 10h-7M11 6l-6 8h6"/><path d="M3 18q2.2 2 4.5 0t4.5 0 4.5 0 4.5 0"/>'],
+ service:['#2fb5a8','עמדה ושירות','<path d="M4 10h16l-1.5 10h-13z"/><path d="M3 10l2-5h14l2 5M9 14h6"/>'],
+ industry:['#8a6a3a','תעשייה','<path d="M3 21V11l5 3V11l5 3V8l5 3v10z"/><path d="M17 8V3h3v8"/>'],
+ story:['#d4a017','סיפור','<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h7M8 10h5"/>'],
+ other:['#8fa5b1','עבודה','<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>']};
+var TCPOR_FAM_ALIAS={carry:'delivery',walk:'errand',stand:'service',port:'logistics',extraction:'industry','port-view':'logistics',roro:'logistics','tower-view':'airport','runway-observation':'airport',
+ 'ground-training':'airport','airport-pickup':'airport',motor:'sea',fishing:'sea',yacht:'sea',jet:'sea',jetski:'sea',row:'sea',ferry:'sea',practice:'sports',forklift:'warehouse',longtask:'other'};
+function tcPorFamKey(d){if(!d)return 'other';const k=[d.jobKey,d.type==='bus'?'bus':null,d.type].find(x=>x&&(TCPOR_FAM[x]||TCPOR_FAM_ALIAS[x]));return k?(TCPOR_FAM[k]?k:TCPOR_FAM_ALIAS[k]):'other'}
+function tcPorFamIc(k,px){const F=TCPOR_FAM[k]||TCPOR_FAM.other;px=px||30;return '<span class="tcFamIc" data-fam="'+k+'" title="'+tcPorEsc(F[1])+'" style="--fam:'+F[0]+';width:'+px+'px;height:'+px+'px"><svg viewBox="0 0 24 24" style="width:62%;height:62%;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">'+F[2]+'</svg></span>'}
+
+/*@@CZ-CORE@@*/
+var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0}};
+function tcczErr(e){TCCZ.n.errs++;if(!TCCZ.err)TCCZ.err=String(e&&e.stack||e).slice(0,240)}
+function tcczHexRgb(h){h=String(h||'');if(/^#[0-9a-f]{3}$/i.test(h))h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];if(!/^#[0-9a-f]{6}$/i.test(h))return null;const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]}
+function tcczShade(h,k){const c=tcczHexRgb(h)||[90,90,90],f=v=>Math.max(0,Math.min(255,Math.round(k>=0?v+(255-v)*k:v*(1+k))));return 'rgb('+f(c[0])+','+f(c[1])+','+f(c[2])+')'}
+/* the face of a look: from the portrait (L.czF, set by look34) or from the look's own fields (they are in the picture's key: height, hair colour, beard) */
+function tcczSig(L){if(L.czF)return L.czF;const h=+L.h||1.76,c=tcczHexRgb(L.hair&&L.hair.c),grey=!!c&&Math.max(...c)-Math.min(...c)<26&&Math.max(...c)>118;
+ return{a:h<1.5?'boy':grey?'elder':'man',b:L.beard?'short':'none',fr:0}}
+/* the portrait's shapes (tcPorDraw, a face of 64 × 64 around 32 × 29) on the head of 3/4: a point (x, y) of the portrait → a point on the head ellipsoid */
+function tcczFace(c,X){
+ const T=c.getTransform(),pxm=Math.hypot(T.a,T.b),H=X.H,hp=H.r[2]*X.SCALE*pxm;
+ if(!TCCZ.on||!(hp>=TCCZ.lod3Px))return false;
+ const L=X.L,F=tcczSig(L),boy=F.a==='boy',eld=F.a==='elder',B=F.b||'none',sk=X.sk,hc=X.hairC,ux=H.r[0]/12.6,uy=H.r[2]/14.6;
+ const E=Math.max(1,Math.min(1.36,1.36-(hp-9)*.012));   // the features a little bigger while the head is small (as in a small portrait)
+ const S=(x,y)=>{const u=(x-32)/12.6*.97,v=-(y-29)/14.6*.95;return X.at(u,Math.sqrt(Math.max(.03,1-u*u-v*v)),v)};
+ const scr=a=>{const o=[];let vs=0;for(const [x,y] of a){const q=S(x,y);vs+=q.v;o.push(X.P(q.p))}return{o,v:vs/a.length}};
+ const W=w=>Math.max(1.05/pxm,w*E*ux*X.SCALE);   // a line: portrait units → screen metres, at least ~1 device px
+ const line=(a,col,w,al)=>{const s=scr(a);if(s.v<.06)return;c.beginPath();c.moveTo(s.o[0][0],s.o[0][1]);for(let i=1;i<s.o.length;i++)c.lineTo(s.o[i][0],s.o[i][1]);c.globalAlpha=al==null?1:al;c.lineWidth=W(w);c.strokeStyle=col;c.lineCap='round';c.lineJoin='round';c.stroke();c.globalAlpha=1};
+ const poly=(a,col,al)=>{const s=scr(a);if(s.v<.06)return;c.beginPath();c.moveTo(s.o[0][0],s.o[0][1]);for(let i=1;i<s.o.length;i++)c.lineTo(s.o[i][0],s.o[i][1]);c.closePath();c.globalAlpha=al==null?1:al;c.fillStyle=col;c.fill();c.globalAlpha=1};
+ const el=(x,y,rx,ry,col,al,st)=>{const q=S(x,y);if(q.v<.08)return;X.ell(q,rx*E*ux,ry*E*uy,col,al,st?W(st):0)};
+ const qb=(p0,p1,p2,n)=>{const o=[];n=n||8;for(let i=0;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*p0[0]+2*u*t*p1[0]+t*t*p2[0],u*u*p0[1]+2*u*t*p1[1]+t*t*p2[1]])}return o};
+ const cb=(p0,p1,p2,p3,n)=>{const o=[];n=n||8;for(let i=0;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]])}return o};
+ const mir=a=>a.map(([x,y])=>[64-x,y]);
+ c.save();try{c.clip()}catch(e){}
+ // the cheeks (not under a full beard), the wrinkles of an elder, the freckles of a boy
+ if(B!=='full'){el(23.8,33.4,2.4,2.2,'#e0706a',.22);el(40.2,33.4,2.4,2.2,'#e0706a',.22)}
+ const wr=tcczShade(sk,-.32);
+ if(eld){line([[26.5,20.4],[37.5,20.4]],wr,.75,.55);line([[27.5,22],[36.5,22]],wr,.7,.5);line([[22.6,29.6],[24.2,29]],wr,.7,.6);line([[41.4,29.6],[39.8,29]],wr,.7,.6)}
+ if(boy&&F.fr)for(const [x,y] of [[24.6,31.6],[26,32.6],[39.4,31.6],[38,32.6]])el(x,y,.5,.5,tcczShade(sk,-.35),.7);
+ // the beard (under the mouth): full / short — the jaw; stubble — the same, faint; goatee — the chin
+ const bc=(L.beard&&L.beard.c)||F.bc||hc;
+ if(B==='full'||B==='short'||B==='stubble'){const lo=B==='full'?45.6:42.6;
+  poly([...cb([19.8,30.5],[19.8,lo-6],[25,lo],[32,lo]),...cb([32,lo],[39,lo],[44.2,lo-6],[44.2,30.5]).slice(1),...cb([44.2,30.5],[42.6,35.4],[40,37.4],[36.5,38.4]).slice(1),...qb([36.5,38.4],[32,36.6],[27.5,38.4]).slice(1),...cb([27.5,38.4],[24,37.4],[21.4,35.4],[19.8,30.5]).slice(1)],bc,B==='stubble'?.3:.96)}
+ if(B==='goatee')poly([...qb([28.6,38.6],[32,40],[35.4,38.6]),[34.4,43.2],...qb([34.4,43.2],[32,44.8],[29.6,43.2]).slice(1)],bc,.95);
+ // the mustache
+ if(B==='mustache'||B==='full'||B==='short'||B==='goatee')poly([...cb([27.2,35.4],[29.4,33.4],[31,34],[32,34.7]),...cb([32,34.7],[33,34],[34.6,33.4],[36.8,35.4]).slice(1),...cb([36.8,35.4],[34.6,36],[33,35.7],[32,35.2]).slice(1),...cb([32,35.2],[31,35.7],[29.4,36],[27.2,35.4]).slice(1)],tcczShade(bc,-.06),.97);
+ // the brows (the colour of the hair; an elder — thicker), the eyes (white, iris, pupil, the light), the lid line
+ const bw=eld?tcczShade(hc,-.1):hc;
+ line(qb([24.4,25.2],[27,23.6],[29.6,25]),bw,eld?2:1.7,.95);line(qb([39.6,25.2],[37,23.6],[34.4,25]),bw,eld?2:1.7,.95);
+ const er=boy?1.35:1.15;
+ for(const s of [0,1]){const ex=s?37:27,ix=s?37.3:27.3;
+  el(ex,28.6,2.1,1.6,'#ffffff',.98);el(ix,28.7,er,er,L.eyes||'#2b1d12',1);el(ix+.4,28.2,.42,.42,'#ffffff',.95);
+  line(qb([ex-2.2,28.3],[ex,26.7],[ex+2.2,28.3],6),tcczShade(sk,-.45),.55,.75)}
+ // the nose, the mouth (above a beard)
+ line(qb([32,29.6],[30.2,33.4],[32.4,34.2]),tcczShade(sk,-.34),1.2,.95);
+ const mb=B==='full'||B==='short'||B==='mustache'||B==='goatee';
+ line(qb([28.4,mb?37.2:36.4],[32,mb?39.4:39.2],[35.6,mb?37.2:36.4]),'#8a3b2e',1.4,.98);
+ // the glasses (the frame round each eye, the bridge, the arms to the ears)
+ if(L.glasses&&!L.shades){const gc=typeof L.glasses==='string'&&/^#|^rgb/.test(L.glasses)?L.glasses:'#26231f';
+  el(27,28.7,3.7,3.7,'#ffffff',.12);el(37,28.7,3.7,3.7,'#ffffff',.12);el(27,28.7,3.7,3.7,gc,.95,1.2);el(37,28.7,3.7,3.7,gc,.95,1.2);
+  line(qb([30.7,28.4],[32,27.6],[33.3,28.4],4),gc,1.1,.95);line([[23.3,28.2],[20.6,27.4]],gc,1.1,.9);line([[40.7,28.2],[43.4,27.4]],gc,1.1,.9)}
+ else if(L.shades){el(27,28.7,3.6,3,'#14171b',.94);el(37,28.7,3.6,3,'#14171b',.94);line(qb([30.7,28.4],[32,27.6],[33.3,28.4],4),'#14171b',1.1,.95)}
+ c.restore();TCCZ.n.face++;return true}
+/* the portrait → a look of 3/4 (the same man in the phone and in the world): the clothes of TC_CUTS.looks (if any), and from the portrait —
+   the skin, the hair, the hat (kippah, cap, helmet, bucket, straw, chef, police, pilot), the beard and its kind, glasses, the age, the colour of the shirt */
+const TCCZ_HAIR={bald:'bald',short:'short',side:'side',curly:'curly',wavy:'curly',buzz:'crop',long:'long'};
+function tcczHat(P){const c=P.hatCol;switch(P.hat){case 'kippah':return{t:'kippah',c:c||'#111418'};case 'cap':return{t:'cap',c:c||'#1f5fb0'};
+ case 'hard':case 'helmet':return{t:'helmet',c:c||'#f2c230'};case 'bucket':return{t:'bucket',c:c||'#4aa3c7'};case 'straw':return{t:'hat',c:'#e2c17a',b:c||'#8a7a5a'};
+ case 'chef':return{t:'chef',c:'#f6f6f2'};case 'police':return{t:'peak',c:c||'#1d2f5a',b:'#141414',e:'#e8c34a'};case 'pilot':return{t:'peak',c:'#f4f4f4',b:c||'#1a2440',e:'#e8c34a'};
+ case 'beanie':return{t:'beanie',c:c||'#3a3f8f'};default:return null}}
+function tcczLook34(id,C,base){try{if(typeof tcPorLook!=='function')return null;if(!C){try{C=g77S().chars[id]}catch(e){}}const P=tcPorLook(id,C||{name:id});if(!P||P.thing)return null;
+  let B=base;if(!B){try{B=typeof TC_CUTS!=='undefined'&&TC_CUTS.looks&&TC_CUTS.looks[id]}catch(e){B=null}}
+  const boy=P.age==='boy',eld=P.age==='elder',h0=tcPorHash(id);
+  const o=JSON.parse(JSON.stringify(B||{h:boy?1.46:eld?1.72:1.76,top:{t:boy?'tee':h0%2?'polo':'shirt',c:'#3f6f96'},legs:{t:boy?'shorts':'trousers',c:boy?'#2f4a6b':'#2b3038'},shoes:boy?{t:'sneaker',c:'#f2f2f2',c2:P.shirt||'#e07b2f'}:{t:'leather',c:'#24262a'}}));
+  if(typeof o.beard==='string')o.beard={c:o.beard};o.w=o.w||1;if(!o.shoes)o.shoes={t:'sneaker',c:'#f2f2f2'};if(!o.legs)o.legs={t:'trousers',c:'#2b3038'};if(!o.top)o.top={t:'shirt',c:'#3f6f96'};
+  if(boy)o.h=Math.min(o.h||1.46,1.48);else if(!B)o.h=+(o.h+((h0%7)-3)/100).toFixed(2);
+  o.skin=P.skin;const hat=tcczHat(P);o.hair={t:TCCZ_HAIR[P.hair]||'short',c:P.hairCol||'#2a1d14'};if(hat)o.hat=hat;else delete o.hat;
+  const bt=P.beard||'none',bc=P.beardCol||P.hairCol||'#3b2a1f';if(bt==='full'||bt==='short')o.beard={c:bc};else delete o.beard;
+  if(P.glasses)o.glasses='#26231f';else delete o.glasses;
+  if(P.shirt)o.top=Object.assign({},o.top,{c:P.shirt});
+  o.czF={a:P.age||'man',b:bt,bc,fr:boy&&tcPorHash(P.shirt+P.hairCol)%3===0?1:0};o.por=1;tcczKey(o);TCCZ.n.looks++;return o}catch(e){tcczErr(e);return null}}
+/* the picture's key: P34's own (P34.lk) + the face of the portrait (two men who differ only in the kind of the beard / the age — two pictures) */
+function tcczKey(o){const sig=o.czF?'|cz'+o.czF.a[0]+o.czF.b+(o.czF.fr?'f':''):'';let kk=null;
+ try{Object.defineProperty(o,'__k',{configurable:true,enumerable:false,get(){if(kk)return kk;const P=(typeof window!=='undefined'&&window.P34)||null;if(!P||!P.lk)return undefined;kk=P.lk(this);kk.body+=sig;kk.hair+=sig;return kk},set(v){kk=v}})}catch(e){}return o}
+/* a kippah for the people of P34 (if cutscenes did not add one — the same shape) */
+(function(){try{const G=typeof window!=='undefined'?window:globalThis,X=G.P34X||(G.P34X={});X.hat=X.hat||{};X.face=tcczFace;
+ if(!X.hat.kippah)X.hat.kippah=function(out,Q){const{H,ez,ef,headD,hat,ellipPart,MAT,mul}=Q,R=[H.r[0]*1.035,H.r[1]*1.035,H.r[2]*1.035];
+  const k=ellipPart('hair',headD+.0212,H.c,H.ax,R,[{n:ez,d:.7*R[2]},{n:mul(ef,-1),d:-.55*R[1]}],hat.c||'#111418',MAT.cloth||MAT.hair,1);if(k)out.push(k)}}catch(e){tcczErr(e)}})();
+
+const TC_CUTS={looks:{
+  'st-aharon':{h:1.72,skin:'#e2b08a',hair:{t:'bald',c:'#d9d6cf'},beard:'#d9d6cf',glasses:'#2a2c30',top:{t:'sweater',c:'#7a5a3a'},legs:{t:'trousers',c:'#4a4036'},shoes:{t:'leather',c:'#3a2a1c'}},
+  'st-shimon':{h:1.76,skin:'#d39a72',hair:{t:'cap',c:'#1f5fb0'},top:{t:'polo',c:'#f2c230'},legs:{t:'jeans',c:'#33465e'},shoes:{t:'sneaker',c:'#f2f2f2',c2:'#1f5fb0'}},
+  'st-shmulik':{h:1.48,skin:'#f1c7a5',hair:{t:'curly',c:'#3b2a1f'},top:{t:'tee',c:'#e07b2f'},legs:{t:'shorts',c:'#2f4a6b'},shoes:{t:'sneaker',c:'#f2f2f2',c2:'#e07b2f'}},
+  'st-david':{h:1.8,skin:'#b97c56',hair:{t:'short',c:'#15110e'},top:{t:'shirt',c:'#a9cbe8'},legs:{t:'trousers',c:'#1f2a44'},shoes:{t:'leather',c:'#141210'}},
+  'st-naftali':{h:1.82,skin:'#e2b08a',hair:{t:'side',c:'#1e1712'},top:{t:'suit',c:'#3b2f5a',c2:'#f4f6f8',tie:'#6a3fb5'},legs:{t:'suit',c:'#24203a'},shoes:{t:'leather',c:'#141210'}},
+  's9-yossi':{h:1.78,skin:'#d39a72',hair:{t:'short',c:'#3b2a1f'},top:{t:'polo',c:'#2f6b45'},legs:{t:'trousers',c:'#2b3038'},shoes:{t:'boot',c:'#24262a'},vest:'#f2d21b'},
+  'st-eliyahu':{h:1.79,skin:'#b97c56',hair:{t:'short',c:'#15110e'},top:{t:'shirt',c:'#2f3e5c',c2:'#2f3e5c',long:true},legs:{t:'trousers',c:'#2b3038'},shoes:{t:'boot',c:'#24262a'},vest:'#ff7a1a'},
+  's9-avi':{h:1.77,skin:'#d39a72',hair:{t:'cap',c:'#13294b'},top:{t:'polo',c:'#f4f6f8'},legs:{t:'shorts',c:'#13294b'},shoes:{t:'sneaker',c:'#f2f2f2',c2:'#4aa3c7'}},
+  's9-moshe':{h:1.74,skin:'#e2b08a',hair:{t:'side',c:'#8a8a86'},beard:'#8a8a86',top:{t:'hoodie',c:'#2f6b45'},legs:{t:'jeans',c:'#3b5a85'},shoes:{t:'boot',c:'#3a2a1c'}},
+  'st-mendi':{h:1.7,skin:'#e2b08a',hair:{t:'cap',c:'#e07b2f'},top:{t:'shirt',c:'#5a7a8a',long:true},legs:{t:'trousers',c:'#3b3f36'},shoes:{t:'boot',c:'#24262a'},vest:'#c9a25a'},
+  'st-farmer':{h:1.78,skin:'#b97c56',hair:{t:'cap',c:'#5a7a2e'},top:{t:'shirt',c:'#a8803a',long:true},legs:{t:'jeans',c:'#3b5a85'},shoes:{t:'boot',c:'#3a2a1c'}},
+  'st-tourist':{h:1.73,skin:'#f1c7a5',hair:{t:'bald',c:'#d9d6cf'},glasses:'#2a2c30',top:{t:'shirt',c:'#d0e6f2'},legs:{t:'shorts',c:'#c7b58a'},shoes:{t:'sneaker',c:'#f2f2f2',c2:'#8a7a5a'}},
+  'st-wh':{h:1.8,skin:'#d39a72',hair:{t:'short',c:'#1e1712'},top:{t:'polo',c:'#7a5230'},legs:{t:'trousers',c:'#2b3038'},shoes:{t:'boot',c:'#24262a'},vest:'#d3ec1e'},
+  'st-mech':{h:1.76,skin:'#b97c56',hair:{t:'short',c:'#3b2a1f'},top:{t:'shirt',c:'#55606b',long:true},legs:{t:'trousers',c:'#3a4048'},shoes:{t:'boot',c:'#24262a'}},
+  'st-mall':{h:1.75,skin:'#e2b08a',hair:{t:'side',c:'#3b2a1f'},top:{t:'polo',c:'#2e7d4f'},legs:{t:'trousers',c:'#2b2f36'},shoes:{t:'leather',c:'#141210'}},
+  'st-lot':{h:1.8,skin:'#d39a72',hair:{t:'short',c:'#15110e'},top:{t:'shirt',c:'#55606b'},legs:{t:'jeans',c:'#33465e'},shoes:{t:'boot',c:'#24262a'},vest:'#ff7a1a'},
+  'st-dealer':{h:1.78,skin:'#e2b08a',hair:{t:'side',c:'#1e1712'},top:{t:'suit',c:'#2f5fa0',c2:'#f4f6f8',tie:'#13294b'},legs:{t:'suit',c:'#1f2a44'},shoes:{t:'leather',c:'#141210'}},
+  'st-refinery':{h:1.79,skin:'#b97c56',hair:{t:'cap',c:'#a5600b'},top:{t:'coat',c:'#a5600b'},legs:{t:'trousers',c:'#2f3338'},shoes:{t:'boot',c:'#24262a'}},
+  'st-fire':{h:1.8,skin:'#d39a72',hair:{t:'short',c:'#1e1712'},top:{t:'coat',c:'#2f3338'},legs:{t:'trousers',c:'#2f3338'},shoes:{t:'boot',c:'#24262a'},hat:{t:'helmet',c:'#c8262b'}}}};
+(function(){
+const ZS=[5.5,11,16];
+P34.budgetMB=96;
+/* the look of a story figure in the game today (074zu_story_actions:porLook, as is) */
+const SKIN=['#f1c7a5','#e2b08a','#d39a72','#b97c56','#8d5a3b'],HAIR=['#1e1712','#3b2a1f','#5a3d26','#15110e','#8a8a86'],TOPS=['#2f6fd0','#2f8a4a','#7a1f2f','#e07b2f','#3f6f96','#5b2a86','#c0392b'];
+const hsh=t=>{let h=7;for(const ch of String(t))h=(h*31+ch.charCodeAt(0))>>>0;return h};
+function todayLook(id,C){const P=tcPorLook(id,C);const h=hsh(id),H={elder:1.7,boy:1.46,man:1.76}[P.age]||1.74,boy=P.age==='boy';
+ return{h:+(H+((h%7)-3)/100).toFixed(2),skin:P.skin||SKIN[h%5],hair:{t:{bald:'bald',curly:'curly',wavy:'curly',side:'side'}[P.hair]||'short',c:P.hairCol||HAIR[(h>>3)%5]},
+  beard:P.beard&&P.beard!=='none'&&P.beard!=='stubble'?{c:P.beardCol||P.hairCol||'#3b2a1f'}:null,glasses:!!P.glasses,hat:P.hat==='cap'?{t:'cap',c:P.hatCol}:P.hat==='hard'?{t:'helmet',c:P.hatCol}:null,
+  top:{t:boy?'tee':(h>>3)%2?'polo':'shirt',c:P.shirt||TOPS[(h>>7)%7]},legs:{t:boy?'shorts':'trousers',c:boy?'#2f4a6b':'#2b3038'},shoes:{t:boy?'sneaker':'leather',c:boy?'#f2f2f2':'#24262a'}}}
+/* the player on foot: the look of the wardrobe (P34G.player); the portrait — made from the same look (the player has none in the game) */
+const PL={h:1.78,w:1.02,skin:'#d9a57f',hair:{t:'side',c:'#3b2a1f'},top:{t:'polo',c:'#2f6fd0'},legs:{t:'jeans',c:'#3b5a85'},shoes:{t:'sneaker',c:'#f2f2f2',c2:'#d8452f'}};
+const PLP={age:'man',skin:'#e4b48c',hair:'side',hairCol:'#3b2a1f',beard:'none',hat:'none',hatCol:'#2f6fd0',glasses:false,shirt:'#2f6fd0'};
+const CH=[
+ {key:'pl',name:'השחקן',sub:'ברגל · המראה מהמלתחה',por:PLP,today:PL,now:PL},
+ {key:'st-aharon',name:'סבא אהרן',C:{name:'סבא אהרן',color:'#8a5a12'}},
+ {key:'st-shimon',name:'שמעון',C:{name:'שמעון',color:'#1f7a8a'}}];
+for(const c of CH)if(c.C){c.por=tcPorLook(c.key,c.C);c.today=todayLook(c.key,c.C);c.now=tcczLook34(c.key,c.C,TC_CUTS.looks[c.key]);
+ const P=c.por,T={kippah:'כיפה',cap:'כובע מצחייה',hard:'קסדה',bucket:'כובע דייג',straw:'כובע קש',police:'כובע שוטר',pilot:'כובע טייס',chef:'כובע שף',none:''}[P.hat]||'',Bd={full:'זקן מלא',short:'זקן קצר',mustache:'שפם',goatee:'זקנקן',stubble:'זיפים',none:''}[P.beard]||'';
+ c.sub=[{elder:'מבוגר',man:'גבר',boy:'נער'}[P.age],T,Bd,P.glasses?'משקפיים':''].filter(Boolean).join(' · ')}
+const main=document.getElementById('main'),cells=[];
+for(const c of CH){const card=document.createElement('section');card.className='card';
+ card.innerHTML='<div class="head"><div class="por"><svg viewBox="0 0 64 64" style="width:100%;height:100%;display:block">'+tcPorDraw(c.por)+'</svg></div><div><h2>'+c.name+'</h2><div class="sub">'+c.sub+'</div></div></div><div class="row"></div>';
+ const row=card.querySelector('.row');
+ ZS.forEach((z,i)=>{const d=document.createElement('div');d.className='cell';const cv=document.createElement('canvas');d.appendChild(cv);const cap=document.createElement('div');cap.className='cap'+(i?' new':'');
+  cap.innerHTML=i?'<b>חדש · זום '+z+'</b> · רק ברגל':'<b>היום · זום 5.5</b> · המקסימום היום';d.appendChild(cap);row.appendChild(d);
+  cells.push({cv,z,look:i?c.now:c.today,ch:c})});
+ main.appendChild(card)}
+const notes=document.createElement('section');notes.className='card';
+notes.innerHTML='<h2 style="margin:0 0 6px;font-size:16px">מה משתנה במשחק</h2><ul class="notes">'+
+ '<li>הגלגלת ממשיכה להתקרב מעבר ל-5.5 עד 16 — רק כשהשחקן ברגל. ברכב, במונית ובמפה (F4) — כמו היום; מי שעולה לרכב בזום קרוב — המצלמה חוזרת לאט ל-5.5.</li>'+
+ '<li>הפנים בסגנון הדיוקן מצוירות רק כשהראש גדול על המסך (הזום החדש), ורק לאנשים שבמסך. בזום של היום — הציור של היום.</li>'+
+ '<li>כל אדם עם דיוקן (אנשי הסיפור) נראה בעולם כמו בטלפון: אותה כיפה או כובע, משקפיים, שפם / זקן, צבע חולצה.</li>'+
+ '<li>גם עוברי האורח והשחקן מקבלים את הפנים החדשות בזום הקרוב (בלי דיוקן — לפי המראה שלהם).</li></ul>';
+main.appendChild(notes);
+let mode='walk',paused=false;
+document.getElementById('ctl').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const m=b.dataset.m;if(m==='pause'){paused=!paused;b.classList.toggle('on',paused);return}
+ mode=m;for(const x of document.querySelectorAll('#ctl button'))if(x.dataset.m!=='pause')x.classList.toggle('on',x.dataset.m===m)});
+/* the ground (world px; 10 px = 1 m): the paving of a sidewalk, a kerb, a strip of grass, the road beyond — so the zoom reads */
+function ground(g,cx,cy,hw,hh){const x0=cx-hw,x1=cx+hw,y0=cy-hh,y1=cy+hh;
+ g.fillStyle='#cfc8bb';g.fillRect(x0,y0,x1-x0,y1-y0);
+ const S=12;g.fillStyle='#d9d3c7';for(let i=Math.floor(x0/S);i*S<x1;i++)for(let j=Math.floor(y0/S);j*S<y1;j++)if((i+j)&1)g.fillRect(i*S+.4,j*S+.4,S-.8,S-.8);
+ g.strokeStyle='rgba(90,80,66,.35)';g.lineWidth=.35;g.beginPath();for(let i=Math.floor(x0/S);i*S<x1;i++){g.moveTo(i*S,y0);g.lineTo(i*S,y1)}for(let j=Math.floor(y0/S);j*S<y1;j++){g.moveTo(x0,j*S);g.lineTo(x1,j*S)}g.stroke();
+ const band=(yy,h,col)=>{for(let k=Math.floor((y0-yy)/120)-1;k*120+yy<y1+120;k++){g.fillStyle=col;g.fillRect(x0,k*120+yy,x1-x0,h)}};
+ band(-60,10,'#7fa65a');band(-50,3,'#9a958c');band(-47,20,'#4a4f55');
+ g.fillStyle='rgba(255,255,255,.75)';for(let k=Math.floor((y0+37)/120)-1;k*120-37<y1+120;k++)for(let i=Math.floor(x0/30);i*30<x1;i++)g.fillRect(i*30,k*120-37.6,14,1.2)}
+/* the walk: the camera follows the man (as in the game); east, stop facing the camera, west, toward the camera, away */
+const PATH=[['walk',0,3.2],['wait',Math.PI/2,1.6],['walk',Math.PI,3.2],['walk',Math.PI/2,2.2],['wait',Math.PI/2,1.4],['walk',-Math.PI/2,2.2]];const PT=PATH.reduce((s,p)=>s+p[2],0);
+const st={t:0,x:0,y:0,d:0},spd=13.5;let last=performance.now();
+function pose(t){if(mode==='front')return{k:'wait',h:Math.PI/2,mv:0};if(mode==='turn')return{k:'stand',h:(Math.floor(t/1.1)%8)*Math.PI/4,mv:0};let u=t%PT;for(const p of PATH){if(u<p[2])return{k:p[0],h:p[1],mv:p[0]==='walk'?1:0};u-=p[2]}return{k:'stand',h:Math.PI/2,mv:0}}
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!paused){st.t+=dt;const p=pose(st.t);if(p.mv){st.x+=Math.cos(p.h)*spd*dt;st.y+=Math.sin(p.h)*spd*dt;st.d+=spd*dt}}
+ const p=pose(st.t),dpr=Math.min(2,window.devicePixelRatio||1);
+ for(const c of cells){const r=c.cv.getBoundingClientRect(),W=Math.max(2,Math.round(r.width*dpr)),H=Math.max(2,Math.round(r.height*dpr));if(c.cv.width!==W||c.cv.height!==H){c.cv.width=W;c.cv.height=H}
+  const g=c.cv.getContext('2d'),z=c.z,s=z*dpr,cy=st.y-((H*.18)/s);g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  g.setTransform(s,0,0,s,W/2-st.x*s,H/2-cy*s);ground(g,st.x,cy,W/2/s+2,H/2/s+2);
+  const cyc=P34.cycle(c.look),ph=p.mv?(st.d/(10*cyc))%1:(st.t/2.4)%1;
+  try{P34.draw(g,st.x,st.y,c.look,{k:p.k},p.h,ph,s)}catch(e){g.setTransform(1,0,0,1,0,0);g.fillStyle='#c0392b';g.font='12px Arial';g.fillText(String(e&&e.message||e).slice(0,60),8,20)}}
+ requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+window.__LAB={TCCZ,P34,CH,cells,st};
+})();
+</script>
+</body>
+</html>
