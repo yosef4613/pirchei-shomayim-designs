@@ -59,7 +59,6 @@ small{color:var(--mut)}
    <rect width="44" height="44" rx="11" fill="#1d6f8f"/>
    <path d="M8 13l9-3 10 3 9-3v21l-9 3-10-3-9 3z" fill="#2a8fb3" stroke="#fff" stroke-width="1.6"/>
    <circle cx="17" cy="20" r="3.2" fill="#ffd23f"/><circle cx="28" cy="25" r="2.6" fill="#4fdc78"/><circle cx="22" cy="30" r="2.4" fill="#ffb347"/>
-   <circle cx="40" cy="4" r="9" fill="#e5484d"/><text x="40" y="8" font-size="10" fill="#fff" font-weight="800">7</text>
    <text x="22" y="60" font-weight="700" fill="#ffd23f">המפה שלי</text>
   </g>
   <g transform="translate(222,170)"><rect width="44" height="44" rx="11" fill="#e0a43a"/><text x="22" y="60">עבודות</text></g>
@@ -67,15 +66,15 @@ small{color:var(--mut)}
   <g transform="translate(106,170)"><rect width="44" height="44" rx="11" fill="#2f8fd6"/><text x="22" y="60">ניווט</text></g>
   <g transform="translate(48,170)"><rect width="44" height="44" rx="11" fill="#e0bd32"/><text x="22" y="60">מונית</text></g>
  </g>
- <text x="150" y="280" fill="#9fb6c4" font-size="11.5" text-anchor="middle">התג על האייקון = כמה אפשר לבחור עכשיו</text>
- <text x="150" y="298" fill="#9fb6c4" font-size="11.5" text-anchor="middle">(סיפור + צד + הצעות — לא יותר מ-3 + 6)</text>
+ <text x="150" y="280" fill="#9fb6c4" font-size="11.5" text-anchor="middle">מראה רק מה שאפשר לבחור עכשיו</text>
+ <text x="150" y="298" fill="#9fb6c4" font-size="11.5" text-anchor="middle">(סיפור ≤ 3 · צד + הצעות ≤ 6)</text>
  <g transform="translate(40,320)" font-size="11.5" fill="#dfe9ef">
   <rect width="220" height="170" rx="12" fill="#0f1a21" stroke="#2a4150"/>
   <text x="208" y="24" text-anchor="end" font-weight="700" fill="#ffd23f">גם מקש: J (פתיחה ישירה)</text>
   <text x="208" y="48" text-anchor="end">וגם מהכרטיס של משימה:</text>
   <text x="208" y="66" text-anchor="end">"במפה שלי"</text>
-  <text x="208" y="94" text-anchor="end">והיומן (T) — שורה למעלה:</text>
-  <text x="208" y="112" text-anchor="end">"לבחור במפה ←"</text>
+  <text x="208" y="94" text-anchor="end">והיומן (T) — כפתור למעלה:</text>
+  <text x="208" y="112" text-anchor="end">"המפה שלי — לבחור"</text>
   <text x="208" y="142" text-anchor="end" fill="#9fb6c4">האפליקציה הראשונה בשורה —</text>
   <text x="208" y="160" text-anchor="end" fill="#9fb6c4">אחרי שיחות / הודעות / יומן</text>
  </g>
@@ -194,7 +193,7 @@ small{color:var(--mut)}
 </div>
 
 <h2>5. הבירור — למה הסיפור לא מסתיים</h2>
-<div class="card" id="find">הבדיקה: tools/story_full.js — כל הסיפור הראשי משמירה נקייה ב-S7F301, מצב "סיפור" (הנעילות) והלוח פועל; כל שלב מחכה לתנאי האמיתי שלו במנוע. התוצאות — בהחזרה (handback.txt) ובעדכון של הסעיף הזה.</div>
+<div class="card" id="find"><b>מצאתי:</b> <code>074ze_story_engine.js:chapterEnd</code> — אחרי פרק 4 הסיפור עובר לפרק 5, ושם אין משימות (<code>074zd_story_data.js</code>: פרקים 5 ו-6 — <code>soon</code> בלבד). <code>step()</code> קורא ל-chapterEnd רק כשלפרק יש משימות — ולכן הסיפור נעצר בפרק 5 לתמיד: ביומן "בקרוב", ובלוח — "משימת ההמשך" (סיפור אזור / עבודה) במקום סיפור. פרקים O ו-1–4 עוברים מקצה לקצה (TCSTORY.qa — 38 שלבים).<br><b>ההבהרה של הבעלים (~13:30):</b> "מסתיים" = להמשיך לפרקים 5 ו-6, משחק גמור, והתחלה ברורה — זה של הסוכן story56. <b>המפה שלי כללית, לפי הנתונים:</b> כל משימה פתוחה של הסיפור — המקום של השלב שלה (at / nav / go; סיפור אזור — המקום של השלב שלו; מבחן — "מכל מקום", ברשימה בלבד), ולכן פרקים 5–6 יופיעו בה לבד כשייכתבו. הכלי tools/story_full.js (כל הסיפור משמירה נקייה, מצב "סיפור", שלב אחרי שלב עם האבחון של כל תקיעה) — מוכן ל-story56.</div>
 
 <h2>6. הבדיקות</h2>
 <table>
@@ -202,7 +201,7 @@ small{color:var(--mut)}
 <tr><td>story2 (בתוך roadAudit)</td><td>הספירה כולל הצעות: אף פעם לא מעל 6 / 3, לא מתחת ל-4 / 1; הצעה לא נוצרת כשמלא ויוצאת כשהשחקן מתחיל משימה כשמלא; המפה שלי — רק פריטים של הלוח, רק בשטח הפתוח; "בחר" → ניווט + כרטיס; התזכורת — לא לפני 6 דקות, לא בזמן שכבה, אותה משימה לא פעמיים ב-20 דק׳ — בלי עקבות</td></tr>
 <tr><td>יום משחק (s2_day.js)</td><td>288 צעדים של 5 דק׳ — בכל צעד: סיפור 1–3, על המפה 4–6, על המפה + הצעות ≤ 6, ספירת התזכורות ≤ הזמן / 6 דק׳, המפה = הלוח</td></tr>
 <tr><td>story_full.js</td><td>כל הסיפור מקצה לקצה — 0 שלבים תקועים (או: כל תקיעה עם הסיבה)</td></tr>
-<tr><td>הסט החוסם</td><td>q_ingame · rules_gate · stuckmax 150 · people_on_road · 0 שגיאות · 0 data:image · release_strip</td></tr>
+<tr><td>הסט החוסם</td><td>q_ingame · rules_gate · stuckmax 150 · people_on_road · 0 שגיאות · 0 תמונות · release_strip</td></tr>
 </table>
 </main>
 </body>
