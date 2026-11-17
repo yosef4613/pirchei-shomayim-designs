@@ -1,0 +1,993 @@
+f(a<x0)x0=a;if(b>x1)x1=b}if(x1>=0){e=false;bb=[x0,y0,x1-x0+1,y1-y0+1]}}catch{e=false}}    if(e){if(G7TE.check)g7EmptyCheck(J.g,T,k);tcv=null;wtcRelease(J.cv);WTC_LPL.stats.empty++}else WTC_LPL.stats.built++}
+   if(tcv){WTC_EMPTY.delete(k);WTC.tiles.set(k,{cv:tcv,last:WTC.frame,layer:J.layer,at:performance.now(),bb})}else{WTC.tiles.delete(k);WTC_EMPTY.set(k,performance.now());if(WTC_EMPTY.size>4000)WTC_EMPTY.clear()}    
+   WTC.stats.built++;WTC.stats.lastBuildMs=J.ms;WTC.stats.totalBuildMs+=J.ms;Z.stats.done++;Z.job=null;done++}
+  if(performance.now()-t0>=Z.partMs)break}
+ FS.used+=performance.now()-t0;return done}
+
+
+function g77TaxiSide(car,e,q){const L=Math.max(1,e.len||Math.hypot((e.x2||0)-(e.x1||0),(e.y2||0)-(e.y1||0))||400),dt=18/L,body={id:car.id,asset:car.asset,ref:car.ref||'Sedan'};
+ for(let k=0;k<=8;k++)for(const sg of (k?[1,-1]:[1])){const t=clamp(q.t+sg*k*dt,.04,.96),p=trafficEdgePoint(e.id,q.dirSign,t);let hit=null;try{hit=dynamicVehicleBodyBlocked(body,p.x,p.y,p.heading)}catch(_){}
+  if(!hit||hit==='PLAYER-PED')return{dirSign:q.dirSign,t,p,d:Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y),moved:k}}
+ return null}
+
+
+G77_ZP.pre=true;G77_ZP.preNow=false;
+function g77ZpPreNext(G){if(g77ZpPreFull(G))return null;const b=wtcRingNext(G);    if(b)return b;const Z=G77_ZP,lc=WTC.lastCam,dx=lc?Camera.x-lc.x:0,dy=lc?Camera.y-lc.y:0;let best=null,bs=1e18;
+ const ex=dx>0.5?2:1,wx=dx<-0.5?2:1,sy=dy>0.5?2:1,ny=dy<-0.5?2:1;
+ for(const [layer,lp] of Object.entries(Z.lp||{})){if(lp.key!==G.key)continue;
+  for(let j=G.j0-ny;j<=G.j1+sy;j++)for(let i=G.i0-wx;i<=G.i1+ex;i++){if(i>=G.i0&&i<=G.i1&&j>=G.j0&&j<=G.j1)continue;const k=layer+'|'+G.key+'|'+i+'|'+j;if(WTC.tiles.has(k)||WTC_EMPTY.has(k))continue;
+   const cx=(i+.5)*G.tw-Camera.x,cy=(j+.5)*G.tw-Camera.y,d=cx*cx+cy*cy-(cx*dx+cy*dy)*60;if(d<bs){bs=d;best=[layer,i,j]}}}
+ return best}
+
+
+G77_ZP.preCap=.85;G77_ZP.stats.preFull=0;G77_ZP.stillEvery=3;
+function g77ZpPreGo(){const lc=WTC.lastCam,Z=G77_ZP;const mv=!lc||Math.abs(Camera.x-lc.x)>.5||Math.abs(Camera.y-lc.y)>.5||WTC.frame-Z.lastChange<Z.quiet;
+ return mv||(Z.stillEvery>0&&WTC.frame%Z.stillEvery===0)}    
+function g77ZpPreFull(G){const mid='|'+G.key+'|';let n=0;for(const k of WTC.tiles.keys())if(k.indexOf(mid)>0)n++;
+ if(n>=Math.floor(WTC.maxTiles*G77_ZP.preCap)-1){G77_ZP.stats.preFull++;return true}return false}
+function g77AsMore(dl,n){if(!dl||typeof dl.timeRemaining!=='function'||dl.didTimeout)return n===0;    
+ return dl.timeRemaining()>(G77_AV.on?Math.max(4,G77_AV.est*1.25):4)||(n===0&&performance.now()-(g77As().lastT||0)>1000)}    
+
+var G77_AV={on:true,quietMs:1500,waitMs:400,est:4,n:0,waits:0};
+function g77AvZoom(){try{const Z=WTC_ZQ;return !!Z&&(Z.active||performance.now()-Z.tCh<G77_AV.quietMs)}catch(e){return false}}
+function g77AvMs(ms){const A=G77_AV;A.n++;A.est=A.n===1?ms:A.est*.8+ms*.2}
+window.__TC_AV=()=>({on:G77_AV.on,est:+G77_AV.est.toFixed(1),tests:G77_AV.n,waits:G77_AV.waits,queue:g77As().q.size,done:g77As().done,miss:g77As().miss});    
+function g77AsLater(){const X=g77As();if(X.tm||X.ric)return;
+ if(typeof requestIdleCallback==='function')X.ric=requestIdleCallback(g77AsStep,{timeout:1000});else X.tm=setTimeout(g77AsStep,250)}
+
+
+function g77PcReg(){return window.__G77PCREG||(window.__G77PCREG=new Map())}
+function g77PcStats(){return window.__G77PCS||(window.__G77PCS={made:0,steps:0,maxMs:0})}
+function g77PcPrep(q,G,steps){if(!steps)return steps;const R=g77PcReg();if(!R.size)return steps;
+ const m=WTC.margin+150,X0=q[1]*G.tw-m,Y0=q[2]*G.tw-m,X1=(q[1]+1)*G.tw+m,Y1=(q[2]+1)*G.tw+m,pre=[];
+ for(const [key,a] of R){if(PORT_CACHE.has(key))continue;const x=a[0]+a[6],y=a[1]+a[7];if(x>X1||y>Y1||x+a[2]<X0||y+a[3]<Y0)continue;pre.push([()=>g77PcMake(key),true,'pc:'+key])}
+ return pre.length?pre.concat(steps):steps}
+function g77PcMake(key){if(PORT_CACHE.has(key))return;const a=g77PcReg().get(key);if(!a)return;const S=g77PcStats(),t0=performance.now();window.__G77PCNODRAW=true;
+ try{portCached(key,a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7])}finally{window.__G77PCNODRAW=false}const d=performance.now()-t0;S.made++;if(d>S.maxMs)S.maxMs=Math.round(d*10)/10}
+
+
+G77_ZP.stillEvery=0;
+
+
+function g77S(){return window.__G77ST||(window.__G77ST={dlgs:{},chars:{},open:null,el:null,typing:0,keyOn:false})}    
+function g77St(){const P=PlayerProfile;let s=P.story;if(!s||typeof s!=='object'||Array.isArray(s))s=P.story={};s.v=1;
+ const D={name:'',flags:{},rel:{},seen:{},journal:[],msgs:[],calls:[],dlg:null};for(const k in D)if(s[k]===undefined||(D[k]!==null&&typeof D[k]==='object'&&(typeof s[k]!=='object'||s[k]===null||Array.isArray(D[k])!==Array.isArray(s[k]))))s[k]=JSON.parse(JSON.stringify(D[k]));if(s.msgV!==2)g77MsgFix(s);return s}
+function g77StRestore(x){if(g77S().open)g77DlgClose(true);try{g77SpReset();g77BbClear()}catch(e){}PlayerProfile.story=x&&typeof x==='object'?cloneJson(x):{};const s=g77St();try{g77SpBadge()}catch(e){}if(s.dlg&&g77S().dlgs[s.dlg.id])g77DlgOpen(s.dlg.id,s.dlg.mode,s.dlg.node,true);else s.dlg=null}
+function g77StEsc(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}
+function g77StName(){const n=g77St().name;return n&&String(n).trim()?String(n).trim():'שחקן'}
+function g77StText(t){return g77StEsc(t).replace(/\{name\}/g,g77StEsc(g77StName())).replace(/\{money\}/g,()=>money(PlayerProfile.money)).replace(/\{coins:(-?\d+)\}/g,(_,n)=>money(+n))}    
+
+function g77Coins(n){return '{coins:'+Math.round(Number(n)||0)+'}'}
+function g77CoinsHtml(t){return String(t==null?'':t).replace(/\{coins:(-?\d+)\}/g,(_,n)=>money(+n))}
+
+function g77StChar(id,name,color){g77S().chars[id]={name,color:color||'#4f7be0'}}
+function g77DlgAdd(id,d){g77S().dlgs[id]=d}
+function g77StCond(c){if(!c)return true;const s=g77St();return String(c).split('&').every(q=>{q=q.trim();const neg=q[0]==='!';if(neg)q=q.slice(1);let v;
+ if(q.startsWith('flag:'))v=!!s.flags[q.slice(5)];else if(q.startsWith('seen:'))v=!!s.seen[q.slice(5)];else{const m=/^(rel:([\w-]+)|money)\s*(>=|<=|>|<|==)\s*(-?\d+)$/.exec(q);if(!m)v=false;else{const a=m[1]==='money'?PlayerProfile.money:(s.rel[m[2]]||0),b=+m[4];v=m[3]==='>='?a>=b:m[3]==='<='?a<=b:m[3]==='>'?a>b:m[3]==='<'?a<b:a===b}}
+ return neg?!v:v})}
+function g77StApply(o){if(!o)return;const s=g77St();if(o.journal)try{g77JrApply(o.journal)}catch(e){}    if(o.set)for(const [k,v] of Object.entries(o.set))s.flags[k]=v;if(o.rel)for(const [k,v] of Object.entries(o.rel))s.rel[k]=Math.max(-100,Math.min(100,(s.rel[k]||0)+v))}
+
+function g77DlgRow(D,id){for(let i=0;i<40&&id&&id!=='end';i++){const r=D.rows[id];if(!r)return null;if(g77StCond(r.cond))return[id,r];id=r.else||r.next}return null}
+function g77DlgOpen(id,mode,at,resume){const D=g77S().dlgs[id];if(!D){toast('אין שיחה בשם '+id);return false}if(g77S().open)g77DlgClose(true);
+ const m=mode==='call'?'call':'talk',q=g77DlgRow(D,at||D.start);if(!q)return false;g77S().open={id,mode:m,node:q[0],shown:0,full:false};g77St().dlg={id,mode:m,node:q[0]};
+ if(m==='talk')Input.held.clear();g77DlgUi();if(!resume)SaveManager.log('story','dialog_open',{id,mode:m});return true}
+function g77DlgClose(silent){const O=g77S().open;g77S().open=null;g77St().dlg=null;clearTimeout(g77S().typing);if(g77S().el)g77S().el.style.display='none';if(O&&!silent){g77St().seen[O.id]=(g77St().seen[O.id]||0)+1;SaveManager.log('story','dialog_end',{id:O.id})}if(O&&O.mode==='talk')focusGame()}
+function g77DlgGo(next){const O=g77S().open;if(!O)return;const D=g77S().dlgs[O.id];const q=next&&next!=='end'?g77DlgRow(D,next):null;if(!q){g77DlgClose(false);return}O.node=q[0];O.shown=0;O.full=false;g77St().dlg={id:O.id,mode:O.mode,node:q[0]};g77DlgUi()}
+
+function g77DlgNext(force){const O=g77S().open;if(!O)return;const D=g77S().dlgs[O.id],r=D.rows[O.node];if(!O.full&&!force){O.full=true;g77DlgPaint();return}const ch=(r.choices||[]).filter(c=>g77StCond(c.cond));if(ch.length)return;g77StApply(r);if(r.end){g77DlgClose(false);return}g77DlgGo(r.next)}
+function g77DlgChoose(i){const O=g77S().open;if(!O)return false;const r=g77S().dlgs[O.id].rows[O.node],ch=(r.choices||[]).filter(c=>g77StCond(c.cond)),c=ch[i];if(!c)return false;g77StApply(r);g77StApply(c);SaveManager.log('story','choice',{id:O.id,row:O.node,i});if(c.end||c.next==='end'||!c.next){g77DlgClose(false);return true}g77DlgGo(c.next);return true}
+function g77StCss(){if($('g77StCss'))return;const st=document.createElement('style');st.id='g77StCss';st.textContent=
+ '#g77Dlg{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:min(720px,92vw);z-index:55;direction:rtl;font:15px/1.55 "Segoe UI",Arial,sans-serif;color:#eef5fa;background:rgba(12,22,32,.94);border:1px solid #2f4a60;border-radius:14px;box-shadow:0 10px 30px #000a;padding:14px 16px 10px;display:none;user-select:none}'+
+ '#g77Dlg.call{left:auto;right:18px;bottom:auto;top:84px;transform:none;width:min(380px,90vw);border-color:#2f8f6b}'+
+ '#g77Dlg .hd{display:flex;align-items:center;gap:10px;margin-bottom:6px}#g77Dlg .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;flex:none}'+
+ '#g77Dlg .nm{font-weight:700;font-size:15px}#g77Dlg .md{margin-inline-start:auto;font-size:12px;color:#8fb0c6}#g77Dlg .tx{min-height:46px;white-space:pre-wrap}'+
+ '#g77Dlg .ch{display:flex;flex-direction:column;gap:6px;margin-top:8px}#g77Dlg .ch button{all:unset;cursor:pointer;padding:7px 10px;border-radius:9px;background:#1b3042;border:1px solid #2f4a60;text-align:right}#g77Dlg .ch button:hover{background:#25425a}'+
+ '#g77Dlg .ch b{display:inline-block;min-width:18px;color:#ffd36a}#g77Dlg .ft{margin-top:8px;font-size:12px;color:#8fb0c6;text-align:left;direction:rtl}';
+ document.head.appendChild(st)}
+function g77DlgEl(){if(g77S().el)return g77S().el;g77StCss();const d=document.createElement('div');d.id='g77Dlg';d.innerHTML='<div class="hd"><div class="av"></div><div class="nm"></div><div class="md"></div></div><div class="tx"></div><div class="ch"></div><div class="ft"></div>';
+ d.addEventListener('click',e=>{const b=e.target.closest('[data-st-ch]');if(b){g77DlgChoose(+b.dataset.stCh);return}g77DlgNext()});document.body.appendChild(d);g77S().el=d;g77StKeys();return d}
+function g77StKeys(){if(g77S().keyOn)return;g77S().keyOn=true;addEventListener('keydown',e=>{const O=g77S().open;if(!O)return;const c=e.code||'';if(/^F\d+$/.test(c))return;
+ const dg=/^(Digit|Numpad)([1-4])$/.exec(c),adv=c==='Enter'||c==='NumpadEnter'||(O.mode==='talk'&&c==='Space');
+ if(dg){g77DlgChoose(+dg[2]-1)}else if(adv){g77DlgNext()}else if(c==='Escape'&&O.mode==='talk'){const r=g77S().dlgs[O.id].rows[O.node];if(!r.noClose)g77DlgClose(false)}else if(O.mode!=='talk')return;
+ e.preventDefault();e.stopImmediatePropagation()},true)}
+function g77DlgUi(){const O=g77S().open,d=g77DlgEl();if(!O){d.style.display='none';return}const D=g77S().dlgs[O.id],r=D.rows[O.node],who=r.who||D.who||'sys',C=g77S().chars[who]||{name:who,color:'#4f7be0'};
+ d.className=O.mode==='call'?'call':'';d.style.display='block';const av=d.querySelector('.av');av.textContent=(C.name||'?').trim()[0]||'?';av.style.background=C.color;d.querySelector('.nm').textContent=C.name;
+ d.querySelector('.md').textContent=O.mode==='call'?'שיחת טלפון':'';O.html=g77StText(r.text||'');O.plain=O.html.replace(/&[^;]+;/g,'_');clearTimeout(g77S().typing);g77DlgType()}
+function g77DlgType(){const O=g77S().open;if(!O)return;if(!O.full){O.shown=Math.min(O.plain.length,O.shown+2);if(O.shown>=O.plain.length)O.full=true;else g77S().typing=setTimeout(g77DlgType,28)}g77DlgPaint()}
+function g77DlgPaint(){const O=g77S().open,d=g77S().el;if(!O||!d)return;const D=g77S().dlgs[O.id],r=D.rows[O.node];
+ let h=O.html;if(!O.full){let n=0,i=0;while(i<h.length&&n<O.shown){if(h[i]==='<'){const j=h.indexOf('>',i);i=j<0?i+1:j+1;continue}if(h[i]==='&'){const j=h.indexOf(';',i);i=j<0?i+1:j+1}else i++;n++}h=h.slice(0,i)}d.querySelector('.tx').innerHTML=h;
+ const ch=O.full?(r.choices||[]).filter(c=>g77StCond(c.cond)):[];d.querySelector('.ch').innerHTML=ch.map((c,i)=>'<button data-st-ch="'+i+'"><b>'+(i+1)+'</b> '+g77StText(c.t)+'</button>').join('');
+ d.querySelector('.ft').textContent=ch.length?'בחירה — מקשים 1 עד '+ch.length+' או לחיצה':(O.mode==='call'?'Enter — המשך':'Enter / רווח — המשך'+(r.noClose?'':' · Esc — סגירה'))}
+
+g77StChar('st-test','בודק המערכת','#4f7be0');
+g77DlgAdd('st-demo',{who:'st-test',start:'t1',rows:{
+ t1:{text:'שלום {name}! זו שיחת בדיקה של מנוע הסיפור. ממשיכים עם Enter או בלחיצה.',next:'t2'},
+ t2:{text:'מה לבדוק עכשיו?',choices:[{t:'בחירה שמשנה את היחסים (+5)',next:'t3',rel:{'st-test':5},set:{demoA:true}},{t:'בחירה שמסמנת דגל',next:'t4',set:{demoB:true}},{t:'לסיים את הבדיקה',next:'end'}]},
+ t3:{text:'היחסים עם בודק המערכת עלו, והדגל demoA סומן.',next:'t5'},
+ t4:{text:'הדגל demoB סומן. שיחה שנשמרת באמצע נפתחת שוב באותה שורה אחרי טעינה.',next:'t5'},
+ t5:{cond:'flag:demoA',else:'t6',text:'ראיתי שבחרת קודם בבחירה הראשונה — זו שורה עם תנאי.',next:'t6'},
+ t6:{text:'סוף שיחת הבדיקה. היתרה שלך: {money}.',end:true}}});
+function g77StF9Row(host){const r=document.createElement('div');r.id='g77StRow';r.style.cssText='margin-top:8px';r.innerHTML='<span style="color:#8fb0c6">מנוע הסיפור (בדיקה):</span> <button id="g77StTalk">שיחה — פנים אל פנים</button><button id="g77StCall">שיחה — בטלפון</button><button id="g77StState">מצב הסיפור</button><button id="g77StReset">איפוס מצב הסיפור</button>';
+ host.appendChild(r);$('g77StTalk').onclick=()=>{g77DlgOpen('st-demo','talk')};$('g77StCall').onclick=()=>{g77DlgOpen('st-demo','call');focusGame()};
+ $('g77StState').onclick=()=>{const s=g77St();toast('דגלים '+Object.keys(s.flags).length+' · יחסים '+JSON.stringify(s.rel)+' · שיחות שנראו '+Object.keys(s.seen).length);focusGame()};
+ $('g77StReset').onclick=()=>{g77StRestore({name:g77St().name});g77SpBadge();toast('מצב הסיפור אופס (השם נשמר)');focusGame()};try{g77SpF9(r)}catch(e){}try{g77JrF9(r)}catch(e){}}    
+function g77StQa(){const keep=cloneJson(g77St()),o={};try{
+  g77StRestore({name:keep.name});o.open=g77DlgOpen('st-demo','talk')&&g77S().open.node==='t1'&&g77S().el.style.display==='block';o.nameIn=g77S().open.html.includes(g77StEsc(g77StName()));
+  g77DlgNext(true);o.choices=g77S().open&&g77S().open.node==='t2'&&(g77DlgNext(),g77S().el.querySelectorAll('[data-st-ch]').length===3);
+  const snap=collectSaveState();o.savedMid=!!(snap.story&&snap.story.dlg&&snap.story.dlg.node==='t2');
+  g77DlgChoose(0);const s1=g77St();o.choice=g77S().open.node==='t3'&&s1.rel['st-test']===5&&s1.flags.demoA===true;
+  g77StRestore(snap.story);o.resumed=!!g77S().open&&g77S().open.node==='t2'&&!g77St().flags.demoA;
+  g77DlgChoose(1);o.flag=g77S().open.node==='t4'&&g77St().flags.demoB===true;g77DlgNext(true);o.condSkip=g77S().open&&g77S().open.node==='t6';
+  o.money=!!g77S().open&&g77S().open.html.includes(money(PlayerProfile.money))&&!g77S().open.html.includes('&lt;span');g77DlgNext(true);o.closed=!g77S().open&&g77St().dlg===null&&g77St().seen['st-demo']===1&&g77S().el.style.display==='none';
+  o.esc=g77StEsc('<b>&"')==='&lt;b&gt;&amp;&quot;';
+  g77DlgOpen('st-demo','call');o.call=g77S().el.className==='call';g77DlgClose(true)}
+ catch(e){o.error=String(e&&e.stack||e)}finally{if(g77S().open)g77DlgClose(true);g77StRestore(keep)}
+ o.ok=!o.error&&['open','nameIn','choices','savedMid','choice','resumed','flag','condSkip','money','closed','esc','call'].every(k=>o[k]===true);return o}
+
+
+function g77Sp(){return window.__G77SP||(window.__G77SP={q:[],ring:null,el:null,tm:0,init:false,play:null})}
+function g77SpInit(){const P=g77Sp();if(P.init)return;
+ PI.calls='<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>';
+ PI.msgs='<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>';
+ if(!PHONE_APPS.find(a=>a.id==='calls'))PHONE_APPS.splice(0,0,{id:'calls',name:'שיחות',icon:'calls',c:'#2f8f6b',live:1},{id:'msgs',name:'הודעות',icon:'msgs',c:'#3a7bd5',live:1});
+ PHONE_VIEWS.calls=g77SpCallsApp;PHONE_VIEWS.msgs=g77SpMsgsApp;P.init=true;g77SpBadge()}
+function g77StApps(){return PHONE_APPS.filter(a=>a.id==='calls'||a.id==='msgs'||a.id==='journal'||a.id==='news').length}    
+function g77SpTime(t){try{return new Date(t).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}catch(e){return''}}
+function g77SpWho(id){const C=g77S().chars[id];return C?C.name:String(id||'?')}
+function g77SpBadge(){g77SpInit();const n=g77St().msgs.filter(m=>!m.read).length,c=g77St().calls.filter(c=>c.state==='missed'&&!c.seen).length,a=PHONE_APPS.find(q=>q.id==='msgs'),b=PHONE_APPS.find(q=>q.id==='calls');if(a)a.name='הודעות'+(n?' ('+n+')':'');if(b)b.name='שיחות'+(c?' ('+c+')':'');return n}
+
+function g77MsgIn(who,text,o){o=o||{};g77MsgReg();const s=g77St(),tx=g77MsgClean(text);who=g77MsgWho(who,tx);const m={id:'MSG-'+Date.now().toString(36)+'-'+(s.msgs.length+1),who,text:tx,at:Date.now(),...g77MsgG(),read:false,voice:!!o.voice,dur:o.voice?(o.dur||Math.max(3,Math.round(tx.length/9))):0};    
+ s.msgs.push(m);if(s.msgs.length>200)s.msgs.splice(0,s.msgs.length-200);g77SpBadge();if(!o.silent)toast((m.voice?'הודעה קולית':'הודעה')+' חדשה מ'+g77SpWho(who)+' · T — טלפון');SaveManager.log('story','message_in',{who,voice:m.voice});if(State.phoneOpen&&State.phoneApp==='msgs'){renderPhone();if(g77Sp().thread===who)g77MsgScroll()}return m}
+
+function g77CallIn(who,dlg,o){const P=g77Sp();P.q.push({who,dlg,o:o||{}});g77SpNext();return P.q.length}
+function g77SpBusy(){return !!(g77S().open||State.phoneOpen||(typeof G77_OT!=='undefined'&&G77_OT.lock)||window.__TC_BENCH||(typeof PERF!=='undefined'&&PERF.frames))}
+function g77SpNext(){const P=g77Sp();if(P.ring||!P.q.length)return;if(g77SpBusy()){clearTimeout(P.tm);P.tm=setTimeout(g77SpNext,1500);return}const c=P.q.shift(),s=g77St();
+ const rec={id:'CALL-'+Date.now().toString(36)+'-'+(s.calls.length+1),who:c.who,dlg:c.dlg,at:Date.now(),...g77MsgG(),state:'ringing',voice:c.o.voice||''};s.calls.push(rec);    if(s.calls.length>200)s.calls.splice(0,s.calls.length-200);
+ P.ring={rec,until:performance.now()+1000*(c.o.ring||20)};g77SpCard();clearTimeout(P.tm);P.tm=setTimeout(g77SpTick,250);SaveManager.log('story','call_in',{who:c.who,dlg:c.dlg})}
+function g77SpTick(){const P=g77Sp();if(!P.ring)return;if(performance.now()>=P.ring.until){g77SpEnd('missed');return}P.tm=setTimeout(g77SpTick,250)}
+function g77SpAnswer(){const P=g77Sp();if(!P.ring)return false;const r=P.ring.rec;r.state='answered';P.ring=null;g77SpCard();clearTimeout(P.tm);g77DlgOpen(r.dlg,'call');g77SpBadge();setTimeout(g77SpNext,500);return true}
+function g77SpEnd(state){const P=g77Sp();if(!P.ring)return false;const r=P.ring.rec;r.state=state;P.ring=null;g77SpCard();clearTimeout(P.tm);if(r.voice)g77MsgIn(r.who,r.voice,{voice:true,silent:true});
+ toast((state==='declined'?'דחית שיחה מ':'שיחה שלא נענתה מ')+g77SpWho(r.who)+(r.voice?' · השאיר הודעה קולית':''));g77SpBadge();setTimeout(g77SpNext,500);return true}
+function g77SpReset(){const P=g77Sp();clearTimeout(P.tm);P.q.length=0;P.ring=null;if(P.el)P.el.style.display='none';g77SpStop()}
+function g77SpCard(){const P=g77Sp();if(!P.el){g77StCss();const st=document.createElement('style');st.textContent='#g77Ring{position:fixed;right:18px;top:84px;z-index:56;width:min(340px,90vw);direction:rtl;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:#eef5fa;background:rgba(10,30,24,.95);border:1px solid #2f8f6b;border-radius:14px;box-shadow:0 10px 30px #000a;padding:12px 14px;display:none;animation:g77Ring 1s ease-in-out infinite}'+
+  '@keyframes g77Ring{0%,100%{box-shadow:0 10px 30px #000a,0 0 0 0 #2f8f6b88}50%{box-shadow:0 10px 30px #000a,0 0 0 8px #2f8f6b22}}#g77Ring .hd{display:flex;align-items:center;gap:10px}#g77Ring .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff}#g77Ring .bt{display:flex;gap:8px;margin-top:10px}'+
+  '#g77Ring button{all:unset;cursor:pointer;flex:1;text-align:center;padding:7px 0;border-radius:9px;font-weight:700}#g77Ring .ok{background:#2f8f6b}#g77Ring .no{background:#8f3a3a}#g77Ring small{color:#9fc7b6}';document.head.appendChild(st);
+  const d=document.createElement('div');d.id='g77Ring';d.addEventListener('click',e=>{if(e.target.closest('.ok'))g77SpAnswer();else if(e.target.closest('.no'))g77SpEnd('declined')});document.body.appendChild(d);P.el=d;
+  addEventListener('keydown',e=>{if(!g77Sp().ring||g77S().open)return;if(e.code==='Enter'||e.code==='NumpadEnter'){g77SpAnswer()}else if(e.code==='Backspace'){g77SpEnd('declined')}else return;e.preventDefault();e.stopImmediatePropagation()},true)}
+ const d=P.el;if(!P.ring){d.style.display='none';return}const r=P.ring.rec,C=g77S().chars[r.who]||{name:r.who,color:'#2f8f6b'};
+ d.innerHTML='<div class="hd"><div class="av" style="background:'+g77StEsc(C.color)+'">'+g77StEsc((C.name||'?').trim()[0]||'?')+'</div><div><b>'+g77StEsc(C.name)+'</b><br><small>שיחה נכנסת…</small></div></div><div class="bt"><button class="ok">ענה — Enter</button><button class="no">דחה — Backspace</button></div>';d.style.display='block'}
+
+function g77SpPlay(id){const s=g77St(),m=s.msgs.find(q=>q.id===id);if(!m)return false;g77SpStop();m.read=true;m.heard=true;const P=g77Sp();P.play={id,t0:performance.now(),dur:m.dur*1000};
+ try{if(PlayerProfile.settings.audio&&window.speechSynthesis&&typeof SpeechSynthesisUtterance==='function'){const u=new SpeechSynthesisUtterance(String(m.text).replace(/\{name\}/g,g77StName()).replace(/\{coins:(-?\d+)\}/g,'$1 מטבעות'));u.lang='he-IL';    const v=speechSynthesis.getVoices().find(q=>/^he/i.test(q.lang));if(v)u.voice=v;speechSynthesis.speak(u);P.play.tts=!!v}}catch(e){}
+ g77SpBadge();const step=()=>{const Q=g77Sp().play;if(!Q||Q.id!==id)return;const el=document.querySelector('[data-sp-bar="'+id+'"]');if(el)el.style.width=Math.min(100,(performance.now()-Q.t0)/Q.dur*100)+'%';if(performance.now()-Q.t0<Q.dur)Q.raf=requestAnimationFrame(step);else g77Sp().play=null};step();return true}
+function g77SpStop(){const P=g77Sp();if(P.play){cancelAnimationFrame(P.play.raf);P.play=null}try{if(window.speechSynthesis)speechSynthesis.cancel()}catch(e){}}
+function g77SpCallsApp(){const s=g77St();s.calls.forEach(c=>{if(c.state==='missed')c.seen=true});setTimeout(g77SpBadge,0);const L=s.calls.slice().reverse();
+ const lab={answered:['נענתה','ok'],missed:['לא נענתה','off'],declined:['נדחתה','off'],ringing:['מצלצלת','ok']};
+ return pcard('שיחות אחרונות',L.length?L.map(c=>'<div class="missionRow"><b>'+g77StEsc(g77SpWho(c.who))+'</b><small>'+g77MsgHm(c)+' · '+pchip((lab[c.state]||[c.state])[0],(lab[c.state]||[,''])[1])+'</small></div>').join(''):pnote('אין שיחות עדיין.'),'calls')}
+
+
+
+function g77MsgIco(k){return({anchor:'<circle cx="12" cy="5" r="2"/><path d="M12 7v14M8 10h8M5 13a7 7 0 0 0 14 0"/>',
+ sail:'<path d="M12 3v13M12 4l7 10h-7M11 6l-6 8h6"/><path d="M4 18h16l-2 3H6z"/>',
+ news:'<path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v9a2 2 0 0 1-2 2"/><path d="M7 8h7M7 11h7M7 14h4"/>',
+ city:'<path d="M3 21h18M5 21V9l5-3v15M10 21V4l9 4v13M13 10h3M13 13h3M13 16h3M7 12h1M7 15h1"/>',
+ port:'<path d="M9 21l1-12h4l1 12M8 9h8M10 9V6h4v3M12 6V3M6 21h12"/>'})[k]||''}
+
+function g77MsgReg(){const C=g77S().chars;if(C['pl-city']&&C['pl-city'].place)return;
+ const L={'pl-club':['מועדון השייט','#0f4c6e','anchor'],'pl-school':['בית הספר לשייט','#1d6f91','sail'],'pl-news':['חדשות העיר','#b23b3b','news'],'pl-city':['העיר','#3d5a73','city']};
+ for(const [id,[name,color,icon]] of Object.entries(L))C[id]={name,color,place:1,icon};if(C['s9-portctl']){C['s9-portctl'].place=1;C['s9-portctl'].icon='port'}}
+
+function g77MsgPlaceOf(t,def){t=String(t||'');if(/מבחן|רישיון סירה|בית הספר לשייט/.test(t))return 'pl-school';if(/סירה|סירת|מעגן|השכרה|מועדון|מרינה|מזח/.test(t))return 'pl-club';if(/ליגה|מחזור|אצטדיון|גביע|חדשות/.test(t))return 'pl-news';return def||'pl-city'}
+function g77MsgWho(who,t){const C=g77S().chars;who=who==null?'':String(who).trim();if(who==='f3-uri')return g77MsgPlaceOf(t,'pl-club');if(who&&C[who])return who;return g77MsgPlaceOf(t,'pl-city')}
+
+function g77MsgClean(t){return String(t==null?'':t).replace(/<span class="tcM">\s*<i class="tcC"[^>]*>\s*<\/i>\s*([\d,.\-]+)\s*<\/span>/g,(_,n)=>g77Coins(parseFloat(n.replace(/,/g,''))||0)).replace(/<\/?[a-zA-Z][^>]*>/g,'')}
+
+function g77MsgFix(s){s.msgV=2;if(!Array.isArray(s.msgs))return;s.msgs=s.msgs.filter(m=>m&&typeof m==='object');let t0=0,i=0;
+ for(const m of s.msgs){i++;m.text=g77MsgClean(m.text);const w=m.who==null?'':String(m.who).trim();if(!w||w==='f3-uri'){m.from0=w;m.who=g77MsgPlaceOf(m.text,w?'pl-club':'pl-city')}else m.who=w;
+  if(!(m.at>0))m.at=t0||Date.now();t0=m.at;m.read=!!m.read;if(!m.id)m.id='MSG-old-'+i}}
+
+function g77MsgFix2(){g77MsgReg();const C=g77S().chars;for(const m of g77St().msgs)if(!m.who||!C[m.who]){m.from0=m.from0||m.who||'';m.who=g77MsgPlaceOf(m.text,'pl-city')}}
+function g77MsgContact(k){const C=g77S().chars[k]||g77S().chars['pl-city']||{name:'העיר',color:'#3d5a73',place:1,icon:'city'};return{id:k,name:C.name,color:C.color||'#4f7be0',place:!!C.place,icon:C.icon||''}}
+function g77MsgAv(C){const ic=C.icon?g77MsgIco(C.icon):'';return '<span class="g77Av" style="background:'+g77StEsc(C.color)+'" aria-hidden="true">'+(ic?'<svg viewBox="0 0 24 24">'+ic+'</svg>':g77StEsc((String(C.name||'?').trim()[0])||'?'))+'</span>'}
+function g77MsgByContact(){const by={};for(const m of g77St().msgs)(by[m.who]||(by[m.who]=[])).push(m);for(const k in by)by[k].sort((a,b)=>(a.at||0)-(b.at||0));return by}
+
+function g77MsgG(){try{const c=gameClock();return{gd:c.day,gm:Math.floor(c.min)}}catch(e){return{}}}
+function g77MsgHm(m){if(m&&m.gm!=null&&m.gd!=null){const h=Math.floor(m.gm/60)%24,mi=Math.floor(m.gm%60);return String(h).padStart(2,'0')+':'+String(mi).padStart(2,'0')}return g77SpTime(m&&m.at)}
+function g77MsgDay(m){let k;if(m&&m.gd!=null&&m.gm!=null){const g=g77MsgG();k=g.gd!=null?g.gd-m.gd:0;if(k>1)return 'יום '+m.gd+' במשחק'}else{const d=new Date(m&&m.at),n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime(),b=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();k=Math.round((a-b)/864e5);if(k>1)return d.getDate()+'.'+(d.getMonth()+1)+'.'+d.getFullYear()}return k<=0?'היום':'אתמול'}
+function g77MsgWhen(m){const w=g77MsgDay(m);return w==='היום'?g77MsgHm(m):w==='אתמול'?w:w.replace(/\.\d{4}$/,'').replace(' במשחק','')}
+function g77MsgCss(){if(document.getElementById('g77MsgCss'))return;const st=document.createElement('style');st.id='g77MsgCss';st.textContent=
+ '.g77Cl{display:flex;flex-direction:column;direction:rtl}'+
+ '.g77Ct{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:11px;width:100%;padding:10px 8px;border-radius:12px}.g77Ct:hover,.g77Ct:focus-visible{background:#ffffff10}.g77Ct+.g77Ct{border-top:1px solid #ffffff12}'+
+ '.g77Av{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 18px/1 "Segoe UI",Arial,sans-serif;box-shadow:inset 0 0 0 2px #ffffff22}.g77Av svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}'+
+ '.g77Ct .md{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.g77Ct .r1,.g77Ct .r2{display:flex;align-items:center;gap:8px;min-width:0}'+
+ '.g77Ct .nm{flex:1;min-width:0;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#eef5fa}.g77Ct .tm{flex:none;font-size:12px;color:#8fa3b3}.g77Ct.un .tm{color:#6cb6ff;font-weight:700}'+
+ '.g77Ct .pv{flex:1;min-width:0;font-size:13.5px;line-height:1.35;color:#a9b8c4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.g77Ct.un .pv{color:#e3ecf3}'+
+ '.g77Ct .ct{flex:none;min-width:21px;height:21px;padding:0 6px;box-sizing:border-box;border-radius:11px;background:#3a7bd5;color:#fff;font:800 12px/21px "Segoe UI",Arial,sans-serif;text-align:center}'+
+ '.g77Th{direction:rtl}.g77Th .hd{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:8px 4px 10px;margin-bottom:8px;background:#0b1620f0;border-bottom:1px solid #ffffff18;border-radius:12px}'+
+ '.g77Th .bk{all:unset;cursor:pointer;padding:6px 11px;border-radius:9px;background:#ffffff16;font-weight:700;font-size:13.5px;color:#e3ecf3}.g77Th .bk:hover{background:#ffffff26}'+
+ '.g77Th .hd .g77Av{width:36px;height:36px;font-size:15px}.g77Th .hd .g77Av svg{width:20px;height:20px}.g77Th .hn{display:flex;flex-direction:column;min-width:0}.g77Th .hn b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.g77Th .hn small{font-size:12px;color:#8fa3b3}'+
+ '.g77Bs{display:flex;flex-direction:column;gap:8px;padding:2px 2px 8px}.g77Dy{align-self:center;font-size:12px;color:#a9b8c4;background:#ffffff12;border-radius:10px;padding:2px 10px;margin:4px 0}.g77Nw{align-self:center;font-size:12px;font-weight:700;color:#cfe3ff;background:#3a7bd544;border-radius:10px;padding:2px 10px}'+
+ '.g77B{align-self:flex-start;max-width:86%;box-sizing:border-box;background:#1b2e3d;border:1px solid #ffffff16;border-radius:16px 4px 16px 16px;padding:8px 11px 5px;box-shadow:0 2px 6px #0004}'+
+ '.g77B .tx{font-size:14.5px;line-height:1.5;color:#eef5fa;white-space:pre-wrap;overflow-wrap:anywhere}.g77B>small{display:block;text-align:left;font-size:11px;color:#8fa3b3;margin-top:3px}'+
+ '.g77B button{all:unset;cursor:pointer;padding:4px 10px;border-radius:9px;background:#3a7bd5;color:#fff;font-weight:700;font-size:13px}';
+ document.head.appendChild(st)}
+
+function g77MsgList(){g77MsgCss();const by=g77MsgByContact(),K=Object.keys(by);if(!K.length)return pcard('הודעות',pnote('אין הודעות עדיין.'),'msgs');
+ K.sort((a,b)=>(by[b].at(-1).at||0)-(by[a].at(-1).at||0));
+ return '<div class="g77Cl" data-msg-list="1">'+K.map(k=>{const L=by[k],m=L[L.length-1],u=L.filter(q=>!q.read).length,C=g77MsgContact(k),pv=m.voice?'הודעה קולית · '+m.dur+' שנ׳':g77StText(m.text);
+  return '<button class="g77Ct'+(u?' un':'')+'" data-msg-open="'+g77StEsc(k)+'" data-unread="'+u+'" aria-label="'+g77StEsc(C.name)+(u?' · '+u+' לא נקראו':'')+'">'+g77MsgAv(C)+
+   '<span class="md"><span class="r1"><span class="nm">'+g77StEsc(C.name)+'</span><span class="tm">'+g77StEsc(g77MsgWhen(m))+'</span></span><span class="r2"><span class="pv">'+pv+'</span>'+(u?'<span class="ct">'+u+'</span>':'')+'</span></span></button>'}).join('')+'</div>'}
+
+function g77MsgThread(k){g77MsgCss();const L=g77MsgByContact()[k]||[],C=g77MsgContact(k),P=g77Sp();let day='',h='';if(P.newK!==k){P.newK=k;P.newId=(L.find(q=>!q.read)||{}).id||null}const nu=P.newId?L.findIndex(q=>q.id===P.newId):-1;    
+ L.forEach((m,i)=>{const d=g77MsgDay(m);if(d!==day){day=d;h+='<div class="g77Dy">'+g77StEsc(d)+'</div>'}if(i===nu)h+='<div class="g77Nw">'+(L.length-nu===1?'הודעה חדשה':(L.length-nu)+' הודעות חדשות')+'</div>';
+  const t='<small>'+g77MsgHm(m)+'</small>';
+  if(m.voice)h+='<div class="g77B" data-msg-id="'+g77StEsc(m.id)+'"><div style="display:flex;align-items:center;gap:8px"><button data-sp-play="'+g77StEsc(m.id)+'">▶ הודעה קולית · '+m.dur+' שנ׳</button></div><div style="height:6px;background:#22313d;border-radius:4px;margin:6px 0"><i data-sp-bar="'+g77StEsc(m.id)+'" style="display:block;height:6px;width:'+(m.heard?100:0)+'%;background:#3a7bd5;border-radius:4px"></i></div><div class="tx" style="font-size:13px;color:#c5d3de">תמליל: '+g77StText(m.text)+'</div>'+t+'</div>';
+  else h+='<div class="g77B" data-msg-id="'+g77StEsc(m.id)+'"><div class="tx">'+g77StText(m.text)+'</div>'+t+'</div>'});
+ for(const m of L)m.read=true;g77SpBadge();
+ if(State.phoneOpen&&State.phoneApp==='msgs')Promise.resolve().then(()=>{try{if(State.phoneApp==='msgs'&&g77Sp().thread===k)$('phoneTitle').textContent=C.name}catch(e){}});
+ return '<div class="g77Th" data-msg-thread="'+g77StEsc(k)+'"><div class="hd"><button class="bk" data-msg-back="1">→ חזרה</button>'+g77MsgAv(C)+'<span class="hn"><b>'+g77StEsc(C.name)+'</b><small>'+(C.place?'מקום':'איש קשר')+' · '+L.length+(L.length===1?' הודעה':' הודעות')+'</small></span></div><div class="g77Bs">'+h+'</div></div>'}
+function g77SpMsgsApp(){const P=g77Sp(),b=$('phoneBody');if(!P.keep&&b&&b.dataset.app!=='msgs')P.thread=null;P.keep=0;g77MsgFix2();if(P.thread&&!g77St().msgs.some(m=>m.who===P.thread))P.thread=null;return P.thread?g77MsgThread(P.thread):g77MsgList()}
+function g77MsgScroll(top){const b=$('phoneBody');if(!b)return;const f=()=>{b.scrollTop=top?0:b.scrollHeight};f();requestAnimationFrame(f)}
+
+function g77MsgGo(k){const P=g77Sp();P.thread=k||null;P.keep=1;P.newK=null;if(State.phoneOpen){State.phoneApp='msgs';renderPhone();g77MsgScroll(!k)}return true}
+function g77MsgOpen(k){if(!State.phoneOpen&&setPhoneOpen(true)===false)return false;return g77MsgGo(k||null)}
+$('phoneOverlay').addEventListener('click',e=>{const o=e.target.closest('[data-msg-open]');if(o){g77MsgGo(o.dataset.msgOpen);e.stopImmediatePropagation();return}if(e.target.closest('[data-msg-back]')){g77MsgGo(null);e.stopImmediatePropagation()}});
+document.addEventListener('click',e=>{if(e.target&&e.target.closest&&e.target.closest('#phoneBack')&&State.phoneOpen&&State.phoneApp==='msgs'&&g77Sp().thread){g77MsgGo(null);e.stopPropagation();e.preventDefault()}},true);    
+
+function g77MsgCheck(L){const C=g77S().chars,d=document.createElement('div');let noSender=0,rawTags=0;for(const m of L){if(!m.who||!C[m.who])noSender++;d.innerHTML=g77StText(m.text);const tx=d.textContent;
+ if(/<\/?[a-z][^>]*>/i.test(String(m.text))||/<\/?[a-z]|class=|aria-label|\{coins|\{money|\{name/i.test(tx))rawTags++}return{msgs:L.length,noSender,rawTags}}
+function g77MsgAudit(){const keep=cloneJson(g77St()),po=State.phoneOpen,pa=State.phoneApp,P=g77Sp(),pt=P.thread,o={},why=[];
+ try{g77MsgReg();g77MsgFix2();o.save=g77MsgCheck(g77St().msgs);
+  const coin='<span class="tcM"><i class="tcC" role="img" aria-label="מטבעות"></i>480</span>',t=Date.now()-36e5;
+  g77StRestore({name:keep.name,msgs:[{who:'f3-uri',text:'"אלבטרוס" מחכה לך במעגן 10 (המזח הראשון).',at:t,read:true},{who:'f3-uri',text:'"אלבטרוס" קשורה במעגן 10 — תודה! · שעות נוספות '+coin,at:t+6e4},
+   {who:'s9-avi',text:'בוקר טוב! השף של מלון הים צריך דגים טריים לארוחת הבוקר.',at:t+12e4},{who:'f3-uri',text:'המבחן לרישיון סירה: סירת המבחן במעגן 4.',at:t+18e4},
+   {text:'המבחן לא עבר — יצאת מנתיב המבחן.',at:t+24e4},{who:'',text:'הודעה בלי שולח ובלי מקום.',at:t+30e4},{who:'x-gone',text:'הודעה משולח שכבר לא קיים.',at:t+36e4}]});
+  g77MsgFix2();const by=g77MsgByContact(),n=k=>(by[k]||[]).length;o.split={club:n('pl-club'),school:n('pl-school'),avi:n('s9-avi'),city:n('pl-city')};
+  if(!(o.split.club===2&&o.split.school===2&&o.split.avi===1&&o.split.city===2))why.push('split');o.old=g77MsgCheck(g77St().msgs);if(o.old.noSender||o.old.rawTags)why.push('old');
+  State.phoneOpen=true;$('phoneOverlay').classList.add('show');State.phoneApp='msgs';P.thread=null;P.keep=1;renderPhone();const body=$('phoneBody'),rows=()=>Object.fromEntries([...body.querySelectorAll('[data-msg-open]')].map(r=>[r.dataset.msgOpen,+r.dataset.unread]));
+  const r0=rows(),ord=[...body.querySelectorAll('[data-msg-open]')].map(r=>r.dataset.msgOpen);o.order=ord.join(',');if(o.order!=='pl-city,pl-school,s9-avi,pl-club')why.push('order');
+  o.unread0=r0;if(!(r0['pl-club']===1&&r0['s9-avi']===1&&r0['pl-school']===2&&r0['pl-city']===2&&g77SpBadge()===6))why.push('unread0');
+  o.oneLine=[...body.querySelectorAll('.g77Ct .pv')].every(p=>getComputedStyle(p).whiteSpace==='nowrap'&&p.getClientRects().length<=1);if(!o.oneLine)why.push('oneLine');
+  body.querySelector('[data-msg-open="pl-club"]').click();const th=body.querySelector('[data-msg-thread]'),bs=[...body.querySelectorAll('.g77B')];
+  o.open=!!th&&th.dataset.msgThread==='pl-club'&&bs.length===2&&bs[0].textContent.includes('מחכה לך')&&bs.every(b=>/\d{1,2}:\d{2}/.test(b.querySelector('small').textContent));if(!o.open)why.push('open');
+  o.coin=!!bs[1]&&!!bs[1].querySelector('.tcM .tcC')&&!/[<>]|\{coins/.test(bs[1].textContent)&&bs[1].textContent.includes('480');if(!o.coin)why.push('coin');
+  o.scrolled=body.scrollTop+body.clientHeight>=body.scrollHeight-2;if(!o.scrolled)why.push('scrolled');
+  $('phoneBack').click();const r1=rows();o.back=!body.querySelector('[data-msg-thread]')&&!!body.querySelector('[data-msg-list]')&&State.phoneApp==='msgs';if(!o.back)why.push('back');
+  o.unread1=r1;if(!(r1['pl-club']===0&&r1['s9-avi']===1&&r1['pl-school']===2&&r1['pl-city']===2&&g77SpBadge()===5&&PHONE_APPS.find(a=>a.id==='msgs').name==='הודעות (5)'))why.push('unread1');
+  body.querySelector('[data-msg-open="pl-school"]').click();body.querySelector('[data-msg-back]').click();const r2=rows();o.back2=!!body.querySelector('[data-msg-list]')&&r2['pl-school']===0&&g77SpBadge()===3;if(!o.back2)why.push('back2');
+  let raw=0;for(const k of Object.keys(g77MsgByContact())){const d=document.createElement('div');d.innerHTML=g77MsgThread(k);d.querySelectorAll('.tx').forEach(x=>{if(/<\/?[a-z]|class=|aria-label|\{coins|\{money/i.test(x.textContent))raw++})}o.rawShown=raw;if(raw)why.push('rawShown')}
+ catch(e){o.error=String(e&&e.stack||e);why.push('error')}finally{P.thread=pt;State.phoneOpen=po;State.phoneApp=pa;if(!po)$('phoneOverlay').classList.remove('show');g77StRestore(keep);if(po)try{renderPhone()}catch(e){}}
+ if(o.save&&(o.save.noSender||o.save.rawTags))why.push('save');o.why=why;o.ok=!why.length;return o}
+window.__TC_PHONE589={audit:g77MsgAudit,check:()=>{g77MsgFix2();return g77MsgCheck(g77St().msgs)},open:g77MsgOpen,coins:g77Coins};
+function g77SpF9(row){const b=(id,t,f)=>{const x=document.createElement('button');x.id=id;x.textContent=t;x.onclick=()=>{f();focusGame()};row.appendChild(x)};
+ b('g77SpCallB','שיחה נכנסת',()=>g77CallIn('st-test','st-demo',{voice:'שלום {name}, ניסיתי להשיג אותך. זו הודעה קולית לבדיקה.'}));b('g77SpMsgB','הודעה',()=>g77MsgIn('st-test','הודעת בדיקה ל-{name}: מערכת ההודעות עובדת.'));b('g77SpVoiceB','הודעה קולית',()=>g77MsgIn('st-test','הודעה קולית לבדיקה. התמליל מוצג תמיד.',{voice:true}))}
+$('phoneOverlay').addEventListener('click',e=>{const b=e.target.closest('[data-sp-play]');if(b){g77SpPlay(b.dataset.spPlay);e.stopPropagation()}});
+function g77SpQa(){const keep=cloneJson(g77St()),o={},po=State.phoneOpen;try{g77StRestore({name:keep.name});g77SpInit();
+  o.apps=!!PHONE_APPS.find(a=>a.id==='calls')&&!!PHONE_APPS.find(a=>a.id==='msgs')&&typeof PHONE_VIEWS.calls==='function';
+  g77CallIn('st-test','st-demo',{voice:'הודעה קולית לבדיקה'});const P=g77Sp();o.ring=!!P.ring&&P.el.style.display==='block'&&g77St().calls.at(-1).state==='ringing';
+  g77SpAnswer();o.answer=!!g77S().open&&g77S().open.mode==='call'&&g77St().calls.at(-1).state==='answered';g77DlgClose(true);
+  g77CallIn('st-test','st-demo',{voice:'הודעה קולית לבדיקה',ring:20});clearTimeout(P.tm);P.ring.until=0;g77SpTick();const n0=g77St().msgs.length;
+  o.missed=g77St().calls.at(-1).state==='missed'&&n0===1&&g77St().msgs[0].voice===true&&!P.ring;
+  g77CallIn('st-test','st-demo',{});g77SpEnd('declined');o.declined=g77St().calls.at(-1).state==='declined';
+  g77MsgIn('st-test','<b>בדיקה</b> {name}',{silent:true});o.unread=g77SpBadge()===2&&PHONE_APPS.find(a=>a.id==='msgs').name==='הודעות (2)';
+  const h=g77MsgList();o.list=h.includes('data-msg-open="st-test"')&&h.includes('data-unread="2"')&&g77St().msgs.filter(m=>!m.read).length===2;    
+  const th=g77MsgThread('st-test');o.escaped=!/&lt;\/?b&gt;|<b>בדיקה/.test(th)&&th.includes('בדיקה '+g77StEsc(g77StName()));o.voiceUi=th.includes('data-sp-play')&&th.includes('תמליל');o.readText=g77St().msgs.filter(m=>!m.read).length===0;
+  o.play=g77SpPlay(g77St().msgs[0].id)&&g77St().msgs[0].read===true&&g77SpBadge()===0;g77SpStop();
+  const c=g77SpCallsApp();o.callsUi=c.includes('לא נענתה')&&c.includes('נדחתה')&&c.includes('נענתה');
+  const snap=collectSaveState();o.saved=snap.story.calls.length===3&&snap.story.msgs.length===2;
+  State.phoneOpen=true;g77CallIn('st-test','st-demo',{});o.queued=!P.ring&&P.q.length===1;State.phoneOpen=po;g77SpReset()}
+ catch(e){o.error=String(e&&e.stack||e)}finally{State.phoneOpen=po;g77SpReset();if(g77S().open)g77DlgClose(true);g77StRestore(keep)}
+ try{const A=g77MsgAudit();o.threads=A.ok===true;if(!A.ok)o.threadsWhy=A.why}catch(e){o.threads=false;o.threadsWhy=String(e)}    
+ o.ok=!o.error&&['apps','ring','answer','missed','declined','unread','list','escaped','voiceUi','readText','play','callsUi','saved','queued','threads'].every(k=>o[k]===true);return o}
+
+
+function g77JrInit(){const J=window.__G77JR||(window.__G77JR={init:false});if(J.init)return;
+ PI.journal='<path d="M6 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6z"/><path d="M6 3v18M10 8h6M10 12h6M10 16h4"/>';
+ if(!PHONE_APPS.find(a=>a.id==='journal')){const i=PHONE_APPS.findIndex(a=>a.id==='msgs');PHONE_APPS.splice(i<0?0:i+1,0,{id:'journal',name:'יומן',icon:'journal',c:'#b0702f',live:1})}PHONE_VIEWS.journal=g77JrApp;J.init=true;g77JrBadge()}
+function g77JrBadge(){const n=g77St().journal.filter(t=>t.state==='open'&&!t.seen).length,a=typeof PHONE_APPS!=='undefined'&&PHONE_APPS.find(q=>q.id==='journal');if(a)a.name='יומן'+(n?' ('+n+')':'');return n}
+function g77JrAdd(id,title,text,o){o=o||{};const s=g77St();let t=s.journal.find(q=>q.id===id);const isNew=!t;if(!t){t={id,at:Date.now()};s.journal.push(t)}Object.assign(t,{title:String(title||id),text:String(text||''),state:'open',chapter:o.chapter||t.chapter||'',seen:false});
+ if(isNew&&!o.silent)toast('יומן: משימה חדשה — '+t.title);SaveManager.log('story','journal_add',{id});g77JrBadge();if(State.phoneOpen&&State.phoneApp==='journal')renderPhone();return t}
+function g77JrSet(id,state){const t=g77St().journal.find(q=>q.id===id);if(!t)return false;t.state=state;t.doneAt=Date.now();toast((state==='done'?'יומן: הושלם — ':'יומן: נכשל — ')+t.title);SaveManager.log('story','journal_'+state,{id});g77JrBadge();if(State.phoneOpen&&State.phoneApp==='journal')renderPhone();return true}
+function g77JrApply(j){if(j.add)g77JrAdd(j.add.id,j.add.title,j.add.text,j.add);if(j.done)g77JrSet(j.done,'done');if(j.fail)g77JrSet(j.fail,'failed')}
+function g77JrApp(){const s=g77St(),open=s.journal.filter(t=>t.state==='open'),rest=s.journal.filter(t=>t.state!=='open').slice().reverse();open.forEach(t=>t.seen=true);setTimeout(g77JrBadge,0);
+ const row=t=>'<div class="missionRow" style="display:block"><b>'+g77StText(t.title)+'</b>'+(t.chapter?' '+pchip(g77StEsc(t.chapter),'off'):'')+(t.state==='done'?' '+pchip('הושלם','ok'):t.state==='failed'?' '+pchip('נכשל','off'):'')+(t.text?'<div><small>'+g77StText(t.text)+'</small></div>':'')+'</div>';
+ return pcard('משימות פתוחות',open.length?open.map(row).join(''):pnote('אין משימות פתוחות.'),'journal')+(rest.length?pcard('הושלמו',rest.slice(0,30).map(row).join(''),'journal'):'')}
+
+function g77Bb(){return window.__G77BB||(window.__G77BB={list:[],raf:0,host:null,seq:0})}
+function g77BbAnchor(a){if(a==='player'){const p=playerActor();return{x:p.x,y:p.y}}if(typeof a==='function'){try{return a()}catch(e){return null}}return a&&Number.isFinite(a.x)&&Number.isFinite(a.y)?a:null}
+function g77Bubble(anchor,text,o){o=o||{};const B=g77Bb();if(!B.host){const st=document.createElement('style');st.textContent='.g77Bb{position:fixed;left:0;top:0;z-index:40;max-width:260px;direction:rtl;font:14px/1.4 "Segoe UI",Arial,sans-serif;color:#13202b;background:#fff;border-radius:12px;padding:7px 11px;box-shadow:0 4px 14px #0006;pointer-events:none;transition:opacity .25s;white-space:pre-wrap}.g77Bb:after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-7px;border:7px solid transparent;border-bottom:0;border-top-color:#fff}.g77Bb b{color:#2f5f8f}';document.head.appendChild(st);
+  const h=document.createElement('div');h.id='g77BbHost';document.body.appendChild(h);B.host=h}
+ while(B.list.length>=4)g77BbDrop(B.list[0]);const el=document.createElement('div');el.className='g77Bb';el.style.opacity='0';const who=o.who?(g77S().chars[o.who]||{name:o.who}).name:'';el.innerHTML=(who?'<b>'+g77StEsc(who)+':</b> ':'')+g77StText(text);B.host.appendChild(el);
+ const b={id:++B.seq,anchor,el,until:performance.now()+(o.ms||Math.max(2500,String(text).length*70)),dy:o.dy||48};B.list.push(b);requestAnimationFrame(()=>{if(b.el)b.el.style.opacity='1'});if(!B.raf)B.raf=requestAnimationFrame(g77BbTick);return b.id}
+function g77BbDrop(b){const B=g77Bb();const i=B.list.indexOf(b);if(i>=0)B.list.splice(i,1);if(b.el){b.el.remove();b.el=null}}
+function g77BbClear(){const B=g77Bb();for(const b of B.list.slice())g77BbDrop(b)}
+function g77BbTick(now){const B=g77Bb();B.raf=0;now=now||performance.now();const hide=State.phoneOpen||State.mapOpen,W=innerWidth,H=innerHeight,placed=[];
+ for(const b of B.list.slice()){if(now>=b.until){g77BbDrop(b);continue}const p=g77BbAnchor(b.anchor);if(!p||hide){b.el.style.display='none';continue}
+  const sx=(p.x-Camera.x)*Camera.zoom+W/2,sy=(p.y-Camera.y)*Camera.zoom+H/2;if(sx<-40||sx>W+40||sy<-40||sy>H+40){b.el.style.display='none';continue}
+  b.el.style.display='block';const w=b.el.offsetWidth,h=b.el.offsetHeight;let x=Math.max(8,Math.min(W-w-8,sx-w/2)),y=Math.max(8,Math.min(H-h-8,sy-b.dy*Math.max(.6,Math.min(1.4,Camera.zoom))-h));
+  for(let k=0;k<4;k++){const hit=placed.find(r=>x<r.x+r.w&&x+w>r.x&&y<r.y+r.h&&y+h>r.y);if(!hit)break;y=Math.max(8,hit.y-h-6)}placed.push({x,y,w,h});b.x=x;b.y=y;b.el.style.transform='translate('+Math.round(x)+'px,'+Math.round(y)+'px)'}
+ if(B.list.length)B.raf=requestAnimationFrame(g77BbTick)}
+function g77JrF9(row){const b=(id,t,f)=>{const x=document.createElement('button');x.id=id;x.textContent=t;x.onclick=()=>{f();focusGame()};row.appendChild(x)};
+ b('g77BbB','בועה מעל השחקן',()=>g77Bubble('player','בדיקת בועה: {name}, הבועה עוקבת אחרי השחקן.',{who:'st-test',ms:5000}));
+ b('g77JrB','משימה ביומן',()=>g77JrAdd('st-task','משימת בדיקה','משימה של מנוע הסיפור — נסגרת בכפתור "סיום משימה".',{chapter:'בדיקה'}));b('g77JrDoneB','סיום משימה',()=>g77JrSet('st-task','done'))}
+function g77JrQa(){const keep=cloneJson(g77St()),o={},po=State.phoneOpen;try{g77StRestore({name:keep.name});g77JrInit();
+  o.app=!!PHONE_APPS.find(a=>a.id==='journal')&&typeof PHONE_VIEWS.journal==='function';
+  g77JrAdd('qa-1','משימה <א>','טקסט {name}',{chapter:'פרק 1',silent:true});o.add=g77St().journal.length===1&&g77JrBadge()===1&&PHONE_APPS.find(a=>a.id==='journal').name==='יומן (1)';
+  g77DlgAdd('qa-jr',{who:'st-test',start:'a',rows:{a:{text:'בדיקה',choices:[{t:'קח משימה',next:'b',journal:{add:{id:'qa-2',title:'משימה מהשיחה'}}}]},b:{text:'סיום',journal:{done:'qa-1'},end:true}}});
+  g77DlgOpen('qa-jr','talk');g77DlgChoose(0);g77DlgNext(true);o.fromDlg=!g77S().open&&g77St().journal.find(t=>t.id==='qa-2')?.state==='open'&&g77St().journal.find(t=>t.id==='qa-1')?.state==='done';
+  const h=g77JrApp();o.ui=h.includes('משימות פתוחות')&&h.includes('הושלמו')&&h.includes('&lt;א&gt;')&&h.includes('פרק 1')&&g77JrBadge()===0;
+  o.fail=g77JrSet('qa-2','failed')&&g77St().journal.find(t=>t.id==='qa-2').state==='failed';o.saved=collectSaveState().story.journal.length===2;
+  const id=g77Bubble('player','בועה <b>{name}</b>',{who:'st-test',ms:60000});g77BbTick(performance.now());const B=g77Bb(),b=B.list.find(q=>q.id===id);
+  o.bubble=!!b&&b.el.style.display==='block'&&b.el.innerHTML.includes('&lt;b&gt;')&&b.x>=0&&b.y>=0&&b.x<=innerWidth&&b.y<=innerHeight;
+  const p=playerActor(),sx=(p.x-Camera.x)*Camera.zoom+innerWidth/2;o.above=!!b&&Math.abs(b.x+b.el.offsetWidth/2-sx)<b.el.offsetWidth&&b.y<(p.y-Camera.y)*Camera.zoom+innerHeight/2;
+  g77Bubble('player','שנייה',{ms:60000});g77BbTick(performance.now());const b2=B.list.at(-1);o.noOverlap=!!b2&&(b2.y+b2.el.offsetHeight<=b.y+1||b.y+b.el.offsetHeight<=b2.y+1);
+  for(let i=0;i<5;i++)g77Bubble('player','עוד '+i,{ms:60000});o.max=B.list.length===4;
+  State.phoneOpen=true;g77BbTick(performance.now());o.hidden=B.list.every(q=>q.el.style.display==='none');State.phoneOpen=po;
+  B.list[0].until=0;g77BbTick(performance.now());o.expire=B.list.length===3;g77BbClear();o.cleared=B.list.length===0&&!document.querySelector('.g77Bb')}
+ catch(e){o.error=String(e&&e.stack||e)}finally{State.phoneOpen=po;g77BbClear();if(g77S().open)g77DlgClose(true);delete g77S().dlgs['qa-jr'];g77StRestore(keep)}
+ o.ok=!o.error&&['app','add','fromDlg','ui','fail','saved','bubble','above','noOverlap','max','hidden','expire','cleared'].every(k=>o[k]===true);return o}
+
+
+(function(){const st=document.createElement('style');st.id='g77CoinCss';st.textContent='.tcM{display:inline-flex;align-items:center;gap:.2em;direction:ltr;unicode-bidi:isolate;white-space:nowrap}'+
+ '.tcC{display:inline-block;width:.95em;height:.95em;flex:none;position:relative;box-sizing:border-box;border-radius:50%;border:.072em solid #b8862b;background:radial-gradient(circle closest-side,#f2c94c 0 69.5%,#d9a93a 69.5% 81.4%,#f2c94c 81.4%)}'+
+ '.tcC::before,.tcC::after{content:"";position:absolute;background:#9c6a18;border-radius:1em}.tcC::before{left:24.6%;top:28.1%;width:50.9%;height:11.4%}.tcC::after{left:44.3%;top:28.1%;width:11.4%;height:47.3%}';    document.head.appendChild(st)})();
+
+function g77CoinSafe(m){const re=/<span class="tcM"><i class="tcC" role="img" aria-label="מטבעות"><\/i>[\d,.\-]*<\/span>/g;let out='',i=0,x;while((x=re.exec(m))){out+=g77StEsc(m.slice(i,x.index))+x[0];i=x.index+x[0].length}return out+g77StEsc(m.slice(i))}
+
+function g77NmW(a){return a.map(w=>Array.from(w,ch=>String.fromCharCode(ch.charCodeAt(0)-1)).join(''))}    
+const G77_NM_BAD=g77NmW(['gvdl', 'tiju', 'cjudi', 'ob{j', 'ijumfs', 'חזסו', 'ןסךבר', 'תשןזי', 'לזע', 'סבקך', 'וךיםש']);
+function g77NmCheck(raw){const n=String(raw||'').replace(/\s+/g,' ').trim();if(n.length<2)return{ok:false,n,why:'השם קצר מדי — לפחות 2 תווים'};if(n.length>16)return{ok:false,n,why:'השם ארוך מדי — עד 16 תווים'};
+ if(!/^[א-תA-Za-z0-9 \-'׳״"]+$/.test(n))return{ok:false,n,why:'רק אותיות בעברית או באנגלית, ספרות, רווח, מקף וגרש'};if(!/[א-תA-Za-z]/.test(n))return{ok:false,n,why:'צריך לפחות אות אחת'};
+ const low=n.toLowerCase().replace(/[\s\-'"׳״]/g,'');if(G77_NM_BAD.some(w=>low.includes(w)))return{ok:false,n,why:'השם לא מתאים — בחר שם אחר'};return{ok:true,n}}
+function g77NmSet(n,quiet){const c=g77NmCheck(n);if(!c.ok)return c;const s=g77St();s.name=c.n;s.nameAsked=true;SaveManager.log('story','name_set',{len:c.n.length});
+ if(!quiet){toast('שלום '+c.n+'!');try{if(!window.__TC_BENCH&&!(typeof G77_OT!=='undefined'&&G77_OT.lock))SaveManager.save('name',{silent:true})}catch(e){}}if(State.phoneOpen)renderPhone();return c}
+function g77Nm(){return window.__G77NM||(window.__G77NM={el:null,open:false,init:false,keys:false})}
+function g77NmSkip(){const h=location.hash||'',real=/(^#|&)real(&|$)/.test(h);return(!real&&(/(^#|&)(dev|qa|bench|owner|noauto|seq)(&|$)/.test(h)||!!navigator.webdriver))||!!window.__TC_BENCH||(typeof G77_OT!=='undefined'&&!!G77_OT.lock)}    
+function g77NmOpen(force){const N=g77Nm();if(N.open)return true;if(!force&&g77NmSkip())return false;if(!N.el){g77StCss();const st=document.createElement('style');st.textContent='#g77Nm{position:fixed;inset:0;z-index:70;display:none;place-items:center;background:#0008;direction:rtl;font:15px/1.5 "Segoe UI",Arial,sans-serif;color:#eef5fa}#g77Nm .bx{width:min(420px,92vw);background:#0f1d29;border:1px solid #2f4a60;border-radius:16px;padding:18px 20px;box-shadow:0 16px 40px #000c}'+
+  '#g77Nm h2{margin:0 0 6px;font-size:20px}#g77Nm input{all:unset;box-sizing:border-box;width:100%;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:#1b3042;border:1px solid #3a5a74;font-size:17px}#g77Nm .er{min-height:20px;color:#ff9d8a;font-size:13px}#g77Nm .bt{display:flex;gap:8px;margin-top:10px}#g77Nm button{all:unset;cursor:pointer;flex:1;text-align:center;padding:9px 0;border-radius:10px;font-weight:700;background:#2f6f9f}#g77Nm button.lt{background:#2a3a48;font-weight:600}';document.head.appendChild(st);
+  const d=document.createElement('div');d.id='g77Nm';d.innerHTML='<div class="bx"><h2>איך קוראים לך?</h2><div>השם יופיע בשיחות, בהודעות ובפרופיל. אפשר לשנות אותו אחר כך: טלפון ← הגדרות.</div><input id="g77NmIn" maxlength="16" autocomplete="off" spellcheck="false" placeholder="השם שלך"><div class="er" id="g77NmEr"></div><div class="bt"><button id="g77NmOk">שמור — Enter</button><button class="lt" id="g77NmLater">אחר כך</button></div></div>';
+  document.body.appendChild(d);N.el=d;$('g77NmOk').onclick=()=>g77NmSubmit();$('g77NmLater').onclick=()=>g77NmClose(true);$('g77NmIn').addEventListener('blur',()=>{if(g77Nm().open)setTimeout(()=>{if(g77Nm().open)$('g77NmIn').focus()},0)})}
+ if(!N.keys){N.keys=true;addEventListener('keydown',e=>{if(!g77Nm().open)return;if(e.code==='Enter'||e.code==='NumpadEnter'){e.preventDefault();g77NmSubmit()}else if(e.code==='Escape'){e.preventDefault();g77NmClose(true)}e.stopPropagation()},true)}
+ N.open=true;Input.held.clear();const n=g77St().name||'';N.el.style.display='grid';$('g77NmIn').value=n;$('g77NmEr').textContent='';setTimeout(()=>{try{$('g77NmIn').focus();$('g77NmIn').select()}catch(e){}},0);return true}
+function g77NmSubmit(){const c=g77NmSet($('g77NmIn').value);if(!c.ok){$('g77NmEr').textContent=c.why;return false}g77NmClose(false);return true}
+function g77NmClose(later){const N=g77Nm();N.open=false;if(N.el)N.el.style.display='none';if(later)g77St().nameAsked=true;focusGame()}
+
+function g77NmBoot(){if(g77NmSkip())return;const s=g77St();if(s.name||s.nameAsked)return;let tco=false;try{tco=typeof TCO!=='undefined'&&(TCO.mode!=='game'||TCO.ui)}catch(e){}    const ready=(typeof g77Bw==='function'&&g77Bw().end)||performance.now()>20000;if(tco||!ready||g77S().open||State.phoneOpen){setTimeout(g77NmBoot,1000);return}g77NmOpen()}
+setTimeout(g77NmBoot,3000);
+function g77NmInit(){const N=g77Nm();if(N.init)return;const f=PHONE_VIEWS.settings;if(typeof f!=='function')return;
+ PHONE_VIEWS.settings=function(){const n=g77St().name;return pcard('שם השחקן',pkv([['שם',n?g77StEsc(n):'— (עוד לא נבחר)']])+'<div class="phoneActions"><button data-st-name="1">שנה שם</button></div>','gear')+f.apply(this,arguments)};N.init=true}
+$('phoneOverlay').addEventListener('click',e=>{if(e.target.closest('[data-st-name]')){setPhoneOpen(false);g77NmOpen(true)}});
+function g77NmQa(){const keep=cloneJson(g77St()),o={};const N=g77Nm();try{g77StRestore({});
+  const v=['דנה','Avi Levi','רון-אל',"ג'ני",'ab'].map(x=>g77NmCheck(x).ok),bad=['א','אבגדהוזחטיכלמנסעפ','123','שם<b>','  ',...g77NmW(['gvdl!zpv', 'חזסו'])].map(x=>g77NmCheck(x).ok);    
+  o.valid=v.every(Boolean);o.invalid=bad.every(x=>x===false);o.trim=g77NmCheck('  דנה   כהן ').n==='דנה כהן';
+  o.open=g77NmOpen(true)===true&&N.open&&N.el.style.display==='grid';
+  $('g77NmIn').value='א';o.reject=g77NmSubmit()===false&&$('g77NmEr').textContent.length>0&&N.open;$('g77NmIn').value='נועה';o.accept=g77NmSubmit()===true&&!N.open&&g77St().name==='נועה'&&g77St().nameAsked===true;
+  o.inDlg=g77StText('שלום {name}')==='שלום נועה';o.saved=collectSaveState().story.name==='נועה';
+  g77NmInit();const h=PHONE_VIEWS.settings();o.settings=h.includes('שם השחקן')&&h.includes('נועה')&&h.includes('data-st-name');
+  g77StRestore({});g77NmOpen(true);g77NmClose(true);o.later=!N.open&&g77St().nameAsked===true&&g77StName()==='שחקן';
+  const m=money(1234);o.coin=m.includes('class="tcC"')&&m.includes('1,234')&&!m.includes('₪');
+  toast('נרכש: <x> · '+money(50));const t=$('toast');o.toast=t.innerHTML.includes('class="tcC"')&&t.innerHTML.includes('&lt;x&gt;')&&!t.innerHTML.includes('<x>');toast('רגיל <y>');o.toastText=t.textContent.includes('רגיל <y>')&&!t.querySelector('y');    
+  const leaks=[];for(const [id,f] of Object.entries(PHONE_VIEWS)){if(id==='map'||id==='nav'||id==='taxi')continue;try{const h2=f();if(typeof h2==='string'&&h2.includes('₪'))leaks.push(id)}catch(e){}}try{if(phoneHome().includes('₪'))leaks.push('home')}catch(e){}o.leaks=leaks;o.noShekel=leaks.length===0&&!$('hudMoney').innerHTML.includes('₪');
+  o.css=!!$('g77CoinCss')}
+ catch(e){o.error=String(e&&e.stack||e)}finally{if(N.open)g77NmClose(false);g77StRestore(keep)}
+ o.ok=!o.error&&['valid','invalid','trim','open','reject','accept','inDlg','saved','settings','later','coin','toast','toastText','noShekel','css'].every(k=>o[k]===true);return o}
+
+
+const G77_VP={on:true,zoom:1.9,skin:['#f1c9a5','#e0ac85','#c68863','#8d5a3b','#5e3b26'],hair:['#2a1d14','#4a3020','#7a5230','#c9a36b','#1b1b1d','#8a8f96'],shirt:['#2f6fd0','#d23a3a','#2f9e5f','#f4f6f8','#22262b','#7a4ccf','#ee7d2d','#1f9aa6'],cab:{}};
+
+function g77VpSeats(asset){const C=G77_VP.cab;if(C[asset]!==undefined)return C[asset];const a=TurboCity.get(asset);let r=null;
+ if(a&&Array.isArray(a.an)){const f=k=>a.an.find(q=>q[0]===k);const cf=f('CabF'),rf=f('RoofF'),rr=f('RoofR'),cr=f('CabR');
+  if(cf&&rf&&rr&&cr){const cy=a.h/2,cw=(cr[2]-cf[2]),xf=rf[1]+2.2,xr=rr[1]-2.4,s=[[xf,cy-cw*.25],[xf,cy+cw*.25]];if(rr[1]-cr[1]>4&&cf[1]-cr[1]>=27&&(cr[1]-10)/Math.max(1,a.w-20)<.6)s.push([xr,cy+cw*.25],[xr,cy-cw*.25]);    r={w:a.w,h:a.h,s}}}
+ C[asset]=r;return r}
+
+function g77VehOcc(car,h){const R=State.taxiRide;if(R&&R.taxiId===car.id&&R.phase==='riding')return 2;h=h>>>0;return 1+(h%4===0?1:0)+(h%13===0?1:0)}
+
+function g77VehPeople(asset,I,n,h){const S=g77VpSeats(asset);if(!S||!n)return;const k=I.w/S.w,P=G77_VP,ap=PlayerProfile.appearance||{};
+ for(let i=0;i<Math.min(n,S.s.length);i++){const q=S.s[i],x=(q[0]-S.w/2)*k,y=(q[1]-S.h/2)*k,hh=(h<0?0:(h>>>(i*3))+i*7)>>>0;
+  const me=h<0&&i===0?p672Pl():null,sk=me?me.skin:P.skin[hh%P.skin.length],hr=me?(me.hat||me.hair).c:P.hair[(hh>>>2)%P.hair.length],st=me?me.top.c:P.shirt[(hh>>>4)%P.shirt.length];    
+  ctx.fillStyle=st;ctx.beginPath();ctx.ellipse(x-1.2*k,y,2.2*k,3.3*k,0,0,6.283);ctx.fill();
+  ctx.fillStyle=sk;ctx.beginPath();ctx.arc(x,y,1.95*k,0,6.283);ctx.fill();ctx.fillStyle=hr;ctx.beginPath();ctx.arc(x-.35*k,y,1.95*k,Math.PI*.5,Math.PI*1.5);ctx.fill()}}
+function g77VpQa(){const o={};try{const a=TurboCity.get('VH-SD-01'),an=a&&a.an.map(q=>q[0]);o.anchors=!!an&&['CabF','RoofF','RoofR','CabR','Driver'].every(k=>an.includes(k));
+  const S=g77VpSeats('VH-SD-01');o.seats=!!S&&S.s.length>=2&&S.s[0][1]<S.h/2&&S.s[1][1]>S.h/2;
+  const occ=[...Array(200).keys()].map(i=>g77VehOcc({id:'Q'+i},stableHash('Q'+i)));o.occ=occ.every(v=>v>=1&&v<=3)&&occ.some(v=>v>1)&&g77VehOcc({id:'Q1'},stableHash('Q1'))===g77VehOcc({id:'Q1'},stableHash('Q1'));
+  const R0=State.taxiRide;State.taxiRide={taxiId:'TX-Q',phase:'riding'};o.taxi=g77VehOcc({id:'TX-Q'},1)===2;State.taxiRide=R0;
+  const cv=document.createElement('canvas');cv.width=240;cv.height=120;const g=cv.getContext('2d'),I=TurboCity.info('VH-SD-01',{targetWidth:200});
+  g.translate(120,60);TurboCity.draw(g,'VH-SD-01',-I.w/2,-I.h/2,{mode:'runtime',targetWidth:200,state:{c:0,r:0}});const before=g.getImageData(0,0,240,120).data.slice();
+  const pc=ctx;ctx=g;try{g77VehPeople('VH-SD-01',I,2,12345)}finally{ctx=pc}const after=g.getImageData(0,0,240,120).data;let d=0;for(let i=0;i<after.length;i+=4)if(after[i]!==before[i]||after[i+1]!==before[i+1]||after[i+2]!==before[i+2])d++;o.people=d>40;
+  
+  let cyan=0;for(let i=0;i<before.length;i+=4)if(before[i+2]>170&&before[i+1]>150&&before[i]<140)cyan++;o.inside=cyan>0;o.zoom=G77_VP.zoom<=2;const sn=id=>{const q=g77VpSeats(id);return q?q.s.length:0};o.rows=sn('VH-SD-01')===4&&sn('VH-PK-02')===4&&sn('VH-SP-03')===2&&sn('VH-PK-01')===2&&sn('VH-TR-01')===2;o.brake=g77VbQa();o.design=g77VdQa().ok}    
+ catch(e){o.error=String(e&&e.stack||e)}o.ok=!o.error&&['anchors','seats','occ','taxi','people','inside','zoom','rows','brake','design'].every(k=>o[k]===true);return o}
+
+
+const G77_VB={on:true,m:new Map(),c:{},pl:{s:0,t:0,h:0}};
+function g77VbTail(asset){const C=G77_VB.c;if(C[asset]!==undefined)return C[asset];const a=TurboCity.get(asset);let r=null;
+ if(a&&Array.isArray(a.an)){const L=a.an.find(q=>q[0]==='Tail L'),R=a.an.find(q=>q[0]==='Tail R');if(L&&R)r={w:a.w,h:a.h,t:[L,R]}}C[asset]=r;return r}
+
+function g77VehBrake(asset,I,br,rv){const T=g77VbTail(asset);if(!T)return;const k=I.w/T.w,x=(T.t[0][1]-T.w/2)*k,ya=(T.t[0][2]-T.h/2)*k,yb=(T.t[1][2]-T.h/2)*k;
+ if(br){ctx.fillStyle='rgba(255,40,40,.22)';ctx.fillRect(x-4.5*k,Math.min(ya,yb)-4*k,4.5*k,Math.abs(yb-ya)+8*k);ctx.fillStyle='#ff4646';for(const y of[ya,yb])ctx.fillRect(x-.3*k,y-1.4*k,2.6*k,2.8*k)}
+ if(rv){ctx.fillStyle='#fdfdf4';for(const y of[ya,yb])ctx.fillRect(x-.3*k,y+(y>0?1.4:-2.8)*k,2.6*k,1.4*k)}}
+
+function g77VbTraffic(car,now){const M=G77_VB.m,sp=+car.speed||0;let p=M.get(car.id),b=!!car.wait&&sp<2;
+ if(p){const dt=(now-p.t)/1000;if(!b)b=dt>0&&dt<.5&&(p.s-sp)/dt>40;p.s=sp;p.t=now}else{if(M.size>300)M.clear();M.set(car.id,{s:sp,t:now})}return b}
+
+function g77VbPlayer(now){const B=G77_VB.pl,sp=+PlayerCar.speed||0,dt=(now-B.t)/1000;if(dt>0&&dt<.5&&Math.abs(B.s)-Math.abs(sp)>dt*150)B.h=now+180;B.s=sp;B.t=now;return(B.h>now?1:0)|(sp<-3?2:0)}
+function g77VbQa(){try{if(!g77VbTail('VH-SD-01'))return false;const cv=document.createElement('canvas');cv.width=240;cv.height=120;const g=cv.getContext('2d'),I=TurboCity.info('VH-SD-01',{targetWidth:200});
+  g.translate(120,60);TurboCity.draw(g,'VH-SD-01',-I.w/2,-I.h/2,{mode:'runtime',targetWidth:200,state:{c:0,r:0}});const b=g.getImageData(0,0,240,120).data.slice();const pc=ctx;ctx=g;try{g77VehBrake('VH-SD-01',I,1,1)}finally{ctx=pc}
+  const a=g.getImageData(0,0,240,120).data;let d=0;for(let i=0;i<a.length;i+=4)if(a[i]!==b[i]||a[i+1]!==b[i+1]||a[i+2]!==b[i+2])d++;
+  const car={id:'QB-'+Date.now(),speed:100,wait:false};g77VbTraffic(car,1000);car.speed=50;const t1=g77VbTraffic(car,1100);const t2=g77VbTraffic(car,1200);car.wait=true;car.speed=0;const t3=g77VbTraffic(car,1300);G77_VB.m.delete(car.id);
+  return d>20&&t1&&!t2&&t3}catch(e){return false}}
+
+
+function g77VdQa(){const ids=['VH-HB-01','VH-HB-02','VH-HB-03','VH-SD-01','VH-SD-02','VH-SD-03','VH-SD-04','VH-SU-01','VH-SU-02','VH-SU-03','VH-SU-04','VH-SU-05','VH-MV-01','VH-MV-02','VH-MV-03','VH-PK-01','VH-PK-02','VH-PK-03','VH-PR-01','VH-PR-02','VH-PR-03','VH-PR-04','VH-SP-01','VH-SP-02','VH-SP-03','VH-SP-04','VH-VN-01','VH-VN-02','VH-VN-03','VH-TR-01','VS-TX-01','VS-TX-02','VS-PL-01','VS-PL-02','VS-AM-01','VS-AM-02','VS-FR-01','VS-FR-02','VS-TW-01','VS-TW-02','VS-DL-01','VS-DL-02','VS-MN-01','VS-GS-01'];
+ const cv=document.createElement('canvas');cv.width=220;cv.height=120;const g=cv.getContext('2d',{willReadFrequently:true}),sig=new Set(),bad=[];
+ for(const id of ids){try{g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,220,120);const I=TurboCity.info(id,{targetWidth:190});g.translate(110,60);TurboCity.draw(g,id,-I.w/2,-I.h/2,{mode:'runtime',targetWidth:190,state:{c:3,r:0},time:0});
+  const w=Math.max(4,Math.round(I.w*.2)),d=g.getImageData(Math.round(110+I.w/2-w-4),0,w,120).data;let h=0,n=0;for(let i=0;i<d.length;i+=8){if(d[i+3]>40)n++;h=(Math.imul(h,31)+(d[i]>>4)*7+(d[i+1]>>4)*3+(d[i+2]>>4)+(d[i+3]>>6))>>>0}if(n<40)bad.push(id);sig.add(h)}catch(e){bad.push(id+': '+e)}}
+ return{ok:!bad.length&&sig.size>=Math.ceil(ids.length*.9),n:ids.length,distinct:sig.size,bad}}
+function g2Door(sd,ac){
+ const S=APTT_SPEC.ac[ac],ng=S.an['Nose Gear'],d=S.an.Door,th=sd.th,c=Math.cos(th),sn=Math.sin(th),dx=d[0]-ng[0],dy=d[1]-ng[1];
+ return[sd.cx+dx*c-dy*sn,sd.ngy+dx*sn+dy*c];
+}
+function g2Hash(s){let h=0;for(const ch of String(s||'X'))h=(h*31+ch.charCodeAt(0))>>>0;return h}
+const G77_BUS_CAP=60;
+function g2PaxN(code,phase,ac){const n=g77Pax(code,ac,phase==='dep'?'dep':'arr');return n?Math.min(G77_BUS_CAP,n):(ac==='AC-RJ-01'?14:10)}
+function g2UsesTruck(sd,ac){return(sd.id==='P6'&&(ac==='AC-RJ-01'||ac==='AC-NB-01'||ac==='AC-QJ-01'))||(sd.id==='P5'&&ac==='AC-RJ-01')}   
+function g2Rear(sd,ac){return sd.id==='P6'&&ac==='AC-QJ-01'}       
+function g2Door2(sd,ac){const A=g77Anchors(ac)||{},d=A['Door L2'];if(!d)return g2Door(sd,ac);const th=sd.th,c=Math.cos(th),sn=Math.sin(th);return[sd.cx+d[0]*c-d[1]*sn,sd.ngy+d[0]*sn+d[1]*c]}
+function g2Remote(sd,ac){return!!(sd&&sd.remote&&sd.kind==='pax'&&G2_REMOTE_AC.has(ac)&&G2_REM[sd.id])}
+
+function g2PaxPath2(sd,ac){const door=g2Door2(sd,ac),R=G2_REM[sd.id],foot=[door[0]+G2_STAIR_GAP+64,door[1]],bus=[R.busX-26,R.busY+13];return[door,foot,[foot[0]+10,door[1]+12],[foot[0]+10,R.busY+13],bus]}   
+function g2PaxPath(sd,ac){
+ const door=g2Door(sd,ac),R=G2_REM[sd.id];
+ const foot=g2UsesTruck(sd,ac)?[door[0]+G2_STAIR_GAP+64,door[1]]:[door[0]+17,door[1]];
+ const bus=sd.id==='P5'?[R.x+13,R.busY-26]:[R.busX-26,R.busY+13];
+ const mid=sd.id==='P5'?[Math.max(R.x+13,foot[0]+8),door[1]+8]:[foot[0]+10,R.busY+13];
+ return[door,foot,mid,bus];
+}
+const g2PathLen=p=>{let l=0;for(let i=1;i<p.length;i++)l+=Math.hypot(p[i][0]-p[i-1][0],p[i][1]-p[i-1][1]);return l};
+const G2_WALK={v:22,gap:.95,pre:2.5,post:2.5};
+function g2BoardDur(sd,ac,n){if(g2Rear(sd,ac))return G2_WALK.pre+Math.max(g2PathLen(g2PaxPath(sd,ac)),g2PathLen(g2PaxPath2(sd,ac)))/G2_WALK.v+(Math.ceil(n/2)-1)*G2_WALK.gap+G2_WALK.post;   
+ return G2_WALK.pre+g2PathLen(g2PaxPath(sd,ac))/G2_WALK.v+(n-1)*G2_WALK.gap+G2_WALK.post}
+
+
+
+
+const G2_GATE={door:[7092,779],walkY:779,zebra:null,offX:-11,label:'BUS GATE · T3',he:'שער אוטובוס · טרמינל 3'};   
+function g2GatePath(bay){const D=APTT_SPEC.veh['LV-SH-01'],fx=D.fp[0]+D.fp[2]/2,fy=D.fp[1]+D.fp[3]/2,dx=D.an.Door[0]-fx,dy=D.an.Door[1]-fy,c=Math.cos(bay.th),sn=Math.sin(bay.th),door=[bay.x+dx*c-dy*sn,bay.yc+dx*sn+dy*c];
+ if(bay.row2||bay.id==='F2-AB2'){const hx=D.fp[2]/2,sg=Math.sign(dy)||1,out=[door[0]-sn*sg*6,door[1]+c*sg*6],gy=((G77_YARD.busYc+hx)+(G77_YARD.row2Yc-hx))/2,wx=G77_YARD.x0+4;   
+  return[door,out,[out[0],gy],[wx,gy],[wx,G2_GATE.walkY],[G2_GATE.door[0],G2_GATE.walkY],[G2_GATE.door[0],G2_GATE.door[1]]]}
+ return[door,[g77WalkX(bay),door[1]],[g77WalkX(bay),G2_GATE.walkY],[G2_GATE.door[0],G2_GATE.walkY],[G2_GATE.door[0],G2_GATE.door[1]]]}
+function g2GateDur(bay,n){return G2_WALK.pre+g2PathLen(g2GatePath(bay))/G2_WALK.v+(n-1)*G2_WALK.gap+G2_WALK.post}
+
+const g2SOut=(b,vm)=>{const m=apttVehMove([[b.x-40,AF.L],[b.x,AF.L],[b.x,b.yc]],[18],vm*.45,{rev:true,v0:3,v1:4});m.kind='out';return m};
+const g2SHome=b=>b.row2?[[AF.GLN,AF.HW,50],[AF.GLN,b.yc,16],[b.x,b.yc,0]]:[[AF.GLN,AF.HW,50],[AF.GLN,AF.L,22],[b.x,AF.L,18],[b.x,b.yc,0]];       
+const g2Out0=b=>b.row2?[[AF.GLN,b.yc+16,0],[AF.GLN,AF.L,18],[AF.GLS,AF.L,18],[AF.GLS,AF.HE,22]]:[[b.x-40,AF.L,0],[AF.GLS,AF.L,22],[AF.GLS,AF.HE,22]];   
+function g2RemoteBuild(v,sd,ac,kind,hold,meta){
+ const b=v.bay,vm=AF.VMAX[v.type],R=G2_REM[sd.id],door=g2Door(sd,ac),tag=(leg,g2)=>{leg.g2=g2;return leg};
+ const base={kind,stand:sd.id,code:meta&&meta.code||null,ac,door};
+ const home=[b.x,b.yc,b.th,0,1],gateN=meta&&meta.n||0,hG=b.pocket==='MS'?0:g2GateDur(b,gateN);
+ const legs=[];
+ if(kind==='bus-dep'){const l=tag(apttHold(home,hG,'svc'),{...base,at:'gate',gate:'load',n:gateN});legs.push(l)}   
+ if(b.pocket!=='MS'&&!b.row2)legs.push(g2SOut(b,vm));if(b.row2){const m=apttVehMove([[AF.GLN,b.yc+16],[AF.GLN,b.yc],[b.x,b.yc]],[16],vm*.45,{rev:true,v0:3,v1:4});m.kind='out';legs.push(m)}       
+ let e=legs.length&&legs[legs.length-1].endPose?legs[legs.length-1].endPose():home,dOut=0,clear=0;   
+ const fwd=(list,o={})=>{const m=afMv(list,vm,{th0:e[2],blend:o.blend??28,v0:o.v0??5,v1:o.v1??4});m.kind=o.kind||'out';legs.push(tag(m,base));e=m.endPose();return m};
+ const rev=(list,f=.45)=>{const {pts,rad}=afPL(list);const m=apttVehMove(pts,rad,vm*f,{rev:true,v0:3,v1:3});m.kind='back';legs.push(tag(m,base));e=m.endPose();return m};
+ const turn=(dir)=>{const p=e.slice(),th0=p[2];const l={kind:'turn',dur:AF.PIV,pose:t=>[p[0],p[1],th0+Math.PI/2*dir*apttSm(t/AF.PIV),0,1]};legs.push(tag(l,base));e=l.pose(AF.PIV);return l};
+ const svc=()=>{const h=tag(apttHold(e,hold,'svc'),{...base,at:'ac'});legs.push(h);return h};
+ if((kind==='stairs'||kind==='stairs2')&&b.pocket==='MS'&&(sd.id==='P5'||g2UsesTruck(sd,ac))){   
+  const K=G2_STAIR_PARK,dr=kind==='stairs2'?g2Door2(sd,ac):door,sx=dr[0]+G2_STAIR_GAP+32,y=dr[1];base.door=dr;
+  if(sd.id==='P5'){const cA=7791,yF=862,cC=8040,yL=790;
+   fwd([[b.x,b.yc,0],[K.exitX,b.yc,16],[K.exitX,yF,14],[cA,yF,18],[cA,y,16],[sx,y,0]]);dOut=legs.reduce((a,l)=>a+l.dur,0);svc();
+   rev([[cA,y],[sx,y]]);clear=legs[legs.length-1].dur;turn(-1);
+   fwd([[cA,y,0],[cA,yF,16],[cC,yF,18],[cC,yL,16],[K.entryX,yL,16],[K.entryX,b.yc,16],[b.x,b.yc,0]],{kind:'back',v0:4});
+  }else{const cC=8040,yL=790;
+   fwd([[b.x,b.yc,0],[K.exitX,b.yc,16],[K.exitX,yL,16],[cC,yL,16],[cC,y,16],[sx,y,0]]);dOut=legs.reduce((a,l)=>a+l.dur,0);svc();
+   rev([[cC,y],[sx,y]]);clear=legs[legs.length-1].dur;turn(-1);
+   fwd([[cC,y,0],[cC,yL,16],[K.entryX,yL,16],[K.entryX,b.yc,16],[b.x,b.yc,0]],{kind:'back',v0:4});
+  }
+ }else if(kind==='stairs'){
+  const sx=door[0]+G2_STAIR_GAP+32,y=door[1];
+  if(R.via==='EAST'&&b.pocket==='MS'){
+   const K=G2_STAIR_PARK;
+   fwd([[b.x,b.yc,0],[K.exitX,b.yc,16],[K.exitX,y,16],[sx,y,0]]);dOut=legs.reduce((a,l)=>a+l.dur,0);svc();
+   rev([[R.pivotX,y],[sx,y]]);clear=legs[legs.length-1].dur;turn(2);
+   fwd([[R.pivotX,y,0],[K.entryX,y,16],[K.entryX,b.yc,16],[b.x,b.yc,0]],{kind:'back',v0:4});
+  }else throw new Error('G2 stairs: P6 from the stair park only');
+ }else{
+  if(R.via==='EAST'){
+   fwd([...g2Out0(b),[R.xN,AF.HE,16],[R.xN,R.uy,16],[R.ux,R.uy,24],[R.ux,R.busY,24],[R.busX,R.busY,0]]);dOut=legs.reduce((a,l)=>a+l.dur,0);svc();
+   const c1=fwd([[R.busX,R.busY,0],[8150,R.busY,12],[8150,R.uy,12],[R.xS,R.uy,16],[R.xS,1060,0]],{kind:'back',v0:4});clear=c1.dur;   
+   fwd([[R.xS,1060,0],[R.xS,AF.HW,16],...g2SHome(b)],{kind:'back',v0:6});
+  }else{
+   fwd([...g2Out0(b),[R.x,AF.HE,16],[R.x,R.busY,0]]);dOut=legs.reduce((a,l)=>a+l.dur,0);svc();
+   const c1=rev([[R.x,AF.HE],[R.x,R.busY]]);clear=c1.dur;
+   fwd([[R.x,AF.HE,0],[R.x,AF.HW,14],...g2SHome(b)],{kind:'back',v0:4});
+  }
+ }
+ if(kind==='bus-arr'){const l=tag(apttHold(home,hG,'svc'),{...base,at:'gate',gate:'unload',n:gateN});legs.push(l)}   
+ const trk=afTrackOf(v,legs);trk.g2=kind;trk.gateHold=hG;
+ return{trk,dOut,hold,clear,dur:trk.seq.dur,gate:hG};
+}
+
+function* g2ServeG(kind,sd,ac,win,hold,meta,extra){
+ const type=kind==='stairs'||kind==='stairs2'?'MS':'AB';let best=null;
+ for(const v of afCands(type,3)){if(type==='AB'&&v.bay&&v.bay.id==='F2-AB1')continue;    
+  if(AO.sliced&&aoOver())yield 0;
+  const B=g2RemoteBuild(v,sd,ac,kind,hold,meta),sm=(yield* aoSampG(B.trk,aoSeqLeg(B.trk.seq)));
+  const sLo=Math.max(aoSlUp(win.at0-B.dOut),afSEarliest());
+  let sHi=aoSl(win.at1-B.dOut);if(win.clearBy!=null)sHi=Math.min(sHi,Math.floor((win.clearBy-B.dOut-hold-B.clear)/AO.DT));
+  if(best)sHi=Math.min(sHi,best.s-1);
+  const s=sHi>=sLo?(yield* afSearchG(v,B.trk,sm,sLo,sHi,extra,Math.round((B.dOut+hold+16)/AO.DT))):-1;
+  if(s<0){const w=aoWhy(sm,sLo);const key='remote-'+kind+':'+(w?w.b.replace(/\d+/g,'#'):'busy/none');AF.fails[key]=(AF.fails[key]||0)+1;continue}
+  if(!best||s<best.s)best={v,B,sm,s};
+ }
+ if(!best){AF.stats.fail++;return null}
+ const at=aoT(best.s)+best.B.dOut,task=afCommit(best.v,best.B.trk,best.sm,best.s,'remote-'+kind,{code:meta&&meta.code,stand:sd.id,at});
+ return{t0:task.t0,end:task.t1,at,done:at+hold,clear:best.B.clear,v:best.v,task,gate:best.B.gate||0};
+}
+
+function* g2RemoteServicesG(sd,ac,tOB,dwell,meta,extra){const m0=AO.LOG.length;for(const ex of [0,150,300]){if(ex)aoRoll(m0);const r=yield* g2RemoteServices1G(sd,ac,tOB,dwell,meta,extra,ex);if(r){if(ex)AO.stats.g2Ext=(AO.stats.g2Ext||0)+1;return r}}return null}
+function* g2RemoteServices1G(sd,ac,tOB,dwell,meta,extra,ex){
+ const truck=g2UsesTruck(sd,ac),nA=g2PaxN(meta.code,'arr',ac),nD=g2PaxN(meta.code,'dep',ac),hA=g2BoardDur(sd,ac,nA),hD=g2BoardDur(sd,ac,nD);
+ let st=null,st2=null,winEnd;
+ if(truck){
+  const Hs=Math.max(dwell-20,hA+hD+190)+(ex||0);
+  st=yield* g2ServeG('stairs',sd,ac,{at0:tOB+4+G77_CHOCK,at1:tOB+70+G77_CHOCK},Hs,meta,extra);if(!st)return null;
+  winEnd=st.done-2;
+  if(g2Rear(sd,ac)){st2=yield* g2ServeG('stairs2',sd,ac,{at0:st.at+6,at1:st.at+70},Hs,meta,extra);if(!st2)return null;winEnd=Math.min(winEnd,st2.done-2)}   
+ }
+ const ba=yield* g2ServeG('bus-arr',sd,ac,{at0:(st2?Math.max(st.at,st2.at):st?st.at:tOB+G77_CHOCK)+5,at1:(st2?Math.max(st.at,st2.at):st?st.at:tOB+G77_CHOCK)+95,clearBy:st?st.done-hD-60:null},hA,{...meta,n:nA},extra);if(!ba)return null;
+ 
+ const depLo=ba.done+ba.clear+25,depHi=st?winEnd:tOB+dwell+120,want=Math.max(depLo,(st?st.done-hD-55:tOB+dwell-hD-30));
+ let bd=null;
+ if(want>depLo+8)bd=yield* g2ServeG('bus-dep',sd,ac,{at0:want,at1:Math.max(want,depHi),clearBy:st?winEnd:null},hD,{...meta,n:nD},extra);
+ if(!bd)bd=yield* g2ServeG('bus-dep',sd,ac,{at0:depLo,at1:Math.max(depLo,depHi),clearBy:st?winEnd:null},hD,{...meta,n:nD},extra);
+ if(!bd)return null;
+ const end=Math.max(st?st.done+st.clear+6:0,st2?st2.done+st2.clear+6:0,bd.done+bd.clear+4);
+ 
+ const gateArr={v:ba.v.id,bay:ba.v.bay.id,at:ba.end-ba.gate,done:ba.end,n:nA},gateDep={v:bd.v.id,bay:bd.v.bay.id,at:bd.t0,done:bd.t0+bd.gate,n:nD};
+ return{end,plan:{stand:sd.id,ac,truck,door:g2Door(sd,ac),path:g2PaxPath(sd,ac),stairs:st&&{v:st.v.id,at:st.at,done:st.done},stairs2:st2&&{v:st2.v.id,at:st2.at,done:st2.done},door2:st2?g2Door2(sd,ac):null,path2:st2?g2PaxPath2(sd,ac):null,arr:{v:ba.v.id,at:ba.at,done:ba.done,n:nA},dep:{v:bd.v.id,at:bd.at,done:bd.done,n:nD},gateArr,gateDep,open:(st?st.at:ba.at-6),close:(st?st.done:bd.done+6)}};
+}
+
+const G2_PAX_ASSETS=['PE-43','PE-44','PE-09','PE-10','PE-19','PE-04','PE-40','PE-41'];
+function g2RemotePassengers(t=APT_OPS.clk,flights=AO.flights){
+ const out=[];
+ for(const f of flights){const r=f.g2;if(!r)continue;const tA=Math.min(r.open,r.gateDep?r.gateDep.at:1e9),tB=Math.max(r.close,r.gateArr?r.gateArr.done:-1e9);if(t<tA-1||t>tB+1)continue;
+  for(const ph of['arr','dep','gateArr','gateDep']){const w=r[ph];if(!w||t<w.at||t>w.done)continue;
+   const gate=ph==='gateArr'||ph==='gateDep',two=!gate&&!!r.path2;
+   for(let i=0;i<w.n;i++){const P=gate?g2GatePath(APL.bays.find(b=>b.id===w.bay)):two&&i%2?r.path2:r.path,L=g2PathLen(P),pts=(ph==='arr'||ph==='gateArr')?P:P.slice().reverse(),travel=L/G2_WALK.v;   
+    const lt=t-w.at-G2_WALK.pre-(two?i>>1:i)*G2_WALK.gap;if(lt<0||lt>=travel)continue;let d=lt*G2_WALK.v,k=1;
+    while(k<pts.length-1&&d>Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1])){d-=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);k++}
+    const a=pts[k-1],b=pts[k],sl=Math.hypot(b[0]-a[0],b[1]-a[1])||1,u=Math.min(1,d/sl),dx=b[0]-a[0],dy=b[1]-a[1];
+    out.push({id:f.code+'-'+ph+'-'+i,flight:f.code,stand:f.stand,phase:ph,gate,asset:G2_PAX_ASSETS[(i+g2Hash(f.code))%G2_PAX_ASSETS.length],x:a[0]+dx*u,y:a[1]+dy*u,face:Math.abs(dx)>Math.abs(dy)?(dx>0?2:6):(dy>0?4:0),walkTime:lt+i*.21,alpha:Math.min(1,lt*3,(travel-lt)*3)})}
+  }
+ }
+ return out;
+}
+function g2DrawAirstair(g,x,y,al){ 
+ g.save();g.globalAlpha=al;g.fillStyle='rgba(8,18,26,.22)';g.fillRect(x+1,y-3,17,8);g.fillStyle='#d8dde2';g.fillRect(x,y-4,16,8);g.strokeStyle='#6b747c';g.lineWidth=.8;
+ for(let sx=x+2;sx<x+16;sx+=2.6){g.beginPath();g.moveTo(sx,y-3.4);g.lineTo(sx,y+3.4);g.stroke()}g.fillStyle='#e07a2a';g.fillRect(x,y-4.4,16,1);g.fillRect(x,y+3.4,16,1);g.restore();
+}
+function g2DrawRemote(now,v){if(WTC_LP===1)return;
+ if(!APT_OPS.ready||!(portVis(v,7600,700,800,260)||portVis(v,6870,614,140,170)))return;const t=APT_OPS.clk;
+ for(const f of AO.flights){const r=f.g2;if(!r||t<r.open||t>r.close)continue;const d=r.door;
+  if(!r.truck)g2DrawAirstair(ctx,d[0],d[1],Math.min(1,(t-r.open)/2,(r.close-t)/2));
+  else{ 
+   const S=AO.fleet.find(q=>q.id===r.stairs.v);const p=S&&afPose(S,t);const lg=p&&p.task?p.task.tr.seq.legAt(t-p.task.t0):null;
+   if(lg&&lg.leg.kind==='svc'){ctx.save();ctx.fillStyle='#9aa3ab';ctx.fillRect(d[0]-1,d[1]-4,G2_STAIR_GAP+2,8);ctx.fillStyle='#e3bf3e';ctx.fillRect(d[0]-1,d[1]-4.6,G2_STAIR_GAP+2,1.2);ctx.restore()}
+   if(r.stairs2&&r.door2){const S2=AO.fleet.find(q=>q.id===r.stairs2.v),p2=S2&&afPose(S2,t),l2=p2&&p2.task?p2.task.tr.seq.legAt(t-p2.task.t0):null,d2=r.door2;if(l2&&l2.leg.kind==='svc'){ctx.save();ctx.fillStyle='#9aa3ab';ctx.fillRect(d2[0]-1,d2[1]-4,G2_STAIR_GAP+2,8);ctx.fillStyle='#e3bf3e';ctx.fillRect(d2[0]-1,d2[1]-4.6,G2_STAIR_GAP+2,1.2);ctx.restore()}}
+  }
+ }
+ for(const p of g2RemotePassengers(t)){if(!portVis(v,p.x-12,p.y-20,24,30))continue;const I=TurboCity.info(p.asset,{scale:G77_PE.sc,direction:p.face,pose:'walking'}),feet=I.an.find(q=>q[0]==='Feet')||['Feet',I.w/2,I.h*.55];
+  ctx.save();ctx.globalAlpha=p.alpha;P34G.k=p.id??null;TurboCity.draw(ctx,p.asset,p.x-feet[1],p.y-feet[2],{mode:'runtime',scale:G77_PE.sc,direction:p.face,pose:'walking',time:p.walkTime});ctx.restore()}
+}
+
+function g2RemoteStats(T){
+ const all=AO.hist.concat(AO.flights).filter(f=>(f.stand==='P6'||f.stand==='P5')&&!f.never&&!f.heli),issues=[];let visits=0,served=0,pax=0,trucks=0;
+ const tasks=[];for(const v of AO.fleet)for(const k of v.hist.concat(v.tasks))if(String(k.role).startsWith('remote-'))tasks.push({v:v.id,role:k.role,code:k.code,t0:k.t0,t1:k.t1,at:k.at});
+ for(const f of all){if(!G2_REMOTE_AC.has(f.ac)||f.states?.[0]?.[1]!=='INBOUND')continue;if(f.tOB==null||f.tOB>T)continue;visits++;const r=f.g2;if(!r){issues.push(f.code+':no-remote-plan');continue}served++;
+  if(r.truck){trucks++;if(!(r.stairs.at<r.arr.at&&r.dep.done<r.stairs.done))issues.push(f.code+':stairs-window');if(r.stairs2){trucks++;if(!(r.stairs2.at<r.arr.at&&r.dep.done<r.stairs2.done))issues.push(f.code+':rear-stairs-window')}}
+  if(!(r.arr.at>=f.tOB&&r.arr.done<r.dep.at))issues.push(f.code+':bus-order');
+  if(f.tPush!=null&&r.close>f.tPush+.5)issues.push(f.code+':open-at-push');pax+=r.arr.n+r.dep.n;
+  const mine=tasks.filter(k=>k.code===f.code);if(mine.length!==(r.truck?(r.stairs2?4:3):2))issues.push(f.code+':task-count '+mine.length)}
+ const shuttles=tasks.filter(k=>/remote-bus/.test(k.role)&&k.t0<=T).length,stairsUses=tasks.filter(k=>/remote-stairs/.test(k.role)&&k.t0<=T).length;   
+ return{ok:issues.length===0,visits,served,trucks,pax,tasks:tasks.length,shuttles,stairsUses,issues};
+}
+
+
+
+
+
+
+
+const G2_SCOPE={id:'G2',x:7200,y:850,w:1200,h:850,next:'AIRPORT-FINISH',gate:'GATE-69'};
+const G2_SHUTTLE_LAYBY={id:'G2-SHUTTLE-LAYBY',x0:7380,x1:7640,b0:7410,b1:7610,y0:1298,y1:1342,label:'שאטל חניון ארוך'};
+const G2_SHUTTLE_SPACES=[{id:'S1',x:7414,y:1302,w:96,h:36},{id:'S2',x:7512,y:1302,w:96,h:36}];
+const G2_PLATFORM={id:'G2-PLAT',x:7262,y:1318,w:482,h:54};
+const G2_LOT={id:'G2-P-LONG',x:7206,y:1376,w:594,h:316,label:'חניון ארוך — P-LONG'};
+const G2_AW={x:7206,y:1318,w:56,h:374},G2_AE={x:7744,y:1318,w:56,h:374};
+const G2_ROWS=[{id:'R1',y:1376,h:68,th:-Math.PI/2},{id:'R2',y:1500,h:68,th:Math.PI/2},{id:'R3',y:1568,h:68,th:-Math.PI/2}];
+const G2_AISLES=[{id:'A1',x:7206,y:1444,w:594,h:56},{id:'A2',x:7206,y:1636,w:594,h:56}];
+const G2_FOOT={x:7490,w:30,y:1372,y1:1692};
+const G2_STALLS=[];
+for(const r of G2_ROWS){
+ for(let c=0;c<6;c++)G2_STALLS.push({id:'G2-'+r.id+'-'+(c+1),lot:G2_LOT.id,row:r.id,x:7262+c*38,y:r.y,w:38,h:r.h,th:r.th,accessible:r.id==='R1'&&c===5,ev:r.id==='R1'&&c<3});
+ for(let c=0;c<5;c++)G2_STALLS.push({id:'G2-'+r.id+'-'+(c+7),lot:G2_LOT.id,row:r.id,x:7520+c*38,y:r.y,w:38,h:r.h,th:r.th,accessible:r.id==='R1'&&c===0,ev:false});
+}
+for(let i=0;i<8;i++)G2_STALLS.push({id:'G2-ST-'+(i+1),lot:G2_LOT.id,row:'ST',x:7800,y:1388+i*38,w:68,h:38,th:0,staff:true});
+const G2_STAFF_GATE={x0:7800,x1:7869,y0:1226,y1:1274,stopX:7846,barX:7860,label:'שער צוות G2'};
+
+C4_YARDS.push({id:'APT-G2-P-LONG',x:G2_LOT.x,y:G2_LOT.y,w:G2_LOT.w,h:G2_LOT.h,label:G2_LOT.label,skin:true,surface:'asphalt',custom:true},
+ {id:'APT-G2-AW',x:G2_AW.x,y:1318,w:G2_AW.w,h:58,label:'כניסה מערבית P-LONG',skin:true,surface:'asphalt',custom:true},
+ {id:'APT-G2-AE',x:G2_AE.x,y:1318,w:G2_AE.w,h:58,label:'כניסה מזרחית P-LONG',skin:true,surface:'asphalt',custom:true},
+ {id:'APT-G2-STAFF',x:7800,y:1376,w:68,h:316,label:'חניות צוות',skin:true,surface:'asphalt',custom:true});
+const G2_CUTS=[{id:'G2-CUT-W',x:G2_AW.x,y:1296,w:G2_AW.w,h:24,custom:true},{id:'G2-CUT-E',x:G2_AE.x,y:1296,w:G2_AE.w,h:24,custom:true},
+ {id:'G2-SHUTTLE-LANE',x:7380,y:1296,w:260,h:48,custom:true},
+ 
+ {id:'G2-F2-LINK',x:7194,y:1444,w:14,h:56,custom:true},{id:'G2-GATE-LANE',x:7798,y:G2_STAFF_GATE.y0,w:G2_STAFF_GATE.x1-7798-1,h:G2_STAFF_GATE.y1-G2_STAFF_GATE.y0,custom:true}];
+C4_ACCESS.push(...G2_CUTS);
+
+for(const l of STREET_LIGHTS){
+ if(l.id==='L-G2-AIR-H-0-R'){l.x=7300;l.y=1368;l.g2Moved='driveway-clear'}
+ if(l.y===1308&&l.x>G2_SHUTTLE_LAYBY.x0-6&&l.x<G2_SHUTTLE_LAYBY.x1+6&&String(l.id).startsWith('L-G2-')){l.y=1368;l.g2Moved='platform-edge'}
+ if(l.id==='L-G2-AIR-H-4-R'){l.x=7724;l.y=1368;l.g2Moved='driveway-clear'}
+ if(l.id==='L-G2-AIR-H-2-R'){l.x=7556;l.g2Moved='walkway-clear'}
+}
+
+{
+ let s=26919;const rnd=()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296};
+ const mix=[['VH-SD-02','Sedan'],['VH-SD-04','Sedan'],['VH-HB-01','Compact'],['VH-SU-03','SUV'],['VH-SD-03','Sedan'],['VH-MV-02','Minivan'],['VH-SD-01','Sedan'],['VH-HB-02','Compact'],['VH-SU-01','SUV']];
+ for(const st of G2_STALLS){if(st.accessible)continue;if(rnd()>(st.staff?.72:.5))continue;const m=mix[Math.floor(rnd()*mix.length)];PARKED_CARS.push(parkInRect('PC-'+st.id,m[0],m[1],st,st.th,Math.floor(rnd()*12)))}
+ const S2=G2_SHUTTLE_SPACES[1];PARKED_CARS.push(parkInRect('PC-G2-SHUTTLE',"LV-SH-01",'Bus',{x:S2.x+4,y:S2.y+4,w:S2.w-8,h:S2.h-8},0,null));
+}
+
+
+const G2_BUILDINGS=[d2Place('G2-STAFF-GATEHOUSE','בית שמירה — שער צוות G2','IL-10',1,0,7834,1373,'airport-security')];
+APT_BUILDINGS.push(...G2_BUILDINGS);C4_BUILDINGS.push(...G2_BUILDINGS);
+const G2_PROPS=[
+ {id:'G2-SHUTTLE-SHELTER',asset:'PR-35',x:7446,scale:.55,snap:1372,solid:true},
+ {id:'G2-SHUTTLE-SIGN',asset:'RF-BUS',x:7409,scale:.4,snap:1372,solid:true},
+ {id:'G2-SHUTTLE-BENCH',asset:'PR-15',x:7476,scale:.42,snap:1372,solid:true},
+ {id:'G2-SHUTTLE-BIN',asset:'PR-16',x:7396,scale:.4,snap:1372,solid:true},
+ {id:'G2-PAY',asset:'PR-20',x:7536,scale:.46,snap:1372,solid:true},
+  
+ {id:'G2-PARK-SIGN-W',asset:'RF-PRK',x:7272,y:1330,scale:.4,solid:true},
+ {id:'G2-PARK-SIGN-E',asset:'RF-PRK',x:7734,y:1330,scale:.4,solid:true},
+ {id:'G2-GATE-STOP',asset:'RF-STP',x:7848,y:1290,scale:.42,v:0,solid:true},
+ {id:'G2-GATE-BARRIER',asset:'RF-BAR',x:7858,y:1258,scale:.5,rot:1,solid:false}
+];
+for(const o of G2_PROPS)if(o.snap!=null){const I=TurboCity.info(o.asset,{scale:o.scale,rot:o.rot||0});o.y=o.snap-(I.fp[1]+I.fp[3])+I.h/2}
+const G2_LAMPS=[[7727,1410],[7727,1534],[7727,1602]].map(([x,y],i)=>({id:'G2-LAMP-'+i,asset:'SL-PKL',x,y,targetWidth:30}));
+const G2_TREES=[[7727,1568,'TP-UR-02',24]].map(([x,y,asset,w],i)=>({id:'G2-TREE-'+i,asset,x,y,targetWidth:w}));
+const G2_HEDGES=[{x:7206,y:1692,w:662,h:8},{x:7710,y:1376,w:34,h:68,island:true},{x:7710,y:1500,w:34,h:136,island:true},{x:7800,y:1318,w:68,h:58,island:true}];
+GRAPHICS_RUNTIME_INFO.required.push(...new Set([...G2_BUILDINGS,...G2_PROPS,...G2_LAMPS,...G2_TREES].map(o=>o.asset)));
+function g2SolidAt(x,y,r){if(x<7195||x>7875||y<1140||y>1705)return null;for(const o of G2_PROPS)if(o.solid&&circleRectHit(x,y,r,f2SpriteBox(o)))return o.id;for(const o of G2_LAMPS)if(Math.hypot(x-o.x,y-o.y)<r+3)return o.id;for(const o of G2_TREES)if(Math.hypot(x-o.x,y-o.y)<r+3)return o.id;return null}
+
+Object.assign(APT_INTERACTIONS,{
+ 'APT-LONG':{id:'APT-LONG',chunk:'G2',label:'חניון ארוך P-LONG',kind:G2_STALLS.filter(s=>!s.staff).length+' חניות · '+G2_STALLS.filter(s=>s.staff).length+' לצוות · שאטל לטרמינל',app:'business',x:7536,y:1350},
+ 'APT-LONG-STOP':{id:'APT-LONG-STOP',chunk:'G2',label:'תחנת השאטל — חניון ארוך',kind:'שאטל לרחבת האוטובוסים בטרמינל',app:'business',x:7474,y:1350},
+ 'APT-STAFF-GATE':{id:'APT-STAFF-GATE',chunk:'G2',label:'שער צוות G2 · מרכז שירותי הקרקע',kind:'כניסת עובדים לחצר הצי · חיווי צי ועמדות מרוחקות',app:'business',x:7834,y:1381}
+});
+APT_INFO['APT-LONG']=[['חניון','33 חניות בשלוש שורות · 2 נגישות · 3 טעינה · 8 חניות צוות'],['גישה','כניסה ויציאה משדרת R-AIR בשני הקצוות · שביל הולכי רגל אל תחנת השאטל'],['שאטל','לרחבת האוטובוסים של הטרמינל']];
+APT_INFO['APT-LONG-STOP']=[['תחנה','מפרץ שאטל בשני מקומות מחוץ לנתיב הראשי'],['קו','חניון ארוך ↔ רחבת האוטובוסים בטרמינל']];
+APT_INFO['APT-STAFF-GATE']=[['שער','בית שמירה ומחסום · הכניסה לאיירסייד בהיתר בלבד'],['צי','חצר שירותי הקרקע, אוטובוסי רחבה ומדרגות ניידות']];
+
+function g2PaintLand(g){
+ g.fillStyle=portPattern('concrete');g.fillRect(G2_PLATFORM.x,G2_PLATFORM.y,G2_PLATFORM.w,G2_PLATFORM.h);
+ g.strokeStyle='rgba(70,66,58,.55)';g.lineWidth=1.5;g.strokeRect(G2_PLATFORM.x+.5,G2_PLATFORM.y+.5,G2_PLATFORM.w-1,G2_PLATFORM.h-1);
+ g.fillStyle=portPattern('asphalt');g.fillRect(G2_LOT.x,G2_LOT.y,G2_LOT.w,G2_LOT.h);g.fillRect(G2_AW.x,1318,G2_AW.w,58);g.fillRect(G2_AE.x,1318,G2_AE.w,58);g.fillRect(7800,1376,68,316);
+ g.fillStyle='rgba(0,0,0,.08)';g.fillRect(7866,1376,2,316);
+ for(const h of G2_HEDGES){g.fillStyle=h.island?'#6f9460':'#4f7346';g.fillRect(h.x,h.y,h.w,h.h);if(h.island){g.strokeStyle='#b9b6a8';g.lineWidth=2;g.strokeRect(h.x+1,h.y+1,h.w-2,h.h-2)}}
+ g.fillStyle=portPattern('concrete');g.fillRect(G2_FOOT.x,G2_FOOT.y,G2_FOOT.w,G2_FOOT.y1-G2_FOOT.y);
+ g.strokeStyle='#e8e2c8';g.lineWidth=1.3;
+ for(const s of G2_STALLS){
+  if(false){}else if(s.staff){g.fillStyle='rgba(224,185,58,.10)';g.fillRect(s.x+1,s.y+1,s.w-2,s.h-2)}
+  g.beginPath();
+  if(s.staff){g.moveTo(s.x,s.y);g.lineTo(s.x+s.w,s.y);g.moveTo(s.x,s.y+s.h);g.lineTo(s.x+s.w,s.y+s.h);g.moveTo(s.x+s.w,s.y);g.lineTo(s.x+s.w,s.y+s.h)}
+  else{g.moveTo(s.x,s.y);g.lineTo(s.x,s.y+s.h);g.moveTo(s.x+s.w,s.y);g.lineTo(s.x+s.w,s.y+s.h);const back=s.th<0?s.y:s.y+s.h;g.moveTo(s.x,back);g.lineTo(s.x+s.w,back)}
+  g.stroke();
+  ;if(s.staff)aptTxt(g,'צוות',s.x+s.w/2+6,s.y+s.h/2,8,'rgba(244,211,94,.9)');
+ }
+ 
+ g.fillStyle='rgba(246,244,232,.9)';for(const y0 of[1444,1636])for(let y=y0+4;y<y0+52;y+=8)g.fillRect(G2_FOOT.x+3,y,G2_FOOT.w-6,4);
+ g.fillStyle='rgba(236,232,210,.8)';
+ for(const y of[1472,1664])for(let x=7300;x<7720;x+=120){if(Math.abs(x-7505)<40)continue;g.beginPath();g.moveTo(x+6,y-4);g.lineTo(x-7,y);g.lineTo(x+6,y+4);g.closePath();g.fill()}
+ for(const y of[1350,1420,1560])for(const [x,d] of[[G2_AE.x+28,1],[G2_AW.x+28,-1]]){g.beginPath();g.moveTo(x-4,y-d*6);g.lineTo(x,y+d*7);g.lineTo(x+4,y-d*6);g.closePath();g.fill()}
+ aptTxt(g,'P-LONG · חניון ארוך',7330,1684,10,'rgba(240,236,214,.75)');aptTxt(g,'כניסה',G2_AE.x+28,1388,8,'rgba(240,236,214,.8)');aptTxt(g,'יציאה',G2_AW.x+28,1388,8,'rgba(240,236,214,.8)');
+ 
+ g.fillStyle=portPattern('concrete');g.fillRect(7814,1320,40,54);g.strokeStyle='#b9b6a8';g.lineWidth=1.5;g.strokeRect(7814.5,1320.5,39,53);
+ g.fillStyle=portPattern('concrete');g.fillRect(7800,1376,68,12);g.fillStyle='rgba(246,244,232,.85)';for(let x=7804;x<7866;x+=8)g.fillRect(x,1378,4,8);
+ g2PaintProps(g);
+}
+function g2PaintCurb(g){
+ const L=G2_SHUTTLE_LAYBY;g.fillStyle=portPattern('asphalt');g.beginPath();g.moveTo(L.x0,L.y0);g.lineTo(L.b0,L.y1);g.lineTo(L.b1,L.y1);g.lineTo(L.x1,L.y0);g.closePath();g.fill();
+ g.strokeStyle='#d9d4c2';g.lineWidth=2.4;g.beginPath();g.moveTo(L.x0,L.y0+1);g.lineTo(L.b0,L.y1);g.lineTo(L.b1,L.y1);g.lineTo(L.x1,L.y0+1);g.stroke();
+ g.strokeStyle='rgba(248,248,240,.85)';g.lineWidth=1.6;g.setLineDash([9,7]);g.beginPath();g.moveTo(L.x0+10,L.y0+1.5);g.lineTo(L.x1-10,L.y0+1.5);g.stroke();g.setLineDash([]);
+ g.strokeStyle='#f4d35e';g.lineWidth=1.3;for(const s of G2_SHUTTLE_SPACES){g.strokeRect(s.x+.5,s.y+.5,s.w-1,s.h-1);aptTxt(g,s.id.slice(1),s.x+10,s.y+s.h/2,8,'#f4d35e')}
+ aptTxt(g,'SHUTTLE',7462,1321,9,'#f4d35e');
+ 
+ const G=G2_STAFF_GATE;g.fillStyle=portPattern('asphalt');g.fillRect(7798,G.y0,G.x1-7798,G.y1-G.y0);
+ g.strokeStyle='#d9d4c2';g.lineWidth=2;g.beginPath();g.moveTo(7798,G.y0);g.lineTo(G.x1,G.y0);g.moveTo(7798,G.y1);g.lineTo(G.x1,G.y1);g.stroke();
+ g.strokeStyle='rgba(248,248,240,.9)';g.lineWidth=3;g.beginPath();g.moveTo(G.stopX,G.y0+3);g.lineTo(G.stopX,G.y1-3);g.stroke();
+ g.save();g.translate(7822,1250);g.rotate(-Math.PI/2);aptTxt(g,'צוות בלבד',0,0,8,'rgba(244,211,94,.9)');g.restore();
+}
+function g2PaintProps(g){for(const o of G2_PROPS)f2DrawSprite(o,0,g)}
+function g2DrawGround(now){if(!e3InView(7200,1140,680,570,80))return;const v=aptView(120);if(portVis(v,7200,1140,680,570))portCached('g2-land',7200,1140,680,570,g2PaintLand,1.5)}
+function g2DrawAccess(now){
+ if(!e3InView(7180,1220,700,300,60))return;const v=aptView(60);
+ if(portVis(v,7370,1220,500,130))portCached('g2-curb',7370,1220,500,130,g2PaintCurb,2);
+ ctx.save();ctx.fillStyle=portPattern('asphalt');ctx.strokeStyle='#e0b85d';ctx.lineWidth=1.6;
+ {const c=G2_CUTS.find(q=>q.id==='G2-F2-LINK');if(portVis(v,c.x-4,c.y-4,c.w+8,c.h+8)){ctx.fillRect(c.x,c.y,c.w,c.h);ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x+c.w,c.y);ctx.moveTo(c.x,c.y+c.h);ctx.lineTo(c.x+c.w,c.y+c.h);ctx.stroke()}}
+ for(const c of G2_CUTS.slice(0,2)){if(!portVis(v,c.x,c.y,c.w,c.h))continue;ctx.fillRect(c.x,c.y,c.w,c.h);ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x+c.w,c.y);ctx.moveTo(c.x,c.y+c.h);ctx.lineTo(c.x+c.w,c.y+c.h);ctx.stroke()}
+ ctx.restore();
+}
+function g2DrawProps(now){if(WTC_LP===1)return;
+ if(!e3InView(7200,1140,680,570,80))return;const v=aptView(80);
+ if(portVis(v,7200,1140,680,560)){for(const [t,x,y,w]of[['שאטל לטרמינל',7422,1346,70],['חניון ארוך P-LONG',7666,1350,84],['שער צוות G2',7834,1208,70]])e4Plate(t,x,y,w)}
+ Targets.add({id:'G2-P-LONG',label:'G2 · חניון ארוך · '+G2_STALLS.length+' חניות (8 צוות)',category:'airport',x:7537,y:1534,w:662,h:316});
+ Targets.add({id:'G2-STAFF-GATE',label:'G2 · שער צוות וחצר הצי',category:'airport',x:7834,y:1250,w:70,h:48});
+}
+function g2DrawOverhead(now){if(WTC_LP===1)return;if(!e3InView(7200,1140,680,580,80))return;const v=aptView(80);for(const o of G2_LAMPS)if(portVis(v,o.x-20,o.y-20,40,40))f2DrawSprite(o,now);for(const o of G2_TREES)if(portVis(v,o.x-30,o.y-30,60,60))g77NcEach(o,now,f2DrawSprite)}
+
+
+
+
+
+
+function g2PaintRemoteMarks(g){
+ const A=aptReady(),SH=APTT_SPEC.veh['LV-SH-01'],L=SH.fp[2]+8,W=SH.fp[3]+6,st=id=>A.stands.find(s=>s.id===id);
+ g.save();
+ const box=(cx,cy,vert,lab)=>{const w=vert?W:L,h=vert?L:W;g.strokeStyle='rgba(244,211,94,.8)';g.lineWidth=1.4;g.setLineDash([6,4]);g.strokeRect(cx-w/2,cy-h/2,w,h);g.setLineDash([]);
+  g.fillStyle='rgba(244,211,94,.10)';g.fillRect(cx-w/2,cy-h/2,w,h);aptTxt(g,lab,cx,cy,8,'rgba(244,211,94,.9)',700)};
+ const walk=P=>{g.strokeStyle='rgba(246,244,232,.62)';g.lineWidth=1.1;g.setLineDash([3,3]);
+  for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(l<2)continue;const nx=-(b[1]-a[1])/l*3,ny=(b[0]-a[0])/l*3;
+   for(const s of[-1,1]){g.beginPath();g.moveTo(a[0]+nx*s,a[1]+ny*s);g.lineTo(b[0]+nx*s,b[1]+ny*s);g.stroke()}}g.setLineDash([])};
+ 
+ const p5=st('P5'),p6=st('P6');
+ if(p5){box(G2_REM.P5.x,G2_REM.P5.busY,true,'BUS');walk(g2PaxPath(p5,'AC-TP-01'))}
+ 
+ if(p6){box(G2_REM.P6.busX,G2_REM.P6.busY,false,'BUS');walk(g2PaxPath(p6,'AC-RJ-01'));
+  const d=g2Door(p6,'AC-RJ-01');g.strokeStyle='rgba(244,242,232,.75)';g.lineWidth=1.2;g.strokeRect(d[0]+G2_STAIR_GAP,d[1]-10,70,20);aptTxt(g,'STAIRS',d[0]+G2_STAIR_GAP+35,d[1]+17,7,'rgba(244,242,232,.8)',700)}
+ 
+ const S=G2_STAIR_PARK;g.fillStyle='rgba(0,0,0,.07)';g.fillRect(S.x0-14,S.lanes[0]-16,S.x1-S.x0+28,S.lanes[S.lanes.length-1]-S.lanes[0]+32);
+ for(const b of A.bays.filter(b=>b.kind==='MS'&&b.zone==='G2')){g.strokeStyle='rgba(244,242,232,.8)';g.lineWidth=1.3;g.beginPath();g.moveTo(b.x0,b.y0);g.lineTo(b.x1,b.y0);g.moveTo(b.x0,b.y1);g.lineTo(b.x1,b.y1);g.stroke();aptTxt(g,b.id.replace('G2-',''),b.x0-9,b.yc,7,'rgba(244,242,232,.85)',700)}
+ aptTxt(g,'STAIRS · P6',S.x,S.lanes[0]-22,8,'rgba(244,242,232,.7)',700);
+ g.restore();
+}
+
+function g2PaintYardMarks(g){
+ const A=aptReady(),homes=new Set(A.fleet.map(f=>f.bay));
+ for(const b of A.bays){if(b.zone==='F2'||b.zone==='G2'||b.zone==='EMRG'||homes.has(b.id))continue;const cx=(b.x0+b.x1)/2,cy=(b.y0+b.y1)/2;
+  g.save();g.translate(cx,cy);if(b.x1-b.x0<b.y1-b.y0)g.rotate(-Math.PI/2);aptTxt(g,b.kind==='BL'?'BELT LOADER':'RESERVE',0,0,7,b.kind==='BL'?'rgba(150,210,240,.9)':'rgba(244,211,94,.75)',700);g.restore()}
+ const ar=A.bays.filter(b=>b.kind==='ARFF'&&b.zone!=='EMRG');if(ar.length){const x0=Math.min(...ar.map(b=>b.x0)),x1=Math.max(...ar.map(b=>b.x1)),y0=Math.min(...ar.map(b=>b.y0));aptTxt(g,'ARFF · כיבוי והצלה',(x0+x1)/2,y0-8,8,'rgba(255,170,160,.95)',700)}
+}
+
+APT_INTERACTIONS['APT-BUS-G2']={id:'APT-BUS-G2',chunk:'F2',label:'רחבת האוטובוסים — עצירת שאטל P-LONG',kind:'נתיב הרחבה ליד המפרצים',phoneOnly:true,x:6990,y:1478};
+Object.assign(MISSION_DEFS,{
+ 'M-G2-SHUTTLE':{id:'M-G2-SHUTTLE',name:'G2 · שאטל חניון ארוך ↔ טרמינל',type:'route',chunk:'G2',jobKey:'airport',license:'LIC-05',reward:520,timeLimit:420,stops:['APT-LONG-STOP','APT-BUS-G2','APT-LONG-STOP'],vehicle:{asset:'LV-SH-01',ref:'Bus@F'},failOnCollision:false,routeLabel:'תחנת השאטל P-LONG → רחבת האוטובוסים בטרמינל → חזרה לחניון'}
+});
+MISSION_AREA_META.G2='G2 · האנגרים, חצר הצי וחניון ארוך';
+
+APT_INFO['APT-FUEL']=[['אזור','מחסן דלק ושירות שדה · מכליות דלק חיות שיוצאות מחצר הצי וחוזרות אליה'],['גישה','איירסייד סגור']];
+APT_INFO['APT-HELI']=[['אזור','מנחתי מסוקים H1–H6 · צפון השדה ומנחת דרומי ליד חצר הצי'],['גישה','איירסייד סגור']];
+APT_INFO['APT-HANGARS']=[['אזור','האנגר גדול, שני האנגרים קטנים, עמדות GA ועמדות מרוחקות P6/P5 עם אוטובוסים ומדרגות'],['גישה','אזור איירסייד סגור למבקרים בשלב הזה']];
+function g2Persistent(){PlayerProfile.worldPersistent||={};const p=PlayerProfile.worldPersistent.airportG2||={shuttleRuns:0,bestShuttleSeconds:null,lastShuttle:null,fleetViews:0,gateVisits:0};for(const k of['shuttleRuns','fleetViews','gateVisits'])if(!Number.isFinite(p[k]))p[k]=0;return p}
+function g2OnComplete(m,d){if(d.id!=='M-G2-SHUTTLE')return;const p=g2Persistent(),secs=Math.round((Date.now()-Date.parse(m.startedAt||iso()))/1000);p.shuttleRuns++;p.lastShuttle={at:iso(),seconds:secs,collisions:Math.max(0,(PlayerCar.collisions||0)-(m.startCollisions||0))};if(p.bestShuttleSeconds==null||secs<p.bestShuttleSeconds)p.bestShuttleSeconds=secs}
+
+const G2_FLEET_LABELS={PT:'גוררי Pushback',BT:'רכבות מזוודות',FT:'מכליות דלק',SH:'הסעות צוות',SVC:'רכבי שירות',MX:'גרר תחזוקה',ARFF:'כבאות והצלה',EMS:'אמבולנסים',POL:'משטרת השדה',AB:'אוטובוסי רחבה',MS:'מדרגות ניידות'};
+function g2FleetStatus(t=APT_OPS.clk){
+ if(!APT_OPS.ready)return null;const by={};let busy=0;
+ for(const v of AO.fleet){const p=afPose(v,t),b=by[v.type]||(by[v.type]={n:0,busy:0});b.n++;if(p&&p.task){b.busy++;busy++}}
+ return{total:AO.fleet.length,busy,home:AO.fleet.length-busy,by};
+}
+function g2StandStatus(id,t=APT_OPS.clk){
+ if(!APT_OPS.ready)return 'הפעילות בשדה עדיין נטענת';
+ const f=AO.flights.find(q=>q.stand===id&&!q.heli&&!q.never&&q.states?.some(s=>s[1]==='ON_BLOCK'||s[1]==='INBOUND'));
+ if(!f)return 'פנויה';const r=f.g2,s=aoStateOf(f,t);
+ if(r&&r.gateArr&&t>=r.gateArr.at&&t<=r.gateArr.done)return f.code+' · הנוסעים יורדים מהאוטובוס בשער T3';
+ if(r&&r.gateDep&&t>=r.gateDep.at&&t<=r.gateDep.done)return f.code+' · הנוסעים עולים לאוטובוס בשער T3';
+ if(r&&t>=r.open&&t<=r.close){const ph=t<r.arr.done?'ירידת נוסעים לאוטובוס':t<r.dep.at?'האוטובוס בדרך לטרמינל':t<=r.dep.done?'עליית נוסעים מהאוטובוס':'סגירת דלת';return f.code+' · '+ph+(r.truck?' · מדרגות ניידות':'')}
+ return f.code+' · '+(E2_STATE_LABELS[s]||s||'בדרך');
+}
+
+function g2InsideStall(car){for(const s of G2_STALLS)if(e2InsideBay(car,s))return s;return null}
+function g2PhoneCard(id){
+ const p=APT_INTERACTIONS[id],held=PlayerProfile.mode==='walk'&&p&&Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y)<=80,btn=(label,action,dis=false)=>`<button data-g2-action="${action}" ${dis?'disabled':''}>${label}</button>`,P=g2Persistent();
+ if(id==='APT-LONG'){const loc=PlayerProfile.worldPersistent?.airportLandside?.parkingLocation,inG2=loc?.zone==='G2',taken=new Set(PARKED_CARS.filter(c=>/^PC-G2-/.test(c.id)).map(c=>c.id.slice(3))),free=G2_STALLS.filter(s=>!s.staff&&!taken.has(s.id)).length;
+  return pcard('איתור הרכב בחניון הארוך',pnote(inG2?'מקום החניה נשמר: '+loc.slot:'עצור באחת החניות, צא מהרכב וגש לעמדת החניון כדי לשמור את מקום הרכב. חניות הצוות שמורות לעובדי השדה.')+pkv([['פנויות כעת',free+' מתוך '+G2_STALLS.filter(s=>!s.staff).length],['נגישות / טעינה','2 / 3']])+`<div class="phoneActions">${btn('שמור את מקום הרכב','remember',!held)}${inG2?'<button data-nav-target="APT-MY-PARK">נווט לרכב</button>':''}</div>`,'nav')}
+ if(id==='APT-LONG-STOP'){const d=MISSION_DEFS['M-G2-SHUTTLE'];return pcard('קו השאטל של החניון הארוך',pnote('עבודת נהיגה בשאטל: מתחילים מתוך רכב באפליקציית העבודות (נדרש רישיון אוטובוס), עוצרים בתחנה כאן, ברחבת האוטובוסים של הטרמינל וחוזרים לחניון.')+pkv([['תגמול',money(d.reward)],['סבבים',P.shuttleRuns],['הזמן הטוב',P.bestShuttleSeconds!=null?P.bestShuttleSeconds+' שנ׳':'—']]),'career')}
+ if(id==='APT-STAFF-GATE'){P.gateVisits++;const F=g2FleetStatus();
+  return pcard('מרכז שירותי הקרקע · G2',pkv(F?[['צי הקרקע',F.total+' רכבים · '+F.home+' בבית · '+F.busy+' במשימה'],...Object.entries(F.by).map(([k,b])=>[G2_FLEET_LABELS[k]||k,b.n+(b.busy?' · '+b.busy+' במשימה':' · בבית')]),['עמדה P6',g2StandStatus('P6')],['עמדה P5',g2StandStatus('P5')]]:[['צי הקרקע','הפעילות בשדה עדיין נטענת']])+pnote('הכניסה לחצר הצי בהיתר בלבד. כל רכב יוצא מהמפרץ הקבוע שלו וחוזר אליו; עבודות הקרקע לשחקן נפתחות בשלב סיום השדה.'),'business')}
+ if(id==='APT-FUEL'){const F=g2FleetStatus(),b=F?.by.FT;return b?pcard('מכליות הדלק',pkv([['מכליות',b.n+' · '+b.busy+' בתדלוק או בדרך']])):''}
+ if(id==='APT-HELI'){const n=APT_OPS.ready?AO.flights.filter(f=>f.heli).length:0;return pcard('מסוקים',pkv([['בתנועה או בחניה',n],['מנחתים','H1–H6']]))}
+ return ''
+}
+function g2Action(action){
+ const id=State.interactionId,p=APT_INTERACTIONS[id];if(!p||PlayerProfile.mode!=='walk'||Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y)>80)return false;
+ if(action==='remember'&&id==='APT-LONG'){const st=g2InsideStall(PlayerCar);if(!st||carKmh()>1)return toast('כדי לשמור מיקום, עצור את הרכב באחת מחניות P-LONG');if(st.staff)return toast('חניות הצוות שמורות לעובדי השדה');
+  e2Persistent().parkingLocation={x:PlayerCar.x,y:PlayerCar.y,asset:PlayerCar.asset,slot:st.id,zone:'G2',at:iso()};SaveManager.save('airport-parking-location',{backup:false,silent:true});toast('מקום החניה נשמר · '+st.id);renderPhone();return true}
+ return false
+}
+$('phoneOverlay').addEventListener('click',e=>{const b=e.target.closest('[data-g2-action]');if(!b||b.disabled)return;g2Action(b.dataset.g2Action)});
+
+
+
+function g2GeometryAudit(){
+ const A=aptReady(),issues=[],over=aptOver,inside=q=>q.x>=7200-.01&&q.y>=850-.01&&q.x+q.w<=8400+.01&&q.y+q.h<=1700+.01;
+ const roads=aptRoadRects(),fps=APT_BUILDINGS.map(aptFp);
+ for(const q of[...G2_STALLS,...G2_SHUTTLE_SPACES,...G2_PROPS.map(f2SpriteBox),...G2_BUILDINGS.map(aptFp),G2_LOT,G2_PLATFORM])if(!inside(q))issues.push('outside-G2:'+(q.id||q.x));
+ 
+ const lots=[{id:'lot',...G2_LOT},{id:'AW',x:G2_AW.x,y:1318,w:G2_AW.w,h:58},{id:'AE',x:G2_AE.x,y:1318,w:G2_AE.w,h:58},{id:'staff',x:7800,y:1376,w:68,h:316}];
+ for(const L of lots){for(const r of roads)if(over(L,r))issues.push('lot-on-road:'+L.id+'/'+r.id);for(const f of fps)if(over(L,f))issues.push('lot-under-building:'+L.id+'/'+f.id);if(over(L,{x:7869,y:1150,w:531,h:550}))issues.push('lot-in-yard:'+L.id)}
+ for(let i=0;i<G2_STALLS.length;i++)for(let j=i+1;j<G2_STALLS.length;j++)if(over(G2_STALLS[i],G2_STALLS[j]))issues.push('stall-overlap:'+G2_STALLS[i].id+'/'+G2_STALLS[j].id);
+ const walk={x:G2_FOOT.x,y:G2_FOOT.y,w:G2_FOOT.w,h:G2_FOOT.y1-G2_FOOT.y};
+ for(const s of G2_STALLS){for(const a of G2_AISLES)if(over(s,a))issues.push('stall-in-aisle:'+s.id);if(over(s,walk))issues.push('stall-on-walkway:'+s.id);for(const h of G2_HEDGES)if(over(s,h))issues.push('stall-on-hedge:'+s.id)}
+ 
+ for(const s of G2_STALLS){if(s.staff){if(s.x!==G2_AE.x+G2_AE.w)issues.push('staff-access:'+s.id);continue}const a=s.row==='R3'?G2_AISLES[1]:G2_AISLES[0];if(!(s.y+s.h===a.y||s.y===a.y+a.h))issues.push('aisle-access:'+s.id)}
+ 
+ for(const c of PARKED_CARS.filter(c=>/^PC-G2-/.test(c.id))){const I=TurboCity.info(c.asset,{scale:roadVehicleScaleFor(c.asset,c.ref)}),r=c.slotRect,vert=Math.abs(Math.sin(c.heading||0))>.5,len=I.w-4,wid=I.h-4;if(!r)continue;if(vert?(wid>r.w+1||len>r.h+1):(len>r.w+1||wid>r.h+1))issues.push('car-clearance:'+c.id)}
+ 
+ const Lb=G2_SHUTTLE_LAYBY,lay={id:'layby',x:Lb.x0,y:Lb.y0,w:Lb.x1-Lb.x0,h:Lb.y1-Lb.y0};
+ if(Lb.y0<1298||Lb.y1>1346)issues.push('layby-band');for(const c of G2_CUTS.slice(0,2))if(over(lay,c))issues.push('layby-on-driveway:'+c.id);
+ 
+ const blockers=[...G2_STALLS,...G2_AISLES,lay,...G2_CUTS,{id:'AW',x:G2_AW.x,y:1318,w:G2_AW.w,h:58},{id:'AE',x:G2_AE.x,y:1318,w:G2_AE.w,h:58},walk];
+ for(const o of G2_PROPS){const q=f2SpriteBox(o);for(const b of blockers)if(over(q,b)&&!(o.id==='G2-GATE-BARRIER'&&b.id==='G2-GATE-LANE'))issues.push(o.id+':blocks '+(b.id||'area'));if(q.y<1318&&o.id!=='G2-GATE-BARRIER'&&o.id!=='G2-GATE-STOP')issues.push(o.id+':in-road-band')}
+ for(const o of[...G2_TREES,...G2_LAMPS]){const q={x:o.x-6,y:o.y-6,w:12,h:12};for(const r of roads)if(over(q,r))issues.push(o.id+':on-road');for(const b of blockers)if(over(q,b))issues.push(o.id+':blocks '+(b.id||'area'))}
+ for(const l of STREET_LIGHTS.filter(l=>l.x>=7200&&l.x<7880&&l.y>1140&&l.y<1700)){const q={x:l.x-5,y:l.y-5,w:10,h:10};for(const b of blockers)if(over(q,b))issues.push(l.id+':blocks '+(b.id||'area'))}
+ for(const id of['APT-LONG','APT-LONG-STOP','APT-STAFF-GATE']){const p=APT_INTERACTIONS[id];if(personBlockedAt(p.x,p.y,5))issues.push(id+':blocked-poi')}
+ 
+ const lk=G2_CUTS.find(c=>c.id==='G2-F2-LINK');
+ if(!(lk.y>=F2_A3.y&&lk.y+lk.h<=F2_A3.y+F2_A3.h&&lk.y===G2_AISLES[0].y&&lk.h===G2_AISLES[0].h&&lk.x<=F2_A3.x+F2_A3.w&&lk.x+lk.w>=G2_AW.x))issues.push('f2-link-alignment');
+ for(const o of[...F2_PROPS.map(f2SpriteBox),...[...F2_TREES,...F2_LAMPS,...G2_TREES,...G2_LAMPS,...STREET_LIGHTS].map(o=>({id:o.id,x:o.x-6,y:o.y-6,w:12,h:12}))])if(over(o,lk))issues.push('f2-link-blocked:'+o.id);
+ 
+ for(const id of['P6','P5']){const s=A.stands.find(q=>q.id===id);if(!s||!s.remote||s.kind!=='pax')issues.push(id+':not-remote-pax')}
+ const ab=A.bays.filter(b=>b.kind==='AB'),ms=A.bays.filter(b=>b.kind==='MS');
+ if(ab.length!==G2_S_BAYS.length||ab.some(b=>!G2_S_BAYS.some(q=>q.id===b.id&&q.x===b.x)))issues.push('apron-bus-bays');   
+ for(const v of A.fleet.filter(f=>f.type==='AB'||f.type==='MS')){const b=A.bays.find(q=>q.id===v.bay);if(!b||b.kind!==v.type)issues.push('home:'+v.id)}
+ if(A.bays.filter(b=>b.zone!=='F2').length<24)issues.push('ground-ops-bays<24');
+ const lotStalls=G2_STALLS.filter(s=>!s.staff).length,total=APT_STALLS.length+F2_STALLS.length+G2_STALLS.length;
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,30),scope:'G2',gate:'GATE-69',parking:{lot:lotStalls,staff:G2_STALLS.length-lotStalls,accessible:G2_STALLS.filter(s=>s.accessible).length,ev:G2_STALLS.filter(s=>s.ev).length,airportTotal:total,parked:PARKED_CARS.filter(c=>/^PC-G2-/.test(c.id)).length},
+  shuttle:G2_SHUTTLE_SPACES.length,props:G2_PROPS.length,trees:G2_TREES.length,lamps:G2_LAMPS.length,remote:{stands:['P6','P5'],aircraft:[...G2_REMOTE_AC],apronBuses:ab.map(b=>b.id),stairs:ms.map(b=>b.id)},yardBays:A.bays.filter(b=>b.zone!=='F2').length,fleet:A.fleet.length,next:'AIRPORT-FINISH'}
+}
+function g2OpsQa(minutes=20,seed=777){
+ if(!APTT_SPEC){APTT_SPEC=aptBuildSpec();APTT_C=aptBuildC()}
+ return aoSandbox(()=>{AO.keep=true;aoInit(0,seed);const T=minutes*60;let paxSeen=0,maxPax=0;
+  for(let t=0;t<=T;t+=1){aoStep(t);if(t%5===0){const n=g2RemotePassengers(t).length;if(n)paxSeen++;maxPax=Math.max(maxPax,n)}}
+  const v=aoVerify(0,T),rem=g2RemoteStats(T),all=AO.hist.concat(AO.flights);
+  const dep=all.filter(f=>f.states.some(s=>s[1]==='DEPARTED')&&!f.init).length,arr=all.filter(f=>f.states.some(s=>s[1]==='ON_BLOCK')&&f.states[0][1]==='INBOUND').length;
+  return{ok:v.ok&&rem.ok,seed,minutes,verify:{ok:v.ok,issues:v.issues.slice(0,6)},dep,arr,remote:rem,paxSamples:paxSeen,maxPax};
+ });
+}
+window.__TC_G2_QA=()=>({geometry:g2GeometryAudit(),fleet:g2FleetStatus(),stands:{P6:g2StandStatus('P6'),P5:g2StandStatus('P5')},remotePassengers:APT_OPS.ready?g2RemotePassengers().length:0,persistent:PlayerProfile.worldPersistent?.airportG2||null,build:BUILD,gate:ACTIVE_GATE,next:'AIRPORT-FINISH'});
+
+
+
+var EW2_READY=false;
+ACTIVITIES.airport={id:'airport',name:'שירותי קרקע · שדה התעופה',c:'#aa71dc',ranks:[{xp:0,name:'חניך שירותי קרקע'},{xp:120,name:'עובד כבודה'},{xp:360,name:'עובד רחבה'},{xp:720,name:'מתפעל מוסמך'},{xp:1200,name:'מדריך רחבה'},{xp:1800,name:'אחראי עמדה'},{xp:2700,name:'מנהל משמרת'},{xp:4000,name:'מנהל שירותי הקרקע'}]};
+const EW2_SCOPE={x:4800,y:850,w:600,h:850,gate:'GATE-70'};
+const EW2_LOT={id:'E2W-PARK',x:4806,y:1330,w:568,h:202,label:'חניון מערב P-WEST · שתי שורות'};   
+const EW2_DRIVES=[{id:'E2W-W',x:4806,y:1296,w:56,h:256},{id:'E2W-E',x:5318,y:1296,w:56,h:256}];   
+const EW2_AISLES=[{id:'E2W-A1',x:4806,y:1394,w:568,h:56}];
+const EW2_STALLS=[];
+for(const row of [{id:'R1',y:1330,th:-Math.PI/2},{id:'R2',y:1450,th:Math.PI/2}]){   
+ for(let i=0;i<11;i++){if(row.id==='R2'&&i<3)continue;const x=i<6?4862+i*38:5120+(i-6)*38;EW2_STALLS.push({id:'E2W-'+row.id+'-'+(i+1),row:row.id,lot:EW2_LOT.id,x,y:row.y,w:38,h:64,th:row.th,accessible:row.id==='R2'&&(i===5||i===6),ev:row.id==='R1'&&i>=6&&i<=8});}
+}
+const EW2_FENCE_Y=725;   
+const EW2_TRAIN_YARD={id:'E2W-TRAIN',x:4832,y:730,w:542,h:130,label:'רחבת הכשרת שירותי קרקע'};   
+const EW2_TRAIN_ACCESS={id:'E2W-TRAIN-ACCESS',x:5320,y:860,w:54,h:342,label:'כניסת שירות לרחבת ההכשרה',custom:true};
+const EW2_PWN={id:'P-WEST-N',x:4832,y:874,w:484,h:186,label:'P-WEST-N · חניון השכרה וחניה'};   
+
+
+const PWN_AISLE={id:'PWN-A',x:4832,y:934,w:488,h:56};
+const PWN_WALK={id:'PWN-WALK',x:5282,y:990,w:34,h:60};
+const PWN_KIOSK_SLOT={id:'PWN-KIOSK',x:5280,y:874,w:36,h:60};
+const PWN_STALLS=[];
+for(let i=0;i<4;i++)PWN_STALLS.push({id:'PWN-N1-'+(i+1),row:'N1',lot:'P-WEST-N',x:4832+i*32,y:874,w:32,h:60,th:-Math.PI/2,accessible:false,ev:false});
+for(let i=0;i<15;i++)PWN_STALLS.push({id:'PWN-N2-'+(i+1),row:'N2',lot:'P-WEST-N',x:4832+i*30,y:990,w:30,h:60,th:Math.PI/2,accessible:i===14,ev:false,staff:i<3});   
+const EW2_TRAINER={x:5198,y:780,heading:0};   
+
+const EW2_TOW={gate:{x0:4870,x1:4970},hold:{x:4842,y:600,w:151,h:120},ac:{x:4920,y:650,heading:Math.PI/2},couple:[4920,716],k:0};
+const EW2_BUILDINGS=[
+ d2Place('E2W-OPS','מרכז שירותי קרקע','IL-06',1,0,4924,1172,'airport-dispatch'),
+ d2Place('E2W-GARAGE','מוסך שירותי השדה','W2SP-11',1,0,5118,1172,'airport-service'),
+ d2Place('E2W-CAFE','קפה השדה','W2SP-03',1,0,5226,1172,'airport-cafe'),
+ d2Place('E2W-SECURITY','בקרת רחבת ההכשרה','IL-10',1,0,5300,1168,'airport-security')
+];
+APT_BUILDINGS.push(...EW2_BUILDINGS);C4_BUILDINGS.push(...EW2_BUILDINGS);
+C4_YARDS.push({...EW2_LOT,skin:true,surface:'asphalt',custom:true},{...EW2_TRAIN_YARD,skin:true,surface:'concrete',custom:true},{id:'E2W-PWN',x:4832,y:874,w:488,h:176,label:'P-WEST-N',skin:true,surface:'asphalt',custom:true},
+ {id:'E2W-PLATFORM',x:4862,y:1318,w:456,h:12,skin:true,surface:'concrete',custom:true},
+ {id:'E2W-FORECOURT',x:4806,y:1172,w:568,h:10,skin:true,surface:'concrete',custom:true});
+C4_ACCESS.push(...EW2_DRIVES.map(d=>({...d,h:80,custom:true})),...EW2_DRIVES.map(d=>({id:d.id+'-S',x:d.x,y:1514,w:d.w,h:40,custom:true})),EW2_TRAIN_ACCESS);   
+const EW2_PATHS=[{pts:[[4820,1183],[5396,1183]],w:18},{pts:[[4820,1324],[5396,1324]],w:10},
+ {pts:[[5105,1324],[5105,1532]],w:30},{pts:[[5396,1183],[5420,1172]],w:18},{pts:[[5396,1324],[5440,1324]],w:10},
+ {pts:[[5299,962],[5299,1080],[5269,1080],[5269,1183]],w:14}];   
+E2_NAV_PATHS.push(...EW2_PATHS);
+const EW2_PROPS=[
+  
+ {id:'E2W-PRK-W',asset:'RF-PRK',x:4867,y:1324,scale:.32,solid:true},
+ {id:'E2W-PRK-E',asset:'RF-PRK',x:5313,y:1324,scale:.32,solid:true},
+ {id:'E2W-WATER',asset:'PR-28',x:5250,y:1181,scale:.35,solid:true},
+ {id:'E2W-GATE',asset:'RF-BAR',x:5339,y:870,rot:1,scale:.45,solid:false},   
+ {id:'E2W-STOP',asset:'RF-STP',x:5390,y:1165,scale:.35,solid:true},
+ ...[4840,5000,5300].map((x,i)=>({id:'E2W-TRAIN-CONE-'+i,asset:'PR-02',x,y:850,scale:.45,solid:true}))
+];
+const EW2_TREES=[[4816,1100,'TP-UR-02'],[5040,1120,'TP-UR-03'],[5384,1500,'TP-UR-02'],[5384,1356,'TP-UR-03']].map(([x,y,asset],i)=>({id:'E2W-TREE-'+i,asset,x,y,targetWidth:24}));
+const EW2_LAMPS=[[5000,1324],[5262,1324],[5390,1430],[4960,1523],[5240,1523],[4846,1056],[5160,1056]].map(([x,y],i)=>({id:'E2W-LAMP-'+i,asset:'SL-PKL',x,y,targetWidth:26}));
+
+
+{
+ let n=70196;const rnd=()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296};
+ const mix=[['VH-SD-02','Sedan'],['VH-HB-01','Compact'],['VH-SU-03','SUV'],['VH-SD-04','Sedan'],['VH-MV-02','Minivan']];
+ for(const s of EW2_STALLS){if(s.accessible||rnd()>.52)continue;const m=mix[Math.floor(rnd()*mix.length)];PARKED_CARS.push(parkInRect('PC-'+s.id,m[0],m[1],s,s.th,Math.floor(rnd()*12)));}
+ const mixN=[['VH-SD-02','Sedan'],['VH-HB-01','Compact'],['VH-SD-04','Sedan'],['VH-HB-02','Compact'],['VH-SU-03','SUV']];   
+ for(const s of PWN_STALLS){if(s.accessible||rnd()>(s.staff?.7:.5))continue;const m=mixN[Math.floor(rnd()*mixN.length)];PARKED_CARS.push(parkInRect('PC-'+s.id,m[0],m[1],s,s.th,Math.floor(rnd()*12)));}
+}
+Object.assign(APT_INTERACTIONS,{
+ 'E2W-OPS':{id:'E2W-OPS',chunk:'E2',label:'מרכז שירותי קרקע',kind:'הכשרה · כבודה, מטען, תדלוק, הכוונה וגרר',app:'business',x:4924,y:1183},
+ 'E2W-GARAGE':{id:'E2W-GARAGE',chunk:'E2',label:'מוסך שירותי השדה',kind:'תיקון ותדלוק רכב',app:'business',x:5118,y:1183},
+ 'E2W-CAFE':{id:'E2W-CAFE',chunk:'E2',label:'קפה השדה',kind:'ארבעה פריטים · מחירים ויתרה',app:'business',x:5226,y:1183},
+ 'E2W-PARK':{id:'E2W-PARK',chunk:'E2',label:'חניון מערב P-WEST',kind:'22 חניות · 2 נגישות · 3 EV · מנתיב השירות ומכביש השדה',app:'business',x:5105,y:1324,navNode:'AIR-1',navVia:[{x:5346,y:1576},{x:5346,y:1422}]},
+ 'E2W-PARK-N':{id:'E2W-PARK-N',chunk:'E2',label:'חניון P-WEST-N · השכרה וחניה',kind:'28 חניות + מפרץ החזרה · השכרת רכב · שמירת מקום',app:'business',x:5299,y:1012,navNode:'D2E',navVia:[{x:4840,y:1274},{x:5347,y:1274},{x:5347,y:962}]},
+ 'E2W-GATE':{id:'E2W-GATE',chunk:'E2',label:'שער רחבת הכשרה',kind:'גישה למשימות שירותי קרקע',app:'business',x:5345,y:1183}
+});
+for(const p of Object.values(APT_INTERACTIONS).filter(p=>p.id.startsWith('E2W-')))APT_INFO[p.id]=[['שירות',p.kind],['גישה','נתיב השירות (הכביש הישן) מצפון · כביש השדה y 1600 מדרום · קו 4 בשני הכיוונים']];
+for(const id of['E2W-OPS','E2W-GARAGE','E2W-CAFE','E2W-GATE'])Object.assign(APT_INTERACTIONS[id],{navNode:'D2E',navVia:[{x:4840,y:1274},{x:APT_INTERACTIONS[id].x,y:1274}]});   
+GRAPHICS_RUNTIME_INFO.required.push(...new Set([...EW2_BUILDINGS,...EW2_PROPS,...EW2_LAMPS,...EW2_TREES].map(o=>o.asset)),'AC-PR-01','LV-BT-01','LV-FT-01','LV-PT-01','LV-FK-01');
+APT_SOLIDS.push({id:'E2W-PAD-FENCE-S',x:4796,y:857,w:524,h:8},{id:'E2W-PAD-FENCE-W',x:4796,y:720,w:10,h:145});APT_FENCE_SEGS.push([4805,860,5320,860]);   
+EW2_READY=true;
+function ew2SolidAt(x,y,r){if(!EW2_READY||x<4795||x>5400||y<720||y>1705)return null;for(const o of EW2_PROPS)if(o.solid&&circleRectHit(x,y,r,f2SpriteBox(o)))return o.id;for(const o of [...EW2_TREES,...EW2_LAMPS])if(Math.hypot(x-o.x,y-o.y)<r+3)return o.id;return null;}
+function ew2ParkingTotal(){return APT_STALLS.filter(s=>!s.returnBay).length+F2_STALLS.length+G2_STALLS.length+EW2_STALLS.length+PWN_STALLS.length+(typeof RA_STAFF_STALLS==='undefined'?0:RA_STAFF_STALLS.length);}
+function ew2Arrow(g,x,y){cityArrow(g,x,y,0,'s',false,1)}    
+function ew2Paint(g){
+ {const T=EW2_TRAIN_YARD;g.fillStyle=portPattern('apron');g.fillRect(T.x,T.y,T.w,T.h);g.fillRect(4806,1172,568,30);
+ g.strokeStyle='#adb3ad';g.lineWidth=1;for(let x=T.x;x<=T.x+T.w;x+=60){g.beginPath();g.moveTo(x,T.y);g.lineTo(x,T.y+T.h);g.stroke();}for(let y=T.y;y<T.y+T.h;y+=54){g.beginPath();g.moveTo(T.x,y);g.lineTo(T.x+T.w,y);g.stroke();}}
+ ew2PaintPWN(g);   
+ 
+ g.save();g.strokeStyle='rgba(133,187,209,.75)';g.lineWidth=1.6;g.setLineDash([6,6]);g.beginPath();g.moveTo(4920,EW2_FENCE_Y+2);g.lineTo(4920,770);g.quadraticCurveTo(4920,780,4960,780);g.lineTo(EW2_TRAINER.x-40,780);g.stroke();g.setLineDash([]);aptTxt(g,'TOW',4936,752,7,'rgba(170,210,226,.85)',700);
+ g.strokeStyle='rgba(236,234,226,.7)';g.lineWidth=1.2;g.setLineDash([5,4]);g.strokeRect(4850,792,80,44);g.setLineDash([]);aptTxt(g,'HOME',4890,828,7,'rgba(236,234,226,.75)',700);g.restore();
+ g.fillStyle=portPattern('asphalt');g.fillRect(EW2_LOT.x,EW2_LOT.y,EW2_LOT.w,EW2_LOT.h);for(const d of EW2_DRIVES)g.fillRect(d.x,1318,d.w,12);
+ g.fillStyle='#d6d7ce';g.fillRect(4862,1318,456,12);g.fillRect(5090,1330,30,EW2_LOT.h);
+ for(const s of EW2_STALLS){g.strokeStyle='#e3e0c9';g.lineWidth=1.3;g.strokeRect(s.x+1,s.y+1,s.w-2,s.h-2);}
+ for(const y of [1422])for(let x=4850;x<5350;x+=160)ew2Arrow(g,x,y);
+ for(const y of [1394]){g.fillStyle='#ecebdc';for(let k=0;k<7;k++)g.fillRect(5092,y+4+k*7,26,3);}
+ g.fillStyle='#71905f';g.fillRect(4862,1514,228,18);g.fillRect(5120,1514,198,18);g.fillRect(5310,1330,8,64);g.fillRect(5310,1450,8,64);   
+ g.setLineDash([8,5]);g.strokeStyle='#e1bc4a';g.lineWidth=2;g.strokeRect(5068,734,210,112);g.setLineDash([]);
+ for(const [x,y,w,h,color]of[[4970,790,60,54,'#e5bf59'],[5072,790,60,54,'#93c97b']]){g.strokeStyle=color;g.strokeRect(x,y,w,h);}
+ for(const p of EW2_PATHS){g.beginPath();p.pts.forEach((q,i)=>i?g.lineTo(...q):g.moveTo(...q));g.strokeStyle='#dad9cb';g.lineWidth=p.w;g.stroke();}
+ for(const p of EW2_PROPS)f2DrawSprite(p,0,g);
+}
+function ew2PaintPWN(g){   
+ const L=EW2_PWN,A=PWN_AISLE,K=PWN_KIOSK_SLOT,W=PWN_WALK;
+ g.fillStyle=portPattern('asphalt');g.fillRect(L.x,874,A.x+A.w-L.x,176);
+ g.fillStyle=portPattern('concrete');g.fillRect(K.x,K.y,K.w,K.h);g.fillRect(W.x,W.y,W.w,W.h+10);
+ g.fillStyle='rgba(60,56,48,.45)';g.fillRect(L.x,874,1.5,176);g.fillRect(L.x,1049,448,1.5);
+ for(const s of [...PWN_STALLS,...APT_STALLS]){const rent=s.group==='P-RENT';
+  if(false){}else if(s.returnBay){g.fillStyle='rgba(215,172,69,.28)';g.fillRect(s.x+2,s.y+2,s.w-4,s.h-4)}else if(rent){g.fillStyle='rgba(224,150,60,.12)';g.fillRect(s.x+2,s.y+2,s.w-4,s.h-4)}else if(s.staff){g.fillStyle='rgba(120,160,200,.10)';g.fillRect(s.x+2,s.y+2,s.w-4,s.h-4)}
+  g.strokeStyle=s.returnBay?'#e6c85b':'#e3e0c9';g.lineWidth=1.3;g.beginPath();g.moveTo(s.x+.5,s.y);g.lineTo(s.x+.5,s.y+s.h);g.moveTo(s.x+s.w-.5,s.y);g.lineTo(s.x+s.w-.5,s.y+s.h);const back=s.th<0?s.y+.5:s.y+s.h-.5;g.moveTo(s.x,back);g.lineTo(s.x+s.w,back);g.stroke();
+  if(s.returnBay)aptTxt(g,'החזרה',s.x+s.w/2,s.y+s.h/2,8,'#f1d578');if(s.staff)aptTxt(g,'צוות',s.x+s.w/2,s.y+s.h-10,7,'rgba(220,232,244,.8)')}
+ for(let x=4880;x<5300;x+=140){ew2Arrow(g,x,950);g.save();g.translate(x+60,974);g.rotate(Math.PI);g.translate(-x-60,-974);ew2Arrow(g,x+60,974);g.restore()}
+ g.fillStyle='#ecebdc';for(let k=0;k<6;k++)g.fillRect(W.x+4,A.y+6+k*8,W.w-8,4);   
+ aptTxt(g,'P-WEST-N',4900,1062,9,'rgba(236,232,210,.72)',800);
+}
+function ew2DrawGround(now){if(e3InView(4800,720,600,980,80))portCached('e2-west-g74',4800,720,600,980,ew2Paint,1.5);}
+function ew2DrawAccess(now){if(e3InView(E2_AIR_C.x,E2_AIR_C.y,E2_AIR_C.w,E2_AIR_C.h,60)){const C=E2_AIR_C;ctx.save();ctx.fillStyle=portPattern('asphalt');ctx.fillRect(C.x,C.y,C.w,C.h);ctx.fillStyle='rgba(60,56,48,.5)';ctx.fillRect(C.x-1.5,C.y,1.5,C.h);ctx.fillRect(C.x+C.w,C.y,1.5,C.h);ctx.strokeStyle='rgba(236,230,206,.55)';ctx.lineWidth=1;ctx.setLineDash([6,8]);ctx.beginPath();ctx.moveTo(C.x+C.w/2,C.y);ctx.lineTo(C.x+C.w/2,C.y+C.h-4);ctx.stroke();ctx.setLineDash([]);aptTxt(ctx,'AIR-C',C.x+C.w/2,C.y+C.h-10,7,'#ece6ce',700);ctx.restore()}
+ g74DrawServiceLane(now);
+ if(!e3InView(4800,720,600,980,80))return;ctx.save();ctx.fillStyle=portPattern('asphalt');for(const d of EW2_DRIVES){ctx.fillRect(d.x,d.y,d.w,82);ctx.fillRect(d.x,1514,d.w,40)}ctx.fillRect(EW2_TRAIN_ACCESS.x,EW2_TRAIN_ACCESS.y,EW2_TRAIN_ACCESS.w,EW2_TRAIN_ACCESS.h);ctx.fillRect(5314,PWN_AISLE.y,8,PWN_AISLE.h);
+ ctx.strokeStyle='#e0b85d';ctx.lineWidth=1.6;for(const d of EW2_DRIVES){ctx.beginPath();ctx.moveTo(d.x,1530);ctx.lineTo(d.x,1552);ctx.moveTo(d.x+d.w,1530);ctx.lineTo(d.x+d.w,1552);ctx.stroke()}ctx.restore();}
+function ew2DrawProps(now){if(WTC_LP===1)return;if(e3InView(4800,720,600,980,80)){Targets.add({id:'E2W-PARK',label:'P-WEST · '+EW2_STALLS.length+' חניות · קו 4',category:'airport',x:5090,y:1431,w:568,h:202});Targets.add({id:'E2W-PARK-N',label:'P-WEST-N · '+(PWN_STALLS.length+APT_STALLS.length)+' חניות · השכרת רכב',category:'airport',x:5074,y:962,w:484,h:176});}}
+function ew2DrawOverhead(now){if(WTC_LP===1)return;if(!e3InView(4800,720,600,980,80))return;for(const o of EW2_TREES)g77NcEach(o,now,f2DrawSprite);for(const o of EW2_LAMPS)f2DrawSprite(o,now);}
+function ew2Persistent(){PlayerProfile.worldPersistent||={};return PlayerProfile.worldPersistent.airportFinish||={completed:{},line4Runs:0,trainingXP:0,wrongGate:0};}
+function ew2Held(id){const p=APT_INTERACTIONS[id];return p&&PlayerProfile.mode==='walk'&&Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y)<=80;}
+function ew2Action(act,arg){const id=State.interactionId;if(!ew2Held(id))return false;
+ if(act==='remember'&&id==='E2W-PARK-N'){const s=PWN_STALLS.find(s=>e2InsideBay(PlayerCar,s));if(!s||carKmh()>1)return toast('עצור בתוך חניה מסומנת ב-P-WEST-N');e2Persistent().parkingLocation={x:PlayerCar.x,y:PlayerCar.y,asset:PlayerCar.asset,slot:s.id,zone:'E2-WEST-N',at:iso()};SaveManager.save('airport-west-n-parking',{silent:true,backup:false});toast('מקום הרכב נשמר · '+s.id);renderPhone();return true;}
+ if(act==='remember'&&id==='E2W-PARK'){const s=EW2_STALLS.find(s=>e2InsideBay(PlayerCar,s));if(!s||carKmh()>1)return toast('עצור בתוך חניה מסומנת בחניון מערב');e2Persistent().parkingLocation={x:PlayerCar.x,y:PlayerCar.y,asset:PlayerCar.asset,slot:s.id,zone:'E2-WEST',at:iso()};SaveManager.save('airport-west-parking',{silent:true,backup:false});toast('מקום הרכב נשמר · '+s.id);renderPhone();return true;}
+ if(act==='buy'&&id==='E2W-CAFE'){const it=EW2_CAFE_ITEMS.find(q=>q[0]===arg);if(!it||PlayerProfile.money<it[2])return toast('אין מספיק כסף');PlayerProfile.money-=it[2];PlayerProfile.inventory[arg]=(PlayerProfile.inventory[arg]||0)+1;recordTransaction('shop-purchase',-it[2],{shop:id,item:arg});SaveManager.save('airport-cafe',{silent:true,backup:false});renderPhone();return true;}
+ if(id==='E2W-GARAGE'&&['repair','fuel'].includes(act)){if(Math.hypot(PlayerCar.x-5118,PlayerCar.y-1250)>180||carKmh()>1)return toast('חנה את הרכב קרוב למוסך');const cost=act==='repair'?120:80;if(PlayerProfile.money<cost)return toast('אין מספיק כסף');PlayerProfile.money-=cost;const v=activeVehicleEco();if(act==='repair')v.damage=0;else v.fuel=100;recordTransaction('vehicle-service',-cost,{service:act,shop:id});SaveManager.save('airport-service',{silent:true,backup:false});renderPhone();return true;}return false;
+}
+const EW2_CAFE_ITEMS=[['e2w-coffee','קפה שחור',12],['e2w-water','מים',7],['e2w-sandwich','כריך',22],['e2w-juice','מיץ פירות',10]];
+for(const [id,name,price]of EW2_CAFE_ITEMS)SHOP_CATALOG[id]={id,name,price,kind:'food'};
+function ew2PhoneCard(id){
+ const P=ew2Persistent(),btn=(s,a,arg='',dis=false)=>`<button data-ew2-action="${a}" data-ew2-arg="${arg}"${dis?' disabled':''}>${s}</button>`;
+ if(id==='E2W-OPS'||id==='E2W-GATE')return pcard('עבודות שירותי קרקע',pnote('רחבת ההכשרה צמודה לגדר השדה, עם מטוס אימון, רכבי שירות ומשימות מעשיות. שער הגרירה בגדר נפתח רק במשימת הגרירה; אזור המסלול הפעיל נשאר מוגן. המשימות אינן משנות את הזמנות המטוסים או את צי השירות החי.')+pkv([['ניסיון בשירותי קרקע',P.trainingXP],['סבבים בקו 4',P.line4Runs],['חניות בשדה',ew2ParkingTotal()+' + מפרץ החזרת רכב']])+EW2_JOB_IDS.map(i=>ew2JobCard(MISSION_DEFS[i])).join(''),'career');
+ if(id==='E2W-PARK'){const free=EW2_STALLS.filter(s=>!allParkedCars().some(c=>c.id==='PC-'+s.id)).length;return pcard('חניון מערב P-WEST',pkv([['חניות',EW2_STALLS.length],['פנויות',free],['נגישות','2'],['טעינה','3 EV בשורה 1'],['השכרת רכב','P-WEST-N מצפון לנתיב השירות'],['גישה','נתיב השירות מצפון · כביש השדה (y 1600) מדרום'],['יתרה',money(PlayerProfile.money)]])+`<div class="phoneActions">${btn('שמור מקום הרכב','remember','',!ew2Held(id))}<button data-nav-target="APT-MY-PARK">נווט לרכב שנשמר</button></div>`,'nav');}
+ if(id==='E2W-PARK-N'){const all=[...PWN_STALLS,...APT_STALLS.filter(s=>!s.returnBay)],free=all.filter(s=>!allParkedCars().some(c=>c.id==='PC-'+s.id)).length;return pcard('חניון P-WEST-N',pkv([['חניות',all.length+' (מתוכן '+(APT_STALLS.length-1)+' השכרה)'],['פנויות',free],['נגישות','2'],['צוות','3'],['השכרת רכב','8 רכבים · מפרץ החזרה ליד הדלפק'],['גישה','מנתיב השירות x 5320–5374 (הכביש הישן)'],['יתרה',money(PlayerProfile.money)]])+`<div class="phoneActions">${btn('שמור מקום הרכב','remember','',!ew2Held(id))}<button data-nav-target="APT-MY-PARK">נווט לרכב שנשמר</button></div>`,'nav');}
+ if(id==='E2W-CAFE')return pcard('קפה השדה · '+money(PlayerProfile.money),EW2_CAFE_ITEMS.map(([key,name,price])=>`<div class="pc"><b>${name} · ${money(price)}</b><small>ברשותך ${PlayerProfile.inventory[key]||0}</small>${btn('קנה','buy',key,!ew2Held(id)||PlayerPr
