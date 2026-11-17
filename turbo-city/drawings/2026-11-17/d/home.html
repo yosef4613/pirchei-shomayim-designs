@@ -363,7 +363,7 @@ var HIN=(function(){
   L.sort((a,b)=>a.y-b.y);const me=opt.me;
   for(const q of L){if(q.w){drawWall(c,v,G,q.w);continue}if(q.p){try{q.p.draw(c,v)}catch(e){}continue}
    const it=q.it,fade=me&&it.h>1.15&&it.y1>me.y&&me.x>it.x0-.3&&me.x<it.x1+.3&&it.y0<me.y+.2&&it.k!=='stairs';if(fade)c.globalAlpha=.42;drawItem(c,v,G,it,t,(opt.st&&opt.st.get(it))||{});if(fade)c.globalAlpha=1}
-  if(opt.labels){c.textAlign='center';for(const r of G.rooms){const X=v.x((r.x0+r.x1)/2),Y=v.y(r.y1)-6;c.font='bold '+Math.round(Math.max(11,v.S*.2))+'px sans-serif';c.lineWidth=3;c.strokeStyle='rgba(255,255,255,.85)';c.strokeText(r.he,X,Y);c.fillStyle='#1d2430';c.fillText(r.he,X,Y)}}}
+  if(opt.labels){c.save();try{c.direction='rtl'}catch(e){}c.textAlign='center';for(const r of G.rooms){const X=v.x((r.x0+r.x1)/2),Y=v.y(Math.min(r.y1-.25,r.y0+.55));c.font='bold '+Math.round(Math.max(11,v.S*.2))+'px sans-serif';c.lineWidth=3;c.strokeStyle='rgba(255,255,255,.85)';c.strokeText(r.he,X,Y);c.fillStyle='#1d2430';c.fillText(r.he,X,Y)}c.restore()}}
  function cache(){return gen._c||(gen._c=new Map())}
  function get(n,b,f){const k=n+'|'+b+'|'+f,C=cache();if(!C.has(k))C.set(k,gen(n,b,f));return C.get(k)}
  const ACT_HE={sleep:'לישון',dress:'להתלבש',fridge:'המקרר והמזווה',cook:'לבשל',wash:'להתרענן',eat:'לשבת לאכול',sit:'לשבת',tv:'לראות טלוויזיה',work:'לבחור עבודה',read:'יומן המשימות',trophy:'הגביעים',
@@ -377,7 +377,7 @@ var HIN=(function(){
  function label(it,f){if(!it||!it.act)return'';if(it.k==='bed1'||it.k==='bed2'||it.k==='bed3')return'לישון';if(it.k==='stairs')return it.up&&it.down?'מדרגות — למעלה / למטה':it.up?'לעלות לקומה '+((f|0)+2):'לרדת לקומה '+(f|0);return KL[it.k]||ACT_HE[it.act]||it.act}
  // the F of the game (the round blue mark, yellow when it is the one to press, "F · …" above it) — at the item, over its top
  function fAt(it){const cx=(it.x0+it.x1)/2,top=Math.min(2.2,it.h||.5);if(it.k==='mat')return[cx,(it.y0+it.y1)/2,.15];if(it.k==='panel')return[cx,it.face==='N'?it.y1:it.y0,1.85];if(it.k==='stairs')return[cx,it.y1-.3,1.1];if(it.k==='turntable')return[cx,(it.y0+it.y1)/2+.8,1.4];return[cx,it.y1-.05,top+.35]}
- function fMark(c,v,x,y,z,txt,hot,show){const X=v.x(x),Y=v.y(y,z),r=hot?11:8;c.save();c.globalAlpha=1;c.fillStyle=hot?'#ffe08a':'#55bce7';c.beginPath();c.arc(X,Y,r,0,Math.PI*2);c.fill();c.strokeStyle='#07131b';c.lineWidth=1.7;c.stroke();
+ function fMark(c,v,x,y,z,txt,hot,show){const X=v.x(x),Y=v.y(y,z),r=hot?11:8;c.save();c.globalAlpha=1;try{c.direction='rtl'}catch(e){}c.fillStyle=hot?'#ffe08a':'#55bce7';c.beginPath();c.arc(X,Y,r,0,Math.PI*2);c.fill();c.strokeStyle='#07131b';c.lineWidth=1.7;c.stroke();
   c.fillStyle='#07131b';c.font='700 '+(hot?12:10)+'px "Segoe UI",Arial';c.textAlign='center';c.textBaseline='middle';c.fillText('F',X,Y+.5);
   if(show&&txt){const t='F · '+txt,px=hot?15:13;c.font='600 '+px+'px "Segoe UI",Arial';c.lineWidth=3.5;c.strokeStyle='rgba(5,10,14,.9)';c.strokeText(t,X,Y-r-px*.75);c.fillStyle=hot?'#ffe08a':'#e8f0f4';c.fillText(t,X,Y-r-px*.75)}c.restore()}
  // all the F marks of a floor: show — the words (all of them in the plan; near the player in the game); hot — the one to press
