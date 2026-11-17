@@ -243,7 +243,7 @@ function pose(look, act, dir, fr) {
   if (k === 'bench') pitch = .08;
   const nb = add(S.torsoAt(D.neck0 + bob), [0, 0, D.neck0 + bob]), nt = add(S.torsoAt(D.neck1 + bob), [fU[0] * .012, fU[1] * .012, D.neck1 + bob]);
   S.neck = [nb, nt];
-  if (D.czUp) pitch -= D.czUp;   // closezoom 17.11
+  if (D.czUp) pitch -= D.czUp * Math.max(0, fU[1]);   // closezoom 17.11: מורם אל המצלמה כשהפנים אליה (בפרופיל ומאחור — בלי)
   const ef = nrm(add(mul(fU, Math.cos(pitch)), mul(Z, -Math.sin(pitch)))), ez = nrm(add(mul(Z, Math.cos(pitch)), mul(fU, Math.sin(pitch))));
   S.head = { c: add(add(S.torsoAt(D.headZ + bob), [0, 0, D.headZ + bob]), add(mul(fU, .016 * D.hs), mul(ef, .01 * D.hs))), ax: [lU, ef, ez], r: D.head };
   // ---- arms: the upper arm and forearm directions in the upper-body frame (a forward, s outward, z up) ----
@@ -983,7 +983,7 @@ function tcPorFamKey(d){if(!d)return 'other';const k=[d.jobKey,d.type==='bus'?'b
 function tcPorFamIc(k,px){const F=TCPOR_FAM[k]||TCPOR_FAM.other;px=px||30;return '<span class="tcFamIc" data-fam="'+k+'" title="'+tcPorEsc(F[1])+'" style="--fam:'+F[0]+';width:'+px+'px;height:'+px+'px"><svg viewBox="0 0 24 24" style="width:62%;height:62%;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">'+F[2]+'</svg></span>'}
 
 /*@@CZ-CORE@@*/
-var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,near:320,car:true,sbcOff:true,closeRes:7.5,headK:1.36,tall:1.15,up:.3,lowK:.8,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0,close:0,sbcVec:0}};
+var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,near:320,car:false,sbcOff:true,closeRes:7.5,headK:1.36,tall:1.15,up:.3,lowK:.8,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0,close:0,sbcVec:0}};
 function tcczErr(e){TCCZ.n.errs++;if(!TCCZ.err)TCCZ.err=String(e&&e.stack||e).slice(0,240)}
 function tcczHexRgb(h){h=String(h||'');if(/^#[0-9a-f]{3}$/i.test(h))h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];if(!/^#[0-9a-f]{6}$/i.test(h))return null;const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]}
 function tcczLight(h,k){const c=tcczHexRgb(h)||[200,200,200],f=v=>Math.round(v+(255-v)*k).toString(16).padStart(2,'0');return '#'+f(c[0])+f(c[1])+f(c[2])}   /* a hex toward white (the library's colours are hex) */

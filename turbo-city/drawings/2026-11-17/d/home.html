@@ -31,8 +31,8 @@ table.acts{border-collapse:collapse;width:100%;font-size:15px} table.acts td,tab
 </ul>
 <h3>איך זה עובד במשחק</h3>
 <ol>
-<li>F ליד הבית → מסך הבית → "🚪 היכנס הביתה": הדמות הולכת עד הדלת, הדלת נפתחת, ועל המסך — בתוך הבית, במבואה (מצב פנים, מצלמה פנימית). כל אגף וגם הסטודיו — מהדלת שלו.</li>
-<li>הולכים בחצים / WASD עם התנגשות בקירות וברהיטים. ליד רהיט עם פעולה — "F — …". Esc או השטיח בדלת — יוצאים, ליד הדלת בחוץ.</li>
+<li>בדלת בחוץ — סימן F ו"F · להיכנס הביתה": הדמות הולכת עד הדלת, ועל המסך — בתוך הבית, במבואה (מצב פנים, מצלמה פנימית). כל אגף — מהדלת שלו ("F · להיכנס לאגף"), והסטודיו — "F · הסטודיו — עיצוב". מסך הבית (שדרוג, הצץ, רכבים, שמירה, שינה) — מ"לוח הבית" במבואה; ובהדרכה של משחק חדש, באמצע משימה או כשסיפור מחכה במסך הבית — F בדלת פותח את המסך, ובראשו "🚪 היכנס הביתה".</li>
+<li>הולכים בחצים / WASD עם התנגשות בקירות וברהיטים. ליד כל דבר שאפשר לעשות — סימן F עגול, וכשמתקרבים — הכיתוב "F · לישון", "F · להתלבש", "F · לבשל"… (בצהוב — מה ש-F יעשה עכשיו). Esc או השטיח בדלת ("F · לצאת") — יוצאים, ליד הדלת בחוץ.</li>
 <li>בכל קומה — המדרגות (F: עלייה / ירידה). הקיר הצפוני גבוה עם חלונות; שאר הקירות חתוכים — כמו בית בובות, רואים פנימה.</li>
 <li>שדרוג רמה: המזווה, הבגדים והשמירה נשארים (הם בפרופיל, לא בבית); בפעם הבאה נכנסים לבית החדש.</li>
 </ol>
@@ -132,7 +132,7 @@ var HIN=(function(){
  // ---- the templates: what every room gets, by its kind and the level (t). w — at the wall ('N','S','E','W','C'), a — where along it ('c' / 's' / 'e'), and the attachments ----
  function tpl(type,t,ctx){const I=[],add=(k,w,a,o)=>I.push(Object.assign({k,w,a:a||'c'},o||{}));
   switch(type){
-   case 'entry':add('mat','DOOR');add('panel','S','s');add('coat','W','e');add('shoebench','E','e');if(t>=3)add('plant','N','s');if(t>=6)add('statue','N','e');if(t>=7)add('chand','C');if(t>=2&&!ctx.display)add('shelf','N','c');break;
+   case 'entry':add('mat','DOOR');add('panel','S','s');add('coat','W','s');add('shoebench','E','e');if(t>=3)add('plant','N','s');if(t>=6)add('statue','N','e');if(t>=7)add('chand','C');if(t>=2&&!ctx.display)add('shelf','N','c');break;
    case 'hall':add('plant','N','e');if(t>=5)add('lamp','S','e');break;
    case 'kitchen':add('fridge','N','e');add('stove','N','c');add('sink','N','s');add('counter','N','s');add('counter','N','e');if(t>=4)add('pantry','S','e');if(t>=3)add('island','C');if(t===1)add('shelf','E','e');break;
    case 'dining':add(t>=8?'table10':t>=6?'table8':t>=4?'table6':t>=2?'table4':'table2','C');if(t>=5)add('bar','N','c');if(t>=6)add('chand','C');add('plant','S','e');break;
@@ -150,7 +150,7 @@ var HIN=(function(){
    case 'library':add('books','N','s');add('books','N','e');add('books','E','c');add('arm','C',null,{ox:-.15});add('lamp','C',null,{ox:.12});break;
    case 'trophy':add('trophy','N','s');add('trophy','N','e');if(ctx.w>=5)add('trophy','N','c');add('statue','C');add('plant','S','e');break;
    case 'display':add('vitrine','N','s');add('vitrine','N','e');add('vitrine','E','c');add('vitrine','W','c');add('statue','C');break;
-   case 'balcony':case 'terrace':add('chairs2','C');add('plant','N','s');add('plant','N','e');if(type==='terrace')add('chairs2','C',null,{ox:.25});break;
+   case 'balcony':case 'terrace':add('chairs2','C');add('plant','N','e');if(type==='terrace'){add('plant','N','s');add('chairs2','C',null,{ox:.25})}break;
    case 'studio':add('mat','DOOR');add('turntable','C',null,{ox:-.12});add('ddesk','N','e');add('swatch','N','s');add('shelf','E','c');add('plant','S','e');break}
   return I}
  // ---- the generator: rooms → walls, openings, furniture, action points; and the check that every room and every action can be reached ----
@@ -212,6 +212,8 @@ var HIN=(function(){
      for(const p of pos){if(s.w==='N')cands.push({x0:p,y0:r.y0+WT/2+.02,x1:p+ww,y1:r.y0+WT/2+.02+dd,face:'S'});else if(s.w==='S')cands.push({x0:p,y0:r.y1-WT/2-.02-dd,x1:p+ww,y1:r.y1-WT/2-.02,face:'N'});
       else if(s.w==='W')cands.push({x0:r.x0+WT/2+.02,y0:p,x1:r.x0+WT/2+.02+dd,y1:p+ww,face:'E'});else cands.push({x0:r.x1-WT/2-.02-dd,y0:p,x1:r.x1-WT/2-.02,y1:p+ww,face:'W'})}}
     let ok=false;for(const c of cands){if(put(c)){ok=true;break}}if(!ok)continue;
+    // a wall tablet / a mirror: the floor in front of it stays free (the player stands there)
+    if(it.k==='panel'||it.k==='mirror'){const F=it.face,dd=.85;clear.push(F==='N'?{x0:it.x0-.1,y0:it.y0-dd,x1:it.x1+.1,y1:it.y0}:F==='S'?{x0:it.x0-.1,y0:it.y1,x1:it.x1+.1,y1:it.y1+dd}:F==='E'?{x0:it.x1,y0:it.y0-.1,x1:it.x1+dd,y1:it.y1+.1}:{x0:it.x0-dd,y0:it.y0-.1,x1:it.x0,y1:it.y1+.1})}
     // the attachments: the night stands of a bed, the chairs round a table, the chair of a desk, the stools of an island
     if(s.night){for(const sx of [-1,1]){const q={k:'night',act:null,room:r.i,h:K.night[2],face:'S',y0:it.y0,y1:it.y0+K.night[1]};q.x0=sx<0?it.x0-.06-K.night[0]:it.x1+.06;q.x1=q.x0+K.night[0];if(free(q,r))items.push(q)}}
     if(/^table/.test(it.k)){const tw=it.x1-it.x0,nx=Math.max(1,Math.round(tw/.75)),cw=K.chair[0];for(const sd of [-1,1])for(let k=0;k<nx;k++){const cx=it.x0+tw*(k+.5)/nx,q={k:'chair',act:null,room:r.i,h:K.chair[2],face:sd<0?'S':'N',x0:cx-cw/2,x1:cx+cw/2,y0:sd<0?it.y0-.05-cw:it.y1+.05,y1:sd<0?it.y0-.05:it.y1+.05+cw,seat:it};if(free(q,r))items.push(q)}
@@ -225,7 +227,7 @@ var HIN=(function(){
    else if(/^table|^bar$/.test(it.k)){for(const ch of items.filter(q=>q.seat===it||(it.k==='bar'&&q.stool&&q.y0>=it.y1-.01&&q.x0>=it.x0-.01&&q.x1<=it.x1+.01)))C.push([(ch.x0+ch.x1)/2,(ch.y0+ch.y1)/2,ch])}
    else{const sides={S:[cx,it.y1+g],N:[cx,it.y0-g],E:[it.x1+g,cy],W:[it.x0-g,cy]};const ord=F==='S'?'SEWN':F==='N'?'NEWS':F==='E'?'ENSW':'WNSE';for(const ch of ord)C.push(sides[ch])}
    it.apC=C}
-  const RC=reach(G0);for(const it of items){if(!it.apC)continue;const c=it.apC.find(p=>RC.can(p[0],p[1]));if(c){it.ap=[c[0],c[1]];if(c[2])it.chair=c[2]}else{it.noAp=it.act;it.act=null}delete it.apC}
+  const RC=reach(G0);for(const it of items){if(!it.apC)continue;const c=it.apC.find(p=>RC.can(p[0],p[1])&&(p[2]||!blocked(G0,p[0],p[1],.25)));if(c){it.ap=[c[0],c[1]];if(c[2])it.chair=c[2]}else{it.noAp=it.act;it.act=null}delete it.apC}
   // the beds: the head at the wall
   return{n,b,f,nf,W,D,P,rooms,walls,items,gaps,front,stairs,unreach,doorX,he:L.he,site:S}}
  // can the player stand at (x, y) with a radius r
@@ -237,7 +239,10 @@ var HIN=(function(){
  // the walk check: from the front door (or the stairs) to every room and every action point, on a grid of 0.15 m
  function reach(G){const s=.15,nx=Math.ceil(G.W/s)+1,ny=Math.ceil((G.D+1.5)/s)+1,ok=new Uint8Array(nx*ny),q=[];
   const st=G.front?[G.front.x,G.D-.45]:G.stairs?[(G.stairs.x0+G.stairs.x1)/2,G.stairs.y1+.45]:[(G.rooms[0].x0+G.rooms[0].x1)/2,(G.rooms[0].y0+G.rooms[0].y1)/2];
-  const id=(x,y)=>Math.round(y/s)*nx+Math.round(x/s);const i0=id(st[0],st[1]);ok[i0]=1;q.push(i0);
+  const id=(x,y)=>Math.round(y/s)*nx+Math.round(x/s);
+  // the start must stand free: the nearest free point (a spiral of 0.15 m)
+  if(blocked(G,st[0],st[1],.22)){let f=null;for(let k=1;k<14&&!f;k++)for(let a=0;a<16&&!f;a++){const X=st[0]+Math.cos(a/16*Math.PI*2)*k*s,Y=st[1]+Math.sin(a/16*Math.PI*2)*k*s;if(!blocked(G,X,Y,.22))f=[X,Y]}if(f)st[0]=f[0],st[1]=f[1]}
+  const i0=id(st[0],st[1]);ok[i0]=1;q.push(i0);
   while(q.length){const i=q.pop(),x=(i%nx)*s,y=Math.floor(i/nx)*s;for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const X=x+dx*s,Y=y+dy*s;if(X<0||Y<0||X>G.W+.01||Y>G.D+1.5)continue;const j=id(X,Y);if(ok[j])continue;if(blocked(G,X,Y,.22))continue;ok[j]=1;q.push(j)}}
   const can=(x,y)=>{for(let k=-2;k<=2;k++)for(let l=-2;l<=2;l++){const X=x+k*s,Y=y+l*s;if(X<0||Y<0)continue;if(ok[id(X,Y)])return true}return false};
   const rooms=G.rooms.filter(r=>{for(let x=r.x0+.3;x<r.x1;x+=.3)for(let y=r.y0+.3;y<r.y1;y+=.3)if(ok[id(x,y)])return false;return true}).map(r=>r.he);
@@ -252,10 +257,11 @@ var HIN=(function(){
  function floorOf(G,r){const P=G.P;if(r.t==='kitchen'||r.t==='bath')return['tile',P.tile];if(r.t==='balcony'||r.t==='terrace')return['deck','#b59a77'];if(r.t==='storage'||r.t==='gym')return['tile',shade(P.tile,-.12)];if(r.t==='entry'&&G.n>=6)return['stone',shade(P.floor,.05)];return[P.plank?'wood':P.marble?'marble':'stone',P.floor]}
  function drawFloor(c,v,G){for(const r of G.rooms){const [k,col]=floorOf(G,r),X0=v.x(r.x0),Y0=v.y(r.y0),X1=v.x(r.x1),Y1=v.y(r.y1);c.fillStyle=col;c.fillRect(X0,Y0,X1-X0,Y1-Y0);c.save();c.beginPath();c.rect(X0,Y0,X1-X0,Y1-Y0);c.clip();
    c.strokeStyle=shade(col,-.12);c.lineWidth=Math.max(.5,v.S*.01);
-   if(k==='wood'){const st=.18*v.S;for(let y=Y0;y<Y1;y+=st){c.beginPath();c.moveTo(X0,y);c.lineTo(X1,y);c.stroke();const off=((Math.round((y-Y0)/st)*37)%5)*.6*v.S;for(let x=X0+off;x<X1;x+=1.4*v.S){c.beginPath();c.moveTo(x,y);c.lineTo(x,y+st);c.stroke()}}}
-   else if(k==='tile'||k==='deck'){const st=(k==='deck'?.14:.5)*v.S;for(let y=Y0;y<Y1;y+=st){c.beginPath();c.moveTo(X0,y);c.lineTo(X1,y);c.stroke()}if(k==='tile')for(let x=X0;x<X1;x+=st){c.beginPath();c.moveTo(x,Y0);c.lineTo(x,Y1);c.stroke()}}
-   else{const st=(k==='marble'?1:.8)*v.S;c.strokeStyle=shade(col,-.08);for(let y=Y0;y<Y1;y+=st){c.beginPath();c.moveTo(X0,y);c.lineTo(X1,y);c.stroke()}for(let x=X0;x<X1;x+=st){c.beginPath();c.moveTo(x,Y0);c.lineTo(x,Y1);c.stroke()}
-    if(k==='marble'){c.strokeStyle='rgba(150,140,125,.35)';for(let i=0;i<(X1-X0)*(Y1-Y0)/(v.S*v.S)/3;i++){const a=X0+((i*97)%101)/101*(X1-X0),b=Y0+((i*61)%89)/89*(Y1-Y0);c.beginPath();c.moveTo(a,b);c.quadraticCurveTo(a+.3*v.S,b+.1*v.S,a+.7*v.S,b-.15*v.S);c.stroke()}}}
+   c.beginPath();   /* one path per room (the lines of the planks / tiles), one stroke */
+   if(k==='wood'){const st=.18*v.S;for(let y=Y0;y<Y1;y+=st){c.moveTo(X0,y);c.lineTo(X1,y);const off=((Math.round((y-Y0)/st)*37)%5)*.6*v.S;for(let x=X0+off;x<X1;x+=1.4*v.S){c.moveTo(x,y);c.lineTo(x,y+st)}}c.stroke()}
+   else if(k==='tile'||k==='deck'){const st=(k==='deck'?.14:.5)*v.S;for(let y=Y0;y<Y1;y+=st){c.moveTo(X0,y);c.lineTo(X1,y)}if(k==='tile')for(let x=X0;x<X1;x+=st){c.moveTo(x,Y0);c.lineTo(x,Y1)}c.stroke()}
+   else{const st=(k==='marble'?1:.8)*v.S;c.strokeStyle=shade(col,-.08);for(let y=Y0;y<Y1;y+=st){c.moveTo(X0,y);c.lineTo(X1,y)}for(let x=X0;x<X1;x+=st){c.moveTo(x,Y0);c.lineTo(x,Y1)}c.stroke();
+    if(k==='marble'){c.strokeStyle='rgba(150,140,125,.35)';c.beginPath();for(let i=0;i<(X1-X0)*(Y1-Y0)/(v.S*v.S)/3;i++){const a=X0+((i*97)%101)/101*(X1-X0),b=Y0+((i*61)%89)/89*(Y1-Y0);c.moveTo(a,b);c.quadraticCurveTo(a+.3*v.S,b+.1*v.S,a+.7*v.S,b-.15*v.S)}c.stroke()}}
    c.restore()}}
  // the north wall's face: windows, pictures and the skirting — on the tall outside walls
  function wallFace(c,v,G,w){const P=G.P,X0=v.x(Math.min(w.x0,w.x1)),X1=v.x(Math.max(w.x0,w.x1)),yb=v.y(w.y0+WT/2,0),yt=v.y(w.y0+WT/2,w.h),L=Math.abs(w.x1-w.x0);
@@ -362,7 +368,23 @@ var HIN=(function(){
  function get(n,b,f){const k=n+'|'+b+'|'+f,C=cache();if(!C.has(k))C.set(k,gen(n,b,f));return C.get(k)}
  const ACT_HE={sleep:'לישון',dress:'להתלבש',fridge:'המקרר והמזווה',cook:'לבשל',wash:'להתרענן',eat:'לשבת לאכול',sit:'לשבת',tv:'לראות טלוויזיה',work:'לבחור עבודה',read:'יומן המשימות',trophy:'הגביעים',
   shelf:'מה שקנית',tools:'הציוד',play:'לשחק',gym:'להתאמן',cinema:'לראות סרט',house:'לוח הבית',view:'לצאת למרפסת',stairs:'מדרגות',exit:'לצאת',car:'עיצוב הרכב',design:'עיצוב הבית והרכב'};
- return{LV,PAL,NAME,K,ACT_HE,tpl,gen,get,blocked,reach,draw,drawItem,drawFloor,box,V,shade,sitesOf,WT,Z,get FZ(){return Z.fz}}})();
+ // the words next to the F of every item (the owner 17.11: "ליד כל דבר שאפשר לעשות יהיה F ויהיה כתוב מה זה")
+ const KL={wardrobe:'להתלבש — הארון',mirror:'להתלבש — המראה',shoes:'להתלבש — הנעליים',shoewall:'להתלבש — קיר הנעליים',fridge:'המקרר',pantry:'המזווה',stove:'לבשל',island:'לבשל — האי',
+  table2:'לאכול',table4:'לאכול',table6:'לאכול',table8:'לאכול',table10:'לאכול',bar:'לאכול — הבר',sofa:'לשבת',sofa3:'לשבת',arm:'לשבת — הכורסה',fire:'לשבת ליד האח',tv:'הטלוויזיה',
+  desk:'המחשב — עבודות',books:'יומן המשימות',trophy:'הגביעים',vitrine:'מה שקנית — הוויטרינה',shelf:'מה שקנית — המדף',tools:'הציוד — ארון הכלים',rods:'הציוד — החכות',
+  pingpong:'לשחק פינג־פונג',pool:'לשחק ביליארד',arcade:'לשחק — מכונת משחק',console:'לשחק — הקונסולה',piano:'לנגן בפסנתר',tread:'להתאמן — הליכון',bench:'להתאמן — ספסל',weights:'להתאמן — משקולות',
+  recl:'לראות סרט',screen:'לראות סרט',tub:'אמבטיה',shower:'מקלחת',basin:'לשטוף פנים',chairs2:'המרפסת — הנוף',panel:'לוח הבית',mat:'לצאת',turntable:'הסטודיו — עיצוב הרכב',ddesk:'הסטודיו — עיצוב הבית',swatch:'הסטודיו — עיצוב הבית'};
+ function label(it,f){if(!it||!it.act)return'';if(it.k==='bed1'||it.k==='bed2'||it.k==='bed3')return'לישון';if(it.k==='stairs')return it.up&&it.down?'מדרגות — למעלה / למטה':it.up?'לעלות לקומה '+((f|0)+2):'לרדת לקומה '+(f|0);return KL[it.k]||ACT_HE[it.act]||it.act}
+ // the F of the game (the round blue mark, yellow when it is the one to press, "F · …" above it) — at the item, over its top
+ function fAt(it){const cx=(it.x0+it.x1)/2,top=Math.min(2.2,it.h||.5);if(it.k==='mat')return[cx,(it.y0+it.y1)/2,.15];if(it.k==='panel')return[cx,it.face==='N'?it.y1:it.y0,1.85];if(it.k==='stairs')return[cx,it.y1-.3,1.1];if(it.k==='turntable')return[cx,(it.y0+it.y1)/2+.8,1.4];return[cx,it.y1-.05,top+.35]}
+ function fMark(c,v,x,y,z,txt,hot,show){const X=v.x(x),Y=v.y(y,z),r=hot?11:8;c.save();c.globalAlpha=1;c.fillStyle=hot?'#ffe08a':'#55bce7';c.beginPath();c.arc(X,Y,r,0,Math.PI*2);c.fill();c.strokeStyle='#07131b';c.lineWidth=1.7;c.stroke();
+  c.fillStyle='#07131b';c.font='700 '+(hot?12:10)+'px "Segoe UI",Arial';c.textAlign='center';c.textBaseline='middle';c.fillText('F',X,Y+.5);
+  if(show&&txt){const t='F · '+txt,px=hot?15:13;c.font='600 '+px+'px "Segoe UI",Arial';c.lineWidth=3.5;c.strokeStyle='rgba(5,10,14,.9)';c.strokeText(t,X,Y-r-px*.75);c.fillStyle=hot?'#ffe08a':'#e8f0f4';c.fillText(t,X,Y-r-px*.75)}c.restore()}
+ // all the F marks of a floor: show — the words (all of them in the plan; near the player in the game); hot — the one to press
+ function fMarks(c,v,G,o){o=o||{};const out=[];for(const it of G.items){if(!it.act||!it.ap)continue;const p=fAt(it),txt=label(it,G.f);let show=o.all!==false;
+   if(o.me){const d=Math.hypot(o.me.x-it.ap[0],o.me.y-it.ap[1]);show=d<(o.r||2.4);if(show&&o.group){const k=it.room+'|'+txt,g=o.group.get(k);if(g&&g!==it)show=false}}
+   fMark(c,v,p[0],p[1],p[2],txt,o.hot===it,show);out.push({it,txt,show,hot:o.hot===it})}return out}
+ return{LV,PAL,NAME,K,ACT_HE,KL,label,fAt,fMark,fMarks,tpl,gen,get,blocked,reach,draw,drawItem,drawFloor,box,V,shade,sitesOf,WT,Z,get FZ(){return Z.fz}}})();
 </script>
 <script>
 (function(){
@@ -381,11 +403,12 @@ var HIN=(function(){
     const people=G.front?[person(G.doorX,S.D-.6)]:[];HIN.draw(c,G,v,0,{labels:true,people,st});
     // the action points
     for(const it of G.items)if(it.act&&it.ap){c.fillStyle='rgba(208,100,59,.9)';c.beginPath();c.arc(v.x(it.ap[0]),v.y(it.ap[1]),Math.max(3,Sx*.07),0,6.28);c.fill()}
+    HIN.fMarks(c,v,G,{all:true});
     const acts={};for(const it of G.items)if(it.act&&it.act!=='exit')acts[AH[it.act]||it.act]=(acts[AH[it.act]||it.act]||0)+1;
     const rl=G.rooms.map(r=>{const nw=!prevRooms.has(r.t);allRooms.add(r.t);return nw&&L.n>1?`<span class="new">${r.he}</span>`:r.he}).join(' · ');
     const R=HIN.reach(G);const warn=(R.rooms.length||R.acts.length||G.unreach.length)?`<div style="color:#c0392b">בדיקה: ${JSON.stringify([G.unreach,R.rooms,R.acts])}</div>`:'';
     card.insertAdjacentHTML('beforeend',`<div class="rooms">החדרים: ${rl}</div><div class="rooms">F: ${Object.keys(acts).join(' · ')}${G.front?' · לצאת (השטיח בדלת)':''}</div>${warn}`);sec.appendChild(card)}}
-  sec.insertAdjacentHTML('beforeend','<div class="rooms">בכתום — חדרים שאין ברמה הקודמת. הנקודות הכתומות — איפה עומדים כדי ללחוץ F.</div>');
+  sec.insertAdjacentHTML('beforeend','<div class="rooms">בכתום — חדרים שאין ברמה הקודמת. סימני F — כל מה שאפשר לעשות, עם הכיתוב (במשחק הכיתוב מופיע כשמתקרבים); הנקודות הכתומות — איפה עומדים.</div>');
   for(const t of allRooms)prevRooms.add(t);host.appendChild(sec)}
 })();
 </script></body></html>
