@@ -172,12 +172,12 @@ function discPart(L, d, cen, r, th, hexTop, hexSide, mat) {   // a horizontal di
 
 // ---- the body ----
 function dims(L) {
-  const h = L.h || 1.76, hs = h / 1.76, w = L.w || 1, bel = L.belly || 1, kid = h < 1.5, hk0 = kid ? Math.pow(hs, .45) : hs, czh = L.czHead > 0 ? L.czHead : 1, hk = hk0 * czh;   /* closezoom 17.11: L.czHead — ראש גדול יותר בזום הקרוב (074zz5), בלי — כמו קודם */
+  const h = L.h || 1.76, hs = h / 1.76, w = L.w || 1, bel = L.belly || 1, kid = h < 1.5, hk0 = kid ? Math.pow(hs, .45) : hs, czh = L.czHead > 0 ? L.czHead : 1, czt = L.czTall > 0 ? L.czTall : 1, hk = hk0 * czh;   /* closezoom 17.11: בזום הקרוב (074zz5) — L.czHead ראש גדול יותר, ‏L.czTall גבוה יותר (מול הכיווץ של 0.6 בהטלה — פנים בפרופורציה של הדיוקן), ‏L.czUp מורם אל המצלמה; בלי — כמו קודם */
   return { h, hs, w, bel, kid, hk,
     hipZ: .53 * h, hipS: .08 * w * hs, thigh: .245 * h, shin: .243 * h, ankZ: .045 * h,
     armS: .166 * w * hs, shZ: .79 * h, uarm: .168 * h, farm: .146 * h,   // p670: the shoulders
     rT: .068 * hs * (.88 + .12 * w), rK: .05 * hs, rA: .036 * hs, rU: .044 * hs * (.9 + .1 * w), rE: .036 * hs, rW: .029 * hs, rHd: .045 * hs,
-    neck0: .812 * h, neck1: .875 * h, rN: .051 * hs, headZ: .93 * h + (czh - 1) * .1 * hk0, head: [.077 * hk, .094 * hk, .114 * hk] };   // p670: the head of a man (15 × 19 × 23 cm), the neck, the hand
+    neck0: .812 * h, neck1: .875 * h, rN: .051 * hs, headZ: .93 * h + (czh * czt - 1) * .1 * hk0, head: [.077 * hk, .094 * hk, .114 * hk * czt], czUp: L.czUp || 0 };   // p670: the head of a man (15 × 19 × 23 cm), the neck, the hand
 }
 // the torso cross-sections (z, half width, half depth) by the kind of top; the hem decides how low the cloth goes
 function torsoRings(D, top) {
@@ -243,6 +243,7 @@ function pose(look, act, dir, fr) {
   if (k === 'bench') pitch = .08;
   const nb = add(S.torsoAt(D.neck0 + bob), [0, 0, D.neck0 + bob]), nt = add(S.torsoAt(D.neck1 + bob), [fU[0] * .012, fU[1] * .012, D.neck1 + bob]);
   S.neck = [nb, nt];
+  if (D.czUp) pitch -= D.czUp;   // closezoom 17.11
   const ef = nrm(add(mul(fU, Math.cos(pitch)), mul(Z, -Math.sin(pitch)))), ez = nrm(add(mul(Z, Math.cos(pitch)), mul(fU, Math.sin(pitch))));
   S.head = { c: add(add(S.torsoAt(D.headZ + bob), [0, 0, D.headZ + bob]), add(mul(fU, .016 * D.hs), mul(ef, .01 * D.hs))), ax: [lU, ef, ez], r: D.head };
   // ---- arms: the upper arm and forearm directions in the upper-body frame (a forward, s outward, z up) ----
@@ -732,15 +733,15 @@ const LAYERS = ['body', 'top', 'hair', 'item'];
 const mk = (w, h) => { if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h); const c = document.createElement('canvas'); c.width = w; c.height = h; return c };
 // p670: the line of the parts — stroked over the fill ('side': the two long sides of a limb; 'full': the outline), in the part's darker
 // colour, from lod 1; OWM — its width in screen metres while a picture is made
-let OWM = 0;
-function olStroke(c, p) { c.lineWidth = OWM; c.strokeStyle = col(p.oc, .36); c.globalAlpha = .82; c.beginPath();
+let OWM = 0, OLA = .82;   // closezoom 17.11: OLA — בזום הקרוב (צפיפות 7.5+) קווי מתאר רכים יותר (.5), וגם השוליים הכהים סביב התמונה
+function olStroke(c, p) { c.lineWidth = OWM; c.strokeStyle = col(p.oc, .36); c.globalAlpha = OLA; c.beginPath();
   if (p.ol === 'side') { const dx = p.sB[0] - p.sA[0], dy = p.sB[1] - p.sA[1], l = Math.hypot(dx, dy); if (l < 1e-6) { c.globalAlpha = 1; return } const nx = -dy / l, ny = dx / l, t = p.olFrom || 0;
     const ax = p.sA[0] + dx * t, ay = p.sA[1] + dy * t, ra = p.ra + (p.rb - p.ra) * t;
     for (const s of [1, -1]) { c.moveTo(ax + nx * ra * s, ay + ny * ra * s); c.lineTo(p.sB[0] + nx * p.rb * s, p.sB[1] + ny * p.rb * s) } }
   else p.path(c);
   c.stroke(); c.globalAlpha = 1 }
 function render(seq, pxm, rim, small, lod, owm) {   /* D‑593: owm — the width of the line in screen metres, for a big picture (the dressing room) */
-  LIFT = small ? 1 : 0; OWM = owm > 0 ? owm : (lod >= 1 ? Math.min(1.6, .35 + pxm * .0085) / pxm : 0);
+  LIFT = small ? 1 : 0; OWM = owm > 0 ? owm : (lod >= 1 ? Math.min(1.6, .35 + pxm * .0085) / pxm : 0); OLA = pxm >= 75 ? .5 : .82;
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const e of seq) if (!e.er) for (const p of e.p.pts) { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1] }
   if (!isFinite(x0)) return null;
@@ -757,7 +758,7 @@ function render(seq, pxm, rim, small, lod, owm) {   /* D‑593: owm — the widt
   if (rim && !small) {   // the rim: the picture's alpha, spread by w device px, filled dark, under the picture
     const w = Math.max(1, Math.round(pxm * .0085)), q = Math.max(1, Math.round(w * .7)), t = mk(W, Hh), g = t.getContext('2d');   // p670: whole pixels, darker
     for (const [dx, dy] of [[w, 0], [-w, 0], [0, w], [0, -w], [q, q], [-q, q], [q, -q], [-q, -q]]) g.drawImage(cv, dx, dy);
-    g.globalCompositeOperation = 'source-in'; g.fillStyle = pxm < 40 ? 'rgba(16,20,26,.68)' : 'rgba(16,20,26,.84)'; g.fillRect(0, 0, W, Hh);
+    g.globalCompositeOperation = 'source-in'; g.fillStyle = pxm < 40 ? 'rgba(16,20,26,.68)' : pxm >= 75 ? 'rgba(16,20,26,.5)' : 'rgba(16,20,26,.84)'; g.fillRect(0, 0, W, Hh);
     g.globalCompositeOperation = 'source-over'; g.drawImage(cv, 0, 0); out = t;
   }
   if (under.length) { const g = out.getContext('2d'); g.setTransform(pxm, 0, 0, pxm, ox, oy); g.globalCompositeOperation = 'destination-over'; for (const p of under) p.paint(g); g.globalCompositeOperation = 'source-over' }
@@ -982,7 +983,7 @@ function tcPorFamKey(d){if(!d)return 'other';const k=[d.jobKey,d.type==='bus'?'b
 function tcPorFamIc(k,px){const F=TCPOR_FAM[k]||TCPOR_FAM.other;px=px||30;return '<span class="tcFamIc" data-fam="'+k+'" title="'+tcPorEsc(F[1])+'" style="--fam:'+F[0]+';width:'+px+'px;height:'+px+'px"><svg viewBox="0 0 24 24" style="width:62%;height:62%;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">'+F[2]+'</svg></span>'}
 
 /*@@CZ-CORE@@*/
-var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,near:320,car:true,head:.35,headR0:5.5,headR1:16,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0,close:0}};
+var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,near:320,car:true,sbcOff:true,closeRes:7.5,headK:1.18,tall:1.15,up:.2,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0,close:0,sbcVec:0}};
 function tcczErr(e){TCCZ.n.errs++;if(!TCCZ.err)TCCZ.err=String(e&&e.stack||e).slice(0,240)}
 function tcczHexRgb(h){h=String(h||'');if(/^#[0-9a-f]{3}$/i.test(h))h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];if(!/^#[0-9a-f]{6}$/i.test(h))return null;const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]}
 function tcczShade(h,k){const c=tcczHexRgb(h)||[90,90,90],f=v=>Math.max(0,Math.min(255,Math.round(k>=0?v+(255-v)*k:v*(1+k))));return 'rgb('+f(c[0])+','+f(c[1])+','+f(c[2])+')'}
@@ -996,15 +997,18 @@ function tcczFace(c,X){
  const L=X.L,F=tcczSig(L),boy=F.a==='boy',eld=F.a==='elder',B=F.b||'none',sk=X.sk,hc=X.hairC,ux=H.r[0]/12.6,uy=H.r[2]/14.6;
  const E=Math.max(1,Math.min(1.36,1.36-(hp-9)*.012));   // the features a little bigger while the head is small (as in a small portrait)
  const S=(x,y)=>{const u=(x-32)/12.6*.97,v=-(y-29)/14.6*.95;return X.at(u,Math.sqrt(Math.max(.03,1-u*u-v*v)),v)};
- const scr=a=>{const o=[];let vs=0;for(const [x,y] of a){const q=S(x,y);vs+=q.v;o.push(X.P(q.p))}return{o,v:vs/a.length}};
+ const scr=a=>{const o=[],vv=[];let vs=0;for(const [x,y] of a){const q=S(x,y);vs+=q.v;vv.push(q.v);o.push(X.P(q.p))}return{o,vv,v:vs/a.length}};
  const W=w=>Math.max(1.05/pxm,w*E*ux*X.SCALE);   // a line: portrait units → screen metres, at least ~1 device px
- const line=(a,col,w,al)=>{const s=scr(a);if(s.v<.06)return;c.beginPath();c.moveTo(s.o[0][0],s.o[0][1]);for(let i=1;i<s.o.length;i++)c.lineTo(s.o[i][0],s.o[i][1]);c.globalAlpha=al==null?1:al;c.lineWidth=W(w);c.strokeStyle=col;c.lineCap='round';c.lineJoin='round';c.stroke();c.globalAlpha=1};
- const poly=(a,col,al)=>{const s=scr(a);if(s.v<.06)return;c.beginPath();c.moveTo(s.o[0][0],s.o[0][1]);for(let i=1;i<s.o.length;i++)c.lineTo(s.o[i][0],s.o[i][1]);c.closePath();c.globalAlpha=al==null?1:al;c.fillStyle=col;c.fill();c.globalAlpha=1};
+ const line=(a,col,w,al)=>{const s=scr(a);if(!(Math.max(...s.vv)>.06))return;c.beginPath();let pen=false;for(let i=0;i<s.o.length;i++){if(s.vv[i]<.0){pen=false;continue}if(pen)c.lineTo(s.o[i][0],s.o[i][1]);else c.moveTo(s.o[i][0],s.o[i][1]);pen=true}c.globalAlpha=al==null?1:al;c.lineWidth=W(w);c.strokeStyle=col;c.lineCap='round';c.lineJoin='round';c.stroke();c.globalAlpha=1};
+ const poly=(a,col,al)=>{const s=scr(a),o=s.o.filter((p,i)=>s.vv[i]>-.02);if(o.length<3||o.length<s.o.length*.55||!(s.v>.03))return;c.beginPath();c.moveTo(o[0][0],o[0][1]);for(let i=1;i<o.length;i++)c.lineTo(o[i][0],o[i][1]);c.closePath();c.globalAlpha=al==null?1:al;c.fillStyle=col;c.fill();c.globalAlpha=1};
  const el=(x,y,rx,ry,col,al,st)=>{const q=S(x,y);if(q.v<.08)return;X.ell(q,rx*E*ux,ry*E*uy,col,al,st?W(st):0)};
  const qb=(p0,p1,p2,n)=>{const o=[];n=n||8;for(let i=0;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*p0[0]+2*u*t*p1[0]+t*t*p2[0],u*u*p0[1]+2*u*t*p1[1]+t*t*p2[1]])}return o};
  const cb=(p0,p1,p2,p3,n)=>{const o=[];n=n||8;for(let i=0;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]])}return o};
  const mir=a=>a.map(([x,y])=>[64-x,y]);
  c.save();try{c.clip()}catch(e){}
+ // the light of the portrait on the face: the flat skin of the portrait from the middle of the face, fading to the shading of 3/4 at the edges
+ if(L.czHead){const q0=S(32,31.5);if(q0.v>.05){const o=X.P(q0.p),R=H.r[0]*X.SCALE*1.25,g=c.createRadialGradient(o[0]-R*.12,o[1]-R*.18,R*.08,o[0],o[1],R);
+  g.addColorStop(0,tcczShade(sk,.1));g.addColorStop(.55,sk);g.addColorStop(1,'rgba(0,0,0,0)');c.globalAlpha=.78*Math.min(1,q0.v*1.6);c.fillStyle=g;c.fillRect(o[0]-R*1.3,o[1]-R*1.3,R*2.6,R*2.6);c.globalAlpha=1}}
  // the cheeks (not under a full beard), the wrinkles of an elder, the freckles of a boy
  if(B!=='full'){el(23.8,33.4,2.4,2.2,'#e0706a',.22);el(40.2,33.4,2.4,2.2,'#e0706a',.22)}
  const wr=tcczShade(sk,-.32);
@@ -1012,8 +1016,8 @@ function tcczFace(c,X){
  if(boy&&F.fr)for(const [x,y] of [[24.6,31.6],[26,32.6],[39.4,31.6],[38,32.6]])el(x,y,.5,.5,tcczShade(sk,-.35),.7);
  // the beard (under the mouth): full / short — the jaw; stubble — the same, faint; goatee — the chin
  const bc=(L.beard&&L.beard.c)||F.bc||hc;
- if(B==='full'||B==='short'||B==='stubble'){const lo=B==='full'?45.6:42.6;
-  poly([...cb([19.8,30.5],[19.8,lo-6],[25,lo],[32,lo]),...cb([32,lo],[39,lo],[44.2,lo-6],[44.2,30.5]).slice(1),...cb([44.2,30.5],[42.6,35.4],[40,37.4],[36.5,38.4]).slice(1),...qb([36.5,38.4],[32,36.6],[27.5,38.4]).slice(1),...cb([27.5,38.4],[24,37.4],[21.4,35.4],[19.8,30.5]).slice(1)],bc,B==='stubble'?.3:.96)}
+ if(B==='full'||B==='short'||B==='stubble'){const lo=B==='full'?45.6:42.6,half=[...cb([19.8,30.5],[19.8,lo-6],[25,lo],[32,lo]),[32,38.2],...qb([32,37.4],[29.6,37.5],[27.5,38.4],4).slice(1),...cb([27.5,38.4],[24,37.4],[21.4,35.4],[19.8,30.5]).slice(1)];
+  for(const hh of [half,mir(half)])poly(hh,bc,B==='stubble'?.3:1)}
  if(B==='goatee')poly([...qb([28.6,38.6],[32,40],[35.4,38.6]),[34.4,43.2],...qb([34.4,43.2],[32,44.8],[29.6,43.2]).slice(1)],bc,.95);
  // the mustache
  if(B==='mustache'||B==='full'||B==='short'||B==='goatee')poly([...cb([27.2,35.4],[29.4,33.4],[31,34],[32,34.7]),...cb([32,34.7],[33,34],[34.6,33.4],[36.8,35.4]).slice(1),...cb([36.8,35.4],[34.6,36],[33,35.7],[32,35.2]).slice(1),...cb([32,35.2],[31,35.7],[29.4,36],[27.2,35.4]).slice(1)],tcczShade(bc,-.06),.97);
@@ -1027,7 +1031,7 @@ function tcczFace(c,X){
  // the nose, the mouth (above a beard)
  line(qb([32,29.6],[30.2,33.4],[32.4,34.2]),tcczShade(sk,-.34),1.2,.95);
  const mb=B==='full'||B==='short'||B==='mustache'||B==='goatee';
- line(qb([28.4,mb?37.2:36.4],[32,mb?39.4:39.2],[35.6,mb?37.2:36.4]),'#8a3b2e',1.4,.98);
+ line(qb([28.6,mb?37.2:36.4],[32,mb?39:38.8],[35.4,mb?37.2:36.4]),'#7d3a2c',1.2,.9);
  // the glasses (the frame round each eye, the bridge, the arms to the ears)
  if(L.glasses&&!L.shades){const gc=typeof L.glasses==='string'&&/^#|^rgb/.test(L.glasses)?L.glasses:'#26231f';
   el(27,28.7,3.7,3.7,'#ffffff',.12);el(37,28.7,3.7,3.7,'#ffffff',.12);el(27,28.7,3.7,3.7,gc,.95,1.2);el(37,28.7,3.7,3.7,gc,.95,1.2);
@@ -1053,16 +1057,19 @@ function tcczLook34(id,C,base){try{if(typeof tcPorLook!=='function')return null;
   if(P.shirt)o.top=Object.assign({},o.top,{c:P.shirt});
   o.czF={a:P.age||'man',b:bt,bc,fr:boy&&tcPorHash(P.shirt+P.hairCol)%3===0?1:0};o.por=1;tcczKey(o);TCCZ.n.looks++;return o}catch(e){tcczErr(e);return null}}
 /* the picture's key: P34's own (P34.lk) + the face of the portrait (two men who differ only in the kind of the beard / the age — two pictures) */
-function tcczKey(o){const f=o.czF?'|cz'+o.czF.a[0]+o.czF.b+(o.czF.fr?'f':''):'',hh=o.czHead>1?'|czh'+o.czHead:'';let kk=null;
+function tcczKey(o){const f=o.czF?'|cz'+o.czF.a[0]+o.czF.b+(o.czF.fr?'f':''):'',hh=o.czHead>1?'|czh'+o.czHead+'t'+(o.czTall||1)+'u'+(o.czUp||0):'';let kk=null;
  try{Object.defineProperty(o,'__k',{configurable:true,enumerable:false,get(){if(kk)return kk;const P=(typeof window!=='undefined'&&window.P34)||null;if(!P||!P.lk)return undefined;kk=P.lk(this);kk.body+=f+hh;kk.hair+=f+hh;if(hh){kk.top+=hh;kk.item+=hh}return kk},set(v){kk=v}})}catch(e){}return o}
-/* the close zoom: the head a little bigger the closer the picture (the density): ×1 at 5.5 and below, ×(1 + TCCZ.head) at 16 — the portrait's
-   proportions; one copy of the look per step (in a WeakMap — the look itself unchanged), its own key. Through P34.sprites — the game's people
-   (P34G, 'flat') and the figures drawn by P34.draw (the story steps) alike. */
+/* the close zoom (the owner 17.11 on the lab: "the faces a little too squashed and small, not in the right proportion"): at a density of
+   TCCZ.closeRes and up (8, 11, 16 — the new zoom only) the head of the illustration — about a sixth of the man (×headK), taller (×tall — the
+   projection draws heights at 0.6, so a face on the ball reads flat), lifted toward the camera (up, radians) — and the beard painted on the face
+   by tcczFace from the cheeks and under the mouth (the portrait's), not the ball of 065 that covered the nose. One copy of the look (WeakMap),
+   its own key; through P34.sprites — the game's people (P34G 'flat') and the story figures (P34.draw) alike. */
 const TCCZ_VAR=new WeakMap();
-function tcczHeadK(res){const t=Math.max(0,Math.min(1,(res-TCCZ.headR0)/(TCCZ.headR1-TCCZ.headR0)));return Math.round((1+TCCZ.head*t)*100)/100}
-function tcczClose(look,res){if(!TCCZ.on||!look||typeof look!=='object'||!(TCCZ.head>0)||look.czHead)return look;const k=tcczHeadK(res);if(!(k>1.001))return look;
- let m=TCCZ_VAR.get(look);if(!m){m=new Map();TCCZ_VAR.set(look,m)}let v=m.get(k);if(v)return v;
- v=Object.assign({},look);delete v.__k;delete v.__hm;v.czHead=k;tcczKey(v);m.set(k,v);TCCZ.n.close++;return v}
+function tcczClose(look,res){if(!TCCZ.on||!look||typeof look!=='object'||look.czHead||!(res>=TCCZ.closeRes))return look;
+ let v=TCCZ_VAR.get(look);if(v)return v;
+ v=Object.assign({},look);delete v.__k;delete v.__hm;v.czHead=TCCZ.headK;v.czTall=TCCZ.tall;v.czUp=TCCZ.up;
+ if(v.beard){const F=tcczSig(look);v.czF=Object.assign({},F,{bc:(v.beard&&v.beard.c)||F.bc,b:F.b&&F.b!=='none'?F.b:'short'});delete v.beard}
+ tcczKey(v);TCCZ_VAR.set(look,v);TCCZ.n.close++;return v}
 function tcczWrapP34(){const P=(typeof window!=='undefined'&&window.P34)||null;if(!P||!P.sprites||P.sprites.__cz)return !!P;const s0=P.sprites;
  const f=function(look,act,heading,phase,res,mode){let L=look;try{L=tcczClose(look,res)}catch(e){tcczErr(e)}return s0.call(this,L,act,heading,phase,res,mode)};f.__cz=1;P.sprites=f;return true}
 /* a kippah for the people of P34 (if cutscenes did not add one — the same shape) */
@@ -1102,7 +1109,7 @@ function todayLook(id,C){const P=tcPorLook(id,C);const h=hsh(id),H={elder:1.7,bo
   top:{t:boy?'tee':(h>>3)%2?'polo':'shirt',c:P.shirt||TOPS[(h>>7)%7]},legs:{t:boy?'shorts':'trousers',c:boy?'#2f4a6b':'#2b3038'},shoes:{t:boy?'sneaker':'leather',c:boy?'#f2f2f2':'#24262a'}}}
 /* the player on foot: the look of the wardrobe (P34G.player); the portrait — made from the same look (the player has none in the game) */
 const PL={h:1.78,w:1.02,skin:'#d9a57f',hair:{t:'side',c:'#3b2a1f'},top:{t:'polo',c:'#2f6fd0'},legs:{t:'jeans',c:'#3b5a85'},shoes:{t:'sneaker',c:'#f2f2f2',c2:'#d8452f'}};
-const PLP={age:'man',skin:'#e4b48c',hair:'side',hairCol:'#3b2a1f',beard:'none',hat:'none',hatCol:'#2f6fd0',glasses:false,shirt:'#2f6fd0'};
+const PLP={age:'man',skin:'#d9a57f',hair:'side',hairCol:'#3b2a1f',beard:'none',hat:'none',hatCol:'#2f6fd0',glasses:false,shirt:'#2f6fd0'};
 const CH=[
  {key:'pl',name:'השחקן',sub:'ברגל · המראה מהמלתחה',por:PLP,today:PL,now:PL},
  {key:'st-aharon',name:'סבא אהרן',C:{name:'סבא אהרן',color:'#8a5a12'}},
