@@ -413,10 +413,9 @@ c.lineJoin='round';c.save();c.translate(.7,2.3);c.fillStyle=c.strokeStyle='#020d
 c.strokeStyle='#e3f8ff';c.lineWidth=1.6;
 c.fillStyle=lg(0,13,0,50,[0,'#e5ffff',.24,'#48f0ff',.55,'#00cce8',1,'#0078b8']);c.fill(T);c.stroke(T);
 c.fillStyle=lg(0,13,0,51,[0,'#fff2a1',.24,'#ffd228',.6,'#ff9700',1,'#f45b08']);c.fill(C);c.stroke(C);
-function put(u){var l=document.querySelector('link[rel~="icon"]')||document.createElement('link');l.rel='icon';l.type='image/png';l.sizes='64x64';l.id='tc-icon';l.href=u;if(!l.parentNode)document.head.appendChild(l);window.__TC_ICON={size:S,ok:true,blob:u.slice(0,5)==='blob:'};}
+function put(u){var l=document.querySelector('link[rel~="icon"]')||document.createElement('link');l.rel='icon';l.type='image/png';l.sizes='64x64';l.id='tc-icon';l.href=u;if(!l.parentNode)document.head.appendChild(l);window.__TC_ICON={size:S,ok:true,png:u.slice(5,14)==='image/png'};}
  
-if(cv.toBlob&&window.URL&&URL.createObjectURL)cv.toBlob(function(b){try{if(b)put(URL.createObjectURL(b))}catch(e){window.__TC_ICON={ok:false,err:String(e)}}},'image/png');
-window.__TC_ICON={size:S,ok:false,pending:true};}catch(e){window.__TC_ICON={ok:false,err:String(e)};}})();</script>
+window.__TC_ICON={size:S,ok:false,pending:true};put(cv.toDataURL('image/png'));}catch(e){window.__TC_ICON={ok:false,err:String(e)};}})();</script>
 </head>
 <body>
 <canvas id="game" tabindex="0"></canvas>
@@ -1996,4 +1995,6 @@ const hit0=(px,py,r,bl)=>Object.entries(R).some(([k,q])=>(bl||k!='bld')&&rc2([px
 const fr_=r=>r[0]>=12&&r[1]>=10&&r[0]+r[2]<=w-12&&r[1]+r[3]<=h-12&&!(flare&&rc2(r,flare,2)),cand=[[R.bld[0]+R.bld[2]+8,bt-40,36,30],[R.bld[0]-44,bt-40,36,30],[R.bld[0]+6,bt+14,38,26]],pat=st.pa?cand.find(r=>fr_(r)&&!hit(r)&&!(tree0&&rc2(r,tree0,2))&&!sh0.some(s=>rc2(r,s,1))):null;
 const dec=[],ok=r=>fr_(r)&&!hit(r)&&!(pat&&rc2(r,pat,2))&&!(tree0&&rc2(r,tree0,2))&&!sh0.some(s=>rc2(r,s,1))&&!dec.some(d=>rc2(d.r,r,1)),add=(k,cx,cy,rr)=>{const r=[cx-rr,cy-rr,2*rr,2*rr];if(ok(r))dec.push({k,cx,cy,rr,r})},addR=(k,r)=>{if(ok(r))dec.push({k,r,cx:r[0]+r[2]/2,cy:r[1]+r[3]/2,rr:r[2]/2})},ls=st.ls;
 if(ls=='hedge')for(let xx=14;xx<w-30;xx+=22)addR('hedge',[xx,h-20,18,7]);
-if(ls=='flower'||ls=='topiary')[R.walk[0]-24,R.walk[0]+R.walk[2]+6].forEach(bx=>addR(ls=='
+if(ls=='flower'||ls=='topiary')[R.walk[0]-24,R.walk[0]+R.walk[2]+6].forEach(bx=>addR(ls=='flower'?'bed':'bedt',[bx,bt+10,18,8]));
+if(ls=='zen')addR('zen',[R.bld[0]-34>14?R.bld[0]-34:R.bld[0]+R.bld[2]+6,bt+22,30,20]);
+if(ls=='pa
