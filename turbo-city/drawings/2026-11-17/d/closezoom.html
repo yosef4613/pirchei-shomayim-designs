@@ -476,7 +476,7 @@ function parts0(look, act, dir, fr, small, lod) {
   const ef = H.ax[1], ez = H.ax[2], el = H.ax[0];
   const hr = (k) => H.r.map(v => v * k);
   if (beard) {   // the beard: the ellipsoid below the cheekbones in front; what the rest of the head hides is erased in the same layer
-    const nb = nrm(add(mul(ef, .62), mul(ez, -.78))), cut = { n: nb, d: .012 * D.hk };
+    const nb = nrm(add(mul(ef, .62), mul(ez, -.78))), cut = { n: nb, d: (L.czBeardD > 0 ? L.czBeardD : .012) * D.hk };   // closezoom 17.11: L.czBeardD — בזום הקרוב הזקן מתחת לפה ועד מתחת לסנטר, לא על האף
     const bp = ellipPart('hair', headD + (dot(nb, VW) < 0 ? .006 : .0108), H.c, H.ax, hr(1.07), [cut], beard.c || hair.c || '#3b2a1f', MAT.hair, .92); if (bp) out.push(bp);
     const rest = ellipSamples(H.c, H.ax, H.r, [{ n: mul(nb, -1), d: -cut.d }], 8, 16).map(q => P(q.p));
     if (rest.length > 2 && dot(nb, VW) < 0) { const pts = hull(rest); out.push({ L: 'hair', d: headD + .0065, pts, path: polyPath(pts), erase: true, paint: c => { c.globalCompositeOperation = 'destination-out'; c.beginPath(); polyPath(pts)(c); c.fill(); c.globalCompositeOperation = 'source-over' } }) }
@@ -983,7 +983,7 @@ function tcPorFamKey(d){if(!d)return 'other';const k=[d.jobKey,d.type==='bus'?'b
 function tcPorFamIc(k,px){const F=TCPOR_FAM[k]||TCPOR_FAM.other;px=px||30;return '<span class="tcFamIc" data-fam="'+k+'" title="'+tcPorEsc(F[1])+'" style="--fam:'+F[0]+';width:'+px+'px;height:'+px+'px"><svg viewBox="0 0 24 24" style="width:62%;height:62%;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">'+F[2]+'</svg></span>'}
 
 /*@@CZ-CORE@@*/
-var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,near:320,car:true,sbcOff:true,closeRes:7.5,headK:1.18,tall:1.15,up:.2,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0,close:0,sbcVec:0}};
+var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,near:320,car:true,sbcOff:true,closeRes:7.5,headK:1.36,tall:1.15,up:.2,beardD:.11,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0,close:0,sbcVec:0}};
 function tcczErr(e){TCCZ.n.errs++;if(!TCCZ.err)TCCZ.err=String(e&&e.stack||e).slice(0,240)}
 function tcczHexRgb(h){h=String(h||'');if(/^#[0-9a-f]{3}$/i.test(h))h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];if(!/^#[0-9a-f]{6}$/i.test(h))return null;const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]}
 function tcczShade(h,k){const c=tcczHexRgb(h)||[90,90,90],f=v=>Math.max(0,Math.min(255,Math.round(k>=0?v+(255-v)*k:v*(1+k))));return 'rgb('+f(c[0])+','+f(c[1])+','+f(c[2])+')'}
@@ -1017,7 +1017,9 @@ function tcczFace(c,X){
  // the beard (under the mouth): full / short — the jaw; stubble — the same, faint; goatee — the chin
  const bc=(L.beard&&L.beard.c)||F.bc||hc;
  if(B==='full'||B==='short'||B==='stubble'){const lo=B==='full'?45.6:42.6,half=[...cb([19.8,30.5],[19.8,lo-6],[25,lo],[32,lo]),[32,38.2],...qb([32,37.4],[29.6,37.5],[27.5,38.4],4).slice(1),...cb([27.5,38.4],[24,37.4],[21.4,35.4],[19.8,30.5]).slice(1)];
-  for(const hh of [half,mir(half)])poly(hh,bc,B==='stubble'?.3:1)}
+  for(const hh of [half,mir(half)])poly(hh,bc,B==='stubble'?.3:1);
+  if(B!=='stubble'){const ed=tcczShade(bc,-.28);for(const hh of [half,mir(half)])line(hh.slice(0,10),ed,.7,.55);
+   for(const [x0,y0,x1,y1] of [[23,34,24.5,39],[26.5,40,27.5,lo-2],[32,41,32,lo-1],[37.5,40,36.5,lo-2],[41,34,39.5,39]])line([[x0,y0],[x1,y1]],ed,.45,.4)}}
  if(B==='goatee')poly([...qb([28.6,38.6],[32,40],[35.4,38.6]),[34.4,43.2],...qb([34.4,43.2],[32,44.8],[29.6,43.2]).slice(1)],bc,.95);
  // the mustache
  if(B==='mustache'||B==='full'||B==='short'||B==='goatee')poly([...cb([27.2,35.4],[29.4,33.4],[31,34],[32,34.7]),...cb([32,34.7],[33,34],[34.6,33.4],[36.8,35.4]).slice(1),...cb([36.8,35.4],[34.6,36],[33,35.7],[32,35.2]).slice(1),...cb([32,35.2],[31,35.7],[29.4,36],[27.2,35.4]).slice(1)],tcczShade(bc,-.06),.97);
@@ -1057,7 +1059,7 @@ function tcczLook34(id,C,base){try{if(typeof tcPorLook!=='function')return null;
   if(P.shirt)o.top=Object.assign({},o.top,{c:P.shirt});
   o.czF={a:P.age||'man',b:bt,bc,fr:boy&&tcPorHash(P.shirt+P.hairCol)%3===0?1:0};o.por=1;tcczKey(o);TCCZ.n.looks++;return o}catch(e){tcczErr(e);return null}}
 /* the picture's key: P34's own (P34.lk) + the face of the portrait (two men who differ only in the kind of the beard / the age — two pictures) */
-function tcczKey(o){const f=o.czF?'|cz'+o.czF.a[0]+o.czF.b+(o.czF.fr?'f':''):'',hh=o.czHead>1?'|czh'+o.czHead+'t'+(o.czTall||1)+'u'+(o.czUp||0):'';let kk=null;
+function tcczKey(o){const f=o.czF?'|cz'+o.czF.a[0]+o.czF.b+(o.czF.fr?'f':''):'',hh=o.czHead>1?'|czh'+o.czHead+'t'+(o.czTall||1)+'u'+(o.czUp||0)+'b'+(o.czBeardD||0):'';let kk=null;
  try{Object.defineProperty(o,'__k',{configurable:true,enumerable:false,get(){if(kk)return kk;const P=(typeof window!=='undefined'&&window.P34)||null;if(!P||!P.lk)return undefined;kk=P.lk(this);kk.body+=f+hh;kk.hair+=f+hh;if(hh){kk.top+=hh;kk.item+=hh}return kk},set(v){kk=v}})}catch(e){}return o}
 /* the close zoom (the owner 17.11 on the lab: "the faces a little too squashed and small, not in the right proportion"): at a density of
    TCCZ.closeRes and up (8, 11, 16 — the new zoom only) the head of the illustration — about a sixth of the man (×headK), taller (×tall — the
@@ -1068,7 +1070,7 @@ const TCCZ_VAR=new WeakMap();
 function tcczClose(look,res){if(!TCCZ.on||!look||typeof look!=='object'||look.czHead||!(res>=TCCZ.closeRes))return look;
  let v=TCCZ_VAR.get(look);if(v)return v;
  v=Object.assign({},look);delete v.__k;delete v.__hm;v.czHead=TCCZ.headK;v.czTall=TCCZ.tall;v.czUp=TCCZ.up;
- if(v.beard){const F=tcczSig(look);v.czF=Object.assign({},F,{bc:(v.beard&&v.beard.c)||F.bc,b:F.b&&F.b!=='none'?F.b:'short'});delete v.beard}
+ if(v.beard){const F=tcczSig(look);v.czF=Object.assign({},F,{bc:(v.beard&&v.beard.c)||F.bc,b:F.b&&F.b!=='none'?F.b:'short'});if(v.czF.b==='full')v.czBeardD=TCCZ.beardD;else delete v.beard}
  tcczKey(v);TCCZ_VAR.set(look,v);TCCZ.n.close++;return v}
 function tcczWrapP34(){const P=(typeof window!=='undefined'&&window.P34)||null;if(!P||!P.sprites||P.sprites.__cz)return !!P;const s0=P.sprites;
  const f=function(look,act,heading,phase,res,mode){let L=look;try{L=tcczClose(look,res)}catch(e){tcczErr(e)}return s0.call(this,L,act,heading,phase,res,mode)};f.__cz=1;P.sprites=f;return true}
