@@ -1,4 +1,147 @@
-n<O.shown){if(h[i]==='<'){const j=h.indexOf('>',i);i=j<0?i+1:j+1;continue}if(h[i]==='&'){const j=h.indexOf(';',i);i=j<0?i+1:j+1}else i++;n++}h=h.slice(0,i)}d.querySelector('.tx').innerHTML=h;
+\"lights\":false}}|||||0|runtime","VH-SU-01|||{\"c\":10,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-01|||{\"c\":3,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-01|||{\"c\":8,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-01|||{\"c\":9,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-02|||{\"c\":0,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-02|||{\"c\":10,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-02|||{\"c\":5,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-02|||{\"c\":6,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-02|||{\"c\":6,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-02|||{\"c\":7,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-02|||{\"c\":9,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":0,\"r\":7}|||||0|runtime","VH-SU-03|||{\"c\":1,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":10,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":10,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":11,\"r\":2}|||||0|runtime","VH-SU-03|||{\"c\":11,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":11,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":11,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":2,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":2,\"r\":6}|||||0|runtime","VH-SU-03|||{\"c\":3,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":3,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":3,\"r\":7}|||||0|runtime","VH-SU-03|||{\"c\":4,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":4,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":5,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":5,\"r\":6}|||||0|runtime","VH-SU-03|||{\"c\":6,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":7,\"r\":0}|||||0|runtime","VH-SU-03|||{\"c\":7,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":7,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":8,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-03|||{\"c\":9,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime","VH-SU-05|||{\"c\":5,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VH-TR-01|||{\"c\":2,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime","VH-TR-01|||{\"c\":4,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime","VH-TR-01|||{\"c\":4,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime","VH-TR-01|||{\"c\":5,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime","VH-TR-01|||{\"c\":7,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VH-VN-01|||{\"c\":11,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime","VH-VN-01|||{\"c\":3,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime","VH-VN-01|||{\"c\":6,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime","VH-VN-01|||{\"c\":9,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VH-VN-02|||{\"c\":0,\"r\":0}|||||0|runtime","VH-VN-02|||{\"c\":0,\"r\":6}|||||0|runtime","VH-VN-02|||{\"c\":11,\"r\":5}|||||0|runtime","VH-VN-02|||{\"c\":2,\"r\":5}|||||0|runtime","VH-VN-02|||{\"c\":4,\"r\":2}|||||0|runtime","VH-VN-02|||{\"c\":4,\"r\":3}|||||0|runtime","VH-VN-02|||{\"c\":8,\"r\":3}|||||0|runtime","VH-VN-02|||{\"c\":9,\"r\":3}|||||0|runtime","VH-VN-03|||{\"c\":10,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime","VS-AM-01|||{\"c\":0,\"r\":0}|||||0|runtime","VS-AM-01|||{\"c\":0,\"r\":1}|||||0|runtime","VS-AM-01|||{\"c\":0,\"r\":4}|||||0|runtime","VS-AM-01|||{\"c\":0,\"r\":5}|||||0|runtime","VS-AM-01|||{\"c\":0,\"r\":7}|||||0|runtime","VS-AM-02|||{\"c\":0,\"r\":0}|||||0|runtime","VS-AM-02||||0||||0|runtime","VS-DL-01|||{\"c\":6,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime","VS-DL-02|||{\"c\":10,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VS-FR-02|||{\"c\":0,\"r\":0}|||||0|runtime","VS-FR-02|||{\"c\":0,\"r\":3}|||||0|runtime","VS-FR-02|||{\"c\":0,\"r\":4}|||||0|runtime","VS-FR-02|||{\"c\":0,\"r\":5}|||||0|runtime","VS-FR-02||||0||||0|runtime","VS-PL-01|||{\"c\":0,\"r\":2}|||||0|runtime","VS-PL-01|||{\"c\":0,\"r\":4}|||||0|runtime","VS-PL-01|||{\"c\":0,\"r\":6}|||||0|runtime","VS-PL-02||||0||||0|runtime","VS-TX-01|||{\"c\":0,\"r\":0}|||||0|runtime","VS-TX-01|||{\"c\":0,\"r\":3}|||||0|runtime","VS-TX-01|||{\"c\":0,\"r\":5}|||||0|runtime","VS-TX-01|||{\"c\":0,\"r\":6}|||||0|runtime","VS-TX-01|||{\"c\":0,\"r\":7}|||||0|runtime","VS-TX-01|||{\"c\":10,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-01|||{\"c\":3,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-01|||{\"c\":4,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-01|||{\"c\":5,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-01|||{\"c\":7,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-01|||{\"c\":9,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-02|||{\"c\":0,\"r\":0}|||||0|runtime","VS-TX-02|||{\"c\":0,\"r\":1}|||||0|runtime","VS-TX-02|||{\"c\":0,\"r\":2}|||||0|runtime","VS-TX-02|||{\"c\":0,\"r\":3}|||||0|runtime","VS-TX-02|||{\"c\":0,\"r\":5}|||||0|runtime","VS-TX-02|||{\"c\":0,\"r\":7}|||||0|runtime","VS-TX-02|||{\"c\":11,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-02|||{\"c\":2,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-02|||{\"c\":5,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime","VS-TX-02|||{\"c\":8,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime"])};    
+function g77AsSeed(k,id,o){const X=g77As();if((!X.x&&!G77_AS2.any)||!X.on)return undefined;if(!X.seed)X.seed=g77AsSeedData();if(!(k in X.seed))return undefined;const v=!!X.seed[k];
+ if(!X.q.has(k)&&(G77_AS2.verify||!G77_AS2.keys.has(k))&&!(G77_AV.on&&v)){    X.q.set(k,[id,Object.assign({},o),v]);X.used++;if(!X.t0)X.t0=performance.now();if(!X.tm)X.tm=setTimeout(g77AsStep,250)}return v}
+function g77AsStep(dl){const X=g77As();X.tm=0;X.ric=0;if(!X.q.size)return;
+ if(!g77Bw().end&&performance.now()-X.t0<20000){X.tm=setTimeout(g77AsStep,250);return}    
+ if(G77_AV.on&&g77AvZoom()){G77_AV.waits++;X.tm=setTimeout(g77AsStep,G77_AV.waitMs);return}    
+ const t0=performance.now();let n=0;
+ for(const [k,[id,o,v]] of X.q){if(!g77AsMore(dl,n))break;n++;X.lastT=performance.now();X.q.delete(k);    let r=WTC.anim.get(k);if(r===undefined){const __t=performance.now();r=wtcTestAnim(id,o);g77AvMs(performance.now()-__t);WTC.anim.set(k,r);WTC.stats.animKeys++;if(r)WTC.stats.animTrue++;g77AcPut(k,r)}
+  X.done++;if(!!r!==v){X.miss++;if(X.missKeys.length<50)X.missKeys.push(k);X.inv=true}}
+ if(X.q.size)g77AsLater();else if(X.inv){X.inv=false;wtcInvalidate()}}
+function g77AsSeedData(){return Object.assign(g77AsSeedData0(),{"AP-TEL-01|0|||0||||0|runtime":1,"CT-40-01|1|||||||0|runtime":0,"CT-40-01|2|||||||0|runtime":0,"CT-40-01|3|||||||0|runtime":0,"CT-RF-01|0|||||||0|runtime":0,"LV-BS-01|||{\"c\":11}|||||0|runtime":0,"LV-BS-01|||{\"c\":9}|||||0|runtime":0,"LV-CH-01|||{\"c\":1,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"LV-CM-01||||||||0|runtime":0,"LV-SH-01|||{\"c\":3,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"LV-SH-01|||{\"c\":4,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"LV-SH-01|||{\"c\":5,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"LV-SH-01|||{\"c\":8,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"LV-TR-01||||||||0|runtime":0,"PE-01|||||idle|0||0|runtime":1,"PE-01|||||idle|4||0|runtime":1,"PE-01|||||running|4||0|runtime":1,"PE-01|||||walking|0||0|runtime":1,"PE-01|||||walking|4||0|runtime":1,"PE-01|||||walking|5||0|runtime":1,"PE-01|||||walking|7||0|runtime":1,"PE-02|||||idle|0||0|runtime":1,"PE-02|||||idle|4||0|runtime":1,"PE-02|||||running|0||0|runtime":1,"PE-02|||||walking|0||0|runtime":1,"PE-02|||||walking|4||0|runtime":1,"PE-02|||||walking|7||0|runtime":1,"PE-03|||||walking|0||0|runtime":1,"PE-03|||||walking|2||0|runtime":1,"PE-03|||||walking|4||0|runtime":1,"PE-03|||||walking|5||0|runtime":1,"PE-03|||||walking|6||0|runtime":1,"PE-03|||||walking|7||0|runtime":1,"PE-04|||||idle|0||0|runtime":1,"PE-04|||||idle|2||0|runtime":1,"PE-04|||||idle|4||0|runtime":1,"PE-04|||||idle|6||0|runtime":1,"PE-04|||||walking|5||0|runtime":1,"PE-04|||||walking|7||0|runtime":1,"PE-05|||||walking|3||0|runtime":1,"PE-05|||||walking|4||0|runtime":1,"PE-05|||||walking|5||0|runtime":1,"PE-05|||||walking|7||0|runtime":1,"PE-07|||||walking|0||0|runtime":1,"PE-07|||||walking|4||0|runtime":1,"PE-07|||||walking|5||0|runtime":1,"PE-07|||||walking|6||0|runtime":1,"PE-07|||||walking|7||0|runtime":1,"PE-09|||||idle|2||0|runtime":1,"PE-09|||||walking|0||0|runtime":1,"PE-09|||||walking|2||0|runtime":1,"PE-09|||||walking|4||0|runtime":1,"PE-09|||||walking|6||0|runtime":1,"PE-10|||||idle|2||0|runtime":1,"PE-10|||||idle|4||0|runtime":1,"PE-10|||||walking|0||0|runtime":1,"PE-10|||||walking|2||0|runtime":1,"PE-10|||||walking|4||0|runtime":1,"PE-10|||||walking|6||0|runtime":1,"PE-13|||||walking|0||0|runtime":1,"PE-13|||||walking|2||0|runtime":1,"PE-13|||||walking|3||0|runtime":1,"PE-13|||||walking|4||0|runtime":1,"PE-13|||||walking|5||0|runtime":1,"PE-13|||||walking|6||0|runtime":1,"PE-13|||||walking|7||0|runtime":1,"PE-14|||||walking|0||0|runtime":1,"PE-14|||||walking|1||0|runtime":1,"PE-14|||||walking|2||0|runtime":1,"PE-14|||||walking|4||0|runtime":1,"PE-14|||||walking|5||0|runtime":1,"PE-14|||||walking|6||0|runtime":1,"PE-14|||||walking|7||0|runtime":1,"PE-19|||||idle|4||0|runtime":1,"PE-19|||||idle|6||0|runtime":1,"PE-19|||||walking|0||0|runtime":1,"PE-19|||||walking|2||0|runtime":1,"PE-19|||||walking|4||0|runtime":1,"PE-19|||||walking|6||0|runtime":1,"PE-40|||||crouch|0||0|runtime":0,"PE-40|||||crouch|1||0|runtime":0,"PE-40|||||crouch|2||0|runtime":0,"PE-40|||||crouch|3||0|runtime":0,"PE-40|||||crouch|4||0|runtime":0,"PE-40|||||crouch|5||0|runtime":0,"PE-40|||||crouch|6||0|runtime":0,"PE-40|||||crouch|7||0|runtime":0,"PE-40|||||idle|0||0|runtime":1,"PE-40|||||idle|1||0|runtime":1,"PE-40|||||idle|2||0|runtime":1,"PE-40|||||idle|3||0|runtime":1,"PE-40|||||idle|4||0|runtime":1,"PE-40|||||idle|5||0|runtime":1,"PE-40|||||idle|6||0|runtime":1,"PE-40|||||standing|2||0|runtime":1,"PE-40|||||standing|4||0|runtime":1,"PE-40|||||walking|0||0|runtime":1,"PE-40|||||walking|1||0|runtime":1,"PE-40|||||walking|2||0|runtime":1,"PE-40|||||walking|4||0|runtime":1,"PE-40|||||walking|5||0|runtime":1,"PE-40|||||walking|6||0|runtime":1,"PE-40|||||walking|7||0|runtime":1,"PE-41|||||idle|2||0|runtime":1,"PE-41|||||walking|0||0|runtime":1,"PE-41|||||walking|2||0|runtime":1,"PE-41|||||walking|4||0|runtime":1,"PE-41|||||walking|6||0|runtime":1,"PE-43|||||idle|0||0|runtime":1,"PE-43|||||idle|4||0|runtime":1,"PE-43|||||walking|0||0|runtime":1,"PE-43|||||walking|4||0|runtime":1,"PE-44|||||idle|0||0|runtime":1,"PE-44|||||idle|4||0|runtime":1,"PE-44|||||walking|0||0|runtime":1,"PE-44|||||walking|4||0|runtime":1,"PE-46|||||walking|6||0|runtime":1,"PL-01|||{\"ou\":0,\"tc\":0,\"bc\":0,\"hs\":0,\"hc\":0,\"sk\":0,\"ac\":0}||idle|2||0|runtime":1,"PR-03||||0||||0|runtime":0,"RF-BAR||||1||||0|runtime":1,"RF-BOL||||0||||0|runtime":0,"SL-IND||||||||0|runtime":0,"SL-PKL||||||||0|runtime":0,"TL-ARW|3|||1||||0|runtime":0,"TL-ARW|3|||3||||0|runtime":0,"TL-PED|5|||0||||0|runtime":0,"TL-PED|5|||1||||0|runtime":0,"TL-PED|5|||2||||0|runtime":0,"TL-PED|5|||3||||0|runtime":0,"TP-AV-01||||||||0|runtime":1,"TP-AV-04|0|||||||0|runtime":1,"TP-PM-02|0|||||||0|runtime":1,"TP-UR-02|0|||||||0|runtime":1,"TP-UR-03|2|||||||0|runtime":1,"VH-HB-01|||{\"c\":0,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":0,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VH-HB-01|||{\"c\":1,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":1,\"r\":2}|||||0|runtime":0,"VH-HB-01|||{\"c\":1,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":10,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":10,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":10,\"r\":6}|||||0|runtime":0,"VH-HB-01|||{\"c\":11,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":11,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":2,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":2,\"r\":4}|||||0|runtime":0,"VH-HB-01|||{\"c\":2,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":2,\"r\":7}|||||0|runtime":0,"VH-HB-01|||{\"c\":3,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":4,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":5,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":5,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":5,\"r\":7}|||||0|runtime":0,"VH-HB-01|||{\"c\":6,\"r\":2}|||||0|runtime":0,"VH-HB-01|||{\"c\":6,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":7,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":8,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":8,\"r\":3}|||||0|runtime":0,"VH-HB-01|||{\"c\":8,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":9,\"r\":0}|||||0|runtime":0,"VH-HB-01|||{\"c\":9,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":9,\"r\":6}|||||0|runtime":0,"VH-HB-02|||{\"c\":0,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":1,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":1,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":10,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":10,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":10,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":10,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":11,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":11,\"r\":4}|||||0|runtime":0,"VH-HB-02|||{\"c\":2,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":2,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":4,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":4,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":5,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":5,\"r\":1}|||||0|runtime":0,"VH-HB-02|||{\"c\":5,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":6,\"r\":2}|||||0|runtime":0,"VH-HB-02|||{\"c\":6,\"r\":3}|||||0|runtime":0,"VH-HB-02|||{\"c\":6,\"r\":5}|||||0|runtime":0,"VH-HB-02|||{\"c\":6,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":7,\"r\":0}|||||0|runtime":0,"VH-HB-02|||{\"c\":9,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":9,\"r\":0}|||||0|runtime":0,"VH-HB-02|||{\"c\":9,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-03|||{\"c\":10,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-03|||{\"c\":9,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":0,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":0,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":0,\"r\":6}|||||0|runtime":0,"VH-MV-02|||{\"c\":1,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":1,\"r\":1}|||||0|runtime":0,"VH-MV-02|||{\"c\":1,\"r\":2}|||||0|runtime":0,"VH-MV-02|||{\"c\":10,\"r\":1}|||||0|runtime":0,"VH-MV-02|||{\"c\":10,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":10,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":11,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":11,\"r\":4,\"L\":{\"lights\":true}}|||||0|runtime":0,"VH-MV-02|||{\"c\":2,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":2,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":2,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":2,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":3,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":3,\"r\":7}|||||0|runtime":0,"VH-MV-02|||{\"c\":4,\"r\":2}|||||0|runtime":0,"VH-MV-02|||{\"c\":4,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":5,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":5,\"r\":7}|||||0|runtime":0,"VH-MV-02|||{\"c\":6,\"r\":3}|||||0|runtime":0,"VH-MV-02|||{\"c\":7,\"r\":0}|||||0|runtime":0,"VH-MV-02|||{\"c\":8,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":9,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":9,\"r\":6}|||||0|runtime":0,"VH-PK-01|||{\"c\":3,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PK-02|||{\"c\":0,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PK-02|||{\"c\":10,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PK-02|||{\"c\":11,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-01|||{\"c\":1,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-01|||{\"c\":2,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-01|||{\"c\":4,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-01|||{\"c\":7,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-02|||{\"c\":0,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-02|||{\"c\":11,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-04|||{\"c\":1,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-04|||{\"c\":4,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-PR-04|||{\"c\":6,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":0,\"r\":0}|||||0|runtime":0,"VH-SD-01|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VH-SD-01|||{\"c\":1,\"r\":1}|||||0|runtime":0,"VH-SD-01|||{\"c\":11,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":2,\"r\":0}|||||0|runtime":0,"VH-SD-01|||{\"c\":2,\"r\":4}|||||0|runtime":0,"VH-SD-01|||{\"c\":4,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":4,\"r\":4}|||||0|runtime":0,"VH-SD-01|||{\"c\":4,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":6,\"r\":3}|||||0|runtime":0,"VH-SD-01|||{\"c\":7,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":7,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":7,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":7,\"r\":7}|||||0|runtime":0,"VH-SD-01|||{\"c\":8,\"r\":5}|||||0|runtime":0,"VH-SD-01|||{\"c\":9,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":9,\"r\":6}|||||0|runtime":0,"VH-SD-02|||{\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":0,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":1,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":10,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":11,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":3,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":3,\"r\":3}|||||0|runtime":0,"VH-SD-02|||{\"c\":4,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":4,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":4,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":5,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":5,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":5,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":6,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":6,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"c\":8,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VH-SD-03|||{\"c\":1,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":10,\"r\":1}|||||0|runtime":0,"VH-SD-03|||{\"c\":11,\"r\":5}|||||0|runtime":0,"VH-SD-03|||{\"c\":11,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":2,\"r\":6}|||||0|runtime":0,"VH-SD-03|||{\"c\":4,\"r\":2}|||||0|runtime":0,"VH-SD-03|||{\"c\":4,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":4,\"r\":4}|||||0|runtime":0,"VH-SD-03|||{\"c\":5,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":5,\"r\":6}|||||0|runtime":0,"VH-SD-03|||{\"c\":6,\"r\":5}|||||0|runtime":0,"VH-SD-03|||{\"c\":6,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":7,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":8,\"r\":3}|||||0|runtime":0,"VH-SD-03|||{\"c\":8,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":8,\"r\":4}|||||0|runtime":0,"VH-SD-03|||{\"c\":8,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":9,\"r\":5}|||||0|runtime":0,"VH-SD-03|||{\"c\":9,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":0,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VH-SD-04|||{\"c\":1,\"r\":2}|||||0|runtime":0,"VH-SD-04|||{\"c\":1,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":1,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":11,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":11,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":11,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":2,\"r\":4}|||||0|runtime":0,"VH-SD-04|||{\"c\":3,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":4,\"r\":2}|||||0|runtime":0,"VH-SD-04|||{\"c\":4,\"r\":3}|||||0|runtime":0,"VH-SD-04|||{\"c\":5,\"r\":6}|||||0|runtime":0,"VH-SD-04|||{\"c\":6,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":7,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":7,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":7,\"r\":7}|||||0|runtime":0,"VH-SD-04|||{\"c\":8,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":8,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":9,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":9,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":9,\"r\":5}|||||0|runtime":0,"VH-SP-01|||{\"c\":2,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":1,"VH-SP-03|||{\"c\":4,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-01|||{\"c\":0,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-01|||{\"c\":10,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-01|||{\"c\":3,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-01|||{\"c\":8,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-01|||{\"c\":9,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-02|||{\"c\":0,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-02|||{\"c\":10,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-02|||{\"c\":5,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-02|||{\"c\":6,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-02|||{\"c\":6,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-02|||{\"c\":7,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-02|||{\"c\":9,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VH-SU-03|||{\"c\":1,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":10,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":10,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":11,\"r\":2}|||||0|runtime":0,"VH-SU-03|||{\"c\":11,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":11,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":11,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":2,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":2,\"r\":6}|||||0|runtime":0,"VH-SU-03|||{\"c\":3,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":3,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":3,\"r\":7}|||||0|runtime":0,"VH-SU-03|||{\"c\":4,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":4,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":5,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":5,\"r\":6}|||||0|runtime":0,"VH-SU-03|||{\"c\":6,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":7,\"r\":0}|||||0|runtime":0,"VH-SU-03|||{\"c\":7,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":7,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":8,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":9,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-05|||{\"c\":5,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-TR-01|||{\"c\":2,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-TR-01|||{\"c\":4,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-TR-01|||{\"c\":4,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-TR-01|||{\"c\":5,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-TR-01|||{\"c\":7,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-VN-01|||{\"c\":11,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-VN-01|||{\"c\":3,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-VN-01|||{\"c\":6,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-VN-01|||{\"c\":9,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-VN-02|||{\"c\":0,\"r\":0}|||||0|runtime":0,"VH-VN-02|||{\"c\":0,\"r\":6}|||||0|runtime":0,"VH-VN-02|||{\"c\":11,\"r\":5}|||||0|runtime":0,"VH-VN-02|||{\"c\":2,\"r\":5}|||||0|runtime":0,"VH-VN-02|||{\"c\":4,\"r\":2}|||||0|runtime":0,"VH-VN-02|||{\"c\":4,\"r\":3}|||||0|runtime":0,"VH-VN-02|||{\"c\":8,\"r\":3}|||||0|runtime":0,"VH-VN-02|||{\"c\":9,\"r\":3}|||||0|runtime":0,"VH-VN-03|||{\"c\":10,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-AM-01|||{\"c\":0,\"r\":0}|||||0|runtime":1,"VS-AM-01|||{\"c\":0,\"r\":1}|||||0|runtime":1,"VS-AM-01|||{\"c\":0,\"r\":4}|||||0|runtime":1,"VS-AM-01|||{\"c\":0,\"r\":5}|||||0|runtime":1,"VS-AM-01|||{\"c\":0,\"r\":7}|||||0|runtime":1,"VS-AM-02|||{\"c\":0,\"r\":0}|||||0|runtime":1,"VS-AM-02||||0||||0|runtime":1,"VS-DL-01|||{\"c\":6,\"r\":6,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-DL-02|||{\"c\":10,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":1,"VS-FR-02|||{\"c\":0,\"r\":0}|||||0|runtime":1,"VS-FR-02|||{\"c\":0,\"r\":3}|||||0|runtime":1,"VS-FR-02|||{\"c\":0,\"r\":4}|||||0|runtime":1,"VS-FR-02|||{\"c\":0,\"r\":5}|||||0|runtime":1,"VS-FR-02||||0||||0|runtime":1,"VS-PL-01|||{\"c\":0,\"r\":2}|||||0|runtime":1,"VS-PL-01|||{\"c\":0,\"r\":4}|||||0|runtime":1,"VS-PL-01|||{\"c\":0,\"r\":6}|||||0|runtime":1,"VS-PL-02||||0||||0|runtime":1,"VS-TX-01|||{\"c\":0,\"r\":0}|||||0|runtime":0,"VS-TX-01|||{\"c\":0,\"r\":3}|||||0|runtime":0,"VS-TX-01|||{\"c\":0,\"r\":5}|||||0|runtime":0,"VS-TX-01|||{\"c\":0,\"r\":6}|||||0|runtime":0,"VS-TX-01|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VS-TX-01|||{\"c\":10,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-01|||{\"c\":3,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-01|||{\"c\":4,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-01|||{\"c\":5,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-01|||{\"c\":7,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-01|||{\"c\":9,\"r\":5,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-02|||{\"c\":0,\"r\":0}|||||0|runtime":0,"VS-TX-02|||{\"c\":0,\"r\":1}|||||0|runtime":0,"VS-TX-02|||{\"c\":0,\"r\":2}|||||0|runtime":0,"VS-TX-02|||{\"c\":0,\"r\":3}|||||0|runtime":0,"VS-TX-02|||{\"c\":0,\"r\":5}|||||0|runtime":0,"VS-TX-02|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VS-TX-02|||{\"c\":11,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-02|||{\"c\":2,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-02|||{\"c\":5,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VS-TX-02|||{\"c\":8,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0})}    
+function g77AsSeedData0(){return {"AP-01||||0||||0|runtime":0,"AP-02||||0||||0|runtime":0,"AP-03||||2||||0|runtime":0,"AP-04||||2||||0|runtime":0,"AP-05||||0||||0|runtime":0,"AP-06||||2||||0|runtime":0,"AP-07||||0||||0|runtime":0,"AP-PAPI-01|0|||0||||0|runtime":0,"AP-WS-01|1|||2||||0|runtime":1,"CT-20-01|0|||||||0|runtime":0,"CT-20-01|1|||||||0|runtime":0,"CT-20-01|2|||||||0|runtime":0,"CT-20-01|3|||||||0|runtime":0,"CT-20-01|4|||||||0|runtime":0,"CT-20-01|5|||||||0|runtime":0,"CT-20-01|6|||||||0|runtime":0,"CT-20-01|7|||||||0|runtime":0,"CT-40-01|0|||||||0|runtime":0,"CT-RF-01|5|||||||0|runtime":0,"FM-01||||||||0|runtime":0,"FM-02||||||||0|runtime":0,"FM-03||||||||0|runtime":0,"FM-04||||||||0|runtime":0,"FM-05||||||||0|runtime":0,"HC-01||||0||||0|runtime":0,"HC-02||||0||||0|runtime":0,"HC-03||||0||||0|runtime":0,"HC-04||||0||||0|runtime":0,"HC-05||||0||||0|runtime":0,"HS-01|||{\"c\":3,\"r\":0}|1||||0|runtime":0,"HS-01|||{}|0||||0|runtime":0,"HS-01|||{}|2||||0|runtime":0,"HS-03|||{\"c\":2,\"r\":2}|0||||0|runtime":0,"HS-03|||{\"c\":5,\"r\":1}|1||||0|runtime":0,"HS-03|||{}|0||||0|runtime":0,"HS-03|||{}|2||||0|runtime":0,"HS-04|||{\"c\":1,\"r\":0}|3||||0|runtime":0,"HS-05|||{\"c\":2,\"r\":3}|1||||0|runtime":0,"HS-05|||{\"c\":4,\"r\":1}|0||||0|runtime":0,"HS-06||||||||0|runtime":0,"HS-08|||{\"c\":5,\"r\":1}|0||||0|runtime":0,"HS-08|||{\"c\":6,\"r\":2}|3||||0|runtime":0,"HS-08|||{}|2||||0|runtime":0,"IL-01||||0||||0|runtime":0,"IL-02||||0||||0|runtime":0,"IL-03||||0||||0|runtime":0,"IL-04||||0||||0|runtime":0,"IL-05||||0||||0|runtime":0,"IL-06||||0||||0|runtime":0,"IL-07||||0||||0|runtime":0,"IL-07||||3||||0|runtime":0,"IL-08||||0||||0|runtime":0,"IL-09||||0||||0|runtime":0,"IL-10||||0||||0|runtime":0,"IL-10||||1||||0|runtime":0,"IL-11||||0||||0|runtime":0,"IL-12||||0||||0|runtime":0,"LV-BS-01|||{\"c\":4}|||||0|runtime":0,"LV-BS-01|||{\"c\":6}|||||0|runtime":0,"LV-FK-01|0|||||||0|runtime":1,"LV-FK-01|1|||||||0|runtime":1,"LV-FK-01|2|||||||0|runtime":1,"LV-FK-01|||{\"c\":9}|||||1|runtime":1,"LV-RS-01|0|||||||0|runtime":1,"LV-RS-01|1|||||||0|runtime":1,"LV-SM-01|||{\"c\":3}|||||0|runtime":0,"LV-SM-01|||{\"c\":5}|||||0|runtime":0,"LV-SM-01|||{\"c\":8,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"OF-01||||0||||0|runtime":0,"OF-10||||0||||0|runtime":0,"OF-11||||0||||0|runtime":0,"PB-01||||0||||0|runtime":0,"PB-02||||0||||0|runtime":0,"PB-03||||0||||0|runtime":0,"PE-01|||||idle|2||0|runtime":1,"PE-01|||||idle|6||0|runtime":1,"PE-01|||||walking|2||0|runtime":1,"PE-01|||||walking|6||0|runtime":1,"PE-02|||||idle|1||0|runtime":1,"PE-02|||||idle|2||0|runtime":1,"PE-02|||||idle|3||0|runtime":1,"PE-02|||||idle|5||0|runtime":1,"PE-02|||||idle|6||0|runtime":1,"PE-02|||||walking|1||0|runtime":1,"PE-02|||||walking|2||0|runtime":1,"PE-02|||||walking|3||0|runtime":1,"PE-02|||||walking|5||0|runtime":1,"PE-02|||||walking|6||0|runtime":1,"PE-04|||||walking|0||0|runtime":1,"PE-04|||||walking|2||0|runtime":1,"PE-04|||||walking|4||0|runtime":1,"PE-04|||||walking|6||0|runtime":1,"PE-05|||||walking|2||0|runtime":1,"PE-05|||||walking|6||0|runtime":1,"PE-16|||||walking|2||0|runtime":1,"PE-16|||||walking|6||0|runtime":1,"PE-30|||||walking|0||0|runtime":1,"PE-30|||||walking|2||0|runtime":1,"PE-30|||||walking|4||0|runtime":1,"PE-30|||||walking|6||0|runtime":1,"PE-43|||||walking|2||0|runtime":1,"PE-43|||||walking|6||0|runtime":1,"PE-44|||||walking|2||0|runtime":1,"PE-44|||||walking|6||0|runtime":1,"PE-47|||||walking|2||0|runtime":1,"PE-47|||||walking|6||0|runtime":1,"PH-L1||||0||||0|runtime":0,"PK2-ACC2||||0||||0|runtime":0,"PK2-ACC2||||||||0|runtime":0,"PK2-C06-N||||0||||0|runtime":0,"PK2-C06-N||||||||0|runtime":0,"PK2-C06-W||||0||||0|runtime":0,"PK2-C06-W||||2||||0|runtime":0,"PK2-CURB-H||||||||0|runtime":0,"PK2-CURB-V||||||||0|runtime":0,"PK2-GAS-E||||0||||0|runtime":0,"PK2-M12||||||||0|runtime":0,"PK2-S06||||1||||0|runtime":0,"PK2-S06||||3||||0|runtime":0,"PL-01|||{\"ou\":0,\"tc\":0,\"bc\":0,\"hs\":0,\"hc\":0,\"sk\":0,\"ac\":0}||idle|6||0|runtime":1,"PR-01|0|||0||||0|runtime":0,"PR-01|0|||2||||0|runtime":0,"PR-01||||0||||0|runtime":0,"PR-01||||||||0|runtime":0,"PR-04|0|||0||||0|runtime":1,"PR-04||||0||||0|runtime":1,"PR-07|0|||||||0|runtime":0,"PR-09|0|||||||0|runtime":0,"PR-09||||0||||0|runtime":0,"PR-09||||||||0|runtime":0,"PR-10|0|||||||0|runtime":0,"PR-10||||||||0|runtime":0,"PR-11|0|||||||0|runtime":0,"PR-14|0|||0||||0|runtime":0,"PR-14||||||||0|runtime":0,"PR-15|0|||||||0|runtime":0,"PR-15||||0||||0|runtime":0,"PR-15||||||||0|runtime":0,"PR-16|0|||0||||0|runtime":0,"PR-16|0|||||||0|runtime":0,"PR-16||||0||||0|runtime":0,"PR-16||||||||0|runtime":0,"PR-17|0|||0||||0|runtime":0,"PR-17|0|||||||0|runtime":0,"PR-17||||0||||0|runtime":0,"PR-17||||||||0|runtime":0,"PR-18|0|||||||0|runtime":0,"PR-18||||0||||0|runtime":0,"PR-18||||||||0|runtime":0,"PR-19||||||||0|runtime":0,"PR-21||||||||0|runtime":0,"PR-22||||||||0|runtime":0,"PR-23|0|||1||||0|runtime":0,"PR-23||||||||0|runtime":0,"PR-28|0|||0||||0|runtime":0,"PR-28||||0||||0|runtime":0,"PR-28||||||||0|runtime":0,"PR-29|0|||0||||0|runtime":0,"PR-29||||0||||0|runtime":0,"PR-29||||||||0|runtime":0,"PR-30||||0||||0|runtime":0,"PR-30||||||||0|runtime":0,"PR-31||||0||||0|runtime":0,"PR-31||||||||0|runtime":0,"PR-32|0|||||||0|runtime":0,"PR-32||||||||0|runtime":0,"PR-35||||0||||0|runtime":0,"PR-35||||1||||0|runtime":0,"PR-35||||2||||0|runtime":0,"PR-35||||3||||0|runtime":0,"RB-01|||{}|0||||0|runtime":0,"RB-01||||0||||0|runtime":0,"RB-02|||{}|0||||0|runtime":0,"RB-02||||0||||0|runtime":0,"RB-04||||0||||0|runtime":0,"RB-05||||0||||0|runtime":0,"RB-12||||0||||0|runtime":0,"RB-DP1||||0||||0|runtime":0,"RB-FT1||||0||||0|runtime":0,"RB-FT1||||1||||0|runtime":0,"RB-ST1||||1||||0|runtime":0,"RB-ST2||||0||||0|runtime":0,"RF-BUS||||||||0|runtime":0,"RK-CS|0|||0||||0|runtime":0,"RK-CS|1|||0||||0|runtime":0,"RK-CS|2|||0||||0|runtime":0,"RK-CS|3|||0||||0|runtime":0,"RK-CS|4|||0||||0|runtime":0,"RK-CS|5|||0||||0|runtime":0,"RL-FR-01|0|||||||0|runtime":1,"RL-FR-03|0|||||||0|runtime":0,"RL-FR-04|0|||||||0|runtime":0,"RL-FR-05|0|||||||0|runtime":0,"RL-FR-05|1|||||||0|runtime":0,"RL-FR-06|0|||||||0|runtime":0,"RL-PS-04|0|||||||0|runtime":1,"RP-SG-01|0|||||||0|runtime":0,"RP-SG-01|2|||||||0|runtime":0,"SL-AV2|0|||0||||0|runtime":0,"SL-AV2|0|||1||||0|runtime":0,"SL-AV2|0|||2||||0|runtime":0,"SL-AV2|0|||3||||0|runtime":0,"SL-AVE|0|||0||||0|runtime":0,"SL-AVE|0|||1||||0|runtime":0,"SL-AVE|0|||2||||0|runtime":0,"SL-AVE|0|||3||||0|runtime":0,"SL-DEC|0|||0||||0|runtime":0,"SL-IND|0|||0||||0|runtime":0,"SL-PKL|0|||0||||0|runtime":0,"SL-PKL|0|||1||||0|runtime":0,"SL-PKL|0|||2||||0|runtime":0,"SL-PKL|0|||3||||0|runtime":0,"SL-PKL||||0||||0|runtime":0,"SL-PRK|0|||0||||0|runtime":0,"SL-RES|0|||0||||0|runtime":0,"SL-RES|0|||1||||0|runtime":0,"SL-RES|0|||2||||0|runtime":0,"SL-RES|0|||3||||0|runtime":0,"SP-05||||0||||0|runtime":0,"SP-06||||0||||0|runtime":0,"SP-07||||0||||0|runtime":0,"TL-ARW|0|||0||||0|runtime":0,"TL-ARW|0|||1||||0|runtime":0,"TL-ARW|0|||2||||0|runtime":0,"TL-ARW|0|||3||||0|runtime":0,"TL-ARW|1|||0||||0|runtime":0,"TL-ARW|1|||1||||0|runtime":0,"TL-ARW|1|||2||||0|runtime":0,"TL-ARW|1|||3||||0|runtime":0,"TL-ARW|2|||0||||0|runtime":0,"TL-ARW|2|||1||||0|runtime":0,"TL-ARW|2|||2||||0|runtime":0,"TL-ARW|2|||3||||0|runtime":0,"TL-ARW|3|||0||||0|runtime":0,"TL-ARW|3|||2||||0|runtime":0,"TL-PED|4|||0||||0|runtime":0,"TL-PED|4|||1||||0|runtime":0,"TL-PED|4|||2||||0|runtime":0,"TL-PED|4|||3||||0|runtime":0,"TP-BD-01|0|||0||||0|runtime":1,"TP-BD-01|0|||||||0|runtime":1,"TP-PM-02|0|||0||||0|runtime":1,"TP-RU-01||||0||||0|runtime":1,"TP-RU-02||||0||||0|runtime":1,"TP-SH-01||||||||0|runtime":0,"TP-SH-02|0|||0||||0|runtime":0,"TP-SH-02||||||||0|runtime":0,"TP-SH-03||||0||||0|runtime":0,"TP-SH-04|0|||0||||0|runtime":0,"TP-SH-04||||||||0|runtime":0,"TP-UR-01|0|||0||||0|runtime":1,"TP-UR-01||||||||0|runtime":1,"TP-UR-02|0|||0||||0|runtime":1,"TP-UR-02|1|||0||||0|runtime":1,"TP-UR-02|2|||0||||0|runtime":1,"TP-UR-02||||0||||0|runtime":1,"TP-UR-02||||||||0|runtime":1,"TP-UR-03|0|||||||0|runtime":1,"TP-UR-03||||0||||0|runtime":1,"TP-UR-03||||||||0|runtime":1,"TP-WP-01||||||||0|runtime":1,"TP-WP-02||||||||0|runtime":1,"VH-HB-01|||{\"c\":1,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":1,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":4,\"r\":3}|||||0|runtime":0,"VH-HB-01|||{\"c\":8,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-01|||{\"c\":8,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VH-HB-02|||{\"c\":1,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":1,\"r\":2}|||||0|runtime":0,"VH-HB-02|||{\"c\":10,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":3,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":3,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-HB-02|||{\"c\":3,\"r\":7}|||||0|runtime":0,"VH-MV-02|||{\"c\":0,\"r\":0}|||||0|runtime":0,"VH-MV-02|||{\"c\":0,\"r\":7}|||||0|runtime":0,"VH-MV-02|||{\"c\":2,\"r\":0}|||||0|runtime":0,"VH-MV-02|||{\"c\":2,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-MV-02|||{\"c\":9,\"r\":3}|||||0|runtime":0,"VH-PK-02|||{\"c\":3,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":10,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":10,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":11,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":11,\"r\":2}|||||0|runtime":0,"VH-SD-01|||{\"c\":3,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":3,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":5,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":6,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-01|||{\"c\":6,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-02|||{\"L\":{\"lights\":true}}|||||0|runtime":0,"VH-SD-03|||{\"c\":1,\"r\":1}|||||0|runtime":0,"VH-SD-03|||{\"c\":10,\"r\":0,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":10,\"r\":6}|||||0|runtime":0,"VH-SD-03|||{\"c\":11,\"r\":1,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":6,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":7,\"r\":0}|||||0|runtime":0,"VH-SD-03|||{\"c\":8,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-03|||{\"c\":9,\"r\":0}|||||0|runtime":0,"VH-SD-04|||{\"c\":2,\"r\":0}|||||0|runtime":0,"VH-SD-04|||{\"c\":3,\"r\":1}|||||0|runtime":0,"VH-SD-04|||{\"c\":6,\"r\":2,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SD-04|||{\"c\":6,\"r\":3}|||||0|runtime":0,"VH-SD-04|||{\"c\":6,\"r\":7}|||||0|runtime":0,"VH-SU-03|||{\"c\":2,\"r\":4}|||||0|runtime":0,"VH-SU-03|||{\"c\":6,\"r\":2}|||||0|runtime":0,"VH-SU-03|||{\"c\":7,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":8,\"r\":3}|||||0|runtime":0,"VH-SU-03|||{\"c\":9,\"r\":3,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-SU-03|||{\"c\":9,\"r\":3}|||||0|runtime":0,"VH-TR-01|||{\"c\":6,\"r\":2}|||||0|runtime":0,"VH-TR-01|||{\"c\":8,\"r\":2}|||||0|runtime":0,"VH-VN-01|||{\"c\":9,\"r\":4,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-VN-02|||{\"c\":1,\"r\":1}|||||0|runtime":0,"VH-VN-02|||{\"c\":10,\"r\":7,\"L\":{\"lights\":false}}|||||0|runtime":0,"VH-VN-02|||{\"c\":2,\"r\":4}|||||0|runtime":0,"VH-VN-02|||{\"c\":6,\"r\":7}|||||0|runtime":0,"VH-VN-02|||{\"c\":8,\"r\":4}|||||0|runtime":0,"VL-01||||0||||0|runtime":0,"VL-01||||3||||0|runtime":0,"VL-02||||0||||0|runtime":0,"VL-02||||1||||0|runtime":0,"VL-03||||1||||0|runtime":0,"VL-04||||0||||0|runtime":0,"VL-04||||3||||0|runtime":0,"VL-05||||1||||0|runtime":0,"VL-05||||2||||0|runtime":0,"VL-06||||0||||0|runtime":0,"VL-06||||3||||0|runtime":0,"VL-07||||2||||0|runtime":0,"VL-08||||2||||0|runtime":0,"VS-FR-02|||{\"c\":0,\"r\":1}|||||0|runtime":1,"VS-PL-01|||{\"c\":0,\"r\":5}|||||0|runtime":1,"VS-PL-01|||{\"c\":0,\"r\":7}|||||0|runtime":1,"VS-PL-02|||{\"c\":0,\"r\":4}|||||0|runtime":1,"VS-PL-02|||{\"c\":0,\"r\":5}|||||0|runtime":1,"W2PB-02||||0||||0|runtime":0,"W2PB-03||||0||||0|runtime":0,"W2PB-05||||0||||0|runtime":0,"W2PB-07||||0||||0|runtime":0,"W2PB-08||||0||||0|runtime":0,"W2PB-09||||0||||0|runtime":0,"W2PB-10||||0||||0|runtime":0,"W2PB-11||||2||||0|runtime":0,"W2PB-12||||0||||0|runtime":0,"W2SP-01||||0||||0|runtime":0,"W2SP-01||||2||||0|runtime":0,"W2SP-02||||0||||0|runtime":0,"W2SP-02||||2||||0|runtime":0,"W2SP-02||||||||0|runtime":0,"W2SP-03||||0||||0|runtime":0,"W2SP-03||||1||||0|runtime":0,"W2SP-03||||2||||0|runtime":0,"W2SP-03||||||||0|runtime":0,"W2SP-04||||0||||0|runtime":0,"W2SP-04||||2||||0|runtime":0,"W2SP-08||||0||||0|runtime":0,"W2SP-08||||2||||0|runtime":0,"W2SP-09||||0||||0|runtime":0,"W2SP-09||||2||||0|runtime":0,"W2SP-10||||0||||0|runtime":0,"W2SP-11||||0||||0|runtime":0,"W2SP-11||||1||||0|runtime":0,"W2SP-12||||3||||0|runtime":0,"W2SP-13||||0||||0|runtime":0,"W2SP-15||||2||||0|runtime":0,"W2SP-15||||||||0|runtime":0,"W2SP-16||||0||||0|runtime":0,"W2SP-17||||0||||0|runtime":0,"W2SP-18||||0||||0|runtime":0,"WF-01||||||||0|runtime":0,"WF-02||||||||0|runtime":0,"WF-03||||||||0|runtime":0,"WF-04||||||||0|runtime":0,"WF-05||||0||||0|runtime":0,"WF-05||||1||||0|runtime":0,"WF-05||||||||0|runtime":0,"WF-07||||0||||0|runtime":0,"WF-07||||1||||0|runtime":0,"WF-08||||0||||0|runtime":0,"WF-08||||2||||0|runtime":0}}
+
+
+var G77_ZP={on:true,partMs:5,quiet:20,famMs:3,famMin0:8,famMax0:16,lastKey:'',lastChange:-1e9,job:null,full:null,l1:null,lp:null,parsed:null,stats:{jobs:0,parts:0,done:0,steps:0,maxPartMs:0,fullCover:0,zoomFrames:0}};
+function g77ZpZooming(G){const Z=G77_ZP;if(G.key!==Z.lastKey){Z.lastKey=G.key;Z.lastChange=WTC.frame}const zm=WTC.frame-Z.lastChange<Z.quiet||(typeof G77_PHS!=='undefined'&&G77_PHS.under);if(zm)Z.stats.zoomFrames++;return zm}    
+
+
+function g77ZpParse(fn,inner){const Z=G77_ZP,C=Z.parsed||(Z.parsed={}),nm=fn.name;if(C[nm]!==undefined)return C[nm];let out=[];
+ try{const s=String(fn);let b=s.slice(s.indexOf('{')+1,s.lastIndexOf('}'));if(inner){const a=b.indexOf('try{'),e=b.lastIndexOf('}finally{');if(a<0||e<a)throw 0;b=b.slice(a+4,e)}
+  for(const st of b.split(';').map(x=>x.trim()).filter(Boolean)){if(/[{}]/.test(st)||!/^[A-Za-z_$][\w$]*\(/.test(st)){out=null;break}const f=eval('(function(now){'+st+'})');out.push([f,true,st.slice(0,st.indexOf('('))])}}
+ catch(e){out=null}
+ C[nm]=out&&out.length?out:false;return C[nm]}
+function g77ZpL1(){return G77_ZP.l1=g77ZpParse(wtcPaintL1,false)}
+function g77ZpSteps(layer){const one=f=>[[f,true,f.name]],or=(p,f)=>p||one(f);
+ if(layer==='M')return one(wtcPaintL0).concat(or(g77ZpParse(wtcPaintL1,false),wtcPaintL1));if(layer==='L0')return one(wtcPaintL0);if(layer==='L1')return or(g77ZpParse(wtcPaintL1,false),wtcPaintL1);
+ if(layer==='T')return or(g77ZpParse(wtcPaintL2,false),wtcPaintL2);
+ const F={P:wtcPaintLP,O:wtcPaintLO,X1:wtcPaintX1,X2:wtcPaintX2,X3:wtcPaintX3}[layer];if(!F)return null;const p=g77ZpParse(F,true);return p||one(F)}
+function g77ZpFlags(layer){return layer==='X3'?2:(layer==='P'||layer==='O'||layer[0]==='X')?1:0}    
+function g77ZpNext(G,lists){const L=lists.slice();for(const lp of Object.values(G77_ZP.lp||{}))if(lp.key===G.key)L.push(lp.list);
+ for(const list of L)for(const [layer,i,j] of list){const k=layer+'|'+G.key+'|'+i+'|'+j;if(WTC.tiles.has(k)||WTC_EMPTY.has(k))continue;return[layer,i,j]}return null}
+function g77ZpSchedule(G,lists,now,zm){const Z=G77_ZP,t0=performance.now();let done=0;
+ for(let guard=0;guard<6;guard++){
+  if(!Z.job){if(!zm&&!Z.preNow)break;const q=Z.preNow?g77ZpPreNext(G):g77ZpNext(G,lists);if(!q)break;const steps=g77PcPrep(q,G,g77ZpSteps(q[0]));        
+   if(!steps){wtcBuild(q[0],G,q[1],q[2],now);done++;WTC.stats.syncBuilt++;if(performance.now()-t0>=Z.partMs)break;continue}    
+   const T=G.T,s=G.s,tw=G.tw,cv=wtcCanvas(),g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,T,T);g.direction=WTC_DIR;if(WTC_LANG&&'lang' in g)g.lang=WTC_LANG;g.setTransform(s,0,0,s,-q[1]*tw*s,-q[2]*tw*s);
+   Z.job={layer:q[0],i:q[1],j:q[2],key:G.key,tw,now,cv,g,steps,k:0,ms:0,err:null,epoch:WTC.epoch,bake:WTC.bake,cam:[Camera.x,Camera.y,Camera.zoom],fl:g77ZpFlags(q[0]),pre:!!Z.preNow};Z.stats.jobs++;if(Z.preNow)Z.stats.pre=(Z.stats.pre||0)+1}
+  if(Z.job.epoch!==WTC.epoch){wtcRelease(Z.job.cv);Z.job=null;Z.stats.dropped=(Z.stats.dropped||0)+1;continue}    
+  const J=Z.job,p0=performance.now(),pc=ctx,pv=VIEW_OVR,pm=WTC_MODE,pmu=Targets.mute,X=g77As(),pb=WTC.bake,cx=Camera.x,cy=Camera.y,cz=Camera.zoom;
+  const plp=WTC_LP,px3=WTC_X3;WTC.bake=J.bake;Camera.x=J.cam[0];Camera.y=J.cam[1];Camera.zoom=J.cam[2];if(J.fl){WTC_LP=1;if(J.fl===2)WTC_X3=true}    
+  ctx=J.g;VIEW_OVR={cx:J.i*J.tw+J.tw/2,cy:J.j*J.tw+J.tw/2,hw:J.tw/2+WTC.margin,hh:J.tw/2+WTC.margin};WTC_MODE=1;Targets.mute=true;WTC.ctxBuilding=J.g;X.x++;
+  try{while(J.k<J.steps.length){const st=J.steps[J.k++],ts=performance.now();st[0](J.now);const d=performance.now()-ts,M=Z.stepMs||(Z.stepMs={}),nm=st[2]||'?';if(!M[nm]||d>M[nm])M[nm]=Math.round(d*10)/10;Z.stats.steps++;if(performance.now()-t0>=Z.partMs)break}}
+  catch(e){if(!WTC.err){WTC.err=String(e&&e.stack||e);console.error('world tile part',e)}J.err=String(e);J.k=J.steps.length}
+  finally{ctx=pc;VIEW_OVR=pv;WTC_MODE=pm;Targets.mute=pmu;WTC.ctxBuilding=null;X.x--;WTC.bake=pb;Camera.x=cx;Camera.y=cy;Camera.zoom=cz;WTC_LP=plp;WTC_X3=px3}
+  const pm2=performance.now()-p0;J.ms+=pm2;Z.stats.parts++;if(pm2>Z.stats.maxPartMs)Z.stats.maxPartMs=pm2;
+  if(J.k>=J.steps.length){const k=J.layer+'|'+J.key+'|'+J.i+'|'+J.j,T=WTC.T;let tcv=J.cv,bb=null;
+   if(J.fl||(J.layer==='L1'&&W3.on&&W3.l1Empty)){let e=true;if(G7BB.on){const R=g7BbResult(J.g,T);e=R.e;bb=R.bb}else{try{const d=new Uint32Array(J.g.getImageData(0,0,T,T).data.buffer);let x0=T,y0=T,x1=-1,y1=-1;for(let y=0;y<T;y++){const r=y*T;let a=-1,b=-1;for(let x=0;x<T;x++)if(d[r+x]){a=x;break}if(a<0)continue;for(let x=T-1;x>=a;x--)if(d[r+x]){b=x;break}if(y<y0)y0=y;y1=y;if(a<x0)x0=a;if(b>x1)x1=b}if(x1>=0){e=false;bb=[x0,y0,x1-x0+1,y1-y0+1]}}catch{e=false}}    if(e){if(G7TE.check)g7EmptyCheck(J.g,T,k);tcv=null;wtcRelease(J.cv);WTC_LPL.stats.empty++}else WTC_LPL.stats.built++}
+   if(tcv){WTC_EMPTY.delete(k);WTC.tiles.set(k,{cv:tcv,last:WTC.frame,layer:J.layer,at:performance.now(),bb})}else{WTC.tiles.delete(k);WTC_EMPTY.set(k,performance.now());if(WTC_EMPTY.size>4000)WTC_EMPTY.clear()}    
+   WTC.stats.built++;WTC.stats.lastBuildMs=J.ms;WTC.stats.totalBuildMs+=J.ms;Z.stats.done++;Z.job=null;done++}
+  if(performance.now()-t0>=Z.partMs)break}
+ FS.used+=performance.now()-t0;return done}
+
+
+function g77TaxiSide(car,e,q){const L=Math.max(1,e.len||Math.hypot((e.x2||0)-(e.x1||0),(e.y2||0)-(e.y1||0))||400),dt=18/L,body={id:car.id,asset:car.asset,ref:car.ref||'Sedan'};
+ for(let k=0;k<=8;k++)for(const sg of (k?[1,-1]:[1])){const t=clamp(q.t+sg*k*dt,.04,.96),p=trafficEdgePoint(e.id,q.dirSign,t);let hit=null;try{hit=dynamicVehicleBodyBlocked(body,p.x,p.y,p.heading)}catch(_){}
+  if(!hit||hit==='PLAYER-PED')return{dirSign:q.dirSign,t,p,d:Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y),moved:k}}
+ return null}
+
+
+G77_ZP.pre=true;G77_ZP.preNow=false;
+function g77ZpPreNext(G){if(g77ZpPreFull(G))return null;const b=wtcRingNext(G);    if(b)return b;const Z=G77_ZP,lc=WTC.lastCam,dx=lc?Camera.x-lc.x:0,dy=lc?Camera.y-lc.y:0;let best=null,bs=1e18;
+ const ex=dx>0.5?2:1,wx=dx<-0.5?2:1,sy=dy>0.5?2:1,ny=dy<-0.5?2:1;
+ for(const [layer,lp] of Object.entries(Z.lp||{})){if(lp.key!==G.key)continue;
+  for(let j=G.j0-ny;j<=G.j1+sy;j++)for(let i=G.i0-wx;i<=G.i1+ex;i++){if(i>=G.i0&&i<=G.i1&&j>=G.j0&&j<=G.j1)continue;const k=layer+'|'+G.key+'|'+i+'|'+j;if(WTC.tiles.has(k)||WTC_EMPTY.has(k))continue;
+   const cx=(i+.5)*G.tw-Camera.x,cy=(j+.5)*G.tw-Camera.y,d=cx*cx+cy*cy-(cx*dx+cy*dy)*60;if(d<bs){bs=d;best=[layer,i,j]}}}
+ return best}
+
+
+G77_ZP.preCap=.85;G77_ZP.stats.preFull=0;G77_ZP.stillEvery=3;
+function g77ZpPreGo(){const lc=WTC.lastCam,Z=G77_ZP;const mv=!lc||Math.abs(Camera.x-lc.x)>.5||Math.abs(Camera.y-lc.y)>.5||WTC.frame-Z.lastChange<Z.quiet;
+ return mv||(Z.stillEvery>0&&WTC.frame%Z.stillEvery===0)}    
+function g77ZpPreFull(G){const mid='|'+G.key+'|';let n=0;for(const k of WTC.tiles.keys())if(k.indexOf(mid)>0)n++;
+ if(n>=Math.floor(WTC.maxTiles*G77_ZP.preCap)-1){G77_ZP.stats.preFull++;return true}return false}
+function g77AsMore(dl,n){if(!dl||typeof dl.timeRemaining!=='function'||dl.didTimeout)return n===0;    
+ return dl.timeRemaining()>(G77_AV.on?Math.max(4,G77_AV.est*1.25):4)||(n===0&&performance.now()-(g77As().lastT||0)>1000)}    
+
+var G77_AV={on:true,quietMs:1500,waitMs:400,est:4,n:0,waits:0};
+function g77AvZoom(){try{const Z=WTC_ZQ;return !!Z&&(Z.active||performance.now()-Z.tCh<G77_AV.quietMs)}catch(e){return false}}
+function g77AvMs(ms){const A=G77_AV;A.n++;A.est=A.n===1?ms:A.est*.8+ms*.2}
+window.__TC_AV=()=>({on:G77_AV.on,est:+G77_AV.est.toFixed(1),tests:G77_AV.n,waits:G77_AV.waits,queue:g77As().q.size,done:g77As().done,miss:g77As().miss});    
+function g77AsLater(){const X=g77As();if(X.tm||X.ric)return;
+ if(typeof requestIdleCallback==='function')X.ric=requestIdleCallback(g77AsStep,{timeout:1000});else X.tm=setTimeout(g77AsStep,250)}
+
+
+function g77PcReg(){return window.__G77PCREG||(window.__G77PCREG=new Map())}
+function g77PcStats(){return window.__G77PCS||(window.__G77PCS={made:0,steps:0,maxMs:0})}
+function g77PcPrep(q,G,steps){if(!steps)return steps;const R=g77PcReg();if(!R.size)return steps;
+ const m=WTC.margin+150,X0=q[1]*G.tw-m,Y0=q[2]*G.tw-m,X1=(q[1]+1)*G.tw+m,Y1=(q[2]+1)*G.tw+m,pre=[];
+ for(const [key,a] of R){if(PORT_CACHE.has(key))continue;const x=a[0]+a[6],y=a[1]+a[7];if(x>X1||y>Y1||x+a[2]<X0||y+a[3]<Y0)continue;pre.push([()=>g77PcMake(key),true,'pc:'+key])}
+ return pre.length?pre.concat(steps):steps}
+function g77PcMake(key){if(PORT_CACHE.has(key))return;const a=g77PcReg().get(key);if(!a)return;const S=g77PcStats(),t0=performance.now();window.__G77PCNODRAW=true;
+ try{portCached(key,a[0],a[1],a[2],a[3],a[4],a[5],a[6],a[7])}finally{window.__G77PCNODRAW=false}const d=performance.now()-t0;S.made++;if(d>S.maxMs)S.maxMs=Math.round(d*10)/10}
+
+
+G77_ZP.stillEvery=0;
+
+
+function g77S(){return window.__G77ST||(window.__G77ST={dlgs:{},chars:{},open:null,el:null,typing:0,keyOn:false})}    
+function g77St(){const P=PlayerProfile;let s=P.story;if(!s||typeof s!=='object'||Array.isArray(s))s=P.story={};s.v=1;
+ const D={name:'',flags:{},rel:{},seen:{},journal:[],msgs:[],calls:[],dlg:null};for(const k in D)if(s[k]===undefined||(D[k]!==null&&typeof D[k]==='object'&&(typeof s[k]!=='object'||s[k]===null||Array.isArray(D[k])!==Array.isArray(s[k]))))s[k]=JSON.parse(JSON.stringify(D[k]));if(s.msgV!==2)g77MsgFix(s);return s}
+function g77StRestore(x){if(g77S().open)g77DlgClose(true);try{g77SpReset();g77BbClear()}catch(e){}PlayerProfile.story=x&&typeof x==='object'?cloneJson(x):{};const s=g77St();try{g77SpBadge()}catch(e){}if(s.dlg&&g77S().dlgs[s.dlg.id])g77DlgOpen(s.dlg.id,s.dlg.mode,s.dlg.node,true);else s.dlg=null}
+function g77StEsc(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}
+function g77StName(){const n=g77St().name;return n&&String(n).trim()?String(n).trim():'שחקן'}
+function g77StText(t){return g77StEsc(t).replace(/\{name\}/g,g77StEsc(g77StName())).replace(/\{money\}/g,()=>money(PlayerProfile.money)).replace(/\{coins:(-?\d+)\}/g,(_,n)=>money(+n))}    
+
+function g77Coins(n){return '{coins:'+Math.round(Number(n)||0)+'}'}
+function g77CoinsHtml(t){return String(t==null?'':t).replace(/\{coins:(-?\d+)\}/g,(_,n)=>money(+n))}
+
+function g77StChar(id,name,color){g77S().chars[id]={name,color:color||'#4f7be0'}}
+function g77DlgAdd(id,d){g77S().dlgs[id]=d}
+function g77StCond(c){if(!c)return true;const s=g77St();return String(c).split('&').every(q=>{q=q.trim();const neg=q[0]==='!';if(neg)q=q.slice(1);let v;
+ if(q.startsWith('flag:'))v=!!s.flags[q.slice(5)];else if(q.startsWith('seen:'))v=!!s.seen[q.slice(5)];else{const m=/^(rel:([\w-]+)|money)\s*(>=|<=|>|<|==)\s*(-?\d+)$/.exec(q);if(!m)v=false;else{const a=m[1]==='money'?PlayerProfile.money:(s.rel[m[2]]||0),b=+m[4];v=m[3]==='>='?a>=b:m[3]==='<='?a<=b:m[3]==='>'?a>b:m[3]==='<'?a<b:a===b}}
+ return neg?!v:v})}
+function g77StApply(o){if(!o)return;const s=g77St();if(o.journal)try{g77JrApply(o.journal)}catch(e){}    if(o.set)for(const [k,v] of Object.entries(o.set))s.flags[k]=v;if(o.rel)for(const [k,v] of Object.entries(o.rel))s.rel[k]=Math.max(-100,Math.min(100,(s.rel[k]||0)+v))}
+
+function g77DlgRow(D,id){for(let i=0;i<40&&id&&id!=='end';i++){const r=D.rows[id];if(!r)return null;if(g77StCond(r.cond))return[id,r];id=r.else||r.next}return null}
+function g77DlgOpen(id,mode,at,resume){const D=g77S().dlgs[id];if(!D){toast('אין שיחה בשם '+id);return false}if(g77S().open)g77DlgClose(true);
+ const m=mode==='call'?'call':'talk',q=g77DlgRow(D,at||D.start);if(!q)return false;g77S().open={id,mode:m,node:q[0],shown:0,full:false};g77St().dlg={id,mode:m,node:q[0]};
+ if(m==='talk')Input.held.clear();g77DlgUi();if(!resume)SaveManager.log('story','dialog_open',{id,mode:m});return true}
+function g77DlgClose(silent){const O=g77S().open;g77S().open=null;g77St().dlg=null;clearTimeout(g77S().typing);if(g77S().el)g77S().el.style.display='none';if(O&&!silent){g77St().seen[O.id]=(g77St().seen[O.id]||0)+1;SaveManager.log('story','dialog_end',{id:O.id})}if(O&&O.mode==='talk')focusGame()}
+function g77DlgGo(next){const O=g77S().open;if(!O)return;const D=g77S().dlgs[O.id];const q=next&&next!=='end'?g77DlgRow(D,next):null;if(!q){g77DlgClose(false);return}O.node=q[0];O.shown=0;O.full=false;g77St().dlg={id:O.id,mode:O.mode,node:q[0]};g77DlgUi()}
+
+function g77DlgNext(force){const O=g77S().open;if(!O)return;const D=g77S().dlgs[O.id],r=D.rows[O.node];if(!O.full&&!force){O.full=true;g77DlgPaint();return}const ch=(r.choices||[]).filter(c=>g77StCond(c.cond));if(ch.length)return;g77StApply(r);if(r.end){g77DlgClose(false);return}g77DlgGo(r.next)}
+function g77DlgChoose(i){const O=g77S().open;if(!O)return false;const r=g77S().dlgs[O.id].rows[O.node],ch=(r.choices||[]).filter(c=>g77StCond(c.cond)),c=ch[i];if(!c)return false;g77StApply(r);g77StApply(c);SaveManager.log('story','choice',{id:O.id,row:O.node,i});if(c.end||c.next==='end'||!c.next){g77DlgClose(false);return true}g77DlgGo(c.next);return true}
+function g77StCss(){if($('g77StCss'))return;const st=document.createElement('style');st.id='g77StCss';st.textContent=
+ '#g77Dlg{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);width:min(720px,92vw);z-index:55;direction:rtl;font:15px/1.55 "Segoe UI",Arial,sans-serif;color:#eef5fa;background:rgba(12,22,32,.94);border:1px solid #2f4a60;border-radius:14px;box-shadow:0 10px 30px #000a;padding:14px 16px 10px;display:none;user-select:none}'+
+ '#g77Dlg.call{left:auto;right:18px;bottom:auto;top:84px;transform:none;width:min(380px,90vw);border-color:#2f8f6b}'+
+ '#g77Dlg .hd{display:flex;align-items:center;gap:10px;margin-bottom:6px}#g77Dlg .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;flex:none}'+
+ '#g77Dlg .nm{font-weight:700;font-size:15px}#g77Dlg .md{margin-inline-start:auto;font-size:12px;color:#8fb0c6}#g77Dlg .tx{min-height:46px;white-space:pre-wrap}'+
+ '#g77Dlg .ch{display:flex;flex-direction:column;gap:6px;margin-top:8px}#g77Dlg .ch button{all:unset;cursor:pointer;padding:7px 10px;border-radius:9px;background:#1b3042;border:1px solid #2f4a60;text-align:right}#g77Dlg .ch button:hover{background:#25425a}'+
+ '#g77Dlg .ch b{display:inline-block;min-width:18px;color:#ffd36a}#g77Dlg .ft{margin-top:8px;font-size:12px;color:#8fb0c6;text-align:left;direction:rtl}';
+ document.head.appendChild(st)}
+function g77DlgEl(){if(g77S().el)return g77S().el;g77StCss();const d=document.createElement('div');d.id='g77Dlg';d.innerHTML='<div class="hd"><div class="av"></div><div class="nm"></div><div class="md"></div></div><div class="tx"></div><div class="ch"></div><div class="ft"></div>';
+ d.addEventListener('click',e=>{const b=e.target.closest('[data-st-ch]');if(b){g77DlgChoose(+b.dataset.stCh);return}g77DlgNext()});document.body.appendChild(d);g77S().el=d;g77StKeys();return d}
+function g77StKeys(){if(g77S().keyOn)return;g77S().keyOn=true;addEventListener('keydown',e=>{const O=g77S().open;if(!O)return;const c=e.code||'';if(/^F\d+$/.test(c))return;
+ const dg=/^(Digit|Numpad)([1-4])$/.exec(c),adv=c==='Enter'||c==='NumpadEnter'||(O.mode==='talk'&&c==='Space');
+ if(dg){g77DlgChoose(+dg[2]-1)}else if(adv){g77DlgNext()}else if(c==='Escape'&&O.mode==='talk'){const r=g77S().dlgs[O.id].rows[O.node];if(!r.noClose)g77DlgClose(false)}else if(O.mode!=='talk')return;
+ e.preventDefault();e.stopImmediatePropagation()},true)}
+function g77DlgUi(){const O=g77S().open,d=g77DlgEl();if(!O){d.style.display='none';return}const D=g77S().dlgs[O.id],r=D.rows[O.node],who=r.who||D.who||'sys',C=g77S().chars[who]||{name:who,color:'#4f7be0'};
+ d.className=O.mode==='call'?'call':'';d.style.display='block';const av=d.querySelector('.av');av.textContent=(C.name||'?').trim()[0]||'?';av.style.background=C.color;d.querySelector('.nm').textContent=C.name;
+ d.querySelector('.md').textContent=O.mode==='call'?'שיחת טלפון':'';O.html=g77StText(r.text||'');O.plain=O.html.replace(/&[^;]+;/g,'_');clearTimeout(g77S().typing);g77DlgType()}
+function g77DlgType(){const O=g77S().open;if(!O)return;if(!O.full){O.shown=Math.min(O.plain.length,O.shown+2);if(O.shown>=O.plain.length)O.full=true;else g77S().typing=setTimeout(g77DlgType,28)}g77DlgPaint()}
+function g77DlgPaint(){const O=g77S().open,d=g77S().el;if(!O||!d)return;const D=g77S().dlgs[O.id],r=D.rows[O.node];
+ let h=O.html;if(!O.full){let n=0,i=0;while(i<h.length&&n<O.shown){if(h[i]==='<'){const j=h.indexOf('>',i);i=j<0?i+1:j+1;continue}if(h[i]==='&'){const j=h.indexOf(';',i);i=j<0?i+1:j+1}else i++;n++}h=h.slice(0,i)}d.querySelector('.tx').innerHTML=h;
  const ch=O.full?(r.choices||[]).filter(c=>g77StCond(c.cond)):[];d.querySelector('.ch').innerHTML=ch.map((c,i)=>'<button data-st-ch="'+i+'"><b>'+(i+1)+'</b> '+g77StText(c.t)+'</button>').join('');
  d.querySelector('.ft').textContent=ch.length?'בחירה — מקשים 1 עד '+ch.length+' או לחיצה':(O.mode==='call'?'Enter — המשך':'Enter / רווח — המשך'+(r.noClose?'':' · Esc — סגירה'))}
 
@@ -8612,601 +8755,4 @@ const TYPES = {
   'AC-NB-01': { he: 'צר-גוף', model: 'TN-320', fit: [0.9911, 0.9666], L: 37.57, WS: 35.8, fw: 4, wc: 6.4, tc: 1.5, sw: 9, nl: .1, tl: .22, zb: 1.65, H: 11.76, wz: 2.1, dih: 6, wt: [.95, .22], kink: .34,
     winglet: 2.2, eng: [.34], ed: 2.2, elen: 1.15, hs: .36, gear: { main: [[3.8, 1]], tire: [.58, .38] }, doors: [.116, .88], win: [.17, .84, 28, [[.4, .46]]], liv: 'aurelia',
     src: 'Airbus A320ceo עם sharklets: אורך 37.57 מ׳, מוטה 35.80 מ׳, גובה 11.76 מ׳' },
-  'AC-TP-01': { he: 'טורבו-פרופ אזורי', model: 'TP-72', fit: [0.9854, 1], L: 27.17, WS: 27.05, fw: 2.8, wc: 2.6, tc: 1.7, sw: .5, nl: .12, tl: .26, zb: .95, H: 7.65, high: true, dih: 1.2, wt: [.5, .25], kink: 0,
-    winglet: 0, prop: [.27], ttail: true, hs: .3, gear: { main: [[2.05, 1]], tire: [.45, .3], sponson: true }, doors: [.123, .86], win: [.22, .8, 18, []], liv: 'skyline',
-    src: 'ATR 72-600: אורך 27.17 מ׳, מוטה 27.05 מ׳, גובה 7.65 מ׳; כנף עליונה, זנב T ומדחפים' },
-  
-  'AC-RJ-01': { he: 'סילון אזורי', model: 'TR-75', fit: [0.9848, 0.9706], L: 31.68, WS: 26.0, fw: 3.01, fh: 3.35, wc: 4.7, tc: 1.25, sw: 5.6, nl: .1, tl: .24, zb: 1.15, H: 9.86, wz: 1.55, dih: 5, wt: [.6, .16], kink: .32,
-    winglet: 1.3, eng: [.34], ed: 1.5, elen: 1.05, hs: .38, gear: { main: [[2.6, 1]], tire: [.5, .3] }, doors: [.109, .87], win: [.2, .83, 21, [[.43, .47]]], liv: 'aurelia',
-    src: 'Embraer E175 (הבעלים 16:46, סעיף 2 — דגם אחד, כל הצורה ממנו): אורך 31.68 מ׳, מוטה 26.00 (כנף STD), גובה 9.86, גוף 3.01 × 3.35 (בועה כפולה); כנף נמוכה משוכה 23.5° עם כנפונים, שני CF34-8E מתחת לכנף, זנב רגיל עם מייצב על הגוף, 21 חלונות. לא בטוח: מפשק הגלגלים (5.2), מוטת המייצב (≈9.9)' },
-  'AC-QJ-01': { he: 'ארבע-מנועי אזורי', model: 'TQ-410', fit: [0.9946, 1], L: 31.0, WS: 26.21, fw: 3.56, wc: 5.4, tc: 1.6, sw: 4, nl: .1, tl: .22, zb: 1.0, H: 8.59, high: true, dih: -3, wt: [.6, .2], kink: 0,
-    winglet: 0, eng: [.22, .4], ed: 1.25, elen: 1.1, ttail: true, hs: .4, gear: { main: [[2.4, 1]], tire: [.5, .3], sponson: true }, doors: [.22, .86], win: [.17, .84, 26, [[.4, .46]]], liv: 'aurelia', src: 'BAe 146-300 / Avro RJ100: אורך 31.0 מ׳, מוטה 26.21 מ׳, גובה 8.59 מ׳, גוף 3.56 מ׳ (הבעלים 16:46: היה 35 × 31); כנף עליונה, 4 מנועים, זנב T' },
-  'AC-CG-01': { he: 'מטוס מטען', model: 'TF-76F', fit: [0.9876, 1], L: 54.94, WS: 47.57, fw: 5.03, wc: 8.6, tc: 2.0, sw: 12, nl: .09, tl: .22, zb: 1.6, H: 15.85, wz: 2.4, dih: 6, wt: [1.15, .28], kink: .34,
-    winglet: 0, eng: [.34], ed: 2.9, elen: 1.25, hs: .39, cargo: true, gear: { main: [[4.65, 2]], tire: [.62, .42] }, doors: [.12], liv: 'aurelia', src: 'Boeing 767-300F: אורך 54.94 מ׳, מוטה 47.57 מ׳, גובה 15.85 מ׳; כנף נמוכה משוכה 31.5°, שני מנועים מתחת לכנף, זנב רגיל, בלי חלונות נוסעים (הבעלים 18:21: לא כנף עליונה וזנב T)' },
-  'AC-HC-01': { he: 'מטוס מטען כבד', model: 'TH-40F', fit: [0.9715, 1], L: 69.1, WS: 73.3, fw: 6.4, wc: 10, tc: 3, sw: 10, nl: .07, tl: .2, zb: 1.6, H: 21.08, high: true, dih: -3, wt: [1.5, .4], kink: 0,
-    winglet: 0, eng: [.22, .46], ed: 2.8, elen: 1.1, hs: .36, cargo: true, gear: { main: [[3.4, 5]], tire: [.62, .42], sponson: true }, doors: [.1], liv: 'aurelia', src: 'Antonov An-124-100: אורך 69.1 מ׳, מוטה 73.3 מ׳, גובה 21.08 מ׳; כנף עליונה עם שיפוע כלפי מטה, 4 מנועים מתחת לכנף, זנב רגיל (הבעלים 18:21: לא T)' },
-  'AC-BJ-01': { he: 'סילון עסקים', model: 'TJ-60', fit: [0.9642, 1], L: 12.37, WS: 13.16, fw: 1.55, wc: 2.4, tc: 1.0, sw: .5, nl: .14, tl: .28, zb: .45, H: 4.09, wz: .55, dih: 4, wt: [.32, .11], kink: .25, wingU: .096,
-    winglet: 0, reng: { at: .72, ed: .58, elen: 1.75 }, ttail: true, hs: .36, gear: { main: [[1.6, 1]], tire: [.3, .17] }, doors: [.2], win: [.31, .5, 4, []], liv: 'aurelia',
-    src: 'Cessna Citation Mustang 510 (Textron Aviation): אורך 12.37 מ׳, מוטה 13.16 מ׳, גובה 4.09 מ׳, רוחב התא 1.40 מ׳ מבפנים; שני מנועים על הגוף מאחור' },
-  'AC-PR-01': { he: 'מטוס קל חד-מנועי', model: 'TA-12', fit: [1, 1], L: 8.28, WS: 11.0, fw: 1.12, wc: 1.63, tc: 1.12, sw: 0, nl: .16, tl: .32, zb: .62, H: 2.72, high: true, dih: 1.7, wt: [.2, .13], kink: .5, wingU: .24,
-    winglet: 0, nprop: { r: .965 }, strut: true, hs: .31, gear: { main: [[1.27, 1]], tire: [.24, .14] }, doors: [], win: null, liv: 'aurelia',
-    src: 'Cessna 172S (Textron Aviation): אורך 8.28 מ׳, מוטה 11.00 מ׳, גובה 2.72 מ׳, רוחב התא 1.0 מ׳ מבפנים, מדחף 1.93 מ׳; כנף גבוהה עם תומכות' },
-  'AC-LT-01': { he: 'דו-מנועי קל', model: 'TB-58', fit: [0.9934, 1], L: 9.09, WS: 11.53, fw: 1.22, wc: 2.13, tc: .95, sw: .45, nl: .2, tl: .32, zb: .55, H: 2.97, wz: .62, dih: 6, wt: [.28, .12], kink: 0, wingU: .148,
-    winglet: 0, prop: [.28], pr: .99, pn: .34, hs: .42, gear: { main: [[1.46, 1]], tire: [.3, .17] }, doors: [], win: null, liv: 'aurelia',
-    src: 'Beechcraft Baron 58 (Textron Aviation): אורך 9.09 מ׳, מוטה 11.53 מ׳, גובה 2.97 מ׳, מדחפים 1.98 מ׳, רוחב מסלול 2.92 מ׳; כנף נמוכה, שני מנועים בכנף' },
-  'AC-CN-01': { he: 'מטוס קנרד עם מדחפים דוחפים', model: 'TV-180', fit: [1, 1], L: 14.41, WS: 14.03, fw: 1.95, wc: 1.65, tc: .7, sw: .35, nl: .16, tl: .3, zb: .6, H: 3.97, wz: 1.2, dih: 2, wt: [.22, .1], kink: 0, wingU: -.069,
-    winglet: 0, prop: [.27], pusher: true, pr: 1.08, pn: .34, canard: { u: .36, span: 1.9, chord: .65 }, ttail: true, hs: .3, gear: { main: [[1.4, 1]], tire: [.3, .18] }, doors: [.22], win: [.33, .55, 6, []], liv: 'aurelia',
-    src: 'Piaggio P.180 Avanti II (Piaggio Aerospace): אורך 14.41 מ׳, מוטה 14.03 מ׳, גובה 3.97 מ׳, מדחפים דוחפים 2.16 מ׳; כנף קדמית קטנה (canard), כנף ראשית מאחור וזנב T' },
-  'AC-AM-01': { he: 'מטוס אמפיבי', model: 'TS-12', fit: [0.9714, 1], L: 7.01, WS: 10.61, fw: 1.3, wc: 1.5, tc: 1.05, sw: .1, nl: .2, tl: .35, zb: .42, H: 2.47, high: true, dih: 1, wt: [.2, .12], kink: 0, wingU: .154,
-    winglet: 0, cpush: { r: .84, at: .64, z: .6 }, seawing: { at: .3, span: .85, chord: 1.4, z: -.32 }, hull: true, ttail: true, hs: .31, gear: { main: [[.95, 1]], tire: [.22, .13] }, doors: [], win: null, liv: 'aurelia',
-    src: 'ICON A5 (ICON Aircraft, iconaircraft.com/a5): אורך 7.01 מ׳, מוטה 10.61 מ׳, גובה 2.47 מ׳ (הבעלים 18:21); גוף סירה, כנף גבוהה, מדחף דוחף אחד מאחורי תא הטייס, "כנפי ים" בצדי הגוף וזנב T' },
-  'AC-TB-01': { he: 'מטען קטן דו-מנועי', model: 'TK-20F', fit: [0.952, 1], L: 16.8, WS: 22.02, fw: 2.1, wc: 2.0, tc: 1.3, sw: .2, nl: .1, tl: .3, zb: .9, H: 6.3, high: true, dih: 2, wt: [.3, .18], kink: .4, wingU: .105, box: 4.5,
-    winglet: 0, prop: [.32], pr: 1.4, pn: .45, strut: true, cargo: true, cargoAt: .6, ttail: true, hs: .3, gear: { main: [[1.7, 1]], tire: [.42, .25], sponson: true }, doors: [], win: null, liv: 'aurelia',
-    src: 'Cessna 408 SkyCourier (Textron Aviation) במקום Skyvan (ברירת מחדל של המתאם 16:15, לאישור הבעלים): אורך 16.80 מ׳, מוטה 22.02 מ׳, גובה 6.30 מ׳ (Wikipedia); גוף קופסתי, כנף גבוהה עם תומכות, שני טורבו-פרופ, כן נסע קבוע, זנב אחד עם מייצב בראשו (התמונות של הבעלים 16:36); 3 מכולות LD3. לא בטוח: רוחב הגוף (2.1)' }
-};
-
-
-
-
-function fusShape(t) {
-  const L = t.L, R = t.fw / 2, Rz = (t.fh || t.fw) / 2, zc = t.zb + Rz, nl = t.nl * L, tlv = t.tl * L * 1.3, zTip = zc - .12 * Rz, NR = NOSE[t.id],   
-  xN = NR ? NR.x[NR.x.length - 1] : 0;
-  
-  
-  const At = 1.9 * nl, Ab = 1.0 * nl, As = 1.6 * nl, aT = L - tlv, ze = zc + .4 * Rz, re = .15 * R;
-  const sq = (x, A, e) => x >= A ? 1 : Math.pow(Math.max(0, 1 - Math.pow(1 - x / A, e || 2.3)), .5);
-  const hr = t.hr || [.2, 2.2], hump = a => !t.hump ? 0 : t.hump * sm((a - hr[0] * nl) / (hr[1] * nl)) * (1 - sm((a - .3 * L) / (.1 * L)));
-  const f = a => {
-    let top, bot, rs;
-    if (NR && a < xN) { top = zc + tab(NR.x, NR.top, a); bot = zc + tab(NR.x, NR.bot, a); rs = tab(NR.x, NR.hw, a); if (a < .02) { rs = Math.max(rs, .0) } }   
-    else if (a < aT) { top = zTip + (zc + Rz - zTip) * sq(a, At, 2.1); bot = zTip - (zTip - (zc - Rz)) * sq(a, Ab, 2.4); rs = R * sq(a, As, 1.75) }
-    else { const s = (a - aT) / (L - aT); top = zc + Rz + (ze + re - (zc + Rz)) * Math.pow(s, 1.8); bot = zc - Rz + (ze - re - (zc - Rz)) * Math.pow(s, .8); rs = R + (re - R) * Math.pow(s, 1.3) }
-    return { zm: (top + bot) / 2, rv: (top - bot) / 2, rs, hump: hump(a) };
-  };
-  
-  
-  if (t.hump && NR && NR.cab) f.hgW = 1;
-  if (NR && NR.cab && NR.cab.q) { const zs = zc + NR.cab.zs; let aC = 0; while (aC < L * .5) { const r = f(aC); if (r.zm + r.rv + r.hump >= zs) break; aC += .02 }
-    const q0 = NR.cab.q; f.q = a => lerp(1, lerp(q0, 1, sm((a - aC - 2.2) / 2)), sm((a - aC + 1.1) / .9)) }
-  if (t.box) { const n = t.box, nl2 = nl * 1.6; f.box = a => a < nl2 ? 2 + (n - 2) * sm(a / nl2) : a > L - tlv * .7 ? 2 + (n - 2) * (1 - sm((a - (L - tlv * .7)) / (tlv * .7))) : n }   
-  f.R = R; f.Rz = Rz; f.zc = zc; f.nl = nl; f.At = At; f.As = As; f.aT = aT; f.aC = Math.max(At, Ab, As, xN, t.hump ? .42 * L : 0); f.L = L; f.NR = NR;
-  return f;
-}
-const hg = s => sm((s - .4) / .6);   
-const hgW = s => sm((s - .12) / .7);   
-function fusP(F, yN, a, th) { const r = F(a), q = F.q ? F.q(a) : 1; let s = Math.sin(th), c = Math.cos(th);
-  if (F.box) { const e = 2 / F.box(a); c = Math.sign(c) * Math.pow(Math.abs(c), e); s = Math.sign(s) * Math.pow(Math.abs(s), e) }   
-  return [r.rs * c, yN - a, r.zm + r.rv * (s > 0 && q !== 1 ? Math.pow(s, q) : s) + (s > 0 ? r.hump * (F.hgW ? hgW(s) : hg(s)) : 0)] }
-function fusN(F, yN, a, th) {   
-  const e = .004, p = fusP(F, yN, a, th), pa = fusP(F, yN, a + .05, th), pt = fusP(F, yN, a, th + e);
-  let n = nrm(crs(sub(pt, p), sub(pa, p))); const r = F(a); if (dot(n, [p[0], 0, p[2] - r.zm]) < 0) n = [-n[0], -n[1], -n[2]]; return n;
-}
-
-
-function nosePt(F, yN, phi, z, sd) {
-  const at = a => { const r = F(a); let s = (z - r.zm) / (r.rv || 1e-6); if (s > 1 || s < -1) return null; const th = Math.asin(s), x = r.rs * Math.cos(th); return { a, th, ph: Math.atan2(x, F.As - a) / D2R } };
-  const A1 = F.As * 1.8; let best = null, prev = null;
-  for (let i = 0; i <= 240; i++) { const a = A1 * i / 240, q = at(a); if (!q) { prev = null; continue }
-    if (prev && (prev.ph - phi) * (q.ph - phi) <= 0) { let lo = prev, hi = q; for (let k = 0; k < 24; k++) { const m = at((lo.a + hi.a) / 2); if (!m) break; if ((lo.ph - phi) * (m.ph - phi) <= 0) hi = m; else lo = m } best = lo; break }
-    prev = q }
-  if (!best) return null;
-  const th = sd > 0 ? best.th : Math.PI - best.th;
-  return { p: fusP(F, yN, best.a, th), a: best.a, th };
-}
-
-function liveryFns(t, lv, F) {
-  const L = t.L, nl = F.nl, tl = t.tl * L, tail0 = L - 1.35 * tl;
-  const tailAt = th => tail0 + .14 * tl * Math.max(0, Math.sin(th));   
-  const w = lv.w, bA0 = 1.1 * nl, bP = (tail0 - bA0) / 8, beak = w === 'allover' ? mixC(lv.s, lv.b, .42) : lv.s;
-  
-  
-  
-  
-  const FF = (G.FFLIV || (G.FFLIV = { on: true })).on !== false, R = t.fw / 2, D = lv.d || [lv.s, lv.t, lv.m];
-  const DOTS = []; if (FF && w === 'dots') { let i = 0; for (let a = .6 * nl; a < tail0 - .2 * R; a += .9 * R) for (let k = 0; k < 8; k++) { const r = 1.3 * R * (.14 + .08 * ((i * 7) % 3)), da = ((i * 13) % 5 - 2) * R * .06; DOTS.push({ a: a + da, th: (-20 + 32 * k) * D2R, r: Math.max(.22, r), c: D[i % D.length] }); i++ } }
-  const dotsAt = (() => { const M = new Map(); return th => { let q = M.get(th); if (q) return q; q = []; for (const d of DOTS) { let e = th - d.th; e = Math.atan2(Math.sin(e), Math.cos(e)); const v = R * e / d.r; if (Math.abs(v) < 1) q.push({ d, ha: d.r * Math.sqrt(1 - v * v) }) } M.set(th, q); return q } })();
-  const spS = a => -20 + 110 * sm((a - .12 * L) / (.54 * L));   
-  const spA = d => { if (d <= -20) return .12 * L; if (d >= 90) return .66 * L; let lo = .12 * L, hi = .66 * L; for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (spS(m) < d) lo = m; else hi = m } return (lo + hi) / 2 };
-  const seam = th => .47 * L - .05 * L * Math.cos(th);   
-  const col = (a, th) => {
-    const s = Math.sin(th), c = Math.abs(Math.cos(th)), deg = Math.asin(cl(s, -1, 1)) / D2R;
-    if (a > tailAt(th)) return lv.t;
-    if (FF) {
-      if (w === 'dots') { for (const q of dotsAt(th)) if (Math.abs(a - q.d.a) < q.ha) return q.d.c; if (s < -.5) return lv.u; return lv.b }
-      if (w === 'split') { const z = seam(th); if (a > z) return lv.t; if (a > z - .28 * R && a < z - .12 * R) return lv.s; if (s < -.5) return lv.u; return lv.b }
-      if (w === 'swoosh') { if (a > .12 * L) { const b = spS(a); if (deg < b) return lv.s; if (deg < b + 7) return lv.m } if (s < -.5) return lv.u; return lv.b }
-      if (w === 'spine') { if (a > .5 * nl && s > 0 && c < .46) return lv.s; if (a > .5 * nl && s > 0 && c < .54) return lv.m; if (deg > 5 && deg < 9) return lv.s; if (s < -.45) return lv.u; return lv.b }
-    }
-    if (w === 'allover') { if (a < .09 * nl) return beak;   
-      if (deg > 4 && deg < 8) return lv.s; if (s < -.45) return lv.u; return lv.b }
-    if (w === 'nose') { const nb = 1.15 * nl - .12 * nl * Math.max(0, s); if (a < nb) return lv.s; if (deg > 5 && deg < 8) return lv.s; if (s < -.5) return lv.u; return lv.b }
-    if (w === 'spine') { if (a > .8 * nl && c < .36 && s > 0) return lv.s; if (deg > 5 && deg < 9) return lv.s; if (s < -.45) return lv.u; return lv.b }
-    
-    
-    if (w === 'bands') { const u = a - bA0 - .9 * Math.cos(th) * t.fw / 2; if (a > bA0 && a < tail0 - .2 * bP && u > 0 && (u % bP) < .42 * bP) return lv.s; if (s < -.5) return lv.u; return lv.b }   
-    if (w === 'split') { if (a > .9 * nl && s < -.08) return lv.s; return lv.b }
-    if (w === 'swoosh') { const q = a / L, d0 = -35 + 85 * q; if (a > nl && deg > d0 && deg < d0 + 10) return lv.s; if (s < -.5) return lv.u; return lv.b }
-    
-    if (a > 1.3 * nl && deg > 5 && deg < 13) return lv.s; if (a > 1.6 * nl && deg > 29 && deg < 31.5) return lv.s; if (s < -.5) return lv.u; return lv.b;
-  };
-  const breaks = th => { const s = Math.sin(th), B = [tailAt(th)];
-    if (FF && w === 'dots') { for (const q of dotsAt(th)) B.push(q.d.a - q.ha, q.d.a + q.ha); return B }
-    if (FF && w === 'split') { const z = seam(th); B.push(z, z - .28 * R, z - .12 * R); return B }
-    if (FF && w === 'swoosh') { const d = Math.asin(cl(s, -1, 1)) / D2R; B.push(.12 * L, spA(d), spA(d - 7)); return B }
-    if (FF && w === 'spine') { B.push(.5 * nl); return B }
-    if (w === 'allover') B.push(.09 * nl); if (w === 'nose') B.push(1.15 * nl - .12 * nl * Math.max(0, s)); if (w === 'spine') B.push(.8 * nl); if (w === 'classic') B.push(1.3 * nl, 1.6 * nl);
-    if (w === 'bands') { const o = .9 * Math.cos(th) * t.fw / 2; for (let k = 0; k < 9; k++) B.push(bA0 + o + k * bP, bA0 + o + (k + .42) * bP) }
-    return B };
-  return { col, breaks, tailAt };
-}
-
-
-
-
-function face(P, c, m, o) { return Object.assign({ P, c, m: m || 'paint' }, o || {}) }
-const orient = (f, d) => { if (dot(faceN(f.P), d) < 0) f.P.reverse(); return f };
-const faceN = P => { let n = [0, 0, 0]; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; n[0] += (p[1] - q[1]) * (p[2] + q[2]); n[1] += (p[2] - q[2]) * (p[0] + q[0]); n[2] += (p[0] - q[0]) * (p[1] + q[1]) } return nrm(n) };
-
-
-function buildFuselage(t, lv, yN, F, LF, opt) {
-  const faces = [], N = opt && opt.lod ? 40 : 72, L = t.L, base = [];
-  const nA = 18, step = a => a < F.aC ? Math.max(.12, F.nl / 12) : a > F.aT ? Math.max(.15, (L - F.aT) / 16) : 1.2;
-  for (let a = 0; a < L - 1e-6;) { base.push(a); a = Math.min(L, a + step(a)) } base.push(L);
-  for (let k = 0; k < N; k++) {
-    const t0 = -Math.PI / 2 + k * TAU / N, t1 = t0 + TAU / N, tm = (t0 + t1) / 2;
-    const A = base.concat(LF.breaks(tm).filter(x => x > 0 && x < L)).sort((p, q) => p - q);
-    let run = null;
-    const flush = () => { if (!run) return; const P = [fusP(F, yN, run.a0, t0), fusP(F, yN, run.a0, t1), fusP(F, yN, run.a1, t1), fusP(F, yN, run.a1, t0)], am = (run.a0 + run.a1) / 2;
-      faces.push(face(P, run.c, 'paint', { g: [fusN(F, yN, am, t0), fusN(F, yN, am, t1)], g4: [fusN(F, yN, run.a0, t0), fusN(F, yN, run.a0, t1), fusN(F, yN, run.a1, t1), fusN(F, yN, run.a1, t0)], fus: 1 })); run = null };   
-    for (let i = 0; i + 1 < A.length; i++) {
-      const a0 = A[i], a1 = A[i + 1]; if (a1 - a0 < 1e-4) continue;
-      const c = LF.col((a0 + a1) / 2, tm), flat = a0 >= F.aC - 1e-6 && a1 <= F.aT + 1e-6;
-      if (run && run.flat && flat && run.c === c && Math.abs(run.a1 - a0) < 1e-6) { run.a1 = a1; continue }
-      flush(); run = { a0, a1, c, flat };
-    }
-    flush();
-  }
-  return faces;
-}
-
-
-function buildRevolve(x0, z0, rings, col, mat, N) {
-  const faces = []; N = N || 40;
-  for (let k = 0; k < N; k++) {
-    const t0 = k * TAU / N, t1 = t0 + TAU / N;
-    for (let i = 0; i + 1 < rings.length; i++) {
-      const [ya, ra, ca] = rings[i], [yb, rb] = rings[i + 1];
-      const P = [[x0 + ra * Math.cos(t0), ya, z0 + ra * Math.sin(t0)], [x0 + ra * Math.cos(t1), ya, z0 + ra * Math.sin(t1)], [x0 + rb * Math.cos(t1), yb, z0 + rb * Math.sin(t1)], [x0 + rb * Math.cos(t0), yb, z0 + rb * Math.sin(t0)]];
-      const rp = (rb - ra) / ((yb - ya) || 1e-6), nn = th => nrm([Math.cos(th), -rp, Math.sin(th)]);
-      faces.push(face(P, ca || col, mat, { g: [nn(t0), nn(t1)] }));
-    }
-  }
-  return faces;
-}
-
-function disc(x0, y, z0, r, col, mat, o) { const P = []; for (let i = 0; i < 28; i++) { const t = i / 28 * TAU; P.push([x0 + r * Math.cos(t), y, z0 + r * Math.sin(t)]) } return face(P, col, mat, Object.assign({ n: [0, 1, 0] }, o || {})) }
-
-
-const CH = [0, .03, .12, .3, .55, .8, 1], TOP = [0, .3, .44, .5, .42, .27, .05], BOT = [0, .26, .36, .38, .3, .17, .03];
-function buildPlate(st, col, o) {
-  o = o || {}; const faces = [];
-  const pt = (s, i, up) => { const y = lerp(s.yLE, s.yTE, CH[i]); return [s.x, y, s.z + (up ? TOP[i] : -BOT[i]) * s.t] };
-  for (let j = 0; j + 1 < st.length; j++) {
-    const A = st[j], B = st[j + 1];
-    for (let i = 0; i + 1 < CH.length; i++) {
-      faces.push(orient(face([pt(A, i, 1), pt(B, i, 1), pt(B, i + 1, 1), pt(A, i + 1, 1)], col, o.mat || 'paint'), [0, i === 0 ? .5 : 0, 1]));
-      faces.push(orient(face([pt(A, i + 1, 0), pt(B, i + 1, 0), pt(B, i, 0), pt(A, i, 0)], sh(col, -.12), o.mat || 'paint'), [0, i === 0 ? .5 : 0, -1]));
-    }
-  }
-  
-  const cap = s => { const U = [], D = []; for (let i = 0; i < CH.length; i++) { U.push(pt(s, i, 1)); D.push(pt(s, i, 0)) } return U.concat(D.reverse()) };
-  faces.push(face(cap(st[st.length - 1]), sh(col, -.06), 'paint', { both: false }));
-  return faces;
-}
-
-function buildFin(st, col) {
-  const faces = [];
-  const pt = (s, i, side) => [side * (side > 0 ? TOP[i] : BOT[i]) * s.t * (BOT[i] > 0 || TOP[i] > 0 ? 1 : 1), lerp(s.yLE, s.yTE, CH[i]), s.z];
-  const half = (s, i, side) => [side * .5 * s.t * (i === 0 ? 0 : [0, .55, .82, .97, 1, .82, .2][i]), lerp(s.yLE, s.yTE, CH[i]), s.z];
-  for (let j = 0; j + 1 < st.length; j++) {
-    const A = st[j], B = st[j + 1];
-    for (let i = 0; i + 1 < CH.length; i++) for (const sd of [1, -1]) {
-      faces.push(orient(face([half(A, i, sd), half(A, i + 1, sd), half(B, i + 1, sd), half(B, i, sd)], col, 'paint'), [sd, i === 0 ? .3 : 0, 0]));
-    }
-  }
-  const T = st[st.length - 1], U = [], D = []; for (let i = 0; i < CH.length; i++) { U.push(half(T, i, 1)); D.push(half(T, i, -1)) }
-  faces.push(orient(face(U.concat(D.reverse()), sh(col, .06), 'paint'), [0, 0, 1]));
-  void pt; return faces;
-}
-
-function boxFaces(plan, zb, zt, cols, o) {
-  o = o || {}; const faces = [], n = plan.length, Zb = i => Array.isArray(zb) ? zb[i] : zb, Zt = i => Array.isArray(zt) ? zt[i] : zt;
-  
-  let ar = 0; for (let i = 0; i < n; i++) { const p = plan[i], q = plan[(i + 1) % n]; ar += p[0] * q[1] - q[0] * p[1] }
-  const pl = ar > 0 ? plan : plan.slice().reverse(), zbb = ar > 0 ? i => Zb(i) : i => Zb(n - 1 - i), ztt = ar > 0 ? i => Zt(i) : i => Zt(n - 1 - i);
-  for (let i = 0; i < n; i++) { const j = (i + 1) % n, p = pl[i], q = pl[j];
-    faces.push(face([[p[0], p[1], zbb(i)], [q[0], q[1], zbb(j)], [q[0], q[1], ztt(j)], [p[0], p[1], ztt(i)]], cols.side || cols.top, o.mat || 'matte', { side: i })) }
-  faces.push(face(pl.map((p, i) => [p[0], p[1], ztt(i)]), cols.top, o.mat || 'matte', { top: 1 }));
-  return faces;
-}
-
-function vcyl(cx, cy, r, z0, z1, col, mat, N) {
-  const faces = []; N = N || 24;
-  for (let i = 0; i < N; i++) { const a = i / N * TAU, b = (i + 1) / N * TAU;
-    faces.push(face([[cx + r * Math.cos(a), cy + r * Math.sin(a), z0], [cx + r * Math.cos(b), cy + r * Math.sin(b), z0], [cx + r * Math.cos(b), cy + r * Math.sin(b), z1], [cx + r * Math.cos(a), cy + r * Math.sin(a), z1]], col, mat, { g: [[Math.cos(a), Math.sin(a), 0], [Math.cos(b), Math.sin(b), 0]] })) }
-  const T = []; for (let i = 0; i < N; i++) { const a = i / N * TAU; T.push([cx + r * Math.cos(a), cy + r * Math.sin(a), z1]) }
-  faces.push(face(T, sh(col, .05), mat, { n: [0, 0, 1] }));
-  return faces;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-function cabOf(t, NR, F) {
-  
-  
-  
-  
-  
-  const R = F.R, C = NR && NR.cab ? NR.cab : {};
-  return { zs: C.zs != null ? C.zs : .62 * R, h: C.h != null ? C.h : .22 * R, vd: C.vd != null ? C.vd : .075 * R, lean: C.lean != null ? C.lean : .1 * R, ls: C.ls != null ? C.ls : .28 * R, lr: C.lr != null ? C.lr : .2 * R, sb: C.sb != null ? C.sb : .4, n: C.n || 2, pil: C.pil };
-}
-function cockpit3D(F, yN, t, NR, decor) {
-  const R = F.R, zc = F.zc, C = cabOf(t, NR, F), sc = NR && NR.cab ? 1 : R / 2, post = .022 * sc, pil = C.pil || .028 * sc, pad = .02 * sc;   
-  const crown = a => { const r = F(a); return r.zm + r.rv + r.hump - zc };
-  const cross = z => { let a = 0; while (a < F.L * .5 && crown(a) < z) a += .05; let lo = Math.max(0, a - .05), hi = a; for (let k = 0; k < 20; k++) { const m = (lo + hi) / 2; if (crown(m) < z) lo = m; else hi = m } return hi };
-  const aC = cross(C.zs), aT = cross(C.zs + C.h), zS = C.zs, zH = C.zs + C.h;
-  
-  const PB = []; { let b = aC + C.vd; PB.push([b, b + C.lean]); for (let k = 1; k <= C.n; k++) { b += k === 1 ? C.ls : C.lr; PB.push([b, b + C.lean * (1 + .15 * k)]) } }
-  const b1 = PB[0][0], b2 = PB[1][0], b3 = PB[PB.length - 1][0], aw = aT;
-  const zSill = () => zS;
-  const thAt = (a, z) => { const r = F(a), Z = zc + z, zt = r.zm + r.rv + r.hump; if (Z >= zt) return Math.PI / 2; if (Z <= r.zm - r.rv) return -Math.PI / 2;
-    const q = F.q ? F.q(a) : 1; let lo = -1, hi = 1; for (let k = 0; k < 22; k++) { const m = (lo + hi) / 2, zz = r.zm + r.rv * (m > 0 && q !== 1 ? Math.pow(m, q) : m) + (m > 0 ? r.hump * (F.hgW ? hgW(m) : hg(m)) : 0); if (zz < Z) lo = m; else hi = m } return Math.asin((lo + hi) / 2) };
-  const pt = (a, z, sd, xMin) => { let th = thAt(a, z); if (xMin) { const r = F(a), tm = Math.acos(Math.min(1, xMin / Math.max(1e-3, r.rs))); th = Math.min(th, tm) } const T = sd > 0 ? th : Math.PI - th; return { p: fusP(F, yN, a, T), n: fusN(F, yN, a, T) } };
-  
-  const pane = k => { const [p0, q0] = k === 0 ? [aC, aT] : PB[k - 1], [p1, q1] = PB[k], zb = k === 0 ? zS : zS + C.sb * C.h, zt = k === C.n ? zH - .12 * C.h : zH;
-    return { B: u => [lerp(p0, p1, u), zb], T: u => [lerp(q0, q1, u), zt], k } };
-  const GL = ['#2a4256', '#57748c', '#c4d9e8'], info = { panes: [], aRef: aC, bend: 0, cab: { aC, aw, PB, zs: C.zs, sl: 0, h: C.h } };
-  for (const sd of [1, -1]) {
-    const frame = [], glass = [], extra = [];
-    for (let k = 0; k <= C.n; k++) {
-      const P = pane(k), len = Math.hypot(P.B(1)[0] - P.B(0)[0], .5 * (P.T(1)[0] - P.T(0)[0])) || 1, n = k === 0 ? 8 : 5;
-      for (const grow of [true, false]) {
-        const du0 = grow ? 0 : (k === 0 ? 0 : pil / len), du1 = grow ? -.01 : pil / len, dwb = grow ? -pad : pil * .8, dwt = grow ? 0 : pil * .8 + pad, xMin = k === 0 && !grow ? post : 0;
-        const at = (u, w) => { const B = P.B(u), T = P.T(u), hb = (T[1] - B[1]) || 1, wb = dwb / hb, wt = 1 - dwt / hb, W = lerp(wb, wt, w), a = lerp(B[0], T[0], W);
-          if (grow && k === 0 && u <= 1e-9) { const p = fusP(F, yN, a, Math.PI / 2); return { p, n: fusN(F, yN, a, Math.PI / 2) } }   
-          return pt(a, lerp(B[1], T[1], W), sd, xMin) };
-        const U = i => lerp(du0, 1 - du1, i / n), outl = [];
-        const nm = at(.5, .5).n;
-        for (let i = 0; i < n; i++) { const u0 = U(i), u1 = U(i + 1), um = (u0 + u1) / 2, Q = [at(u0, 0), at(um, 0), at(u1, 0), at(u1, 1), at(um, 1), at(u0, 1)], c = at(um, .5);
-          let PP = Q.map(q => q.p); if (dot(faceN(PP), c.n) < 0) PP = PP.reverse();
-          if (grow) frame.push(face(PP, '#28323b', 'matte', { n: c.n, noSeam: 1 }));
-          else glass.push(face(PP, GL[1], 'glass', { g: [nm, nm], grad: GL, gax: [at(um, 0).p, at(um, 1).p], noSeam: 1 })) }
-        if (!grow) { for (let i = 0; i <= n; i++) outl.push(at(U(i), 0)); for (let j = 1; j <= 4; j++) outl.push(at(U(n), j / 4)); for (let i = n; i >= 0; i--) outl.push(at(U(i), 1)); for (let j = 3; j >= 1; j--) outl.push(at(U(0), j / 4));
-          info.panes.push({ sd, k, far: false, P: outl.map(q => q.p), N: outl.map(q => q.n), AZ: [P.B(0), P.B(1), P.T(1), P.T(0)] }) }
-        if (!grow && k === 0) for (const f of [.3, .72]) { const A = at(f, .02), Bq = at(f - .08, .25); extra.push({ line: 1, P: [A.p, Bq.p], c: '#1b2229', w: .022 * sc, n: A.n }) }
-        
-        if (!grow) { const S = [at(.16, .08), at(.34, .08), at(.56, .94), at(.38, .94)]; let SP = S.map(q => q.p.map((v, i) => v + q.n[i] * .004)); const cn = at(.36, .5).n; if (dot(faceN(SP), cn) < 0) SP = SP.reverse();
-          extra.push(face(SP, '#ffffff', 'matte', { n: cn, a: .2, noSeam: 1 })) }
-      }
-    }
-    decor.push(...frame, ...glass, ...extra);
-  }
-  return info;
-}
-function bandFor(m, h) {
-  const I = m.info, dec = [], BD = cockpit3D(I.F, I.yN, I.t, NOSE[I.id], dec), body = m.pieces.find(p => p.kind === 'body');
-  const pieces = m.pieces.map(p => p !== body ? p : Object.assign({}, p, { decor: p.decor.slice(0, I.bandAt).concat(dec, p.decor.slice(I.bandAt)) }));
-  return { pieces, info: Object.assign({}, I, { band: BD }) };
-}
-
-
-
-
-const FIT = {};
-function fitOf(id, livKey, opt, t0) { const m = buildRaw(id, livKey, Object.assign({}, opt, { lod: 1 }), t0); let xa = 1e9, xb = -1e9, ya = 1e9, yb = -1e9;
-  for (const p of m.pieces) { for (const f of p.faces || []) for (const q of f.P) { xa = Math.min(xa, q[0]); xb = Math.max(xb, q[0]); ya = Math.min(ya, q[1]); yb = Math.max(yb, q[1]) } }
-  const kL = t0.L / Math.max(.1, yb - ya), kW = t0.WS / Math.max(.1, xb - xa);
-  return FIT[id] = { kL: Math.abs(kL - 1) < .002 ? 1 : Math.min(1.05, kL), kW: Math.abs(kW - 1) < .002 ? 1 : Math.min(1.05, kW) } }
-function build(id, livKey, opt) {
-  opt = opt || {}; const t0 = TYPES[id]; if (!t0) throw new Error('A34: unknown type ' + id); t0.id = id;
-  const f = opt.raw ? { kL: 1, kW: 1 } : t0.fit ? { kL: t0.fit[0], kW: t0.fit[1] } : FIT[id] || fitOf(id, livKey, opt, t0);   
-  return buildRaw(id, livKey, opt, f.kL === 1 && f.kW === 1 ? t0 : Object.assign({}, t0, { L: t0.L * f.kL, WS: t0.WS * f.kW, Lr: t0.L, WSr: t0.WS })) }
-function buildRaw(id, livKey, opt, t) {
-  opt = opt || {};
-  const lv = livKey && typeof livKey === 'object' ? livKey : LIV[livKey || t.liv], L = t.L, R = t.fw / 2, HS = t.WS / 2, yN = .17 * L, yC = -.33 * L, x0 = .06 * L, TF = t.boom ? Object.assign({}, t, { L: t.L * t.boom.pod }) : t, F = fusShape(TF), LF = liveryFns(TF, lv, F), NRV = opt.lod ? 24 : 44;
-  const ofU = u => yC + u * L;   
-  const pieces = [];
-  const piece = (kind, faces, extra) => { const p = Object.assign({ kind, faces, decor: [] }, extra || {}); pieces.push(p); return p };
-  const topAt = a => { const r = F(a); return r.zm + r.rv + r.hump };
-  
-  const body = buildFuselage(TF, lv, yN, F, LF, opt);
-  const decor = [];
-  
-  const bandAt = decor.length, BD = opt.noBand ? null : cockpit3D(F, yN, t, NOSE[id], decor);   
-  
-  { const nl = F.nl, a0 = .12 * nl, a1 = Math.min(F.aC * .55, 1.1 * nl), P = [];
-    for (let i = 0; i <= 8; i++) P.push(fusP(F, yN, lerp(a0, a1, i / 8), 101 * D2R)); for (let i = 8; i >= 0; i--) P.push(fusP(F, yN, lerp(a0, a1, i / 8), 118 * D2R));
-    decor.push(face(P.map(p => [p[0], p[1], p[2] + .01]), '#ffffff', 'matte', { n: [0, 0, 1], a: .16, noSeam: 1 })) }
-  
-  { const NR = NOSE[id], a = NR ? NR.door : (t.doors && t.doors[0] || .2) * L, P = [], W = [];
-    for (const d of [4, 14, 24, 34]) P.push(fusP(F, yN, a - .5, d * D2R)); for (const d of [34, 24, 14, 4]) P.push(fusP(F, yN, a + .5, d * D2R));
-    decor.push(face(P.map(p => [p[0], p[1], p[2] + .01]), '#000000', 'matte', { n: fusN(F, yN, a, 19 * D2R), a: .07, noSeam: 1 }));
-    decor.push({ line: 1, P: P.concat([P[0]]).map(p => [p[0], p[1], p[2] + .015]), c: 'rgba(20,30,40,.75)', w: .07 });
-    for (const [d, da] of [[24, -.18], [24, .18], [30, .18], [30, -.18]]) W.push(fusP(F, yN, a + da, d * D2R));
-    decor.push(face(W.map(p => [p[0], p[1], p[2] + .02]), '#22384e', 'glass', { n: fusN(F, yN, a, 27 * D2R) })) }
-  
-  { const P = []; for (let d = 8; d <= 172; d += 8) P.push(fusP(F, yN, .40 * F.nl - .05 * F.nl * Math.abs(Math.cos(d * D2R)), d * D2R).map((v, i) => i === 2 ? v + .015 : v)); decor.push({ line: 1, P, c: 'rgba(40,52,64,.24)', w: .03 }) }
-  
-  if (t.cargo) { const a = (t.cargoAt || .16) * L, P = []; for (const d of [8, 40, 62]) P.push(fusP(F, yN, a - 1.8, d * D2R)); for (const d of [62, 40, 8]) P.push(fusP(F, yN, a + 1.8, d * D2R)); decor.push({ line: 1, P: P.concat([P[0]]), c: 'rgba(28,38,50,.65)', w: .08 }) }   
-  if (t.win) { const [w0, w1, n, skip] = t.win, ww = Math.min(.3, (w1 - w0) * L / n * .5);
-    for (let i = 0; i < n; i++) { const u = w0 + (w1 - w0) * i / (n - 1); if (skip.some(([p, q]) => u > p && u < q)) continue; const a = u * L;
-      for (const [d0, d1] of [[17, 26], [154, 163]]) decor.push(face([fusP(F, yN, a - ww / 2, d0 * D2R), fusP(F, yN, a + ww / 2, d0 * D2R), fusP(F, yN, a + ww / 2, d1 * D2R), fusP(F, yN, a - ww / 2, d1 * D2R)], '#22384e', 'glass', { n: fusN(F, yN, a, (d0 + d1) / 2 * D2R) })) } }
-  
-  
-  
-  if (t.hump && t.win && BD) { const [w0, w1, n] = t.win, pitch = (w1 - w0) * L / (n - 1), ww = Math.min(.3, pitch * .5), hh = .47;
-    let aE = BD.cab.PB[2][0]; while (aE < L * .5 && F(aE).hump < .97 * t.hump) aE += .05; while (aE < L * .5 && F(aE).hump >= .97 * t.hump) aE += .05;   
-    const a0 = BD.cab.PB[2][0] + 1.0, a1 = aE - .7, nU = Math.max(0, Math.floor((a1 - a0) / pitch) + 1);
-    const thAt = (a, z) => { let lo = 0, hi = Math.PI / 2; for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (fusP(F, yN, a, m)[2] < z) lo = m; else hi = m } return (lo + hi) / 2 };
-    for (let i = 0; i < nU; i++) { const a = a0 + i * pitch, zt = topAt(a), tc = thAt(a, zt - 1.1), d = Math.hypot(...sub(fusP(F, yN, a, tc + .01), fusP(F, yN, a, tc))) / .01, dt = hh / 2 / Math.max(.2, d);
-      for (const sd of [1, -1]) { const th = v => sd > 0 ? v : Math.PI - v, Q = [fusP(F, yN, a - ww / 2, th(tc - dt)), fusP(F, yN, a + ww / 2, th(tc - dt)), fusP(F, yN, a + ww / 2, th(tc + dt)), fusP(F, yN, a - ww / 2, th(tc + dt))];
-        const nn = fusN(F, yN, a, th(tc)); let PP = Q.map(p => p.map((v, k) => v + nn[k] * .01)); if (dot(faceN(PP), nn) < 0) PP = PP.reverse();
-        decor.push(face(PP, '#22384e', 'glass', { n: nn, noSeam: 1 })) } } }
-  for (const [di, u] of (t.doors || []).entries()) { const a = u * L; for (const sd of [1, -1]) { if (di === 0 && sd > 0) continue; const P = [], th = d => (sd > 0 ? d : 180 - d) * D2R;
-    for (const d of [3, 12, 22, 33]) P.push(fusP(F, yN, a - .55, th(d))); for (const d of [33, 22, 12, 3]) P.push(fusP(F, yN, a + .55, th(d)));
-    decor.push({ line: 1, P, c: 'rgba(28,38,50,.7)', w: .07 }) } }
-  
-  const dark = lum(lv.b) < .45, nameCol = Math.abs(lum(lv.s) - lum(lv.b)) > .3 ? lv.s : Math.abs(lum(lv.t) - lum(lv.b)) > .3 ? lv.t : (dark ? '#f4f6f8' : '#1d2730');
-  const aT = .37 * L, zT = topAt(aT);
-  decor.push({ text: lv.n, at: [0, yN - aT, zT], size: R * .82, maxW: .34 * L, col: nameCol, halo: dark ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.55)' });
-  decor.push({ text: t.model, at: [-R * .55, yN - F.nl * 1.9, topAt(F.nl * 1.9) - .3], size: R * .3, maxW: F.nl * 1.4, col: dark ? '#f4f6f8' : '#1d2730', light: 1 });
-  decor.push({ mark: lv.k, at: [0, yN - (L - 1.35 * t.tl * L + .5 * t.tl * L), topAt(L - .8 * t.tl * L)], size: R * .75, col: lv.m });
-  
-  const extra = [];
-  let finZ0 = topAt(.8 * L) - .25;
-  if (t.tailEng) {
-    const ec = ofU(-.35), n = .17 * L, r = t.fw * .26, z0 = topAt(.85 * L) + r * .55;
-    const rings = [[ec + n / 2, r * .9], [ec + n / 2 - .25, r], [ec + n * .1, r * 1.04], [ec - n * .3, r * .95], [ec - n / 2, r * .7]];
-    extra.push(...buildRevolve(0, z0, rings, lv.eng || lv.t, 'metal', 40));
-    extra.push(disc(0, ec + n / 2 + .02, z0, r * .9, '#c9ced3', 'metal'), disc(0, ec + n / 2 + .04, z0, r * .74, '#16191c', 'matte'), disc(0, ec + n / 2 + .3, z0, r * .17, '#6f7880', 'metal'));
-    finZ0 = z0 + r * .7;
-  }
-  
-  if (!t.boom) { const ttail = t.ttail, y0 = ofU(-.30), y1 = ofU(-.50), c0 = y0 - y1, span = t.H - finZ0, swp = Math.tan((ttail ? 30 : 36) * D2R), ct = c0 * (ttail ? .62 : .42), th = (opt.finThick || 1) * .115;
-    const st = [0, .5, 1].map(f => { const z = finZ0 + span * f, yLE = y0 - span * f * swp, c = lerp(c0, ct, f); return { z, yLE, yTE: yLE - c, t: c * th } });
-    extra.push(...buildFin(st, lv.t));
-    const T = st[2]; decor.push({ line: 1, P: [[0, lerp(st[0].yLE, st[0].yTE, .68), st[0].z + .3], [0, lerp(T.yLE, T.yTE, .68), T.z - .1]], c: 'rgba(0,0,0,.3)', w: .08, late: 1 });
-    
-    if (ttail) { const zt = t.H - .15, rc = .07 * L, tcc = .04 * L, sw = .05 * L, hs = HS * t.hs, yl = T.yLE + .4;
-      for (const sd of [1, -1]) extra.push(...buildPlate([{ x: sd * .1, yLE: yl, yTE: yl - rc, z: zt, t: .16 }, { x: sd * hs, yLE: yl - sw, yTE: yl - sw - tcc, z: zt + .1, t: .08 }], lv.t)) }
-  }
-  
-  let wingSt = null;
-  const yRLE = ofU(t.wingU != null ? t.wingU : .06), yRTE = yRLE - t.wc, yTLE = yRLE - t.sw, yTTE = yTLE - t.tc, yr = .41 * t.fw;
-  const wingLE = x => lerp(yRLE, yTLE, (x - yr) / (HS - yr)), wingTE = x => x <= yr + (HS - yr) * t.kink ? yRTE : lerp(yRTE, yTTE, ((x - yr) / (HS - yr) - t.kink) / (1 - t.kink));
-  const wingZ = x => (t.high ? t.zb + t.fw + .25 : t.wz) + Math.max(0, x - R) * Math.tan(t.dih * D2R);
-  const wingT = x => lerp(t.wt[0], t.wt[1], cl((x - R) / (HS - R), 0, 1));
-  const wingCol = lv.w === 'allover' ? sh(lv.b, -.04) : '#dfe3e7';
-  
-  if (t.high) { const s0 = { x: -R, yLE: wingLE(R), yTE: wingTE(R), z: wingZ(R), t: wingT(R) }, s1 = Object.assign({}, s0, { x: R }), B = buildPlate([s0, s1], wingCol);
-    if (NOSE[id] && NOSE[id].cab && t.L < 20) decor.push(...B.map(f => Object.assign(f, { late: 1 }))); else extra.push(...B) }
-  piece('body', body.concat(extra), { decor });
-  
-  for (const sd of [1, -1]) {
-    const xs = (t.high ? [R, R + (HS - R) * .5, HS] : [R * .72, yr + (HS - yr) * t.kink, HS]).map(x => Math.max(x, 0));
-    const st = xs.map(x => ({ x: sd * x, yLE: wingLE(x), yTE: wingTE(x), z: wingZ(x), t: wingT(x) }));
-    const f = buildPlate(st, wingCol), dec = [];
-    
-    const onTop = (x, c) => { const y = lerp(wingLE(x), wingTE(x), c), i = c < .3 ? 2 : c < .55 ? 3 : c < .8 ? 4 : 5; return [sd * x, y, wingZ(x) + TOP[i] * wingT(x) + .02] };
-    const xa = xs[0] + .3, xk = xs[1], xt = HS - .4;
-    dec.push({ line: 1, P: [onTop(xa, .74), onTop(xk, .72), onTop(xt, .7)], c: 'rgba(30,40,50,.38)', w: .06 });
-    for (const x of [xa + (xk - xa) * .5, xk, xk + (xt - xk) * .45, xk + (xt - xk) * .72]) dec.push({ line: 1, P: [onTop(x, .72), onTop(x, .98)], c: 'rgba(30,40,50,.3)', w: .05 });
-    if (!t.high) dec.push({ line: 1, P: [onTop(xa + 1, .12), onTop(xt - .5, .12)], c: 'rgba(30,40,50,.26)', w: .05, dash: [.9, .6] });
-    if (t.winglet) { const xT = HS, yl = wingLE(HS) - t.tc * .1, zt = wingZ(HS), h = t.winglet, cant = Math.tan(14 * D2R), c0 = t.tc * .85, c1 = t.tc * .38, swp = h * .7;
-      const P0 = [sd * xT, yl, zt], P1 = [sd * (xT + h * cant), yl - swp, zt + h], P2 = [sd * (xT + h * cant), yl - swp - c1, zt + h], P3 = [sd * xT, yl - c0, zt];
-      const off = v => [v[0] - sd * .07, v[1], v[2]], off2 = v => [v[0] + sd * .07, v[1], v[2]];
-      f.push(orient(face([P0, P1, P2, P3].map(off), lv.t, 'paint'), [-sd, 0, .25]), orient(face([P0, P1, P2, P3].map(off2), sh(lv.t, -.1), 'paint'), [sd, 0, -.25]));
-      f.push(orient(face([off(P0), off2(P0), off2(P1), off(P1)], sh(lv.t, .1), 'paint'), [0, 1, .3])) }
-    if (t.strut) { const xs2 = HS * .52; dec.push({ line: 1, P: [[sd * R * .95, wingLE(R) - t.wc * .5, t.zb + .35], [sd * xs2, lerp(wingLE(xs2), wingTE(xs2), .3), wingZ(xs2) - wingT(xs2) * .4]], c: '#8a9198', w: .07 }) }   
-    wingSt = st;
-    piece('wing', f, { decor: dec, side: sd });
-  }
-  
-  if (t.eng) for (const f0 of t.eng) for (const sd of [1, -1]) {
-    const x = f0 * HS, n = t.fw * t.elen, r = t.ed / 2, yc = (x0 - t.sw * f0 + t.fw * .45) + yC, zw = wingZ(x) - wingT(x) * .3, z0 = zw - r * .62;
-    const rings = [[yc + n / 2, r * .86, '#d4d8dc'], [yc + n / 2 - .12, r * .97], [yc + n / 2 - .45, r], [yc + n * .05, r * .99], [yc - n * .32, r * .88], [yc - n * .44, r * .74, '#8a9198'], [yc - n / 2, r * .66, '#8a9198']];
-    const fc = buildRevolve(sd * x, z0, rings, lv.eng || sh(lv.b, -.03), 'metal', NRV);
-    
-    fc.unshift(...boxFaces([[sd * x - .18, yc + n * .1], [sd * x + .18, yc + n * .1], [sd * x + .18, yc - n * .75], [sd * x - .18, yc - n * .75]], z0 + r * .6, zw + .05, { top: sh(lv.eng || lv.b, -.15), side: sh(lv.eng || lv.b, -.2) }, { mat: 'paint' }));
-    fc.unshift(...buildRevolve(sd * x, z0, [[yc - n / 2 + .05, r * .5, '#5c636a'], [yc - n / 2 - n * .2, r * .12]], '#5c636a', 'metal', 24));
-    fc.push(disc(sd * x, yc + n / 2 + .01, z0, r * .86, '#c9ced3', 'metal'), disc(sd * x, yc + n / 2 + .03, z0, r * .72, '#16191c', 'matte'), disc(sd * x, yc + n / 2 + .25, z0, r * .16, '#7a838b', 'metal', { spin: 1 }));
-    piece('engine', fc, { side: sd });
-  }
-  if (t.prop) for (const f0 of t.prop) for (const sd of [1, -1]) {
-    const x = f0 * HS, zw = wingZ(x), r = t.pn || .62, z0 = zw - (t.pn ? t.pn * .4 : .3), sc = (t.pn || .62) / .62, yF = t.pusher ? wingLE(x) + .3 * sc : wingLE(x) + 2.3 * sc, yB = t.pusher ? wingTE(x) - 1.4 * sc : wingTE(x) - 1.6 * sc;
-    const rings = [[yF, r * .55], [yF - .4, r * .9], [yF - 1.2, r], [yB + 1.2, r * .95], [yB, r * .45]];
-    const fc = buildRevolve(sd * x, z0, rings, lv.b, 'paint', 32);
-    
-    const pr = t.pr || 1.96, yP = t.pusher ? yB - .3 * sc : yF + .35 * sc, dn = t.pusher ? -1 : 1;
-    for (let i = 0; i < 6; i++) { const a = (i / 6) * TAU + .3, b = a + .1, c0 = .3;
-      fc.push(face([[sd * x + c0 * Math.cos(a - .25), yP, z0 + c0 * Math.sin(a - .25)], [sd * x + pr * Math.cos(a), yP, z0 + pr * Math.sin(a)], [sd * x + pr * Math.cos(b), yP, z0 + pr * Math.sin(b)], [sd * x + c0 * Math.cos(b + .25), yP, z0 + c0 * Math.sin(b + .25)]], '#2a2e33', 'metal', { n: [0, 1, 0], both: true })) }
-    fc.push(...buildRevolve(sd * x, z0, [[yP + dn * .7 * sc, .02], [yP + dn * .45 * sc, .2 * sc], [yP, .32 * sc]], lv.b, 'paint', 20));
-    piece('engine', fc, { side: sd });
-  }
-  
-  
-  const zcB = t.zb + R;
-  if (t.reng) for (const sd of [1, -1]) { const e = t.reng, r = e.ed / 2, n = e.elen, yc = yN - e.at * L, x = sd * (R + r + .18), z0 = zcB + .25 * R;
-    const fc = buildRevolve(x, z0, [[yc + n / 2, r * .86, '#d4d8dc'], [yc + n / 2 - .12, r * .98], [yc + n * .1, r], [yc - n * .3, r * .9], [yc - n / 2, r * .7, '#8a9198']], lv.eng || sh(lv.b, -.03), 'metal', NRV);
-    fc.unshift(...boxFaces([[sd * R * .7, yc + .3], [x, yc + .3], [x, yc - .6], [sd * R * .7, yc - .6]], z0 - .12, z0 + .12, { top: sh(lv.b, -.08), side: sh(lv.b, -.16) }, { mat: 'paint' }));
-    fc.push(disc(x, yc + n / 2 + .01, z0, r * .86, '#c9ced3', 'metal'), disc(x, yc + n / 2 + .03, z0, r * .7, '#16191c', 'matte'));
-    piece('engine', fc, { side: sd }) }
-  if (t.nprop) { const r0 = F(0.02), z0 = r0.zm, yP = yN + .12, pr = t.nprop.r, fc = [];
-    fc.push(...buildRevolve(0, z0, [[yP + .42, .02], [yP + .22, .15], [yP, .22]], '#d8dce0', 'metal', 20));
-    for (const a of [.4, .4 + Math.PI]) fc.push(face([[.06 * Math.cos(a - 1.4), yP + .05, z0 + .06 * Math.sin(a - 1.4)], [pr * Math.cos(a), yP + .05, z0 + pr * Math.sin(a)], [pr * Math.cos(a + .12), yP + .05, z0 + pr * Math.sin(a + .12)], [.06 * Math.cos(a + 1.6), yP + .05, z0 + .06 * Math.sin(a + 1.6)]], '#2a2e33', 'metal', { n: [0, 1, 0], both: true }));
-    extra.push(...fc) }
-  if (t.tandem) { const yl = wingLE(R), yt = wingTE(R), zw = wingZ(0) + wingT(0) * .5, z0 = zw + 1.0, r = .42, pr = t.tandem.r, yF = yl + .9, yB = yt - .9, fc = [];
-    fc.push(...boxFaces([[-.12, yl - .4], [.12, yl - .4], [.12, yt + .4], [-.12, yt + .4]], zw, z0 - r * .6, { top: sh(lv.b, -.1), side: sh(lv.b, -.2) }, { mat: 'paint' }));
-    fc.push(...buildRevolve(0, z0, [[yF, r * .5], [yF - .3, r * .9], [(yF + yB) / 2, r], [yB + .3, r * .9], [yB, r * .5]], lv.b, 'paint', 24));
-    for (const [yP, dn] of [[yF + .1, 1], [yB - .1, -1]]) { for (const a of [0, 2.09, 4.19]) fc.push(face([[.05 * Math.cos(a - 1.4), yP, z0 + .05 * Math.sin(a - 1.4)], [pr * Math.cos(a), yP, z0 + pr * Math.sin(a)], [pr * Math.cos(a + .12), yP, z0 + pr * Math.sin(a + .12)], [.05 * Math.cos(a + 1.6), yP, z0 + .05 * Math.sin(a + 1.6)]], '#2a2e33', 'metal', { n: [0, dn, 0], both: true }));
-      fc.push(...buildRevolve(0, z0, [[yP + dn * .4, .02], [yP + dn * .2, .14], [yP, .2]], lv.b, 'paint', 16)) }
-    piece('engine', fc, { side: 0 }) }
-  if (t.cpush) { const c = t.cpush, yP = yN - c.at * L, z0 = F.zc + c.z, pr = c.r, fc = [];
-    fc.push(...buildRevolve(0, z0, [[yP + 1.25, .06], [yP + 1.0, .3], [yP + .45, .33], [yP + .12, .2], [yP + .02, .09]], lv.b, 'paint', 20));
-    for (const a of [0, 2.09, 4.19]) fc.push(face([[.05 * Math.cos(a - 1.4), yP, z0 + .05 * Math.sin(a - 1.4)], [pr * Math.cos(a), yP, z0 + pr * Math.sin(a)], [pr * Math.cos(a + .1), yP, z0 + pr * Math.sin(a + .1)], [.05 * Math.cos(a + 1.6), yP, z0 + .05 * Math.sin(a + 1.6)]], '#2a2e33', 'metal', { n: [0, -1, 0], both: true }));
-    piece('engine', fc, { side: 0 }) }
-  if (t.seawing) { const c = t.seawing, yl = yN - c.at * L, z = F.zc + c.z; for (const sd of [1, -1])
-    piece('stab', buildPlate([{ x: sd * R * .85, yLE: yl, yTE: yl - c.chord, z, t: .22 }, { x: sd * (R + c.span), yLE: yl - .35, yTE: yl - c.chord * .8, z: z + .12, t: .1 }], lv.w === 'allover' ? sh(lv.b, -.06) : sh(lv.b, -.03)), { side: sd }) }
-  if (t.canard) { const c = t.canard, yl = ofU(c.u), z = zcB - .15 * R; for (const sd of [1, -1])
-    piece('stab', buildPlate([{ x: sd * R * .8, yLE: yl, yTE: yl - c.chord, z, t: c.chord * .1 }, { x: sd * (R + c.span), yLE: yl - .25, yTE: yl - .25 - c.chord * .6, z: z + .05, t: c.chord * .07 }], lv.w === 'allover' ? sh(lv.b, -.06) : '#e3e6e9'), { side: sd }) }
-  if (t.floats) for (const sd of [1, -1]) { const x = sd * HS * .82, zw = wingZ(Math.abs(x)) - wingT(Math.abs(x)) * .3, z0 = zw - .95, yc = (wingLE(Math.abs(x)) + wingTE(Math.abs(x))) / 2;
-    const fc = buildRevolve(x, z0, [[yc + .8, .05], [yc + .55, .2], [yc, .24], [yc - .7, .12]], sh(lv.b, -.04), 'paint', 16);
-    fc.unshift(...boxFaces([[x - .04, yc + .2], [x + .04, yc + .2], [x + .04, yc - .2], [x - .04, yc - .2]], z0 + .15, zw, { top: '#6c737a', side: '#5a6067' }, { mat: 'metal' }));
-    piece('engine', fc, { side: sd }) }
-  if (t.boom) { const xb = t.boom.x * HS, yW = wingTE(xb), yT = yN - L, r0 = .32, z0 = wingZ(xb) - .25, hs = xb + .6;
-    for (const sd of [1, -1]) { const fc = buildRevolve(sd * xb, z0, [[yW + 1.2, r0 * .9], [yW, r0], [yT + 2.2, r0 * .75], [yT, r0 * .5]], lv.b, 'paint', 16);
-      const y0 = yT + 2.2, y1 = yT + .2, st = [0, 1].map(f => { const z = z0 + r0 + (t.H - z0 - r0) * f, yLE = y0 - f * 1.0, c = lerp(y0 - y1, (y0 - y1) * .6, f); return { z, yLE, yTE: yLE - c, t: c * .12 } });
-      fc.push(...buildFin(st, lv.t).map(f => Object.assign(f, { P: f.P.map(q => [q[0] + sd * xb, q[1], q[2]]) })));
-      piece('body2', fc, { side: sd }) }
-    const zt = t.H - .2, yl = yT + 1.9; piece('stab', buildPlate([{ x: -hs, yLE: yl, yTE: yl - 1.3, z: zt, t: .12 }, { x: hs, yLE: yl, yTE: yl - 1.3, z: zt, t: .12 }], lv.t), { side: 0 }) }
-  
-  if (!t.ttail && !t.boom) for (const sd of [1, -1]) {
-    const yl = ofU(-.36), rc = .1 * L, tcc = .045 * L, sw = .07 * L, hs = HS * t.hs, a = yN - yl, r = F(a), z = r.zm + r.rv * .15, x0s = Math.max(.2, r.rs * .55);
-    const st = [{ x: sd * x0s, yLE: yl, yTE: yl - rc, z, t: rc * .11 }, { x: sd * hs, yLE: yl - sw, yTE: yl - sw - tcc, z: z + (hs - x0s) * Math.tan(6 * D2R), t: tcc * .09 }];
-    piece('stab', buildPlate(st, lv.w === 'allover' ? sh(lv.b, -.06) : '#e3e6e9'), { side: sd });
-  }
-  
-  const tyre = (x, y, r, w) => ({ tyre: 1, x, y, r, w });
-  const gearPiece = (list, legs) => piece('gear', [], { tyres: list, legs });
-  { const [tr, tw] = t.gear.tire, ymg = yC + x0 - t.wc * .55;
-    for (const [gx, nAx] of t.gear.main) for (const sd of [1, -1]) {
-      const T = [], X = sd * gx; for (let i = 0; i < nAx; i++) { const y = ymg + (nAx > 1 ? (i - (nAx - 1) / 2) * tr * 2.3 : 0); for (const dx of [-.42, .42]) T.push(tyre(X + dx * (tr * 1.25), y, tr, tw)) }
-      const top = t.high ? t.zb + .6 : Math.min(wingZ(gx) - .2, t.zb + 1.4);
-      gearPiece(T, [{ x: X, y: ymg, z0: tr * .9, z1: top, r: .17 }]);
-    }
-    if (t.gear.centre) { const T = [], y0 = ymg - 1.2; for (let i = 0; i < t.gear.centre; i++) for (const dx of [-.5, .5]) T.push(tyre(dx, y0 + (i - .5) * tr * 2.3, tr, tw)); gearPiece(T, [{ x: 0, y: y0, z0: tr, z1: t.zb + .3, r: .16 }]) }
-    const nr = tr * .72; gearPiece([tyre(-.32, 0, nr, tw * .9), tyre(.32, 0, nr, tw * .9)], [{ x: 0, y: 0, z0: nr, z1: t.zb + .2, r: .1 }]);
-    if (t.gear.sponson) for (const sd of [1, -1]) { const f = boxFaces([[sd * R * .7, ymg + 1.8], [sd * (R + .55), ymg + 1.5], [sd * (R + .55), ymg - 1.9], [sd * R * .7, ymg - 2.2]], t.zb + .1, t.zb + 1.2, { top: sh(lv.b, -.06), side: sh(lv.b, -.12) }, { mat: 'paint' }); piece('body2', f) }
-  }
-  
-  for (const p of pieces) bounds(p);
-  const info = { id, t, lv, L, R, HS, yN, yC, yTail: yN - L, wingLE, wingTE, wingZ, wingT, finTop: t.H, F, x0, band: BD, bandAt };
-  return { pieces, info };
-}
-
-
-
-
-const HELI = {
-  
-  'AC-HL-01': { he: 'מסוק קל', L: 9.07, D: 10.06, H: 3.28, tr: 1.47, hub: .33, main: '#d9dce0', acc: '#2a6ab0', k: 0, nb: 2, src: 'Robinson R44: רוטור 10.06 מ׳, אורך כולל 11.66 מ׳, 2 להבים, מגלשיים' },
-  'AC-HL-02': { he: 'מסוק משטרה וחילוץ', L: 13.77, D: 13.8, H: 4.98, tr: 2.7, hub: .375, main: '#1c2430', acc: '#e8e8ea', k: 4, nb: 5, src: 'Leonardo AW139: רוטור 13.8 מ׳, אורך כולל 16.66 מ׳, 5 להבים, גלגלים' },
-  'AC-HL-03': { he: 'מסוק תובלה', L: 15.6, Lo: 30.14, D: 18.29, H: 5.68, main: '#4a5a3a', acc: '#d8d8d0', k: 6, nb: 3, src: 'Boeing CH-47F Chinook: שני רוטורים של 18.29 מ׳ (3 להבים), גוף 15.6 מ׳ לציור (הבעלים 18:21), 30.14 מ׳ עם הרוטורים למעטפת ולרחבה, גובה 5.68 מ׳ (RSAF CH-47F fact sheet), 4 גלגלים, בלי רוטור זנב' },
-  'AC-HL-04': { he: 'מסוק רפואי', L: 13.77, D: 13.8, H: 4.98, tr: 2.7, hub: .375, main: '#f4d21f', acc: '#1f8a4c', k: 4, nb: 5, ems: 1, src: 'Leonardo AW139 (רפואי)' },
-  'AC-HL-05': { he: 'מסוק עסקים', L: 13.77, D: 13.8, H: 4.98, tr: 2.7, hub: .375, main: '#1d2b44', acc: '#c9a24a', k: 4, nb: 5, src: 'Leonardo AW139 (עסקים)' },
-  'AC-HL-06': { he: 'מסוק תיירות', L: 10.68, D: 10.69, H: 3.34, hub: .326, main: '#f2f4f6', acc: '#e8682b', k: 5, nb: 3, src: 'Airbus H130 (EC130): רוטור 10.69 מ׳, גוף 10.68 מ׳, 3 להבים, Fenestron, תא זכוכית רחב, מגלשיים' },
-  
-  
-  
-  'AC-HL-07': { he: 'מסוק כיבוי', L: 13.77, D: 13.8, H: 4.98, tr: 2.7, hub: .375, main: '#c8261e', acc: '#f4f4f0', k: 4, nb: 5, fire: 1, src: 'Leonardo AW139 בגרסת כיבוי (D‑149): דלי Bambi ‏(≈2 מ׳ קוטר, 1.6 מ׳ גובה) על כבל; ציור בלבד — ההתנהגות בשלב החירום' }
-};
-const HSP = [{ bw: .13, b: .36, body: 'tear', glass: 'bubble', gear: 'skid', tail: 'rotor' }, { bw: .15, b: .38, body: 'tear', glass: 'std', gear: 'skid', tail: 'rotor' },
-  { bw: .17, b: .46, body: 'box', glass: 'std', gear: 'wheels', tail: 'rotor' }, { bw: .16, b: .40, body: 'round', glass: 'std', gear: 'skid', tail: 'fen' },
-  { bw: .16, b: .52, body: 'sleek', glass: 'wide', gear: 'wheels', tail: 'rotor4', boom: [[.62, .8], [.42, .55], [.28, .36], [.22, .3]] }, { bw: .19, b: .42, body: 'round', glass: 'pano', gear: 'skid', tail: 'fen', hzk: .5, front: 'blunt', boom: [[.5, .62], [.34, .44], [.24, .32], [.2, .27]] },
-  { bw: .24, b: 1, body: 'tandem', glass: 'std', gear: 'wheels4', tail: 'none' }];   
-
-function revolveE(x0, z0, rings, col, mat, N) {
-  const faces = []; N = N || 24;
-  for (let k = 0; k < N; k++) { const t0 = k * TAU / N, t1 = t0 + TAU / N;
-    for (let i = 0; i + 1 < rings.length; i++) { const [ya, xa, za, ca] = rings[i], [yb, xb, zb] = rings[i + 1];
-      const P = [[x0 + xa * Math.cos(t0), ya, z0 + za * Math.sin(t0)], [x0 + xa * Math.cos(t1), ya, z0 + za * Math.sin(t1)], [x0 + xb * Math.cos(t1), yb, z0 + zb * Math.sin(t1)], [x0 + xb * Math.cos(t0), yb, z0 + zb * Math.sin(t0)]];
-      const nn = th => nrm([Math.cos(th) / Math.max(.05, (xa + xb) / 2), -((xb - xa) / ((yb - ya) || 1e-6)) * 0, Math.sin(th) / Math.max(.05, (za + zb) / 2)]);
-      faces.push(face(P, ca || col, mat, { g: [nn(t0), nn(t1)] })) } }
-  return faces;
-}
-
-
-
-function buildTandem(id, T, opt) {
-  const L = T.L, pieces = [], piece = (kind, faces, extra) => { const p = Object.assign({ kind, faces, decor: [] }, extra || {}); pieces.push(p); return p };
-  const zs = .55, hw = 1.3, hz = 1.35, zc = zs + hz, nx = L / 2, y1 = -L / 2, N = opt.lod ? 20 : 28, decor = [];
-  const body = revolveE(0, zc, [[nx, .25, .3], [nx - .45, .95, 1.0], [nx - 1.5, 1.24, 1.3], [nx - 3, hw, hz], [y1 + 1.6, hw, hz], [y1 + .35, hw * .96, hz * .9], [y1, hw * .9, hz * .78]], T.main, 'paint', N);
-  for (const sd of [1, -1]) body.push(...revolveE(sd * (hw + .18), zs + .55, [[nx - 4.2, .08, .1], [nx - 4.8, .32, .42], [y1 + 3.2, .34, .44], [y1 + 2.4, .1, .12]], sh(T.main, -.05), 'paint', 14));
-  
-  body.push(...revolveE(0, zc + hz * .82, [[nx - 1.2, .1, .1], [nx - 1.7, .55, .45], [nx - 2.6, .5, .42], [nx - 3.4, .1, .1]], T.main, 'paint', 14));
-  body.push(...buildFin([{ z: zc + hz * .6, yLE: y1 + 4.4, yTE: y1 + .2, t: 1.4 }, { z: zc + hz + 1.75, yLE: y1 + 2.4, yTE: y1 + .7, t: .8 }], T.main));
-  for (const sd of [1, -1]) body.push(...revolveE(sd * 1.05, zc + hz + .35, [[y1 + 4.6, .1, .1], [y1 + 4.3, .38, .38], [y1 + 2.3, .4, .4], [y1 + 1.9, .22, .22]], sh(T.main, -.08), 'metal', 14));
-  
-  for (const sd of [1, -1]) { const P = [[sd * .1, nx - .55, zc + .55], [sd * .95, nx - 1.0, zc + .45], [sd * 1.2, nx - 1.75, zc + .4], [sd * 1.2, nx - 1.75, zc - .15], [sd * .95, nx - .95, zc - .1], [sd * .1, nx - .45, zc - .05]];
-    decor.push(face(sd > 0 ? P : P.slice().reverse(), '#1d3346', 'glass', { n: [sd * .6, .5, .6], grad: ['#1a2c3d', '#57748c', '#c4d9e8'] })) }
-  piece('body', body, { decor });
-  { const r = .45, T4 = []; for (const y of [nx - 3.2, y1 + 3.6]) for (const sd of [1, -1]) T4.push({ tyre: 1, x: sd * 1.45, y, r, w: .3 }); piece('gear', [], { tyres: T4, legs: [] }) }
-  
-  const f = [], R2 = T.D / 2;
-  for (const [yH, zt, a0] of [[nx - 2.2, zc + hz + .9, .3], [y1 + 1.6, zc + hz + 2.25, .9]]) {
-    f.push(...vcyl(0, yH, .14, zt - .6, zt, '#3a3f45', 'metal', 10), ...vcyl(0, yH, .38, zt - .05, zt + .14, '#2a2e33', 'metal', 14));
-    if (opt.spin) { const P = []; for (let i = 0; i < 36; i++) { const a = i / 36 * TAU; P.push([R2 * Math.cos(a), yH + R2 * Math.sin(a), zt + .06]) } f.push(face(P, '#d2dceb', 'glass', { n: [0, 0, 1], a: .18, ns: 1 })) }
-    else for (let i = 0; i < 3; i++) { const a = a0 + i * TAU / 3, c = Math.cos(a), sn = Math.sin(a), w = .3; f.push(face([[-sn * w, yH + c * w, zt + .06], [R2 * c - sn * w, yH + R2 * sn + c * w, zt + .02], [R2 * c + sn * w, yH + R2 * sn - c * w, zt + .02], [sn * w, yH - c * w, zt + .06]], '#2c3036', 'metal', { n: [0, 0, 1], both: true })) } }
-  piece('rotor', f);
-  for (const p of pieces) bounds(p);
-  return { pieces, info: { id, heli: true, t: Object.assign({ he: T.he, H: zc + hz + 2.4, zb: zs, fw: 2 * hw }, T), L, R: hw, yN: nx, HS: T.D / 2 + 6 } };
-}
-function buildHeli(id, opt) {
-  opt = opt || {}; const T = HELI[id]; if (!T) throw new Error('A34: unknown helicopter ' + id);
-  if ((HSP[T.k] || {}).body === 'tandem') return buildTandem(id, T, opt);
-  const H = HSP[T.k] || HSP[0], L = T.L, b = L * H.b, bw = L * H.bw, hw = bw / 2, hz = bw * (H.hzk || .62), nx = H.body === 'sleek' ? b * .74 : b * .62, zs = H.gear === 'wheels' ? .7 : .55, zc = zs + hz;
-  const yH = T.hub != null ? nx - T.hub * L : .05 * b;   
-  const pieces = [], piece = (kind, faces, extra) => { const p = Object.assign({ kind, faces, decor: [] }, extra || {}); pieces.push(p); return p };
-  const fb = H.body === 'box' ? [1, 1] : H.body === 'round' ? [1.06, 1] : [1, 1];
-  
-  const rings = H.front === 'blunt' ? [[nx, .36 * hw, .42 * hz], [nx - .04 * b, .8 * hw, .82 * hz], [nx - .15 * b, .97 * hw * fb[0], .98 * hz], [.05 * b, hw * fb[0], hz], [-.25 * b, .92 * hw, .9 * hz], [-.45 * b, .48 * hw, .58 * hz]]
-    : [[nx, .06 * hw, .06 * hz], [nx - .07 * b, .5 * hw, .55 * hz], [nx - .22 * b, .88 * hw * fb[0], .93 * hz], [.05 * b, hw * fb[0], hz], [-.25 * b, .9 * hw, .88 * hz], [-.45 * b, .42 * hw, .5 * hz]];
-  if (H.body === 'box') rings.splice(1, 1, [nx - .05 * b, .7 * hw, .7 * hz]);
-  const body = revolveE(0, zc, rings, T.main, 'paint', opt.lod ? 20 : 28), decor = [];
-  
-  const yB0 = -.3 * b, yB1 = nx - L, zb = zc + .25 * hz;   
-  body.push(...revolveE(0, zb, (BM => [[yB0, BM[0][0] * hw, BM[0][1] * hw], [yB0 + (yB1 - yB0) * .45, BM[1][0] * hw, BM[1][1] * hw], [yB1 + .4, BM[2][0] * hw, BM[2][1] * hw], [yB1, BM[3][0] * hw, BM[3][1] * hw]])(H.boom || [[.42, .42], [.24, .24], [.14, .14], [.1, .1]]), T.main, 'paint', 12));
-  const fin = [{ z: zb, yLE: yB1 + 1.1, yTE: yB1 - .1, t: .12 }, { z: zb + hz * 1.3, yLE: yB1 + .35, yTE: yB1 - .35, t: .08 }];
-  body.push(...buildFin(fin.map(q => ({ z: q.z, yLE: q.yLE, yTE: q.yTE, t: H.tail === 'fen' ? .35 : q.t })), T.acc));
-  const yS = yB1 + 1.4, sp = hw * 1.45; body.push(...buildPlate([{ x: -sp, yLE: yS, yTE: yS - .5, z: zb, t: .06 }, { x: sp, yLE: yS, yTE: yS - .5, z: zb, t: .06 }], T.acc));
-  if (H.tail === 'fen') body.push(disc(-.19, yB1 + .3, zb + hz * .45, .32, '#1b1f24', 'matte', { n: [-1, 0, 0], both: true }));
-  else { const tr = T.tr ? T.tr / 2 : L * .075, tx = -.18, tz = zb + hz * .5, n = H.tail === 'rotor4' ? 4 : 2;
-    if (opt.spin) { const P = []; for (let i = 0; i < 20; i++) { const a = i / 20 * TAU; P.push([tx, yB1 + .2 + tr * Math.cos(a), tz + tr * Math.sin(a)]) } body.push(face(P, '#cfd8e2', 'glass', { n: [-1, 0, 0], both: true, a: .25, ns: 1 })) }
-    else for (let i = 0; i < n; i++) { const a = .5 + i * TAU / n; body.push(face([[tx, yB1 + .2, tz], [tx, yB1 + .2 + tr * Math.cos(a), tz + tr * Math.sin(a)], [tx, yB1 + .2 + tr * Math.cos(a + .14), tz + tr * Math.sin(a + .14)]], '#22262b', 'metal', { n: [-1, 0, 0], both: true })) } }
-  
-  { const gl = H.glass, y0 = nx - .02 * b, y1 = nx - (gl === 'bubble' ? .42 : gl === 'pano' ? .52 : .3) * b, th0 = gl === 'bubble' ? -25 : gl === 'pano' ? -38 : 5;
-    const ell = (y, th) => { const u = (y - rings[0][0]) / (rings[rings.length - 1][0] - rings[0][0]); let i = 0; while (i + 1 < rings.length - 1 && y < rings[i + 1][0]) i++;
-      const A = rings[i], B = rings[i + 1], f = (y - A[0]) / ((B[0] - A[0]) || 1e-6), rx = lerp(A[1], B[1], f), rz = lerp(A[2], B[2], f); void u; return [rx * Math.cos(th) * 1.01, y, zc + rz * Math.sin(th) * 1.01] };
-    for (const [d0, d1] of [[th0, 88], [92, 180 - th0]]) { const P = []; for (let i = 0; i <= 6; i++) P.push(ell(lerp(y0, y1, i / 6), d0 * D2R)); for (let i = 6; i >= 0; i--) P.push(ell(lerp(y0, y1, i / 6), d1 * D2R));
-      decor.push(face(P, '#1d3346', 'glass', { n: [0, .4, .9], grad: ['#1a2c3d', '#7fa3c1'] })) }
-    
-    if (gl === 'wide' || gl === 'pano') { const nW = gl === 'wide' ? 5 : 2, ya = y1 - .03 * b, yb = gl === 'wide' ? -.3 * b : -.34 * b, st = (ya - yb) / nW, t0 = (gl === 'wide' ? 8 : 0) * D2R, t1 = (gl === 'wide' ? 42 : 64) * D2R;
-      for (let i = 0; i < nW; i++) { const a0 = ya - i * st - st * .1, a1 = ya - (i + 1) * st + st * .1;
-        for (const sd of [1, -1]) { const th = t => sd > 0 ? t : Math.PI - t, P = [ell(a0, th(t0)), ell(a1, th(t0)), ell(a1, th(t1)), ell(a0, th(t1))];
-          decor.push(face(P, '#22384e', 'glass', { n: [sd, 0, .35], grad: ['#1a2c3d', '#6f93b1'] })) } } } }
-  
-  if (T.ems) for (let i = 0; i < 8; i++) { const y = .3 * b - i * .1 * b; for (const sd of [1, -1]) { const P = [[sd * hw * .97, y, zc - .1 * hz], [sd * hw * .97, y - .1 * b, zc - .1 * hz], [sd * hw * .97, y - .1 * b, zc + .2 * hz], [sd * hw * .97, y, zc + .2 * hz]]; if (i % 2) decor.push(face(P, T.acc, 'paint', { n: [sd, 0, 0] })) } }
-  else decor.push({ line: 1, P: [[hw * .98, .35 * b, zc + .05 * hz], [hw * .98, -.42 * b, zc + .05 * hz]], c: T.acc, w: .12 }, { line: 1, P: [[-hw * .98, .35 * b, zc + .05 * hz], [-hw * .98, -.42 * b, zc + .05 * hz]], c: T.acc, w: .12 });
-  if (T.fire) for (const sd of [1, -1]) decor.push(face([[sd * hw * .975, .38 * b, zc - .42 * hz], [sd * hw * .975, -.45 * b, zc - .42 * hz], [sd * hw * .975, -.45 * b, zc - .08 * hz], [sd * hw * .975, .38 * b, zc - .08 * hz]], T.acc, 'paint', { n: [sd, 0, 0] }));   
-  piece('body', body, { decor });
-  
-  if (H.gear === 'skid') { const f = [], xs = bw * .68;
-    for (const sd of [1, -1]) { f.push(...boxFaces([[sd * xs - .05, .5 * b], [sd * xs + .05, .5 * b], [sd * xs + .05, -.42 * b], [sd * xs - .05, -.42 * b]], 0, .1, { top: '#2a2e33', side: '#1b1e22' }, { mat: 'metal' }));
-      for (const y of [.3 * b, -.2 * b]) f.push(...boxFaces([[sd * xs - .04, y - .04], [sd * hw * .5 + .04 * sd, y - .04], [sd * hw * .5 + .04 * sd, y + .04], [sd * xs - .04, y + .04]], .1, zs + .1, { top: '#3a3f45', side: '#2a2e33' }, { mat: 'metal' })) }
-    piece('gear', f) }
-  else { const r = .32; piece('gear', [], { tyres: [{ tyre: 1, x: -hw * .9, y: -.1 * b, r, w: .22 }, { tyre: 1, x: hw * .9, y: -.1 * b, r, w: .22 }, { tyre: 1, x: 0, y: .45 * b, r: r * .8, w: .18 }], legs: [{ x: 0, y: .45 * b, z0: r * .8, z1: zs, r: .08 }] }) }
-  
-  { const zt = T.H ? Math.max(zc + hz + .25, T.H - .12) : zc + hz + .45, R2 = T.D / 2, f = [];
-    f.push(...vcyl(0, yH, .12, zc + hz * .8, zt, '#3a3f45', 'metal', 10), ...vcyl(0, yH, .32, zt - .05, zt + .12, '#2a2e33', 'metal', 14));
-    if (opt.spin) { const P = []; for (let i = 0; i < 36; i++) { const a = i / 36 * TAU; P.push([R2 * Math.cos(a), yH + R2 * Math.sin(a), zt + .06]) } f.push(face(P, '#d2dceb', 'glass', { n: [0, 0, 1], a: .2, ns: 1 })) }
-    else for (let i = 0; i < T.nb; i++) { const a = .6 + i * TAU / T.nb, c = Math.cos(a), sn = Math.sin(a), w = .16; f.push(face([[-sn * w, yH + c * w, zt + .06], [R2 *
+  'AC-TP-01': { he: 'טורבו-פרופ אזורי', model: 'TP-72', fit: [0.9854, 1], L: 27.17, WS: 27.05, fw: 2.8, wc: 2.6, tc: 1.7, sw: .5, nl: .1
