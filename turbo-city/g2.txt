@@ -1087,7 +1087,7 @@ window.__TC_GRAPHICS_RUNTIME={source:'Turbo City Graphics Library Wave 4.4 Hebre
 </script>
 <script>
 (()=>{'use strict';
-const BUILD='turbo-city-v1.96-s7f306',TC_REL=(()=>{const b=String(BUILD),v=(b.match(/v(\d+\.\d+)/i)||[])[1]||'?',m=b.match(/s7f(\d+)/i),tag=m?m[0].toUpperCase():'DEV';return{ver:v,no:m?+m[1]:null,tag,scope:'TC_V'+v.replace('.','')+'_'+tag}})();    
+const BUILD='turbo-city-v1.96-s7f307',TC_REL=(()=>{const b=String(BUILD),v=(b.match(/v(\d+\.\d+)/i)||[])[1]||'?',m=b.match(/s7f(\d+)/i),tag=m?m[0].toUpperCase():'DEV';return{ver:v,no:m?+m[1]:null,tag,scope:'TC_V'+v.replace('.','')+'_'+tag}})();    
 const VER=TC_REL.ver, ACTIVE_GATE='GATE-77', FILE_SCOPE=TC_REL.scope;
 
 

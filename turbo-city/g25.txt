@@ -1,4 +1,32 @@
-(P[0]+P[2])/2,y:(P[1]+P[3])/2+150},zoom:.8,row:k+1}}
+at===undefined)return figsNow().find(f=>f.id===pid)||null;
+   if(at===null){delete EXT[pid];return null}
+   const f=figOf(pid,o.name),pt=o.exact?{x:at.x,y:at.y}:spotNear(at,o.r||8)||{x:at.x,y:at.y};
+   EXT[pid]={pt,until:o.until?pnow()+o.until:0,src:o.src||'ext'};if(!f.hold&&!figsNow().some(q=>q===f&&q.src!==EXT[pid].src))f.pt=pt;if(!f.arr)f.arrived=true;return f}    catch(e){err('fig',e);return null}}
+ function drawWho(now){if(!(Camera.zoom>=.8)||typeof P34==='undefined'||!P34.draw)return;let res=2;try{res=p599Res(Camera.zoom*(window.devicePixelRatio||1))}catch(e){}
+  for(const q of figsNow()){if(q.hide||!q.pt)continue;const m=me();let x=q.pt.x,y=q.pt.y,walkK=null,walkHd=null;
+   if(!q.arrived&&!q.hold){if(!q.arr){if(Math.hypot(m.x-q.pt.x,m.y-q.pt.y)<300&&inView(q.pt.x,q.pt.y,0)){const fr=arrFrom(q,m);if(fr){q.arr={from:fr,t0:now};E.arrivals=(E.arrivals||0)+1}else q.arrived=true}else continue}
+    if(q.arr){const A=q.arr.from,L=Math.max(1,Math.hypot(q.pt.x-A.x,q.pt.y-A.y)),f=Math.min(1,(now-q.arr.t0)/1000*30/L);x=A.x+(q.pt.x-A.x)*f;y=A.y+(q.pt.y-A.y)*f;walkK='walk';walkHd=Math.atan2(q.pt.y-A.y,q.pt.x-A.x);if(f>=1){q.arrived=true;q.arr=null}}}
+   if(!inView(x,y,40))continue;const d=Math.hypot(m.x-x,m.y-y),I=walkK?null:figIdle(q,now,d,m,x,y),hd=walkHd!=null?walkHd:q.hd!=null?q.hd:I.hd,kk=walkK||q.k||I.k,ph=walkK?((now/700)%1):q.k?(SAP_ACT[q.k]?(now/900)%1:(now/2400)%1):I.ph;    
+   try{P34.draw(ctx,x,y,q.look,{k:kk},hd,ph,res)}catch(e){err('who',e);continue}{const F=E.fs||(E.fs={}),o=F[q.id];if(!o||o.k!==kk){const L=E.fsLog||(E.fsLog=[]);L.push([q.id,kk,now|0,x|0,y|0]);if(L.length>60)L.shift()}F[q.id]={k:kk,t:now|0,x:x|0,y:y|0,hold:!!q.hold}}    E.figDrawn=(E.figDrawn||0)+1;
+   if(d<160&&q.name&&!q.hold){const c=ctx,fs=11/Camera.zoom,ly=y-K*30;c.save();c.font='700 '+fs+'px Segoe UI,Arial';c.textAlign='center';c.textBaseline='middle';const tw=c.measureText(q.name).width+fs;c.fillStyle='rgba(18,26,34,.78)';c.fillRect(x-tw/2,ly-fs*.75,tw,fs*1.5);c.fillStyle='#fff';c.fillText(q.name,x,ly);c.restore()}}}
+ window.tcStepFig=tcStepFig;
+  
+ function figCheck(){const out={ok:true,bad:[]};const keepE=JSON.stringify(EXT);try{const C=(g77S&&g77S().chars)||{},ids=Object.keys(C).filter(k=>C[k]&&C[k].name).slice(0,3);if(!ids.length){out.note='אין אנשי קשר';return out}
+   const a=tcStepFig(ids[0],{x:PlayerPed.x+30,y:PlayerPed.y},{until:5000,src:'qa'}),b=tcStepFig(ids[0],{x:PlayerPed.x+60,y:PlayerPed.y},{until:5000,src:'qa'});if(!a||a!==b)out.bad.push('שני אובייקטים לאותו אדם');
+   if(tcStepFig(ids[0])!==a)out.bad.push('tcStepFig(id) לא מחזיר את הדמות');out.por=!!(a&&a.por);if(typeof TCPOR!=='undefined'&&TCPOR.look&&a&&!a.por&&!(TCPOR.look(ids[0])||{}).thing)out.bad.push('המראה לא מ-TCPOR');
+   const n=figsNow().filter(f=>f.id===a.id).length;if(n!==1)out.bad.push('בציור: '+n+' פעמים');tcStepFig(ids[0],null);if(figsNow().some(f=>f===a&&f.src==='qa'))out.bad.push('לא הוסר');
+   out.figs=figsNow().length;out.road=figsNow().filter(f=>f.pt&&onRoad(f.pt.x,f.pt.y)).map(f=>f.id)}catch(e){out.bad.push(String(e&&e.message||e).slice(0,120))}
+  finally{for(const k of Object.keys(EXT))delete EXT[k];Object.assign(EXT,JSON.parse(keepE))}out.ok=!out.bad.length;return out}
+ 
+
+ const VIS={v:null,n:0,err:null,starts:{roof:0,stand:0}};const visErr=e=>{if(!VIS.err)VIS.err=String(e&&e.message||e).slice(0,160)};
+ function visDef(kind){
+  if(kind==='roof'){const o=(typeof C4_BUILDINGS!=='undefined'?C4_BUILDINGS:[]).find(b=>b&&b.id==='A5-OFFICE');if(!o||!o.entrance)return null;let I=null;try{I=BLD40.info('A5TOWER')}catch(e){}
+   const H=I&&I.floors?I.floors*3.3+1.6:(o.bld40&&o.bld40.H)||41.2,up=H*10*K;    
+   return{kind,label:'הגג של מגדל הכיכר',door:{x:o.entrance.x,y:o.entrance.y+5},fig:{x:o.x+o.w*.64,y:o.y+o.h*.8-up},cam:{x:o.x+o.w/2,y:o.y+o.h/2-up*.6},zoom:.5,floors:(I&&I.floors)||12,up}}
+  if(kind==='stand'){if(typeof A34D==='undefined'||!A34D.standS||!A34D.gates)return null;const S=A34D.standS,G=A34D.gates.slice().sort((a,b)=>Math.abs(a[0]-PlayerPed.x)-Math.abs(b[0]-PlayerPed.x))[0];
+   const rows=9,d=(S[3]-S[1]-12)/rows,k=4,z=.5+k*.45,sx=S[0]+4+6*Math.round((G[0]-S[0]-4)/6)+3,sy=S[1]+6+k*d-z*6+1;    
+   const P=A34D.stad||[200,1800,1050,2350];return{kind,label:'היציע הדרומי',door:{x:G[0],y:G[1]+6},fig:{x:sx,y:sy},cam:{x:(P[0]+P[2])/2,y:(P[1]+P[3])/2+150},zoom:.8,row:k+1}}
   return null}
  function visStart(kind,o,now){if(VIS.v||!walk())return false;const D=visDef(kind);if(!D)return false;const T=now||pnow(),s={x:PlayerPed.x,y:PlayerPed.y},dr=D.door,yy=dr.y+14;
   const path=[s,{x:s.x,y:yy},{x:dr.x,y:yy},{x:dr.x,y:dr.y}];let L=0;for(let i=1;i<path.length;i++)L+=Math.hypot(path[i].x-path[i-1].x,path[i].y-path[i-1].y);
@@ -213,7 +241,7 @@
  function msWho(kind,key,C){try{const D=TCSTORY.D;if(kind==='talk')return(D.dialogs[key]||{}).who||'';for(const ch of D.chapters||[])for(const m of ch.missions||[])if(m.id===C.mi)return m.giver||''}catch(e){}return''}
  function msArm(kind,key,s,args){const C=stCur();if(!C)return;const q=MS.cur;if(q&&q.kind===kind&&q.key===key&&q.mi===C.mi&&q.step===C.step)return;
   const who=msWho(kind,key,C);let name='';try{name=who?(g77S().chars[who]||{}).name||'':''}catch(e){}let label='';try{if(kind==='job')label=(MISSION_DEFS[key]||{}).name||key;if(kind==='show'){const [kd,fid]=key.split(':'),L=kd==='film'?TCSHOW.FILMS:TCSHOW.PLAYS;label=((L||[]).find(f=>f.id===fid)||{}).title||''}}catch(e){}
-  MS.cur={kind,key,s,mi:C.mi,step:C.step,args,at:poiAt(s.at||s.nav),r:s.r||150,who,name,label,born:pnow()};MS.armed++;if(!E.qa)try{toast(msHud(true)||'F')}catch(e){}}
+  MS.cur={kind,key,s,mi:C.mi,step:C.step,args,at:poiAt(s.at||s.nav),r:s.r||150,who,name,label,born:pnow()};MS.armed++;if(!E.qa)try{toast(msHud(true)||'G')}catch(e){}}
  {const O=g77DlgOpen;g77DlgOpen=function(id,mode,at,resume){try{if(mode==='talk'&&!resume&&MS.allow!==id&&!stQa()){const C=stCur();if(C&&C.s&&C.s.talk===id){msArm('talk',id,C.s);return false}}}catch(e){err('dlg',e)}return O.apply(this,arguments)}}
  function msJobBlocks(id){if(MS.allow===id||stQa()||typeof TCSTORY==='undefined'||!TCSTORY.E||TCSTORY.E.allowJob!==id)return false;const R=MS.ready;if(R&&R.key===id&&pnow()<R.until){MS.ready=null;return false}const C=stCur();return!!(C&&C.s&&C.s.job===id)}
  {const O=startMission;startMission=function(id){try{if(msJobBlocks(id)){msArm('job',id,stCur().s);return}}catch(e){err('job',e)}return O.apply(this,arguments)}}
@@ -225,9 +253,9 @@
  function isThing(id){try{if(!id||typeof TCPOR==='undefined'||!TCPOR.look)return'';const P=TCPOR.look(id);return P&&P.thing||''}catch(e){return''}}    
  function msFig(q){if(!q.who||isThing(q.who))return null;let f=null;try{f=tcStepFig(q.who);if(!f&&q.at)f=tcStepFig(q.who,q.at,{src:'sa-ms',until:20000,r:14})}catch(e){}return f&&f.pt?f:null}
  function msHud(arm){const q=MS.cur;if(!q||!q.at)return'';const m=me(),d=Math.hypot(m.x-q.at.x,m.y-q.at.y);if(!arm&&d>Math.max(q.r,120)*2.2)return'';const out=walk()?'':'לצאת מהרכב ו';
-  return q.kind==='talk'?'F · '+out+'לגשת ולדבר עם '+(q.name||'הדמות'):q.kind==='job'?'F · '+out+'לקבל את העבודה'+(q.name?' מ'+q.name:'')+(q.label?' — '+q.label:''):'F · '+out+'לקנות כרטיס'+(q.label?' — '+q.label:'')}
+  return q.kind==='talk'?'G · '+out+'לגשת ולדבר עם '+(q.name||'הדמות'):q.kind==='job'?'G · '+out+'לקבל את העבודה'+(q.name?' מ'+q.name:'')+(q.label?' — '+q.label:''):'G · '+out+'לקנות כרטיס'+(q.label?' — '+q.label:'')}
  function msF(){const q=MS.cur;if(!q||PS.q||cut()||!q.at)return false;const m=me(),f=q.who?FIG[q.who]:null,P=f&&f.pt&&!f.hide?f.pt:q.at;if(walk()?Math.hypot(m.x-P.x,m.y-P.y)>110:Math.hypot(m.x-q.at.x,m.y-q.at.y)>Math.max(q.r,120))return false;    
-  if(q.kind==='job'&&!q.s.walk&&walk()&&Math.hypot(PlayerCar.x-PlayerPed.x,PlayerCar.y-PlayerPed.y)>400){try{toast('העבודה מתחילה ברכב — חוזרים לרכב, ואז F')}catch(e){}return true}
+  if(q.kind==='job'&&!q.s.walk&&walk()&&Math.hypot(PlayerCar.x-PlayerPed.x,PlayerCar.y-PlayerPed.y)>400){try{toast('העבודה מתחילה ברכב — חוזרים לרכב, ואז G')}catch(e){}return true}
   msGo(q);return true}
  function msGo(q){const inCar=PlayerProfile.mode==='vehicle',f=q.kind==='show'?null:msFig(q),steps=[];if(inCar)steps.push({k:'exit'});
   if(q.kind==='show')steps.push({k:'walk',to:()=>standAt(q.at,12)},{k:'pose',p:'saPay',d:1.4,face:()=>q.at,bub:['player','כרטיס אחד, בבקשה'+(q.label?' — '+q.label:''),1900]},{k:'fn',fn:T=>{SA.fx.push({k:'land',x:q.at.x,y:q.at.y,t0:T||pnow()})}});
@@ -236,7 +264,7 @@
    if(q.kind==='job'){steps.push({k:'pose',p:'saGive',d:.8,rev:1,face:()=>f&&f.pt||q.at,fig:'saGive',held:1,obj:{o:'paper',c:'#e8dcc0'}},{k:'fn',fn:()=>{MS.paper=1}});
     if(!q.s.walk)steps.push({k:'walk',to:()=>standAt({x:PlayerCar.x,y:PlayerCar.y},14),carry:1},{k:'enter'})}}
   steps.push({k:'fn',fn:()=>{if(q.kind==='job'&&!q.s.walk&&PlayerProfile.mode!=='vehicle'){MS.cur=null;MS.ready={key:q.key,until:pnow()+180000};if(MS.dry)MS.dry.push({kind:'job',key:q.key,mode:'ready'});else try{toast('המסמכים אצלך — E לרכב, והעבודה מתחילה')}catch(e){}return}msFire(q)}});MS.cur=q;
-  psRun(steps,{tag:'ms:'+q.kind,fig:f,hud:msHud(true).replace(/^F · (לצאת מהרכב ו)?/,''),cancel:w=>{MS.paper=0;if(w!=='replace'&&!E.qa)try{toast('נעצר — F כדי להתחיל שוב')}catch(e){}}})}
+  psRun(steps,{tag:'ms:'+q.kind,fig:f,hud:msHud(true).replace(/^G · (לצאת מהרכב ו)?/,''),cancel:w=>{MS.paper=0;if(w!=='replace'&&!E.qa)try{toast('נעצר — G כדי להתחיל שוב')}catch(e){}}})}
  function msFire(q){MS.cur=null;MS.paper=0;MS.go++;MS.n[q.kind]++;if(MS.dry){MS.dry.push({kind:q.kind,key:q.key,mode:PlayerProfile.mode});return}
   if(q.kind==='talk'){MS.allow=q.key;try{g77DlgOpen(q.key,'talk')}finally{MS.allow=null}}
   else if(q.kind==='job'){const E2=TCSTORY.E;MS.allow=q.key;E2.allowJob=q.key;try{const m=TCSTORY.M();if(m&&m.race)m.race.t0=Date.now();startMission(q.key)}finally{E2.allowJob=null;MS.allow=null}}
@@ -296,7 +324,7 @@
  try{if(window.TCBUSY&&TCBUSY.probe)TCBUSY.probe('event',()=>!!PS.q&&!E.qa)}catch(e){err('busy-probe',e)}
   
  window.addEventListener('keydown',e=>{try{if(!PS.q||e.repeat)return;if(/^(KeyW|KeyA|KeyS|KeyD|ArrowUp|ArrowDown|ArrowLeft|ArrowRight|Escape)$/.test(e.code||''))psStop('key')}catch(x){}},true);
- window.__TC_SACT={SA,E,spec,arm,F,tick,check,table,carried,demo,VIS,visStart,visOut,visCheck,FIG,tcStepFig,figCheck,PS,MS,psRun,psStop,psFast,msCheck,plainCheck,poseCheck,plainGo,SAP_ACT,figs:()=>figsNow().map(f=>({id:f.id,name:f.name,pt:f.pt,src:f.src,por:f.por})),who:()=>whoNow().map(w=>({id:w.id,n:w.n,nm:w.nm,pt:whoPt(w).pt,road:whoPt(w).pt?!!onRoad(whoPt(w).pt.x,whoPt(w).pt.y):null})),err:()=>E.err};
+ window.__TC_SACT={SA,E,spec,arm,F,storyKey,GK,gNear,tick,check,table,carried,demo,VIS,visStart,visOut,visCheck,FIG,tcStepFig,figCheck,PS,MS,psRun,psStop,psFast,msCheck,plainCheck,poseCheck,plainGo,SAP_ACT,figs:()=>figsNow().map(f=>({id:f.id,name:f.name,pt:f.pt,src:f.src,por:f.por})),who:()=>whoNow().map(w=>({id:w.id,n:w.n,nm:w.nm,pt:whoPt(w).pt,road:whoPt(w).pt?!!onRoad(whoPt(w).pt.x,whoPt(w).pt.y):null})),err:()=>E.err};
  return{SA,E,arm,check,table}})();
 
 
@@ -2038,6 +2066,43 @@ var TCS56=(function(){
    detail:q.ok?'פרקים 5, 6 והסוף בנויים ('+q.chapters.join(' · ')+') · '+q.missions+' משימות, '+q.steps+' צעדים, '+q.places+' מקומות — כולם קיימים · בשלב שלהם: פתוחים ומחוברים '+q.reach+' (בכביש '+q.via.road+', במעבורת '+q.via.ferry+', ברגל מהכביש '+q.via.walk+') · '+q.ms+' מ"ש':'נכשל: '+q.why.slice(0,10).join(' | ')+(q.error?' · '+q.error:'')});
    if(!q.ok){r.ok=false;(r.issues||[]).push('story56')}}catch(e){err('audit',e)}return r}}
  const api={ST,qa,tick,stormWanted,cards};window.__TC_S56=api;return api})();
+
+
+var TCREWARD=(function(){
+ const BASE={O:150,'1':250,'2':350,'3':450,'4':600,'5':750,'6':900,F:1200};
+ const R={on:true,v:1,n:{set:0,pop:0},tab:[],err:null,last:null};
+ function err(e){R.err=String(e&&e.message||e).slice(0,200)}
+ const r50=x=>Math.round(x/50)*50;
+ function acts(mi){let k=0;for(const s of mi.steps||[])if(s.job||s.license||s.show||s.area||s.state||s.watch)k++;return k}
+ function calc(ch,mi){const b=BASE[ch.id]!=null?BASE[ch.id]:500,n=(mi.steps||[]).length;return r50(b*(1+.3*Math.max(0,n-1)+.4*acts(mi)))}
+ function apply(){let D=null;try{D=TCSTORY.D}catch(e){}if(!D)try{D=TC_STORY}catch(e){}if(!D||!Array.isArray(D.chapters))return 0;R.tab=[];
+  for(const ch of D.chapters)for(const mi of ch.missions||[]){if(mi.reward0==null)mi.reward0=mi.reward||0;const v=Math.max(mi.reward0,calc(ch,mi));if(mi.reward!==v){mi.reward=v;R.n.set++}
+   R.tab.push({ch:ch.id,id:mi.id,name:mi.name,steps:(mi.steps||[]).length,acts:acts(mi),was:mi.reward0,now:mi.reward})}
+  return R.tab.length}
+ try{apply()}catch(e){err(e)}
+  
+ let el=null;function box(){if(el)return el;const st=document.createElement('style');st.textContent=
+  '#tcRew{position:fixed;left:50%;top:22%;transform:translate(-50%,0) scale(.9);z-index:70;pointer-events:none;direction:rtl;text-align:center;font:800 15px/1.35 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif;color:#e9fff1;opacity:0;transition:opacity .25s,transform .25s}'+
+  '#tcRew.on{opacity:1;transform:translate(-50%,0) scale(1)}#tcRew .v{display:inline-block;font-size:40px;font-weight:900;color:#7dffb0;text-shadow:0 3px 0 #0b4a2a,0 0 18px #2bd47a88;letter-spacing:.5px}#tcRew .s{margin-top:2px;padding:4px 12px;border-radius:10px;background:rgba(8,26,18,.82);border:1px solid #2f9e5f;display:inline-block}';
+  document.head.appendChild(st);el=document.createElement('div');el.id='tcRew';el.setAttribute('role','status');el.setAttribute('aria-live','polite');document.body.appendChild(el);return el}
+ let hideT=0;
+ function pop(n,sub){try{const d=box();let m='';try{m=typeof money==='function'?money(n):String(n)}catch(e){m=String(n)}d.innerHTML='<div class="v">+'+m+'</div>'+(sub?'<div><span class="s">'+String(sub).replace(/[<>&]/g,'')+'</span></div>':'');
+  d.classList.add('on');clearTimeout(hideT);hideT=setTimeout(()=>d.classList.remove('on'),2600);R.n.pop++;R.last={n,sub,t:Date.now()}}catch(e){err(e)}}
+ function qa(){try{if(TCSTORY.E&&TCSTORY.E.qa)return true}catch(e){}try{if(window.__TC_SACT&&__TC_SACT.E&&__TC_SACT.E.qa)return true}catch(e){}return false}
+ function lastDone(){try{const m=g77St().main;if(!m||!m.done)return null;let best=null,bt=-1;for(const [id,t] of Object.entries(m.done)){const v=+t||0;if(v>=bt){bt=v;best=id}}if(!best)return null;
+   for(const ch of TCSTORY.D.chapters)for(const mi of ch.missions||[])if(mi.id===best)return mi}catch(e){}return null}
+ try{const T0=recordTransaction;recordTransaction=function(type,amount,detail){const r=T0.apply(this,arguments);try{const n=Number(amount)||0;if(type==='story'&&n>0&&!qa()){const d=detail||{};let sub='';
+    if(d.story){let nm='';try{nm=(S9STORY.ST[d.story]||{}).name||''}catch(e){}sub='סיפור צד הושלם'+(nm?': '+nm:'')}
+    else if(d.why==='mission'){const mi=lastDone();sub='משימה בסיפור הושלמה'+(mi&&mi.name?': '+mi.name:'')}else sub='תגמול';pop(n,sub)}}catch(e){err(e)}return r}}catch(e){err(e)}
+ function check(){const out={ok:true,bad:[],n:0,sum:{},minByCh:{}};try{apply();for(const t of R.tab){out.n++;out.sum[t.ch]=(out.sum[t.ch]||0)+t.now;out.minByCh[t.ch]=Math.min(out.minByCh[t.ch]==null?1e9:out.minByCh[t.ch],t.now);
+     if(!(t.now>=(BASE[t.ch]||0)))out.bad.push(t.id+': '+t.now);if(t.now<t.was)out.bad.push(t.id+': פחות ממה שהיה')}
+   const order=['O','1','2','3','4','5','6','F'].filter(k=>out.minByCh[k]!=null);for(let i=1;i<order.length;i++)if(out.minByCh[order[i]]<out.minByCh[order[i-1]])out.bad.push('יורד: '+order[i]);
+   const m0=PlayerProfile.money,tx=ensureEconomySchema().transactions.length,p0=R.n.pop;recordTransaction('story',0,{why:'qa'});if(R.n.pop!==p0)out.bad.push('0 קופץ');
+   const keepQa=TCSTORY.E.qa;TCSTORY.E.qa=false;try{recordTransaction('story',123,{why:'qa-pop'})}finally{TCSTORY.E.qa=keepQa}if(R.n.pop!==p0+1)out.bad.push('לא קפץ');if(!(el&&el.classList.contains('on')&&/123/.test(el.textContent)))out.bad.push('אין +123 על המסך');
+   const T=ensureEconomySchema().transactions;T.splice(tx);PlayerProfile.money=m0;try{el.classList.remove('on')}catch(e){}}catch(e){out.bad.push('err '+String(e&&e.message||e).slice(0,120))}
+  if(R.err)out.bad.push('err: '+R.err);out.ok=!out.bad.length;return out}
+ return{R,BASE,calc,apply,pop,check,table:()=>R.tab}})();
+window.__TC_REWARD=TCREWARD;
 
 
 
