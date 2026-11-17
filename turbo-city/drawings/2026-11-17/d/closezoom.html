@@ -172,12 +172,12 @@ function discPart(L, d, cen, r, th, hexTop, hexSide, mat) {   // a horizontal di
 
 // ---- the body ----
 function dims(L) {
-  const h = L.h || 1.76, hs = h / 1.76, w = L.w || 1, bel = L.belly || 1, kid = h < 1.5, hk = kid ? Math.pow(hs, .45) : hs;
+  const h = L.h || 1.76, hs = h / 1.76, w = L.w || 1, bel = L.belly || 1, kid = h < 1.5, hk0 = kid ? Math.pow(hs, .45) : hs, czh = L.czHead > 0 ? L.czHead : 1, hk = hk0 * czh;   /* closezoom 17.11: L.czHead — ראש גדול יותר בזום הקרוב (074zz5), בלי — כמו קודם */
   return { h, hs, w, bel, kid, hk,
     hipZ: .53 * h, hipS: .08 * w * hs, thigh: .245 * h, shin: .243 * h, ankZ: .045 * h,
     armS: .166 * w * hs, shZ: .79 * h, uarm: .168 * h, farm: .146 * h,   // p670: the shoulders
     rT: .068 * hs * (.88 + .12 * w), rK: .05 * hs, rA: .036 * hs, rU: .044 * hs * (.9 + .1 * w), rE: .036 * hs, rW: .029 * hs, rHd: .045 * hs,
-    neck0: .812 * h, neck1: .875 * h, rN: .051 * hs, headZ: .93 * h, head: [.077 * hk, .094 * hk, .114 * hk] };   // p670: the head of a man (15 × 19 × 23 cm), the neck, the hand
+    neck0: .812 * h, neck1: .875 * h, rN: .051 * hs, headZ: .93 * h + (czh - 1) * .1 * hk0, head: [.077 * hk, .094 * hk, .114 * hk] };   // p670: the head of a man (15 × 19 × 23 cm), the neck, the hand
 }
 // the torso cross-sections (z, half width, half depth) by the kind of top; the hem decides how low the cloth goes
 function torsoRings(D, top) {
@@ -982,7 +982,7 @@ function tcPorFamKey(d){if(!d)return 'other';const k=[d.jobKey,d.type==='bus'?'b
 function tcPorFamIc(k,px){const F=TCPOR_FAM[k]||TCPOR_FAM.other;px=px||30;return '<span class="tcFamIc" data-fam="'+k+'" title="'+tcPorEsc(F[1])+'" style="--fam:'+F[0]+';width:'+px+'px;height:'+px+'px"><svg viewBox="0 0 24 24" style="width:62%;height:62%;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round">'+F[2]+'</svg></span>'}
 
 /*@@CZ-CORE@@*/
-var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0}};
+var TCCZ={v:1,on:true,max:16,lod3Px:8.6,easeS:.35,near:320,car:true,head:.35,headR0:5.5,headR1:16,err:'',n:{face:0,looks:0,figs:0,ease:0,qaOff:0,errs:0,close:0}};
 function tcczErr(e){TCCZ.n.errs++;if(!TCCZ.err)TCCZ.err=String(e&&e.stack||e).slice(0,240)}
 function tcczHexRgb(h){h=String(h||'');if(/^#[0-9a-f]{3}$/i.test(h))h='#'+h[1]+h[1]+h[2]+h[2]+h[3]+h[3];if(!/^#[0-9a-f]{6}$/i.test(h))return null;const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]}
 function tcczShade(h,k){const c=tcczHexRgb(h)||[90,90,90],f=v=>Math.max(0,Math.min(255,Math.round(k>=0?v+(255-v)*k:v*(1+k))));return 'rgb('+f(c[0])+','+f(c[1])+','+f(c[2])+')'}
@@ -1053,8 +1053,18 @@ function tcczLook34(id,C,base){try{if(typeof tcPorLook!=='function')return null;
   if(P.shirt)o.top=Object.assign({},o.top,{c:P.shirt});
   o.czF={a:P.age||'man',b:bt,bc,fr:boy&&tcPorHash(P.shirt+P.hairCol)%3===0?1:0};o.por=1;tcczKey(o);TCCZ.n.looks++;return o}catch(e){tcczErr(e);return null}}
 /* the picture's key: P34's own (P34.lk) + the face of the portrait (two men who differ only in the kind of the beard / the age — two pictures) */
-function tcczKey(o){const sig=o.czF?'|cz'+o.czF.a[0]+o.czF.b+(o.czF.fr?'f':''):'';let kk=null;
- try{Object.defineProperty(o,'__k',{configurable:true,enumerable:false,get(){if(kk)return kk;const P=(typeof window!=='undefined'&&window.P34)||null;if(!P||!P.lk)return undefined;kk=P.lk(this);kk.body+=sig;kk.hair+=sig;return kk},set(v){kk=v}})}catch(e){}return o}
+function tcczKey(o){const f=o.czF?'|cz'+o.czF.a[0]+o.czF.b+(o.czF.fr?'f':''):'',hh=o.czHead>1?'|czh'+o.czHead:'';let kk=null;
+ try{Object.defineProperty(o,'__k',{configurable:true,enumerable:false,get(){if(kk)return kk;const P=(typeof window!=='undefined'&&window.P34)||null;if(!P||!P.lk)return undefined;kk=P.lk(this);kk.body+=f+hh;kk.hair+=f+hh;if(hh){kk.top+=hh;kk.item+=hh}return kk},set(v){kk=v}})}catch(e){}return o}
+/* the close zoom: the head a little bigger the closer the picture (the density): ×1 at 5.5 and below, ×(1 + TCCZ.head) at 16 — the portrait's
+   proportions; one copy of the look per step (in a WeakMap — the look itself unchanged), its own key. Through P34.sprites — the game's people
+   (P34G, 'flat') and the figures drawn by P34.draw (the story steps) alike. */
+const TCCZ_VAR=new WeakMap();
+function tcczHeadK(res){const t=Math.max(0,Math.min(1,(res-TCCZ.headR0)/(TCCZ.headR1-TCCZ.headR0)));return Math.round((1+TCCZ.head*t)*100)/100}
+function tcczClose(look,res){if(!TCCZ.on||!look||typeof look!=='object'||!(TCCZ.head>0)||look.czHead)return look;const k=tcczHeadK(res);if(!(k>1.001))return look;
+ let m=TCCZ_VAR.get(look);if(!m){m=new Map();TCCZ_VAR.set(look,m)}let v=m.get(k);if(v)return v;
+ v=Object.assign({},look);delete v.__k;delete v.__hm;v.czHead=k;tcczKey(v);m.set(k,v);TCCZ.n.close++;return v}
+function tcczWrapP34(){const P=(typeof window!=='undefined'&&window.P34)||null;if(!P||!P.sprites||P.sprites.__cz)return !!P;const s0=P.sprites;
+ const f=function(look,act,heading,phase,res,mode){let L=look;try{L=tcczClose(look,res)}catch(e){tcczErr(e)}return s0.call(this,L,act,heading,phase,res,mode)};f.__cz=1;P.sprites=f;return true}
 /* a kippah for the people of P34 (if cutscenes did not add one — the same shape) */
 (function(){try{const G=typeof window!=='undefined'?window:globalThis,X=G.P34X||(G.P34X={});X.hat=X.hat||{};X.face=tcczFace;
  if(!X.hat.kippah)X.hat.kippah=function(out,Q){const{H,ez,ef,headD,hat,ellipPart,MAT,mul}=Q,R=[H.r[0]*1.035,H.r[1]*1.035,H.r[2]*1.035];
@@ -1082,7 +1092,7 @@ const TC_CUTS={looks:{
   'st-fire':{h:1.8,skin:'#d39a72',hair:{t:'short',c:'#1e1712'},top:{t:'coat',c:'#2f3338'},legs:{t:'trousers',c:'#2f3338'},shoes:{t:'boot',c:'#24262a'},hat:{t:'helmet',c:'#c8262b'}}}};
 (function(){
 const ZS=[5.5,11,16];
-P34.budgetMB=96;
+P34.budgetMB=96;tcczWrapP34();
 /* the look of a story figure in the game today (074zu_story_actions:porLook, as is) */
 const SKIN=['#f1c7a5','#e2b08a','#d39a72','#b97c56','#8d5a3b'],HAIR=['#1e1712','#3b2a1f','#5a3d26','#15110e','#8a8a86'],TOPS=['#2f6fd0','#2f8a4a','#7a1f2f','#e07b2f','#3f6f96','#5b2a86','#c0392b'];
 const hsh=t=>{let h=7;for(const ch of String(t))h=(h*31+ch.charCodeAt(0))>>>0;return h};
@@ -1127,9 +1137,9 @@ function ground(g,cx,cy,hw,hh){const x0=cx-hw,x1=cx+hw,y0=cy-hh,y1=cy+hh;
  band(-60,10,'#7fa65a');band(-50,3,'#9a958c');band(-47,20,'#4a4f55');
  g.fillStyle='rgba(255,255,255,.75)';for(let k=Math.floor((y0+37)/120)-1;k*120-37<y1+120;k++)for(let i=Math.floor(x0/30);i*30<x1;i++)g.fillRect(i*30,k*120-37.6,14,1.2)}
 /* the walk: the camera follows the man (as in the game); east, stop facing the camera, west, toward the camera, away */
-const PATH=[['walk',0,3.2],['wait',Math.PI/2,1.6],['walk',Math.PI,3.2],['walk',Math.PI/2,2.2],['wait',Math.PI/2,1.4],['walk',-Math.PI/2,2.2]];const PT=PATH.reduce((s,p)=>s+p[2],0);
+const PATH=[['walk',0,3.2],['stand',Math.PI/2,1.6],['walk',Math.PI,3.2],['walk',Math.PI/2,2.2],['wait',Math.PI/2,1.4],['walk',-Math.PI/2,2.2]];const PT=PATH.reduce((s,p)=>s+p[2],0);
 const st={t:0,x:0,y:0,d:0},spd=13.5;let last=performance.now();
-function pose(t){if(mode==='front')return{k:'wait',h:Math.PI/2,mv:0};if(mode==='turn')return{k:'stand',h:(Math.floor(t/1.1)%8)*Math.PI/4,mv:0};let u=t%PT;for(const p of PATH){if(u<p[2])return{k:p[0],h:p[1],mv:p[0]==='walk'?1:0};u-=p[2]}return{k:'stand',h:Math.PI/2,mv:0}}
+function pose(t){if(mode==='front')return{k:'stand',h:Math.PI/2,mv:0};if(mode==='turn')return{k:'stand',h:(Math.floor(t/1.1)%8)*Math.PI/4,mv:0};let u=t%PT;for(const p of PATH){if(u<p[2])return{k:p[0],h:p[1],mv:p[0]==='walk'?1:0};u-=p[2]}return{k:'stand',h:Math.PI/2,mv:0}}
 function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!paused){st.t+=dt;const p=pose(st.t);if(p.mv){st.x+=Math.cos(p.h)*spd*dt;st.y+=Math.sin(p.h)*spd*dt;st.d+=spd*dt}}
  const p=pose(st.t),dpr=Math.min(2,window.devicePixelRatio||1);
  for(const c of cells){const r=c.cv.getBoundingClientRect(),W=Math.max(2,Math.round(r.width*dpr)),H=Math.max(2,Math.round(r.height*dpr));if(c.cv.width!==W||c.cv.height!==H){c.cv.width=W;c.cv.height=H}
