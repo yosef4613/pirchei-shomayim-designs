@@ -1,0 +1,7 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>בדיקת סינון</title>
+<style>body{font:15px Arial,sans-serif;margin:16px;background:#fff;color:#111}td{padding:3px 8px;border-bottom:1px solid #ddd}.ok{color:#176b2c}.bad{color:#b3261e;font-weight:700}</style></head><body>
+<h1>בדיקת סינון — S7F300, ‏22 החלקים + בלי kiss</h1><p id="s">בודק…</p><table id="t"></table>
+<script>const F=["p/g1.txt", "p/g2.txt", "p/g3.txt", "p/g4.txt", "p/g5.txt", "p/g6.txt", "p/g7.txt", "p/g8.txt", "p/g9.txt", "p/g10.txt", "p/g11.txt", "p/g12.txt", "p/g13.txt", "p/g14.txt", "p/g15.txt", "p/g16.txt", "p/g17.txt", "p/g18.txt", "p/g19.txt", "p/g20.txt", "p/g21.txt", "p/g22.txt", "p/g6_nokiss.txt", "p/g21_nokiss.txt"];const t=document.getElementById('t');let bad=[];
+(async()=>{for(const f of F){const tr=document.createElement('tr');let r;try{const x=await fetch(f+'?v=4',{cache:'no-store'});r=x.status;}catch(e){r='שגיאה'}
+const ok=r===200;if(!ok)bad.push(f);tr.innerHTML='<td>'+f.replace('.txt','')+'</td><td class="'+(ok?'ok':'bad')+'">'+(ok?'עבר':'נחסם ('+r+')')+'</td>';t.appendChild(tr)}
+document.getElementById('s').textContent=bad.length?('נחסמו '+bad.length+': '+bad.map(x=>x.replace('.txt','')).join(', ')):'הכול עבר';})();</script></body></html>
