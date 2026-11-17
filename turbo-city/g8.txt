@@ -1,415 +1,4 @@
-2, tl: .26, zb: .95, H: 7.65, high: true, dih: 1.2, wt: [.5, .25], kink: 0,
-    winglet: 0, prop: [.27], ttail: true, hs: .3, gear: { main: [[2.05, 1]], tire: [.45, .3], sponson: true }, doors: [.123, .86], win: [.22, .8, 18, []], liv: 'skyline',
-    src: 'ATR 72-600: אורך 27.17 מ׳, מוטה 27.05 מ׳, גובה 7.65 מ׳; כנף עליונה, זנב T ומדחפים' },
-  
-  'AC-RJ-01': { he: 'סילון אזורי', model: 'TR-75', fit: [0.9848, 0.9706], L: 31.68, WS: 26.0, fw: 3.01, fh: 3.35, wc: 4.7, tc: 1.25, sw: 5.6, nl: .1, tl: .24, zb: 1.15, H: 9.86, wz: 1.55, dih: 5, wt: [.6, .16], kink: .32,
-    winglet: 1.3, eng: [.34], ed: 1.5, elen: 1.05, hs: .38, gear: { main: [[2.6, 1]], tire: [.5, .3] }, doors: [.109, .87], win: [.2, .83, 21, [[.43, .47]]], liv: 'aurelia',
-    src: 'Embraer E175 (הבעלים 16:46, סעיף 2 — דגם אחד, כל הצורה ממנו): אורך 31.68 מ׳, מוטה 26.00 (כנף STD), גובה 9.86, גוף 3.01 × 3.35 (בועה כפולה); כנף נמוכה משוכה 23.5° עם כנפונים, שני CF34-8E מתחת לכנף, זנב רגיל עם מייצב על הגוף, 21 חלונות. לא בטוח: מפשק הגלגלים (5.2), מוטת המייצב (≈9.9)' },
-  'AC-QJ-01': { he: 'ארבע-מנועי אזורי', model: 'TQ-410', fit: [0.9946, 1], L: 31.0, WS: 26.21, fw: 3.56, wc: 5.4, tc: 1.6, sw: 4, nl: .1, tl: .22, zb: 1.0, H: 8.59, high: true, dih: -3, wt: [.6, .2], kink: 0,
-    winglet: 0, eng: [.22, .4], ed: 1.25, elen: 1.1, ttail: true, hs: .4, gear: { main: [[2.4, 1]], tire: [.5, .3], sponson: true }, doors: [.22, .86], win: [.17, .84, 26, [[.4, .46]]], liv: 'aurelia', src: 'BAe 146-300 / Avro RJ100: אורך 31.0 מ׳, מוטה 26.21 מ׳, גובה 8.59 מ׳, גוף 3.56 מ׳ (הבעלים 16:46: היה 35 × 31); כנף עליונה, 4 מנועים, זנב T' },
-  'AC-CG-01': { he: 'מטוס מטען', model: 'TF-76F', fit: [0.9876, 1], L: 54.94, WS: 47.57, fw: 5.03, wc: 8.6, tc: 2.0, sw: 12, nl: .09, tl: .22, zb: 1.6, H: 15.85, wz: 2.4, dih: 6, wt: [1.15, .28], kink: .34,
-    winglet: 0, eng: [.34], ed: 2.9, elen: 1.25, hs: .39, cargo: true, gear: { main: [[4.65, 2]], tire: [.62, .42] }, doors: [.12], liv: 'aurelia', src: 'Boeing 767-300F: אורך 54.94 מ׳, מוטה 47.57 מ׳, גובה 15.85 מ׳; כנף נמוכה משוכה 31.5°, שני מנועים מתחת לכנף, זנב רגיל, בלי חלונות נוסעים (הבעלים 18:21: לא כנף עליונה וזנב T)' },
-  'AC-HC-01': { he: 'מטוס מטען כבד', model: 'TH-40F', fit: [0.9715, 1], L: 69.1, WS: 73.3, fw: 6.4, wc: 10, tc: 3, sw: 10, nl: .07, tl: .2, zb: 1.6, H: 21.08, high: true, dih: -3, wt: [1.5, .4], kink: 0,
-    winglet: 0, eng: [.22, .46], ed: 2.8, elen: 1.1, hs: .36, cargo: true, gear: { main: [[3.4, 5]], tire: [.62, .42], sponson: true }, doors: [.1], liv: 'aurelia', src: 'Antonov An-124-100: אורך 69.1 מ׳, מוטה 73.3 מ׳, גובה 21.08 מ׳; כנף עליונה עם שיפוע כלפי מטה, 4 מנועים מתחת לכנף, זנב רגיל (הבעלים 18:21: לא T)' },
-  'AC-BJ-01': { he: 'סילון עסקים', model: 'TJ-60', fit: [0.9642, 1], L: 12.37, WS: 13.16, fw: 1.55, wc: 2.4, tc: 1.0, sw: .5, nl: .14, tl: .28, zb: .45, H: 4.09, wz: .55, dih: 4, wt: [.32, .11], kink: .25, wingU: .096,
-    winglet: 0, reng: { at: .72, ed: .58, elen: 1.75 }, ttail: true, hs: .36, gear: { main: [[1.6, 1]], tire: [.3, .17] }, doors: [.2], win: [.31, .5, 4, []], liv: 'aurelia',
-    src: 'Cessna Citation Mustang 510 (Textron Aviation): אורך 12.37 מ׳, מוטה 13.16 מ׳, גובה 4.09 מ׳, רוחב התא 1.40 מ׳ מבפנים; שני מנועים על הגוף מאחור' },
-  'AC-PR-01': { he: 'מטוס קל חד-מנועי', model: 'TA-12', fit: [1, 1], L: 8.28, WS: 11.0, fw: 1.12, wc: 1.63, tc: 1.12, sw: 0, nl: .16, tl: .32, zb: .62, H: 2.72, high: true, dih: 1.7, wt: [.2, .13], kink: .5, wingU: .24,
-    winglet: 0, nprop: { r: .965 }, strut: true, hs: .31, gear: { main: [[1.27, 1]], tire: [.24, .14] }, doors: [], win: null, liv: 'aurelia',
-    src: 'Cessna 172S (Textron Aviation): אורך 8.28 מ׳, מוטה 11.00 מ׳, גובה 2.72 מ׳, רוחב התא 1.0 מ׳ מבפנים, מדחף 1.93 מ׳; כנף גבוהה עם תומכות' },
-  'AC-LT-01': { he: 'דו-מנועי קל', model: 'TB-58', fit: [0.9934, 1], L: 9.09, WS: 11.53, fw: 1.22, wc: 2.13, tc: .95, sw: .45, nl: .2, tl: .32, zb: .55, H: 2.97, wz: .62, dih: 6, wt: [.28, .12], kink: 0, wingU: .148,
-    winglet: 0, prop: [.28], pr: .99, pn: .34, hs: .42, gear: { main: [[1.46, 1]], tire: [.3, .17] }, doors: [], win: null, liv: 'aurelia',
-    src: 'Beechcraft Baron 58 (Textron Aviation): אורך 9.09 מ׳, מוטה 11.53 מ׳, גובה 2.97 מ׳, מדחפים 1.98 מ׳, רוחב מסלול 2.92 מ׳; כנף נמוכה, שני מנועים בכנף' },
-  'AC-CN-01': { he: 'מטוס קנרד עם מדחפים דוחפים', model: 'TV-180', fit: [1, 1], L: 14.41, WS: 14.03, fw: 1.95, wc: 1.65, tc: .7, sw: .35, nl: .16, tl: .3, zb: .6, H: 3.97, wz: 1.2, dih: 2, wt: [.22, .1], kink: 0, wingU: -.069,
-    winglet: 0, prop: [.27], pusher: true, pr: 1.08, pn: .34, canard: { u: .36, span: 1.9, chord: .65 }, ttail: true, hs: .3, gear: { main: [[1.4, 1]], tire: [.3, .18] }, doors: [.22], win: [.33, .55, 6, []], liv: 'aurelia',
-    src: 'Piaggio P.180 Avanti II (Piaggio Aerospace): אורך 14.41 מ׳, מוטה 14.03 מ׳, גובה 3.97 מ׳, מדחפים דוחפים 2.16 מ׳; כנף קדמית קטנה (canard), כנף ראשית מאחור וזנב T' },
-  'AC-AM-01': { he: 'מטוס אמפיבי', model: 'TS-12', fit: [0.9714, 1], L: 7.01, WS: 10.61, fw: 1.3, wc: 1.5, tc: 1.05, sw: .1, nl: .2, tl: .35, zb: .42, H: 2.47, high: true, dih: 1, wt: [.2, .12], kink: 0, wingU: .154,
-    winglet: 0, cpush: { r: .84, at: .64, z: .6 }, seawing: { at: .3, span: .85, chord: 1.4, z: -.32 }, hull: true, ttail: true, hs: .31, gear: { main: [[.95, 1]], tire: [.22, .13] }, doors: [], win: null, liv: 'aurelia',
-    src: 'ICON A5 (ICON Aircraft, iconaircraft.com/a5): אורך 7.01 מ׳, מוטה 10.61 מ׳, גובה 2.47 מ׳ (הבעלים 18:21); גוף סירה, כנף גבוהה, מדחף דוחף אחד מאחורי תא הטייס, "כנפי ים" בצדי הגוף וזנב T' },
-  'AC-TB-01': { he: 'מטען קטן דו-מנועי', model: 'TK-20F', fit: [0.952, 1], L: 16.8, WS: 22.02, fw: 2.1, wc: 2.0, tc: 1.3, sw: .2, nl: .1, tl: .3, zb: .9, H: 6.3, high: true, dih: 2, wt: [.3, .18], kink: .4, wingU: .105, box: 4.5,
-    winglet: 0, prop: [.32], pr: 1.4, pn: .45, strut: true, cargo: true, cargoAt: .6, ttail: true, hs: .3, gear: { main: [[1.7, 1]], tire: [.42, .25], sponson: true }, doors: [], win: null, liv: 'aurelia',
-    src: 'Cessna 408 SkyCourier (Textron Aviation) במקום Skyvan (ברירת מחדל של המתאם 16:15, לאישור הבעלים): אורך 16.80 מ׳, מוטה 22.02 מ׳, גובה 6.30 מ׳ (Wikipedia); גוף קופסתי, כנף גבוהה עם תומכות, שני טורבו-פרופ, כן נסע קבוע, זנב אחד עם מייצב בראשו (התמונות של הבעלים 16:36); 3 מכולות LD3. לא בטוח: רוחב הגוף (2.1)' }
-};
-
-
-
-
-function fusShape(t) {
-  const L = t.L, R = t.fw / 2, Rz = (t.fh || t.fw) / 2, zc = t.zb + Rz, nl = t.nl * L, tlv = t.tl * L * 1.3, zTip = zc - .12 * Rz, NR = NOSE[t.id],   
-  xN = NR ? NR.x[NR.x.length - 1] : 0;
-  
-  
-  const At = 1.9 * nl, Ab = 1.0 * nl, As = 1.6 * nl, aT = L - tlv, ze = zc + .4 * Rz, re = .15 * R;
-  const sq = (x, A, e) => x >= A ? 1 : Math.pow(Math.max(0, 1 - Math.pow(1 - x / A, e || 2.3)), .5);
-  const hr = t.hr || [.2, 2.2], hump = a => !t.hump ? 0 : t.hump * sm((a - hr[0] * nl) / (hr[1] * nl)) * (1 - sm((a - .3 * L) / (.1 * L)));
-  const f = a => {
-    let top, bot, rs;
-    if (NR && a < xN) { top = zc + tab(NR.x, NR.top, a); bot = zc + tab(NR.x, NR.bot, a); rs = tab(NR.x, NR.hw, a); if (a < .02) { rs = Math.max(rs, .0) } }   
-    else if (a < aT) { top = zTip + (zc + Rz - zTip) * sq(a, At, 2.1); bot = zTip - (zTip - (zc - Rz)) * sq(a, Ab, 2.4); rs = R * sq(a, As, 1.75) }
-    else { const s = (a - aT) / (L - aT); top = zc + Rz + (ze + re - (zc + Rz)) * Math.pow(s, 1.8); bot = zc - Rz + (ze - re - (zc - Rz)) * Math.pow(s, .8); rs = R + (re - R) * Math.pow(s, 1.3) }
-    return { zm: (top + bot) / 2, rv: (top - bot) / 2, rs, hump: hump(a) };
-  };
-  
-  
-  if (t.hump && NR && NR.cab) f.hgW = 1;
-  if (NR && NR.cab && NR.cab.q) { const zs = zc + NR.cab.zs; let aC = 0; while (aC < L * .5) { const r = f(aC); if (r.zm + r.rv + r.hump >= zs) break; aC += .02 }
-    const q0 = NR.cab.q; f.q = a => lerp(1, lerp(q0, 1, sm((a - aC - 2.2) / 2)), sm((a - aC + 1.1) / .9)) }
-  if (t.box) { const n = t.box, nl2 = nl * 1.6; f.box = a => a < nl2 ? 2 + (n - 2) * sm(a / nl2) : a > L - tlv * .7 ? 2 + (n - 2) * (1 - sm((a - (L - tlv * .7)) / (tlv * .7))) : n }   
-  f.R = R; f.Rz = Rz; f.zc = zc; f.nl = nl; f.At = At; f.As = As; f.aT = aT; f.aC = Math.max(At, Ab, As, xN, t.hump ? .42 * L : 0); f.L = L; f.NR = NR;
-  return f;
-}
-const hg = s => sm((s - .4) / .6);   
-const hgW = s => sm((s - .12) / .7);   
-function fusP(F, yN, a, th) { const r = F(a), q = F.q ? F.q(a) : 1; let s = Math.sin(th), c = Math.cos(th);
-  if (F.box) { const e = 2 / F.box(a); c = Math.sign(c) * Math.pow(Math.abs(c), e); s = Math.sign(s) * Math.pow(Math.abs(s), e) }   
-  return [r.rs * c, yN - a, r.zm + r.rv * (s > 0 && q !== 1 ? Math.pow(s, q) : s) + (s > 0 ? r.hump * (F.hgW ? hgW(s) : hg(s)) : 0)] }
-function fusN(F, yN, a, th) {   
-  const e = .004, p = fusP(F, yN, a, th), pa = fusP(F, yN, a + .05, th), pt = fusP(F, yN, a, th + e);
-  let n = nrm(crs(sub(pt, p), sub(pa, p))); const r = F(a); if (dot(n, [p[0], 0, p[2] - r.zm]) < 0) n = [-n[0], -n[1], -n[2]]; return n;
-}
-
-
-function nosePt(F, yN, phi, z, sd) {
-  const at = a => { const r = F(a); let s = (z - r.zm) / (r.rv || 1e-6); if (s > 1 || s < -1) return null; const th = Math.asin(s), x = r.rs * Math.cos(th); return { a, th, ph: Math.atan2(x, F.As - a) / D2R } };
-  const A1 = F.As * 1.8; let best = null, prev = null;
-  for (let i = 0; i <= 240; i++) { const a = A1 * i / 240, q = at(a); if (!q) { prev = null; continue }
-    if (prev && (prev.ph - phi) * (q.ph - phi) <= 0) { let lo = prev, hi = q; for (let k = 0; k < 24; k++) { const m = at((lo.a + hi.a) / 2); if (!m) break; if ((lo.ph - phi) * (m.ph - phi) <= 0) hi = m; else lo = m } best = lo; break }
-    prev = q }
-  if (!best) return null;
-  const th = sd > 0 ? best.th : Math.PI - best.th;
-  return { p: fusP(F, yN, best.a, th), a: best.a, th };
-}
-
-function liveryFns(t, lv, F) {
-  const L = t.L, nl = F.nl, tl = t.tl * L, tail0 = L - 1.35 * tl;
-  const tailAt = th => tail0 + .14 * tl * Math.max(0, Math.sin(th));   
-  const w = lv.w, bA0 = 1.1 * nl, bP = (tail0 - bA0) / 8, beak = w === 'allover' ? mixC(lv.s, lv.b, .42) : lv.s;
-  
-  
-  
-  
-  const FF = (G.FFLIV || (G.FFLIV = { on: true })).on !== false, R = t.fw / 2, D = lv.d || [lv.s, lv.t, lv.m];
-  const DOTS = []; if (FF && w === 'dots') { let i = 0; for (let a = .6 * nl; a < tail0 - .2 * R; a += .9 * R) for (let k = 0; k < 8; k++) { const r = 1.3 * R * (.14 + .08 * ((i * 7) % 3)), da = ((i * 13) % 5 - 2) * R * .06; DOTS.push({ a: a + da, th: (-20 + 32 * k) * D2R, r: Math.max(.22, r), c: D[i % D.length] }); i++ } }
-  const dotsAt = (() => { const M = new Map(); return th => { let q = M.get(th); if (q) return q; q = []; for (const d of DOTS) { let e = th - d.th; e = Math.atan2(Math.sin(e), Math.cos(e)); const v = R * e / d.r; if (Math.abs(v) < 1) q.push({ d, ha: d.r * Math.sqrt(1 - v * v) }) } M.set(th, q); return q } })();
-  const spS = a => -20 + 110 * sm((a - .12 * L) / (.54 * L));   
-  const spA = d => { if (d <= -20) return .12 * L; if (d >= 90) return .66 * L; let lo = .12 * L, hi = .66 * L; for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (spS(m) < d) lo = m; else hi = m } return (lo + hi) / 2 };
-  const seam = th => .47 * L - .05 * L * Math.cos(th);   
-  const col = (a, th) => {
-    const s = Math.sin(th), c = Math.abs(Math.cos(th)), deg = Math.asin(cl(s, -1, 1)) / D2R;
-    if (a > tailAt(th)) return lv.t;
-    if (FF) {
-      if (w === 'dots') { for (const q of dotsAt(th)) if (Math.abs(a - q.d.a) < q.ha) return q.d.c; if (s < -.5) return lv.u; return lv.b }
-      if (w === 'split') { const z = seam(th); if (a > z) return lv.t; if (a > z - .28 * R && a < z - .12 * R) return lv.s; if (s < -.5) return lv.u; return lv.b }
-      if (w === 'swoosh') { if (a > .12 * L) { const b = spS(a); if (deg < b) return lv.s; if (deg < b + 7) return lv.m } if (s < -.5) return lv.u; return lv.b }
-      if (w === 'spine') { if (a > .5 * nl && s > 0 && c < .46) return lv.s; if (a > .5 * nl && s > 0 && c < .54) return lv.m; if (deg > 5 && deg < 9) return lv.s; if (s < -.45) return lv.u; return lv.b }
-    }
-    if (w === 'allover') { if (a < .09 * nl) return beak;   
-      if (deg > 4 && deg < 8) return lv.s; if (s < -.45) return lv.u; return lv.b }
-    if (w === 'nose') { const nb = 1.15 * nl - .12 * nl * Math.max(0, s); if (a < nb) return lv.s; if (deg > 5 && deg < 8) return lv.s; if (s < -.5) return lv.u; return lv.b }
-    if (w === 'spine') { if (a > .8 * nl && c < .36 && s > 0) return lv.s; if (deg > 5 && deg < 9) return lv.s; if (s < -.45) return lv.u; return lv.b }
-    
-    
-    if (w === 'bands') { const u = a - bA0 - .9 * Math.cos(th) * t.fw / 2; if (a > bA0 && a < tail0 - .2 * bP && u > 0 && (u % bP) < .42 * bP) return lv.s; if (s < -.5) return lv.u; return lv.b }   
-    if (w === 'split') { if (a > .9 * nl && s < -.08) return lv.s; return lv.b }
-    if (w === 'swoosh') { const q = a / L, d0 = -35 + 85 * q; if (a > nl && deg > d0 && deg < d0 + 10) return lv.s; if (s < -.5) return lv.u; return lv.b }
-    
-    if (a > 1.3 * nl && deg > 5 && deg < 13) return lv.s; if (a > 1.6 * nl && deg > 29 && deg < 31.5) return lv.s; if (s < -.5) return lv.u; return lv.b;
-  };
-  const breaks = th => { const s = Math.sin(th), B = [tailAt(th)];
-    if (FF && w === 'dots') { for (const q of dotsAt(th)) B.push(q.d.a - q.ha, q.d.a + q.ha); return B }
-    if (FF && w === 'split') { const z = seam(th); B.push(z, z - .28 * R, z - .12 * R); return B }
-    if (FF && w === 'swoosh') { const d = Math.asin(cl(s, -1, 1)) / D2R; B.push(.12 * L, spA(d), spA(d - 7)); return B }
-    if (FF && w === 'spine') { B.push(.5 * nl); return B }
-    if (w === 'allover') B.push(.09 * nl); if (w === 'nose') B.push(1.15 * nl - .12 * nl * Math.max(0, s)); if (w === 'spine') B.push(.8 * nl); if (w === 'classic') B.push(1.3 * nl, 1.6 * nl);
-    if (w === 'bands') { const o = .9 * Math.cos(th) * t.fw / 2; for (let k = 0; k < 9; k++) B.push(bA0 + o + k * bP, bA0 + o + (k + .42) * bP) }
-    return B };
-  return { col, breaks, tailAt };
-}
-
-
-
-
-function face(P, c, m, o) { return Object.assign({ P, c, m: m || 'paint' }, o || {}) }
-const orient = (f, d) => { if (dot(faceN(f.P), d) < 0) f.P.reverse(); return f };
-const faceN = P => { let n = [0, 0, 0]; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; n[0] += (p[1] - q[1]) * (p[2] + q[2]); n[1] += (p[2] - q[2]) * (p[0] + q[0]); n[2] += (p[0] - q[0]) * (p[1] + q[1]) } return nrm(n) };
-
-
-function buildFuselage(t, lv, yN, F, LF, opt) {
-  const faces = [], N = opt && opt.lod ? 40 : 72, L = t.L, base = [];
-  const nA = 18, step = a => a < F.aC ? Math.max(.12, F.nl / 12) : a > F.aT ? Math.max(.15, (L - F.aT) / 16) : 1.2;
-  for (let a = 0; a < L - 1e-6;) { base.push(a); a = Math.min(L, a + step(a)) } base.push(L);
-  for (let k = 0; k < N; k++) {
-    const t0 = -Math.PI / 2 + k * TAU / N, t1 = t0 + TAU / N, tm = (t0 + t1) / 2;
-    const A = base.concat(LF.breaks(tm).filter(x => x > 0 && x < L)).sort((p, q) => p - q);
-    let run = null;
-    const flush = () => { if (!run) return; const P = [fusP(F, yN, run.a0, t0), fusP(F, yN, run.a0, t1), fusP(F, yN, run.a1, t1), fusP(F, yN, run.a1, t0)], am = (run.a0 + run.a1) / 2;
-      faces.push(face(P, run.c, 'paint', { g: [fusN(F, yN, am, t0), fusN(F, yN, am, t1)], g4: [fusN(F, yN, run.a0, t0), fusN(F, yN, run.a0, t1), fusN(F, yN, run.a1, t1), fusN(F, yN, run.a1, t0)], fus: 1 })); run = null };   
-    for (let i = 0; i + 1 < A.length; i++) {
-      const a0 = A[i], a1 = A[i + 1]; if (a1 - a0 < 1e-4) continue;
-      const c = LF.col((a0 + a1) / 2, tm), flat = a0 >= F.aC - 1e-6 && a1 <= F.aT + 1e-6;
-      if (run && run.flat && flat && run.c === c && Math.abs(run.a1 - a0) < 1e-6) { run.a1 = a1; continue }
-      flush(); run = { a0, a1, c, flat };
-    }
-    flush();
-  }
-  return faces;
-}
-
-
-function buildRevolve(x0, z0, rings, col, mat, N) {
-  const faces = []; N = N || 40;
-  for (let k = 0; k < N; k++) {
-    const t0 = k * TAU / N, t1 = t0 + TAU / N;
-    for (let i = 0; i + 1 < rings.length; i++) {
-      const [ya, ra, ca] = rings[i], [yb, rb] = rings[i + 1];
-      const P = [[x0 + ra * Math.cos(t0), ya, z0 + ra * Math.sin(t0)], [x0 + ra * Math.cos(t1), ya, z0 + ra * Math.sin(t1)], [x0 + rb * Math.cos(t1), yb, z0 + rb * Math.sin(t1)], [x0 + rb * Math.cos(t0), yb, z0 + rb * Math.sin(t0)]];
-      const rp = (rb - ra) / ((yb - ya) || 1e-6), nn = th => nrm([Math.cos(th), -rp, Math.sin(th)]);
-      faces.push(face(P, ca || col, mat, { g: [nn(t0), nn(t1)] }));
-    }
-  }
-  return faces;
-}
-
-function disc(x0, y, z0, r, col, mat, o) { const P = []; for (let i = 0; i < 28; i++) { const t = i / 28 * TAU; P.push([x0 + r * Math.cos(t), y, z0 + r * Math.sin(t)]) } return face(P, col, mat, Object.assign({ n: [0, 1, 0] }, o || {})) }
-
-
-const CH = [0, .03, .12, .3, .55, .8, 1], TOP = [0, .3, .44, .5, .42, .27, .05], BOT = [0, .26, .36, .38, .3, .17, .03];
-function buildPlate(st, col, o) {
-  o = o || {}; const faces = [];
-  const pt = (s, i, up) => { const y = lerp(s.yLE, s.yTE, CH[i]); return [s.x, y, s.z + (up ? TOP[i] : -BOT[i]) * s.t] };
-  for (let j = 0; j + 1 < st.length; j++) {
-    const A = st[j], B = st[j + 1];
-    for (let i = 0; i + 1 < CH.length; i++) {
-      faces.push(orient(face([pt(A, i, 1), pt(B, i, 1), pt(B, i + 1, 1), pt(A, i + 1, 1)], col, o.mat || 'paint'), [0, i === 0 ? .5 : 0, 1]));
-      faces.push(orient(face([pt(A, i + 1, 0), pt(B, i + 1, 0), pt(B, i, 0), pt(A, i, 0)], sh(col, -.12), o.mat || 'paint'), [0, i === 0 ? .5 : 0, -1]));
-    }
-  }
-  
-  const cap = s => { const U = [], D = []; for (let i = 0; i < CH.length; i++) { U.push(pt(s, i, 1)); D.push(pt(s, i, 0)) } return U.concat(D.reverse()) };
-  faces.push(face(cap(st[st.length - 1]), sh(col, -.06), 'paint', { both: false }));
-  return faces;
-}
-
-function buildFin(st, col) {
-  const faces = [];
-  const pt = (s, i, side) => [side * (side > 0 ? TOP[i] : BOT[i]) * s.t * (BOT[i] > 0 || TOP[i] > 0 ? 1 : 1), lerp(s.yLE, s.yTE, CH[i]), s.z];
-  const half = (s, i, side) => [side * .5 * s.t * (i === 0 ? 0 : [0, .55, .82, .97, 1, .82, .2][i]), lerp(s.yLE, s.yTE, CH[i]), s.z];
-  for (let j = 0; j + 1 < st.length; j++) {
-    const A = st[j], B = st[j + 1];
-    for (let i = 0; i + 1 < CH.length; i++) for (const sd of [1, -1]) {
-      faces.push(orient(face([half(A, i, sd), half(A, i + 1, sd), half(B, i + 1, sd), half(B, i, sd)], col, 'paint'), [sd, i === 0 ? .3 : 0, 0]));
-    }
-  }
-  const T = st[st.length - 1], U = [], D = []; for (let i = 0; i < CH.length; i++) { U.push(half(T, i, 1)); D.push(half(T, i, -1)) }
-  faces.push(orient(face(U.concat(D.reverse()), sh(col, .06), 'paint'), [0, 0, 1]));
-  void pt; return faces;
-}
-
-function boxFaces(plan, zb, zt, cols, o) {
-  o = o || {}; const faces = [], n = plan.length, Zb = i => Array.isArray(zb) ? zb[i] : zb, Zt = i => Array.isArray(zt) ? zt[i] : zt;
-  
-  let ar = 0; for (let i = 0; i < n; i++) { const p = plan[i], q = plan[(i + 1) % n]; ar += p[0] * q[1] - q[0] * p[1] }
-  const pl = ar > 0 ? plan : plan.slice().reverse(), zbb = ar > 0 ? i => Zb(i) : i => Zb(n - 1 - i), ztt = ar > 0 ? i => Zt(i) : i => Zt(n - 1 - i);
-  for (let i = 0; i < n; i++) { const j = (i + 1) % n, p = pl[i], q = pl[j];
-    faces.push(face([[p[0], p[1], zbb(i)], [q[0], q[1], zbb(j)], [q[0], q[1], ztt(j)], [p[0], p[1], ztt(i)]], cols.side || cols.top, o.mat || 'matte', { side: i })) }
-  faces.push(face(pl.map((p, i) => [p[0], p[1], ztt(i)]), cols.top, o.mat || 'matte', { top: 1 }));
-  return faces;
-}
-
-function vcyl(cx, cy, r, z0, z1, col, mat, N) {
-  const faces = []; N = N || 24;
-  for (let i = 0; i < N; i++) { const a = i / N * TAU, b = (i + 1) / N * TAU;
-    faces.push(face([[cx + r * Math.cos(a), cy + r * Math.sin(a), z0], [cx + r * Math.cos(b), cy + r * Math.sin(b), z0], [cx + r * Math.cos(b), cy + r * Math.sin(b), z1], [cx + r * Math.cos(a), cy + r * Math.sin(a), z1]], col, mat, { g: [[Math.cos(a), Math.sin(a), 0], [Math.cos(b), Math.sin(b), 0]] })) }
-  const T = []; for (let i = 0; i < N; i++) { const a = i / N * TAU; T.push([cx + r * Math.cos(a), cy + r * Math.sin(a), z1]) }
-  faces.push(face(T, sh(col, .05), mat, { n: [0, 0, 1] }));
-  return faces;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-function cabOf(t, NR, F) {
-  
-  
-  
-  
-  
-  const R = F.R, C = NR && NR.cab ? NR.cab : {};
-  return { zs: C.zs != null ? C.zs : .62 * R, h: C.h != null ? C.h : .22 * R, vd: C.vd != null ? C.vd : .075 * R, lean: C.lean != null ? C.lean : .1 * R, ls: C.ls != null ? C.ls : .28 * R, lr: C.lr != null ? C.lr : .2 * R, sb: C.sb != null ? C.sb : .4, n: C.n || 2, pil: C.pil };
-}
-function cockpit3D(F, yN, t, NR, decor) {
-  const R = F.R, zc = F.zc, C = cabOf(t, NR, F), sc = NR && NR.cab ? 1 : R / 2, post = .022 * sc, pil = C.pil || .028 * sc, pad = .02 * sc;   
-  const crown = a => { const r = F(a); return r.zm + r.rv + r.hump - zc };
-  const cross = z => { let a = 0; while (a < F.L * .5 && crown(a) < z) a += .05; let lo = Math.max(0, a - .05), hi = a; for (let k = 0; k < 20; k++) { const m = (lo + hi) / 2; if (crown(m) < z) lo = m; else hi = m } return hi };
-  const aC = cross(C.zs), aT = cross(C.zs + C.h), zS = C.zs, zH = C.zs + C.h;
-  
-  const PB = []; { let b = aC + C.vd; PB.push([b, b + C.lean]); for (let k = 1; k <= C.n; k++) { b += k === 1 ? C.ls : C.lr; PB.push([b, b + C.lean * (1 + .15 * k)]) } }
-  const b1 = PB[0][0], b2 = PB[1][0], b3 = PB[PB.length - 1][0], aw = aT;
-  const zSill = () => zS;
-  const thAt = (a, z) => { const r = F(a), Z = zc + z, zt = r.zm + r.rv + r.hump; if (Z >= zt) return Math.PI / 2; if (Z <= r.zm - r.rv) return -Math.PI / 2;
-    const q = F.q ? F.q(a) : 1; let lo = -1, hi = 1; for (let k = 0; k < 22; k++) { const m = (lo + hi) / 2, zz = r.zm + r.rv * (m > 0 && q !== 1 ? Math.pow(m, q) : m) + (m > 0 ? r.hump * (F.hgW ? hgW(m) : hg(m)) : 0); if (zz < Z) lo = m; else hi = m } return Math.asin((lo + hi) / 2) };
-  const pt = (a, z, sd, xMin) => { let th = thAt(a, z); if (xMin) { const r = F(a), tm = Math.acos(Math.min(1, xMin / Math.max(1e-3, r.rs))); th = Math.min(th, tm) } const T = sd > 0 ? th : Math.PI - th; return { p: fusP(F, yN, a, T), n: fusN(F, yN, a, T) } };
-  
-  const pane = k => { const [p0, q0] = k === 0 ? [aC, aT] : PB[k - 1], [p1, q1] = PB[k], zb = k === 0 ? zS : zS + C.sb * C.h, zt = k === C.n ? zH - .12 * C.h : zH;
-    return { B: u => [lerp(p0, p1, u), zb], T: u => [lerp(q0, q1, u), zt], k } };
-  const GL = ['#2a4256', '#57748c', '#c4d9e8'], info = { panes: [], aRef: aC, bend: 0, cab: { aC, aw, PB, zs: C.zs, sl: 0, h: C.h } };
-  for (const sd of [1, -1]) {
-    const frame = [], glass = [], extra = [];
-    for (let k = 0; k <= C.n; k++) {
-      const P = pane(k), len = Math.hypot(P.B(1)[0] - P.B(0)[0], .5 * (P.T(1)[0] - P.T(0)[0])) || 1, n = k === 0 ? 8 : 5;
-      for (const grow of [true, false]) {
-        const du0 = grow ? 0 : (k === 0 ? 0 : pil / len), du1 = grow ? -.01 : pil / len, dwb = grow ? -pad : pil * .8, dwt = grow ? 0 : pil * .8 + pad, xMin = k === 0 && !grow ? post : 0;
-        const at = (u, w) => { const B = P.B(u), T = P.T(u), hb = (T[1] - B[1]) || 1, wb = dwb / hb, wt = 1 - dwt / hb, W = lerp(wb, wt, w), a = lerp(B[0], T[0], W);
-          if (grow && k === 0 && u <= 1e-9) { const p = fusP(F, yN, a, Math.PI / 2); return { p, n: fusN(F, yN, a, Math.PI / 2) } }   
-          return pt(a, lerp(B[1], T[1], W), sd, xMin) };
-        const U = i => lerp(du0, 1 - du1, i / n), outl = [];
-        const nm = at(.5, .5).n;
-        for (let i = 0; i < n; i++) { const u0 = U(i), u1 = U(i + 1), um = (u0 + u1) / 2, Q = [at(u0, 0), at(um, 0), at(u1, 0), at(u1, 1), at(um, 1), at(u0, 1)], c = at(um, .5);
-          let PP = Q.map(q => q.p); if (dot(faceN(PP), c.n) < 0) PP = PP.reverse();
-          if (grow) frame.push(face(PP, '#28323b', 'matte', { n: c.n, noSeam: 1 }));
-          else glass.push(face(PP, GL[1], 'glass', { g: [nm, nm], grad: GL, gax: [at(um, 0).p, at(um, 1).p], noSeam: 1 })) }
-        if (!grow) { for (let i = 0; i <= n; i++) outl.push(at(U(i), 0)); for (let j = 1; j <= 4; j++) outl.push(at(U(n), j / 4)); for (let i = n; i >= 0; i--) outl.push(at(U(i), 1)); for (let j = 3; j >= 1; j--) outl.push(at(U(0), j / 4));
-          info.panes.push({ sd, k, far: false, P: outl.map(q => q.p), N: outl.map(q => q.n), AZ: [P.B(0), P.B(1), P.T(1), P.T(0)] }) }
-        if (!grow && k === 0) for (const f of [.3, .72]) { const A = at(f, .02), Bq = at(f - .08, .25); extra.push({ line: 1, P: [A.p, Bq.p], c: '#1b2229', w: .022 * sc, n: A.n }) }
-        
-        if (!grow) { const S = [at(.16, .08), at(.34, .08), at(.56, .94), at(.38, .94)]; let SP = S.map(q => q.p.map((v, i) => v + q.n[i] * .004)); const cn = at(.36, .5).n; if (dot(faceN(SP), cn) < 0) SP = SP.reverse();
-          extra.push(face(SP, '#ffffff', 'matte', { n: cn, a: .2, noSeam: 1 })) }
-      }
-    }
-    decor.push(...frame, ...glass, ...extra);
-  }
-  return info;
-}
-function bandFor(m, h) {
-  const I = m.info, dec = [], BD = cockpit3D(I.F, I.yN, I.t, NOSE[I.id], dec), body = m.pieces.find(p => p.kind === 'body');
-  const pieces = m.pieces.map(p => p !== body ? p : Object.assign({}, p, { decor: p.decor.slice(0, I.bandAt).concat(dec, p.decor.slice(I.bandAt)) }));
-  return { pieces, info: Object.assign({}, I, { band: BD }) };
-}
-
-
-
-
-const FIT = {};
-function fitOf(id, livKey, opt, t0) { const m = buildRaw(id, livKey, Object.assign({}, opt, { lod: 1 }), t0); let xa = 1e9, xb = -1e9, ya = 1e9, yb = -1e9;
-  for (const p of m.pieces) { for (const f of p.faces || []) for (const q of f.P) { xa = Math.min(xa, q[0]); xb = Math.max(xb, q[0]); ya = Math.min(ya, q[1]); yb = Math.max(yb, q[1]) } }
-  const kL = t0.L / Math.max(.1, yb - ya), kW = t0.WS / Math.max(.1, xb - xa);
-  return FIT[id] = { kL: Math.abs(kL - 1) < .002 ? 1 : Math.min(1.05, kL), kW: Math.abs(kW - 1) < .002 ? 1 : Math.min(1.05, kW) } }
-function build(id, livKey, opt) {
-  opt = opt || {}; const t0 = TYPES[id]; if (!t0) throw new Error('A34: unknown type ' + id); t0.id = id;
-  const f = opt.raw ? { kL: 1, kW: 1 } : t0.fit ? { kL: t0.fit[0], kW: t0.fit[1] } : FIT[id] || fitOf(id, livKey, opt, t0);   
-  return buildRaw(id, livKey, opt, f.kL === 1 && f.kW === 1 ? t0 : Object.assign({}, t0, { L: t0.L * f.kL, WS: t0.WS * f.kW, Lr: t0.L, WSr: t0.WS })) }
-function buildRaw(id, livKey, opt, t) {
-  opt = opt || {};
-  const lv = livKey && typeof livKey === 'object' ? livKey : LIV[livKey || t.liv], L = t.L, R = t.fw / 2, HS = t.WS / 2, yN = .17 * L, yC = -.33 * L, x0 = .06 * L, TF = t.boom ? Object.assign({}, t, { L: t.L * t.boom.pod }) : t, F = fusShape(TF), LF = liveryFns(TF, lv, F), NRV = opt.lod ? 24 : 44;
-  const ofU = u => yC + u * L;   
-  const pieces = [];
-  const piece = (kind, faces, extra) => { const p = Object.assign({ kind, faces, decor: [] }, extra || {}); pieces.push(p); return p };
-  const topAt = a => { const r = F(a); return r.zm + r.rv + r.hump };
-  
-  const body = buildFuselage(TF, lv, yN, F, LF, opt);
-  const decor = [];
-  
-  const bandAt = decor.length, BD = opt.noBand ? null : cockpit3D(F, yN, t, NOSE[id], decor);   
-  
-  { const nl = F.nl, a0 = .12 * nl, a1 = Math.min(F.aC * .55, 1.1 * nl), P = [];
-    for (let i = 0; i <= 8; i++) P.push(fusP(F, yN, lerp(a0, a1, i / 8), 101 * D2R)); for (let i = 8; i >= 0; i--) P.push(fusP(F, yN, lerp(a0, a1, i / 8), 118 * D2R));
-    decor.push(face(P.map(p => [p[0], p[1], p[2] + .01]), '#ffffff', 'matte', { n: [0, 0, 1], a: .16, noSeam: 1 })) }
-  
-  { const NR = NOSE[id], a = NR ? NR.door : (t.doors && t.doors[0] || .2) * L, P = [], W = [];
-    for (const d of [4, 14, 24, 34]) P.push(fusP(F, yN, a - .5, d * D2R)); for (const d of [34, 24, 14, 4]) P.push(fusP(F, yN, a + .5, d * D2R));
-    decor.push(face(P.map(p => [p[0], p[1], p[2] + .01]), '#000000', 'matte', { n: fusN(F, yN, a, 19 * D2R), a: .07, noSeam: 1 }));
-    decor.push({ line: 1, P: P.concat([P[0]]).map(p => [p[0], p[1], p[2] + .015]), c: 'rgba(20,30,40,.75)', w: .07 });
-    for (const [d, da] of [[24, -.18], [24, .18], [30, .18], [30, -.18]]) W.push(fusP(F, yN, a + da, d * D2R));
-    decor.push(face(W.map(p => [p[0], p[1], p[2] + .02]), '#22384e', 'glass', { n: fusN(F, yN, a, 27 * D2R) })) }
-  
-  { const P = []; for (let d = 8; d <= 172; d += 8) P.push(fusP(F, yN, .40 * F.nl - .05 * F.nl * Math.abs(Math.cos(d * D2R)), d * D2R).map((v, i) => i === 2 ? v + .015 : v)); decor.push({ line: 1, P, c: 'rgba(40,52,64,.24)', w: .03 }) }
-  
-  if (t.cargo) { const a = (t.cargoAt || .16) * L, P = []; for (const d of [8, 40, 62]) P.push(fusP(F, yN, a - 1.8, d * D2R)); for (const d of [62, 40, 8]) P.push(fusP(F, yN, a + 1.8, d * D2R)); decor.push({ line: 1, P: P.concat([P[0]]), c: 'rgba(28,38,50,.65)', w: .08 }) }   
-  if (t.win) { const [w0, w1, n, skip] = t.win, ww = Math.min(.3, (w1 - w0) * L / n * .5);
-    for (let i = 0; i < n; i++) { const u = w0 + (w1 - w0) * i / (n - 1); if (skip.some(([p, q]) => u > p && u < q)) continue; const a = u * L;
-      for (const [d0, d1] of [[17, 26], [154, 163]]) decor.push(face([fusP(F, yN, a - ww / 2, d0 * D2R), fusP(F, yN, a + ww / 2, d0 * D2R), fusP(F, yN, a + ww / 2, d1 * D2R), fusP(F, yN, a - ww / 2, d1 * D2R)], '#22384e', 'glass', { n: fusN(F, yN, a, (d0 + d1) / 2 * D2R) })) } }
-  
-  
-  
-  if (t.hump && t.win && BD) { const [w0, w1, n] = t.win, pitch = (w1 - w0) * L / (n - 1), ww = Math.min(.3, pitch * .5), hh = .47;
-    let aE = BD.cab.PB[2][0]; while (aE < L * .5 && F(aE).hump < .97 * t.hump) aE += .05; while (aE < L * .5 && F(aE).hump >= .97 * t.hump) aE += .05;   
-    const a0 = BD.cab.PB[2][0] + 1.0, a1 = aE - .7, nU = Math.max(0, Math.floor((a1 - a0) / pitch) + 1);
-    const thAt = (a, z) => { let lo = 0, hi = Math.PI / 2; for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (fusP(F, yN, a, m)[2] < z) lo = m; else hi = m } return (lo + hi) / 2 };
-    for (let i = 0; i < nU; i++) { const a = a0 + i * pitch, zt = topAt(a), tc = thAt(a, zt - 1.1), d = Math.hypot(...sub(fusP(F, yN, a, tc + .01), fusP(F, yN, a, tc))) / .01, dt = hh / 2 / Math.max(.2, d);
-      for (const sd of [1, -1]) { const th = v => sd > 0 ? v : Math.PI - v, Q = [fusP(F, yN, a - ww / 2, th(tc - dt)), fusP(F, yN, a + ww / 2, th(tc - dt)), fusP(F, yN, a + ww / 2, th(tc + dt)), fusP(F, yN, a - ww / 2, th(tc + dt))];
-        const nn = fusN(F, yN, a, th(tc)); let PP = Q.map(p => p.map((v, k) => v + nn[k] * .01)); if (dot(faceN(PP), nn) < 0) PP = PP.reverse();
-        decor.push(face(PP, '#22384e', 'glass', { n: nn, noSeam: 1 })) } } }
-  for (const [di, u] of (t.doors || []).entries()) { const a = u * L; for (const sd of [1, -1]) { if (di === 0 && sd > 0) continue; const P = [], th = d => (sd > 0 ? d : 180 - d) * D2R;
-    for (const d of [3, 12, 22, 33]) P.push(fusP(F, yN, a - .55, th(d))); for (const d of [33, 22, 12, 3]) P.push(fusP(F, yN, a + .55, th(d)));
-    decor.push({ line: 1, P, c: 'rgba(28,38,50,.7)', w: .07 }) } }
-  
-  const dark = lum(lv.b) < .45, nameCol = Math.abs(lum(lv.s) - lum(lv.b)) > .3 ? lv.s : Math.abs(lum(lv.t) - lum(lv.b)) > .3 ? lv.t : (dark ? '#f4f6f8' : '#1d2730');
-  const aT = .37 * L, zT = topAt(aT);
-  decor.push({ text: lv.n, at: [0, yN - aT, zT], size: R * .82, maxW: .34 * L, col: nameCol, halo: dark ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.55)' });
-  decor.push({ text: t.model, at: [-R * .55, yN - F.nl * 1.9, topAt(F.nl * 1.9) - .3], size: R * .3, maxW: F.nl * 1.4, col: dark ? '#f4f6f8' : '#1d2730', light: 1 });
-  decor.push({ mark: lv.k, at: [0, yN - (L - 1.35 * t.tl * L + .5 * t.tl * L), topAt(L - .8 * t.tl * L)], size: R * .75, col: lv.m });
-  
-  const extra = [];
-  let finZ0 = topAt(.8 * L) - .25;
-  if (t.tailEng) {
-    const ec = ofU(-.35), n = .17 * L, r = t.fw * .26, z0 = topAt(.85 * L) + r * .55;
-    const rings = [[ec + n / 2, r * .9], [ec + n / 2 - .25, r], [ec + n * .1, r * 1.04], [ec - n * .3, r * .95], [ec - n / 2, r * .7]];
-    extra.push(...buildRevolve(0, z0, rings, lv.eng || lv.t, 'metal', 40));
-    extra.push(disc(0, ec + n / 2 + .02, z0, r * .9, '#c9ced3', 'metal'), disc(0, ec + n / 2 + .04, z0, r * .74, '#16191c', 'matte'), disc(0, ec + n / 2 + .3, z0, r * .17, '#6f7880', 'metal'));
-    finZ0 = z0 + r * .7;
-  }
-  
-  if (!t.boom) { const ttail = t.ttail, y0 = ofU(-.30), y1 = ofU(-.50), c0 = y0 - y1, span = t.H - finZ0, swp = Math.tan((ttail ? 30 : 36) * D2R), ct = c0 * (ttail ? .62 : .42), th = (opt.finThick || 1) * .115;
-    const st = [0, .5, 1].map(f => { const z = finZ0 + span * f, yLE = y0 - span * f * swp, c = lerp(c0, ct, f); return { z, yLE, yTE: yLE - c, t: c * th } });
-    extra.push(...buildFin(st, lv.t));
-    const T = st[2]; decor.push({ line: 1, P: [[0, lerp(st[0].yLE, st[0].yTE, .68), st[0].z + .3], [0, lerp(T.yLE, T.yTE, .68), T.z - .1]], c: 'rgba(0,0,0,.3)', w: .08, late: 1 });
-    
-    if (ttail) { const zt = t.H - .15, rc = .07 * L, tcc = .04 * L, sw = .05 * L, hs = HS * t.hs, yl = T.yLE + .4;
-      for (const sd of [1, -1]) extra.push(...buildPlate([{ x: sd * .1, yLE: yl, yTE: yl - rc, z: zt, t: .16 }, { x: sd * hs, yLE: yl - sw, yTE: yl - sw - tcc, z: zt + .1, t: .08 }], lv.t)) }
-  }
-  
-  let wingSt = null;
-  const yRLE = ofU(t.wingU != null ? t.wingU : .06), yRTE = yRLE - t.wc, yTLE = yRLE - t.sw, yTTE = yTLE - t.tc, yr = .41 * t.fw;
-  const wingLE = x => lerp(yRLE, yTLE, (x - yr) / (HS - yr)), wingTE = x => x <= yr + (HS - yr) * t.kink ? yRTE : lerp(yRTE, yTTE, ((x - yr) / (HS - yr) - t.kink) / (1 - t.kink));
-  const wingZ = x => (t.high ? t.zb + t.fw + .25 : t.wz) + Math.max(0, x - R) * Math.tan(t.dih * D2R);
-  const wingT = x => lerp(t.wt[0], t.wt[1], cl((x - R) / (HS - R), 0, 1));
-  const wingCol = lv.w === 'allover' ? sh(lv.b, -.04) : '#dfe3e7';
-  
-  if (t.high) { const s0 = { x: -R, yLE: wingLE(R), yTE: wingTE(R), z: wingZ(R), t: wingT(R) }, s1 = Object.assign({}, s0, { x: R }), B = buildPlate([s0, s1], wingCol);
-    if (NOSE[id] && NOSE[id].cab && t.L < 20) decor.push(...B.map(f => Object.assign(f, { late: 1 }))); else extra.push(...B) }
-  piece('body', body.concat(extra), { decor });
-  
-  for (const sd of [1, -1]) {
-    const xs = (t.high ? [R, R + (HS - R) * .5, HS] : [R * .72, yr + (HS - yr) * t.kink, HS]).map(x => Math.max(x, 0));
-    const st = xs.map(x => ({ x: sd * x, yLE: wingLE(x), yTE: wingTE(x), z: wingZ(x), t: wingT(x) }));
-    const f = buildPlate(st, wingCol), dec = [];
-    
-    const onTop = (x, c) => { const y = lerp(wingLE(x), wingTE(x), c), i = c < .3 ? 2 : c < .55 ? 3 : c < .8 ? 4 : 5; return [sd * x, y, wingZ(x) + TOP[i] * wingT(x) + .02] };
-    const xa = xs[0] + .3, xk = xs[1], xt = HS - .4;
-    dec.push({ line: 1, P: [onTop(xa, .74), onTop(xk, .72), onTop(xt, .7)], c: 'rgba(30,40,50,.38)', w: .06 });
-    for (const x of [xa + (xk - xa) * .5, xk, xk + (xt - xk) * .45, xk + (xt - xk) * .72]) dec.push({ line: 1, P: [onTop(x, .72), onTop(x, .98)], c: 'rgba(30,40,50,.3)', w: .05 });
-    if (!t.high) dec.push({ line: 1, P: [onTop(xa + 1, .12), onTop(xt - .5, .12)], c: 'rgba(30,40,50,.26)', w: .05, dash: [.9, .6] });
-    if (t.winglet) { const xT = HS, yl = wingLE(HS) - t.tc * .1, zt = wingZ(HS), h = t.winglet, cant = Math.tan(14 * D2R), c0 = t.tc * .85, c1 = t.tc * .38, swp = h * .7;
-      const P0 = [sd * xT, yl, zt], P1 = [sd * (xT + h * cant), yl - swp, zt + h], P2 = [sd * (xT + h * cant), yl - swp - c1, zt + h], P3 = [sd * xT, yl - c0, zt];
-      const off = v => [v[0] - sd * .07, v[1], v[2]], off2 = v => [v[0] + sd * .07, v[1], v[2]];
-      f.push(orient(face([P0, P1, P2, P3].map(off), lv.t, 'paint'), [-sd, 0, .25]), orient(face([P0, P1, P2, P3].map(off2), sh(lv.t, -.1), 'paint'), [sd, 0, -.25]));
-      f.push(orient(face([off(P0), off2(P0), off2(P1), off(P1)], sh(lv.t, .1), 'paint'), [0, 1, .3])) }
-    if (t.strut) { const xs2 = HS * .52; dec.push({ line: 1, P: [[sd * R * .95, wingLE(R) - t.wc * .5, t.zb + .35], [sd * xs2, lerp(wingLE(xs2), wingTE(xs2), .3), wingZ(xs2) - wingT(xs2) * .4]], c: '#8a9198', w: .07 }) }   
-    wingSt = st;
-    piece('wing', f, { decor: dec, side: sd });
-  }
-  
-  if (t.eng) for (const f0 of t.eng) for (const sd of [1, -1]) {
-    const x = f0 * HS, n = t.fw * t.elen, r = t.ed / 2, yc = (x0 - t.sw * f0 + t.fw * .45) + yC, zw = wingZ(x) - wingT(x) * .3, z0 = zw - r * .62;
+ zw - r * .62;
     const rings = [[yc + n / 2, r * .86, '#d4d8dc'], [yc + n / 2 - .12, r * .97], [yc + n / 2 - .45, r], [yc + n * .05, r * .99], [yc - n * .32, r * .88], [yc - n * .44, r * .74, '#8a9198'], [yc - n / 2, r * .66, '#8a9198']];
     const fc = buildRevolve(sd * x, z0, rings, lv.eng || sh(lv.b, -.03), 'metal', NRV);
     
@@ -676,7 +265,7 @@ function drawDecor(c, list, M, o) {
       c.font = (d.light ? '600 ' : '800 ') + sz + 'px Arial,"Noto Sans Hebrew",sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.direction = 'rtl';
       const w = c.measureText(d.text).width, mw = d.maxW * M.s; if (w > mw) c.font = (d.light ? '600 ' : '800 ') + (sz * mw / w) + 'px Arial,"Noto Sans Hebrew",sans-serif';
       if (d.halo) { c.lineJoin = 'round'; c.strokeStyle = d.halo; c.lineWidth = sz * .22; c.strokeText(d.text, 0, 0) } c.fillStyle = d.col; c.fillText(d.text, 0, 0); c.restore(); continue }
-    if (d.mark) { const p = P2(M, d.at), s = d.size * M.s; c.save(); c.translate(p[0], p[1]); c.fillStyle = d.col; c.strokeStyle = d.col; c.lineWidth = s * .16;
+    if (d.mark) { const p = P2(M, d.at), s = d.size * M.s; if (d.al && window.__TCAL_MARK && window.__TCAL_MARK(c, d.al, p[0], p[1], s, d.col)) continue; c.save(); c.translate(p[0], p[1]); c.fillStyle = d.col; c.strokeStyle = d.col; c.lineWidth = s * .16;
       if (d.mark === 'bird') { c.beginPath(); c.moveTo(0, s * .5); c.lineTo(-s * .4, -s * .4); c.lineTo(0, -s * .15); c.lineTo(s * .4, -s * .4); c.closePath(); c.fill() }
       else if (d.mark === 'arc') { c.beginPath(); c.arc(0, 0, s * .45, -.4 + Math.PI / 2, 3.5 + Math.PI / 2); c.stroke() }
       else if (d.mark === 'chev') { c.beginPath(); c.moveTo(0, s * .5); c.lineTo(-s * .45, 0); c.lineTo(-s * .45, -s * .2); c.lineTo(0, s * .3); c.lineTo(s * .45, -s * .2); c.lineTo(s * .45, 0); c.closePath(); c.fill() }
@@ -9985,4 +9574,227 @@ var BSHOP=(function(){
   if(st.job)return toast('המבדוק תפוס — '+(byId(st.job.boat)||{}).name+' בעבודה'),false;if(F.S.aboard===id)return toast('קודם קושרים את הסירה ויורדים ממנה'),false;if(b.mode!=='moored')return toast('"'+b.name+'" צריכה להיות קשורה במקום שלה'),false;
   let price;if(cat==='paint'){val=val||{};price=upPrice(m,'paint',1)}else{val=+val;if(!UP[cat]||val!==(u[cat]||0)+1||val>upMax(m,cat))return toast('השדרוג הזה לא זמין לסירה הזו'),false;price=upPrice(m,cat,val)}
   if(!o.free){if(PlayerProfile.money<price)return toast('אין מספיק כסף — '+money(price)),false;PlayerProfile.money-=price;try{recordTransaction('boat-upgrade',-price,{boat:id,cat})}catch(e){}}
-  const wt=whatOf(b,cat,val);st.job
+  const wt=whatOf(b,cat,val);st.job={boat:id,cat,val,price,phase:'sail',t:0,w:1,sec:UP[cat].sec*(o.fast===true?.25:o.fast||1),applied:0,at:Date.now(),what:wt.line,demo:o.demo?1:0};b.mode='yard';b.legs=rYard(b);b.onArrive=docked;
+  msg('pl-shipyard','קיבלנו את "'+b.name+'" — '+jobTxt(st.job)+'. איש המספנה משיט אותה עכשיו אל המבדוק היבש; אפשר לבוא לראות את העבודה.');try{SaveManager.log('boatshop','order',{boat:id,cat})}catch(e){}save('yard-order');return true}
+ function docked(b){const J=P().job;b.mode='dock';b.u=0;b.x=DKX;b.y=dockY(b);b.h=-Math.PI/2;b.legs=[];if(J){J.phase='gate';J.t=0}}
+ function backHome(b){const st=P(),J=st.job;b.mode='moored';b.u=0;b.h=b.be.h;try{F.save(b)}catch(e){}st.job=null;st.stats.upgrades++;msg('pl-shipyard','"'+b.name+'" מוכנה וחזרה למקום '+b.be.slot+' במעגן שלך'+(J?' — '+jobTxt(J):'')+'.'+(J&&J.what?' מה השתנה: '+J.what+'.':'')+' שיט נעים!');save('yard-done')}
+ function apply(b,J){const u=b.rec.up;if(J.cat==='paint'){const v=J.val||{};if(v.hull)b.rec.lv[0]=v.hull;if(v.stripe)b.rec.lv[1]=v.stripe;if(v.design!=null)u.design=v.design;u.anti=1}else u[J.cat]=J.val;refresh(b);J.applied=1}
+ function yardStep(dt){const st=P(),J=st.job;if(!J)return;const b=byId(J.boat);if(!b){st.job=null;return}
+  if(J.phase==='sail'||J.phase==='back')return;J.t+=dt;
+  if(J.phase==='gate'){if(J.t>=3){J.phase='pump';J.t=0}}
+  else if(J.phase==='pump'){J.w=cl(1-J.t/9,0,1);if(J.t>=9){J.phase='work';J.t=0}}
+  else if(J.phase==='work'){J.w=0;if(!J.applied&&J.t>=J.sec*.7)apply(b,J);if(J.t>=J.sec){J.phase='fill';J.t=0}}
+  else if(J.phase==='fill'){J.w=cl(J.t/9,0,1);if(J.t>=9){J.phase='open';J.t=0}}
+  else if(J.phase==='open'){J.w=1;if(J.t>=3){J.phase='back';J.t=0;b.mode='yard';b.legs=rHome(b);b.onArrive=backHome}}}
+ const gateK=J=>!J?0:J.phase==='gate'?cl(J.t/3,0,1):J.phase==='open'?1-cl(J.t/3,0,1):(J.phase==='sail'||J.phase==='back')?0:1;    
+ function dockLift(b,J){const drop=G.dockD*(1-J.w),rest=Math.max(.1,G.dockD-b.fb-.3);return{lf:-Math.min(drop,rest),dry:drop>rest+.05}}
+
+  
+ function paintBoat(c,b,x,y,h,t,o){if(!b.owned)return BOAT34.fish3(c,b,x,y,h,t,o);o=o||{};const sp=specOf(b);
+  if(o.thumb)return BOAT34.paint(c,sp,x,y,h,t,{u:0,night:0,thumb:true,lod:2,noRefl:true,wave:.3});
+  if(b.mode==='dock'){if(Camera.zoom>.3)return null;const J=P().job,q=J?dockLift(b,J):{lf:0,dry:false};return BOAT34.paint(c,sp,x,y,h,t,{u:0,night:o.night,lift:q.lf,dry:q.dry,noShadow:true,noRefl:true,wave:0,ph:0})}
+  if(b.mode==='moored'&&!(o.people&&o.people.length)){const z=Camera.zoom*(window.devicePixelRatio||1),bob=Math.sin(t*1.5+b.ph)*.5;BOAT34.still(c,'MY|'+b.id+'|'+sp.upKey+'|'+sp.lvKey,sp,x,y,h,t,{moored:1,night:o.night},0,bob);
+   if(z>.8){const s=slotOf(b.be.slot),by=y-b.L*.42-b.fb*KZ+bob,sy=y+b.L*.44-b.fb*KZ+bob;c.save();c.strokeStyle='rgba(236,228,206,.8)';c.lineWidth=.5;c.beginPath();
+    for(const sd of[-1,1]){c.moveTo(x+sd*b.B*.2,by);c.quadraticCurveTo(x+sd*b.B*.4,(by+QY)/2+1.5,x+sd*Math.min(s.w*.46,b.B*.7),QY)}
+    c.moveTo(x-b.B*.42,sy);c.quadraticCurveTo(x-b.B*.5-2,sy+2,s.x,Math.min(s.fin[3]-2,sy));c.stroke();c.restore()}return null}
+  return BOAT34.paint(c,sp,x,y,h,t,{u:Math.abs(o.u||0),trail:o.trail,wave:o.wave,night:o.night,under:o.under,fishing:o.fishing,people:o.people})}
+ try{F.setPainter(paintBoat)}catch(e){er('painter',e)}
+
+ return{G,SL,DECKS,WH,QY,LY,DKX,CALM,calm,nearMouth,hDock,statsOf,visTxt,whatOf,FGEAR,TYPES,MODELS,MOD,HULLS,STRIPES,DESIGNS,UP,CLS_HE,PH_HE,OWN,ERR,er,P,byId,slotOf,freeSlot,dockY,specOf,refresh,mk,sync,live,buy,sell,sellValue,rename,refuel,fuelCost,order,upPrice,upMax,jobTxt,gateK,dockLift,rOut,rHome,rYard,rAway,keep,msg,paintBoat,yardStep,arrived}})();
+window.__TC_BSHOP=BSHOP;
+
+
+var BSHOP_UI=(function(){
+ const B=BSHOP,G=B.G,F=FISH3,QY=B.QY,TAU=Math.PI*2,KZ=6,cl=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t,ease=u=>{u=cl(u,0,1);return u*u*(3-2*u)},er=B.er;
+ const nightV=()=>cl(+window.__TC_NIGHT||0,0,1),res=()=>p599Res(Camera.zoom*(window.devicePixelRatio||1)),zoomV=()=>Camera.zoom*(window.devicePixelRatio||1);
+ const inV=(x0,y0,x1,y1,p)=>e3InView(x0,y0,x1-x0,y1-y0,p==null?40:p),viewM=()=>inV(7170,2380,8080,2960,80),viewS=()=>inV(6500,2030,6570,2140,40),viewQ=()=>inV(7170,2410,7770,2800,30),viewY=()=>inV(7770,2480,8080,2830,40);
+ const UI={tab:'fishing',liv:{},yb:null,pre:null,paint:null,cvT:0};
+  
+ const WSB=s9Bld({id:'G4-WORKSHOP',label:'הסדנה של המספנה',zone:'G4',rect:G.ws,floors:1,h_m:G.wsH,kind:'workshop',front:'S',entrance:[7904,G.ws[3]],palette:{he:'מספנה — פח גלי אפור-כחול עם פס כתום',wall:'#8fa6b3',roof:'#5f7684',trim:'#e07b2f'},size_m:[12.8,8]});
+ S9_LOOK['G4-WORKSHOP']={win:'band',sign:'המספנה',logo:'#e07b2f',roof:'gable',clere:true,rollup:[[7812,7876]]};
+ const LAMPS=[[7352,2555],[7420,2555],[7540,2555],[7660,2555],[7770,2555],[7930,2560],[8028,2700],[7188,2500]];
+ const LK={};function look(role,i){const k=role+i;if(LK[k]!==undefined)return LK[k];let L=null;try{L=P34U.l(role,i,{})}catch(e){}return LK[k]=L}
+ function man(c,x,y,lk,act,h,ph){try{if(window.P34&&lk){P34.draw(c,x,y,lk,{k:act||'stand'},h||0,ph||0,res());return}}catch(e){er('man',e)}c.fillStyle='#2b3a48';c.beginPath();c.arc(x,y-8,3,0,TAU);c.fill()}
+ const R=(c,col,r)=>{c.fillStyle=col;c.fillRect(r[0],r[1],r[2]-r[0],r[3]-r[1])};
+
+  
+ function ground(c,now,N){if(viewS())shopGround(c,N);if(!viewM())return;c.save();const z=Camera.zoom;
+  try{ 
+   if(viewQ()){if(z>.5){for(let x=G.quay[0]+18;x<G.quay[2];x+=48)BOAT34.pile(c,x,QY+2.5,2,1.1,N?1:0);for(const s of B.SL)BOAT34.pile(c,s.fin[0]+3,s.fin[3]+1.5,1.8,1.3,N?1:0);for(let y=G.con[1]+20;y<G.con[3];y+=44)BOAT34.pile(c,G.con[0]-1.5,y,2,1.1,N?1:0)}
+   f34Deck(c,G.con,'h',N);f34Deck(c,G.quay,'v',N);for(const s of B.SL)f34Deck(c,s.fin,'h',N);f34Deck(c,[B.SL[9].x+B.SL[9].w,QY,B.SL[9].x+B.SL[9].w+G.fw,B.SL[9].fin[3]],'h',N);
+   c.fillStyle=N?'#5a4632':'#8a6844';c.fillRect(G.quay[0],QY-2,G.quay[2]-G.quay[0],2);c.fillStyle='#8e8a80';c.fillRect(G.quay[0],G.quay[1],G.quay[2]-G.quay[0],2.5);    
+   if(z>.5)for(const s of B.SL){f34Bollard(c,s.x+3,QY-4);f34Bollard(c,s.x+s.w-3,QY-4);c.fillStyle='#f4f6f8';c.fillRect(s.x-5,QY-9,4,5);c.fillStyle='#3f8fd0';c.fillRect(s.x-5,QY-9,4,1.4);    
+     if(z>.9)try{s9Txt(c,String(s.n),s.x+s.w/2,QY-8,s.cls==='jet'?5:6.5,'rgba(255,255,255,.92)')}catch(e){}}}
+    
+   if(viewY()){const W=G.wharf,D=G.dock;c.fillStyle='rgba(6,20,30,.25)';c.fillRect(W[0]+3,W[3],W[2]-W[0],7);
+   for(const r of B.WH){R(c,N?'#6c6a64':'#bcb8ad',r)}
+   c.fillStyle=N?'#4d4b47':'#8d897f';c.fillRect(W[0],W[3]-1,D[0]-W[0],5);c.fillRect(D[2],W[3]-1,W[2]-D[2],5);
+   if(z>.45){c.strokeStyle='rgba(70,66,58,.28)';c.lineWidth=.6;c.beginPath();for(let x=W[0]+40;x<D[0];x+=40){c.moveTo(x,W[1]);c.lineTo(x,W[3])}for(let y=W[1]+48;y<W[3];y+=48){c.moveTo(W[0],y);c.lineTo(D[0],y);c.moveTo(D[2],y);c.lineTo(W[2],y)}c.stroke();
+    c.strokeStyle='#e0b020';c.lineWidth=2;c.setLineDash([5,4]);c.strokeRect(D[0]-3,D[1]-3,D[2]-D[0]+6,D[3]-D[1]+3);c.setLineDash([]);
+    c.fillStyle='rgba(224,123,47,.16)';c.fillRect(7800,2664,112,112);c.strokeStyle='rgba(224,123,47,.55)';c.lineWidth=1;c.strokeRect(7800,2664,112,112);
+    for(let x=W[0]+22;x<D[0];x+=44){c.fillStyle='#1d2124';c.beginPath();c.arc(x,W[3]+2.5,3,0,TAU);c.fill();c.fillStyle='#3a4046';c.beginPath();c.arc(x,W[3]+2.5,1.3,0,TAU);c.fill()}}
+   R(c,N?'#1c4f74':'#2f7fb0',[D[0],D[1],D[2],D[3]])}    
+  }catch(e){er('ground',e)}c.restore()}
+ function shopGround(c,N){try{const d=G.shop.disp;c.fillStyle='rgba(0,0,0,.2)';c.fillRect(6518,2084,16,38);R(c,N?'#77756f':'#d8d4c8',[6516,2081,6532,2120]);c.fillStyle='#1d6fa5';c.fillRect(6516,2117,16,3);c.fillStyle=N?'#5a5852':'#a9a59a';c.fillRect(6516,2120,16,3)}catch(e){er('shopG',e)}}
+
+  
+ function props(c,now,N){if(!viewM())return;c.save();try{if(viewY()){const b=WSB;s9Shadow(c,b.x,b.y,b.x+b.w,b.y+b.h,b.hpx);s9Face(c,b,N);
+   const dk=(x,y,col)=>{c.fillStyle='rgba(0,0,0,.2)';c.beginPath();c.ellipse(x+2,y+1.5,3.4,1.8,0,0,TAU);c.fill();c.fillStyle=col;c.fillRect(x-3,y-7,6,7);c.beginPath();c.ellipse(x,y,3,1.5,0,0,TAU);c.fill();c.fillStyle='rgba(255,255,255,.3)';c.beginPath();c.ellipse(x,y-7,3,1.5,0,0,TAU);c.fill()};
+   dk(7806,2672,'#c43b2f');dk(7814,2674,'#1d6fa5');dk(7810,2680,'#f2c230');
+    
+   c.fillStyle='rgba(0,0,0,.2)';c.fillRect(7838,2686,20,8);c.fillStyle='#6a5238';c.fillRect(7836,2684,20,3);c.fillStyle='#2a2f35';c.fillRect(7840,2670,10,14);c.fillStyle='#3a4046';c.fillRect(7840,2668,10,3);c.fillStyle='#c43b2f';c.fillRect(7840,2675,10,1.6);c.fillStyle='#8c949a';c.fillRect(7844,2684,2,7);
+   c.fillStyle='rgba(0,0,0,.18)';c.beginPath();c.ellipse(7884,2762,9,4.5,0,0,TAU);c.fill();c.fillStyle='#b88a3a';c.fillRect(7874,2754,18,10);c.strokeStyle='#d8a94a';c.lineWidth=2;for(let k=0;k<3;k++){const a=k*2.09+.4;c.beginPath();c.ellipse(7883+Math.cos(a)*4,2756+Math.sin(a)*2.2,4,1.8,a,0,TAU);c.stroke()}
+   c.fillStyle='rgba(0,0,0,.2)';c.fillRect(7822,2748,16,5);c.fillStyle='#c43b2f';c.fillRect(7820,2740,16,9);c.fillStyle='#e0483a';c.fillRect(7820,2738,16,3);
+   for(let k=0;k<4;k++){c.fillStyle=k%2?'#a8814f':'#96703f';c.fillRect(7800,2772-k*2.4,34,2.2)}
+   c.strokeStyle='#3a4046';c.lineWidth=1.6;c.beginPath();c.moveTo(7898,2738);c.lineTo(7898,2752);c.moveTo(7892,2748);c.quadraticCurveTo(7898,2757,7904,2748);c.moveTo(7894,2740);c.lineTo(7902,2740);c.stroke()}
+    
+   c.fillStyle='rgba(0,0,0,.2)';c.fillRect(7205,2560,8,4);c.fillStyle='#e9ecee';c.fillRect(7203,2548,8,13);c.fillStyle='#c43b2f';c.fillRect(7203,2548,8,3);c.fillStyle='#1d2a33';c.fillRect(7204.5,2552.5,5,3);
+   for(const x of[7420,7660]){c.fillStyle='#e9ecee';c.fillRect(x+12,2553-9,1.4,9);c.lineWidth=1.6;for(let k=0;k<4;k++){c.strokeStyle=k%2?'#f4f4f0':'#f25a1a';c.beginPath();c.arc(x+12.7,2553-11,2.6,k*Math.PI/2,(k+1)*Math.PI/2);c.stroke()}}
+    
+   for(const [x,y] of LAMPS){if(!e3InView(x-6,y-30,14,34,10))continue;c.fillStyle='rgba(0,0,0,.18)';c.beginPath();c.ellipse(x+2,y+1,2.4,1.1,0,0,TAU);c.fill();c.fillStyle=N?'#59626a':'#3d4a54';c.fillRect(x-.7,y-27,1.4,27)}
+  }catch(e){er('props',e)}c.restore()}
+
+  
+ function dockDraw(c,now,N){const [x0,y0,x1,y1]=G.dock,W=x1-x0,J=B.P().job,b=J&&B.byId(J.boat),inD=!!(b&&b.mode==='dock'),w=inD?J.w:1,dep=G.dockD*KZ,t=now/1000,gk=B.gateK(J),nv=nightV();
+  if(inD&&w<1){c.save();c.beginPath();c.rect(x0,y0,W,y1-y0);c.clip();const drop=dep*(1-w);
+   c.fillStyle=N?'#4a4d4d':'#8f8d84';c.fillRect(x0,y0+dep,W,y1-y0-dep);c.fillStyle='rgba(0,0,0,.14)';c.fillRect(x0+W/2-2,y0+dep,4,y1-y0-dep);
+   for(let y=y0+dep+16;y<y1-14;y+=20){c.fillStyle='rgba(0,0,0,.25)';c.fillRect(x0+W/2-6,y+5,14,3);c.fillStyle='#5a4a34';c.fillRect(x0+W/2-7,y,14,5);c.fillStyle='#7a6648';c.fillRect(x0+W/2-7,y-2,14,2.4)}
+   {const g=c.createLinearGradient(0,y0,0,y0+dep);g.addColorStop(0,N?'#6a6c6a':'#b3afa4');g.addColorStop(1,N?'#474949':'#7d7b73');c.fillStyle=g;c.fillRect(x0,y0,W,dep);c.fillStyle='rgba(0,0,0,.16)';for(let k=1;k<3;k++)c.fillRect(x0,y0+dep*k/3,W,1);
+    c.fillStyle='rgba(20,40,50,.22)';c.fillRect(x0,y0+Math.max(0,drop-3),W,Math.min(drop,3)+.5);c.fillStyle='#e0b020';for(let k=0;k<5;k++)c.fillRect(x0+6+k*(W-12)/4-1,y0+2,2,dep-3)}
+   c.fillStyle='rgba(0,0,0,.2)';c.fillRect(x0,y0,3,y1-y0);c.fillRect(x1-2,y0,2,y1-y0);
+   if(w>.02){const wy=y0+drop;c.fillStyle='rgba(40,120,172,'+(.5+.42*w).toFixed(2)+')';c.fillRect(x0,wy,W,y1-wy);c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=.8;c.beginPath();for(let k=0;k<5;k++){const yy=wy+6+k*((y1-wy)/5)+Math.sin(t*1.3+k)*1.5;c.moveTo(x0+8+(k*17)%30,yy);c.lineTo(x0+30+(k*23)%40,yy+1)}c.stroke();
+    c.fillStyle='rgba(255,255,255,.5)';c.fillRect(x0,wy,W,1.2);if(J.phase==='pump'||J.phase==='fill'){for(let k=0;k<6;k++){const u=(t*1.4+k*.17)%1;c.fillStyle='rgba(255,255,255,'+(.7*(1-u)).toFixed(2)+')';c.beginPath();c.arc(x1-7+Math.sin(k*2)*3,y1-16-u*10*(J.phase==='fill'?-1:1),1.2+u*2,0,TAU);c.fill()}}}
+   c.restore()}
+  if(inD){const q=B.dockLift(b,J);try{BOAT34.paint(c,B.specOf(b),b.x,b.y,b.h,t,{u:0,night:nv,lift:q.lf,dry:q.dry,noShadow:true,noRefl:true,wave:q.dry?0:.08,ph:0})}catch(e){er('dockBoat',e)}
+   if(q.dry){c.strokeStyle=N?'#6a5238':'#8a6a48';c.lineWidth=1.5;c.lineCap='round';c.beginPath();for(const f of[-.28,.02,.3])for(const s of[-1,1]){const yy=b.y+f*b.L;c.moveTo(s<0?x0+1:x1-1,yy-q.lf*KZ*.2+4);c.lineTo(b.x+s*b.B*.43,yy-(q.lf+b.fb*.45)*KZ)}c.stroke()}}
+   
+  {const gx=x0-(W+2)*(1-gk),gy=y1-9;c.save();c.beginPath();c.rect(x0-1,gy-8,W+2,26);c.clip();c.fillStyle=N?'#27333c':'#3f5463';c.fillRect(gx,gy,W,9);c.fillStyle=N?'#1b242b':'#2c3c48';c.fillRect(gx,gy+9,W,6);c.fillStyle='#e0b020';for(let k=0;k<6;k++)c.fillRect(gx+4+k*(W-8)/5-2,gy+9,4,6);c.fillStyle='rgba(255,255,255,.22)';c.fillRect(gx,gy,W,1.2);c.restore()}}
+
+  
+ const A_PARK=-2.5;
+ function craneState(now){const J=B.P().job,b=J&&B.byId(J.boat),t=now/1000,cx=G.crane[0],cy=G.crane[1];let a=A_PARK+Math.sin(t*.25)*.05,rr=44,zh=5.4+Math.sin(t*.9)*.15,load=null;
+  if(J&&J.phase==='work'&&b&&b.mode==='dock'&&!J.applied){const u=(J.t%14)/14,ty=cl(b.y-b.L*.15,cy-40,cy+40),aD=Math.atan2(ty-cy,B.DKX-cx),rD=cl(Math.hypot(B.DKX-cx,ty-cy),24,G.reach),aP=Math.atan2(2680-cy,7880-cx),rP=Math.hypot(7880-cx,2680-cy);
+   if(u<.16){a=aP;rr=rP;zh=lerp(5.4,.9,ease(u/.16))}else if(u<.3){a=aP;rr=rP;zh=lerp(.9,5.4,ease((u-.16)/.14));load=J.cat}
+   else if(u<.56){const e=ease((u-.3)/.26);a=lerp(aP,aD,e);rr=lerp(rP,rD,e);zh=5.4;load=J.cat}
+   else if(u<.72){a=aD;rr=rD;zh=lerp(5.4,1.4,ease((u-.56)/.16));load=J.cat}else if(u<.82){a=aD;rr=rD;zh=lerp(1.4,5.4,ease((u-.72)/.1))}
+   else{const e=ease((u-.82)/.18);a=lerp(aD,aP,e);rr=lerp(rD,rP,e);zh=5.4}}
+  return{a,rr,zh,load,col:J&&J.cat==='paint'&&J.val&&J.val.hull||'#e0731d'}}
+ function craneDraw(c,now,N){const cx=G.crane[0],cy=G.crane[1],H=G.craneH*KZ,S=craneState(now),ca=Math.cos(S.a),sa=Math.sin(S.a),top=[cx,cy-H],end=[cx+ca*G.reach,cy+sa*G.reach-H],hk=[cx+ca*S.rr,cy+sa*S.rr],Y=N?'#a87a18':'#e0a020',Yd=N?'#7a5810':'#b07a10';
+  c.save();c.lineCap='round';c.strokeStyle='rgba(8,16,24,.18)';c.lineWidth=3;c.beginPath();c.moveTo(cx+G.craneH*2.7,cy+G.craneH*3.6);c.lineTo(cx+ca*G.reach+G.craneH*2.7,cy+sa*G.reach+G.craneH*3.6);c.stroke();
+  c.fillStyle='rgba(0,0,0,.25)';c.beginPath();c.ellipse(cx+2,cy+1.5,7,3.6,0,0,TAU);c.fill();c.fillStyle=N?'#555':'#7d868c';c.beginPath();c.ellipse(cx,cy,6,3,0,0,TAU);c.fill();
+  c.fillStyle=Yd;c.fillRect(cx-2.6,cy-H,5.2,H);c.fillStyle=Y;c.fillRect(cx-2.6,cy-H,2.2,H);c.fillStyle='#1d2124';for(let k=1;k<5;k++)c.fillRect(cx-2.6,cy-H*k/5,5.2,1);
+  c.strokeStyle=Yd;c.lineWidth=3.2;c.beginPath();c.moveTo(cx-ca*14,cy-sa*14-H);c.lineTo(end[0],end[1]);c.stroke();c.strokeStyle=Y;c.lineWidth=1.4;c.beginPath();c.moveTo(cx-ca*14,cy-sa*14-H-1);c.lineTo(end[0],end[1]-1);c.stroke();
+  c.strokeStyle='#3a4046';c.lineWidth=.7;c.beginPath();c.moveTo(cx,cy-H-9);c.lineTo(end[0]-ca*6,end[1]);c.moveTo(cx,cy-H-9);c.lineTo(cx-ca*14,cy-sa*14-H);c.moveTo(cx,cy-H);c.lineTo(cx,cy-H-9);c.stroke();
+  c.fillStyle='#4a5056';c.fillRect(cx-ca*14-3,cy-sa*14-H-2.5,6,5);c.fillStyle=N?'#ffd36a':'#2a2f35';c.fillRect(cx-2,cy-H-5,4,4);
+  const hy=hk[1]-S.zh*KZ;c.strokeStyle='#1d2124';c.lineWidth=.6;c.beginPath();c.moveTo(hk[0],hk[1]-H);c.lineTo(hk[0],hy);c.stroke();c.fillStyle='#f2c230';c.fillRect(hk[0]-1.5,hy-1,3,2.4);
+  if(S.load){const x=hk[0],y=hy+2;c.strokeStyle='#1d2124';c.lineWidth=.5;c.beginPath();c.moveTo(x,y-1);c.lineTo(x-4,y+3);c.moveTo(x,y-1);c.lineTo(x+4,y+3);c.stroke();
+   if(S.load==='engine'){c.fillStyle='#2a2f35';c.fillRect(x-4,y+3,8,10);c.fillStyle='#c43b2f';c.fillRect(x-4,y+6,8,1.5);c.fillStyle='#8c949a';c.fillRect(x-1,y+13,2,5)}
+   else if(S.load==='tank'){c.fillStyle='#b9c0c5';c.fillRect(x-6,y+3,12,6);c.fillStyle='#d8dde0';c.fillRect(x-6,y+2,12,2);c.fillStyle='#c43b2f';c.fillRect(x-1,y+1,2,1.4)}
+   else if(S.load==='fishing'){c.strokeStyle='#2a2d31';c.lineWidth=.8;c.beginPath();for(let k=-1;k<=1;k++){c.moveTo(x-8,y+4+k);c.lineTo(x+10,y+4+k*.4)}c.stroke();c.fillStyle='#e8ecee';c.fillRect(x-7,y+5,5,4)}
+   else if(S.load==='elec'){c.fillStyle='#f4f6f8';c.beginPath();c.ellipse(x,y+6,5,3.2,0,0,TAU);c.fill();c.fillStyle='#c9ced2';c.fillRect(x-1,y+8,2,4)}
+   else{c.fillStyle='#8a6a48';c.fillRect(x-7,y+10,14,2);for(let k=0;k<3;k++){c.fillStyle=k===1?'#f4f4f0':S.col;c.fillRect(x-6+k*4.4,y+3,3.6,7)}}}
+  c.restore()}
+
+  
+ function liveL(c,now,N){const t=now/1000;try{if(viewS())shopLive(c,now,N);if(!viewM()){marks(c,now);return}
+   const vY=viewY(),J=B.P().job,b=J&&B.byId(J.boat),work=J&&J.phase==='work'&&b&&b.mode==='dock';if(vY)dockDraw(c,now,N);
+    
+   {const L=G.quay[2]-G.quay[0]-90,u=(t*13)%(2*L),x=G.quay[0]+50+(u<L?u:2*L-u);if(e3InView(x-12,2540,24,34,10))man(c,x,2567,look('dock',21),'walk',u<L?0:Math.PI,(t*.9)%1);if(e3InView(7210,2535,24,34,10))man(c,7222,2560,look('dock',22),'stand',Math.PI/2+Math.sin(t*.4)*.5,0)}
+    
+   if(!vY){}else if(work){const u=(t*.09)%1,g=u<.5?u*2:2-u*2,x=lerp(7862,7926,g),y=lerp(2654,2688,g);man(c,x,y,look('refinery',23),'walk',u<.5?.5:Math.PI+.5,(t*.9)%1);
+    const wy=cl(b.y+Math.sin(t*.2)*b.L*.3,G.dock[1]+14,G.dock[3]-20);man(c,7929,wy,look('dock',24),'stand',0,0);const q=B.dockLift(b,J),hx=b.x-b.B*.42,hy=wy-(q.lf+b.fb*.4)*KZ;
+    if(J.cat==='paint'){const col=J.val&&J.val.hull||'#f4f4f0';c.save();c.globalAlpha=.35+.2*Math.sin(t*9);c.fillStyle=col;c.beginPath();c.moveTo(7932,wy-9);c.lineTo(hx,hy-5);c.lineTo(hx,hy+5);c.closePath();c.fill();c.restore()}
+    else{c.fillStyle='#fff7c0';for(let k=0;k<7;k++){const u2=(t*3+k*.37)%1,a=k*2.4+Math.floor(t*3+k*.37)*1.7;c.globalAlpha=1-u2;c.fillRect(hx+Math.cos(a)*u2*9,hy+Math.sin(a)*u2*6+u2*u2*8,1.3,1.3)}c.globalAlpha=1;if(nightV()>.3||Math.sin(t*23)>.2)try{BOAT34.lamp(c,hx,hy,'white',7+Math.sin(t*31)*2,.75,0)}catch(e){}}}
+   else{man(c,7892,2654,look('refinery',23),'stand',Math.PI/2+Math.sin(t*.3)*.4,0)}
+    
+   if(zoomV()>.7&&viewQ()){c.strokeStyle='rgba(255,255,255,'+(.35-.15*nightV()).toFixed(2)+')';c.lineWidth=.8;c.beginPath();for(let x=G.quay[0]+18;x<G.quay[2];x+=48){const r=3.5+Math.sin(t*1.6+x)*1.2;c.moveTo(x+r,QY+3.5);c.ellipse(x,QY+3.5,r,r*.45,0,0,TAU)}c.stroke()}
+   marks(c,now)}catch(e){er('live',e)}}
+ function shopLive(c,now,N){try{const d=G.shop.disp;BOAT34.still(c,'BS-DISPLAY',DSP,d[0],d[1],-Math.PI/2,0,{lift:1.02,dry:true,noShadow:true,noRefl:true,night:nightV()},0,0)}catch(e){er('disp',e)}}
+ const DSP={type:'jetski',L:36,B:13,id:'BS-DISPLAY',lv:Object.assign({},BOAT34.T.jetski.lv[0],{hull:'#f4f4f4',stripe:'#d8302a',boot:'#d8302a',sup:'#1d1f22'}),lvKey:'d'};
+ function marks(c,now,top){if(PlayerProfile.mode!=='walk'||F.S.aboard||WTC_LP===1)return;const nr=nearPoi(60);for(const p of Object.values(POIS)){if((p.id==='F3-BOATSHOP')!==!!top||!e3InView(p.x-20,p.y-30,40,50,20))continue;const hot=nr&&nr.id===p.id;
+   c.fillStyle=hot?'#ffe08a':'#55bce7';c.beginPath();c.arc(p.x,p.y,hot?10:7,0,TAU);c.fill();c.strokeStyle='#07131b';c.lineWidth=1.5;c.stroke();c.fillStyle='#07131b';c.font='700 9px Segoe UI,Arial';c.textAlign='center';c.textBaseline='middle';c.fillText('F',p.x,p.y+.5);
+   try{Targets.add({id:p.id,label:p.label,category:'business',x:p.x,y:p.y,shape:'circle',r:14})}catch(e){}if(hot)try{s9Txt(c,'F · '+p.label,p.x,p.y-20,8,'#ffe08a')}catch(e){}}}
+
+  
+ function over(c,now,N){try{const nv=nightV();
+   if(viewS()){const [xa,xb,y]=G.shop.sign,yt=y-4.7*KZ,yb=y-3.1*KZ;c.fillStyle='#dfe5ea';c.fillRect(xa,yt,1.6,y-yt);c.fillRect(xb-1.6,yt,1.6,y-yt);c.fillStyle='rgba(0,0,0,.18)';c.fillRect(xa+2,y-1,xb-xa,2);
+    c.fillStyle=N?'#0a2a42':'#0b3a5c';c.fillRect(xa-2,yt,xb-xa+4,yb-yt);c.strokeStyle='#f2c45a';c.lineWidth=.8;c.strokeRect(xa-1.2,yt+.8,xb-xa+2.4,yb-yt-1.6);try{s9Txt(c,'חנות הסירות',(xa+xb)/2,(yt+yb)/2+.3,6.2,'#ffe7a8',xb-xa-2)}catch(e){}if(Camera.zoom>.3)marks(c,now,true)}
+   if(!viewM())return;c.save();
+   if(inV(7770,2440,8080,2830,40)){s9Roof(c,WSB,N,now);craneDraw(c,now,N)}
+    
+   if(inV(7200,2500,7350,2590,20)){for(const y of[G.quay[1]+2,QY-2]){c.fillStyle='#e9ecee';c.fillRect(G.gateX-1.2,y-3.4*KZ,2.4,3.4*KZ);c.fillStyle='#1d3a5a';c.fillRect(G.gateX-2,y-3.4*KZ-2,4,2.4);if(nv>.3)BOAT34.lamp(c,G.gateX,y-3.4*KZ-3,'warm',9,.8*nv,0)}
+   c.strokeStyle='#dfe5ea';c.lineWidth=.8;c.beginPath();for(let k=0;k<4;k++){c.moveTo(G.gateX+k*4,G.quay[1]+2);c.lineTo(G.gateX+k*4,G.quay[1]+2-1.2*KZ)}c.moveTo(G.gateX,G.quay[1]+2-1.2*KZ);c.lineTo(G.gateX+13,G.quay[1]+2-1.2*KZ);c.stroke();
+   {const [xa,xb,y]=G.sign,yt=y-4.5*KZ,yb=y-2.3*KZ,nm=(()=>{try{return g77StName()}catch(e){return 'שחקן'}})();c.fillStyle='#e9ecee';c.fillRect(xa,yt,1.8,y-yt);c.fillRect(xb-1.8,yt,1.8,y-yt);
+    c.fillStyle='rgba(0,0,0,.2)';c.fillRect(xa-1,yt+1.5,xb-xa+5,yb-yt);c.fillStyle=N?'#0a2a42':'#0f3a5c';c.fillRect(xa-3,yt,xb-xa+6,yb-yt);c.strokeStyle='#f2c45a';c.lineWidth=.9;c.strokeRect(xa-2,yt+1,xb-xa+4,yb-yt-2);
+    try{s9Txt(c,'המעגן של '+nm,(xa+xb)/2,yt+5.2,6.6,'#ffe7a8',xb-xa-4);s9Txt(c,'מעגן פרטי · 10 מקומות',(xa+xb)/2,yt+10.6,3.6,'rgba(232,241,246,.9)',xb-xa-6,'600')}catch(e){}
+    if(nv>.3){BOAT34.lamp(c,xa+10,yt-1,'warm',10,.7*nv,0);BOAT34.lamp(c,xb-10,yt-1,'warm',10,.7*nv,0)}}}
+   for(const [x,y] of LAMPS){if(!e3InView(x-32,y-30,70,50,10))continue;c.fillStyle=N?'#59626a':'#3d4a54';c.fillRect(x-.7,y-27,5,1.3);c.fillStyle=nv>.3?'#ffe7a8':'#e8ecee';c.fillRect(x+2,y-26,3,1.6);
+    if(nv>.3){c.fillStyle='rgba(255,220,150,'+(.2*nv).toFixed(3)+')';c.beginPath();c.ellipse(x+3,y+5,30,15,0,0,TAU);c.fill();BOAT34.lamp(c,x+3.5,y-25,'warm',17,.9*nv,0)}}
+   c.restore()}catch(e){er('over',e)}}
+ S9_HOOKS.ground.push(ground);S9_HOOKS.props.push(props);S9_HOOKS.live.push(liveL);S9_HOOKS.over.push(over);
+
+  
+ const POIS={'F3-BOATSHOP':{id:'F3-BOATSHOP',label:'חנות הסירות',short:'חנות הסירות',x:6546,y:2106,chunk:'F3',app:'business',mode:'walk'},
+  'G4-MYMARINA':{id:'G4-MYMARINA',label:'המעגן שלי',short:'המעגן שלי',x:7214,y:2569,chunk:'G4',app:'business',mode:'walk'},
+  'G4-SHIPYARD':{id:'G4-SHIPYARD',label:'המספנה',short:'המספנה',x:7856,y:2656,chunk:'G4',app:'business',mode:'walk'}};
+ 
+
+ const FZONE={'G4-SHIPYARD':[G.ws[0]-8,G.ws[3]-2,G.ws[2]+8,G.ws[3]+46]};
+ const inZone=(id,x,y)=>{const z=FZONE[id];return !!z&&x>=z[0]&&x<=z[2]&&y>=z[1]&&y<=z[3]};
+ function nearPoi(r){if(PlayerProfile.mode!=='walk')return null;r=r||30;let best=null;for(const p of Object.values(POIS)){let d=Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y);if(inZone(p.id,PlayerPed.x,PlayerPed.y))d=Math.min(d,r*.5);if(d<=r&&(!best||d<best.d))best={...p,d}}return best}
+ try{PLACE_ID['F3-BOATSHOP']=()=>({name:'חנות הסירות של המרינה',kind:'סירות דייג · אופנועי ים · סירות מנוע · יאכטות',slogan:'הסירה שרואים כאן היא הסירה ששטים בה',c1:'#0b3a5c',c2:'#f2c45a',logo:placeMono('סירות','#0b3a5c','#f2c45a')});
+  PLACE_ID['G4-MYMARINA']=()=>({name:'המעגן של '+g77StName(),kind:'המעגן הפרטי שלך · 10 מקומות',slogan:'כל הסירות שלך במקום אחד — תדלוק, שם וניווט',c1:'#14506b',c2:'#ffd98a',logo:placeMono('מעגן','#14506b','#ffd98a')});
+  PLACE_ID['G4-SHIPYARD']=()=>({name:'המספנה של המרינה',kind:'מבדוק יבש · סדנה · שדרוגים',slogan:'מנוע, מיכל דלק, ציוד דיג, אלקטרוניקה, צבע ועיצוב',c1:'#3a4650',c2:'#f08a2a',logo:placeMono('מספנה','#3a4650','#f08a2a')})}catch(e){er('place',e)}
+ {const pI=interactNearbyPoi;interactNearbyPoi=function(){try{if(!(typeof G77_FF!=='undefined'&&G77_FF.open)&&!F.S.aboard){if(State.phoneOpen&&POIS[State.interactionId]){setPhoneOpen(false);return true}const p=nearPoi(30);if(p){State.serviceId=null;State.shopId=null;B.live();openPoiPhone('business',p.id);return true}}}catch(e){er('F',e)}return pI.apply(this,arguments)};
+  const pB=phoneBusinessBase;phoneBusinessBase=function(){const id=State.interactionId;if(POIS[id]){try{B.live();return id==='F3-BOATSHOP'?shopHtml():id==='G4-MYMARINA'?marinaHtml():yardHtml()}catch(e){er('html',e);return pnote('המסך לא נטען — '+String(e&&e.message||e))}}return pB.apply(this,arguments)};
+  const pN=navPoiRegistry;navPoiRegistry=function(){const o=pN.apply(this,arguments);for(const [id,p] of Object.entries(POIS))if(!o[id])o[id]={...p};return o};
+  const pH=hudGoalText;hudGoalText=function(){try{if(!F.S.aboard){const p=nearPoi(30);if(p)return State.mapQa?'מצלמה חופשית — F4 חוזר לשחקן, ואז F · '+p.label:'F · '+p.label}}catch(e){}return pH.apply(this,arguments)};
+  const pR=renderPhone;renderPhone=function(){const r=pR.apply(this,arguments);try{if(State.phoneOpen&&POIS[State.interactionId])requestAnimationFrame(paintCv)}catch(e){}return r}}
+
+  
+ const CSS=`#phoneOverlay.place #phoneBody>.bsW{grid-column:1/-1}.bsTabs{display:flex;gap:10px;flex-wrap:wrap}.bsTabs button{flex:1;min-width:170px;padding:13px 10px;border-radius:14px;font-weight:800;font-size:17px;background:#0e2a3d;color:#cfe3ee;border:1px solid #ffffff26}
+.bsTabs button.on{background:var(--pc1,#0b3a5c);color:#fff;border-color:var(--pc2,#f2c45a);box-shadow:0 0 0 2px var(--pc2,#f2c45a) inset}.bsTabs small{display:block;font-weight:400;font-size:12px;opacity:.8;margin-top:2px}
+.bsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}.bsCard{background:#0e2a3d;border:1px solid #ffffff22;border-radius:16px;overflow:hidden;color:#e8f1f6;display:flex;flex-direction:column}
+.bsCard canvas{width:100%;height:auto;display:block;background:#2c7fb0}.bsCard .bd{padding:12px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}.bsCard h4{margin:0;font-size:21px;color:#ffe08a}.bsCard .he{color:#a9c6d6;font-size:13.5px}
+.bsSpec{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:14px}.bsSpec div{display:flex;justify-content:space-between;border-bottom:1px solid #ffffff14;padding:2px 0}.bsSpec span{color:#a9c6d6}.bsSpec div.w{grid-column:1/-1}
+.bsBar{display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;font-size:12.5px;color:#a9c6d6}.bsBar i{display:block;height:8px;border-radius:5px;background:#ffffff1c;overflow:hidden}.bsBar i b{display:block;height:100%;background:linear-gradient(90deg,#2f86c1,#62d2ff)}
+.bsSw{display:flex;gap:7px;align-items:center;flex-wrap:wrap;font-size:13px;color:#a9c6d6}.bsSw button{width:38px;height:26px;border-radius:8px;padding:0;border:2px solid #ffffff40;position:relative;overflow:hidden}.bsSw button i{position:absolute;inset:auto 0 0 0;height:7px}
+.bsSw button.on{outline:3px solid var(--pc2,#f2c45a);outline-offset:1px}.bsPrice{font-size:22px;font-weight:800;color:#fff;margin-top:auto}.bsCard .phoneActions{margin-top:4px}.bsWhy{font-size:13px;color:#ffb3a8}
+.bsSlots{display:flex;gap:5px;align-items:flex-start;direction:ltr;margin:8px 0}.bsSlots div{border:2px solid #ffffff38;border-top:6px solid #b88d5f;border-radius:0 0 8px 8px;text-align:center;font-size:12px;color:#cfe3ee;padding:3px 2px;background:#0e3249}.bsSlots div.on{background:#1d6fa5;color:#fff;border-color:#ffe08a;border-top-color:#b88d5f}.bsSlots b{display:block;font-size:15px}
+.bsFuel{height:10px;border-radius:6px;background:#ffffff1c;overflow:hidden}.bsFuel b{display:block;height:100%;background:linear-gradient(90deg,#e0731d,#f2c230)}.bsIn{padding:9px 10px;border-radius:10px;border:1px solid #ffffff40;background:#071a27;color:#fff;font:inherit;width:150px}
+.bsLv{display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:center;font-size:14px;margin:4px 0}.bsLv .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#ffffff1c;font-weight:800}.bsLv .n.has{background:#3cb371;color:#06210f}.bsLv .n.nx{background:var(--pc2,#f08a2a);color:#201000}
+.bsLv button{padding:8px 12px;font-size:13.5px;border-radius:10px}.bsJob{display:grid;grid-template-columns:1fr;gap:6px}.bsJob .st{display:flex;gap:4px}.bsJob .st i{flex:1;height:8px;border-radius:5px;background:#ffffff1c}.bsJob .st i.d{background:#3cb371}.bsJob .st i.c{background:var(--pc2,#f08a2a)}
+.bsPick{display:flex;gap:8px;flex-wrap:wrap}.bsPick button{padding:9px 14px;border-radius:12px}.bsPick button.on{background:var(--pc1,#3a4650);color:#fff;box-shadow:0 0 0 2px var(--pc2,#f08a2a) inset}`;
+ function css(){if(document.getElementById('bsCss'))return;const s=document.createElement('style');s.id='bsCss';s.textContent=CSS;document.head.appendChild(s)}
+ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const story=id=>{try{const s=typeof S9STORY!=='undefined'?S9STORY.card(id):'';return s?'<div class="bsW">'+s+'</div>':''}catch(e){return ''}};
+ const stHe=b=>{const J=B.P().job;return J&&J.boat===b.id?'במספנה — '+B.PH_HE[J.phase]:b.rec.st==='in'?'בדרך אליך — סקיפר המסירה משיט אותה מהים':b.rec.st==='out'?'נמכרה — יוצאת לים':F.S.aboard===b.id?'בים — איתך':b.mode==='moored'?'קשורה במקום '+b.be.slot:'בדרך חזרה למקום '+b.be.slot+' עם איש המעגן'};
+ function shopHtml(){css();const st=B.P(),own=B.OWN.filter(b=>b.rec.st!=='out');let h=story('F3-BOATSHOP');
+  h+=`<div class="bsW bsTabs">${B.TYPES.map(([k,he,sub])=>`<button class="${UI.tab===k?'on':''}" data-bs="tab|${k}">${he}<small>${sub}</small></button>`).join('')}</div>`;
+  h+=`<div class="bsW bsGrid">${B.MODELS.filter(m=>m.type===UI.tab).map(m=>{const li=UI.liv[m.id]|0,sl=B.freeSlot(m.cls),can=PlayerProfile.money>=m.price&&!!sl,rng=Math.round(m.tank/m.burn/60);
+    return `<div class="bsCard"><canvas data-bs-cv="model|${m.id}|${li}" width="560" height="300"></canvas><div class="bd"><h4>${m.name}</h4><div class="he">${m.he}</div>
+<div class="bsSpec"><div><span>אורך</span><b>${m.len} מ׳</b></div><div><span>מקומות</span><b>${m.seats}</b></div><div><span>מהירות</span><b>${m.kn} קשר</b></div><div><span>מיכל דלק</span><b>${m.tank} ל׳</b></div><div class="w"><span>מנוע</span><b>${m.engine}</b></div><div class="w"><span>המקום במעגן שלך</span><b>${B.CLS_HE[m.cls]}</b></div></div>
+<div class="bsBar"><span>מהירות</span><i><b style="width:${Math.round(m.kn/52*100)}%"></b></i></div><div class="bsBar"><span>תאוצה</span><i><b style="width:${Math.round(Math.min(1,m.acc/78)*100)}%"></b></i></div><div class="bsBar"><span>טווח</span><i><b style="width:${Math.round(Math.min(1,rng/26)*100)}%"></b></i></div>
+<div class="bsSw"><span>הצבע:</span>${m.liv.map((q,i)=>`<button class="${i===li?'on':''}" style="background:${q[0]}" data-bs="liv|${m.id}|${i}" aria-label="צבע ${i+1}"><i style="background:${q[1]}"></i></button>`).join('')}${m.fish0?'<span>· כולל ציוד דיג</span>':''}</div>
+<div class="bsPrice">${money(m.price)}</div>${can?'':`<div class="bsWhy">${!sl?'אין מקום פנוי במעגן שלך לסירה כזו':'חסרים '+money(m.price-PlayerProfile.money)}</div>`}
+<div class="phoneActions"><button class="primary" data-bs="buy|${m.id}|${li}" ${can?'':'disabled'}>לקנות · מקום ${sl?sl.n:'—'} במעגן שלך</button></div></div></div>`}).join('')}</div>`;
+  h+=pcard('הסירות שלך',own.length?pkv(own.map(b=>['"'+esc(b.name)+'" · '+b.model.name,stHe(b)]))+`<div class="phoneActions"><button data-bs="nav|G4-MYMARINA">ניווט למעגן שלי</button><button data-bs="nav|G4-SHIPYARD">ניווט למספנה</button></div>`:pnote('עוד אין לך סירה. בוחרים סוג למעלה, צבע — וקונים. הסירה מגיעה בשיט אל המקום שלה במעגן שלך.'),'shop');
+  h+=pcard('איך זה עובד',pkv([['המעגן שלך','רציף חדש ממזרח לפתח של המרינה — 10 מקומות; מגיעים ברגל מהמזח המזרחי'],['שיט לבד',licenseOwned('LIC-10')?'יש לך רישיון סירה':'צריך רישיון סירה — המבחן בבית הספר לשייט, במועדון השייט'],['דיג מהסירה','בסירה עם ציוד דיג, ועם רישיון דיג עמוק'],['שדרוגים','במספנה שבקצה המעגן — מנוע, מיכל דלק, ציוד דיג, אלקטרוניקה, צבע ועיצוב']])+(licenseOwned('LIC-10')?'':`<div class="phoneActions"><button data-bs="nav|F3-CLUB">ניווט למועדון השייט — מבחן הסירה</button></div>`),'shop');return h}
+ function marinaHtml(){css();const st=B.P(),own=B.OWN.filter(b=>b.rec.st!=='out');let h=story('G4-MYMARINA');
+  h+=`<section class="pc bsW"><h3><span>המקומות במעגן</span></h3><div class="bsSlots">${B.SL.map(s=>{const b=own.find(q=>q.be.slot===s.n);return `<div class="${b?'on':''}" style="width:${Math.round(s.w*1.5)}px;height:${Math.round(30+s.d*.45)}px"><b>${s.n}</b>${b?esc(b.name):'פנוי'}</div>`}).join('')}</div>${pnote('שלושת המקומות הראשונים — לאופנועי ים; אחריהם שלושה לסירות עד 8 מ׳, שניים לסירות עד 12 מ׳, ושניים ליאכטות. המספנה — בקצה המזרחי של הרציף.')}</section>`;
+  if(!own.length)h+=pcard('אין כאן עדיין סירה',pnote('הסירות שקונים בחנות הסירות (בבניין מועדון השייט, מהטיילת) מגיעות לכאן — כל אחת למקום שלה.')+`<div class="phoneActions"><button class="primary" data-bs="nav|F3-BOATSHOP">ניווט לחנות הסירות</button></div>`,'shop');
+  h+=`<div class="bsW bsGrid">${own.map(b=>{const pc=Math.round(100*b.rec.fuel/b.tankMax),fc=B.fuelCost(b),moored=b.mode==='moored'&&b.rec.st==='ok',J=st.job&&st.job.boat===b.id;
+    return `<div class="bsCard"><canvas data-bs-cv="boat|${b.id}" width="560" height="260"></canvas><div class="bd"><h4>"${esc(b.name)}"</h4><div class="he">${b.model.name} · ${b.model.he} · ${stHe(b)}</div>
+<div class="bsSpec"><div><span>מהירות</span><b>${b.speed} קשר</b></div><div><span>מיכל</span><b>${b.tankMax} ל׳</b></div><div><span>ציוד דיג</span><b>${b.rods.length?b.rods.length+' חכות':'אין'}</b></div><div><span>אלקטרוניקה</span><b>${['אין','מאתר דגים','מאתר דגים ומכ״ם'][b.rec.up.elec||0]}</b></div></div>
+<div class="bsBar"><span>דלק ${pc}%</span><i class="bsFuel"><b style="width:${pc}%"></b></i></div>
+<div class="phoneActions"><button class="primary" data-bs="go|${b.id}">ניווט לסירה</button><button data-bs="fuel|${b.id}" ${moored&&fc>0&&PlayerProfile.money>=fc?'':'disabled'}>${fc>0?'תדלוק מלא · '+money(fc):'המיכל מלא'}</button></div>
+<div class="bsSw"><input class="bsIn" maxlength="14" value="${esc(b.name)}" data-bs-name="${b.id}" aria-label="שם הסירה"><button style="width:auto;height:auto;padding:8px 12px" data-bs="name|${b.id}">לשנות שם</button></div>
+<div class="phoneActions"><button data-bs="yard|${b.id}">שדרוג במספנה</button><button data-bs="sell|${b.id}" ${moored&&!J?'':'disabled'}>למכור · ${money(B.sellValue(b))}</button></div></div></div>`}).join('')}</div>`;
+  h+=pcard('שיט',pkv([['עלייה','F או E על האצבע שליד הסירה'],['נהיגה','W ו-S — מצערת · A ו-D — הגה · רווח — עצירה'],['ירידה','E כשהסירה בתוך המקום שלה — היא נקשרת בלי סיבוב'],['דלק','נגמר בים? סירת השירות גוררת אותך למקום שלך, בתשלום'],['רישיון',licenseOwned('LIC-10')?'יש לך רישיון סירה':'כדי לשוט לבד צריך רישיון סירה — המבחן במועדון השייט']]),'shop');return h}
+ const ybOf=()=>{const own=B.OWN.filter(b=>b.rec.st!=='out');let b=own.find(q=>q.id===UI.yb);if(!b){b=own[0]||null;UI.yb=b?b.id:null;UI.paint=null}return b};
+ function yardHtml(){css();const st=B.P(),J=st.job,own=B.OWN.filter(b=>b.rec.st!=='out');let h=story('G4-SHIPYARD');
+  if(UI.demo&&!J)h+=`<section class="pc bsW" style="border:2px solid var(--pc2,#f08a2a)"><h3><span>שדרוג לדוגמה (לוח F9)</span></h3>${pnote('1 · בוחרים סירה בשורה שלמטה. 2 · בוחרים שדרוג — "להראות על הסירה" מראה בתמונה איך היא תיראה. 3 · מזמינים (בדוגמה — בחינם, והעבודה מהירה). אז המסך נסגר, הסירה שטה אל המבדוק, והשלט "מה השתנה" והמצלמה מראים את החלק מקרוב — לפני ואחרי.')}</section>`;
+  if(J){const jb=B.byId(J.boat),ph=['sail','gate','pump','work','fill','open','back'],i=ph.indexOf(J.phase);h+=`<section class="pc bsW"><h3><span>במבדוק עכשיו — "${esc(jb?jb.name:'')}" · ${B.jobTxt(J)}</span></h3><div class="bsJob"><div class="st">${ph.map((p,k)=>`<i class="${k<i?'d':k===i?'c':''}"></i>`).join('')}</div><b>${B.PH_HE[J.phase]}${J.phase==='work'?' — עוד '+Math.max(1,Math.ceil(J.sec-J.t))+' שניות':''}</b>${J.what?'<span>מה משתנה: '+esc(J.what)+'</span>':''}</div>${pnote('הסירה נמצאת במבדוק היבש עד סוף העבודה, ואז חוזרת בשיט למקום שלה. אפשר לצאת מהמסך ולראות.')}</section>`}
+  if(!own.length){h+=pcard('המספנה',pnote('כאן משדרגים את הסירות שלך: מנוע, מיכל דלק, ציוד דיג, אלקטרוניקה, צבע ועיצוב. קודם קונים סירה בחנות הסירות.')+`<div class="phoneActions"><button class="primary" data-bs="nav|F3-BOATSHOP">ניווט לחנות הסירות</button></div>`,'shop');return h}
+  const b=ybOf(),m=b.model,u=b.rec.up,busy=!!J,ok=b.mode==='moored'&&b.rec.st==='ok'&&!busy,pt=UI.paint||(UI.paint={hull:b.rec.lv[0],stripe:b.rec.lv[1],design:u.design||0});
+  h+=`<div class="bsW bsPick">${own.map(q=>`<button class="${q.id===b.id?'on':''}" data-bs="yb|${q.id}">"${esc(q.name)}" · ${q.model.name}</button>`).joi
