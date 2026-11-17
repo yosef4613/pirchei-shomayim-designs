@@ -1,4 +1,246 @@
-rn false}}
+ayer){try{if(a.kind==='ac'||a.kind==='heli')a34EnqAc(a,now,layer);else a34EnqVeh(a,now,t)}catch(e){a34Err(e);if(a.kind==='ac'||a.kind==='heli'){try{a34GhostDraw(ctx,a,now)}catch(e2){}}else aptDrawVeh(ctx,a,now)}}    
+
+function a34QFlush(now,layer){const Q=A34Q.q;Q.sort((p,q)=>p.k-q.k);for(const e of Q){try{e.f()}catch(err){a34Err(err)}}Q.length=0;s6aFlushBags(ctx);if(layer==='ground')a34Pump()}
+function a34Pump(){if(A34G.lastFrame===A34G.frame)return;A34G.lastFrame=A34G.frame;const t0=performance.now();
+ try{const fr=A34G.frame;let need=false;for(const s of A34G.S.values()){if(!s.ready&&fr-s.req>A34G.fresh){a34Free(s);A34G.n.drop++}else if(!s.ready&&s.req===fr)need=true}let first=false;for(const s of A34G.S.values())if(!s.ready&&s.first>=fr-1){first=true;break}
+  const quiet=typeof C34G==='undefined'||performance.now()-C34G.tileT>C34G.tileQuietMs,left=typeof FS!=='undefined'?FS.budgetMs-FS.used:A34G.pumpMs;
+  const B=Math.max(quiet?(need?Math.max(A34G.minMs,Math.min(A34G.pumpMs,left)):Math.min(A34G.pumpMs,left)):0,first?(A34G.firstMs||4):0);    
+  if(B>0){const until=t0+B,J=[...A34G.S.values()].filter(s=>!s.ready).sort((p,q)=>((q.first>=fr-1)-(p.first>=fr-1))||q.req-p.req);    for(const s of J){if(performance.now()>until)break;A34G.n.jobs++;
+    while(performance.now()<=until&&!a34Step(s,until)){}}}
+  if(A34G.bytes>A34G.budgetMB*1048576){const R=[...A34G.S.values()].filter(s=>s.ready&&s.use<fr&&!(s.pre&&fr-s.pre<240&&(s.need==null||s.need-APT_OPS.clk<30))).sort((p,q)=>p.use-q.use);for(const s of R){if(A34G.bytes<=A34G.budgetMB*.85*1048576)break;a34Free(s);A34G.n.evict++}}}
+ catch(e){a34Err(e)}A34G.n.ms+=performance.now()-t0;A34G.n.pumps++}
+
+
+function a34ModelSweep(){if(!(A34G.mIdleMs>0)||!A34G.M.size)return;const now=performance.now();
+ for(const [mk,e] of A34G.M)if(now-(e.ts||0)>A34G.mIdleMs){A34G.M.delete(mk);A34G.n.mFree=(A34G.n.mFree||0)+1}}
+setInterval(()=>{try{a34ModelSweep()}catch(e){}},2000);
+window.__TC_A34={on:v=>{if(v!=null)A34G.on=!!v;return A34G.on},stats:()=>({...A34G.n,sets:A34G.S.size,models:A34G.M.size,MB:+(A34G.bytes/1048576).toFixed(1),frame:A34G.frame}),
+ reset:()=>{for(const k in A34G.n)A34G.n[k]=typeof A34G.n[k]==='number'?0:'';return 1},warm:ms=>{const until=performance.now()+(ms||2000);for(const s of A34G.S.values()){while(!s.ready&&performance.now()<until&&!a34Step(s,until)){}}return[...A34G.S.values()].filter(s=>s.ready).length}};
+
+
+
+var A34X={on:true,cap:false,ms:1.5,fx:0,wk:false,ns:false,mk:0,MK:null,seg0:0,dn:0,cpa:.6,prev:new Set(),cur:new Set(),subj:[],col:'#2f7cf6',edge:'#0b4fc4',a:.45,ea:.95,C:null,K:new Map(),kMax:48,pxMax:6e6,px:0,frame:0,n:{pairs:0,drawn:0,cached:0,miss:0,cut:0,ms:0,max:0,frames:0,err:0,last:''}};
+function a34XEvict(){const K=A34X.K;for(const [k,v] of K){if(K.size<=A34X.kMax&&A34X.px<=A34X.pxMax&&A34X.frame-v.f<=30)break;if(v.c){A34X.px-=v.w*v.h;v.c.width=v.c.height=0}K.delete(k)}}
+function a34XErr(e){A34X.n.err++;A34X.n.last=String(e&&e.message||e).slice(0,160)}
+function a34XCv(W,H){let C=A34X.C;if(!C){C=A34X.C=[0,1].map(()=>{const c=document.createElement('canvas');c.width=c.height=256;return{c,g:c.getContext('2d',{willReadFrequently:true})}})}   
+ for(const q of C)if(q.c.width<W||q.c.height<H){q.c.width=Math.max(q.c.width,W);q.c.height=Math.max(q.c.height,H)}
+ for(const q of C){q.g.setTransform(1,0,0,1,0,0);q.g.globalCompositeOperation='source-over';q.g.globalAlpha=1;q.g.clearRect(0,0,W,H)}return C}
+
+
+function a34XMask(Ly){if(Ly.mask!==undefined)return Ly.mask;try{const W=Ly.cv.width,H=Ly.cv.height,cs=8,gw=Math.ceil(W/cs),gh=Math.ceil(H/cs);let M=A34X.MK;if(!M){const c=document.createElement('canvas');c.width=c.height=64;M=A34X.MK={c,g:c.getContext('2d',{willReadFrequently:true})}}
+  if(M.c.width<gw||M.c.height<gh){M.c.width=Math.max(M.c.width,gw);M.c.height=Math.max(M.c.height,gh)}M.g.clearRect(0,0,gw,gh);M.g.imageSmoothingEnabled=true;M.g.imageSmoothingQuality='medium';M.g.drawImage(Ly.cv,0,0,W,H,0,0,W/cs,H/cs);
+  const d=M.g.getImageData(0,0,gw,gh).data,b=new Uint8Array(gw*gh);for(let i=0;i<gw*gh;i++)if(d[i*4+3]>10)b[i]=1;Ly.mask={cs,gw,gh,b}}catch(e){Ly.mask=null}return Ly.mask}
+
+function a34XHit(P,R){const L=P.Ly,M=a34XMask(L);if(!M)return true;const u=wx=>(wx-P.x)/P.k*P.dq-L.x0,v=wy=>(wy-P.y)/P.k*P.dq-L.y0;
+ const i0=Math.max(0,Math.floor(u(R[0])/M.cs)),i1=Math.min(M.gw-1,Math.floor(u(R[2])/M.cs)),j0=Math.max(0,Math.floor(v(R[1])/M.cs)),j1=Math.min(M.gh-1,Math.floor(v(R[3])/M.cs));
+ for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++)if(M.b[j*M.gw+i])return true;return false}
+
+function a34XRect(a){const [x,y,th]=a.pose;let w=40,h=16;try{const s=aptSpr(a.id);if(s&&s.w){w=s.w;h=s.h}}catch(e){}const c=Math.abs(Math.cos(th)),s=Math.abs(Math.sin(th)),ex=w/2*c+h/2*s,ey=w/2*s+h/2*c;
+ return[x-ex-2,y-ey-A34.K*4*A34_PXM-2,x+ex+2,y+ey+2]}
+
+function a34XKey(S,P,R,m){const r=v=>Math.round(v*4);const s=S.pic?('p'+r(S.pic.x)+','+r(S.pic.y)+','+S.pic.Ly.cv.width):S.veh?('v'+(S.veh.v&&S.veh.v.id||S.veh.id)+','+S.veh.pose.map(r).join(',')):('s'+S.k+','+r(S.x)+','+r(S.y)+','+r(S.h||0));
+ return s+'|'+P.key+'|'+Math.round(m.a*1000)}
+
+function a34XOccPic(P){return{R:P.R,key:'P'+Math.round(P.x*4)+','+Math.round(P.y*4)+','+P.Ly.cv.width,pic:P,draw:g=>{const L=P.Ly;g.translate(P.x,P.y);if(P.k!==1)g.scale(P.k,P.k);a34Turn(g,L,P.d);g.drawImage(L.cv,L.x0/P.dq,L.y0/P.dq,L.w/P.dq,L.h/P.dq)}}}
+function a34XPair(S,P,m){const Rs=S.pic?S.pic.R:S.veh?a34XRect(S.veh):S.R;let R=[Math.max(Rs[0],P.R[0]),Math.max(Rs[1],P.R[1]),Math.min(Rs[2],P.R[2]),Math.min(Rs[3],P.R[3])];
+ if(R[0]>=R[2]||R[1]>=R[3])return 0;let ck=P.key;if(P.box){const q=P.box(R);if(!q)return 0;R=q.b;ck=q.k}A34X.n.pairs++;
+ const key=a34XKey(S,{key:ck},R,m),hit=A34X.K.get(key);if(hit){hit.f=A34X.frame;A34X.K.delete(key);A34X.K.set(key,hit);if(hit.c){const X=Math.floor(m.a*R[0]+m.e)-2,Y=Math.floor(m.d*R[1]+m.f)-2;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(hit.c,0,0,hit.w,hit.h,X+hit.dx,Y+hit.dy,hit.dw,hit.dh);ctx.restore();A34X.n.cached++}return 0}
+ if(P.pic&&P.pic.Ly.mask===undefined){if(A34X.mk>0){A34X.n.cut++;return 0}A34X.mk++}   
+ if(P.pic&&!a34XHit(P.pic,R)){A34X.n.miss++;A34X.K.set(key,{c:null,f:A34X.frame});return 0}
+ const cw=ctx.canvas.width,ch=ctx.canvas.height;let Xr=Math.floor(m.a*R[0]+m.e)-2,Yr=Math.floor(m.d*R[1]+m.f)-2,X0=Math.max(0,Xr),Y0=Math.max(0,Yr),X1=Math.min(cw,Math.ceil(m.a*R[2]+m.e)+2),Y1=Math.min(ch,Math.ceil(m.d*R[3]+m.f)+2),W=X1-X0,H=Y1-Y0;
+ if(W<3||H<3||W>1400||H>1400)return 0;
+ 
+ const W0=W,H0=H,sq=W0*H0>480000?1/3:W0*H0>120000?.5:1;W=Math.ceil(W0*sq);H=Math.ceil(H0*sq);
+ 
+ if(A34X.dn>0&&A34X.fx+(performance.now()-A34X.seg0)+A34X.cpa>A34X.ms){A34X.n.cut++;return 0}const tm=performance.now();
+ const [O1,O3]=a34XCv(W,H),T=g=>g.setTransform(m.a*sq,m.b*sq,m.c*sq,m.d*sq,(m.e-X0)*sq,(m.f-Y0)*sq);
+ 
+ T(O1.g);{const g0=ctx,q1=typeof C34G!=='undefined'?C34G.q.length:0,q2=typeof G77_UP!=='undefined'?G77_UP.q.length:0;ctx=O1.g;A34X.cap=true;
+  try{if(S.f)S.f()}finally{ctx=g0;A34X.cap=false;if(typeof C34G!=='undefined')C34G.q.length=Math.min(C34G.q.length,q1);if(typeof G77_UP!=='undefined')G77_UP.q.length=Math.min(G77_UP.q.length,q2)}}
+ O1.g.setTransform(1,0,0,1,0,0);O1.g.globalAlpha=1;O1.g.globalCompositeOperation='source-in';O1.g.fillStyle=A34X.col;O1.g.fillRect(0,0,W,H);
+ 
+ for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])O3.g.drawImage(O1.c,0,0,W,H,dx,dy,W,H);O3.g.globalCompositeOperation='destination-out';O3.g.drawImage(O1.c,0,0,W,H,0,0,W,H);
+ O3.g.globalCompositeOperation='source-in';O3.g.fillStyle=A34X.edge;O3.g.fillRect(0,0,W,H);
+ 
+ for(const q of [O1,O3]){T(q.g);q.g.globalCompositeOperation='destination-in';P.draw(q.g);q.g.setTransform(1,0,0,1,0,0);q.g.globalCompositeOperation='source-over'}
+ 
+ O3.g.globalCompositeOperation='destination-over';O3.g.globalAlpha=A34X.a/A34X.ea;O3.g.drawImage(O1.c,0,0,W,H,0,0,W,H);O3.g.globalAlpha=1;O3.g.globalCompositeOperation='source-over';
+ 
+ let bx0=W,by0=H,bx1=-1,by1=-1;{const u=new Uint32Array(O3.g.getImageData(0,0,W,H).data.buffer);for(let y=0;y<H;y++){const r=y*W;let a=-1,b=-1;for(let x=0;x<W;x++)if(u[r+x]){a=x;break}if(a<0)continue;for(let x=W-1;x>=a;x--)if(u[r+x]){b=x;break}if(a<bx0)bx0=a;if(b>bx1)bx1=b;if(y<by0)by0=y;by1=y}}
+ const rep=A34X.prev.has(key);A34X.cur.add(key);
+ if(bx1<0){A34X.n.miss++;if(rep)A34X.K.set(key,{c:null,f:A34X.frame});A34X.cpa=.8*A34X.cpa+.2*Math.min(6,performance.now()-tm);return 0}
+ const bw=bx1-bx0+1,bh=by1-by0+1,ox=X0+bx0/sq,oy=Y0+by0/sq;
+ ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=A34X.ea;ctx.drawImage(O3.c,bx0,by0,bw,bh,ox,oy,bw/sq,bh/sq);ctx.restore();A34X.n.drawn++;A34X.dn++;
+ 
+ if(rep&&X0===Xr&&Y0===Yr){const c=document.createElement('canvas');c.width=bw;c.height=bh;const g=c.getContext('2d');g.globalAlpha=A34X.ea;g.drawImage(O3.c,bx0,by0,bw,bh,0,0,bw,bh);A34X.K.set(key,{c,w:bw,h:bh,dw:bw/sq,dh:bh/sq,dx:ox-Xr,dy:oy-Yr,f:A34X.frame});A34X.px+=bw*bh;a34XEvict()}
+ A34X.cpa=.8*A34X.cpa+.2*Math.min(6,performance.now()-tm);return 1}
+
+function a34XRun(Q){const t0=performance.now();A34X.wk=true;A34X.seg0=t0;const m=ctx.getTransform();
+ outer:for(let j=0;j<Q.length;j++){const P=Q[j];if(!P.pic||!P.pic.Ly.cv)continue;
+  for(let i=0;i<j;i++){const S=Q[i];if(!S.veh&&!S.pic)continue;if(S.pic&&(S.pic.Ly===P.pic.Ly||S.pic.set===P.pic.set))continue;    
+   const Rs=S.pic?S.pic.R:null;if(Rs&&(Rs[2]<=P.pic.R[0]||Rs[0]>=P.pic.R[2]||Rs[3]<=P.pic.R[1]||Rs[1]>=P.pic.R[3]))continue;
+   if(performance.now()-t0+A34X.fx>A34X.ms){A34X.n.cut++;break outer}
+   try{a34XPair(S,P.occ||(P.occ=a34XOccPic(P.pic)),m)}catch(e){a34XErr(e)}}}
+ const dt=performance.now()-t0;A34X.n.ms+=dt;A34X.fx+=dt}
+const __p391Flush=a34QFlush;
+a34QFlush=function(now,layer){if(!A34X.on||layer!=='ground')return __p391Flush(now,layer);const Q=A34Q.q.slice().sort((p,q)=>p.k-q.k);__p391Flush(now,layer);try{a34XRun(Q)}catch(e){a34XErr(e)}};
+window.__TC_A34X={on:v=>{if(v!=null)A34X.on=!!v;return A34X.on},stats:()=>({...A34X.n,cpa:+A34X.cpa.toFixed(2),msPerFrame:A34X.n.frames?+(A34X.n.ms/A34X.n.frames).toFixed(3):0,max:+A34X.n.max.toFixed(2),cache:A34X.K.size,px:A34X.px}),reset:()=>{for(const k in A34X.n)A34X.n[k]=typeof A34X.n[k]==='number'?0:'';return 1}};
+
+
+
+const __p391Begin=c34Begin;c34Begin=function(now){if(A34X.wk){A34X.n.frames++;if(A34X.fx>A34X.n.max)A34X.n.max=A34X.fx}A34X.wk=false;A34X.mk=0;A34X.dn=0;{const t=A34X.prev;t.clear();A34X.prev=A34X.cur;A34X.cur=t}A34X.subj.length=0;A34X.fx=0;A34X.frame++;a34XEvict();return __p391Begin(now)};
+const __p391Push=c34Push;c34Push=function(id,col,x,y,h,o){const n=C34G.q.length,r=__p391Push.apply(this,arguments);if(!A34X.ns&&C34G.q.length>n){const e=C34G.q[C34G.q.length-1];e.sx=x;e.sy=y;e.sh=h;e.sr=(o&&o.r)||60;e.spl=!!(o&&o.player)}return r};
+const __p391Stack=c34Stack;c34Stack=function(){A34X.ns=true;try{return __p391Stack.apply(this,arguments)}finally{A34X.ns=false}};   
+const __p391CFlush=c34Flush;c34Flush=function(now){if(A34X.on&&C34G.live&&portInView()){for(const e of C34G.q)if(e.sx!=null){const r=e.sr*.75;A34X.subj.push({k:e.spl?'pl':'q',x:e.sx,y:e.sy,h:e.sh,R:[e.sx-r,e.sy-r-26,e.sx+r,e.sy+r],f:e.f})}
+  A34X.subj.sort((a,b)=>(b.k==='pl')-(a.k==='pl'))}return __p391CFlush(now)};
+
+function a34XCraneRects(c,P){const o=stsParts(c,P),K=stsK(),B=[...o.side,...o.beams,o.boom,o.house,o.trol,o.cab];
+ if(o.sp){B.push([o.x-16,o.x+16,o.bt-4,o.bt+8,o.Hb-22,o.Hb+2]);const zs=o.zl+o.Hc+2,ty=P.ty,L=o.L,W=o.W;
+  if(P.load)B.push([o.x-L/2,o.x+L/2,ty-W/2,ty+W/2,o.zl,o.zl+o.Hc]);for(const b of [[o.x-L/2-1,o.x+L/2+1,ty-W/2-1,ty-W/2+1],[o.x-L/2-1,o.x+L/2+1,ty+W/2-1,ty+W/2+1],[o.x-L/2-1,o.x-L/2+1,ty-W/2,ty+W/2],[o.x+L/2-1,o.x+L/2+1,ty-W/2,ty+W/2]])B.push([...b,zs,zs])}
+ else if(P.grab){const gb=P.grab,r=11,zs=o.zl+16;B.push([o.x-r-gb.open*4,o.x+r+gb.open*4,P.ty-r,P.ty+r,o.zl,zs])}
+ return B.map(b=>[b[0],b[2]-K*b[5],b[1],b[3]-K*b[4]])}
+function a34XCrane(c,P){const t0=A34X.seg0=performance.now(),m=ctx.getTransform(),Q=a34XCraneRects(c,P);let R=[1e9,1e9,-1e9,-1e9];for(const q of Q){R[0]=Math.min(R[0],q[0]);R[1]=Math.min(R[1],q[1]);R[2]=Math.max(R[2],q[2]);R[3]=Math.max(R[3],q[3])}
+ const ov=(a,b)=>!(a[2]<=b[0]||a[0]>=b[2]||a[3]<=b[1]||a[1]>=b[3]);if(!A34X.subj.some(s=>ov(s.R,R)))return;A34X.wk=true;
+ const occ={R,key:'',
+  
+  box:Rq=>{let b=null,k='';for(const q of Q)if(ov(q,Rq)){const x0=Math.max(q[0],Rq[0]),y0=Math.max(q[1],Rq[1]),x1=Math.min(q[2],Rq[2]),y1=Math.min(q[3],Rq[3]);if(!b)b=[x0,y0,x1,y1];else{b[0]=Math.min(b[0],x0);b[1]=Math.min(b[1],y0);b[2]=Math.max(b[2],x1);b[3]=Math.max(b[3],y1)}k+=q.map(v=>Math.round(v)).join(',')+';'}
+   if(b){b[0]-=2;b[1]-=2;b[2]+=2;b[3]+=2}return b?{b,k}:null},
+  draw:g=>{g.fillStyle='#000';g.beginPath();for(const q of Q)g.rect(q[0],q[1],q[2]-q[0],q[3]-q[1]);g.fill()}};
+ for(const s of A34X.subj){if(!ov(s.R,R))continue;if(performance.now()-t0+A34X.fx>A34X.ms){A34X.n.cut++;break}
+  try{a34XPair(s,occ,m)}catch(e){a34XErr(e)}}
+ const dt=performance.now()-t0;A34X.n.ms+=dt;A34X.fx+=dt}
+const __p391Sts=c34Sts;c34Sts=function(c,P,S,now){const ok=__p391Sts(c,P,S,now);if(ok&&A34X.on&&A34X.subj.length){try{a34XCrane(c,P)}catch(e){a34XErr(e)}}return ok};
+
+
+
+var C34GH={on:true,n:{ghost:0,frames:0},g:0,PAL:null};
+
+
+const C34GH_LV={'LV-BS':1.25,'LV-CH':1.3,'LV-SH':1.2,'LV-TK':1.4,'LV-FK':1.6,'LV-TL':1.05,'LV-SM':1.45,'LV-RS':1.1};
+function c34GhostOk(id){const a=id.charCodeAt(0),b=id.charCodeAt(1);if(id.charCodeAt(2)!==45)return false;if(a===86)return b===72||b===83;if(a===67&&b===84)return true;return a===76&&b===86&&C34GH_LV[id.slice(0,5)]!=null}
+
+
+function c34GhostH(id,L,W){const p=id.slice(0,5),r=L/Math.max(1,W);if(C34GH_LV[p]!=null)return W*C34GH_LV[p];if(id.charCodeAt(0)===67)return W*1.05;return W*(r>3.2?1.25:p==='VH-MV'||p==='VH-VN'||id.startsWith('VS-')?1.05:p==='VH-SU'||p==='VH-PK'?.92:.8)}
+function c34GhostCol(o){const s=o&&o.state,c=s&&s.c!=null?s.c:0;let P=C34GH.PAL;if(!P){try{P=C34GH.PAL=typeof C34!=='undefined'&&C34.PAL?C34.PAL:(typeof PAL!=='undefined'?PAL:null)}catch(e){P=null}}const e=P&&(P[c]||P[0]);return e?e[1]:'#9aa2aa'}
+function c34GhostSh(hex,f){const m=/^#?([0-9a-f]{6})$/i.exec(hex||'');if(!m)return hex;const v=parseInt(m[1],16),ch=[v>>16&255,v>>8&255,v&255].map(x=>Math.round(f<0?x*(1+f):x+(255-x)*f));return 'rgb('+ch.join(',')+')'}
+function c34Ghost(c,id,x,y,o){if(NR34.on){C34GH.n.skip=(C34GH.n.skip||0)+1;C34GH.g++;return true}   
+ const I=TurboCity.info(id,o),fp=I&&I.fp;if(!I)return false;
+ const fx=fp?fp[0]:I.w*.08,fy=fp?fp[1]:I.h*.12,fw=fp?fp[2]:I.w*.84,fh=fp?fp[3]:I.h*.76,L=Math.max(fw,fh),W=Math.min(fw,fh),H=c34GhostH(id,L,W);
+ const m=c.getTransform(),sc=Math.sqrt(Math.abs(m.a*m.d-m.b*m.c)),dz=(typeof C34!=='undefined'&&C34.K?C34.K:.6)*H*sc;
+ const P=[[x+fx,y+fy],[x+fx+fw,y+fy],[x+fx+fw,y+fy+fh],[x+fx,y+fy+fh]].map(q=>[m.a*q[0]+m.c*q[1]+m.e,m.b*q[0]+m.d*q[1]+m.f]),T=P.map(p=>[p[0],p[1]-dz]);
+ const col=c34GhostCol(o),cx=(P[0][0]+P[2][0])/2,cy=(P[0][1]+P[2][1])/2;
+ c.save();c.setTransform(1,0,0,1,0,0);
+ for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4];let nx=b[1]-a[1],ny=-(b[0]-a[0]);if(nx*((a[0]+b[0])/2-cx)+ny*((a[1]+b[1])/2-cy)<0){nx=-nx;ny=-ny}if(ny<=0)continue;   
+  const l=Math.hypot(nx,ny)||1;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.lineTo(b[0],b[1]-dz);c.lineTo(a[0],a[1]-dz);c.closePath();c.fillStyle=c34GhostSh(col,-.28-.12*Math.abs(nx/l));c.fill()}
+ c.beginPath();c.moveTo(T[0][0],T[0][1]);for(let i=1;i<4;i++)c.lineTo(T[i][0],T[i][1]);c.closePath();c.fillStyle=c34GhostSh(col,.05);c.fill();
+ c.beginPath();c.moveTo(P[0][0],P[0][1]);for(const p of [P[1],P[2],P[3]])c.lineTo(p[0],p[1]);c.closePath();for(let i=0;i<4;i++){c.moveTo(T[i][0],T[i][1]);c.lineTo(P[i][0],P[i][1])}c.moveTo(T[0][0],T[0][1]);for(const p of [T[1],T[2],T[3],T[0]])c.lineTo(p[0],p[1]);
+ c.strokeStyle='rgba(12,18,24,.32)';c.lineWidth=Math.max(.6,sc*.6);c.stroke();c.restore();C34GH.n.ghost++;C34GH.g++;return true}
+const __p394Draw=TurboCity.draw;
+TurboCity.draw=function(c,id,x,y,o){
+ if(C34GH.on&&!(typeof NR34!=='undefined'&&NR34.player)&&c===GAME_CTX&&typeof id==='string'&&c34GhostOk(id)&&C34G.on&&!MAPBASE.pass&&WTC_MODE!==1&&ctx===GAME_CTX){    
+  try{if(c34Ghost(c,id,x,y,o||{}))return}catch(e){}}
+ return __p394Draw.apply(this,arguments)};
+
+
+const __p394Fork=c34ForkProp;c34ForkProp=function(r){if(__p394Fork(r))return true;
+ if(C34GH.on&&C34G.on&&ctx===GAME_CTX&&WTC_MODE!==1&&!MAPBASE.pass&&r&&typeof r.id==='string'&&c34GhostOk(r.id)){try{return c34Ghost(ctx,r.id,r.x,r.y,r.o||{})}catch(e){}}return false};
+window.__TC_GHOST={on:v=>{if(v!=null)C34GH.on=!!v;return C34GH.on},stats:()=>({...C34GH.n,g:C34GH.g})};
+
+
+
+var A34P={on:true,ahead:30,step:1,every:20,max:8,near:400,n:{lists:0,asked:0,poses:0,skip:0}},A34P_L=new WeakMap();
+function a34PreList(a,f,t){const N=A34G.dirs,out=[],seen=new Set();
+ for(let k=1;k*A34P.step<=A34P.ahead;k++){const p=g77AcPoseAt(f,t+k*A34P.step);A34P.n.poses++;if(!p)continue;if((p[3]||0)>8)break;   
+  const phi=p[2]-Math.PI/2,b=((Math.round(phi/(2*Math.PI/N))%N)+N)%N;if(seen.has(b))continue;seen.add(b);out.push(b);if(out.length>=A34P.max)break}   
+ A34P.n.lists++;return out}
+function a34Pre(a){if(!A34P.on||!a||a.kind!=='ac'||!a.f||!a.f.tracks)return;const [x,y,,z0]=a.pose,z=z0||0;if(z>8)return;
+ const t=typeof APT_OPS!=='undefined'?APT_OPS.clk:null;if(t==null)return;
+ 
+ const R=A34P.near;if(typeof c34In==='function'&&!c34In(x-R,y-R,2*R,2*R)){A34P.n.skip++;return}
+ if(!g77Moving(a,x,y)&&!(a.f.tPush!=null&&a.f.tPush>t-1&&a.f.tPush<t+A34P.ahead)){A34P.n.skip++;return}
+ let e=A34P_L.get(a.f);if(!e||A34G.frame-e.fr>=A34P.every){e={fr:A34G.frame,bs:a34PreList(a,a.f,t)};A34P_L.set(a.f,e)}if(!e.bs.length)return;
+ const L=a34Liv(a.id,a.f),mk=a.id+'|'+L.key,dq=a34Dens();if(A34G.bad.has(mk))return;
+ e.bs.forEach((b,i)=>{const key=mk+'|'+b+'|'+dq+'|g';let set=A34G.S.get(key);
+  if(!set){set={key,mk,id:a.id,lv:L.lv,spin:false,b,dq,st:'g',ready:false,P:null,req:A34G.frame-1-i,use:A34G.frame,pre:1};A34G.S.set(key,set);A34G.n.sets++}
+  if(!set.ready){set.req=Math.max(set.req,A34G.frame-1-Math.min(i,90));A34P.n.asked++}else set.use=A34G.frame})}   
+const __p397Enq=a34EnqAc;a34EnqAc=function(a,now,layer){const r=__p397Enq.apply(this,arguments);try{a34Pre(a)}catch(e){}return r};
+window.__TC_A34P={on:v=>{if(v!=null)A34P.on=!!v;return A34P.on},stats:()=>({...A34P.n})};
+
+
+
+var P392={on:true,g:0,n:{kit:0,ghost:0,carts:0,farm:0,farmGhost:0}};
+
+const C34_GSE={'LV-FT-01':['tanker',null,1.4],'G7-WT':['tanker',null,1.35],'G7-LV':['tanker',null,1.3],'LV-BT-01':['btug',null,1.3],'G7-CU':['btug',null,1.3],'LV-PT-01':['ptug',null,.75],
+ 'G7-BL':['belt',null,1.5],'G7-CT':['cater',null,1.5],'G7-GP':['gpu',null,1],'G7-GC':['gpu',null,1],'G7-HL':['hilo',null,.8],'F2-MS':['stairs',null,1.7],'G7-SH':['shuttle',null,1.2],
+ 'LV-TR-01':['ftrac',null,1.15],'LV-CM-01':['comb',null,1.05],'LV-FW-01':['fwag',null,.65]};
+const P392_FARM={'LV-TR-01':'#3f7f2e','LV-CM-01':'#3f7f2e','LV-FW-01':'#8a5a32'};
+C34GH_LV['LV-TR']=1.15;C34GH_LV['LV-CM']=1.05;C34GH_LV['LV-FW']=.65;   
+
+function p392Ghost(x,y,th,L,W,H,col,al){if(NR34.on)return;   
+const c=Math.cos(th),s=Math.sin(th),hl=L/2,hw=W/2,dz=(C34.K||.6)*H,P=[[hl,-hw],[hl,hw],[-hl,hw],[-hl,-hw]].map(([u,v])=>[x+u*c-v*s,y+u*s+v*c]),T=P.map(p=>[p[0],p[1]-dz]);
+ ctx.save();if(al!=null&&al<1)ctx.globalAlpha*=al;
+ for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4],ny=a[0]-b[0];if(ny<=0)continue;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineTo(b[0],b[1]-dz);ctx.lineTo(a[0],a[1]-dz);ctx.closePath();ctx.fillStyle=c34GhostSh(col,-.3);ctx.fill()}
+ ctx.beginPath();ctx.moveTo(T[0][0],T[0][1]);for(let i=1;i<4;i++)ctx.lineTo(T[i][0],T[i][1]);ctx.closePath();ctx.fillStyle=c34GhostSh(col,.03);ctx.fill();ctx.strokeStyle='rgba(12,18,24,.32)';ctx.lineWidth=.6;ctx.stroke();ctx.restore()}
+
+function p392Carts(g,a,al){const tr=a.tr;if(!tr||!tr.carts||!tr.carts.length)return;const cs=[],K=C34.K||.6;let lift=0;
+ for(let i=0;i<tr.carts.length;i++){const q=tr.cartAt(a.pose,i,a.lt,tr),c=tr.carts[i],Lc=2*c.hx,Wc=2*c.hy,id=C34.kit('bcart',Lc,Wc);
+  const ok=c34Now(id,'#aab4bd',q[0],q[1],q[2],{alpha:al<1?al:null,r:Lc*.6+8});if(!ok)p392Ghost(q[0],q[1],q[2],Lc,Wc,Wc*.55,'#aab4bd',al);
+  lift=K*(Wc/1.5)*.55;cs.push(q);P392.n.carts++}
+ f2DrawTrainBags(g,a,cs.map(q=>[q[0],q[1]-lift,q[2]]),al)}
+
+function p392Apt(g,a,t,now){if(!P392.on)return null;const asset=(t&&S6A_ASSET[t])||a.id,k=asset&&C34_GSE[asset];
+ if(!k){if(!asset||!C34_APT[asset])return null;   
+  const r=__p392Apt(g,a,S6A_ASSET[t]?t:null,now);if(r)return r;if(g!==ctx||!c34Live())return false;const [x,y,th,,al]=a.pose,[Lw,Ww]=c34Dims(asset,aptVehGs(asset));if(!(Lw>0))return false;
+  p392Ghost(x,y,th,Lw,Ww,Ww*1.05,c34Col({c:0}),al);P392.n.ghost++;P392.g++;return true}
+ if(g!==ctx||!c34Live())return false;const [x,y,th,,al]=a.pose;if(!(al>0))return true;
+ const T=t&&S6A_TYPES[t],D=T?[T[1]*A34_PXM,T[2]*A34_PXM]:asset==='F2-MS'?[F2_MS.len,F2_MS.wid]:(g77GseDim()[asset]||c34Dims(asset,aptVehGs(asset))),Lw=D[0],Ww=D[1];if(!(Lw>0&&Ww>0))return false;
+ const id=C34.kit(k[0],Lw,Ww,k[1]||undefined),v=a.v,bar=!!(v&&a.lt!=null&&g77BeaconSet().has(v.type));
+ const ok=c34Now(id,c34Col({c:0}),x,y,th,{alpha:al<1?al:null,st:c34St(false,false,0,true,bar),key:v&&v.id?'APT|'+v.id:null,r:Lw*.6+12});
+ if(!ok)p392Ghost(x,y,th,Lw,Ww,k[2]*Ww,'#eef1f3',al);P392.n[ok?'kit':'ghost']++;P392.g++;
+ p392Carts(g,a,al);return true}
+
+const __p392Amb=g77AmbDraw;g77AmbDraw=function(g,a,now){if(P392.on&&g===ctx&&c34Live()){try{const [x,y,th,,al]=a.pose;if(!(al>0))return;const asset=a.id||'VS-AM-02',[Lw,Ww]=c34Dims(asset,aptVehGs(asset));
+ if(Lw>0){const ok=c34Now(C34.kit('cater',Lw,Ww),c34Col({c:0}),x,y,th,{alpha:al<1?al:null,r:Lw*.6+12});if(!ok)p392Ghost(x,y,th,Lw,Ww,Ww*1.5,'#eef1f3',al);P392.n[ok?'kit':'ghost']++;P392.g++;return}}catch(e){c34Err(e)}}
+ return __p392Amb.apply(this,arguments)};
+const __p392Apt=c34Apt;c34Apt=function(g,a,t,now){let r=null;try{r=p392Apt(g,a,t,now)}catch(e){c34Err(e);r=null}return r===null?__p392Apt.apply(this,arguments):r};
+
+function p392Farm(c,id,x,y,o){const m=ctx.getTransform(),I=TurboCity.info(id,o);if(!I||!I.fp)return false;
+ const lx=x+I.fp[0]+I.fp[2]/2,ly=y+I.fp[1]+I.fp[3]/2,[S,e,f]=c34CamM(),X=m.a*lx+m.c*ly+m.e,Y=m.b*lx+m.d*ly+m.f,wx=(X-e)/S,wy=(Y-f)/S,h=Math.atan2(m.b,m.a),k=Math.hypot(m.a,m.b)/S;
+ const Lw=I.fp[2]*k,Ww=I.fp[3]*k,kid=C34.kit(C34_GSE[id][0],Lw,Ww);let ok=false;ctx.save();ctx.setTransform(S,0,0,S,e,f);try{ok=c34Now(kid,P392_FARM[id],wx,wy,h,{r:Lw*.6+12})}finally{ctx.restore()}
+ if(ok){P392.n.farm++;P392.g++}else P392.n.farmGhost++;return ok}
+const __p392Draw=TurboCity.draw;
+TurboCity.draw=function(c,id,x,y,o){
+ if(P392.on&&typeof id==='string'&&P392_FARM[id]&&c===GAME_CTX&&ctx===GAME_CTX&&WTC_MODE!==1&&!MAPBASE.pass&&c34Live()){try{if(p392Farm(c,id,x,y,o||{}))return}catch(e){c34Err(e)}}
+ return __p392Draw.apply(this,arguments)};   
+window.__TC_P392={on:v=>{if(v!=null)P392.on=!!v;return P392.on},stats:()=>({...P392.n,g:P392.g})};
+
+
+
+var P399={on:true,sp:null,n:{semi:0,name:0,plate:0}};
+const __p399Semi=c34Semi;c34Semi=function(v,x,y,h,Lw){const n=C34G.q.length,r=__p399Semi.apply(this,arguments);
+ if(P399.on&&!A34X.ns&&C34G.q.length>n)for(let i=n;i<C34G.q.length;i++){const e=C34G.q[i];if(e.sx==null){e.sx=x;e.sy=y;e.sh=h;e.sr=(+Lw||200)*.6+20;e.spl=v===PlayerCar;P399.n.semi++}}
+ return r};
+
+function p399Spots(){if(P399.sp)return P399.sp;const B=PORT_BOX,m=300;P399.sp=g7RoadNameSpots().filter(s=>s.x>B.x-m&&s.x<B.x+B.w+m&&s.y>B.y-m&&s.y<B.y+B.h+m);return P399.sp}
+function p399Names(c,P){const Q=a34XCraneRects(c,P);if(!Q.length)return;let R=[1e9,1e9,-1e9,-1e9];for(const q of Q){R[0]=Math.min(R[0],q[0]);R[1]=Math.min(R[1],q[1]);R[2]=Math.max(R[2],q[2]);R[3]=Math.max(R[3],q[3])}
+ const z=Camera.zoom;for(const s of p399Spots()){if(s.x<R[0]-400||s.x>R[2]+400||s.y<R[1]-400||s.y>R[3]+400)continue;const p=g7RnPlace(s),g=g7LabelFit(s.t,p.half,z);if(!g)continue;
+  const hw=g.w/2+g.px*.6,hh=g.h/2,ex=s.v?hh:hw,ey=s.v?hw:hh;if(p.x+ex<=R[0]||p.x-ex>=R[2]||p.y+ey<=R[1]||p.y-ey>=R[3])continue;
+  if(!Q.some(q=>!(p.x+ex<=q[0]||p.x-ex>=q[2]||p.y+ey<=q[1]||p.y-ey>=q[3])))continue;
+  ctx.save();ctx.beginPath();for(const q of Q)ctx.rect(q[0],q[1],q[2]-q[0],q[3]-q[1]);ctx.clip();ctx.globalAlpha=A34X.ea*.8;ctx.translate(p.x,p.y);if(s.v)ctx.rotate(-Math.PI/2);g7Label(s.t,0,0,p.half);ctx.restore();P399.n.name++}
+ 
+ if(typeof PORT_SIGNS!=='undefined')for(const s of PORT_SIGNS){const w=Math.max(s.w,160),x0=s.x-w/2,x1=s.x+w/2,y0=s.y-8,y1=s.y+8;if(x1<=R[0]||x0>=R[2]||y1<=R[1]||y0>=R[3])continue;
+  if(!Q.some(q=>!(x1<=q[0]||x0>=q[2]||y1<=q[1]||y0>=q[3])))continue;
+  ctx.save();ctx.beginPath();for(const q of Q)ctx.rect(q[0],q[1],q[2]-q[0],q[3]-q[1]);ctx.clip();ctx.globalAlpha=A34X.ea*.8;e4Plate(s.t,s.x,s.y,s.w);ctx.restore();P399.n.plate=(P399.n.plate||0)+1}}
+const __p399Sts=c34Sts;c34Sts=function(c,P,S,now){const ok=__p399Sts(c,P,S,now);if(ok&&P399.on&&A34X.on){try{p399Names(c,P)}catch(e){a34XErr(e)}}return ok};
+window.__TC_P399={on:v=>{if(v!=null)P399.on=!!v;return P399.on},stats:()=>({...P399.n,spots:P399.sp?P399.sp.length:null,x:{...A34X.n}})};
+
+
+
+var P400={on:true,zR:4.0,h:2.9,hCab:3.1,zRest:3.6,hPax:1.76,hw:{hwF:9.5,hwA:10.5,hwB:9},door:new Map(),n:{drawn:0,flat:0,pax:0,paxOut:0,err:0,last:''}};
+
+function p400Parts(P){const K=G77_K72,o={hwF:K.hwF,hwA:K.hwA,hwB:K.hwB};Object.assign(K,P400.hw);try{return g77K72Parts(P)}finally{Object.assign(K,o)}}
+function p400Err(e){P400.n.err++;P400.n.last=String(e&&e.message||e).slice(0,160)}
+function p400Live(){try{return P400.on&&typeof c34Live==='function'&&c34Live()&&typeof A34G!=='undefined'&&A34G.on&&a34LibInit()}catch(e){return false}}
 
 function p400Door(ac){let d=P400.door.get(ac);if(d!==undefined)return d;d=null;
  
@@ -1877,7 +2119,7 @@ function g76RailAudit(){
  if(!(G76_XING.y===CARGO_W.lane&&G76_XING.y>RA_TRACK_END+40&&G76_XING.y<APT_FENCE_Y))issues.push('crossing-not-on-lane');
  
  for(const T of RL_TRAINS){if(T.err){issues.push(T.id+':'+T.err);continue}const nW=T.cars.filter(c=>/^W\d$/.test(c.id)).length;
-  for(const R of T.runs){for(const [id] of R.legs)if(/^ISL-/.test(id)&&!T.passenger)issues.push(T.id+':island-branch');    
+  for(const R of T.runs){for(const [id] of R.legs)if(/^ISL-/.test(id)&&!T.passenger&&!T.islandFreight)issues.push(T.id+':island-branch');        
    if(nW>4){let mn=1e9;for(const p of R.P.pts)mn=Math.min(mn,p[1]);if(mn<PORT_TURNBACK_GUARD_Y)issues.push(T.id+':north-of-guard:'+Math.round(mn))}}}
  const I=g76XBuild(),busy=I.map(q=>({id:q.T.id,closed:Math.round(q.L.reduce((s,[a,b])=>s+(b-a),0)),cycle:Math.round(q.T.cycle)}));
  if(!I.length||!I[0].L.length)issues.push('crossing-never-closed');
@@ -2349,6 +2591,78 @@ window.__TC_P555=p555Audit;
    for(const w of cand){if(w<ch+6||w>L*.5)continue;const p=clearCurbPoint(e,fromA?w:L-w,sg,others,true,gap);if(!p)continue;const pa=(p.x-j.x)*ux+(p.y-j.y)*uy;if(Math.abs(pa-w)>6||(pa>m0&&pa<m1))continue;
     moved.push({id:l.id,road:e.id,from:[Math.round(l.x),Math.round(l.y)],to:[Math.round(p.x),Math.round(p.y)],crossing:c.id,side:w===c1?'פינה':'בלוק'});l.x=p.x;l.y=p.y;if(p.rot!=null)l.rot=p.rot;l.r76=1;try{POLE_FIT_CACHE.delete(l)}catch(x){}done=true;break}
    if(!done)stuck.push({id:l.id,crossing:c.id})}}})();
+
+
+ 
+var ISLF={id:'FRT-ISL',err:null,lag:null,sep:null,spanFree:null,ok:false,dwell:{port:25},home:380,headIsl:100,pallets:0};
+const ISLF_DOCK=(()=>{const A=S13D.sb[0],B=S13D.sb[1],L=Math.hypot(B[0]-A[0],B[1]-A[1]),u=[(B[0]-A[0])/L,(B[1]-A[1])/L],n=[-u[1],u[0]],at=(f,o)=>[A[0]+u[0]*L*f+n[0]*o,A[1]+u[1]*L*f+n[1]*o];
+ return{A,B,L,u,n,at,poly:[at(.57,34),at(.90,34),at(.90,64),at(.57,64)],shed:[8880,7550,8990,7630],door:[8935,7550]}})();
+function islfDef(lag){const L2=RAIL_SEG_BY_ID['ISL-B2'].len,h=ISLF.home,st=L2-ISLF.headIsl;return{id:ISLF.id,label:'רכבת המשא של האי · קרון סגור וקטר · רציף W2 בנמל ↔ פס ב׳ של תחנת האי',vmax:60,lag,
+ cars:[{id:'W1',asset:'RL-FR-03',variant:0,label:'קרון סגור · משטחים לאי'},{id:'L',asset:'RL-FR-01',label:'קטר משא · רכבת האי'}],
+ runs:[{to:'תחנת האי · פס ב׳ · רציף הפריקה',stop:'work',dwell:0,legs:[['Q2-E',h,'E'],['EAST-S0','S','E'],['EAST-S1','S','E'],['ISL-B1','S','E'],['ISL-B2','S',st]]},
+  {to:'רציף W2 בנמל · המסילה הדרומית',stop:'quay',dwell:ISLF.dwell.port,legs:[['ISL-B2',st,'S'],['ISL-B1','E','S'],['EAST-S1','E','S'],['EAST-S0','E','S'],['Q2-E','E',h]]}]}}
+ 
+function islfBuild(D){const T={id:D.id,label:D.label,off:0,vmax:D.vmax||RL_V,cars:D.cars.map(c=>({...c,len:rlCarLen(c.asset)})),runs:[],err:null,islandFreight:true};
+ try{T.L=T.cars.reduce((s,c)=>s+c.len,0)+RL_GAP*(T.cars.length-1);const off=order=>{let s=0;const o=new Array(T.cars.length);for(const i of order){o[i]=s+T.cars[i].len/2;s+=T.cars[i].len+RL_GAP}return o};
+  T.offFwd=off(T.cars.map((_,i)=>i));T.offRev=off(T.cars.map((_,i)=>T.cars.length-1-i));let t=0;
+  for(const R of D.runs){const P=rlPathBuild(R.legs),prof=rlRunProfile(R.legs,P,T.L,T.vmax);T.runs.push({...R,P,d:P.len-T.L,tm:prof.T,prof,t0:t,t1:t+prof.T,tEnd:t+prof.T+R.dwell});t+=prof.T+R.dwell}
+  const F=rlTrain('FRT-3'),C=F&&!F.err?F.cycle:740;T.runs[0].dwell+=C-t;let u=0;for(const Q of T.runs){Q.t0=u;Q.t1=u+Q.tm;Q.tEnd=Q.t1+Q.dwell;u=Q.tEnd}T.cycle=u;T.off=F&&!F.err?(((F.off-D.lag)%u)+u)%u:0}catch(e){T.err=String(e&&e.message||e)}return T}
+ 
+function islfOnSpan(T,t){const S=rlState(T,t*1000);if(!S)return false;try{for(const c of rlCars(S))if(s13InPoly(S13_LF.poly,c.x,c.y))return true}catch(e){}return false}
+(function(){try{if(typeof g76Blocks!=='function')throw new Error('no g76Blocks');for(const id of ['Q2-E','EAST-S0','EAST-S1','ISL-B1','ISL-B2'])if(!RAIL_SEG_BY_ID[id])throw new Error('no seg '+id);
+ const T0=islfBuild(islfDef(0));if(T0.err)throw new Error(T0.err);const C=Math.round(T0.cycle),H=3*C;
+ const others=RL_TRAINS.filter(q=>!q.err&&q.id!==ISLF.id),occ=new Map(),span=new Uint8Array(H);
+ for(const q of others){for(let t=0;t<H;t++){const S=rlState(q,t*1000);if(!S)continue;for(const b of g76Blocks(S)){let a=occ.get(b);if(!a){a=new Uint8Array(H);occ.set(b,a)}a[t]=1}if(q.id==='RL-PS-02'||q.island)if(islfOnSpan(q,t))span[t]=1}}
+  
+ const mine=[],mySpan=new Uint8Array(C);for(let t=0;t<C;t++){const S=rlState(T0,t*1000);mine.push(S?[...g76Blocks(S)]:[]);if(islfOnSpan(T0,t))mySpan[t]=1}
+ let best=null;for(const M of [20,12,8,4]){const dil=new Map();for(const [b,a] of occ){const o=new Uint8Array(H);for(let t=0;t<H;t++)if(a[t])for(let d=-M;d<=M;d++){const k=t+d;if(k>=0&&k<H)o[k]=1}dil.set(b,o)}
+  for(let lag=0;lag<C;lag+=2){let bad=false;
+    
+   for(let t=0;t<H&&!bad;t++){const L=mine[((t-lag)%C+C)%C];for(const b of L){const a=dil.get(b);if(a&&a[t]){bad=true;break}}}
+   if(bad)continue;
+    
+   const S=new Uint8Array(C);for(let t=0;t<C;t++)S[t]=(span[t]||mySpan[((t-lag)%C+C)%C])?1:0;let w=0,cur=0;for(let k=0;k<2*C;k++){if(S[k%C]){cur=0}else{cur++;if(cur>w)w=cur}}w=Math.min(w,C);
+   if(!best||w>best.w)best={lag,M,w}}if(best)break}
+ if(!best)throw new Error('no free window');ISLF.lag=best.lag;ISLF.sep=best.M;ISLF.spanFree=best.w;
+ const T=islfBuild(islfDef(best.lag));if(T.err)throw new Error(T.err);RL_TRAINS.push(T);ISLF.ok=true}catch(e){ISLF.err=String(e&&e.message||e)}})();
+ 
+function islfState(now){const T=rlTrain(ISLF.id);if(!T||T.err)return null;return rlState(T,now)}
+ 
+function islfAtDock(S){return!!(S&&S.R&&S.R.stop==='work'&&!S.moving)}
+function islfDockDraw(c,now,N){const D=ISLF_DOCK;if(!e3InView(8740,7360,320,300,40))return;c.save();
+ c.fillStyle='rgba(8,18,26,.18)';c.beginPath();D.poly.forEach((p,i)=>i?c.lineTo(p[0]+3,p[1]+4):c.moveTo(p[0]+3,p[1]+4));c.closePath();c.fill();
+ c.fillStyle=N?'#5d5a52':'#b7b2a4';c.beginPath();D.poly.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();c.fill();
+ c.strokeStyle='#d9b23a';c.lineWidth=2.5;c.beginPath();c.moveTo(D.poly[0][0],D.poly[0][1]);c.lineTo(D.poly[1][0],D.poly[1][1]);c.stroke();    
+  
+ const S=islfState(now),k=S&&islfAtDock(S)?Math.min(6,Math.floor(Math.max(0,S.dwellDone-8)/22)):0;for(let i=0;i<3;i++){const p=D.at(.60+i*.03,52);c.fillStyle=i<3-Math.min(3,k)?'#a07a4a':'rgba(160,122,74,.25)';c.fillRect(p[0]-5,p[1]-4,10,8)}
+  const r=D.shed;c.fillStyle=N?'#3a3d40':'#8e9196';c.fillRect(r[0]-14,r[1]-16,r[2]-r[0]+28,r[3]-r[1]+16);c.restore()}
+function islfForklift(c,now,N){const S=islfState(now);if(!islfAtDock(S))return;const D=ISLF_DOCK;if(!e3InView(8840,7420,260,240,40))return;
+ const cars=rlCars(S),w=cars.find(q=>q.car.id==='W1');if(!w)return;const door=[w.x+D.n[0]*30,w.y+D.n[1]*30],shed=[D.door[0],D.door[1]-6],L=Math.hypot(shed[0]-door[0],shed[1]-door[1]);
+ const T=Math.max(0,S.dwellDone-6),per=2*L/22+8,ph=(T%per),loaded=ph<per/2,f=Math.min(1,(loaded?ph:per-ph)/(L/22)),x=door[0]+(shed[0]-door[0])*f,y=door[1]+(shed[1]-door[1])*f,h=Math.atan2(shed[1]-door[1],shed[0]-door[0])+(loaded?0:Math.PI);
+ ISLF.pallets=Math.floor(T/per);c.save();c.translate(x,y);c.rotate(h);c.fillStyle='rgba(0,0,0,.25)';c.fillRect(-9,-5,18,11);c.fillStyle='#e0a020';c.fillRect(-10,-6,16,12);c.fillStyle='#2a2d30';c.fillRect(-4,-5,7,10);c.fillStyle='#55595d';c.fillRect(6,-6,2,12);
+ if(loaded){c.fillStyle='#a07a4a';c.fillRect(8,-5,9,10)}c.restore()}
+function islfCanopy(c,now,N){const D=ISLF_DOCK;if(!e3InView(8740,7360,320,300,40))return;const H=24;c.save();c.fillStyle=N?'rgba(150,200,235,.14)':'rgba(170,215,245,.24)';c.strokeStyle='rgba(70,120,160,.85)';c.lineWidth=1.3;    
+ c.beginPath();D.poly.forEach((p,i)=>i?c.lineTo(p[0],p[1]-H):c.moveTo(p[0],p[1]-H));c.closePath();c.fill();c.stroke();c.strokeStyle='#5b6166';for(const f of [.57,.68,.79,.90])for(const o of [36,62]){const p=D.at(f,o);c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(p[0],p[1]-H);c.stroke()}c.restore()}
+try{S9_HOOKS.props.push(islfDockDraw)}catch(e){ISLF.err=ISLF.err||'dock-hook '+e}
+{const f=drawFreightTrains;drawFreightTrains=function(now){f(now);try{islfForklift(ctx,now,s9Night());islfCanopy(ctx,now,s9Night())}catch(e){ISLF.err=ISLF.err||String(e&&e.message||e)}}}
+ 
+ 
+function islfAudit(){const o={ok:false,issues:[],lag:ISLF.lag,sep:ISLF.sep,spanFree:ISLF.spanFree,err:ISLF.err};try{const T=rlTrain(ISLF.id);if(ISLF.err)o.issues.push('err:'+ISLF.err);if(!T){o.issues.push('no-train');return o}
+ o.cycle=Math.round(T.cycle);o.runs=T.runs.map(R=>R.stop+':'+Math.round(R.tm)+'+'+Math.round(R.dwell));if(T.runs[1].dwell>30)o.issues.push('waits-in-port:'+Math.round(T.runs[1].dwell));
+  
+ {const R=T.runs[0],S={T,R,u:R.P.len,fwd:true,moving:false,dwellDone:10,dwellLeft:10,g:0},w=rlCars(S)[0],D=ISLF_DOCK,rel=[(w.x-D.A[0])*D.u[0]+(w.y-D.A[1])*D.u[1]];const f=rel[0]/D.L;o.wagonF=+f.toFixed(3);if(f<.60||f>.88)o.issues.push('wagon-off-dock:'+f.toFixed(2))}
+ {const R=T.runs[1],S={T,R,u:R.P.len,fwd:false,moving:false,dwellDone:10,dwellLeft:10,g:1};for(const c of rlCars(S))for(const id of ['Q2-EE','ES-JB']){const n=RAIL_NODES.find(q=>q.id===id);if(n&&Math.hypot(c.x-n.x,c.y-n.y)<c.car.len/2+20)o.issues.push('port-on-turnout:'+id)}}
+ {const C=(typeof S13_LF!=='undefined'&&S13_LF.cycle)||{},need=(C.warn||30)+(C.gates||10)+(C.raise||40)+140+(C.lower||40)+(C.open||10);o.liftNeed=need;if(ISLF.spanFree!=null&&ISLF.spanFree<need+30)o.issues.push('lift-window:'+ISLF.spanFree+'<'+(need+30))}    
+  
+ {let meets=0;const H=3*Math.round(T.cycle);for(let t=0;t<H&&meets<3;t++){const S=rlState(T,t*1000);if(!S)continue;const mb=g76Blocks(S);for(const q of RL_TRAINS){if(q===T||q.err)continue;const Q=rlState(q,t*1000);if(!Q)continue;for(const b of g76Blocks(Q))if(mb.has(b)){meets++;o.issues.push('meet:'+q.id+'@'+b+'@'+t);break}}}}
+  
+ {const D=ISLF_DOCK;for(const p of D.poly){const r=isl17RoadD(p[0],p[1],['IS-E1B','IS-E2','IS-E3','IS-E4']);if(r.d<0)o.issues.push('dock-on-road')}const s=D.shed;for(const [x,y] of [[s[0],s[1]],[s[2],s[1]],[s[0],s[3]],[s[2],s[3]]]){const r=isl17RoadD(x,y,['IS-E2','IS-E3']);if(r.d<0)o.issues.push('shed-on-road:'+r.id)}
+  if(!C4_BUILDINGS.some(b=>b.id==='IS-FREIGHT-B'))o.issues.push('no-shed-building')}
+}catch(e){o.issues.push('audit:'+String(e&&e.message||e).slice(0,120))}o.issues=[...new Set(o.issues)];o.ok=!o.issues.length;return o}
+window.__TC_ISLF=()=>islfAudit();
+(function(){const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);try{const L=r.checks||r.results;if(Array.isArray(L)){const A=islfAudit();
+ L.push({name:'isl17_freight_train',id:'isl17_freight_train',ok:A.ok,pass:A.ok,detail:A.ok?'רכבת המשא של האי (D‑694): קרון וקטר, רציף W2 בנמל ↔ פס ב׳ של תחנת האי (דרך הפס הדרומי); בלי מפגש בבלוקים; חלון של '+A.spanFree+' שנ׳ בלי רכבת על המפתח; הקרון מול רציף הפריקה':A.issues.slice(0,6).join(' | ')});
+ if(!A.ok){r.ok=false;r.issues=(r.issues||[]).concat(['isl17_freight_train — '+A.issues.slice(0,4).join(' | ')])}}}catch(e){}return r}})();
  
 (function p522rFix(){const F=window.P522FIX={moved:[],added:[],trees:[],racks:0,miss:[]};
  const mv=(id,x,y)=>{const l=STREET_LIGHTS.find(q=>q.id===id);if(!l){F.miss.push(id);return}F.moved.push([id,Math.round(l.x),Math.round(l.y),x,y]);l.x=x;l.y=y;l.p522fix=1;try{POLE_FIT_CACHE.delete(l)}catch(e){}};
@@ -2904,7 +3218,8 @@ function g73LockSnapshot(){const A=aptReady(),r=v=>Math.round(v*100)/100,R=o=>o&
 
 
 
-const G73_LOCK={"runway":[-430,240,4950,8250],"taxiwayA":[-68,120,4900,8030],"y":{"RY":-430,"RN":-550,"RS":-310,"SN":-610,"SS":-250,"TY":-68,"TN":-128,"TS":-8,"FN":-760,"PR0":-745,"PR1":-715,"LY":274,"LN":234,"LS":314},"L":[5950,8345],"connectors":[["B1",5990,80],["A2S",6600,110],["B2",7276,80],["A3S",7950,110]],"lines":{"fence":944,"stand":660,"bridge":768,"e2WestFence":725,"serviceL":734,"frontage":1090,"cargoLane":700},"stands":[["P1",6096,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01",true],["P2",6430,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01/AC-QJ-01",true],["P3",6732,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01/AC-QJ-01",true],["P4",7055,660,1.57,"bridge","apron","AC-MW-01/AC-LG-01",true],["C1",5080,480,1.57,"cargoS","cargoW","AC-CG-01",true],["C2",5390,515,1.57,"cargoS","cargoW","AC-TP-01/AC-TB-01",true],["C3",5700,480,1.57,"cargoS","cargoW","AC-CG-01",true],["O2",8130,434.34,1.57,"apronSW","ne","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA3",8270,434.34,1.57,"apronSW","ne","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA4",8130,530,-1.57,"apronSW","neS","AC-PR-01",false],["GA1",7389,729.34,1.57,"apronSW","east","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA2",7514,729.34,1.57,"apronSW","east","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["P5",7680,744,1.57,"apronSW","east","AC-RJ-01/AC-TP-01",true],["P6",7926,745,1.57,"apronSW","east","AC-NB-01/AC-RJ-01/AC-QJ-01",true],["GA7",7552,150,1.57,"strip","strip","AC-PR-01/AC-LT-01",true],["GA8",7645,150,1.57,"strip","strip","AC-PR-01/AC-LT-01",true],["M1",7505.66,974.83,-1.57,"indoor","hangar","AC-BJ-01",false],["M2",7678.43,975.66,-1.57,"indoor","hangar","AC-PR-01",false],["M3",7869.37,975.66,-1.57,"indoor","hangar","AC-PR-01",false]],"zones":{"wApron":{"x":4805,"y":604,"w":595,"h":120},"eBlock":{"x":7316,"y":496,"w":1019,"h":504},"hard":{"x":7236,"y":1000,"w":1099,"h":135},"ne":{"x":8045,"y":314,"w":300,"h":300},"yard":{"x":7869,"y":1158,"w":531,"h":342},"heli":{"x":7885,"y":1520,"w":510,"h":170},"perim":{"x":8352,"y":-280,"w":46,"h":1440}},"areas":{"emergency":[8072,-108,272,314],"truckYard":{"x":5436,"y":944,"w":310,"h":206},"trainingPad":{"x":4832,"y":730,"w":542,"h":130},"towGate":[4870,4970],"pWestN":{"x":4832,"y":874,"w":484,"h":186},"cargoGate":[5684,5744]},"pockets":{"A":[6201,6221,6259],"B":[6531,6551,6628],"D":[7182,7202,7301],"C":[6573,6595,6628]},"bays":[["Y-FT1",7942,36,1190,1280],["Y-FT2",7978,36,1190,1280],["Y-FT3",8014,36,1190,1280],["Y-FT4",8050,36,1190,1280],["Y-FT5",8086,36,1190,1280],["Y-SH1",8122,36,1190,1280],["Y-SH2",8158,36,1190,1280],["Y-SV1",8192,32,1190,1280],["Y-SV2",8224,32,1190,1280],["Y-RX1",8274,52,1190,1280],["Y-RX2",8326,52,1190,1280],["Y-BL1",7938,28,1320,1410],["Y-BL2",7966,28,1320,1410],["Y-BT1",7992,24,1320,1410],["Y-BT2",8016,24,1320,1410],["Y-BT3",8040,24,1320,1410],["Y-PT1",8073,34,1320,1410],["Y-PT2",8107,34,1320,1410],["Y-PT3",8141,34,1320,1410],["Y-PT4",8175,34,1320,1410],["Y-PT5",8209,34,1320,1410],["Y-PT6",8243,34,1320,1410],["Y-MX1",8283,34,1320,1410],["Y-MX2",8317,34,1320,1410],["G2-MS1",8230,70,813,835],["G2-MS2",8230,70,841,863],["G2-MS3",8230,70,869,891],["G2-MS4",8230,70,897,919],["H-BL3",7336,26,1018,1086],["H-BL4",7392,26,1018,1086],["EM-AR1",8099,46,-20,76],["EM-AR2",8145,46,-20,76],["EM-AR3",8191,46,-20,76],["EM-RES",8237,46,-20,76],["EM-EMS1",8093,34,130,202],["EM-EMS2",8127,34,130,202],["EM-POL1",8158,28,130,202],["EM-POL2",8186,28,130,202],["N-PT1",7346,34,830,900],["N-PT2",7382,34,830,900],["N-PT3",7418,34,830,900]],"roads":[127,139]};                                           
+
+const G73_LOCK={"runway":[-430,240,4950,8250],"taxiwayA":[-68,120,4900,8030],"y":{"RY":-430,"RN":-550,"RS":-310,"SN":-610,"SS":-250,"TY":-68,"TN":-128,"TS":-8,"FN":-760,"PR0":-745,"PR1":-715,"LY":274,"LN":234,"LS":314},"L":[5950,8345],"connectors":[["B1",5990,80],["A2S",6600,110],["B2",7276,80],["A3S",7950,110]],"lines":{"fence":944,"stand":660,"bridge":768,"e2WestFence":725,"serviceL":734,"frontage":1090,"cargoLane":700},"stands":[["P1",6096,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01",true],["P2",6430,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01/AC-QJ-01",true],["P3",6732,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01/AC-QJ-01",true],["P4",7055,660,1.57,"bridge","apron","AC-MW-01/AC-LG-01",true],["C1",5080,480,1.57,"cargoS","cargoW","AC-CG-01",true],["C2",5390,515,1.57,"cargoS","cargoW","AC-TP-01/AC-TB-01",true],["C3",5700,480,1.57,"cargoS","cargoW","AC-CG-01",true],["O2",8130,434.34,1.57,"apronSW","ne","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA3",8270,434.34,1.57,"apronSW","ne","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA4",8130,530,-1.57,"apronSW","neS","AC-PR-01",false],["GA1",7389,729.34,1.57,"apronSW","east","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA2",7514,729.34,1.57,"apronSW","east","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["P5",7680,744,1.57,"apronSW","east","AC-RJ-01/AC-TP-01",true],["P6",7926,745,1.57,"apronSW","east","AC-NB-01/AC-RJ-01/AC-QJ-01",true],["GA7",7552,150,1.57,"strip","strip","AC-PR-01/AC-LT-01",true],["GA8",7645,150,1.57,"strip","strip","AC-PR-01/AC-LT-01",true],["M1",7505.66,974.83,-1.57,"indoor","hangar","AC-BJ-01",false],["M2",7678.43,975.66,-1.57,"indoor","hangar","AC-PR-01",false],["M3",7869.37,975.66,-1.57,"indoor","hangar","AC-PR-01",false]],"zones":{"wApron":{"x":4805,"y":604,"w":595,"h":120},"eBlock":{"x":7316,"y":496,"w":1019,"h":504},"hard":{"x":7236,"y":1000,"w":1099,"h":135},"ne":{"x":8045,"y":314,"w":300,"h":300},"yard":{"x":7869,"y":1158,"w":531,"h":342},"heli":{"x":7885,"y":1520,"w":510,"h":170},"perim":{"x":8352,"y":-280,"w":46,"h":1440}},"areas":{"emergency":[8072,-108,272,314],"truckYard":{"x":5436,"y":944,"w":310,"h":206},"trainingPad":{"x":4832,"y":730,"w":542,"h":130},"towGate":[4870,4970],"pWestN":{"x":4832,"y":874,"w":484,"h":186},"cargoGate":[5684,5744]},"pockets":{"A":[6201,6221,6259],"B":[6531,6551,6628],"D":[7182,7202,7301],"C":[6573,6595,6628]},"bays":[["Y-FT1",7942,36,1190,1280],["Y-FT2",7978,36,1190,1280],["Y-FT3",8014,36,1190,1280],["Y-FT4",8050,36,1190,1280],["Y-FT5",8086,36,1190,1280],["Y-SH1",8122,36,1190,1280],["Y-SH2",8158,36,1190,1280],["Y-SV1",8192,32,1190,1280],["Y-SV2",8224,32,1190,1280],["Y-RX1",8274,52,1190,1280],["Y-RX2",8326,52,1190,1280],["Y-BL1",7938,28,1320,1410],["Y-BL2",7966,28,1320,1410],["Y-BT1",7992,24,1320,1410],["Y-BT2",8016,24,1320,1410],["Y-BT3",8040,24,1320,1410],["Y-PT1",8073,34,1320,1410],["Y-PT2",8107,34,1320,1410],["Y-PT3",8141,34,1320,1410],["Y-PT4",8175,34,1320,1410],["Y-PT5",8209,34,1320,1410],["Y-PT6",8243,34,1320,1410],["Y-MX1",8283,34,1320,1410],["Y-MX2",8317,34,1320,1410],["G2-MS1",8230,70,813,835],["G2-MS2",8230,70,841,863],["G2-MS3",8230,70,869,891],["G2-MS4",8230,70,897,919],["H-BL3",7336,26,1018,1086],["H-BL4",7392,26,1018,1086],["EM-AR1",8099,46,-20,76],["EM-AR2",8145,46,-20,76],["EM-AR3",8191,46,-20,76],["EM-RES",8237,46,-20,76],["EM-EMS1",8093,34,130,202],["EM-EMS2",8127,34,130,202],["EM-POL1",8158,28,130,202],["EM-POL2",8186,28,130,202],["N-PT1",7346,34,830,900],["N-PT2",7382,34,830,900],["N-PT3",7418,34,830,900]],"roads":[129,141]};                                           
 function g73LockAudit(){if(!G73_LOCK)return{ok:false,issues:['no-lock'],items:0};const now=g73LockSnapshot(),issues=[];let items=0;
  for(const k of Object.keys(G73_LOCK)){items++;if(JSON.stringify(now[k])!==JSON.stringify(G73_LOCK[k]))issues.push(k)}
  for(const k of Object.keys(now))if(!(k in G73_LOCK))issues.push('unlocked:'+k);
@@ -3862,7 +4177,7 @@ var TCF9 = { el: null, tab: 'perf', sofs: null, ck: {}, timer: 0, busy: false };
 
 
 const TCF9_ZST = Array.isArray(window.__TC_STORY) ? window.__TC_STORY : (typeof TC_STORY !== 'undefined' && Array.isArray(TC_STORY) ? TC_STORY : []);
-window.__TC_ZSTORY = TCF9_ZST;
+window.__TC_F9ZST = TCF9_ZST;
 function tcF9StoryList() { return Array.isArray(window.__TC_STORY) ? window.__TC_STORY : TCF9_ZST }
 const TCF9_TABS = [['perf', 'ביצועים'], ['zones', 'אזורים'], ['checks', 'בדיקות'], ['events', 'אירועים'], ['time', 'זמן'], ['look', 'בדיקה בעין']];
 const TCF9_MOD = { C4: ['C4ANIM', 1], C3: ['C3LOOK', 2], A3: ['A34LOOK', 2], A4: ['A34LOOK', 2], B3: ['B3ANIM', 1], B4: ['B4ANIM', 1], D5: ['P554', 0], D3: ['D3ANIM', 1], D4: ['D4ANIM', 1] };           
@@ -3933,21 +4248,55 @@ function tcF9LiveRow(z, A) { const L = window.__TC_LIVE || { zones: {}, except: 
 function tcF9Zones() { const p = tcF9P('zones'); if (p.dataset.built) { tcF9ZoneHeads(); return } p.dataset.built = 1; let A = null; try { A = liveAudit() } catch (e) {} const Z = tcF9ZoneList();
   p.innerHTML = '<div class="tcF9Mut">' + Z.length + ' אזורים בנויים; ' + Z.filter(o => o.rank === 2).length + ' עם פרטים חיים. לחיצה על אזור פותחת את הפרטים שלו; "מצלמה" ו"מההתחלה" מזיזים את המצלמה (הלוח זז הצידה — F9 או הכפתור למעלה מחזירים).</div>' +
     '<div class="tcF9Row"><button class="sm" data-act="sofs0">כל הסיפורים בזמן הרגיל</button></div>' +
-    Z.map(o => '<details data-zone="' + o.z + '" data-x="' + o.x + '" data-y="' + o.y + '"><summary>' + o.z + ' · ' + tcF9E(tcF9Name(o.z)) + ' · <span class="tcF9Head">' + tcF9LiveRow(o.z, A) + '</span></summary><div></div></details>').join('');
+    Z.map(o => '<details data-zone="' + o.z + '" data-x="' + o.x + '" data-y="' + o.y + '"><summary>' + o.z + ' · ' + tcF9E(tcF9Name(o.z)) + ' · <span class="tcF9Head">' + tcF9LiveRow(o.z, A) + '</span>' + tcF9StoryCount(o.z) + '</summary><div></div></details>').join('');
   p.querySelectorAll('details').forEach(d => d.addEventListener('toggle', () => { if (d.open && !d.dataset.built) { d.dataset.built = 1; try { d.lastElementChild.innerHTML = tcF9ZoneBody(d.dataset.zone, +d.dataset.x, +d.dataset.y) } catch (e) { d.dataset.built = ''; d.lastElementChild.innerHTML = '<div class="tcF9Bad">שגיאה באזור: ' + tcF9E(e && e.message) + '</div>' } } })) }
+function tcF9StoryCount(z) { let a = 0, b = 0; try { a = tcF9StoryList().filter(s => s.zone === z).length } catch (e) {} try { b = tcF9Quests(z).length } catch (e) {}    
+  return ' · <span class="tcF9Mut">' + (a + b ? (a + b) + ' סיפורים' + (a && b ? ' (' + a + ' חיים, ' + b + ' של המשחק)' : a ? ' חיים' : ' של המשחק') : 'אין סיפורים') + '</span>' }
 function tcF9ZoneHeads() { let A = null; try { A = liveAudit() } catch (e) {} tcF9P('zones').querySelectorAll('details').forEach(d => { const h = d.querySelector('.tcF9Head'); if (h) h.innerHTML = tcF9LiveRow(d.dataset.zone, A) }) }
 function tcF9ZoneBody(z, x, y) { const L = window.__TC_LIVE || { zones: {}, except: {} }, Q = L.zones[z], c = (Q && Q.center) || [x, y]; let h = '<div class="tcF9Row"><button class="sm" data-cam="' + c[0] + ',' + c[1] + ',1.1">קפיצה לאזור</button></div>';
   if (Q) { let M = []; try { M = Q.movers(tcF9Now(), true) } catch (e) {} h += '<h4>הפרטים החיים (' + M.length + ')</h4><table class="tcF9Tbl"><tr><th>סוג</th><th>מה זז</th><th>מתי</th><th></th></tr>' +
       M.map(m => { const b = m.box || [c[0] - 40, c[1] - 40, c[0] + 40, c[1] + 40]; return '<tr><td>' + tcF9E(m.kind) + '</td><td>' + tcF9E(m.act || m.what || m.id) + ' <span class="tcF9Mut">' + tcF9E(m.id) + '</span></td><td>' + tcF9E(m.when || 'תמיד') + '</td><td><button class="sm" data-box="' + b.join(',') + '">מצלמה</button></td></tr>' }).join('') + '</table>' }
   const S = tcF9StoryList().filter(s => s.zone === z); if (S.length) h += '<h4>הסיפורים (' + S.length + ')</h4>' + S.map(s => '<div class="tcF9Row"><button class="sm" data-story="' + tcF9E(s.id) + '">מההתחלה</button><span>' + tcF9E(s.what) + '</span><span class="tcF9Mut">· כל ' + (Math.round(s.T / 6) / 10) + ' דק׳ · פעיל ' + s.on[1] + ' שנ׳' + (s.day ? ' · ביום' : '') + '</span></div>').join('');
+  h += tcF9QuestRows(z);
   h += '<h4>מצב הבדיקות</h4><div class="tcF9Row">' + tcF9ZoneChecks(z) + '<button class="sm" data-act="pixz" data-z="' + z + '">הפרטים החיים — זזים בפועל (האזור הזה)</button></div><div data-out="pixz-' + z + '"></div>'; return h }
-function tcF9ZoneChecks(z) { const r = []; for (const [k, l] of [['live', 'ספירה'], ['pix', 'זזים בפועל'], ['story', 'סיפורים']]) { const R = TCF9.ck[k]; if (!R || !R.zones || !(z in R.zones)) continue; const v = R.zones[z]; r.push('<span class="' + (v ? 'tcF9Ok' : 'tcF9Bad') + '">' + l + ' ' + (v ? '✓' : '✗') + '</span>') }
+
+
+function tcF9S9() { try { return window.__TC_S9STORY || (typeof S9STORY !== 'undefined' ? S9STORY : null) } catch (e) { return null } }
+function tcF9Quests(z) { const S = tcF9S9(); if (!S || !S.ST) return []; return Object.keys(S.ST).filter(id => S.ST[id] && (z == null || S.ST[id].zone === z)) }
+function tcF9HM(v) { const h = Math.floor(v) % 24, m = Math.round((v - Math.floor(v)) * 60); return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') }
+function tcF9QuestState(id) { const S = tcF9S9(), Q = S.ST[id]; let n = 0, d = false; try { n = S.step(id); d = S.done(id) } catch (e) {} let lk = false; try { const T = window.__TC_STORY; lk = !!(T && T.locked && T.locked('area', id)) } catch (e) {}
+  return d ? '<span class="tcF9Ok">הושלם</span>' : n > 0 ? '<span class="tcF9Ok">שלב ' + n + ' מתוך ' + Q.steps.length + ': ' + tcF9E((Q.steps[n - 1] || {}).title || '') + '</span>' : lk ? '<span class="tcF9Mut">נעול (הסיפור הראשי — עוד לא הגיע לאזור)</span>' : '<span class="tcF9Mut">לא התחיל</span>' }
+function tcF9QuestRows(z) { const L = tcF9Quests(z); if (!L.length) return ''; const S = tcF9S9();
+  return '<h4>סיפורי המשחק (' + L.length + ')</h4>' + L.map(id => { const Q = S.ST[id], H = Q.hours;
+    return '<div class="tcF9Row" data-q="' + tcF9E(id) + '"><b>' + tcF9E(Q.name || id) + '</b><span class="tcF9Mut">· ' + Q.steps.length + ' שלבים' + (H ? ' · מתחיל לבד ' + tcF9HM(H[0]) + '–' + tcF9HM(H[1]) : '') + (Q.reward ? ' · ' + Q.reward + ' ₪' : '') + '</span><span data-qst="' + tcF9E(id) + '">' + tcF9QuestState(id) + '</span>' +
+      '<button class="sm" data-qcam="' + tcF9E(id) + '">למקום</button><button class="sm" data-qgo="' + tcF9E(id) + '">להתחיל עכשיו</button><button class="sm" data-qqa="' + tcF9E(id) + '">בדיקה מההתחלה עד הסוף</button><span class="tcF9Mut" data-qout="' + tcF9E(id) + '"></span></div>' }).join('') }
+function tcF9QuestPlace(id) { const S = tcF9S9(), Q = S.ST[id]; let n = 0; try { n = S.done(id) ? 0 : S.step(id) } catch (e) {} const s = n > 0 ? Q.steps[n - 1] : null;
+  if (s && s.drive && !s.poi) return { x: s.drive[0], y: s.drive[1], label: s.title };
+  let R = {}; try { R = navPoiRegistry() } catch (e) {} const p = R[s ? s.poi : Q.start] || R[Q.start] || (s && s.drive ? { x: s.drive[0], y: s.drive[1] } : null); return p ? { x: p.x, y: p.y, label: (s && s.title) || p.label || Q.start } : null }
+function tcF9QuestCam(id) { const p = tcF9QuestPlace(id); if (!p) { toast('לא נמצא המקום של הסיפור'); return false } tcF9Cam(p.x, p.y, 2); toast(tcF9S9().ST[id].name + ' — ' + p.label); return true }
+function tcF9QuestRefresh(id) { try { const e = TCF9.el && TCF9.el.querySelector('[data-qst="' + id + '"]'); if (e) e.innerHTML = tcF9QuestState(id) } catch (e) {} }
+function tcF9QuestGo(id) { const S = tcF9S9(); if (!S || !S.ST[id]) return; let ok = false;
+  if (S.done(id)) { toast('הסיפור כבר הושלם בשמירה הזו — "בדיקה מההתחלה עד הסוף" מריצה אותו בלי לשנות אותה'); return }
+  if (S.step(id) > 0) { tcF9QuestCam(id); return }
+  try { const T = window.__TC_STORY; if (T && T.locked && T.locked('area', id)) { toast('הסיפור נעול עד שהסיפור הראשי מגיע לאזור ' + S.ST[id].zone); return } } catch (e) {}
+  try { ok = S.start(id) } catch (e) { toast('שגיאה: ' + e.message) } tcF9QuestRefresh(id); if (ok) tcF9QuestCam(id) }
+function tcF9QuestQa(id) { const S = tcF9S9(), P = PlayerProfile, k = { m: P.money, story: JSON.stringify(P.story || {}), nav: State.navigation, ia: State.interactionId, app: State.phoneApp, am: P.activeMission, tst: toast }; let tx = null, certs = null, n0 = 0, q = null;
+  try { tx = ensureEconomySchema().transactions; n0 = tx.length } catch (e) {} try { certs = JSON.stringify(ensureActivitySchema().certs) } catch (e) {}
+  try { toast = function () {}; q = S.qa(id) } catch (e) { q = { ok: false, err: String(e && e.message || e) } }
+  finally { toast = k.tst; P.money = k.m; try { P.story = JSON.parse(k.story) } catch (e) {} State.navigation = k.nav; State.interactionId = k.ia; State.phoneApp = k.app; P.activeMission = k.am;
+    try { if (tx && tx.length > n0) tx.length = n0 } catch (e) {} try { if (certs != null) { const c = ensureActivitySchema().certs, o = JSON.parse(certs); for (const x of Object.keys(c)) if (!(x in o)) delete c[x] } } catch (e) {} }
+  return q }
+function tcF9QuestQaText(q) { return q.ok ? '✓ ' + q.steps + ' שלבים · ' + q.msgs + ' הודעות · ' + q.reward + ' ₪ · היומן: הושלם' : '✗ ' + (q.err || (q.log || []).filter(l => /^no-/.test(l)).join(', ') || ('הודעות ' + q.msgs + ' · תגמול ' + q.reward + ' · היומן ' + q.journal)) }
+function tcF9ZoneChecks(z) { const r = []; for (const [k, l] of [['live', 'ספירה'], ['pix', 'זזים בפועל'], ['story', 'הסיפורים החיים'], ['quest', 'סיפורי המשחק']]) { const R = TCF9.ck[k]; if (!R || !R.zones || !(z in R.zones)) continue; const v = R.zones[z]; r.push('<span class="' + (v ? 'tcF9Ok' : 'tcF9Bad') + '">' + l + ' ' + (v ? '✓' : '✗') + '</span>') }
   return r.length ? r.join(' · ') + ' ' : '<span class="tcF9Mut">הבדיקות לא הורצו עדיין (לשונית "בדיקות")</span> ' }
 
 function tcF9Click(e) { const b = e.target.closest('button'); if (!b || !TCF9.el.contains(b)) return; const D = b.dataset;
   if (D.cam) { const v = D.cam.split(',').map(Number); tcF9Cam(v[0], v[1], v[2]); return }
   if (D.box) { const v = D.box.split(',').map(Number); tcF9Cam((v[0] + v[2]) / 2, (v[1] + v[3]) / 2, tcF9Zoom(v)); return }
   if (D.story) { tcF9Story(D.story); return }
+  if (D.qcam) { tcF9QuestCam(D.qcam); return }    
+  if (D.qgo) { tcF9QuestGo(D.qgo); return }
+  if (D.qqa) { const q = tcF9QuestQa(D.qqa), o = TCF9.el.querySelector('[data-qout="' + D.qqa + '"]'); if (o) { o.className = q.ok ? 'tcF9Ok' : 'tcF9Bad'; o.textContent = tcF9QuestQaText(q) } tcF9QuestRefresh(D.qqa); return }
   if (D.night != null) { try { c34Night(+D.night) } catch (e) {} tcF9TimeLine(); return }
   if (D.wld) { try { wldGo(D.wld) } catch (e) {} tcF9TimeLine(); return }    
   if (D.wx) { try { wxGo(D.wx) } catch (e) {} tcF9TimeLine(); return }    
@@ -3982,7 +4331,7 @@ async function tcF9CallsZones() { const o = document.getElementById('tcF9CallsOu
   o.innerHTML = '<table class="tcF9Tbl"><tr><th>אזור</th><th>קריאות לציור לפריים (זום 1.1, מרכז האזור)</th></tr>' + rows.map(r => '<tr><td>' + r[0] + ' ' + tcF9E(tcF9Name(r[0])) + '</td><td>' + r[1] + '</td></tr>').join('') + '</table>' }
 
 const TCF9_CK = [['road', 'הכבישים והצמתים'], ['special', 'חניות נכים וטעינה'], ['r76', 'שבילי ההולכים — לא על נתיב נסיעה'], ['peopleQ', 'אנשים בכביש — מהירה: 20 שנ׳ של מה שקורה עכשיו'],
-  ['peopleF', 'אנשים בכביש — מלאה: העולם רץ 120 שנ׳ קדימה (המשחק נעצר לכמה שניות)'], ['live', 'הפרטים החיים — ספירה (8 לפחות, 4 סוגים)'], ['pix', 'הפרטים החיים — זזים בפועל, ביום ובלילה'], ['story', 'הסיפורים — מתחילים, נגמרים, ממתינים ומתחילים שוב']];
+  ['peopleF', 'אנשים בכביש — מלאה: העולם רץ 120 שנ׳ קדימה (המשחק נעצר לכמה שניות)'], ['live', 'הפרטים החיים — ספירה (8 לפחות, 4 סוגים)'], ['pix', 'הפרטים החיים — זזים בפועל, ביום ובלילה'], ['story', 'הסיפורים החיים — מתחילים, נגמרים, ממתינים ומתחילים שוב'], ['quest', 'סיפורי המשחק — כל סיפור מההתחלה עד הסוף (בלי לשנות את השמירה)']];
 function tcF9Checks() { const p = tcF9P('checks'); if (!p.dataset.built) { p.dataset.built = 1;
     p.innerHTML = '<div class="tcF9Row"><button data-act="all">הרץ הכול (בלי הבדיקה המלאה של האנשים)</button><span class="tcF9Mut">כל בדיקה בכפתור שלה; התוצאה נשארת כאן ובלשונית "אזורים".</span></div><table class="tcF9Tbl" id="tcF9CkT"><tr><th>בדיקה</th><th>תוצאה</th><th></th></tr>' +
       TCF9_CK.map(([k, l]) => '<tr data-row="' + k + '"><td>' + l + '</td><td class="r"><span class="tcF9Mut">לא הורץ</span></td><td><button class="sm" data-ck="' + k + '">הרץ</button></td></tr><tr data-det="' + k + '" style="display:none"><td colspan="3"><pre></pre></td></tr>').join('') + '</table>' }
@@ -4002,6 +4351,8 @@ const tcF9CK = {
     return { ok: !!a.ok, zones, sum: Object.keys(zones).length + ' אזורים · ' + (a.fails || []).length + ' כישלונות', text: L.concat(a.fails || []).join('\n') } },
   pix: () => tcF9Hold(() => tcF9Pixels(null)),
   story: () => tcF9Hold(() => tcF9Stories()),
+  quest: () => { const L = tcF9Quests(null), zones = {}, T = []; let bad = 0; for (const id of L) { const Q = tcF9S9().ST[id], q = tcF9QuestQa(id); zones[Q.zone] = (zones[Q.zone] !== false) && !!q.ok; if (!q.ok) bad++; T.push(Q.zone + ' ' + id + ' · ' + (Q.name || '') + ' · ' + tcF9QuestQaText(q)) }
+    return { ok: L.length > 0 && !bad, zones, sum: L.length + ' סיפורים ב-' + Object.keys(zones).length + ' אזורים · ' + bad + ' נכשלו', text: T.join('\n') } },
   peopleF: () => { const R = JSON.parse(tcF9PeopleFull(120)); return { ok: !!R.ok, sum: R.samples + ' דגימות מצב ו-' + R.sweeps + ' מעברי ציור (' + R.views + ' תצוגות) · ' + R.drawn + ' אנשים מצוירים · ' + R.hits.length + ' על נתיב נסיעה', text: R.hits.slice(0, 40).map(h => h.who + ' · ' + h.kind + ' · ' + h.x + ', ' + h.y + ' · ' + h.zone + ' · ' + h.roadName + ' · שנ׳ ' + h.t).join('\n') + (R.renderErr ? '\nשגיאת ציור: ' + R.renderErr : '') } } };
 
 function tcF9Pixels(only) { const Z = (window.__TC_LIVE || { zones: {} }).zones, c34 = typeof c34Live === 'function' ? c34Live : null, zones = {}, L = []; let all = true;
@@ -4017,15 +4368,22 @@ function tcF9Pixels(only) { const Z = (window.__TC_LIVE || { zones: {} }).zones,
       zones[z] = zok; if (!zok) all = false } } finally { if (c34) c34Live = c34 }
   return { ok: all, zones, sum: Object.keys(zones).length + ' אזורים · ' + Object.values(zones).filter(v => !v).length + ' עם פרט שלא זז', text: L.join('\n') } }
 
-function tcF9Stories() { const S = tcF9StoryList(), c34 = typeof c34Live === 'function' ? c34Live : null, zones = {}, L = []; let all = true;
-  try { if (c34) c34Live = () => false; for (const q of S) { const [x0, y0, x1, y1] = q.box, W = x1 - x0, H = y1 - y0, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
+
+
+function tcF9QuietGm() { let C = null; try { C = typeof G84_CLOCK !== 'undefined' ? G84_CLOCK : null } catch (e) {} if (!C || !Number.isFinite(C.base)) return () => {};
+  const b0 = C.base, M0 = window.__TC_A3_MATCH; let c; try { c = gameClock() } catch (e) { return () => {} } const mod = c.min;
+  try { delete window.__TC_A3_MATCH } catch (e) { window.__TC_A3_MATCH = undefined }
+  for (const q of [720, 600, 840, 960]) { C.base = b0 + (q - mod); let quiet = true; try { if (A34PLAY.matchNow()) quiet = false; const g = A34PLAY.gm(); if (A34LOOK.spr3.at(g, false, false).on) quiet = false } catch (e) {} if (quiet) break }
+  return () => { C.base = b0; if (M0 !== undefined) window.__TC_A3_MATCH = M0 } }
+function tcF9Stories() { const S = tcF9StoryList(), c34 = typeof c34Live === 'function' ? c34Live : null, zones = {}, L = []; let all = true; let unGm = () => {};
+  try { if (c34) c34Live = () => false; unGm = tcF9QuietGm(); for (const q of S) { const [x0, y0, x1, y1] = q.box, W = x1 - x0, H = y1 - y0, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
       const hashAt = (t, nt) => { g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H); g.setTransform(1, 0, 0, 1, -x0, -y0); try { q.render(g, t * 1000, nt) } catch (e) { return 'err' } const d = g.getImageData(0, 0, W, H).data; let h = 0; for (let i = 0; i < d.length; i += 4) h = (h * 31 + d[i] + d[i + 1] * 7 + d[i + 2] * 13 + d[i + 3] * 17 + i) >>> 0; return h };
       const base = q.T * 10 + (q.t0 || 0), wait = q.T - q.on[1]; let ok = wait >= 120; const parts = [];
       for (const nt of (q.day ? [0] : [0, 1])) { const [a, bb] = q.on, A = new Set(), I = new Set(), A2 = new Set(); for (let k = 0; k < 24; k++) A.add(hashAt(base + a + (bb - a) * (k + .5) / 24, nt));
         const i0 = bb + 2, i1 = q.T - 1; hashAt(base + i0, nt); for (let k = 0; k < 12; k++) I.add(hashAt(base + i0 + (i1 - i0) * k / 11, nt)); for (let k = 0; k < 8; k++) A2.add(hashAt(base + q.T + a + (bb - a) * (k + .5) / 8, nt));
         const o = A.size >= 4 && I.size === 1 && A2.size >= 2; if (!o) ok = false; parts.push((nt ? 'לילה ' : 'יום ') + A.size + '/' + I.size + '/' + A2.size) }
       if (q.day) parts.push('לילה — כבוי'); zones[q.zone] = (zones[q.zone] !== false) && ok; if (!ok) all = false;
-      L.push(q.zone + ' ' + q.id + ' · כל ' + q.T + ' שנ׳ · פעיל ' + q.on.join('–') + ' · המתנה ' + wait + ' שנ׳ · ' + parts.join(' · ') + (ok ? ' ✓' : ' ✗')) } } finally { if (c34) c34Live = c34 }
+      L.push(q.zone + ' ' + q.id + ' · כל ' + q.T + ' שנ׳ · פעיל ' + q.on.join('–') + ' · המתנה ' + wait + ' שנ׳ · ' + parts.join(' · ') + (ok ? ' ✓' : ' ✗')) } } finally { if (c34) c34Live = c34; unGm() }
   return { ok: all && S.length > 0, zones, sum: S.length + ' סיפורים · ' + L.filter(l => / ✗$/.test(l)).length + ' לא תקינים', text: 'מראות: בחלון הפעיל / בהמתנה / במחזור הבא\n' + L.join('\n') } }
 
 function tcF9OnRoadFn() { const lane = tcF9OnLaneFn(), BB = BUS_BAY, S = BB.stop / 2, E = S + BB.entry, BAYS = BUS_PHYS.filter(p => p.bay && p.F).map(p => ({ id: 'BAY-' + p.id, name: 'מפרץ האוטובוס ' + p.id + ' (' + p.stops.join(', ') + ')', F: p.F, h: p.F.roadW / 2 }));    
@@ -5747,7 +6105,7 @@ var S10U=(function(){const TAU=Math.PI*2,ERR={e:null},er=(k,e)=>{if(!ERR.e)ERR.e
   lq:[8975,6168,9088,6262],proc:[8905,6262,9040,6332],wells:[8905,6175,8970,6255],
   cranes:[{id:'RIG-CR1',x:8885,y:6185,rest:Math.PI/2,boom:200},{id:'RIG-CR2',x:8885,y:6315,rest:Math.PI*.78,boom:200}],
   flare:{a:[9080,6338,20],b:[9210,6468,50]},life:[[9090,6272,9106,6300],[9090,6306,9106,6334]]};
- const PIPE=[[8885,6315],[8700,6330],[8485,6330]];                     
+ const PIPE=(typeof ISL17H8!=='undefined'&&ISL17H8.ok)?[[9065,6315],[9250,6470],[9440,6650]]:[[8885,6315],[8700,6330],[8485,6330]];    
   
  const SV={id:'SV-RIG',L:225,B:68,name:'אספקה 1',slot:{x:5804,y:5322},dockAt:{x:8790,y:6260}};
  const bz=(a,c1,c2,b,n)=>{const o=[];for(let i=1;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*u*a[0]+3*u*u*t*c1[0]+3*u*t*t*c2[0]+t*t*t*b[0],u*u*u*a[1]+3*u*u*t*c1[1]+3*u*t*t*c2[1]+t*t*t*b[1]])}return o};
@@ -5822,7 +6180,7 @@ var S10U=(function(){const TAU=Math.PI*2,ERR={e:null},er=(k,e)=>{if(!ERR.e)ERR.e
    
   c.strokeStyle=s9Hex('#f2c230',N?.6:1);c.lineWidth=1.2;for(let z=2;z<RIG.z;z+=1.2){const y=6215-z*KZ;c.beginPath();c.moveTo(8866,y);c.lineTo(8876,y-3);c.stroke()}}
  function pipe(c,N){if(!e3InView(8460,6290,460,80,40))return;c.save();c.lineCap='round';
-  for(let i=1;i<PIPE.length;i++){const a=PIPE[i-1],b=PIPE[i],g=c.createLinearGradient(a[0],a[1],b[0],b[1]);const fa=i===1?.38:.3,fb=i===PIPE.length-1?0:.3;g.addColorStop(0,'rgba(40,60,74,'+fa+')');g.addColorStop(1,'rgba(40,60,74,'+fb+')');c.strokeStyle=g;c.lineWidth=7;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+  for(let i=1;i<PIPE.length;i++){const a=PIPE[i-1],b=PIPE[i],g=c.createLinearGradient(a[0],a[1],b[0],b[1]);const fa=i===1?.38:.3,fb=i===PIPE.length-1?((typeof ISL17H8!=='undefined'&&ISL17H8.ok)?.42:0):.3;g.addColorStop(0,'rgba(40,60,74,'+fa+')');g.addColorStop(1,'rgba(40,60,74,'+fb+')');c.strokeStyle=g;c.lineWidth=7;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
   c.restore()}
   
  function lights(c,N,t){if(!N&&Camera.zoom<.5)return;c.save();c.globalCompositeOperation='lighter';const L=(x,y,col,r,a)=>{try{BOAT34.lamp(c,x,y,col,r,a)}catch(e){c.fillStyle=col==='red'?'rgba(255,60,40,'+a+')':col==='green'?'rgba(60,255,110,'+a+')':'rgba(255,255,240,'+a+')';c.beginPath();c.arc(x,y,r/3,0,TAU);c.fill()}};
@@ -9257,359 +9615,4 @@ function clGraph(){if(CL.G)return CL.G;const N=new Map(),A=new Map(),add=(a,b,w,
  
 function clAttach(x,y,maxD){const G=clGraph();let best=null;const L=[];
  for(const s of G.segs){const dx=s.bx-s.ax,dy=s.by-s.ay,l2=dx*dx+dy*dy,u=Math.max(0,Math.min(1,((x-s.ax)*dx+(y-s.ay)*dy)/l2)),px=s.ax+dx*u,py=s.ay+dy*u,d=Math.hypot(x-px,y-py);if(d<=(maxD||260))L.push({d,x:px,y:py,a:s.a,b:s.b})}
- L.sort((p,q)=>p.d-q.d);for(const q of L.slice(0,10)){if(clLineClear(x,y,q.x,q.y)){best=q;break}}return best}
- 
-function clRoute(s,t,avoid){if(!s||!t)return null;const G=clGraph(),N=G.N,A=G.A;
- if((s.a===t.a&&s.b===t.b)||(s.a===t.b&&s.b===t.a))return[{x:t.x,y:t.y}];
- const dist=new Map(),prev=new Map(),H=[];const push=(d,id)=>{H.push([d,id]);let i=H.length-1;while(i>0){const j=(i-1)>>1;if(H[j][0]<=H[i][0])break;[H[i],H[j]]=[H[j],H[i]];i=j}};
- const pop=()=>{const top=H[0],last=H.pop();if(H.length){H[0]=last;let i=0;for(;;){const l=2*i+1,r=l+1;let m=i;if(l<H.length&&H[l][0]<H[m][0])m=l;if(r<H.length&&H[r][0]<H[m][0])m=r;if(m===i)break;[H[i],H[m]]=[H[m],H[i]];i=m}}return top};
- for(const id of [s.a,s.b]){const n=N.get(id);const d=Math.hypot(n.x-s.x,n.y-s.y);if(d<(dist.get(id)??Infinity)){dist.set(id,d);prev.set(id,null);push(d,id)}}
- const goal=new Set([t.a,t.b]),done=new Set();let found=0;
- while(H.length){const [d,id]=pop();if(done.has(id))continue;done.add(id);if(goal.has(id)){found++;if(found>=2)break}if(d>24000)break;
-  for(const [to,w,cw] of (A.get(id)||[])){if(cw&&((avoid&&avoid.has(cw))||G.avoid.has(cw)))continue;const nd=d+w+(cw?(ZEBRA_BY_ID[cw]?120:40):0);if(nd<(dist.get(to)??Infinity)){dist.set(to,nd);prev.set(to,[id,cw]);push(nd,to)}}}
- let end=null,bd=Infinity;for(const id of [t.a,t.b]){if(!dist.has(id))continue;const n=N.get(id),d=dist.get(id)+Math.hypot(n.x-t.x,n.y-t.y);if(d<bd){bd=d;end=id}}
- if(end==null)return null;const ids=[];let k=end,cws=[];while(k!=null){ids.unshift(k);const pv=prev.get(k);if(!pv){cws.unshift(null);break}cws.unshift(pv[1]);k=pv[0]}
- const out=[];for(let i=0;i<ids.length;i++){const n=N.get(ids[i]);const q={x:n.x,y:n.y};if(i>0&&cws[i]){q.cw=cws[i];q.a=ids[i-1];q.b=ids[i]}out.push(q)}
- out.push({x:t.x,y:t.y});return out}
-function clPathLen(P,x,y){let d=0,px=x,py=y;for(const q of P){d+=Math.hypot(q.x-px,q.y-py);px=q.x;py=q.y}return d}
-
- 
-function clDoorsInit(){if(CL.doors.length)return;
- for(const r of [...CL_DOORS,...CL_GATES]){const [id,k,x,y,ax,ay,z]=r;const att=clAttach(ax,ay,40)||clAttach(x,y,220);if(!att){CL.stats.doorNoAttach=(CL.stats.doorNoAttach||0)+1;continue}
-  const D={id,k,x,y,ax,ay,z,att,n:0};CL.doors.push(D);CL.dById[id]=D}
- CL.homes=CL.doors.filter(d=>d.k==='home');CL.places=CL.doors.filter(d=>d.k==='place');CL.gates=CL.doors.filter(d=>d.k==='gate')}
-function clStopPf(S){return{x:S.C.x+S.n.x*40,y:S.C.y+S.n.y*40}}
-function clStopsInit(){if(CL.stopsInit)return;CL.stopsInit=true;CL.stopAtt={};for(const id in LN.stops){const S=LN.stops[id],p=clStopPf(S),a=clAttach(p.x,p.y,120);if(a)CL.stopAtt[id]={x:p.x,y:p.y,att:a}}}
- 
-function clBusPlan(o,d){if(!LN.on||!LN.seeded||!CL.stopAtt)return null;let best=null;
- for(const L of LN_LINES)for(const dir of ['F','B']){const Q=L[dir];for(let i=0;i<Q.length-1;i++){const A=CL.stopAtt[Q[i]];if(!A)continue;const da=Math.hypot(A.x-o.x,A.y-o.y);if(da>1600)continue;
-   for(let j=i+1;j<Q.length;j++){const B=CL.stopAtt[Q[j]];if(!B)continue;const db=Math.hypot(B.x-d.x,B.y-d.y);if(db>1300||da+db>Math.hypot(o.x-d.x,o.y-d.y)*.85)continue;const c=da+db+(j-i)*40;if(!best||c<best.c)best={c,from:Q[i],to:Q[j],dir,L}}}}
- return best}
-
- 
-function clMk(home,id){const n=++CL.serial,pid=id||('CL-P-'+n),h=stableHash(pid);const p={id:pid,cl:true,asset:CL_ASSETS[h%CL_ASSETS.length],x:home?home.x:0,y:home?home.y:0,dir:2,pose:'idle',speed:28+(h>>>4)%9,wait:false,inCrosswalk:null,nodeId:null,targetId:null,ghost:0,blockT:0,hop:0,
-  st:'in',at:home,home,car:null,trip:null,path:null,pi:0,nextT:0,shown:false};CL.P.push(p);CL.byId.set(pid,p);return p}
-function clShow(p,x,y){p.x=x;p.y=y;if(!p.shown){NPC_PEDESTRIANS.push(p);p.shown=true}}
-function clHide(p){if(p.shown){const i=NPC_PEDESTRIANS.indexOf(p);if(i>=0)NPC_PEDESTRIANS.splice(i,1);p.shown=false}p.inCrosswalk=null;p.wait=false;p.nodeId=null;p.targetId=null}
-const CL_OUT=new Set(['walk','go','taxiwait','alight','boarding','car','taxi','bus','gatewait']);    
-function clOut(){let n=0;for(const p of CL.P)if(CL_OUT.has(p.st))n++;return n}
- 
-function clDoorOut(p,door){p.at=null;clShow(p,door.x,door.y);p.dir=npcDir(door.ax-door.x,door.ay-door.y,2);CL.stats.doorOut++;clEv('דלת-יציאה',p,door.x,door.y)}
-function clDoorIn(p,door){clHide(p);p.st='in';p.at=door;p.trip=null;p.path=null;p.x=door.x;p.y=door.y;CL.stats.doorIn++;clEv('דלת-כניסה',p,door.x,door.y);
- p.nextT=CL.t+(door===p.home?90+clR()*260:door===p.work?700+clR()*500:50+clR()*200)}
- 
- 
-const CL_A3P_WALK={x0:4,x1:208,y0:1700,y1:2478,ax:132,mouth:{x:132,y:2490}};
-function clInLot(x,y){const L=CL_A3P_WALK;return x>=L.x0&&x<=L.x1&&y>=L.y0&&y<=L.y1}
-function clYard(x,y){if(clInLot(x,y))return CL_A3P_WALK;for(const k in CL.alleys){const A=CL.alleys[k];if(A.yard&&A.yard.inside(x,y))return A.yard}return null}
-function clWalkTo(p,to,toAtt,after,avoid){const L=CL_A3P_WALK,pre=[],post=[];let sx=p.x,sy=p.y;
-  
- const Y1=clYard(p.x,p.y),Y2=to?clYard(to.x,to.y):null;
- if(Y1&&Y1.out){if(Y2===Y1){p.path=Y1.within(p,to);p.pi=0;p.st='walk';p.after=after;p.goal=null;return true}pre.push(...Y1.out(p));sx=Y1.mouth.x;sy=Y1.mouth.y}
- else if(Y1){pre.push({x:L.ax,y:p.y},{x:L.mouth.x,y:L.mouth.y});sx=L.mouth.x;sy=L.mouth.y}
- if(Y2&&Y2.in){post.push(...Y2.in(to));toAtt=Y2.att||(Y2.att=clAttach(Y2.mouth.x,Y2.mouth.y,120))}
- else if(Y2){post.push({x:L.mouth.x,y:L.mouth.y},{x:L.ax,y:to.y});toAtt=CL.mouthAtt||(CL.mouthAtt=clAttach(L.mouth.x,L.mouth.y,260))}
- if(Y1&&Y2&&Y1===Y2&&!Y1.out){p.path=[...pre.slice(0,1),{x:L.ax,y:to.y},{x:to.x,y:to.y}];p.pi=0;p.st='walk';p.after=after;p.goal=null;return true}
- const from=clAttach(sx,sy,260);let R=from&&toAtt?clRoute(from,toAtt,avoid):null;if(!R){CL.stats.noRoute++;return false}p.goal={to,toAtt,after};
- if(pre.length||post.length){const P=[...pre,{x:from.x,y:from.y},...R,...post];if(to)P.push({x:to.x,y:to.y});p.path=P;p.pi=0;p.st='walk';p.after=after;return true}
- const P=[{x:from.x,y:from.y},...R];if(to)P.push({x:to.x,y:to.y});p.path=P;p.pi=0;p.st='walk';p.after=after;return true}
-function clStepWalker(p,dt){const P=p.path;if(!P)return true;let m=0;
- const sp=(p.inCrosswalk?52:p.speed*(typeof wxHurry==='function'?wxHurry(p):1));m=sp*dt;
- while(p.pi<P.length){const q=P[p.pi];
-  if(q.cw&&p.inCrosswalk!==q.cw){if(!pedestrianWalkAllowed(q.cw)){p.wait=true;p.pose='idle';p.nodeId=q.a;p.targetId=q.b;p.waitT=(p.waitT||0)+dt;if(p.waitT>(CL.stats.maxCwWait||0))CL.stats.maxCwWait=+p.waitT.toFixed(1);
-   if(p.waitT>22&&p.goal&&!(p.avoid&&p.avoid.has(q.cw))){const av=new Set(p.avoid||[]);av.add(q.cw);const G=p.goal;p.avoid=av;if(clWalkTo(p,G.to,G.toAtt,G.after,av)){p.waitT=0;p.wait=false;p.nodeId=null;p.targetId=null;CL.stats.reroute2=(CL.stats.reroute2||0)+1;return false}}
-   return false}p.inCrosswalk=q.cw;p.nodeId=q.a;p.targetId=q.b;p.waitT=0}
-  const dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy);p.wait=false;
-  if(d>m){p.x+=dx/d*m;p.y+=dy/d*m;p.dir=npcDir(dx,dy,p.dir);p.pose=p.inCrosswalk?'running':'walking';return false}
-  p.x=q.x;p.y=q.y;m-=d;p.pi++;if(d>.01)p.dir=npcDir(dx,dy,p.dir);if(q.cw){p.inCrosswalk=null;p.nodeId=null;p.targetId=null}}
- p.pose='idle';p.avoid=null;p.goal=null;return true}
-
- 
- 
-function clHouseCar(p,from,to){for(const c of CL.cars)if(c.home&&c.home===p.home&&clCarUsable(c,from,to))return c;return null}
-function clTrip(p,to,why){const from=p.at;if(!from||!to||from===to)return false;const d=Math.hypot(to.x-from.x,to.y-from.y);
- let mode='walk',bp=null,pk=null;const car=clHouseCar(p,from,to);
- if(car)mode='car';
- else if(d>1250){bp=clBusPlan(from,to);if(bp&&clR()<.85)mode='bus';else if(d>1500&&clTaxiFree()&&(pk=clTaxiCurb(from))&&clTaxiCurb(to)&&(d>2600||clR()<.5))mode='taxi'}
- if(mode==='walk'&&d>3400){p.nextT=CL.t+60+clR()*90;return false}    
- p.trip={mode,from,to,why:why||'',t0:CL.t};p.st='go';CL.stats.trips++;CL.stats[mode]++;
- if(mode==='car')return clCarTripStart(p,car,from,to);
- clDoorOut(p,from);
- if(mode==='bus'){p.trip.bus=bp;const A=CL.stopAtt[bp.from];if(clWalkTo(p,A,A.att,'stop'))return true;clBackIn(p,from);return false}
- if(mode==='taxi'){p.trip.pick=pk;if(clWalkTo(p,pk,pk.att,'taxi-wait'))return true;clBackIn(p,from);return false}
- if(clWalkTo(p,to,to.att,to.k==='gate'?'gate':'door'))return true;clBackIn(p,from);return false}
-function clBackIn(p,door){CL.stats.walkFail++;if(p.shown){clDoorIn(p,door)}else{p.st='in';p.at=door;p.trip=null}p.nextT=CL.t+60+clR()*120;return false}
- 
-function clArrive(p){const a=p.after,T=p.trip;p.path=null;
- if(a==='door'){clDoorIn(p,T?T.to:p.home);return}
- if(a==='gate'){clGateIn(p);return}
- if(a==='gate-open'){if(CL.match&&(CL.match.ph==='leave'||CL.match.ph==='done'))clGateLate(p);else clGateEnter(p);return}
- if(a==='stop'){clStopJoin(p);return}
- if(a==='taxi-wait'){p.st='taxiwait';p.pose='idle';p.dir=npcDir(p.trip.pick.x-p.trip.pick.att.x,p.trip.pick.y-p.trip.pick.att.y,p.dir);const v=TRAFFIC_CARS.find(q=>q.clTaxi&&q.clTaxi.p===p);if(v){if(v.clTaxi.ph==='board')clTaxiKerb(p,v)}else clTaxiCall(p);return}
- if(a==='car-in'){clCarBoard(p);return}
- if(a==='gatewait'){p.st='gatewait';p.pose='idle';p.dir=0;return}
- if(a==='taxi-at'){p.st='taxiwait';p.atTaxi=true;p.pose='idle';return}
- if(a==='home'){clDoorIn(p,p.home);return}
- clDoorIn(p,p.home)}
-
- 
-function clStopJoin(p){const sid=p.trip.bus.from;clHide(p);p.st='stop';p.stop=sid;(CL.stopQ[sid]||(CL.stopQ[sid]=[])).push(p);LN.q[sid].waiting++;CL.stats.stopJoin++;clEv('תחנה-הצטרפות',p,p.x,p.y)}
- 
-function clBayStart(B,S){const Q=CL.stopQ[S.id]||[];const L=lnLoop(B),later=L.slice(L.indexOf(S.id)+1);
-  
- const on=CL.onBus[B.id]||(CL.onBus[B.id]=[]);const offP=B.retire?on.slice():on.filter(p=>p.trip&&p.trip.bus&&p.trip.bus.to===S.id);
- for(const p of offP)on.splice(on.indexOf(p),1);
- const unknown=Math.max(0,(B.off||0)-offP.length);B.clOff=offP.concat(Array(unknown).fill(null));
- const want=B.on||0;const take=[];for(const p of Q){if(take.length>=want)break;if(p.trip&&p.trip.bus&&later.includes(p.trip.bus.to))take.push(p)}
- B.pax.splice(B.pax.length-want,want);if(take.length<want){CL.stats.boardSkip=(CL.stats.boardSkip||0)+want-take.length;B.on=take.length}
- for(const p of take)B.pax.push(p.trip.bus.to);B.clOn=take}
-var __clBayStart=lnBayStart;lnBayStart=function(B,S){__clBayStart(B,S);try{if(CL.on&&CL.seeded&&B.ph==='bay'&&!B.nodoor)clBayStart(B,S);else{B.clOn=[];B.clOff=[]}}catch(e){CL.err=CL.err||'bay '+String(e&&e.message||e)}};
-var __clBayStep=lnBayStep;lnBayStep=function(B,dt){const n0=BUS_ALIGHTERS.length;__clBayStep(B,dt);if(!CL.on||!CL.seeded)return;try{
- for(const a of BUS_ALIGHTERS.slice(n0)){
-  if(a.board){const p=(B.clOn||[]).shift();if(!p){a.clNew=true;continue}const Q=CL.stopQ[B.at]||[],k=Q.indexOf(p);if(k>=0)Q.splice(k,1);a.id=p.id;a.asset=p.asset;a.clp=p;p.st='boarding';p.boardBus=B.id;p.stop=null;
-   
-
-   const S=LN.stops[B.at];if(S){const j=(B.onDone-1)%8;a.x=S.C.x+S.n.x*40-S.u.x*(10+j*6);a.y=S.C.y+S.n.y*40-S.u.y*(10+j*6)}clEv('תחנה-עולה',p,a.x,a.y);continue}
-  const p=(B.clOff||[]).shift();if(p){a.id=p.id;a.asset=p.asset;a.clp=p;p.st='alight';CL.stats.busOut++;clEv('אוטובוס-ירידה',p,a.x,a.y)}else a.clNew=true}}catch(e){CL.err=CL.err||'baystep '+String(e&&e.message||e)}};
- 
-var __clStep=lnStep;lnStep=function(v,dt){const B=v.ln;let w0=null,q=null;try{if(CL.on&&CL.seeded&&B&&B.ph==='tdwell'&&B.bt===0){q=busPassengerStop(BUS_TERMINAL_STOPS[B.L.line].id);w0=q.waiting}}catch(e){}
- __clStep(v,dt);if(w0==null)return;try{const n=w0-q.waiting;if(n>0){const nx=B.L[B.dir];B.pax.splice(B.pax.length-n,n);const on=CL.onBus[B.id]||(CL.onBus[B.id]=[]);
-  for(let j=0;j<n;j++){let p=CL.termQ.shift();if(!p){p=clMk(null);p.st='bus';CL.stats.visitors++}const to=nx[stableHash(p.id+':T')%nx.length];p.trip={mode:'bus',bus:{from:'T',to,dir:B.dir,L:B.L},to:null,t0:CL.t};p.st='bus';B.pax.push(to);on.push(p);CL.stats.busIn++;clEv('אוטובוס-עלייה (מסוף)',p,v.x,v.y)}}}catch(e){CL.err=CL.err||'term '+String(e&&e.message||e)}};
- 
-function clBusPeople(){for(let i=BUS_ALIGHTERS.length-1;i>=0;i--){const a=BUS_ALIGHTERS[i];if(a.delay>0)continue;
-  if(a.board){if(a.clp){a.clp.x=a.x;a.clp.y=a.y;a.ttl=Math.max(a.ttl,1.5)}continue}    
-  if((a.stage>=1&&a.targets&&a.targets.length>1)||a.ttl<1.4){BUS_ALIGHTERS.splice(i,1);let p=a.clp;
-   if(!p){p=CL.byId.get(a.id)||clMk(null,a.id);p.asset=a.asset;CL.stats.visitors++;p.trip={mode:'bus',to:null,t0:CL.t}}
-   clShow(p,a.x,a.y);p.dir=a.dir;let to=p.trip&&p.trip.to;if(!to){to=clNearPlace(a.x,a.y,p);p.trip=p.trip||{};p.trip.to=to;if(!p.home)p.home=to}
-   if(!to||!clWalkTo(p,to,to.att,'door'))clStranded(p)}}}
-function clBoardWatch(){for(const p of CL.P){if(p.st!=='boarding')continue;if(BUS_ALIGHTERS.some(q=>q.clp===p))continue;    
-  const B=LN.bus.find(b=>b.id===p.boardBus);p.st='bus';CL.stats.busIn++;
-  if(B){(CL.onBus[B.id]||(CL.onBus[B.id]=[])).push(p);clEv('אוטובוס-עלייה',p,p.x,p.y)}else{CL.stats.boardLost=(CL.stats.boardLost||0)+1}}}
-function clNearPlace(x,y,p){let best=null,bd=1e9;for(const d of CL.places){const q=Math.hypot(d.x-x,d.y-y);if(q<bd){bd=q;best=d}}return best}
- 
-function clStranded(p){CL.stats.stranded=(CL.stats.stranded||0)+1;let best=null,bd=1e9;for(const d of CL.doors){const q=Math.hypot(d.x-p.x,d.y-p.y);if(q<bd&&d.k!=='gate'){bd=q;best=d}}
- if(best&&clWalkTo(p,best,best.att,'door')){p.trip=p.trip||{};p.trip.to=best;if(!p.home)p.home=best;return}p.st='stuck';p.pose='idle'}
-
- 
- 
-const CL_A3P={id:'A3P',name:'החניון של קריית הספורט (A3-P)',aisleIn:118,aisleOut:94,mouthY:2474,edge:'A3-RD',stopX:196,joinX:214};
-function clCarsInit(){const P=allParkedCars();try{c2AlleysInit()}catch(e){CL.err=CL.err||'alleys '+String(e&&e.message||e)}
- for(const o of P){if(!/^PC-(C3-\d|D3N-\d)/.test(o.id))continue;let home=null,hd=1e9;for(const d of CL.homes){if(!/^(C3|D3)-V/.test(d.id))continue;const q=Math.hypot(d.x-o.x,d.y-o.y);if(q<hd&&clLineClear(d.x,d.y,o.x,o.y)){hd=q;home=d}}if(!home||hd>260)continue;
-  const sp=clDriveSpot(o);if(!sp)continue;const c={id:o.id,asset:o.asset,ref:o.ref||'Sedan',home,spot:sp,x:o.x,y:o.y,h:o.heading||0,x0:o.x,y0:o.y,v:null,ph:'park',party:[],owner:null,where:'home'};CL.cars.push(c);CL.carById[c.id]=c}
-  
- try{c2B3Cars(P)}catch(e){CL.err=CL.err||'b3cars '+String(e&&e.message||e)}    
- for(const c of CL.cars){if(c.owner)continue;const p=CL.P.find(q=>q.home===c.home&&!q.car);if(p){p.car=c.id;c.owner=p}}
-  
- const S0=g77PkStalls().filter(s=>/^A3-P-[WE]\d+$/.test(s.id));CL.lots.A3P={def:CL_A3P,stalls:S0.map(s=>({id:s.id,x:s.x+s.w/2,y:s.y+s.h/2,side:s.id[5],res:null}))};
- const homes=CL.homes.filter(d=>/^B3-/.test(d.id)).sort((a,b)=>Math.hypot(a.x-120,a.y-2470)-Math.hypot(b.x-120,b.y-2470));let hi=0;
- for(const v of TRAFFIC_CARS){if(!v.clFire)continue;const st=CL.lots.A3P.stalls.filter(s=>!clStallBusy(s)).sort((a,b)=>a.y-b.y)[0];if(!st||!homes.length)continue;st.res=v.id;
-  const home=homes[hi++%homes.length],p=clMk(home);p.st='car';p.at=null;const c={id:v.id,asset:v.asset,ref:v.ref,home,spot:null,x:v.x,y:v.y,h:v.heading,v,ph:'wander',party:[p],owner:p,where:'road',commute:true,homeStall:st,trip:null};
-  p.trip={mode:'car',ride:c.id,from:home,to:home,t0:0};v.cl=c;CL.cars.push(c);CL.carById[c.id]=c}
-  
- }
-function clStallBusy(st){if(st.res)return true;for(const o of allParkedCars())if(Math.abs(o.x-st.x)<9&&Math.abs(o.y-st.y)<9)return true;return false}
-function clLotFreeN(lot){const L=CL.lots[lot];return L?L.stalls.filter(s=>!clStallBusy(s)).length:0}
-function clLotFree(lot){const L=CL.lots[lot];if(!L)return null;const free=L.stalls.filter(s=>!clStallBusy(s));if(!free.length)return null;if(lot==='C2M')free.sort((a,b)=>Math.abs(a.x-3000)-Math.abs(b.x-3000));else free.sort((a,b)=>b.y-a.y);return free[Math.floor(clR()*Math.min(free.length,6))]}
- 
-function clDriveSpot(o){const pos=nearestRoadPosition(o.x,o.y);if(!pos||pos.d>140)return null;const e=pos.edge,A=byNode[e.a],B=byNode[e.b],L=Math.hypot(B.x-A.x,B.y-A.y),ux=(B.x-A.x)/L,uy=(B.y-A.y)/L;
- const open=e.id==='LC-C3'?-1:e.id==='LC-D3V'?-1:null;if(open==null)return null;    
- const side=Math.sign(-(o.x-A.x)*uy+(o.y-A.y)*ux)||1;    
- const deg=id=>EDGES.filter(q=>!q.future&&(q.a===id||q.b===id)).length,bend=deg(e.a)===2;    
- const outDir=open,J=clLanePt(e.id,outDir,o.x,o.y,52),ln=lane2(e.id,outDir,0),sJ=J.t*L;if(!bend&&ln&&sJ>Math.min(ln.stopS,ln.len)-44)return null;    
- const inDir=-open,A2=clLanePt(e.id,inDir,o.x,o.y,-46),ln2=lane2(e.id,inDir,0);if(!bend&&ln2&&A2.t*L<(ln2.boxFrom||0)+40)return null;    
- return{edge:e.id,u:pos.u,L,ux,uy,side,outDir,inDir,sx:pos.x,sy:pos.y}}
- 
-function clLotFor(to){if(!to)return null;if(to.z==='A4'||to.k==='gate')return'A3P';if(to.id==='C2-MALL'&&CL.lots.C2M)return'C2M';return null}
-function clCarUsable(c,from,to){if(c.commute||c.ph!=='park'||c.v)return false;
- if(c.where==='home'&&from===c.home){const L=clLotFor(to);return !!L&&clLotFreeN(L)>0}
- if(c.where!=='home'&&to===c.home)return true;return false}
- 
-function clCarTripStart(p,c,from,to){c.ph='boarding';c.party=[p];c.owner=p;c.trip={from,to,lotTo:c.where==='home'?(clLotFor(to)||'A3P'):'home'};
- if(c.trip.lotTo!=='home'){const st=clLotFree(c.trip.lotTo);if(!st){c.ph='park';c.party=[];c.trip=null;p.trip.mode='walk';CL.stats.car--;CL.stats.walk++;clDoorOut(p,from);if(clWalkTo(p,to,to.att,to.k==='gate'?'gate':'door'))return true;return clBackIn(p,from)}st.res=c.id;c.trip.stall=st}
-  
- const extra=Math.floor(clR()*3);
- for(const q of CL.P){if(c.party.length>=1+extra)break;if(q===p||q.st!=='in'||q.at!==from||q.home!==c.home)continue;q.trip={mode:'car',from,to,why:p.trip.why,t0:CL.t,ride:c.id};q.st='go';c.party.push(q)}
- for(const q of c.party.slice()){if(c.ph!=='boarding')break;q.trip=q.trip||{};q.trip.mode='car';q.trip.from=from;q.trip.to=to;q.trip.ride=c.id;clCarGoTo(q,c,from)}
- if(c.ph!=='boarding')return p.st!=='go';
- clLog(p.id+' יוצא לרכב '+c.id+' ('+c.party.length+' אנשים)');return true}
-function clCarDoorPt(c,i){const h=c.v?c.v.heading:c.h,lx=Math.sin(h),ly=-Math.cos(h),fx=Math.cos(h),fy=Math.sin(h),s=i%2?-1:1;return{x:c.x+lx*s*15+fx*(i>1?-8:4),y:c.y+ly*s*15+fy*(i>1?-8:4)}}
-function clCarGoTo(q,c,from){const i=c.party.indexOf(q),dp=clCarDoorPt(c,i);if(from&&!q.shown)clDoorOut(q,from);
- if(Math.hypot(dp.x-q.x,dp.y-q.y)<160&&clLineClear(q.x,q.y,dp.x,dp.y)){q.path=[dp];q.pi=0;q.st='walk';q.after='car-in';return}
- const inY=!!clYard(dp.x,dp.y),att=inY?null:clAttach(dp.x,dp.y,200);if((att||inY)&&clWalkTo(q,dp,att,'car-in'))return;q.trip.carFail=1;clCarAbort(c,q)}
- 
-function clCarAbort(c,q){CL.stats.carAbort=(CL.stats.carAbort||0)+1;const P=c.party.slice();c.party=[];if(c.trip&&c.trip.stall)c.trip.stall.res=null;c.trip=null;c.ph='park';
- P.forEach((r,j)=>{const from=r.trip&&r.trip.from;r.trip={mode:'walk',from,to:from,t0:CL.t};if(r.st==='car'){const dp=clCarDoorPt(c,j);clShow(r,dp.x,dp.y);CL.stats.carOut++;clEv('רכב-יציאה',r,dp.x,dp.y)}
-  if(r.shown){if(!from||!clWalkTo(r,from,from.att,'door'))clStranded(r)}else if(from){r.st='in';r.at=from;r.trip=null;r.nextT=CL.t+60}})}
-function clCarBoard(p){const c=CL.carById[p.trip&&p.trip.ride];if(!c||c.ph!=='boarding'||!c.party.includes(p)){CL.stats.carMissed=(CL.stats.carMissed||0)+1;const to=p.trip&&p.trip.to;p.trip={mode:'walk',to,t0:CL.t};if(!to||!clWalkTo(p,to,to.att,to.k==='gate'?'gate':'door'))clStranded(p);return}clHide(p);p.st='car';p.x=c.x;p.y=c.y;CL.stats.carIn++;clEv('רכב-כניסה',p,c.x,c.y);
- if(c.party.every(q=>q.st==='car')){c.ph='ready';c.readyT=CL.t}}
- 
- 
-function clAisleFree(c){const K2=c2AisleKey(c,false);if(K2){for(const q of CL.cars){if(q===c)continue;if(q.v&&q.v.clOff&&c2AisleKey(q,false)===K2)return false;if(q.v&&(q.ph==='arrived'||(q.ph==='road'&&c2NearStop(q,260)))&&c2AisleKey(q,true)===K2)return false;    if(q.ph==='ready'&&!q.v&&c2AisleKey(q,false)===K2&&q.readyT<c.readyT)return false}return true}
- if(c.where!=='A3P')return true;for(const q of CL.cars)if(q!==c&&q.v&&q.where==='A3P'&&(q.ph==='out'||q.ph==='merge'||q.ph==='enter'))return false;for(const q of CL.cars)if(q!==c&&q.v&&q.ph==='in'&&q.trip&&q.trip.lotTo==='A3P')return false;return true}
-function clCarDepart(c){const o=allParkedCars().find(q=>q.id===c.id);const v={id:c.id,asset:c.asset,ref:c.ref,kind:'civilian',label:'רכב',edgeId:c.where==='home'&&c.alley?c.alley.edge:c.where==='C2M'?C2M_LOT.outEdge:c.spot?c.spot.edge:CL_A3P.edge,dirSign:1,t:.5,lane:0,lanePref:0,laneTarget:0,x:c.x,y:c.y,heading:c.h,speed:0,targetSpeed:92,wait:false,hop:0,stuck:0,ghost:0,plan:null,runKey:null,turn:null,clOff:true,cl:c};
- if(o)removeWorldParked(c.id);else VehicleWorld.hidden.add(c.id);try{VehicleWorld.serial++}catch(e){}
- TRAFFIC_CARS.push(v);c.v=v;c.ph='out';c.legs=clLegsOut(c);c.li=0;c.s=0;c.wt=0;CL.stats.carDep++;clEv('רכב-יציאה מחניה',c.id,c.x,c.y);clLog(c.id+' יוצא מ'+(c.where==='home'?'השביל':'החניון'))}
- 
-function clBez(P0,P1,P2,P3,n){const out=[];for(let i=0;i<=n;i++){const t=i/n,a=(1-t)**3,b=3*(1-t)**2*t,c=3*(1-t)*t*t,d=t**3;out.push([a*P0[0]+b*P1[0]+c*P2[0]+d*P3[0],a*P0[1]+b*P1[1]+c*P2[1]+d*P3[1]])}return out}
-function clLeg(pts,rev){return{P:lgPath(pts),rev:!!rev}}
-function clLanePt(edge,dir,x,y,ahead){const e=byEdge[edge],A=byNode[e.a],B=byNode[e.b],L=Math.hypot(B.x-A.x,B.y-A.y),u=((x-A.x)*(B.x-A.x)+(y-A.y)*(B.y-A.y))/(L*L),t0=dir>0?u:1-u,t=Math.max(.03,Math.min(.97,t0+(ahead||0)/L));const p=trafficEdgePoint(edge,dir,t,0);return{x:p.x,y:p.y,heading:p.heading,t}}
-
-
-function clLegsOut(c){if(c.where==='home'&&c.alley)return c2AlleyOut(c);if(c.where==='C2M')return c2LotOut(c);const h=c.h,hx=Math.cos(h),hy=Math.sin(h);
- if(c.where==='home'){const S=c.spot,tr={x:-S.uy*S.side,y:S.ux*S.side},e=byEdge[S.edge],A=byNode[e.a],hw=(TYPES[e.cls]||TYPES.local).width/2;    
-  const along=(c.x-A.x)*S.ux+(c.y-A.y)*S.uy,K={x:A.x+S.ux*along+tr.x*(hw+26),y:A.y+S.uy*along+tr.y*(hw+26)};c.K=K;c.facing=hx*(-tr.x)+hy*(-tr.y)>.3;
-  const J=clLanePt(S.edge,S.outDir,c.x,c.y,S.ahead||(c.facing?52:30));c.join=J;
-  if(c.facing&&Math.hypot(K.x-c.x,K.y-c.y)>2)return[clLeg([[c.x,c.y],[K.x,K.y]])];return[]}
- const D=CL_A3P,st=c.stall,xo=D.aisleOut,legs=[];const J=clLanePt(D.edge,-1,D.joinX,2550,0);c.join=J;c.K={x:xo,y:D.mouthY};const nose=(st.side==='W'?hx>.5:hx<-.5);    
- if(nose)legs.push(clLeg(clBez([c.x,c.y],[c.x+hx*30,c.y],[xo,c.y-4],[xo,c.y+34],14)));
- else legs.push(clLeg(clBez([c.x,c.y],[c.x-hx*30,c.y],[xo,c.y+6],[xo,c.y-30],14),true),clLeg([[xo,c.y-30],[xo,c.y+34]]));
- legs.push(clLeg([[xo,c.y+34],[xo,D.mouthY]]));return legs}
-function clLegsEnter(c){if((c.where==='home'&&c.alley)||c.where==='C2M')return c2Enter(c);const J=c.join,jx=Math.cos(J.heading),jy=Math.sin(J.heading);
- if(c.where==='home'){const S=c.spot,K=c.K;
-  if(c.facing){const tr={x:-S.uy*S.side,y:S.ux*S.side};return[clLeg(clBez([K.x,K.y],[K.x-tr.x*26,K.y-tr.y*26],[J.x-jx*36,J.y-jy*36],[J.x,J.y],16))]}
-   
-  const hx=Math.cos(c.h),hy=Math.sin(c.h),back=[c.x-hx*34,c.y-hy*34],R=clLanePt(S.edge,S.outDir,c.x,c.y,-30);return[clLeg(clBez([c.x,c.y],back,[R.x+jx*30,R.y+jy*30],[R.x,R.y],16),true),clLeg([[R.x,R.y],[J.x,J.y]])]}
- const M=c.K;return[clLeg(clBez([M.x,M.y],[M.x,M.y+46],[J.x-46,J.y],[J.x,J.y],14))]}
-function clLegsIn(c){if(c.trip.lotTo==='home'&&c.alley)return c2AlleyIn(c);if(c.trip.lotTo==='C2M')return c2LotIn(c);const v=c.v,hx=Math.cos(v.heading),hy=Math.sin(v.heading);
- if(c.trip.lotTo==='home'){const S=c.spot,tr={x:-S.uy*S.side,y:S.ux*S.side},px=c.x0,py=c.y0;    
-  return[clLeg(clBez([v.x,v.y],[v.x+hx*40,v.y+hy*40],[px-tr.x*40,py-tr.y*40],[px,py],18))]}
- const D=CL_A3P,st=c.trip.stall,xi=D.aisleIn;return[clLeg([[v.x,v.y],...clBez([v.x,v.y],[v.x+hx*40,v.y],[xi,D.mouthY+40],[xi,D.mouthY],14).slice(1),[xi,st.y+34],...clBez([xi,st.y+34],[xi,st.y+8],[st.side==='W'?xi-30:xi+30,st.y],[st.x,st.y],14).slice(1)])]}
- 
-function clCarBlocked(c,x,y,h){const v=c.v;let me;try{me=vehicleCollisionShape(v.asset,v.ref,x,y,h)}catch(e){return null}const rev=c.legs&&c.legs[c.li]&&c.legs[c.li].rev?-1:1,fx=Math.cos(h)*rev,fy=Math.sin(h)*rev,committed=c.ph==='enter'||c.ph==='in';
- for(const o of TRAFFIC_CARS){if(o===v||Math.abs(o.x-x)>120||Math.abs(o.y-y)>120)continue;const ax=(o.x-v.x)*fx+(o.y-v.y)*fy;if(ax<-6)continue;
-   
-  if(o.cl&&o.cl.by===c.id&&(o.cl.wt||0)>.5&&c.id<o.cl.id){CL.stats.yieldPair=(CL.stats.yieldPair||0)+1;continue}
-   
-  if(committed&&!o.clOff){const lat=Math.abs(-(o.x-v.x)*fy+(o.y-v.y)*fx);if(ax<10||lat>16)continue}try{if(vehicleBodiesOverlap(me,trafficVehicleShape(o),1))return o.id}catch(e){}}
- try{if(PlayerProfile.mode==='vehicle'&&Math.abs(PlayerCar.x-x)<120&&Math.abs(PlayerCar.y-y)<120&&vehicleBodiesOverlap(me,trafficVehicleShape(PlayerCar),1))return 'PLAYER'}catch(e){}
- try{if(PlayerProfile.mode!=='vehicle'&&Math.hypot(PlayerPed.x-x,PlayerPed.y-y)<22)return 'PLAYER-PED'}catch(e){}return null}
-function clCarLegs(c,dt){const L=c.legs[c.li];if(!L)return true;const v=c.v,room=L.P.total-c.s,vmax=L.rev?12:(c.ph==='in'?24:28),want=Math.min(vmax,Math.sqrt(60*Math.max(0,room+(c.li<c.legs.length-1?30:0)))+3);v.speed=Math.min(want,(v.speed||0)+30*dt);
- const ns=Math.min(L.P.total,c.s+v.speed*dt),p=lgPose(L.P,ns),h=L.rev?p.heading+Math.PI:p.heading;if(c.wt>14){c.passT=CL.t+2;c.wt=0;CL.stats.legPass=(CL.stats.legPass||0)+1}const hit=CL.t<(c.passT||0)?null:clCarBlocked(c,p.x,p.y,h);
- if(hit){v.speed=0;v.wait=true;c.wt+=dt;c.by=hit;return false}c.wt=0;c.by=null;v.wait=false;c.s=ns;v.x=p.x;v.y=p.y;v.heading=lgTurn(v.heading,h,dt);c.x=v.x;c.y=v.y;
- if(ns>=L.P.total-.05){c.li++;c.s=0;if(c.li<c.legs.length&&c.legs[c.li].rev!==L.rev)v.speed=0}return c.li>=c.legs.length}
- 
-function clJoinClear(c){const J=c.join,v=c.v,K=c.K||J,mx=(K.x+J.x)/2,my=(K.y+J.y)/2;for(const o of roadVehicles2()){if(o===v)continue;const d=Math.min(Math.hypot(o.x-J.x,o.y-J.y),Math.hypot(o.x-mx,o.y-my));if(d<75)return o.id;if(d<280&&(o.speed||0)>4){const toJ=(mx-o.x)*Math.cos(o.heading)+(my-o.y)*Math.sin(o.heading);if(toJ>-20)return o.id}}
- for(const q of CL.cars)if(q!==c&&q.v&&(q.ph==='enter'||q.ph==='in')&&Math.hypot(q.v.x-mx,q.v.y-my)<120)return q.id;
- try{if(PlayerProfile.mode==='vehicle'&&Math.hypot(PlayerCar.x-J.x,PlayerCar.y-J.y)<120)return 'PLAYER'}catch(e){}return null}
-function clCarJoin(c){const v=c.v,J=c.join;const S=c.where==='home'?c.spot:null,G=c2JoinOf(c),edge=G?G.edge:S?S.edge:CL_A3P.edge,dir=G?G.dir:S?S.outDir:-1,ln=G?G.lane:0;
- v.edgeId=edge;v.dirSign=dir;v.t=J.t;v.lane=ln;v.lanePref=ln;v.laneTarget=ln;v.x=J.x;v.y=J.y;v.heading=J.heading;v.speed=10;v.wait=false;v.turn=null;v.plan=null;v.runKey=null;v.ghost=1;v.c2=null;v.clOff=false;
- if(c.trip&&c.trip.lotTo==='wander'){v.taxiRoute=null;c.ph='wander';c.where='road';c.trip=null;clLog(c.id+' יצא לעבודה — בתנועה של העיר');return}
- const r=clCarRoute(c);if(!r){CL.stats.noRoute++;clLog(c.id+': אין דרך')}v.taxiRoute=r?{...r,phase:'cl',hold:false,arrived:false}:null;c.ph='road';c.rt=0;clLog(c.id+' בכביש')}
-function clCarRoute(c){const v=c.v;let edge,dir,x,y;if(c.trip&&c.trip.lotTo==='wander')return null;const G=c2StopOf(c);if(G){edge=G.edge;dir=G.dir;x=G.x;y=G.y;c.stopT=G.t}else if(c.trip.lotTo==='home'){const S=c.spot;edge=S.edge;dir=S.inDir;const A=clLanePt(S.edge,S.inDir,c.x0,c.y0,S.back||-46);x=A.x;y=A.y;c.stopT=A.t}else{edge=CL_A3P.edge;dir=1;const A=clLanePt(edge,1,CL_A3P.stopX,2550,0);x=A.x;y=A.y;c.stopT=A.t}
- const te=byEdge[edge],e=byEdge[v.edgeId];if(!te||!e)return null;const forward=v.dirSign>0?e.b:e.a,fT=c.stopT;
- if(v.edgeId===edge&&v.dirSign===dir&&fT>(v.t||0)+.03)return{nodes:[forward],pos:0,entryNode:forward,finalEdgeId:edge,finalDirSign:dir,finalT:fT,finalActive:true,targetX:x,targetY:y};
- const entry=dir>0?te.a:te.b,nodes=shortestNodePath(forward,entry,clPub);if(!nodes.length)return null;
- return{nodes,pos:0,entryNode:entry,finalEdgeId:edge,finalDirSign:dir,finalT:fT,finalActive:false,targetX:x,targetY:y}}
- 
-function clCarArrived(v){const c=v.cl;if(!c)return;v.speed=0;v.wait=true;if(v.taxiRoute){v.taxiRoute.hold=true;v.taxiRoute.arrived=true}c.ph='arrived';c.wt=0;clLog(c.id+' הגיע')}
-function clCarEnterClear(c){const v=c.v;const K2=c2AisleKey(c,true);if(K2){for(const q of CL.cars)if(q!==c&&q.v&&q.v.clOff&&c2AisleKey(q,false)===K2){if(q.ph==='in'&&(q.li>0||(q.s||0)>90))continue;return q.id}    for(const o of roadVehicles2()){if(o===v)continue;const ax=(v.x-o.x)*Math.cos(o.heading)+(v.y-o.y)*Math.sin(o.heading),lat=Math.abs(-(v.x-o.x)*Math.sin(o.heading)+(v.y-o.y)*Math.cos(o.heading));if(ax>0&&ax<150&&lat<60&&(o.speed||0)>3&&Math.abs(((o.heading-v.heading+Math.PI*3)%(Math.PI*2))-Math.PI)<.6)return o.id}return null}
- if(c.trip.lotTo==='home'&&c.spot&&c.spot.side*c.spot.inDir<0){    
-  for(const o of roadVehicles2()){if(o===v)continue;const d=Math.hypot(o.x-v.x,o.y-v.y);if(d<230&&(o.speed||0)>4&&((v.x-o.x)*Math.cos(o.heading)+(v.y-o.y)*Math.sin(o.heading))>0)return o.id}}
- for(const q of CL.cars)if(q!==c&&q.v&&q.ph==='enter'&&Math.hypot(q.v.x-v.x,q.v.y-v.y)<160)return q.id;
- if(c.trip.lotTo==='A3P')for(const q of CL.cars)if(q!==c&&q.v&&q.where==='A3P'&&(q.ph==='out'||q.ph==='merge'||q.ph==='enter'||q.ph==='in'))return q.id;return null}
-function clCarIn(c){const v=c.v;try{releaseGrant2(v)}catch(e){}v.c2=null;v.taxiRoute=null;v.plan=null;v.runKey=null;v.turn=null;v.clOff=true;c.ph='in';c.legs=clLegsIn(c);c.li=0;c.s=0;c.wt=0}
- 
-function clCarPark(c){const v=c.v,i=TRAFFIC_CARS.indexOf(v);if(i>=0)TRAFFIC_CARS.splice(i,1);c.h=v.heading;c.x=v.x;c.y=v.y;c.v=null;c.ph='park';
- const snap={id:c.id,asset:c.asset,ref:c.ref,x:c.x,y:c.y,heading:c.h,cl:true};const k=VehicleWorld.extra.findIndex(o=>o.id===c.id);if(k>=0)VehicleWorld.extra.splice(k,1);VehicleWorld.extra.push(snap);VehicleWorld.hidden.add(c.id);try{VehicleWorld.serial++}catch(e){}
- if(c.trip.lotTo==='home'){c.where='home'}else{c.where=c.trip.lotTo;c.stall=c.trip.stall;c.stall.res=c.commute?c.id:null}    
- CL.stats.carPark++;clEv('רכב-חנה',c.id,c.x,c.y);clLog(c.id+' חנה ב'+(c.where==='home'?'שביל הבית':c.where==='C2M'?'החניון של הקניון':'A3-P'));
- const to=c.trip.to;c.party.forEach((p,j)=>{const dp=clCarDoorPt(c,j);clShow(p,dp.x,dp.y);p.st='walk';CL.stats.carOut++;clEv('רכב-יציאה',p,dp.x,dp.y);
-  if(to.k==='gate'){if(!clWalkTo(p,to,to.att,'gate'))clStranded(p)}
-  else if(to===p.home&&Math.hypot(to.x-dp.x,to.y-dp.y)<160&&clLineClear(dp.x,dp.y,to.x,to.y)){p.path=[{x:to.x,y:to.y}];p.pi=0;p.after='door';p.trip.to=to}
-  else if(!clWalkTo(p,to,to.att,'door'))clStranded(p)});
- c.party=[];c.trip=null}
-function clCarStep(c,dt){if(c.ph==='ready'&&!c.v){if(clAisleFree(c)&&!CL.cars.some(q=>q!==c&&q.ph==='ready'&&q.where===c.where&&q.where==='A3P'&&q.readyT<c.readyT))clCarDepart(c);return}
- if(c.ph==='arrived'&&c2AisleKey(c,true)&&c.wt>60){CL.stats.enterForced=(CL.stats.enterForced||0)+1}const v=c.v;if(!v)return;
- if(TRAFFIC_CARS.indexOf(v)<0){TRAFFIC_CARS.push(v)}if(!VehicleWorld.hidden.has(c.id))VehicleWorld.hidden.add(c.id);
- if(c.ph==='wander'){const m=lgMinOfDay();if((m>=1350||m<300)&&!v.taxiRoute&&!v.turn&&c.party.length){c.trip={lotTo:'A3P',stall:c.homeStall,to:c.owner.home,from:null};const r=clCarRoute(c);
-   if(r){v.taxiRoute={...r,phase:'cl',hold:false,arrived:false};v.plan=null;v.runKey=null;c.ph='road';c.rt=0;clLog(c.id+' בלילה — הביתה, לחנייה שלו ב-A3-P')}else c.trip=null}return}
- if(c.ph==='out'){v.stuck=0;if(clCarLegs(c,dt)){c.ph='merge';c.wt=0;v.speed=0}return}
- if(c.ph==='merge'){v.speed=0;v.wait=true;v.stuck=0;c.wt+=dt;const by=clJoinClear(c);if(by&&c.wt<45){c.by=by;return}if(c.wt>=45)CL.stats.mergeForced=(CL.stats.mergeForced||0)+1;c.ph='enter';c.legs=clLegsEnter(c);c.li=0;c.s=0;c.wt=0;return}
- if(c.ph==='enter'){v.stuck=0;if(clCarLegs(c,dt))clCarJoin(c);return}
- if(c.ph==='road'){c.rt+=dt;if(!v.taxiRoute&&c.rt>2){const r=clCarRoute(c);if(r){v.taxiRoute={...r,phase:'cl',hold:false,arrived:false};CL.stats.reroute=(CL.stats.reroute||0)+1}}return}
- if(c.ph==='arrived'){v.speed=0;v.wait=true;c.wt+=dt;const by=clCarEnterClear(c);if(by&&c.wt<25){c.by=by;return}clCarIn(c);return}
- if(c.ph==='in'){v.stuck=0;if(clCarLegs(c,dt))clCarPark(c);return}}
-var __clRV=roadVehicles2;roadVehicles2=function(){const o=__clRV();if(!CL.anyOff)return o;return o.filter(v=>!v.clOff)};
-var __clTSA=taxiServiceArrived;taxiServiceArrived=function(car){if(car&&car.cl){try{clCarArrived(car)}catch(e){CL.err=CL.err||'arr '+String(e&&e.message||e)}return}if(car&&car.clTaxi){try{clTaxiArrived(car)}catch(e){CL.err=CL.err||'tarr '+String(e&&e.message||e)}return}return __clTSA(car)};
-
- 
-const CL_TAXI_HOME={x:4845,y:2550};    
- 
-function clPub(e){return fuelPub2(e)&&!/^LC-E3[WN]$/.test(e.id)}    
-function clTaxiFree(){let n=0;for(const v of TRAFFIC_CARS)if(v.kind==='taxi'&&!v.clTaxi&&taxiAvailable(v)&&!(State.taxiRide&&State.taxiRide.taxiId===v.id))n++;return n>1}    
- 
-function clTaxiCurb(d){const ok=e=>clPub(e)&&!e.oneway&&(e.cls==='local'||e.cls==='lane2');const pos=nearestRoadPosition(d.ax,d.ay,ok);if(!pos||pos.d>260)return null;
- const e=pos.edge,A=byNode[e.a],B=byNode[e.b],L=Math.hypot(B.x-A.x,B.y-A.y);if(L<160)return null;const ux=(B.x-A.x)/L,uy=(B.y-A.y)/L,side=Math.sign(-(d.ax-A.x)*uy+(d.ay-A.y)*ux)||1,dir=side>0?1:-1;
- const u=Math.max(.2,Math.min(.8,pos.u)),h=(TYPES[e.cls]||TYPES.local).width/2,cx=A.x+(B.x-A.x)*u+(-uy)*side*(h+5),cy=A.y+(B.y-A.y)*u+ux*side*(h+5),att=clAttach(cx,cy,60);if(!att)return null;
- return{x:cx,y:cy,att,edge:e.id,dir,t:dir>0?u:1-u}}
-function clTaxiCall(p){const pk=p.trip.pick;let best=null,bd=1e9;for(const v of TRAFFIC_CARS){if(v.kind!=='taxi'||v.clTaxi||!taxiAvailable(v)||(State.taxiRide&&State.taxiRide.taxiId===v.id))continue;const d=Math.hypot(v.x-pk.x,v.y-pk.y);if(d<bd){bd=d;best=v}}
- if(!best){p.trip.retry=CL.t+6;return}const r=clTaxiRouteTo(best,pk);if(!r){p.trip.retry=CL.t+6;return}
- best.clTaxi={p,ph:'pick',pk};best.taxiRoute={...r,phase:'cl-taxi',hold:false,arrived:false};best.plan=null;best.runKey=null;best.targetSpeed=86;CL.stats.taxiTrips++;clLog(best.id+' בדרך לאסוף את '+p.id)}
-function clTaxiRouteTo(v,pk){const te=byEdge[pk.edge],e=byEdge[v.edgeId];if(!te||!e)return null;const forward=v.dirSign>0?e.b:e.a,fT=taxiFinalClamp(pk.edge,pk.dir,pk.t);
- if(v.edgeId===pk.edge&&v.dirSign===pk.dir&&fT>(v.t||0)+.04)return{nodes:[forward],pos:0,entryNode:forward,finalEdgeId:pk.edge,finalDirSign:pk.dir,finalT:fT,finalActive:true,targetX:pk.x,targetY:pk.y};
- const entry=pk.dir>0?te.a:te.b,nodes=shortestNodePath(forward,entry,clPub);if(!nodes.length)return null;return{nodes,pos:0,entryNode:entry,finalEdgeId:pk.edge,finalDirSign:pk.dir,finalT:fT,finalActive:false,targetX:pk.x,targetY:pk.y}}
-function clTaxiArrived(v){const T=v.clTaxi;v.speed=0;v.wait=true;if(v.taxiRoute){v.taxiRoute.hold=true;v.taxiRoute.arrived=true}
- if(T.ph==='pick'){T.ph='board';T.t=0;const p=T.p;p.atTaxi=false;if(p.st==='taxiwait')clTaxiKerb(p,v);return}    
- if(T.ph==='ride'){const p=T.p,to=p.trip.to,dk=T.dk,K=dk.edge?clKerbAt(dk,v):dk;clShow(p,K.x,K.y);p.dir=npcDir(dk.x-v.x,dk.y-v.y,2);CL.stats.taxiOut++;clEv('מונית-ירידה',p,p.x,p.y);
-  if(!clWalkTo(p,to,to.att,to.k==='gate'?'gate':'door'))clStranded(p);
-   
-  const pos=nearestRoadPosition(CL_TAXI_HOME.x,CL_TAXI_HOME.y,e=>!e.oneway&&clPub(e));let r=null;if(pos)r=clTaxiRouteTo(v,{edge:pos.edge.id,dir:1,t:pos.u,x:pos.x,y:pos.y});
-  v.clTaxi={ph:'home',p:null,t:0};v.taxiRoute=r?{...r,phase:'cl-taxi',hold:false,arrived:false}:null;v.plan=null;v.runKey=null;if(!r)v.clTaxi=null;return}
- if(T.ph==='home'){v.clTaxi=null;v.taxiRoute=null;v.plan=null;v.wait=false;v.speed=0;v.hop+=3;clLog(v.id+' חזרה לתחנת המוניות')}}
- 
-function clKerbAt(pk,v){const e=byEdge[pk.edge];if(!e)return{x:pk.x,y:pk.y};const A=byNode[e.a],B=byNode[e.b],L=Math.hypot(B.x-A.x,B.y-A.y),ux=(B.x-A.x)/L,uy=(B.y-A.y)/L,s=(v.x-pk.x)*ux+(v.y-pk.y)*uy;return{x:pk.x+ux*s,y:pk.y+uy*s}}
-function clTaxiKerb(p,v){const K=clKerbAt(p.trip.pick,v);p.path=[K];p.pi=0;p.st='walk';p.after='taxi-at'}
-function clTaxiBoard(p){const v=TRAFFIC_CARS.find(q=>q.clTaxi&&q.clTaxi.p===p);if(!v){clStranded(p);return}clHide(p);p.st='taxi';CL.stats.taxiIn++;clEv('מונית-כניסה',p,v.x,v.y);
- const to=p.trip.to,dk=clTaxiCurb(to);v.clTaxi.ph='ride';v.clTaxi.t=0;const r=dk?clTaxiRouteTo(v,dk):null;
- if(!r){v.clTaxi.dk=p.trip.pick;v.taxiRoute=null;v.taxiRoute=null;clTaxiArrived(v);return}v.clTaxi.dk=dk;v.taxiRoute={...r,phase:'cl-taxi',hold:false,arrived:false};v.plan=null;v.runKey=null}
-function clTaxiStep(dt){for(const v of TRAFFIC_CARS){const T=v.clTaxi;if(!T)continue;T.t=(T.t||0)+dt;
-  if(T.ph==='board'&&T.p.atTaxi&&T.t>1){T.ph='boarding';clTaxiBoard(T.p);continue}
-  if(T.ph==='pick'&&!v.taxiRoute){const r=clTaxiRouteTo(v,T.pk);if(r)v.taxiRoute={...r,phase:'cl-taxi',hold:false,arrived:false}}
-  if(T.ph==='ride'&&!v.taxiRoute&&T.dk){const r=clTaxiRouteTo(v,T.dk);if(r)v.taxiRoute={...r,phase:'cl-taxi',hold:false,arrived:false}}
-  if(T.ph==='home'&&(!v.taxiRoute||T.t>240)){v.clTaxi=null;v.taxiRoute=null;v.plan=null}}
-  
- for(const p of CL.P)if(p.st==='taxiwait'&&p.trip&&p.trip.retry&&CL.t>=p.trip.retry){p.trip.retry=0;if(!TRAFFIC_CARS.some(v=>v.clTaxi&&v.clTaxi.p===p))clTaxiCall(p);
-   if(CL.t-p.trip.t0>150&&!TRAFFIC_CARS.some(v=>v.clTaxi&&v.clTaxi.p===p)){p.trip.mode='walk';const to=p.trip.to;if(!clWalkTo(p,to,to.att,to.k==='gate'?'gate':'door'))clStranded(p)}}}
-
- 
-function clMatchInfo(){try{return A34PLAY.matchNow()}catch(e){return null}}
- 
-function clMatchSoon(){const M=clMatchInfo();if(M)return M;try{const g=A34PLAY.gm(),ov=window.__TC_A3_MATCH;let K=null,idx=null;if(ov&&ov.K!=null){K=ov.K;idx=ov.idx||9001}else{const N=A34PLAY.nextMatch();if(N){K=N.K;idx=N.day}}
- if(K==null)return null;const u=(g-K)*2;return u>=-270&&u<-150?{u,K,idx,soon:true}:null}catch(e){return null}}
-function clGateSlot(p){const g=p.trip.to,G=CL.gateQ||(CL.gateQ={});const L=G[g.id]||(G[g.id]=[]);let i=L.indexOf(p);if(i<0){i=L.length;L.push(p)}return{x:g.x+((i%15)-7)*8.5,y:g.y+9+Math.floor(i/15)%4*8.5}}
-function clGateIn(p){const M=clMatchInfo();
- if(CL.match&&(CL.match.ph==='leave'||CL.match.ph==='done')){clGateLate(p);return}
- if(!M){ const s=clGateSlot(p);p.st='walk';p.path=[s];p.pi=0;p.after='gatewait';return}
- clGateEnter(p)}
-function clGateLate(p){CL.stats.gateLate=(CL.stats.gateLate||0)+1;const g=p.trip.to,home=p.home;p.at=g;p.trip=null;p.st='go';
- const c=CL.cars.find(q=>!q.commute&&q.home&&q.home===home&&q.where==='A3P'&&(q.ph==='park'||(q.ph==='boarding'&&q.trip&&q.trip.lotTo==='home'&&q.party.length<4)));
- if(c){if(c.ph==='park'){c.ph='boarding';c.party=[];c.owner=p;c.trip={from:g,to:home,lotTo:'home'}}c.party.push(p);p.trip={mode:'car',from:g,to:home,ride:c.id,t0:CL.t,why:'home'};clCarGoTo(p,c,g);return}
- if(!home||!clTrip(p,home,'home')){const n=home||clNearPlace(g.x,g.y,p);p.trip={mode:'walk',to:n,t0:CL.t};if(!clWalkTo(p,n,n.att,'door'))clStranded(p)}}
-function clGateEnter(p){clHide(p);p.st='seat';p.at=p.trip.to;p.x=p.at.x;p.y=p.at.y;CL.seats++;CL.stats.gateIn++;clEv('שער-כניסה',p,p.at.x,p.at.y);if(CL.match)CL.match.in++}
-function clMatchTick(){let M=clMatchInfo();
-const M0=M;M=clMatchSoon();
- if(M&&CL.match&&CL.match.idx===M.idx&&CL.match.K!==M.K)CL.match.K=M.K;    
- if(M&&(!CL.match||CL.match.idx!==M.idx)){if(CL.match&&CL.match.ph!=='done')clMatchEndNow();CL.match={idx:M.idx,K:M.K,ph:'come',crowd:[],in:0,out:0,sent:0,modes:{walk:0,car:0,taxi:0,bus:0},t0:CL.t,queue:[]};clMatchCrowd();clLog('יום משחק: הקהל יוצא אל האצטדיון ('+CL.match.crowd.length+')')}
- const X=CL.match;if(!X)return;
- if(X.ph==='come'){const u=M0?M0.u:-1e9;
-   
-  let k=0;while(X.queue.length&&k<6){const p=X.queue[0];if(p.st!=='in'){X.queue.shift();continue}if(CL.t<p.go)break;X.queue.shift();k++;const g=CL.gates[stableHash(p.id)%CL.gates.length];if(!clTrip(p,g,'match')){X.miss=(X.miss||0)+1;continue}X.sent++;X.modes[p.trip.mode]=(X.modes[p.trip.mode]||0)+1}
-   
-  if(M0){let k=0;for(const id in (CL.gateQ||{})){const L=CL.gateQ[id];let j=0;while(L.length&&j<4){const p=L[0];if(p.st!=='gatewait'){if(p.st==='walk'&&p.after==='gatewait')break;L.shift();continue}L.shift();j++;k++;p.path=[{x:p.trip.to.x,y:p.trip.to.y}];p.pi=0;p.st='walk';p.after='gate-open'}}}
-  const S=clMatchLeaveAt();if(M0&&u>=S){X.ph='leave';X.tl=CL.t;clLog('סוף המשחק: '+CL.seats+' ביציע יוצאים');
-    
-   for(const p of CL.P){if(p.trip&&p.trip.why==='match'&&p.st==='gatewait')clGateLate(p)}}}
- if(X.ph==='leave'){ 
-  let k=0;for(const p of CL.P){if(k>=3)break;if(p.st!=='seat')continue;k++;clGateOut(p)}
-  if(!CL.seats&&!CL.P.some(p=>p.trip&&p.trip.why==='match'&&p.st!=='in')){X.ph='done';clLog('הקהל עזב: נכנסו '+X.in+', יצאו '+X.out)}}
- if(!M0&&!(M&&M.soon)&&X.ph!=='done'&&X.ph!=='leave'){X.ph='leave';X.tl=CL.t;for(const p of CL.P){if(p.trip&&p.trip.why==='match'&&p.st==='gatewait')clGateLate(p)}}}
-function clLeaveU(idx){try{const S2=SPORT2.a3Info(idx,0);return(S2.leave||A34PLAY.MT.end)-6}catch(e){return 640}}
-function clMatchLeaveAt(){try{const M=A34PLAY.matchNow(),S2=SPORT2.a3Info(M.idx,M.u);return(S2.leave||A34PLAY.MT.end)-6}catch(e){return 640}}
-function clGateOut(p){const g=p.at;CL.seats--;CL.stats.gateOut++;if(CL.match)CL.match.out++;clEv('שער-יציאה',p,g.x,g.y);p.st='go';p.at=g;p.trip=null;
- const home=p.home,c=CL.cars.find(q=>!q.commute&&q.home&&q.home===home&&q.where==='A3P'&&(q.ph==='park'||(q.ph==='boarding'&&q.trip&&q.trip.lotTo==='home'&&q.party.length<4)));
- if(c){if(c.ph==='park'){c.ph='boarding';c.party=[];c.owner=p;c.trip={from:g,to:home,lotTo:'home'}}c.party.push(p);p.trip={mode:'car',from:g,to:home,ride:c.id,t0:CL.t,why:'home'};clCarGoTo(p,c,g);return}
- if(!home||!clTrip(p,home,'home')){if(!p.shown)clDoorOut(p,g);const n=home||clNearPlace(g.x,g.y,p);if(!clWalkTo(p,n,n.att,'door'))clStranded(p)}}
- 
-function clMatchCrowd(){const X=CL.match,G=CL.gates[1],c=[];for(const p of CL.P){if(p.st!=='in'||!p.home||p.at!==p.home)continue;c.push([Math.hypot(p.home.x-G.x,p.home.y-G.y),p])}
- c.sort((a,b)=>a[0]-b[0]);const want=Math.min(CL.cap.match,c.length);X.target=0;let t=CL.t;
- for(const [d,p] of c){if(X.crowd.length>=want)break;const car=CL.cars.find(q=>q.home===p.home&&!q.commute);if(d>3400&&!car)continue;X.crowd.push(p);p.go=t+(d/30>100?0:clR()*40);X.queue.
+ L.sort((p,q)=>p.d-q.d);for(const q of L.slice(0,10))

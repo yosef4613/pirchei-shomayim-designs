@@ -1,4 +1,20 @@
-..P.gates],[R.drive,P.flare,R.walk,P.ent].filter(Boolean),0));T('trees clear of drive/walk/entrance/building/pool',cl(trees,[R.drive,R.walk,P.ent,R.bld,R.pool].filter(Boolean),0));
+,[.65,.6,2.4],[.5,.25,1.8]].forEach(([u,v,rr])=>{ci(c,x+rw*u+1,y+rh*v+1,rr,'rgba(0,0,0,.25)');ci(c,x+rw*u,y+rh*v,rr,'#8d9399')})}
+else if(d.k=='palm'){ci(c,cx+4,cy+5,r*.9,'rgba(20,30,40,.22)');for(let k=0;k<7;k++){c.save();c.translate(cx,cy);c.rotate(k*.9);c.fillStyle=k%2?'#3d9a45':'#52b34e';c.beginPath();c.ellipse(r*.5,0,r*.62,2.4,0,0,6.3);c.fill();c.restore()}ci(c,cx,cy,2,'#7a5a3a')}
+else{ci(c,cx+3,cy+4,r,'rgba(20,30,40,.25)');ci(c,cx,cy,r,lg(c,cx-r,cy-r,cx+r,cy+r,['#79cf62','#2f8a3c']));ci(c,cx-r*.3,cy-r*.3,r*.35,'rgba(255,255,255,.18)')}});
+P.lamps.forEach(l=>{RFXQ&&RFXQ.push(['lamp',l.cx,l.cy]);gl(l.cx,l.cy,10);ci(c,l.cx+1,l.cy+1.5,2.2,'rgba(0,0,0,.2)');ci(c,l.cx,l.cy,1.9,'#2b2f35');ci(c,l.cx,l.cy-.8,1.2,n?'#fff6c8':'#e9e4d2')});
+if(m.fence&&on('fence')){const fn=st.fn||'picket',fc=fn=='picket'?'#f4f4f0':fn=='rail'?'#a97c50':fn=='wall'?'#cfc8ba':'#2b2f35';
+P.segs.forEach(([a1,b1,a2,b2])=>{if(fn=='wall'){c.strokeStyle='rgba(20,30,40,.25)';c.lineWidth=4;c.beginPath();c.moveTo(a1+1.5,b1+2);c.lineTo(a2+1.5,b2+2);c.stroke();c.strokeStyle=fc;c.lineWidth=3.6;c.beginPath();c.moveTo(a1,b1);c.lineTo(a2,b2);c.stroke();c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=1;c.beginPath();c.moveTo(a1,b1-1);c.lineTo(a2,b2-1);c.stroke()}else{c.strokeStyle=fc;c.lineWidth=fn=='rail'?1.6:1;c.beginPath();c.moveTo(a1,b1);c.lineTo(a2,b2);c.stroke();if(fn!='picket'){c.beginPath();c.moveTo(a1,b1+(b1==b2?-2.2:0));c.lineTo(a2,b2+(b1==b2?-2.2:0));c.stroke()}}});
+P.posts.forEach(([x,y],i)=>{if(fn=='wall')return;if(fn=='picket'){if(i%1==0)fr(c,fc,x+.5,y,2,3,.6)}else if(fn=='rail'){if(i%2==0)fr(c,fc,x-.5,y-.5,4,4,1)}else if(i%3==0){fr(c,fc,x+.7,y+.7,1.6,1.6);ci(c,x+1.5,y+1.5,1.8,'#2b2f35');ci(c,x+1,y+1,.7,'rgba(255,255,255,.6)')}});
+P.gates.forEach(([x,y,gw,gh])=>{fr(c,'rgba(20,30,40,.25)',x+1.5,y+2,gw,gh,1);fr(c,fn=='iron'?'#2b2f35':'#d8d2c4',x,y,gw,gh,1);fr(c,'rgba(255,255,255,.45)',x,y,gw,1.3,.6)})}}
+const h2=house;house=function(c,m,S){const a=HA.get(m.R.bld),st=ST[a.id];STY=st;h2(c,{...m,fence:0,tree:0},{...S,L:{...S.L,garden:false}});STY=null;LAND(c,m,S,a,st)};
+const insp2=insp;insp=function(){insp2();const a=sel;if(a&&a.pal=='house'){const r=document.createElement('div');r.className='row';r.innerHTML='<span>Light</span>'+['Day','Night'].map((n,i)=>`<button class="${(a.S.n|0)==i?'on':''}" data-k="n" data-i="${i}">${n}</button>`).join(' ');const t=$('#insp table');t&&t.parentNode.insertBefore(r,t)}};
+ 
+let HLL2=null;const HL=()=>HLL2||(HLL2=(()=>{const L=[['HOUSE / VILLA / PLAYER HOME — real bounds of every drawn item (trees, shrubs, beds, hedges, patio, lamps, fence posts, gates, curb cut)','h']];
+const Ms=[...HS,...VL,...PH].map(([id,n,m0])=>{const a=A.find(q=>q.id==id),m=lay(m0);return[id,n,m,a,PL(m,a,ST[id])]});
+Ms.forEach(([id,n,m,a,P])=>{const R=m.R,w=m.w,h=m.h,I=(r,b,g=0)=>!!b&&rc2(r,b,g),ck=[],T=(k,ok)=>ck.push([k,ok]),inLot=r=>r[0]>=0&&r[1]>=0&&r[0]+r[2]<=w&&r[1]+r[3]<=h;
+const trees=[...(P.tree0?[P.tree0]:[]),...P.dec.filter(d=>['tree','palm','bedt'].includes(d.k)).map(d=>d.r)],garden=[...P.sh0,...P.dec.map(d=>d.r)],cl=(rs,bs,g)=>rs.every(r=>bs.every(b=>!I(r,b,g)));
+T('bld×drive',!I(R.bld,R.drive,-1));T('bld×pool',!I(R.bld,R.pool,4));T('drive×pool',!I(R.drive,R.pool,4));T('walk×pool',!I(R.walk,R.pool,4));T('walk×drive',!I(R.walk,R.drive,0));T('garage→drive',!R.gar||I(R.gar,R.drive,1));T('drive→street',!R.drive||R.drive[1]+R.drive[3]>=h-1);T('pool in lot',!R.pool||inLot(R.pool));
+T('fence/gates clear of drive+curb cut+walk+entrance',cl([...P.posts,...P.gates],[R.drive,P.flare,R.walk,P.ent].filter(Boolean),0));T('trees clear of drive/walk/entrance/building/pool',cl(trees,[R.drive,R.walk,P.ent,R.bld,R.pool].filter(Boolean),0));
 T('shrubs/beds/hedges clear of drive/walk/entrance',cl(garden,[R.drive,P.flare,R.walk,P.ent].filter(Boolean),0));T('garden not under building',cl(garden,[R.bld],-.5));T('patio clear of drive/walk/entrance/building/pool + in lot',!P.pat||(cl([P.pat],[R.drive,R.walk,P.ent,R.bld,R.pool].filter(Boolean),0)&&inLot(P.pat)));T('lamps clear of drive/walk/entrance',cl(P.lamps.map(l=>l.r),[R.drive,R.walk,P.ent].filter(Boolean),0));
 T('all items inside lot',[...trees,...garden,...P.posts,...P.lamps.map(l=>l.r)].every(inLot));const bad=ck.filter(q=>!q[1]);L.push([`${id} ${n}: ${bad.length?'FAIL '+bad.map(q=>q[0]).join(', '):'PASS '+ck.length+'/'+ck.length}`,!bad.length])});
 const Pm=PH.map(([i,n,m0])=>lay(m0)),ar=Pm.map(m=>m.R.bld[2]*m.R.bld[3]),o1=ar.every((v,i)=>!i||v>ar[i-1]),o2=!Pm[0].R.gar&&Pm.slice(1).every(m=>m.R.gar)&&Pm.slice(0,3).every(m=>!m.R.pool)&&Pm[3].R.pool&&Pm[4].R.pool;L.push(['PLAYER HOME PROGRESSION','h'],[`L1→L5 area grows: ${o1?'PASS':'FAIL'}`,o1],[`garage from L2, pool from L4: ${o2?'PASS':'FAIL'}`,o2]);
@@ -1057,7 +1073,7 @@ window.__TC_GRAPHICS_RUNTIME={source:'Turbo City Graphics Library Wave 4.4 Hebre
 </script>
 <script>
 (()=>{'use strict';
-const BUILD='turbo-city-v1.96-s7f301',TC_REL=(()=>{const b=String(BUILD),v=(b.match(/v(\d+\.\d+)/i)||[])[1]||'?',m=b.match(/s7f(\d+)/i),tag=m?m[0].toUpperCase():'DEV';return{ver:v,no:m?+m[1]:null,tag,scope:'TC_V'+v.replace('.','')+'_'+tag}})();    
+const BUILD='turbo-city-v1.96-s7f302',TC_REL=(()=>{const b=String(BUILD),v=(b.match(/v(\d+\.\d+)/i)||[])[1]||'?',m=b.match(/s7f(\d+)/i),tag=m?m[0].toUpperCase():'DEV';return{ver:v,no:m?+m[1]:null,tag,scope:'TC_V'+v.replace('.','')+'_'+tag}})();    
 const VER=TC_REL.ver, ACTIVE_GATE='GATE-77', FILE_SCOPE=TC_REL.scope;
 
 
@@ -1323,8 +1339,14 @@ const NODES=[
  {id:'ISW-6',x:7000,y:7196,type:'joint',label:'ISW-6 — דרך הנמל והכפר באי (S13)'},
  {id:'E69_73',x:6900,y:7262,type:'intersection',cul:true,label:'E69_73 — רחבת נמל האי והמעבורת: ראש סיבוב, התחנה הסופית ST-22 (S13)'},
  {id:'ISE-1',x:8700.9,y:7582.5,type:'joint',label:'ISE-1 — דרך התחנה באי (S13)'},
- {id:'ISE-0',x:8526,y:7459.2,type:'intersection',label:'ISE-0 — דרך התחנה באי × לולאת התחנה (s16c, ‏D‑670)'},{id:'ISE-A',x:8705,y:7668,type:'joint',label:'ISE-A — לולאת התחנה באי (s16c)'},{id:'ISE-B',x:8625,y:7650,type:'joint',label:'ISE-B — לולאת התחנה באי (s16c)'},{id:'ISE-C',x:8570,y:7605,type:'joint',label:'ISE-C — לולאת התחנה באי (s16c)'},{id:'ISE-D',x:8537,y:7532,type:'joint',label:'ISE-D — לולאת התחנה באי (s16c)'},
- {id:'E880_760',x:8796,y:7603,type:'intersection',cul:true,label:'E880_760 — רחבת תחנת האי: ראש סיבוב, התחנה הסופית ST-21 (S13)'},
+  
+ {id:'ISE-0',x:8526,y:7459.2,type:'joint',label:'ISE-0 — דרך התחנה באי (island 17.11: בלי לולאת ST-21)'},
+ {id:'ISE-2',x:8860,y:7690,type:'joint',label:'ISE-2 — דרך המזרח באי: הפנייה מזרחה, מתחת לסוף המסילה (island 17.11)'},
+ {id:'ISE-3',x:9380,y:7690,type:'joint',label:'ISE-3 — דרך המזרח באי: הפנייה צפונה (island 17.11)'},
+ {id:'ISEL-0',x:9380,y:7300,type:'intersection',label:'ISEL-0 — לולאת המזרח: הכניסה והיציאה (island 17.11)'},
+ {id:'ISEL-1',x:9130,y:7300,type:'joint',label:'ISEL-1 — לולאת המזרח (island 17.11)'},{id:'ISEL-2',x:9000,y:7170,type:'joint',label:'ISEL-2 — לולאת המזרח (island 17.11)'},
+ {id:'ISEL-3',x:9000,y:6960,type:'joint',label:'ISEL-3 — לולאת המזרח (island 17.11)'},{id:'ISEL-4',x:9380,y:6960,type:'joint',label:'ISEL-4 — לולאת המזרח (island 17.11)'},
+  
   
   
   
@@ -1557,14 +1579,14 @@ const EDGES=[
  {id:'IS-E1',globalRoadId:'TC-H9-R101',a:'IL',b:'ISE-0',cls:'local',corridor:'IS-E',name:'דרך התחנה באי — מהכיכר',plan:'IS-E/1'},    
  {id:'IS-E1B',globalRoadId:'TC-H9-R103',a:'ISE-0',b:'ISE-1',cls:'local',corridor:'IS-E',name:'דרך התחנה באי — ליד התחנה',plan:'IS-E/1'},
   
-  
-  
- {id:'IS-L1',globalRoadId:'TC-H9-R104',a:'E880_760',b:'ISE-A',cls:'oneway5',oneway:1,serviceOnly:true,corridor:'IS-L',name:'לולאת התחנה באי — מהרחבה',plan:'IS-L (D‑670)'},
- {id:'IS-L2',globalRoadId:'TC-H9-R105',a:'ISE-A',b:'ISE-B',cls:'oneway5',oneway:1,serviceOnly:true,corridor:'IS-L',name:'לולאת התחנה באי — לאורך החניון',plan:'IS-L (D‑670)'},
- {id:'IS-L3',globalRoadId:'TC-H9-R106',a:'ISE-B',b:'ISE-C',cls:'oneway5',oneway:1,serviceOnly:true,corridor:'IS-L',name:'לולאת התחנה באי — הקשת 1',plan:'IS-L (D‑670)'},
- {id:'IS-L4',globalRoadId:'TC-H9-R107',a:'ISE-C',b:'ISE-D',cls:'oneway5',oneway:1,serviceOnly:true,corridor:'IS-L',name:'לולאת התחנה באי — הקשת 2',plan:'IS-L (D‑670)'},
- {id:'IS-L5',globalRoadId:'TC-H9-R108',a:'ISE-D',b:'ISE-0',cls:'oneway5',oneway:1,serviceOnly:true,corridor:'IS-L',name:'לולאת התחנה באי — אל דרך התחנה',plan:'IS-L (D‑670)'},
- {id:'IS-E2',globalRoadId:'TC-H9-R102',a:'ISE-1',b:'E880_760',cls:'local',corridor:'IS-E',name:'דרך התחנה באי — אל הרחבה',plan:'IS-E/1'},    
+ {id:'IS-E2',globalRoadId:'TC-H9-R102',a:'ISE-1',b:'ISE-2',cls:'local',corridor:'IS-E',name:'דרך המזרח באי — מהתחנה אל הפנייה',plan:'ISL-E (D‑694)'},
+ {id:'IS-E3',globalRoadId:'TC-H9-R109',a:'ISE-2',b:'ISE-3',cls:'local',corridor:'IS-E',name:'דרך המזרח באי — לאורך סוף המסילה',plan:'ISL-E (D‑694)'},
+ {id:'IS-E4',globalRoadId:'TC-H9-R110',a:'ISE-3',b:'ISEL-0',cls:'local',corridor:'IS-E',name:'דרך המזרח באי — צפונה אל לולאת המזרח',plan:'ISL-E (D‑694)'},
+ {id:'IS-EL1',globalRoadId:'TC-H9-R104',a:'ISEL-0',b:'ISEL-1',cls:'oneway5',oneway:1,corridor:'IS-EL',name:'לולאת המזרח באי — מערבה',plan:'ISL-E-LOOP (D‑694)'},
+ {id:'IS-EL2',globalRoadId:'TC-H9-R105',a:'ISEL-1',b:'ISEL-2',cls:'oneway5',oneway:1,corridor:'IS-EL',name:'לולאת המזרח באי — הפינה',plan:'ISL-E-LOOP (D‑694)'},
+ {id:'IS-EL3',globalRoadId:'TC-H9-R106',a:'ISEL-2',b:'ISEL-3',cls:'oneway5',oneway:1,corridor:'IS-EL',name:'לולאת המזרח באי — צפונה',plan:'ISL-E-LOOP (D‑694)'},
+ {id:'IS-EL4',globalRoadId:'TC-H9-R107',a:'ISEL-3',b:'ISEL-4',cls:'oneway5',oneway:1,corridor:'IS-EL',name:'לולאת המזרח באי — מזרחה (התחנה הסופית של קו 5א)',plan:'ISL-E-LOOP (D‑694)'},
+ {id:'IS-EL5',globalRoadId:'TC-H9-R108',a:'ISEL-4',b:'ISEL-0',cls:'oneway5',oneway:1,corridor:'IS-EL',name:'לולאת המזרח באי — דרומה אל דרך המזרח',plan:'ISL-E-LOOP (D‑694)'},    
  {id:'CL-F1',globalRoadId:'TC-F3-R001',a:'J61_26',b:'K61_176',cls:'arterial',corridor:'CL-F',name:'דרך המרינה והטרמינל — צפונה',plan:'CL-F/1'},
   
   
@@ -4121,6 +4143,118 @@ const S16C={err:null,cableShift:[36,-22]};
 }catch(e){S16C.err='cable: '+String(e&&e.message||e)}})();
 
 
+var ISL17=(function(){const R={err:null,v:'17.11-1'};
+ try{
+  const A=S13D.cable[0],B=S13D.cable[1],C=[6760,7660];    
+  const ST=[{id:'A',he:'תחנת העמק — ליד כיכר האי',c:A,z:9,end:true},{id:'B',he:'הפסגה — קפה התצפית',c:B,z:8,end:false},{id:'C',he:'תחנת הנמל',c:C,z:9,end:true}];
+  const N=10,OFF=16,V=20,RST=46,W_END=7,W_MID=5,TOWER_Z=11,SAG=1.1;    
+  const sub=(p,q)=>[p[0]-q[0],p[1]-q[1]],len=v=>Math.hypot(v[0],v[1]),nrm=v=>{const L=len(v)||1;return[v[0]/L,v[1]/L]};
+  const u1=nrm(sub(B,A)),u2=nrm(sub(C,B)),n1=[-u1[1],u1[0]],n2=[-u2[1],u2[0]];
+  let m=[n1[0]+n2[0],n1[1]+n2[1]];m=nrm(m);const mk=1/Math.max(.5,m[0]*n1[0]+m[1]*n1[1]);m=[m[0]*mk,m[1]*mk];
+  const off=(p,n,s)=>[p[0]+n[0]*OFF*s,p[1]+n[1]*OFF*s];
+   
+  const TF=[.6,.5];    
+  const TW=[{c:[A[0]+(B[0]-A[0])*TF[0],A[1]+(B[1]-A[1])*TF[0]],leg:0,n:n1},{c:[B[0]+(C[0]-B[0])*TF[1],B[1]+(C[1]-B[1])*TF[1]],leg:1,n:n2}];
+   
+  const P=[],Z=[];const push=(p,z)=>{P.push(p);Z.push(z)};
+  const segZ=(z0,z1,f,tf)=>{ const h=f<tf?f/tf:(f-tf)/(1-tf),a=f<tf?z0:TOWER_Z,b=f<tf?TOWER_Z:z1;return a+(b-a)*h-SAG*4*h*(1-h)};
+  const leg=(p0,p1,n0,n1_,s,z0,z1,steps,tf)=>{for(let i=0;i<=steps;i++){const f=i/steps,q=[p0[0]+(p1[0]-p0[0])*f,p0[1]+(p1[1]-p0[1])*f],nn=[n0[0]+(n1_[0]-n0[0])*f,n0[1]+(n1_[1]-n0[1])*f];push(off(q,nn,s),segZ(z0,z1,f,tf))}};
+  const turn=(cen,nFrom,dir,z,steps)=>{ for(let i=1;i<steps;i++){const a=Math.PI*i/steps,ca=Math.cos(a),sa=Math.sin(a);push([cen[0]-nFrom[0]*OFF*ca+dir[0]*OFF*sa,cen[1]-nFrom[1]*OFF*ca+dir[1]*OFF*sa],z)}};
+  leg(A,B,n1,m,-1,ST[0].z,ST[1].z,40,TF[0]);P.pop();Z.pop();leg(B,C,m,n2,-1,ST[1].z,ST[2].z,48,TF[1]);
+  turn(C,n2,u2,ST[2].z,10);
+  leg(C,B,n2,m,1,ST[2].z,ST[1].z,48,1-TF[1]);P.pop();Z.pop();leg(B,A,m,n1,1,ST[1].z,ST[0].z,40,1-TF[0]);
+  turn(A,[-n1[0],-n1[1]],[-u1[0],-u1[1]],ST[0].z,10);
+  push(P[0],Z[0]);
+   
+  const S=[0],VS=[0],WT=[];
+  for(let i=1;i<P.length;i++){const mid=[(P[i][0]+P[i-1][0])/2,(P[i][1]+P[i-1][1])/2];let w=1,at=null;for(const s of ST)if(len(sub(mid,s.c))<RST){w=s.end?W_END:W_MID;at=s.id}
+   const d=len(sub(P[i],P[i-1]));S.push(S[i-1]+d);VS.push(VS[i-1]+d*w);WT.push({w,at})}
+  const LREAL=S[S.length-1],LV=VS[VS.length-1],T=LV/V;
+   
+  const CLK={paused:false,p0:0,acc:0};
+  function vt(t,on){if(!on){if(!CLK.paused){CLK.paused=true;CLK.p0=t}return t-CLK.acc-(t-CLK.p0)}if(CLK.paused){CLK.paused=false;CLK.acc+=t-CLK.p0}return t-CLK.acc}
+  function at(v){ v=((v%LV)+LV)%LV;let lo=0,hi=VS.length-1;while(hi-lo>1){const md=(lo+hi)>>1;if(VS[md]<=v)lo=md;else hi=md}
+   const f=(v-VS[lo])/Math.max(1e-6,VS[hi]-VS[lo]),a=P[lo],b=P[hi];return{x:a[0]+(b[0]-a[0])*f,y:a[1]+(b[1]-a[1])*f,z:Z[lo]+(Z[hi]-Z[lo])*f,seg:WT[lo]||{w:1,at:null},s:S[lo]+(S[hi]-S[lo])*f,h:Math.atan2(b[1]-a[1],b[0]-a[0])}}
+  function pose(k,t,on,live){const T0=live===false?t:vt(t,on),v=(T0*V+k*LV/N),q=at(v),half=S[P.length>>1]||LREAL/2;
+   const out=q.s<=LREAL/2;    
+   return{x:q.x,y:q.y,z:q.z,h:q.h,mv:!q.seg.at&&!!on,at:q.seg.at,f:out?q.s/(LREAL/2):1-(q.s-LREAL/2)/(LREAL/2),dir:out?'C':'A',k,on:!!on}}
+   
+  function status(sid,t,on){const inSt=[],next=[];for(let k=0;k<N;k++){const p=pose(k,t,on);if(p.at===sid)inSt.push(k+1)}
+   if(on){const T0=vt(t,on);for(let k=0;k<N;k++){for(let dt=0;dt<=T;dt+=1){const q=at((T0+dt)*V+k*LV/N);if(q.seg.at===sid){if(dt>0)next.push(dt);break}}}}
+   return{inSt,next:next.length?Math.min(...next):null}}
+  R.ST=ST;R.N=N;R.OFF=OFF;R.TW=TW;R.P=P;R.Z=Z;R.LREAL=LREAL;R.T=T;R.pose=pose;R.status=status;R.oneWayM=Math.round((len(sub(B,A))+len(sub(C,B)))/10);
+  R.box=[Math.min(A[0],B[0],C[0])-60,Math.min(A[1],B[1],C[1])-160,Math.max(A[0],B[0],C[0])+60,Math.max(A[1],B[1],C[1])+60];
+   
+  S13D.build.push({id:'IS-CABLE-W-B',lot:'IS-CABLE-W',rect:[6705,7620,6815,7700],kind:'cable',he:'הרכבל — תחנת הנמל: גלגל ההחזרה, רציף העלייה והירידה',floors:1,roof:'flat',note:'D‑694 (17.11)',zone:'F9'});
+  S13D.lots.push({id:'IS-CABLE-W',kind:'building',rect:[6705,7620,6815,7700],drect:[6705,7620,6815,7700],label:'הרכבל — תחנת הנמל',zone:'F9',stalls:null,c:null,r:null,ring:null});
+  R.ok=true}catch(e){R.err=String(e&&e.stack||e).slice(0,300);R.ok=false}
+ return R})();
+
+
+
+
+
+var ISL17E={err:null,ok:false,light:{x:8760,y:6712},moved:[]};
+(function(){try{const D=S13D,lot=id=>D.lots.find(l=>l.id===id),bld=id=>D.build.find(b=>b.id===id);
+ {const l=lot('IS-LIGHT');if(l){l.rectWas=l.rect;l.rect=[8630,6680,8800,6800];l.drect=[8630,6680,8800,6800];l.zone='H8';l.label='המגדלור ובית השומר — על הכף של H8';ISL17E.moved.push('IS-LIGHT')}}
+ {const b=bld('IS-LIGHT-T');if(b){b.rectWas=b.rect;b.rect=[8738,6690,8782,6734];b.zone='H8'}}
+ {const b=bld('IS-LIGHT-H');if(b){b.rectWas=b.rect;b.rect=[8650,6728,8730,6790];b.zone='H8';ISL17E.moved.push('IS-LIGHT-H')}}
+  
+ {const l=lot('IS-HELI');if(l&&l.c){l.cWas=l.c;l.c=[9190,7160];l.rect=[9090,7060,9290,7260];l.drect=[9090,7060,9290,7260];ISL17E.moved.push('IS-HELI')}}
+  
+ {const l=lot('IS-TURN');if(l){l.drectWas=l.drect;l.drect=[-10,-10,-10,-10]}}
+  
+ {const l=lot('IS-P');if(l){l.drectWas=l.drect;l.drect=[l.drect[0],l.drect[1],8600,l.drect[3]]}}
+  
+ D.build.push({id:'IS-FREIGHT-B',lot:'IS-FREIGHT',rect:[8880,7550,8990,7630],kind:'warehouse',he:'מחסן מסוף המשא — המשטחים מרכבת המשא, משאיות הפיזור',floors:1,roof:'metal',note:'D‑694 (17.11)',zone:'H9'});
+ D.lots.push({id:'IS-FREIGHT',kind:'building',rect:[8780,7380,9040,7640],drect:[8866,7534,9004,7640],label:'מסוף המשא — רציף הפריקה והמחסן',zone:'H9',stalls:null,c:null,r:null,ring:null});
+ D.siteRoadsWas=D.siteRoads.filter(r=>r.id==='IS-SVC'||r.id==='IS-SVC-HELI');D.siteRoads=D.siteRoads.filter(r=>r.id!=='IS-SVC'&&r.id!=='IS-SVC-HELI');
+ ISL17E.ok=true}catch(e){ISL17E.err=String(e&&e.stack||e).slice(0,300)}})();
+var ISL17H8=(function(){const R={err:null,ok:false};try{
+ const H8C=[[8420,6905],[8500,6840],[8560,6760],[8700,6660],[8900,6625],[9100,6612],[9300,6602],[9450,6590],[9600,6575]];
+ const cut=P=>{const i=P.findIndex(p=>p[0]===8420&&p[1]===6905);if(i<0)throw new Error('אין (8420, 6905) בקו החוף');let j=i+1;while(j<P.length&&P[j][0]<=9600&&P[j][1]<7000)j++;return[i,j]};
+ {const P=S13D.coast,[i,j]=cut(P);S13D.coast=P.slice(0,i).concat(H8C,P.slice(j))}
+ {const P=S13D.islandPoly,[i,j]=cut(P);const rest=P.slice(j).filter(p=>p[0]>9600&&p[1]>7000||p[1]>=10000);S13D.islandPoly=P.slice(0,i).concat(H8C,[[12600,6575]],rest)}    
+ R.gas=[9440,6690,9560,6770];R.pier=[9496,6450,9526,6600];R.coast=H8C;
+ S13D.build.push({id:'IS-GAS-B',lot:'IS-GAS',rect:R.gas,kind:'utility',he:'תחנת קבלת הגז — מהצינור של האסדה',floors:1,roof:'flat',note:'D‑694 (17.11)',zone:'H8'});
+ S13D.lots.push({id:'IS-GAS',kind:'building',rect:[9420,6640,9600,6800],drect:[9420,6640,9600,6800],label:'בסיס האסדה — תחנת קבלת הגז ומזח האספקה',zone:'H8',stalls:null,c:null,r:null,ring:null});
+  
+ R.ground=function(c,N){if(!e3InView(8400,6420,1200,500,40))return;
+  const [p0,p1,p2,p3]=R.pier;c.fillStyle='rgba(8,16,24,.18)';c.fillRect(p0+6,p1+8,p2-p0,p3-p1);
+  c.fillStyle=N?'#4a4238':'#9c8a6c';c.fillRect(p0,p1,p2-p0,p3-p1);c.strokeStyle=N?'rgba(0,0,0,.25)':'rgba(70,55,35,.45)';c.lineWidth=.8;for(let y=p1+4;y<p3;y+=6){c.beginPath();c.moveTo(p0,y);c.lineTo(p2,y);c.stroke()}
+  c.fillStyle=N?'#2e2a25':'#5a4c3a';for(let y=p1+8;y<p3;y+=24){c.fillRect(p0-2,y,3,3);c.fillRect(p2-1,y,3,3)}
+  c.fillStyle='#e8c33a';c.fillRect(p0+4,p1+2,p2-p0-8,2);c.fillStyle='#3a3f44';for(const y of [p1+12,p1+60,p1+110])for(const x of [p0+3,p2-3]){c.beginPath();c.arc(x,y,2.2,0,6.283);c.fill()}
+  const g=[9420,6640,9600,6800];c.fillStyle=N?'#4b4e50':'#b9b8b0';c.fillRect(g[0],g[1],g[2]-g[0],g[3]-g[1]);c.strokeStyle=N?'#8a9096':'#5a6066';c.lineWidth=1.2;c.setLineDash([4,3]);c.strokeRect(g[0]+2,g[1]+2,g[2]-g[0]-4,g[3]-g[1]-4);c.setLineDash([]);
+  c.strokeStyle=N?'#7d868d':'#55606a';c.lineWidth=5;c.beginPath();c.moveTo(9440,6650);c.lineTo(9470,6690);c.stroke();    
+  for(const [x,y,r] of [[8900,6680,13],[9060,6670,15],[9220,6660,14],[9330,6700,12],[8820,6800,12],[9000,6760,13],[9180,6740,12]]){c.fillStyle=N?'rgba(30,50,30,.55)':'rgba(96,140,70,.85)';c.beginPath();c.ellipse(x,y,r,r*.7,0,0,6.283);c.fill();c.fillStyle=N?'rgba(20,40,20,.3)':'rgba(200,235,170,.35)';c.beginPath();c.ellipse(x-r*.3,y-r*.25,r*.4,r*.28,0,0,6.283);c.fill()}};
+ 
+
+ R.landAt=(x,y)=>{if(x<8420||x>9600||y<6560||y>=6900)return false;for(let i=1;i<H8C.length;i++){const a=H8C[i-1],b=H8C[i];if(x>=a[0]&&x<=b[0]){const yc=a[1]+(b[1]-a[1])*(x-a[0])/Math.max(1e-6,b[0]-a[0]);return y>=yc+4}}return false};
+ R.ok=true}catch(e){R.err=String(e&&e.stack||e).slice(0,300)}return R})();
+
+
+var ISL17PARK=(function(){const R={err:null,ok:false};try{if(!ISL17H8.ok)throw new Error('no H8');
+ R.walk=[[8806,6690],[8860,6664],[8900,6651],[9000,6644],[9100,6638],[9200,6633],[9300,6628],[9392,6622]];    
+ R.branch=[[9150,6636],[9150,6772],[9236,6772]];    
+ R.look={x:8812,y:6688,r:16};R.play=[9240,6752,9300,6794];R.tables=[[9095,6765],[9100,6800],[9190,6810]];
+ R.benches=[[8880,6648],[9000,6633],[9120,6627],[9240,6622],[9350,6617]];R.lamps=[[8930,6662],[9060,6655],[9190,6648],[9320,6642]];
+ for(const P of [R.walk,R.branch])for(const [x,y] of P)if(!ISL17H8.landAt(x,y))throw new Error('park-not-on-land '+x+','+y);
+ const ln=(c,P)=>{c.beginPath();P.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke()};
+ R.draw=function(c,N){if(!e3InView(8780,6590,640,260,40))return;c.save();c.lineCap='round';c.lineJoin='round';
+  c.strokeStyle=N?'#4a453a':'#b9a982';c.lineWidth=14;ln(c,R.walk);ln(c,R.branch);c.strokeStyle=N?'#5d574a':'#d6c9a4';c.lineWidth=11;ln(c,R.walk);ln(c,R.branch);
+  {const L=R.look;c.fillStyle=N?'#55524c':'#cfc6b0';c.beginPath();c.arc(L.x,L.y,L.r,0,6.283);c.fill();c.strokeStyle=N?'#8a8f93':'#5b6166';c.lineWidth=1.4;c.beginPath();c.arc(L.x,L.y,L.r-1,-2.6,.4);c.stroke()}    
+  {const [a,b,x2,y2]=R.play;c.fillStyle=N?'#5a5244':'#e6d3a3';c.fillRect(a,b,x2-a,y2-b);c.strokeStyle=N?'#6d6a62':'#8f8a7d';c.lineWidth=1;c.strokeRect(a,b,x2-a,y2-b);
+   c.strokeStyle='#c0392b';c.lineWidth=1.6;c.beginPath();c.moveTo(a+8,b+8);c.lineTo(a+8,b+26);c.moveTo(a+28,b+8);c.lineTo(a+28,b+26);c.moveTo(a+6,b+8);c.lineTo(a+30,b+8);c.stroke();    
+   c.fillStyle='#2e86c1';c.fillRect(a+40,b+10,6,22);c.fillStyle='#f2c230';c.fillRect(a+38,b+8,10,4)}    
+  for(const [x,y] of R.tables){c.fillStyle=N?'#4a3c2c':'#8a6a44';c.fillRect(x-7,y-3,14,6);c.fillStyle=N?'#3c3024':'#6f5434';c.fillRect(x-7,y-7,14,2);c.fillRect(x-7,y+5,14,2)}
+  for(const [x,y] of R.benches){c.fillStyle=N?'#3c3024':'#7a5a3a';c.fillRect(x-6,y-1.5,12,3);c.fillStyle=N?'#2a2a2a':'#3d4248';c.fillRect(x-5,y+1.5,1.2,2);c.fillRect(x+4,y+1.5,1.2,2)}
+  for(const [x,y] of R.lamps){c.fillStyle=N?'#6d747a':'#4a5258';c.fillRect(x-.8,y-18,1.6,18);c.fillStyle=N?'rgba(255,224,150,.95)':'#e8e2c8';c.beginPath();c.arc(x,y-19,2.2,0,6.283);c.fill();
+   if(N){const g=c.createRadialGradient(x,y,1,x,y,30);g.addColorStop(0,'rgba(255,214,140,.30)');g.addColorStop(1,'rgba(255,214,140,0)');c.fillStyle=g;c.beginPath();c.arc(x,y,30,0,6.283);c.fill()}}
+  c.restore()};
+ {const g0=ISL17H8.ground;ISL17H8.ground=function(c,N){g0(c,N);try{R.draw(c,N)}catch(e){R.err=R.err||String(e&&e.message||e)}}}
+ R.ok=true}catch(e){R.err=String(e&&e.message||e).slice(0,200)}return R})();
+
+
 var S13X={err:null,n:0};
 function s13Err(k,e){if(!S13X.err)S13X.err=k+': '+String(e&&e.stack||e).slice(0,300)}
 const S13_BOX=[5880,5040,9700,7800];
@@ -4135,7 +4269,7 @@ const S13_HB=10*S9HM*S9K;
 const S13_PAL={stone:{he:'אבן הר בהירה, גג רעפים אדום וחלונות עץ',wall:'#e6d8bd',roof:'#a9533c',trim:'#5a4632'},station:{he:'תחנת האי — אבן וזכוכית, גג רעפים',wall:'#ece2cf',roof:'#9c4a34',trim:'#2f5566'},
  timber:{he:'עץ ואבן — סגנון ההר',wall:'#c9a27a',roof:'#7a4b2e',trim:'#3e2b1c'},white:{he:'טיח לבן ותריסים כחולים',wall:'#f2eee4',roof:'#b25d3f',trim:'#2c5d8a'},
  cable:{he:'בטון ופלדה, אדום הרכבל',wall:'#d8d6d0',roof:'#6f7a80',trim:'#d0342c'},keeper:{he:'בית השומר — טיח לבן, גג רעפים',wall:'#f4f0e6',roof:'#a8432f',trim:'#2b4f6e'}};
-const S13_SPEC={'IS-STATION-HALL':['station',9,'office','gable','תחנת האי'],'IS-SHOP-B':['white',4.5,'small','gable','חנות האי'],'IS-CABLE-LOW-B':['cable',7,'band','flat','הרכבל'],
+const S13_SPEC={'IS-STATION-HALL':['station',9,'office','gable','תחנת האי'],'IS-SHOP-B':['white',4.5,'small','gable','חנות האי'],'IS-CABLE-LOW-B':['cable',7,'band','flat','הרכבל'],'IS-CABLE-W-B':['cable',6.5,'band','flat','הרכבל — הנמל'],'IS-GAS-B':['white',5,'small','flat','קבלת הגז'],'IS-FREIGHT-B':['white',5,'band','flat','מחסן מסוף המשא'],
  'IS-CABLE-TOP-B':['timber',6,'band','gable','קפה הפסגה'],'IS-VH-1':['stone',5,'office','gable'],'IS-VH-2':['white',5,'office','gable'],'IS-VH-3':['stone',5,'office','gable'],'IS-VH-4':['timber',5,'office','gable'],
  'IS-VH-5':['white',5,'office','gable'],'IS-HOSTEL-B':['timber',8.5,'office','gable','אכסניית ההר'],'IS-LIGHT-H':['keeper',7,'office','gable','בית השומר'],'IS-WAIT-BOOTH':['white',3,'small','flat','קופה'],
  'IS-HARBOR-OFFICE':['stone',4,'small','gable','משרד הנמל']};
@@ -4146,15 +4280,15 @@ for(const b of S13D.build){const sp=S13_SPEC[b.id];if(!sp||!b.rect)continue;cons
   info:{fp:[0,0,r[2]-r[0],r[3]-r[1]],w:r[2]-r[0],h:r[3]-r[1],an:[]},fp:{x:r[0],y:r[1],w:r[2]-r[0],h:r[3]-r[1]},custom:true,drawFn:()=>{}})}
 C4_BUILDINGS.push(...S13_BUILDINGS);
  
-const S13_LIGHT={x:9355,y:6975,r:22,h:28};
+const S13_LIGHT=(typeof ISL17E!=='undefined'&&ISL17E.ok)?{x:ISL17E.light.x,y:ISL17E.light.y,r:22,h:28}:{x:9355,y:6975,r:22,h:28};    
 C4_BUILDINGS.push({id:'IS-LIGHT-T',label:'המגדלור',kind:'lighthouse',s13:true,x:S13_LIGHT.x-S13_LIGHT.r,y:S13_LIGHT.y-S13_LIGHT.r,w:S13_LIGHT.r*2,h:S13_LIGHT.r*2,hpx:S13_LIGHT.h*S9HM,info:{fp:[0,0,44,44],w:44,h:44,an:[]},fp:{x:S13_LIGHT.x-22,y:S13_LIGHT.y-22,w:44,h:44},custom:true,drawFn:()=>{}});
 
  
 const S13_BEACH=(()=>{const B=S13D.lots.find(l=>l.id==='IS-BEACH').drect,C=S13D.coast.filter(p=>p[0]>=B[0]-15&&p[0]<=B[2]+15&&p[1]<7100);return C.concat([[B[2]+15,B[3]],[B[0]-15,B[3]]])})();
-const S13_OLIVE=[6990,7560,7190,7745],S13_MEADOW=[9000,6985,9240,7215];
-function s13Land(c,N){const D=S13D;if(!s13Vis(6080,6880,9700,7800,40))return;
+const S13_OLIVE=[6990,7560,7190,7745],S13_MEADOW=(typeof ISL17E!=='undefined'&&ISL17E.ok)?[9050,7010,9330,7250]:[9000,6985,9240,7215];    
+function s13Land(c,N){const D=S13D;if(!s13Vis(6080,6540,9700,7800,40))return;    
   
- const isl=s13P('isl',D.islandPoly),nob=S13PATH.noBasin||(S13PATH.noBasin=(()=>{const p=new Path2D();p.rect(5800,6600,4000,1300);for(const P of D.water){p.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)p.lineTo(P[i][0],P[i][1]);p.closePath()}return p})());
+ const isl=s13P('isl',D.islandPoly),nob=S13PATH.noBasin||(S13PATH.noBasin=(()=>{const p=new Path2D();p.rect(5800,6500,4000,1400);for(const P of D.water){p.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)p.lineTo(P[i][0],P[i][1]);p.closePath()}return p})());
  c.save();c.clip(isl);c.clip(nob,'evenodd');    
  c.fillStyle=N?'#39472f':'#a9b679';c.fill(isl);
  c.lineJoin='round';c.lineCap='round';const coast=s13P('coast',D.coast.filter(p=>p[0]<9600&&p[1]<7750),false);    
@@ -4174,7 +4308,7 @@ function s13Land(c,N){const D=S13D;if(!s13Vis(6080,6880,9700,7800,40))return;
  {const r=S13_OLIVE;c.fillStyle=N?'#3d4430':'#b8b183';c.fillRect(r[0],r[1],r[2]-r[0],r[3]-r[1]);c.strokeStyle=N?'rgba(255,255,255,.06)':'rgba(120,100,70,.45)';c.lineWidth=2;for(let y=r[1]+16;y<r[3];y+=22){c.beginPath();c.moveTo(r[0],y);c.lineTo(r[2],y);c.stroke()}}
  {const r=S13_MEADOW;c.fillStyle=N?'#3c4a33':'#b3c47e';c.fillRect(r[0],r[1],r[2]-r[0],r[3]-r[1]);if(!N&&Camera.zoom>.4){const R=s9Rng(11),col=['#f4d35e','#f7f2e8','#e8566d','#b06ad8'];for(let i=0;i<180;i++){c.fillStyle=col[(R()*4)|0];c.fillRect(r[0]+R()*(r[2]-r[0]),r[1]+R()*(r[3]-r[1]),1.6,1.6)}}}
  c.restore()}
-function s13Surface(c,N){const D=S13D,L=id=>D.lots.find(l=>l.id===id);
+function s13Surface(c,N){const D=S13D,L=id=>D.lots.find(l=>l.id===id);try{if(ISL17H8.ok)ISL17H8.ground(c,N)}catch(e){}    
  const pave=(r,col)=>{c.fillStyle=col;c.fillRect(r[0],r[1],r[2]-r[0],r[3]-r[1])};
   
  if(s13Vis(8440,7230,8790,7470))s9Pav(c,[8452,7236,8786,7392],'IS-PLAZA',N?'#6c665a':'#d8ccb3');
@@ -4190,7 +4324,7 @@ function s13Surface(c,N){const D=S13D,L=id=>D.lots.find(l=>l.id===id);
  {const r=L('IS-SLIP').drect;if(s13Vis(r[0]-40,r[1],r[2],r[3])){pave([6300,r[1],r[2],r[3]],N?'#3a3c3c':'#8f8f88');c.fillStyle=N?'#4a4d4d':'#b4b2a8';c.beginPath();c.moveTo(6176,7600);c.lineTo(6310,7600);c.lineTo(6310,7690);c.lineTo(6160,7690);c.closePath();c.fill();
   c.strokeStyle='rgba(60,60,60,.35)';c.lineWidth=1;for(let x=6180;x<6310;x+=12){c.beginPath();c.moveTo(x,7602);c.lineTo(x,7688);c.stroke()}}}
   
- for(const [x,y,r] of [[6950,7235,125],[8815,7690,125]]){if(!s13Vis(x-150,y-150,x+150,y+150))continue;c.fillStyle=N?'#55585a':'#d7d3c8';c.beginPath();c.arc(x,y,r+20,0,6.2832);c.fill();c.fillStyle=N?'#26292b':P_ASPH();c.beginPath();c.arc(x,y,r,0,6.2832);c.fill();
+ for(const [x,y,r] of ((typeof ISL17E!=='undefined'&&ISL17E.ok)?[[6950,7235,125]]:[[6950,7235,125],[8815,7690,125]])){    if(!s13Vis(x-150,y-150,x+150,y+150))continue;c.fillStyle=N?'#55585a':'#d7d3c8';c.beginPath();c.arc(x,y,r+20,0,6.2832);c.fill();c.fillStyle=N?'#26292b':P_ASPH();c.beginPath();c.arc(x,y,r,0,6.2832);c.fill();
   c.fillStyle=N?'#3c4a33':'#7aa35a';c.beginPath();c.arc(x,y,40,0,6.2832);c.fill();c.strokeStyle='#d7d3c8';c.lineWidth=5;c.stroke();c.strokeStyle='rgba(245,200,60,.85)';c.lineWidth=2;c.setLineDash([10,8]);c.beginPath();c.arc(x,y,r-14,0,6.2832);c.stroke();c.setLineDash([])}
   
  {const l=L('IS-HELI');if(s13Vis(l.c[0]-110,l.c[1]-110,l.c[0]+110,l.c[1]+110)){c.fillStyle=N?'#3a3f42':'#9aa1a4';c.beginPath();c.arc(l.c[0],l.c[1],l.r+8,0,6.2832);c.fill();c.fillStyle=N?'#2c3033':'#6e767a';c.beginPath();c.arc(l.c[0],l.c[1],l.r,0,6.2832);c.fill();
@@ -6772,115 +6906,4 @@ function s10CanopyOver(c,b,C,N,now){const R=C.span||[b.x,b.y,b.x+b.w,b.y+b.h],H=
  c.fillStyle='rgba(255,255,255,.22)';for(let x=x0+4;x<x1-8;x+=24)c.fillRect(x,y0+3,6,1);
   
  c.fillStyle=N?'#fff3c4':'#e6e9ea';for(let x=x0+10;x<x1-14;x+=24)c.fillRect(x,y1-1.2,12,1.2);if(N){c.save();c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,236,190,.16)';c.fillRect(x0,y1,x1-x0,S9K*C.hz*.9);c.restore()}
- const sign={'C6-GATE-W':'השער המערבי','C6-GATE-E':'שער החצר','D6-FUEL-KIOSK':'דלק הנמל','D6-GATE-E':'השער המזרחי'}[b.id];if(sign)s9Sign(c,sign,(x0+x1)/2,y1+5,Math.min(x1-x0-6,74),b.id==='D6-FUEL-KIOSK'?'#b85f1c':'#8f2a20',N);
- c.strokeStyle='rgba(0,0,0,.3)';c.lineWidth=.8;c.strokeRect(x0+.4,y0+.4,x1-x0-.8,y1-y0-.8)}
-
-
-function s10Fences(c){c.lineCap='butt';for(const [x1,y1,x2,y2] of S10_FENCE_SEGS){if(!e3InView(Math.min(x1,x2)-4,Math.min(y1,y2)-14,Math.abs(x2-x1)+8,Math.abs(y2-y1)+18,0))continue;const H=S9K*20;
-  c.fillStyle='rgba(8,18,26,.12)';c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.lineTo(x2+S9_SUN.dx*20,y2+S9_SUN.dy*20);c.lineTo(x1+S9_SUN.dx*20,y1+S9_SUN.dy*20);c.closePath();c.fill();
-  if(y1===y2){c.strokeStyle='rgba(150,162,168,.5)';c.lineWidth=.6;c.beginPath();for(let x=Math.min(x1,x2);x<Math.max(x1,x2);x+=3){c.moveTo(x,y1);c.lineTo(x+3,y1-H)}c.stroke();c.strokeStyle='#5b676c';c.lineWidth=1.2;c.beginPath();c.moveTo(x1,y1-H);c.lineTo(x2,y2-H);c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke()}
-  else{c.strokeStyle='#5b676c';c.lineWidth=1.4;c.beginPath();c.moveTo(x1,y1-H);c.lineTo(x2,y2-H);c.stroke();c.strokeStyle='rgba(150,162,168,.5)';c.lineWidth=H;c.globalAlpha=.25;c.beginPath();c.moveTo(x1,y1-H/2);c.lineTo(x2,y2-H/2);c.stroke();c.globalAlpha=1}
-  const len=Math.hypot(x2-x1,y2-y1),n=Math.max(1,Math.round(len/26));for(let i=0;i<=n;i++){const px=x1+(x2-x1)*i/n,py=y1+(y2-y1)*i/n;c.fillStyle='#38434a';c.fillRect(px-.8,py-H,1.6,H)}}
- for(const g of S10_GATES){const hz=g.side==='N'||g.side==='S';for(const e of[g.a,g.b]){const px=hz?e:g.fixed,py=hz?g.fixed:e;if(!e3InView(px-4,py-16,8,20,0))continue;c.fillStyle='#d9b23a';c.fillRect(px-2,py-S9K*24,4,S9K*24);c.fillStyle='#2a2f33';c.fillRect(px-2,py-S9K*12,4,1.2)}}}
- 
-function s10Skid(c,r,N,kind){const [x0,y0,x1,y1]=r,w=x1-x0;s9Shadow(c,x0,y0,x1,y1,22,.2);const n=kind==='meter'?2:4;
- for(let i=0;i<n;i++){const cx=x0+(i+.5)*w/n,cy=(y0+y1)/2+6;c.fillStyle=N?'#4d5a61':'#7f8c93';c.fillRect(cx-9,cy-S9K*16,18,S9K*16);c.fillStyle=N?'#5d6a71':'#9aa7ad';c.fillRect(cx-9,cy-S9K*16-9,18,9);c.fillStyle=kind==='meter'?'#2e7d4f':'#2f5d8a';c.fillRect(cx-5,cy-S9K*16-7,10,5);
-  c.strokeStyle='#d9b23a';c.lineWidth=2.4;c.beginPath();c.moveTo(cx,cy-S9K*16-9);c.lineTo(cx,y0-4);c.stroke();c.fillStyle='#c0392b';c.beginPath();c.arc(cx,y0-4,2.6,0,6.2832);c.fill()}
- c.strokeStyle='#d9b23a';c.lineWidth=2.8;c.beginPath();c.moveTo(x0+4,y0-4);c.lineTo(x1-4,y0-4);c.stroke();c.strokeStyle='rgba(192,57,43,.85)';c.lineWidth=.9;c.strokeRect(x0+1,y0+1-S9K*10,w-2,y1-y0-2)}
- 
-function s10Hopper(c,r,N){const [x0,y0,x1,y1]=r,hz=90,H=S9K*hz,w=x1-x0;s9Shadow(c,x0,y0,x1,y1,hz,.22);
- c.strokeStyle=N?'#4f5a60':'#6f7b82';c.lineWidth=3;for(const [px,py] of[[x0+5,y1-4],[x1-5,y1-4]]){c.beginPath();c.moveTo(px,py);c.lineTo(px,py-H+8);c.stroke()}
- c.lineWidth=.9;c.beginPath();for(let k=0;k<3;k++){const ya=y1-4-k*H/3.2;c.moveTo(x0+5,ya);c.lineTo(x1-5,ya-H/3.2);c.moveTo(x1-5,ya);c.lineTo(x0+5,ya-H/3.2)}c.stroke();
- const g=c.createLinearGradient(x0,0,x1,0);g.addColorStop(0,N?'#6a5a34':'#b89a52');g.addColorStop(.5,N?'#8a7646':'#e0c06a');g.addColorStop(1,N?'#5a4c2c':'#a58844');c.fillStyle=g;c.beginPath();c.moveTo(x0-2,y1-H);c.lineTo(x1+2,y1-H);c.lineTo(x0+w*.62,y1-H*.42);c.lineTo(x0+w*.38,y1-H*.42);c.closePath();c.fill();
- c.fillStyle=N?'#7a6a40':'#cdb060';c.fillRect(x0-2,y0-H-2,w+4,y1-y0+2);c.fillStyle=N?'#3d3524':'#6f5f38';c.fillRect(x0+6,y0-H+5,w-12,y1-y0-12);c.strokeStyle='rgba(0,0,0,.3)';c.lineWidth=.8;c.strokeRect(x0-2,y0-H-2,w+4,y1-y0+2);
-  
- const cx=x0+w/2;c.fillStyle='rgba(8,16,24,.18)';c.fillRect(cx-4,y1,12,5080-y1+8);c.fillStyle=N?'#4f5a60':'#7b878d';c.beginPath();c.moveTo(cx-5,y1-H*.4);c.lineTo(cx+5,y1-H*.4);c.lineTo(cx+5,5074-S9K*46);c.lineTo(cx-5,5074-S9K*46);c.closePath();c.fill();
- c.strokeStyle='#d9b23a';c.lineWidth=1;c.beginPath();c.moveTo(cx-5,y1-H*.4);c.lineTo(cx-5,5074-S9K*46);c.moveTo(cx+5,y1-H*.4);c.lineTo(cx+5,5074-S9K*46);c.stroke();c.fillStyle='#2b3136';c.fillRect(cx-6,5074-S9K*46-2,12,6);
- s9Sign(c,'משפך תפזורת',cx,y1-H*.42+10,64,'#7a4a12',N)}
- 
-function s10MhcBase(c,d,N){const [x,y,r]=d;s9DiscShadow(c,x,y,r*.7,60,.2);c.fillStyle=N?'#3a4046':'#4d555c';c.fillRect(x-26,y-12,52,24);c.fillStyle='#17191a';for(const dx of[-22,-8,8,22])for(const dy of[-14,12])c.fillRect(x+dx-4,y+dy-1,8,4);
- c.fillStyle='#d9b23a';for(const [ox,oy] of[[-30,-18],[30,-18],[-30,18],[30,18]]){c.fillRect(x+ox-3,y+oy-3,6,6);c.strokeStyle='#59646a';c.lineWidth=1.6;c.beginPath();c.moveTo(x+ox*.8,y+oy*.6);c.lineTo(x+ox,y+oy);c.stroke()}
- c.fillStyle=N?'#8a5a16':'#e0a020';c.fillRect(x-14,y-10-S9K*30,28,S9K*30+14);c.fillStyle=N?'#a06a1c':'#f2b93a';c.fillRect(x-14,y-10-S9K*30-12,28,12);c.strokeStyle='rgba(0,0,0,.3)';c.lineWidth=.7;c.strokeRect(x-14,y-10-S9K*30-12,28,S9K*30+26)}
-function s10Cuts(c){for(const a of S10_ACCESS){if(!e3InView(a.x,a.y,a.w,a.h,10))continue;const r=[a.x,a.y,a.x+a.w,a.y+a.h],hz=a.w>a.h;
-  c.fillStyle='#8c9095';c.fillRect(r[0],r[1],a.w,a.h);c.fillStyle='rgba(255,255,255,.07)';c.fillRect(r[0],r[1],a.w,a.h);c.fillStyle='#d6d1c4';
-  if(hz){c.fillRect(r[0]-2,r[1],2,a.h);c.fillRect(r[2],r[1],2,a.h)}else{c.fillRect(r[0],r[1]-2,a.w,2);c.fillRect(r[0],r[3],a.w,2)}
-  c.fillStyle='rgba(30,30,30,.22)';if(hz){for(let y=r[1]+3;y<r[3];y+=6){c.fillRect(r[0]-2,y,2,1);c.fillRect(r[2],y,2,1)}}else{for(let x=r[0]+3;x<r[2];x+=6){c.fillRect(x,r[1]-2,1,2);c.fillRect(x,r[3],1,2)}}}}
-function s10Props(c,now,N){ try{s10Cuts(c)}catch(e){s10Err('cuts',e)}if(!s10View(60))return;c.save();
- try{s10Fences(c);
-  if(e3InView(2890,4520,170,260,60)){for(const id of['C6-OIL-TANK-1','C6-OIL-TANK-2']){const f=S10F[id];s9Tank(c,f.disc[0],f.disc[1],f.disc[2],f.h_m*10,'#b9c3c9',N)}s10Skid(c,S10F['C6-OIL-PUMPS'].rect,N,'pump');s10Skid(c,S10F['C6-OIL-METER'].rect,N,'meter')}
-  {const h=S10F['D6-HOPPER'].rect;if(s10In(h,120))s10Hopper(c,h,N)}
-  {const m=S10F['D6-MHC'].disc;if(e3InView(m[0]-60,m[1]-80,120,130,40))s10MhcBase(c,m,N)}
-  if(typeof S10KIT!=='undefined')S10KIT.props(c,now,N);
- }catch(e){s10Err('props',e)}c.restore()}
-
-
-var S10_HS=0;
-function s10Helipad(c,now,N){const hp=S10_HELI,b=S10BL['D6-ADMIN'],H=s9H(b),x=hp.x,y=hp.y-H,r=hp.r;    if(!e3InView(x-r-20,y-r-20,2*r+40,2*r+40,20))return;
- c.fillStyle='rgba(0,0,0,.18)';c.beginPath();c.ellipse(x+2,y+3,r+3,r+3,0,0,6.2832);c.fill();c.fillStyle=N?'#2d3338':'#4a5258';c.beginPath();c.arc(x,y,r,0,6.2832);c.fill();c.strokeStyle='#f4f1e8';c.lineWidth=2.6;c.beginPath();c.arc(x,y,r-4,0,6.2832);c.stroke();
- c.strokeStyle='#f4f1e8';c.lineWidth=4;c.beginPath();c.moveTo(x-14,y-18);c.lineTo(x-14,y+18);c.moveTo(x+14,y-18);c.lineTo(x+14,y+18);c.moveTo(x-14,y);c.lineTo(x+14,y);c.stroke();
-  
- for(let k=0;k<12;k++){const a=k*Math.PI/6,lx=x+Math.cos(a)*(r+1),ly=y+Math.sin(a)*(r+1);c.fillStyle=N?'#9dffb0':'#3f8f4f';c.beginPath();c.arc(lx,ly,1.5,0,6.2832);c.fill();if(N){c.save();c.globalCompositeOperation='lighter';c.fillStyle='rgba(140,255,170,.2)';c.beginPath();c.arc(lx,ly,6,0,6.2832);c.fill();c.restore()}}
- try{if(!S10_HS){const i=TurboCity.info('AC-HL-06',{scale:1});S10_HS=10.69*10/Math.max(i.w,i.h)}const inf=TurboCity.info('AC-HL-06',{scale:S10_HS}),on=typeof S10LIVE!=='undefined'&&S10LIVE.rotorOn(now);
-  c.save();c.translate(x,y);c.rotate(-.5);TurboCity.draw(c,'AC-HL-06',-inf.w/2,-inf.h/2,{mode:'runtime',scale:S10_HS,t:on?now/1000*.9:0,state:{v:on?2:0}});c.restore()}catch(e){}}
-function s10WallLamp(c,l,N){const b=S10BL[l.road];if(!b||S10_CANOPY[b.id])return;const e=b.entrance,off={W:[-3,0],E:[3,0],N:[0,-2],S:[0,2]}[b.front]||[0,0],x=e.x+off[0],y=e.y+off[1]-S9K*30;if(!e3InView(x-20,y-20,40,60,10))return;
- c.fillStyle='#2b3136';c.fillRect(x-2,y-1.5,4,3);c.fillStyle=N?'#fff3c4':'#e9e6da';c.beginPath();c.arc(x,y+1.6,1.8,0,6.2832);c.fill();if(N){c.save();c.globalCompositeOperation='lighter';const g=c.createRadialGradient(x,y+10,1,x,y+10,26);g.addColorStop(0,'rgba(255,226,160,.42)');g.addColorStop(1,'rgba(255,226,160,0)');c.fillStyle=g;c.beginPath();c.ellipse(x,y+12,24,18,0,0,6.2832);c.fill();c.restore()}}
-function s10Over(c,now,N){if(!s10View(80))return;c.save();
- try{const L=S10_BUILDINGS.filter(b=>!S10_CANOPY[b.id]).map(s9V).filter(b=>{const H=s9H(b);return e3InView(b.x,b.y-H-40,b.w+30,b.h+40,30)}).sort((a,b)=>(a.y+a.h)-(b.y+b.h));
-  for(const b of L)s9Roof(c,b,N,now);
-  for(const b of S10_BUILDINGS){const C=S10_CANOPY[b.id];if(!C)continue;if(b.id!=='C6-XRAY'&&b.id!=='D6-FUEL-KIOSK')for(const r of C.booths)s10BoothTop(c,r,34,b.pal,N);if(b.id==='D6-FUEL-KIOSK')s10BoothTop(c,C.booths[0],34,b.pal,N);s10CanopyOver(c,b,C,N,now)}
-  s10Helipad(c,now,N);
-  for(const l of S10_WALL_LAMPS)s10WallLamp(c,l,N);
-  if(typeof S10KIT!=='undefined')S10KIT.over(c,now,N);
- }catch(e){s10Err('over',e)}c.restore()}
-
-
-{const pG=drawPortGround;drawPortGround=function(now){ctx.save();ctx.beginPath();ctx.rect(4800,4200,1400,1300);ctx.clip();try{pG.apply(this,arguments)}finally{ctx.restore()}s10Ground(now)}}
-S9_HOOKS.props.push(s10Props);S9_HOOKS.over.push(s10Over);
-
-
-var S10KIT=(function(){
- const K=()=>S9K,TAU=6.2832,E={err:null};
- const err=(k,e)=>{if(!E.err)E.err=k+': '+String(e&&e.stack||e).slice(0,300)};
- const night=()=>Math.max(0,Math.min(1,+window.__TC_NIGHT||0));
- let TOV=null;    
- const simT=now=>{if(TOV!=null)return TOV;try{return(SIM_LOOP.simNow!=null?SIM_LOOP.simNow:now)/1000}catch(e){return now/1000}};
-  
- const PC=N=>N?'#80878c':'#c4cacf',PD=N=>N?'#4f565b':'#8e979d',ST=N=>N?'#3d4347':'#6d767c';
- function vpipe(c,x,ya,yb,w,N){c.strokeStyle=PD(N);c.lineWidth=w+1.2;c.beginPath();c.moveTo(x,ya);c.lineTo(x,yb);c.stroke();c.strokeStyle=PC(N);c.lineWidth=w;c.stroke();c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=1;c.beginPath();c.moveTo(x-w/2+1,ya);c.lineTo(x-w/2+1,yb);c.stroke()}
- function hpipe(c,xa,xb,y,w,N){c.strokeStyle=PD(N);c.lineWidth=w+1.2;c.beginPath();c.moveTo(xa,y);c.lineTo(xb,y);c.stroke();c.strokeStyle=PC(N);c.lineWidth=w;c.stroke();c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=1;c.beginPath();c.moveTo(xa,y-w/2+1);c.lineTo(xb,y-w/2+1);c.stroke()}
- function column(c,x,y,H,N){c.fillStyle=N?'#55524c':'#b8b3a7';c.fillRect(x-2.8,y-H+3,5.6,H-3);c.fillStyle=N?'#6a675f':'#d2cdc1';c.fillRect(x-2.8,y-H+3,1.9,H-3);c.fillStyle=N?'#4a4842':'#9c978c';c.fillRect(x-5,y-3,10,3);
-  c.fillStyle=ST(N);c.fillRect(x-12,y-H+1,24,3);c.fillStyle='rgba(0,0,0,.25)';c.fillRect(x-12,y-H+4,24,1);c.strokeStyle=ST(N);c.lineWidth=1;c.beginPath();c.moveTo(x-2.8,y-H+12);c.lineTo(x-10,y-H+4);c.moveTo(x+2.8,y-H+12);c.lineTo(x+10,y-H+4);c.stroke()}
- function ladder(c,x,yb,yt,N){c.strokeStyle=N?'#6a7076':'#9aa3a8';c.lineWidth=.7;c.beginPath();c.moveTo(x-1.4,yb);c.lineTo(x-1.4,yt);c.moveTo(x+1.4,yb);c.lineTo(x+1.4,yt);for(let y=yb-2;y>yt;y-=3){c.moveTo(x-1.4,y);c.lineTo(x+1.4,y)}c.stroke()}
-  
- function pipeShadow(c,x,y0,y1,cols,zM){const dx=2.5*zM,dy=3.2*zM;c.fillStyle='rgba(10,16,24,.13)';c.fillRect(x-12+dx,y0+dy,24,y1-y0);for(const y of cols){c.beginPath();c.moveTo(x-2,y);c.lineTo(x+2,y);c.lineTo(x+2+dx,y+dy);c.lineTo(x-2+dx,y+dy);c.closePath();c.fill()}}
-  
- function pipeBridge(c,x,cols,o){const N=o.N,H=o.zM*6,y0=o.y0,y1=o.y1,wx=x+6.5;for(const y of cols)column(c,x,y,H,N);
-  for(const [ya,yb] of(o.truss||[])){ c.strokeStyle=ST(N);c.lineWidth=1.6;for(const dx of[-10.5,10.5]){c.beginPath();c.moveTo(x+dx,ya-H+2);c.lineTo(x+dx,yb-H+2);c.moveTo(x+dx,ya-H-9);c.lineTo(x+dx,yb-H-9);c.stroke()}
-   c.lineWidth=.8;c.beginPath();const n=Math.max(2,Math.round((yb-ya)/22));for(let i=0;i<n;i++){const a=ya+(yb-ya)*i/n,b=ya+(yb-ya)*(i+1)/n;for(const dx of[-10.5,10.5]){c.moveTo(x+dx,a-H+2);c.lineTo(x+dx,b-H-9);c.moveTo(x+dx,a-H-9);c.lineTo(x+dx,a-H+2)}c.moveTo(x-10.5,a-H+2);c.lineTo(x+10.5,a-H+2)}c.stroke()}
-   
-  c.fillStyle=N?'#2e3135':'#4b5157';c.fillRect(x-12,y0-H-1,2.4,y1-y0+2);c.fillRect(x+9.6,y0-H-1,2.4,y1-y0+2);for(let g=y0;g<y1;g+=30)c.fillRect(x-12,g-H-1,24,1.5);
-  c.fillStyle=N?'#3b3e42':'#5a6066';c.fillRect(wx-3,y0-H-1,6,y1-y0+2);c.fillStyle='rgba(255,255,255,.12)';for(let g=y0-H;g<y1-H;g+=4)c.fillRect(wx-3,g,6,.6);
-  vpipe(c,x-6.2,y0-H-2,y1-H-2,4.4,N);vpipe(c,x-0.4,y0-H-2,y1-H-2,6,N);for(let yb=y0+40;yb<y1;yb+=60){c.fillStyle=PD(N);c.fillRect(x-9,yb-H-3,13,2)}
-  const hr=1.1*6;c.strokeStyle=N?'#8a7a3a':'#e0b73a';c.lineWidth=1;c.beginPath();c.moveTo(wx+3,y0-H-hr);c.lineTo(wx+3,y1-H-hr);for(let yp=y0;yp<=y1;yp+=18){c.moveTo(wx+3,yp-H-1);c.lineTo(wx+3,yp-H-hr)}c.stroke();
-  for(const y of(o.ladders||[]))ladder(c,x-9,y-1,y-H,N)}
-  
- function trestle(c,r,o){const N=o.N,[x0,y0,x1,y1]=r,fb=o.fb||18; 
-  for(let y=y0+16;y<=y1;y+=o.step||40)for(const px of[x0+3,x1-3]){c.fillStyle=N?'#3a3d40':'#5f6569';c.fillRect(px-2,y,4,fb);c.fillStyle='rgba(255,255,255,.2)';c.fillRect(px-2,y,1.2,fb);c.fillStyle='rgba(255,255,255,'+(N?.12:.28)+')';c.beginPath();c.ellipse(px,y+fb,5,2,0,0,TAU);c.fill()}
-  c.fillStyle='rgba(6,20,34,.22)';c.fillRect(x0+5,y0+6,x1-x0,y1-y0);c.fillStyle=N?'#6a6c68':'#a9aba4';c.fillRect(x0,y0,x1-x0,y1-y0);c.fillStyle=N?'#4a4c4a':'#7d807a';c.fillRect(x0,y1,x1-x0,3);
-  c.strokeStyle='rgba(60,60,56,.25)';c.lineWidth=.6;c.beginPath();for(let y=y0+8;y<y1;y+=8){c.moveTo(x0,y);c.lineTo(x1,y)}c.stroke();
-  if(o.rail!==false){c.strokeStyle=N?'#8a7a3a':'#d9b23a';c.lineWidth=.9;c.beginPath();c.moveTo(x0+1,y0);c.lineTo(x0+1,y1);c.moveTo(x1-1,y0);c.lineTo(x1-1,y1);c.stroke()}}
- function dolphin(c,d,N,lit){const x=d.x,y=d.y,r=d.r||14,fb=16;for(const [dx,dy] of[[-r*.6,r*.3],[r*.6,r*.3],[0,-r*.5]]){c.fillStyle=N?'#3a3d40':'#5f6569';c.fillRect(x+dx-2.2,y+dy,4.4,fb);c.fillStyle='rgba(255,255,255,.25)';c.beginPath();c.ellipse(x+dx,y+dy+fb,5,2,0,0,TAU);c.fill()}
-  c.fillStyle='rgba(6,20,34,.22)';c.beginPath();c.ellipse(x+4,y+5,r,r*.8,0,0,TAU);c.fill();c.fillStyle=N?'#5f615d':'#9a9c95';c.beginPath();c.ellipse(x,y+2.5,r,r*.8,0,0,TAU);c.fill();c.fillStyle=N?'#74766f':'#b9bbb3';c.beginPath();c.ellipse(x,y,r,r*.8,0,0,TAU);c.fill();
-  c.fillStyle='#2f3437';c.beginPath();c.arc(x,y,3.4,0,TAU);c.fill();c.fillStyle='#6d7479';c.beginPath();c.arc(x-.8,y-.8,1.4,0,TAU);c.fill();
-  if(d.kind==='breasting'){c.fillStyle='#17191a';c.fillRect(x-9,y+r*.8-1,18,5)}
-  const on=lit&&((performance.now()/700+x*.01)%2<1);c.fillStyle=on?'#ffd23f':'#8a6a12';c.beginPath();c.arc(x+r*.55,y-r*.5,1.8,0,TAU);c.fill();if(on){c.save();c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,214,90,.3)';c.beginPath();c.arc(x+r*.55,y-r*.5,8,0,TAU);c.fill();c.restore()}}
-  
- function bob(id,t,amp){let h=0;for(const ch of id)h=(h*31+ch.charCodeAt(0))%997;return Math.sin(t*.55+h)*(amp==null?.9:amp)}
- function ship(c,s,now,o){o=o||{};const t=now/1000,b=o.still?0:bob(s.id,t,o.amp),spec=s.__s34||(s.__s34={type:s.type,L:s.L,B:s.B,id:s.id,name:s.name,cargoLive:!!s.cargoLive});
-  try{BOAT34.still(c,'S10|'+s.id,spec,s.x,s.y,s.h||0,t,{anchor:o.anchor===undefined?'deck':o.anchor,moored:1},0,b)}catch(e){err('ship '+s.id,e)}return b}
- function moor(c,pts,N){c.save();c.strokeStyle=N?'rgba(180,172,150,.7)':'rgba(236,228,206,.85)';c.lineWidth=.9;c.beginPath();for(const [x0,y0,x1,y1,sag] of pts){c.moveTo(x0,y0);c.quadraticCurveTo((x0+x1)/2,(y0+y1)/2+(sag==null?4:sag),x1,y1)}c.stroke();c.restore()}
-  
- function wash(c,x0,x1,y,t,N){c.save();c.strokeStyle=N?'rgba(190,220,235,.28)':'rgba(255,255,255,.5)';c.lineWidth=1.1;c.beginPath();for(let x=x0;x<x1;x+=26){const p=(t*.7+x*.031)%1,w=7+5*Math.sin(x*.07+t);c.globalAlpha=1;c.moveTo(x+p*10,y+2+p*6);c.quadraticCurveTo(x+p*10+w/2,y+p*6+4.5,x+p*10+w,y+2+p*6)}c.stroke();c.restore()}
-  
- function stack(asset,vs,x,y,h){try{const [L,W]=c34CtDims(asset);return c34Stack(asset,vs,x,y,h||0,L,W)}catch(e){err('stack',e);return false}}
- function boxFlat(c,asset,v,x,y){const I=TurboCity.info(asset,{scale:PORT_CT_SCALE});TurboCity.draw(c,asset,x-I.w/2,y-I.h/2,{mode:'runtime
+ const sign={'C6-GATE-W':'השער 
