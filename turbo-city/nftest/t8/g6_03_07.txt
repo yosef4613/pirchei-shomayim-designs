@@ -1,0 +1,64 @@
+ootKey)||'[]');L.push(B);while(L.length>12)L.shift();localStorage.setItem(G77_OT.bootKey,JSON.stringify(L))}catch(e){}}
+function g77OtBoot(bl){if(!G77_OT.on)return;const t=performance.now(),B={ms:Math.round(t),wait:(typeof G77_AS!=='undefined'&&G77_AS.waitMs)||0,bench:!!window.__TC_BENCH,src:bl&&bl.source||(bl&&bl.bench?'bench':'new'),at:new Date().toISOString(),build:BUILD};G77_OT.boot=B;
+ const R=g77OtLoad(),resume=!!(R&&R.phase&&R.phase!=='done');if(resume){G77_OT.lock=true;G77_OT.run=R;try{G77_ASV.on=false}catch(e){}try{G77_WL.hold=true;g77WakeOn()}catch(e){}}
+ try{if(typeof g77FgOn==='function'&&g77FgOn()&&!window.__TC_BENCH)g77FgToggle(true,true)}catch(e){}
+ let n=0,last=0,ok=0;const tick=ts=>{n++;if(n===1)B.first=Math.round(performance.now());const dt=last?ts-last:0;last=ts;g77BwTick(dt,n);ok=n>1&&dt<50&&!(window.__TC_LOADING&&window.__TC_LOADING())?ok+1:0;
+  if(ok>=10||performance.now()-t>30000){B.smooth=Math.round(performance.now());g77BwEnd(B,ok>=10);    B.hid=window.__TC_HIDMS?Math.round(window.__TC_HIDMS()):0;    const m=g77OtMem();B.heap=m.heap;B.cmb=m.cmb;g77OtBootLog(B);if(resume&&G77_OT.run===R){if(!window.__TC_BENCH)g77OtWall(true);setTimeout(g77OtResume,500)}return}        requestAnimationFrame(tick)};requestAnimationFrame(tick)}
+function g77OtResume(){const R=G77_OT.run;if(!R||window.__TC_BENCH)return;
+ if(R.phase==='restore')return setTimeout(()=>{g77OtFinish(R).catch(e=>{g77OtSay('הסיכום נכשל: '+e.message)})},2500);
+ R.errors.push(R.phase==='live'?'הבדיקה נקטעה באמצע (הדף נטען מחדש) — חוזרים למצב שלפני הבדיקה':'ה-Benchmark נקטע באמצע — חוזרים למצב שלפני הבדיקה');R.phase='restore';g77OtStore(R);g77OtSay('חוזר למצב שלפני הבדיקה…');setTimeout(()=>location.reload(),1500)}
+ 
+function g77OtBootRestore(SM,cb){const R=g77OtLoad();if(!R||R.phase!=='restore')return false;SAVE_ST.bootAsync=true;
+ (async()=>{let r=null;try{const v=await saveIdbGet('owner_restore');if(v&&v.raw){r=SM.loadString(v.raw,'OWNER-TEST');if(r&&r.ok){const pv=await saveIdbGet('primary');let lr=null;try{lr=localStorage.getItem(SAVE_KEY)}catch(e){}SM._last=(pv&&pv.raw)||lr||null}}}catch(e){r=null}
+  if(!r||!r.ok){R.errors.push('השחזור מהעותק של הבדיקה נכשל — נטענה השמירה שלך');R.restored=false;g77OtStore(R);return cb(SM.load({silent:true}))}R.restored=true;g77OtStore(R);cb(r)})();return true}
+
+function g77OtStartUi(kind){if(G77_OT.lock||PERF.busy)return toast('בדיקה כבר רצה');let d=$('g77OtStart');if(d)d.remove();d=window.document.createElement('div');d.id='g77OtStart';d.dir='rtl';
+ d.style.cssText='position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:76;width:min(660px,92vw);background:rgba(8,16,24,.97);color:#e6f1f8;border:1px solid #3b5b74;border-radius:12px;padding:14px 16px;font:14px/1.55 "Segoe UI",Arial;box-shadow:0 10px 30px #000a';
+ const all=kind==='all';
+ d.innerHTML='<b style="font-size:16px">'+(all?'בדיקות בעלים — הכול':'ריצה ארוכה — 60 דקות')+'</b>'+
+  '<div style="margin-top:6px">'+(all?'המשחק ירוץ לבד כ-15 דקות (עם WebGL — כ-22): נסיעה במסלול קבוע בין אזורים, מונית במצב צפייה, תצוגת המגדל, זום מהמינימום עד המקסימום; הטלפון, המפה הגדולה, לוח הטיסות, F9 ו-F4 — כל אחד 5 פעמים; שמירה וטעינה 5 פעמים (בעותק בדיקה); חלון מוסתר; ואז Benchmark רגיל — המשחק נטען מחדש לבד.':'אותו מסלול רץ בלולאה 60 דקות, ואפשר לא להיות ליד המחשב. כל 10 שניות נרשמים FPS, זמן פריים, זיכרון וקפיצות. בסוף — גרף ומגמת הזיכרון לאורך השעה.')+'</div>'+
+  '<div style="margin-top:6px">בסוף נשמר קובץ אחד לתיקיית ההורדות (<span dir="ltr">owner_tests_….txt</span>) עם תקציר בעברית בראש, והמשחק חוזר בדיוק למצב שלפני הבדיקה. השמירות שלך לא משתנות.</div>'+
+  '<div style="margin-top:8px;color:#ffd38a"><b>השאר את החלון פתוח וגלוי, ובטל שינה וכיבוי מסך עד הסוף.</b> אל תגע בעכבר ובמקלדת. הדפדפן יתבקש להשאיר את המסך דלוק (בקובץ כתוב אם הצליח). שינה או סגירת מכסה מזוהות — הקטע מסומן "לא תקף" ונמדד שוב.</div>'+
+  '<div id="g77OtPow" style="margin-top:6px;color:#8fb0c6">חשמל: בודק…</div>'+
+  '<div style="margin-top:4px;color:#8fb0c6">פעם אחת, לא בשגרה: הרצה אחת בסוללה ואחת בחשמל, ופעם אחת סגירת מכסה או שינה באמצע וחזרה. עד היום: '+g77OtOnce()+'</div>'+
+  (all?'<div style="margin-top:8px"><label><input type="checkbox" id="g77OtGl"> גם WebGL</label> &nbsp; <label><input type="checkbox" id="g77OtPq"> גם pq</label><br><label><input type="checkbox" id="g77OtZs" checked> בסוף — צילומי האזורים בזום קרוב (אחרי כל המדידות; כ-'+Math.max(1,Math.round(g77ZnPlan('hi').shots.length*G77_ZONES.estS/60))+' דקות נוספות; הורדה בכפתור)</label></div>':'')+
+  '<div style="margin-top:10px;display:flex;gap:8px"><button id="g77OtGo" style="font-weight:700">התחל</button><button id="g77OtNo">ביטול</button></div>';
+ window.document.body.appendChild(d);g77OtPower().then(p=>{const e=$('g77OtPow');if(e)e.textContent='חשמל: '+g77OtPowerText(p)});
+ $('g77OtNo').onclick=()=>{d.remove();focusGame()};
+ $('g77OtGo').onclick=()=>{const o={webgl:!!($('g77OtGl')&&$('g77OtGl').checked),pq:!!($('g77OtPq')&&$('g77OtPq').checked),zones:!!($('g77OtZs')&&$('g77OtZs').checked),quick:/[#&]ownerquick\b/.test(location.hash)};d.remove();focusGame();g77OtStart(kind,o).catch(e=>{g77OtSay('הבדיקה נעצרה: '+e.message)})}}
+
+function g77OtPanel(){let d=$('g77Ot');if(d)return d;d=window.document.createElement('div');d.id='g77Ot';d.dir='rtl';
+ d.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:74;width:min(680px,92vw);max-height:86vh;overflow:auto;background:rgba(8,16,24,.93);color:#e6f1f8;border:1px solid #3b5b74;border-radius:10px;padding:7px 12px;font:13px/1.5 "Segoe UI",Arial;box-shadow:0 6px 20px #0008';
+ d.innerHTML='<b>בדיקות בעלים</b> · <span id="g77OtStep" style="color:#ffd38a"></span><div id="g77OtBody"></div><div id="g77OtBtns" style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap"><button id="g77OtAbort">בטל את הבדיקה</button></div>';
+ window.document.body.appendChild(d);$('g77OtAbort').onclick=()=>{const R=G77_OT.run;if(R){R.abort=true;g77OtStore(R)}g77OtSay('מבטל — חוזר למצב שלפני הבדיקה…')};return d}
+function g77OtSay(t){g77OtPanel();const e=$('g77OtStep');if(e)e.textContent=t;try{perfHudStatus('בדיקות בעלים: '+t)}catch(e){}}
+
+function g77OtPrep(){if(typeof G77_TV!=='undefined'&&G77_TV.on)g77TvExit();if(State.mapQa)toggleMapQa();try{if(State.phoneOpen)setPhoneOpen(false);if(State.mapOpen)setMapOpen(false);g77FfClose()}catch(e){}State.paused=false;Input.held.clear();G77_OT.drive=null;G77_OT.zoom=null}
+function g77OtPath(){if(G77_OT.paths)return G77_OT.paths;const W=[[2820,2456],[5250,2130],[5400,3700],[4600,4700],[3000,4700],[900,3000]],pts=[];let ok=0;
+ for(let i=1;i<W.length;i++){const a=nearestRoadNode(W[i-1][0],W[i-1][1]),b=nearestRoadNode(W[i][0],W[i][1]);const ids=a&&b?shortestNodePath(a.id,b.id):[];if(ids.length>1){ok++;for(const id of ids){const n=byNode[id];if(n)pts.push([n.x,n.y])}}else pts.push(W[i-1],W[i])}
+ const cuLen=[0];for(let i=1;i<pts.length;i++)cuLen.push(cuLen[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+ G77_OT.paths={pts,cuLen,len:Math.max(1,cuLen[cuLen.length-1]),info:{legs:W.length-1,onRoads:ok,points:pts.length,lenPx:Math.round(cuLen[cuLen.length-1])}};return G77_OT.paths}
+function g77OtDriveStep(t){const D=G77_OT.drive;if(!D)return;const P=D.P;let d=((t-D.t0)/1000*D.v)%P.len;if(!(d>=0))d=0;let i=1;while(i<P.cuLen.length-1&&P.cuLen[i]<d)i++;
+ const a=P.pts[i-1],b=P.pts[i],l=P.cuLen[i]-P.cuLen[i-1],u=l>1e-6?Math.max(0,Math.min(1,(d-P.cuLen[i-1])/l)):0;PlayerCar.x=a[0]+(b[0]-a[0])*u;PlayerCar.y=a[1]+(b[1]-a[1])*u;if(l>1)PlayerCar.heading=Math.atan2(b[0]-a[0],-(b[1]-a[1]));PlayerCar.speed=0}
+function g77OtZoomStep(t){const Z=G77_OT.zoom;if(!Z)return;const u=Math.max(0,Math.min(1,(t-Z.t0)/Z.dur));Camera.zoom=Z.z0*Math.pow(Z.z1/Z.z0,u)}
+const G77_OT_PART={
+ drive:{label:'(א) נסיעה במסלול קבוע בין אזורים (C3 → E3 → E5 → D6 → C6 → A4)',on(R,sec){g77OtPrep();State.taxiRide=null;PlayerProfile.activeMission=null;State.licenseExam=null;PlayerProfile.mode='vehicle';const P=g77OtPath();
+   G77_OT.drive={P,t0:performance.now(),v:Math.max(160,Math.min(480,P.len/(sec+6)))};g77OtDriveStep(performance.now());Camera.x=PlayerCar.x;Camera.y=PlayerCar.y;Camera.zoom=1.1},off(){G77_OT.drive=null;PlayerCar.speed=0}},
+ taxi:{label:'(א) נסיעה במונית במצב צפייה',on(R){g77OtPrep();State.taxiRide=null;PlayerProfile.activeMission=null;State.licenseExam=null;PlayerProfile.mode='walk';PlayerProfile.money=Math.max(PlayerProfile.money,1e6);PlayerPed.x=2820;PlayerPed.y=2456;
+   const D=g77TaxiDests().filter(p=>navPoiRegistry()[p.id]);if(!D.length)throw new Error('אין יעדי מונית');const pick=D.find(p=>p.id==='A6-BARN')||D.map(p=>({p,d:Math.abs(Math.hypot(p.x-PlayerPed.x,p.y-PlayerPed.y)-3200)})).sort((a,b)=>a.d-b.d)[0].p;    
+   if(beginTaxiCall(null,'phone')!==true||!State.taxiRide)throw new Error('לא הוזמנה מונית');const car=taxiCarById(State.taxiRide.taxiId);G77_OT.taxiFix=true;try{forceTaxiPickupArrival(car)}finally{G77_OT.taxiFix=false}    PlayerPed.x=car.x;PlayerPed.y=car.y+2;
+   if(startTaxiPassengerRide(pick.id,'watch')!==true)throw new Error('הנסיעה במונית לא התחילה');try{if(State.phoneOpen)setPhoneOpen(false)}catch(e){}G77_OT.taxiDest=pick.id;G77_OT.taxiX0=car.x;G77_OT.taxiY0=car.y;Camera.zoom=1.1},    
+  off(R){const r=State.taxiRide;if(R&&R.res&&R.res.seg.taxi&&!R.res.seg.taxi.dest){R.res.seg.taxi.dest=G77_OT.taxiDest;R.res.seg.taxi.end=r?r.phase:'הגיעה'}if(R&&R.res&&R.res.seg.taxi&&R.res.seg.taxi.px==null&&G77_OT.taxiX0!=null){const T=R.res.seg.taxi,c=r&&taxiCarById(r.taxiId),q=c||navPoiRegistry()[G77_OT.taxiDest];T.x0=Math.round(G77_OT.taxiX0);T.y0=Math.round(G77_OT.taxiY0);T.px=q?Math.round(Math.hypot(q.x-G77_OT.taxiX0,q.y-G77_OT.taxiY0)):null}    if(r&&r.phase==='riding')try{skipTaxiRideToDestination()}catch(e){}State.taxiRide=null}},
+ tower:{label:'(א) תצוגת המגדל (Tower View)',on(){g77OtPrep();PlayerProfile.mode='walk';g77TvEnter(false)},off(){try{g77TvExit()}catch(e){}}},
+ zoomC:{label:'(א) זום מהמינימום עד המקסימום — העיר (E3)',xy:[5250,2130]},
+ zoomA:{label:'(א) זום מהמינימום עד המקסימום — השדה',xy:[6880,880]}};
+for(const k of ['zoomC','zoomA']){const P=G77_OT_PART[k];P.on=(R,sec)=>{g77OtPrep();toggleMapQa();Camera.x=P.xy[0];Camera.y=P.xy[1];G77_OT.zoom={t0:performance.now()+1500,dur:Math.max(1,sec)*1000,z0:CAM_ZOOM_MIN,z1:g77ZmMax()};Camera.zoom=CAM_ZOOM_MIN};
+ P.off=()=>{G77_OT.zoom=null;if(State.mapQa)toggleMapQa()};P.ops=()=>{G77_OT.zoom=null;Camera.zoom=CAM_ZOOM_MIN}}
+function g77OtAbortChk(R){if(R.abort)throw new Error('בוטל בידי הבעלים')}
+function g77OtSec(R,k){return R.opts&&R.opts.quick?4:G77_OT_SEC[k]}
+function g77OtBad(m,R,t0){if(!m)return'אין מדידה';if(m.frames<30)return'רק '+m.frames+' פריימים';if(m.focusLost)return'החלון איבד פוקוס או הוסתר';if(m.frameMs.max>3000)return'פער של '+Math.round(m.frameMs.max/1000)+' שנ׳ — שינה או הקפאה';if((R.sleep||[]).some(e=>Date.parse(e.at)>=t0-1000))return'זוהתה שינה / סגירת מכסה';return null}
+async function g77OtMeasure(R,sec){let t0=Date.now(),m=await perfMeasure(sec,{profile:false}),bad=g77OtBad(m,R,t0),re=null;if(bad){re=bad;g77OtSay('הקטע לא תקף ('+bad+') — נמדד שוב');await perfWait(1500);t0=Date.now();m=await perfMeasure(sec,{profile:false});bad=g77OtBad(m,R,t0)}return{m,bad,re}}
+function g77OtPack(x,label){const m=x.m;const top=m.stalls&&m.stalls.n?m.stalls.top.slice(0,3).map(q=>({dt:q.dt,js:q.js,why:q.why})):[];
+ return{label,s:m.seconds,fr:m.frames,fps:m.fps,avg:m.frameMs.avg,p95:m.frameMs.p95,p99:m.frameMs.p99,max:m.frameMs.max,low1:m.low1Fps,o50:m.over50,o100:m.over100,js:m.jsMs.avg,top,by:m.stalls&&m.stalls.by||{},heap:m.heapMB,cmb:m.canvasMB&&m.canvasMB.mb,inval:x.bad||null,re:x.re||null}}
+async function g77OtSeg(R,k){g77OtAbortChk(R);const P=G77_OT_PART[k],sec=g77OtSec(R,k);g77OtSay(P.label);P.on(R,sec);
+ try{await perfWait(1500);const x=await g77OtMeasure(R,sec);const o=g77OtPack(x,P.label);try{const c=window.__TC_CANVAS_MEM&&window.__TC_CANVAS_MEM('by');if(c){o.cby=c.by;o.cc=g77OtCaches();if(!R.res.cpeak||c.mb>R.res.cpeak.mb)R.res.cpeak={seg:k,mb:c.mb,by:c.by,cc:o.cc}}}catch(e){}    if(k==='drive'&&G77_OT.paths)o.route=G77_OT.pa

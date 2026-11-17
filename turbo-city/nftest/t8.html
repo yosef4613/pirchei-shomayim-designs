@@ -1,0 +1,7 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>בדיקת סינון</title>
+<style>body{font:15px Arial,sans-serif;margin:16px;background:#fff;color:#111}td{padding:3px 8px;border-bottom:1px solid #ddd}.ok{color:#176b2c}.bad{color:#b3261e;font-weight:700}</style></head><body>
+<h1>בדיקת סינון — S7F300, ‏בדיקה 8 — g6_03 בחתיכות קטנות, הקול בקידוד hex / ספרות, וקובץ קול אמיתי</h1><p id="s">בודק…</p><table id="t"></table>
+<script>const F=["t8/g6_03_01.txt", "t8/g6_03_02.txt", "t8/g6_03_03.txt", "t8/g6_03_04.txt", "t8/g6_03_05.txt", "t8/g6_03_06.txt", "t8/g6_03_07.txt", "t8/g6_03_08.txt", "t8/g6_03_09.txt", "t8/g6_03_10.txt", "t8/g14_04_hex.txt", "t8/g16_07_hex.txt", "t8/g16_09_hex.txt", "t8/g17_10_hex.txt", "t8/g14_04_dec.txt", "t8/voice_sample.wav", "t8/voice_sample.ogg"];const t=document.getElementById('t');let bad=[];
+(async()=>{for(const f of F){const tr=document.createElement('tr');let r;try{const x=await fetch(f+'?v=8',{cache:'no-store'});r=x.status;}catch(e){r='שגיאה'}
+const ok=r===200;if(!ok)bad.push(f);tr.innerHTML='<td>'+f.replace('.txt','')+'</td><td class="'+(ok?'ok':'bad')+'">'+(ok?'עבר':'נחסם ('+r+')')+'</td>';t.appendChild(tr)}
+document.getElementById('s').textContent=bad.length?('נחסמו '+bad.length+': '+bad.map(x=>x.replace('.txt','')).join(', ')):'הכול עבר';})();</script></body></html>

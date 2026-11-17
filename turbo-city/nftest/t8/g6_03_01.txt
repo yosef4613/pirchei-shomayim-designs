@@ -1,0 +1,63 @@
+.push('no-ledger');
+  for(const v of AO.fleet){if(v.type!=='FW')continue;o.trucks++;for(const k of v.tasks.concat(v.hist||[])){o.tasks++;const q=k.fi;if(!q)continue;if(q.pre)o.pre++;if(q.post)o.post++;
+    const n=(k.tr&&k.tr.seq&&k.tr.seq.legs||[]).filter(l=>l.kind==='fill').length;if(n!==(q.pre?1:0)+(q.post?1:0)&&o.issues.length<8)o.issues.push(v.id+'@'+k.t0.toFixed(1)+':fill-legs '+n);
+    if(q.left!=null&&q.left<-1e-6&&o.issues.length<8)o.issues.push(v.id+'@'+k.t0.toFixed(1)+':below-zero')}}});
+  o.ok=o.trucks>0&&o.tasks>0&&!o.issues.length}catch(e){o.error=String(e&&e.stack||e)}return o}
+function g77FwEnd(legs){const l=legs[legs.length-1];return l.endPose?l.endPose():l.pose(l.dur)}
+
+
+function g77LookCrew(t,take){
+ if(typeof g77BcWin==='function')for(const f of AO.flights){const p=f.pax;if(!p||!f.bridge||!p.points)continue;const W=g77BcWin(f);if(!W)continue;const m=p.points[Math.floor(p.points.length/2)];
+  if(W.dep!=null)take(W.dep-1,m[0],m[1],3.6,'צוות הטיסה עולה בשרוול — '+f.code+' ב-'+f.stand);
+  if(W.arr!=null)take(W.arr-1,m[0],m[1],3.6,'צוות הטיסה יורד בשרוול — '+f.code+' ב-'+f.stand)}
+ for(const f of AO.flights){const S=f.sh;if(!S||S.at==null)continue;const R=G2_REM[f.stand];if(!R)continue;const x=R.busX!=null?R.busX:R.x,y=R.busY;take(S.at-2,x,y,3,'החלפת צוות בהסעת הצוות — '+f.code+' ב-'+f.stand)}}
+function g77LookFill(t,take){const P=S6B_DEPOT;
+ for(const v of AO.fleet){if(v.type!=='FT'&&v.type!=='FW')continue;for(const k of v.tasks.concat(v.hist||[])){const F=s6bFillOf(k);if(!F)continue;take(k.t0+F[0]-3,P.x,P.y-10,3.2,'מכלית '+v.id+(v.type==='FW'?' (אזור המטען)':'')+' מתמלאת במחסן הדלק')}}}
+function g77LookCfQa(seed=777,secs=3600){const o={ok:false};try{aoSandbox(()=>{AO.keep=true;    aoInit(0,seed);for(let t=0;t<=secs;t++)aoStep(t);const t=0;let c=null,f=null;g77LookCrew(t,(at,x,y,z,lab)=>{if(at>=t&&(!c||at<c.at))c={at:+at.toFixed(1),lab}});g77LookFill(t,(at,x,y,z,lab)=>{if(at>=t&&(!f||at<f.at))f={at:+at.toFixed(1),lab}});
+  o.crew=c;o.fill=f});o.ok=!!o.crew&&!!o.fill}catch(e){o.error=String(e&&e.stack||e)}return o}
+
+
+var G77_AS={on:true,key:'turbo_city_save_auto_v1',n:0,last:null,choice:null};
+function g77AsSave(SM){if(window.__TC_BENCH)return{ok:false,bench:true};if(typeof G77_OT!=='undefined'&&G77_OT.lock)return{ok:true,skipped:'owner-test'};    if(typeof G77_LDS!=='undefined'&&G77_LDS.job)return{ok:true,skipped:'airport-load'};    try{if(typeof G77_PSV!=='undefined'){G77_PSV.last=Date.now();g77AsvReset()}
+  let d;SAVE_CJ=SAVE_REF;try{d=collectSaveState(SM._meta)}finally{SAVE_CJ=cloneJson}d.metadata.slot='auto';const s=JSON.stringify(d);
+  if(s.length<=SAVE_LS_MAX){try{localStorage.setItem(G77_AS.key,s)}catch(e){}}else{try{localStorage.removeItem(G77_AS.key)}catch(e){}}
+  saveIdbPut('auto',{raw:s,chars:s.length,at:d.metadata.updatedAt});try{localStorage.setItem(G77_AS.key+'_at',d.metadata.updatedAt)}catch(e){}    G77_AS.n++;G77_AS.last=d.metadata.updatedAt;
+  SM.status('שמירה אוטומטית · '+new Date().toLocaleTimeString('he-IL'),'ok');SM.log('saved',{reason:'auto-15',slot:'auto'});return{ok:true,chars:s.length,slot:'auto'}}
+ catch(e){SM.log('save_failed',{message:String(e),slot:'auto'});return{ok:false,error:String(e)}}}
+function g77AsMaybe(){try{return!!(localStorage.getItem(G77_AS.key)||localStorage.getItem(G77_AS.key+'_at'))}catch(e){return false}}
+ 
+async function g77AsGet(){let raw=null;try{raw=localStorage.getItem(G77_AS.key)}catch(e){}if(!raw){try{const v=await saveIdbGet('auto');if(v&&v.raw)raw=v.raw}catch(e){}}return raw}
+function g77AsMeta(raw){try{const m=raw.indexOf('"updatedAt":"');if(m>=0){const e=raw.indexOf('"',m+13);return raw.slice(m+13,e)}}catch(e){}return null}
+function g77AsFmt(iso){try{const d=new Date(iso);return d.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}catch(e){return iso||'?'}}
+ 
+function g77AsChoose(SM,pRaw,pLabel,aRaw,fin){const tp=g77AsMeta(pRaw),ta=g77AsMeta(aRaw),autoNewer=!!(ta&&(!tp||ta>tp));
+ const load=(raw,lab)=>{G77_AS.waitMs=Math.round(performance.now()-(G77_AS.t0||performance.now()));try{d.remove()}catch(e){}window.removeEventListener('keydown',key,true);G77_AS.choice=lab;const r=SM.loadString(raw,lab);if(lab==='AUTO'&&r.ok){SM._last=pRaw}fin(r.ok?r:SM.loadString(pRaw,pLabel))};
+ const d=window.document.createElement('div');d.id='g77AsChoose';d.dir='rtl';
+ d.style.cssText='position:fixed;inset:0;z-index:10000;background:rgba(5,14,22,.78);display:flex;align-items:center;justify-content:center;font:600 16px system-ui,Arial;color:#eaf4fb';
+ const box=window.document.createElement('div');box.style.cssText='background:#0f2131;border:1px solid #4d7ea3;border-radius:12px;padding:18px 22px;min-width:340px;box-shadow:0 8px 28px rgba(0,0,0,.5)';
+ const h=window.document.createElement('div');h.textContent='המשך משחק — מאיזו שמירה?';h.style.cssText='font-size:18px;margin-bottom:12px';box.appendChild(h);
+ const mk=(lab,t,newer,raw,code)=>{const b=window.document.createElement('button');b.textContent=lab+' · '+g77AsFmt(t)+(newer?' · החדשה':'');
+  b.style.cssText='display:block;width:100%;margin:6px 0;padding:10px 12px;border-radius:8px;font:600 15px system-ui,Arial;cursor:pointer;color:#fff;border:1px solid '+(newer?'#7fd18b':'#4d7ea3')+';background:'+(newer?'#1f4d2b':'#1a3347');b.onclick=()=>load(raw,code);box.appendChild(b);return b};
+ const bp=mk('השמירה שלי',tp,!autoNewer,pRaw,pLabel),ba=mk('השמירה האוטומטית',ta,autoNewer,aRaw,'AUTO');
+ const n=window.document.createElement('div');n.textContent='Enter — החדשה';n.style.cssText='margin-top:8px;color:#8fb0c6;font-size:13px';box.appendChild(n);
+ d.appendChild(box);window.document.body.appendChild(d);G77_AS.t0=performance.now();(autoNewer?ba:bp).focus();
+ const key=e=>{if(e.key==='Enter'){e.preventDefault();e.stopPropagation();autoNewer?load(aRaw,'AUTO'):load(pRaw,pLabel)}};window.addEventListener('keydown',key,true)}
+function g77AsQa(){const o={ok:false};try{const before=(()=>{try{return localStorage.getItem(SAVE_KEY)}catch(e){return null}})(),bk=(()=>{try{return localStorage.getItem(SAVE_BACKUP_KEY)}catch(e){return null}})(),last=SaveManager._last;
+  const r=g77AsSave(SaveManager);const after=(()=>{try{return localStorage.getItem(SAVE_KEY)}catch(e){return null}})(),bk2=(()=>{try{return localStorage.getItem(SAVE_BACKUP_KEY)}catch(e){return null}})();
+  o.saved=!!r.ok;o.primaryKept=before===after&&SaveManager._last===last;o.backupKept=bk===bk2;o.slot=r.slot;o.ok=o.saved&&o.primaryKept&&o.backupKept&&r.slot==='auto'}catch(e){o.error=String(e&&e.stack||e)}return o}
+
+
+var G77_WL={on:true,lock:null,state:'—',err:null,n:0};
+async function g77WakeOn(){if(!G77_WL.on)return G77_WL.state;try{if(!('wakeLock' in navigator)){G77_WL.state='לא נתמכת';return G77_WL.state}
+  if(G77_WL.lock&&!G77_WL.lock.released)return G77_WL.state;G77_WL.lock=await navigator.wakeLock.request('screen');G77_WL.state='פעילה';G77_WL.n++;G77_WL.err=null;
+  G77_WL.lock.addEventListener('release',()=>{if(G77_WL.state==='פעילה')G77_WL.state='שוחררה'})}catch(e){G77_WL.state='נדחתה';G77_WL.err=String(e&&e.message||e).slice(0,120)}return G77_WL.state}
+function g77WakeOff(){try{G77_WL.lock&&G77_WL.lock.release()}catch(e){}G77_WL.lock=null;G77_WL.state='כבויה'}
+function g77WakeText(){return'נעילת מסך (שלא ייכנס לשינה): '+G77_WL.state+(G77_WL.err?' — '+G77_WL.err:'')+(G77_WL.n>1?' · נתבקשה '+G77_WL.n+' פעמים':'')}
+window.document.addEventListener('visibilitychange',()=>{if((window.__TC_BENCH||G77_WL.hold)&&!window.document.hidden&&G77_WL.on&&G77_WL.state!=='כבויה')g77WakeOn()});
+ 
+function g77WakeHold(){if(!G77_WL.on)return;G77_WL.hold=true;g77WakeOn();clearInterval(G77_WL.iv);let idle=0;
+ G77_WL.iv=setInterval(()=>{const busy=(typeof G77_LKA!=='undefined'&&G77_LKA.busy)||(typeof PERF!=='undefined'&&PERF.busy);idle=busy?0:idle+2;if(idle>=10){clearInterval(G77_WL.iv);G77_WL.hold=false;g77WakeOff()}},2000)}
+
+
+var G77_OT={on:true,key:'turbo_city_owner_run_v1',hist:'turbo_city_owner_hist_v1',bootKey:'turbo_city_boot_log_v1',lastKey:'turbo_city_owner_last_v1',lock:false,hide:false,drive:null,zoom:null,boot:null,run:null,paths:null,wallIv:null,taxiDest:null};
+var G77_OT_CHG={22:'p256 — pq מחוץ לרצף; p257 — השמירה האוטומטית במשבצת משלה (D‑217); p258 — נעילת מסך (D‑218)',23:'p259 — הבחירה בפתיחה בין השמירות (D‑217)',24:'p260 — בדיקות בעלים (D‑218); p261 — גרף זמן פריים ומדד הציור',25:'p260 — הבחנה בין שינה לקיפאון בבדיקות הבעלים',26:'p261 — מונה הציור בשם משלו (ב-S7F24 / S7F25 השם דרס את המתג של דלתות הקייטרינג) — נקודת הבסיס של הבעלים',27:'p262 — K‑161: המכלית של אזור המטען מתמלאת כשהיא פנויה; p263 — K‑162: בדיקת העולם לא רצה בפתיחה',29:'p264 — K‑162: הצבת הפנסים והרמזורים בלי עבודה כפולה (אותה תשובה)',30:'p265 — הבדיקה lookCrewFill רואה את כל השעה; p266 — D‑220: טעינה ארוכה של שדה התעופה בחלקים, עם מסך התקדמות',31:'p267 — זיכרון התמונות לפי מי שיצר אותן',33:'p268 + p269 — רמות קבועות לאריחים ולתמונות בזמן זום; p270 — תמונה שנזרקת מתרוקנת מיד',34:'p271 — לוחות הטיסות וקודי הרכבים כתמונות',35:'p272 — סימונים מחוץ למסך לא מצוירים',36:'p273 — הטלפון מוכן מראש',37:'p274 — K‑161: המילוי אחרי המשימה רק כשיש לו מקום',38:'p275 — K‑161 (א) כבויה (כמו S7F26)',39:'p276 — בפתיחה, הזמן שהחלון היה מוסתר לא נספר',40:'p267 — שורת השיא של התמונות בקובץ מתוקנת',41:'p277 — לכל מדד סף רעש משלו, המדדים העיקריים בראש התקציר; p278 — הכנת הטלפון חוזרת עד שהיא קורית',42:'p279 — בזמן זום: הקודים ולוחות הטיסות בלי תמונות חדשות לכל קנה מידה; מונה התמונות מנקה רק כשהרשימה הוכפלה',43:'p280 — בזמן זום: המטוסים בלי תמונות חדשות לכל קנה מידה',44:'בנייה לבדיקה בלבד — לא נמסרה',45:'p283 — השדה נטען ברקע כשהשחקן רחוק ממנו',46:'p284 — K‑164: מונית שמוצבת באיסוף מקבלת את הנתיב של הנקודה',47:'p285 — בבדיקות הבעלים: הכנת הטלפון, צעדי השדה בכל טעינה, הרגע של הפריים הארוך אחרי חלון מוסתר',48:'בנייה לבדיקה בלבד — לא נמסרה (p286)',49:'בנייה לבדיקה בלבד — לא נמסרה (p286 + p287)',50:'p287 — taxiWatch: המתנה חוקית בתור לא נספרת בזמן של הנסיעה; p286 (הצומת D4C) לא נכנס — לתכנון מחדש (הבעלים, 12:10)',51:'בנייה לבדיקה בלבד — לא נמסרה (p288 בלי עדכון הבדיקות של העולם)',52:'p288 — אוטובוס אחד פחות בכל קו (D‑223): 23 → 19, המסוף E3 פנוי יותר',53:'p289 — הטלפון: העולם מאחוריו לא מצויר מחדש כשהוא פתוח; בבדיקות הבעלים — למה הפריים הארוך בפתיחת הטלפון',54:'p290 — הפתיחה: מיקום העמודים נבדק רק מול הכבישים הקרובים (אותה תוצאה); בדיקות האנימציה נשמרות בדפדפן לפתיחות הבאות של אותה בנייה; בבדיקות הבעלים — מה היה בפתיחה',57:'p294 — הטלפון: כשהוא פתוח העולם מצויר כל פריים רביעי (הסגירה לא משלמת על כל הזמן שהיה פתוח); בבדיקות הבעלים — למה הפריים הארוך גם בסגירה',55:'p291, p292 — הפתיחה: בדיקות הבטיחות של הספרייטים נשמרות בדפדפן; המפה הקטנה בלי מטמון התמונות; תכנון הנמל — מיקומי המשאיות לפי הצורך (אותה תוכנית)',56:'p293 — הפתיחה הראשונה של בנייה: תשובות האנימציה מהזרע של הבנייה, נבדקות שוב ברקע אחרי הפתיחה',58:'p295 — הזום: האריחים נבנים בחלקים עם תקציב זמן לכל פריים, ובינתיים מוצגים האריחים הקיימים',59:'p296 — המונית בבדיקות: תמיד A6-BARN, אותו צד של הכביש; ברת השוואה לפי היעד ונקודת היציאה; p297 — הנסיעה: האזורים השכנים מוכנים מראש בחלקים, לכיוון הנסיעה קודם — הקרקע והשכבות שמעליה',60:'p298 — עבודת הרקע: ההכנה מראש לא דוחקת אריחים של אותו זום; הבדיקה השנייה של בדיקות האנימציה — בזמן הפנוי של הדפדפן',61:'p299 — הזום: תמונות האזורים (השדה, הנמל) שאריח צריך נעשות לפני הציור, אחת בכל צעד — לא כולן בפריים אחד',62:'p300 — מצלמה עומדת: הטבעת סביב התצוגה לא מוכנה בתוך הפריימים (רק בזמן הפנוי, כמו לפני p297); בתנועה ובזום — כמו קודם',63:'p301 — מנוע הסיפור (א), חלק 1: מצב הסיפור בשמירה, טבלת השיחות וחלון הדיאלוג (פנים אל פנים ובטלפון); F9 — שיחת בדיקה',64:'p302 — מנוע הסיפור (א), חלק 2: שיחות נכנסות, הודעות והודעה קולית; האפליקציות "שיחות" ו"הודעות" בטלפון',65:'p303 — מנוע הסיפור (א), חלק 3: היומן (משימות הסיפור) ובועות מעל אנשים, רכבים ונקודות',66:'p304 — מנוע הסיפור (א), חלק 4: שם השחקן בפתיחה (ושינוי בהגדרות) ואייקון המטבע במקום ₪ בכל המשחק',67:'p305 — עיצוב המכוניות (ב), חלק 1: הפנים דרך השמשה (לוח מחוונים, מסך, הגה, מושבים) והאנשים ברכב מזום 1.9',68:'p306 — עיצוב המכוניות (ב), חלק 2: הגלגלים מתחת לגוף, פינות לפי ס

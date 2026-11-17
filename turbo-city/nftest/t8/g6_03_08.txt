@@ -1,0 +1,72 @@
+ths.info;o.xy=[Math.round(Camera.x),Math.round(Camera.y)];R.res.seg[k]=o;
+  if(typeof g77GpuReset==='function'){if(P.ops)P.ops();g77GpuReset();let q=null;try{q=await perfMeasure(R.opts&&R.opts.quick?1.5:3,{profile:false,ops:true})}finally{o.gd=g77GpuTake(q)}}g77OtStore(R)}
+ finally{try{P.off(R)}catch(e){}}}
+async function g77OtRoute(R){for(const k of ['drive','taxi','tower','zoomC','zoomA'])await g77OtSeg(R,k)}
+
+async function g77OtAfter(fn,ms){const fg0=typeof G77_FG!=='undefined'?G77_FG.on:false;if(typeof G77_FG!=='undefined'){G77_FG.on=true;G77_FG.jumps=[]}const t=performance.now();fn();const tc=performance.now()-t;await perfWait(ms);let mx=0,mj=0,n=0;for(const x of PERF.roll)if(x[0]>=t){n++;if(x[1]>mx)mx=x[1];if(x[2]>mj)mj=x[2]}let why='';if(typeof G77_FG!=='undefined'){const J=G77_FG.jumps.reduce((m,x)=>!m||x.dt>m.dt?x:m,null);why=J?J.why.join('+'):'';G77_FG.on=fg0}return[Math.round(mx),Math.round(mj),n,Math.round(tc),why]}    
+
+async function g77OtUiSettle(R){const from=PlayerProfile.mode,t0=performance.now();let d=null;
+ if(from==='vehicle'){PlayerCar.speed=0;let pos=null;for(const a of [Math.PI/2,-Math.PI/2,Math.PI]){const x=PlayerCar.x+Math.cos(PlayerCar.heading+a)*30,y=PlayerCar.y+Math.sin(PlayerCar.heading+a)*30;let bl=true;try{bl=personBlockedAt(x,y)}catch(e){}if(!bl){pos={x,y};break}}
+  if(!pos)pos={x:PlayerCar.x+Math.cos(PlayerCar.heading+Math.PI/2)*30,y:PlayerCar.y+Math.sin(PlayerCar.heading+Math.PI/2)*30};d=Math.round(Math.hypot(PlayerPed.x-pos.x,PlayerPed.y-pos.y));
+  PlayerPed.x=pos.x;PlayerPed.y=pos.y;PlayerPed.heading=PlayerCar.heading;try{PlayerPed.dir=personDirection(Math.cos(PlayerCar.heading),Math.sin(PlayerCar.heading))}catch(e){}PlayerPed.pose='idle'}
+ PlayerProfile.mode='walk';const cam=Math.round(Math.hypot(Camera.x-PlayerPed.x,Camera.y-PlayerPed.y));Camera.x=PlayerPed.x;Camera.y=PlayerPed.y;
+ let ok=0,fb=WTC.stats.fallbackTiles||0;while(performance.now()-t0<5000&&ok<12){await new Promise(r=>requestAnimationFrame(r));const f=WTC.stats.fallbackTiles||0,job=typeof G77_ZP!=='undefined'&&!!G77_ZP.job;ok=(f===fb&&!job)?ok+1:0;fb=f}
+ let mx=0;for(const x of PERF.roll)if(x[0]>=t0&&x[1]>mx)mx=x[1];R.res.uiw={from,walkerMoved:d,cam,ms:Math.round(performance.now()-t0),max:Math.round(mx),complete:ok>=12};await perfWait(300)}
+async function g77OtUi(R){const q=R.opts&&R.opts.quick,ms=q?700:1500,N=q?2:5;g77OtPrep();State.taxiRide=null;await g77OtUiSettle(R);R.res.pw0=g77OtPw();        
+ const U=[['phone',()=>setPhoneOpen(true),()=>setPhoneOpen(false)],['map',()=>setMapOpen(true),()=>setMapOpen(false)],['fids',()=>g77FfOpen({term:2}),()=>g77FfClose()],
+  ['f9',()=>{if(!PERF.hud)perfHudToggle()},()=>{if(PERF.hud)perfHudToggle()}],['f4',()=>{if(!State.mapQa)toggleMapQa()},()=>{if(State.mapQa)toggleMapQa()}]];
+ for(const [k,on,off] of U){g77OtAbortChk(R);g77OtSay('(ב) '+G77_OT_NAME[k]+' — פתיחה וסגירה × '+N);const o={open:[],close:[],js:[],call:[],why:[]},hud=PERF.hud;
+  for(let i=0;i<N;i++){const a=await g77OtAfter(on,ms),b=await g77OtAfter(off,ms);o.open.push(a[0]);o.close.push(b[0]);o.js.push(Math.max(a[1],b[1]));o.call.push(a[3]);o.why.push(a[4]||'');(o.callc||(o.callc=[])).push(b[3]);(o.whyc||(o.whyc=[])).push(b[4]||'')}        
+  if(k==='f9'&&hud&&!PERF.hud)perfHudToggle();R.res.ui[k]=o;g77OtStore(R)}}
+
+async function g77OtSaveT(R){const q=R.opts&&R.opts.quick,N=q?2:5,rows=[],loads=[];g77OtPrep();G77_OT.block=true;try{
+ for(let i=0;i<N;i++)for(const kind of ['manual','auto']){g77OtAbortChk(R);g77OtSay('(ג) שמירה '+(kind==='manual'?'ידנית':'אוטומטית')+' '+(i+1)+'/'+N+' — בעותק בדיקה');
+  const t0=performance.now();let d;SAVE_CJ=SAVE_REF;try{d=collectSaveState(SaveManager._meta)}finally{SAVE_CJ=cloneJson}d.metadata.slot='owner-test-'+kind;const s=JSON.stringify(d);let ls=false;
+  if(s.length<=SAVE_LS_MAX){try{localStorage.setItem('turbo_city_owner_test_ls',s);ls=true}catch(e){}}const t1=performance.now();const ok=await saveIdbPut('owner_test_'+kind,{raw:s,chars:s.length});const t2=performance.now();
+  rows.push({kind,freeze:+(t1-t0).toFixed(1),write:Math.round(t2-t1),chars:s.length,ls,ok});await perfWait(500)}
+ try{localStorage.removeItem('turbo_city_owner_test_ls')}catch(e){}
+ for(let i=0;i<N;i++){g77OtAbortChk(R);g77OtSay('(ג) טעינה '+(i+1)+'/'+N+' — מעותק הבדיקה');const r0=performance.now(),v=await saveIdbGet('owner_test_manual'),r1=performance.now();if(!v||!v.raw)throw new Error('עותק הבדיקה לא נקרא');
+  const t0=performance.now(),d=SaveManager.parse(v.raw),val=validateSave(d);if(!val.ok)throw new Error('עותק הבדיקה לא תקין');applySaveState(d);const t1=performance.now();const lj=G77_LDS.job,lc=G77_CONT.last,lst=lj?{n:lj.total,ex:!!lj.exact}:(lc&&lc.clk!=null&&lc.from!=null?{n:Math.round(lc.clk-lc.from)+1,ex:!!lc.exact}:null);    let sl=0,bg=!!(G77_LDS.job&&G77_LDS.job.bg);while(typeof G77_LDS!=='undefined'&&G77_LDS.job&&!G77_LDS.job.bg){sl=1;await perfWait(50)}const t2=performance.now();loads.push({read:Math.round(r1-r0),freeze:+(t1-t0).toFixed(1),total:Math.round(t2-t0),parts:sl?G77_LDS.stats.lastSlices:0,bg,steps:lst?lst.n:null,exact:lst?lst.ex:null});    await perfWait(800)}    
+ if(typeof G77_LDS!=='undefined'&&G77_LDS.job){G77_LDS.job.bg=false;g77LdsUi(G77_LDS.job);while(G77_LDS.job)await perfWait(50)}    
+ R.res.save={rows,loads};g77OtStore(R)}finally{G77_OT.block=false}}
+
+async function g77OtHidden(R){const q=R.opts&&R.opts.quick,hs=q?4:8;g77OtPrep();g77OtSay('(ו) חלון מוסתר — דימוי של '+hs+' שנ׳');
+ const C=()=>({sim:typeof SIM_LOOP!=='undefined'&&SIM_LOOP.simNow!=null?+(SIM_LOOP.simNow/1000).toFixed(2):null,apt:typeof APT_OPS!=='undefined'&&APT_OPS.clk!=null?+(+APT_OPS.clk).toFixed(2):null,play:+(+PlayerProfile.stats.playTimeSeconds||0).toFixed(1),wall:+(performance.now()/1000).toFixed(2)});
+ const o={hiddenS:hs,pw0:g77OtPw()};G77_ASV.on=true;try{if(!G77_ASV.pending)g77AsvWarn()}catch(e){}await perfWait(2500);o.c0=C();o.pend0=!!G77_ASV.pending;o.n0=G77_ASV.n;
+ G77_OT.hide=true;try{Object.defineProperty(window.document,'hidden',{configurable:true,get:()=>true});Object.defineProperty(window.document,'visibilityState',{configurable:true,get:()=>'hidden'})}catch(e){}window.document.dispatchEvent(new Event('visibilitychange'));
+ try{await perfWait(hs*1000)}finally{o.c1=C();o.pendHidden=!!G77_ASV.pending;o.nHidden=G77_ASV.n;try{delete window.document.hidden;delete window.document.visibilityState}catch(e){}G77_OT.hide=false}
+ const tr=performance.now();window.document.dispatchEvent(new Event('visibilitychange'));
+ await perfWait(3000);let mx=0,mj=0,n=0,mt=null;for(const x of PERF.roll)if(x[0]>=tr){n++;if(x[1]>mx)mt=Math.round(x[0]-tr);mx=Math.max(mx,x[1]);mj=Math.max(mj,x[2])}o.after={maxDt:Math.round(mx),maxJs:Math.round(mj),frames:n,at:mt};o.pw1=g77OtPw();o.pwRan=!!(o.pw1&&o.pw1.at!=null&&o.pw1.at>=tr);    o.c2=C();
+ await perfWait(10000);o.c3=C();o.pendAfter=!!G77_ASV.pending;o.nAfter=G77_ASV.n;G77_ASV.on=false;try{if(G77_ASV.pending)g77AsvDone(false)}catch(e){}
+ o.ok={still:o.c1.play-o.c0.play<1.5,asvHeld:o.pend0&&o.pendHidden&&o.nHidden===o.n0,asvAfter:o.nAfter===o.n0+1&&!o.pendAfter,aptOn:o.c3.apt!=null&&o.c2.apt!=null&&o.c3.apt>o.c2.apt,simOn:o.c3.sim!=null&&o.c2.sim!=null&&o.c3.sim>o.c2.sim};R.res.hidden=o;g77OtStore(R)}
+
+async function g77OtLong(R){const q=R.opts&&R.opts.quick,min=q?1.5:60,T0=performance.now(),END=T0+min*60000,S=[];R.res.long={min,samples:S,loops:0};let seg='—';
+ const iv=setInterval(()=>{const now=performance.now(),L=PERF.roll.filter(x=>now-x[0]<=10000&&x[1]>0);if(!L.length)return;const d=L.map(x=>x[1]).sort((a,b)=>a-b),q95=d[Math.min(d.length-1,Math.ceil(.95*d.length)-1)],m=g77OtMem();
+  S.push([+((now-T0)/60000).toFixed(2),+(L.length/10).toFixed(1),+(d.reduce((a,b)=>a+b,0)/d.length).toFixed(1),Math.round(q95),Math.round(d[d.length-1]),L.filter(x=>x[1]>50).length,L.filter(x=>x[1]>100).length,m.heap,m.cmb,seg]);if(S.length%6===0)g77OtStore(R)},10000);
+ try{while(performance.now()<END){R.res.long.loops++;for(const k of ['drive','taxi','tower','zoomC','zoomA']){const left=END-performance.now();if(left<=0)break;g77OtAbortChk(R);seg=k;const P=G77_OT_PART[k],ms=Math.min(left,(q?6:G77_OT_LSEC[k])*1000);
+   g77OtSay('ריצה ארוכה — '+Math.floor((performance.now()-T0)/60000)+' מתוך '+min+' דק׳ · סיבוב '+R.res.long.loops+' · '+G77_OT_NAME[k]);try{P.on(R,ms/1000);await perfWait(ms)}catch(e){R.errors.push('ריצה ארוכה · '+G77_OT_NAME[k]+': '+String(e&&e.message||e).slice(0,120))}finally{try{P.off(R)}catch(e){}}}}}
+ finally{clearInterval(iv);G77_OT.drive=null;G77_OT.zoom=null}R.res.long.realMin=+((performance.now()-T0)/60000).toFixed(1);g77OtStore(R)}
+
+async function g77OtStage(R,k,label,fn){const t0=performance.now();g77OtSay(label);let ok=true;try{await fn(R)}catch(e){ok=false;R.errors.push(label+': '+String(e&&e.message||e).slice(0,200))}
+ R.stages.push({k,label,ok:ok&&!R.abort,s:Math.round((performance.now()-t0)/1000)});R.res.mem.push(Object.assign({k,label},g77OtMem()));g77OtStore(R)}
+function g77OtBenchHash(mode,R){return'bench'+(mode==='webgl'?'&webgl':mode==='pq'?'&pq':'')+'&owner'+(R.opts&&R.opts.quick?'&quick':'')+(R.dev?'&dev':'')}
+function g77OtCleanLive(){G77_OT.drive=null;G77_OT.zoom=null;G77_OT.hide=false;try{delete window.document.hidden;delete window.document.visibilityState}catch(e){}try{g77OtPrep()}catch(e){}}
+async function g77OtStart(kind,opts){if(G77_OT.lock||PERF.busy)return;G77_OT.lock=true;const asv0=G77_ASV.on!==false;try{if(G77_ASV.pending)g77AsvDone(false)}catch(e){}G77_ASV.on=false;g77OtSay('מכין…');
+ try{G77_WL.hold=true;await g77WakeOn()}catch(e){}const power=await g77OtPower(),fp0=await g77OtFp();let raw=null;
+ try{let d;SAVE_CJ=SAVE_REF;try{d=collectSaveState(SaveManager._meta)}finally{SAVE_CJ=cloneJson}d.metadata.slot='owner-test';raw=JSON.stringify(d)}catch(e){}
+ const okp=raw?await saveIdbPut('owner_restore',{raw,chars:raw.length,at:new Date().toISOString()}):false;
+ if(!okp){G77_OT.lock=false;G77_ASV.on=asv0;g77OtSay('לא ניתן לשמור עותק של המשחק לבדיקה — הבדיקה בוטלה');return}
+ const R={v:1,id:Date.now(),kind,build:BUILD,t0:new Date().toISOString(),phase:'live',opts:opts||{},dev:/(^#|&)(dev|qa)(&|$)/.test(location.hash||''),power,fp0,snap:g77OtState(),asv0,boot0:G77_OT.boot,snapKB:Math.round(raw.length/1024),
+  env:{ua:navigator.userAgent,viewport:innerWidth+'×'+innerHeight,dpr,screen:screen.width+'×'+screen.height,gpu:perfGpuInfo(),cores:navigator.hardwareConcurrency||null,memGB:navigator.deviceMemory||null},
+  res:{seg:{},ui:{},save:null,hidden:null,mem:[Object.assign({k:'start',label:'התחלה'},g77OtMem())],bench:{},long:null},errors:[],stages:[],sleep:[],wake:g77WakeText()};
+ G77_OT.run=R;g77OtStore(R);g77OtWall(true);PERF.busy=true;perfFrameHook(true);const t0=performance.now();
+ try{const S=kind==='all'?[['route','(א) מסלול שחקן',g77OtRoute],['ui','(ב) הממשק',g77OtUi],['save','(ג) שמירה וטעינה',g77OtSaveT],['hidden','(ו) חלון מוסתר',g77OtHidden]]:[['long','ריצה ארוכה — 60 דקות',g77OtLong]];
+  for(const [k,l,fn] of S){if(R.abort)break;await g77OtStage(R,k,l,fn)}}
+ finally{PERF.busy=false;g77OtCleanLive()}
+ R.liveS=Math.round((performance.now()-t0)/1000);R.wake=g77WakeText();
+ if(kind==='all'&&!R.abort){R.phase='bench';g77OtStore(R);g77OtSay('עובר ל-Benchmark — המשחק נטען מחדש לבד (לא לגעת)');await perfWait(1500);try{localStorage.setItem('turbo_city_bench_req',String(Date.now()))}catch(e){}location.hash=g77OtBenchHash('normal',R);location.reload();return}
+ R.phase='restore';g77OtStore(R);g77OtSay('חוזר למצב שלפני הבדיקה (טעינה מחדש)…');await perfWait(1200);location.reload()}
+
+function g77OtBenchPack(r){const scn={};for(const [k,v] of Object.entries(r.scenarios||{}))scn[k]={fps:v.fps,p95:v.frameMs.p95,p99:v.frameMs.p99,o50:v.over50,o100:v.over100,max:v.frameMs.max,ops:v.ops?v.ops.avg:null,inval:v.invalid||null,re:v.retried||null,gd:v.gd||null};    
+ let text='';try{text=perfReportText(r)}catch(e){}return{scn,text:text.slice(0,20000),memory:r.memory||null,wake:g77WakeText(),totalS:r.totalS,mode:r.mode}}
+function g77OtBenchDone(r){const R=g77OtLoad();if(!R||R.phase!=='bench')return;R.res.bench[PERF_MODE
