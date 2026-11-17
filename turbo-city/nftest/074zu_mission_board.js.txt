@@ -1,0 +1,219 @@
+/* ===== 17.11 · MBOARD — לוח המשימות (D‑693): ספירה אחת להודעות, לכרטיסים, לסמנים ולניווט. הציור: deliver/2026-11-17/missions/Missions_board_plan.html.
+   מצאתי (כלל 19): סיפורי האזורים (038a: S9STORY) מתחילים לבד לפי השעה — סיפור כל 5 דקות משחק, בלי תקרה (הודעה + יומן + ניווט, בלי "קבל");
+   המפות (074zn: MMIS) מציירות כל סיפור וכל עבודה זמינים — עשרות נקודות; ההודעות (055) בלי כפתורים; הסיפור (074ze) — משימה אחת בכל פעם.
+   כאן (מעל הקיים, כלל 19א — בלי מנוע חדש לסיפורים או לעבודות):
+   · משימות צד פעילות על המפה — לפחות 4, לכל היותר 6: סיפורי האזורים (S9STORY) והעבודות (MISSION_DEFS). פחות מ-4 → מיד חדשה, רק בשטח הפתוח
+     (TCSTORY.locked / d5MissionHidden), קרובה לשחקן, מאזור ואיש קשר אחרים. בין 4 ל-6 — הצעה אחת לכל היותר שממתינה; הצעה שלא התקבלה — לא פעילה
+     (בלי סמן, בלי ניווט, לא נספרת). מה שהשחקן מתחיל בעצמו — נכנס ללוח (וכשמלא — יוצאת אחת שעוד לא התחילה).
+   · משימות סיפור פעילות — 1 עד 3: הקבוצות (GROUPS) — 2–3 משימות של פרק פתוחות יחד בכל סדר (המנוע — 074ze: openMission / runBg); בהמתנה — המשימה הבאה בכרטיס.
+   · לכל משימה פעילה: הודעה אחת מאיש הקשר (עם קבל / נווט / התקשר / אחר כך בשרשור), כרטיס קופץ אחד, שורה ביומן, סמן במפות, ויעד ניווט — מאותו מצב
+     (PlayerProfile.story.board, נשמר עם הסיפור — בלי מפתח חדש בשמירה).
+   · רק במשחק אמיתי (לא ב-#dev / #qa / #bench / webdriver), כמו הסיפור; בבדיקות — MBOARD.force(true). בלי ציור בכל פריים: פעם בשנייה. ===== */
+var MBOARD=(function(){
+ const LIM={storyMin:1,storyMax:3,sideMin:4,sideMax:6,offerMax:1};
+ const T={offerGap:120,offerLife:180,dropCool:480,evictCool:120,cardSec:16,startR:110};   /* game minutes (a game day = 48 real minutes: an offer at most every 4 real minutes); the card — real seconds; the start of a job — px */
+ const E={err:null,errs:0,ticks:0,force:null,qa:0,card:null,cardQ:[],cardT:0,el:null,ms:0,msMax:0,log:[],sup:null,jobsDone:[],prompt:{},R:null,Rt:0,groups:0,parked:0};
+ const err=(k,e)=>{E.errs++;if(!E.err)E.err=k+': '+String(e&&e.stack||e).slice(0,300)};
+ const log=(k,v)=>{E.log.push(k+' '+v);if(E.log.length>60)E.log.shift()};
+ /* ---------- the groups of the story (D‑693: "משימת משחק דורשת לבצע 2 או 3 משימות כשבהם לא משנה הסדר") — only "after" changes; the chapters stay as they are ---------- */
+ const GROUPS=[{after:'1-2',open:['1-3','1-4','1-5'],then:'1-6'},{after:'2-1',open:['2-2','2-3'],then:'2-4'},{after:'2-4',open:['2-5','2-6'],then:'2-7'},
+  {after:'3-1',open:['3-2','3-3','3-4'],then:'3-5'},{after:'4-1',open:['4-2','4-3'],then:'4-4'},{after:'4-4',open:['4-5','4-6'],then:'4-7'}];
+ const SD=()=>{try{return TCSTORY.D}catch(e){return null}};
+ function mis(id){const D=SD();if(!D)return null;for(const c of D.chapters||[])for(const m of c.missions||[])if(m.id===id)return m;return null}
+ try{for(const g of GROUPS){const ms=g.open.map(mis),t=mis(g.then);if(!t||!t.start||ms.some(m=>!m||!m.start))continue;for(const m of ms)m.start.after=g.after;t.start.after=g.open.slice();E.groups++}}catch(e){err('groups',e)}   /* the same start objects as the engine's (MI is a shallow copy) */
+ /* ---------- small helpers ---------- */
+ function gm(){try{const c=gameClock();return(c.day-1)*1440+c.min}catch(e){return 0}}
+ function real(){try{return !(/(^#|&)(dev|qa|bench|noauto|seq)(&|$)/.test(location.hash||'')||window.__TC_BENCH||navigator.webdriver)}catch(e){return false}}
+ function active(){return E.force!=null?!!E.force:real()}
+ function reg(){const t=performance.now();if(!E.R||t-E.Rt>4000){try{E.R=navPoiRegistry()}catch(e){E.R={}}E.Rt=t}return E.R}
+ const esc=t=>{try{return g77StEsc(t)}catch(e){return String(t)}};
+ const quiet=()=>!!E.qa;
+ function bR(){try{const s=PlayerProfile.story;const b=s&&s.board;return b&&typeof b==='object'&&b.v===1&&Array.isArray(b.side)?b:null}catch(e){return null}}   /* read only (the wrappers — a check of another system must not leave a trace) */
+ function B(){const s=g77St();let b=s.board;if(!b||typeof b!=='object'||b.v!==1)b=s.board={v:1,side:[],offer:null,drop:{},n:{fill:0,offer:0,done:0,evict:0,player:0,acc:0},t:gm()};   /* the first offer — not together with the first 4 */
+  if(!Array.isArray(b.side))b.side=[];if(!b.drop||typeof b.drop!=='object')b.drop={};if(!b.n||typeof b.n!=='object')b.n={};return b}
+ const has=(b,k)=>!!(b&&b.side.some(q=>q.key===k));
+ function storySteps(){if(E.ss)return E.ss;const z=new Set(),j=new Set();try{for(const c of SD().chapters||[])for(const m of c.missions||[])for(const s of m.steps||[]){if(s.area)z.add(s.area);if(s.job)j.add(s.job)}}catch(e){}return E.ss={z,j}}
+ function zsJob(jid){try{const D=typeof ZSTORY_D!=='undefined'?ZSTORY_D:null;if(!D)return false;for(const [id,S] of Object.entries(D.stories||{}))if((S.steps||[]).some(s=>s.job===jid||s.startJob===jid)&&(S9STORY.step(id)||0)>0&&!S9STORY.done(id))return true}catch(e){}return false}   /* a job that is a step of a story of a zone that runs — the story is the mission (not twice) */
+ function locked(k,id){try{return TCSTORY.locked(k,id)}catch(e){return null}}
+ function chunkOf(p){try{return p.chunk&&/^[A-H][0-9]$/.test(p.chunk)?p.chunk:currentChunkId(p.x,p.y)}catch(e){return''}}
+ /* ---------- what a mission on the board is (its place now, who sends, the text) ---------- */
+ function zInfo(id){const S=S9STORY.ST[id];if(!S)return null;const R=reg(),n=S9STORY.step(id)||0,st=n>0?S.steps[Math.min(S.steps.length-1,n-1)]:null;let poi=(st&&st.poi&&R[st.poi])?st.poi:(R[S.start]?S.start:null);
+  if(!poi&&st&&st.drive){const best=Object.keys(R).find(k=>R[k]&&Math.hypot(R[k].x-st.drive[0],R[k].y-st.drive[1])<(st.drive[2]||90));if(best)poi=best}
+  const p=poi?R[poi]:null;return{key:'z:'+id,kind:'z',id,name:S.name,who:(S.intro&&S.intro[0])||'pl-city',text:(S.intro&&S.intro[1])||'',zone:S.zone,reward:S.reward||0,poi,x:p?p.x:NaN,y:p?p.y:NaN,label:p?(p.label||poi):'',run:n>0,done:!!S9STORY.done(id),hours:S.hours0||S.hours||null,steps:S.steps.length,step:n}}
+ function jInfo(id){const d=MISSION_DEFS[id];if(!d)return null;const R=reg();let poi=null;for(const q of [d.start,d.pickup,...(d.stops||[]),d.dropoff])if(q&&R[q]){poi=q;break}
+  let p=poi?R[poi]:null;if(!p&&d.type==='shift'){try{const j=ACT_JOB_LIST.find(q=>q.id===id),a=j&&actPoiXY(j.start);if(a&&R[a.id]){poi=a.id;p=R[a.id]}}catch(e){}}
+  const A=PlayerProfile.activeMission,txt=[d.pickupLabel,d.dropoffLabel].filter(Boolean).join(' ← ')||(d.stops&&d.stops.length?d.stops.length+' תחנות':'');
+  return{key:'j:'+id,kind:'j',id,name:d.name||id,who:'pl-city',text:txt,zone:p?chunkOf(p):'',reward:d.reward||0,poi,x:p?p.x:NaN,y:p?p.y:NaN,label:p?(p.label||poi):'',run:!!(A&&A.id===id),done:false,walk:!!d.walk,type:d.type||''}}
+ function sInfo(id){const q=storyOpen().find(x=>x.id===id);if(!q)return null;const R=reg(),p=q.at?R[q.at]:null,M0=mis(id)||{};return{key:'s:'+id,kind:'s',id,name:q.name,who:q.giver||'pl-city',text:M0.text||q.text,step:q.step+1,steps:q.steps,now:q.text,zone:p?chunkOf(p):'',reward:M0.reward||0,poi:p?q.at:null,x:p?p.x:NaN,y:p?p.y:NaN,label:p?(p.label||q.at):'',run:true,done:false,focus:q.focus}}
+ function info(key){const i=String(key).indexOf(':'),k=String(key).slice(0,i),id=String(key).slice(i+1);try{return k==='z'?zInfo(id):k==='j'?jInfo(id):k==='s'?sInfo(id):null}catch(e){err('info '+key,e);return null}}
+ /* ---------- who may come to the board: the open area of the player, not a step of the main story, has a real place ---------- */
+ function zoneOk(id){const S=S9STORY.ST[id];if(!S||S9STORY.done(id)||(S9STORY.step(id)||0)>0||storySteps().z.has(id))return false;if(S.hours&&S.hours[0]===0&&S.hours[1]===0)return false;   /* only from its card (BS-ST-FIRST) */
+  if(locked('area',id))return false;return !!reg()[S.start]}
+ function jobOk(id,again){const d=MISSION_DEFS[id];if(!d||d.retired||/^M-ST-/.test(id)||storySteps().j.has(id))return false;try{if(typeof d5MissionHidden==='function'&&d5MissionHidden(id))return false}catch(e){return false}   /* the story wraps it with its lock (074ze) */
+  if(d.license&&!licenseOwned(d.license))return false;const A=PlayerProfile.activeMission;if(A&&A.id===id)return false;if(!again&&(PlayerProfile.progression.completedMissions||[]).includes(id)&&d.repeatable!==true)return false;   /* again — a job that was done comes back when the open area has nothing new (the floor of 4 holds all the game) */
+  if(d.type==='shift'){try{const j=ACT_JOB_LIST.find(q=>q.id===id);if(j&&!actJobStatus(j).ok)return false}catch(e){}}
+  const I=jInfo(id);return I&&I.poi?I:false}   /* the info itself (the pool does not build it twice) */
+ function validNew(key){const i=key.indexOf(':'),k=key.slice(0,i),id=key.slice(i+1);return k==='z'?zoneOk(id):k==='j'?jobOk(id,true):false}
+ function pool(b,now,need){const out=[],a=(()=>{try{return playerActor()}catch(e){return{x:0,y:0}}})(),zs=new Set(),ws=new Set();let nz=0,nj=0;
+  for(const q of b.side){const I=info(q.key);if(I){zs.add(I.zone);ws.add(I.who)}if(q.kind==='z')nz++;else nj++}
+  const h=(()=>{try{const c=gameClock();return c.hour+c.minute/60}catch(e){return 12}})();
+  const consider=(key,I)=>{if(!I||has(b,key)||(b.offer&&b.offer.key===key)||(b.drop[key]||0)>now||!isFinite(I.x))return;let s=Math.hypot(I.x-a.x,I.y-a.y)/1000;if(zs.has(I.zone))s+=2;if(I.who!=='pl-city'&&ws.has(I.who))s+=1.5;
+   if(I.kind==='z'&&I.hours){const d=((I.hours[0]-h)%24+24)%24;if(d<3)s-=1.5}if(I.kind==='z'&&nz>nj)s+=1;if(I.kind==='j'&&nj>nz)s+=1;s+=Math.random()*.3;out.push({key,kind:I.kind,id:I.id,s})};
+  const tn=performance.now();if(!E.pm||tn-E.pm.t>8000||E.qa){E.pm={t:tn,z:Object.keys(S9STORY.ST).filter(zoneOk),j:Object.keys(MISSION_DEFS).filter(id=>!!jobOk(id))}}   /* who may come — at most once in 8 s (the gates of the locks are not cheap) */
+  for(const id of E.pm.z)if(zoneOk(id))consider('z:'+id,zInfo(id));
+  for(const id of E.pm.j){const I=jobOk(id);if(I)consider('j:'+id,I)}
+  if(need&&out.length<need){const cm=PlayerProfile.progression.completedMissions||[];for(const id of cm){const I=MISSION_DEFS[id]&&!out.some(q=>q.key==='j:'+id)&&jobOk(id,true);if(!I)continue;consider('j:'+id,I);const q=out.find(x=>x.key==='j:'+id);if(q){q.s+=5;q.again=1}}}
+  return out.sort((x,y)=>x.s-y.s)}
+ function evictable(q){const I=info(q.key);return !q.acc&&!(I&&I.run)}
+ function put(b,it){b.side.push(it);const now=gm();while(b.side.length>LIM.sideMax){let i=-1,t=1e18;b.side.forEach((q,k)=>{if(q!==it&&evictable(q)&&(q.at||0)<t){t=q.at||0;i=k}});if(i<0)break;const q=b.side.splice(i,1)[0];b.drop[q.key]=now+T.evictCool;b.n.evict=(b.n.evict||0)+1;log('evict',q.key)}}
+ function running(b){return b.side.filter(q=>{const I=info(q.key);return I&&I.run}).length}
+ /* ---------- the message, the card (once), the call ---------- */
+ function opening(){try{return TCSTORY.mode()==='story'&&(TCSTORY.state()||{}).ch==='O'}catch(e){return false}}   /* the opening (the first guided mission) — the side missions are on the map and in the journal, without a message popping up */
+ function msgText(I,why){const where=(I.label?I.label:'')+(I.zone?' ('+I.zone+')':''),pay=I.reward?' · '+g77Coins(I.reward):'';
+  if(I.kind==='z')return(why==='offer'?'הצעה: ':'')+I.text+' · "'+I.name+'" — מתחילים ב'+where+pay+'. ביומן (T) — קבל / נווט.';
+  return(why==='offer'?'הצעה — ':'עבודה פנויה על המפה — ')+I.name+' · מתחילים ב'+where+pay+'. ביומן (T) — קבל / נווט.'}
+ function announce(c,why){const I=info(c.key);if(!I)return;let m=null;const q=quiet()||opening();try{m=g77MsgIn(I.who,msgText(I,why),{silent:true})}catch(e){err('msg',e)}if(m){m.mb=c.key;m.mbw=why}
+  if(!q){E.cardQ=E.cardQ.filter(x=>x.key!==c.key);E.cardQ.push({key:c.key,why})}}
+ /* what the player started himself — its message too (the same four channels): a story of a zone — its first message (already sent by the story) gets the buttons; a job — one short message, quietly */
+ function mine(key){const I=info(key);if(!I)return;try{const L=g77St().msgs;if(I.kind==='z'){const S=S9STORY.ST[I.id],w=S&&S.intro;for(let i=L.length-1;i>=0;i--){const m=L[i];if(w&&m.who===w[0]&&m.text===g77MsgClean(w[1])&&!m.mb){m.mb=key;m.mbw='player';return}}}
+   if(L.some(m=>m.mb===key))return;const m=g77MsgIn(I.who,(I.kind==='z'?'הסיפור "'+I.name+'" התחיל':'העבודה "'+I.name+'" התחילה')+' · על הלוח — ביומן (T).',{silent:true});if(m){m.mb=key;m.mbw='player'}}catch(e){err('mine',e)}}
+ function callDlg(I){const id='mb-call-'+I.key;try{g77DlgAdd(id,{who:I.who,start:'a',rows:{a:{who:I.who,text:(I.kind==='z'||I.kind==='s'?I.text+' ':'יש עבודה: '+I.name+'. ')+'המקום: '+(I.label||'')+(I.zone?' ב-'+I.zone:'')+(I.reward?'. התשלום — '+g77Coins(I.reward):'')+'.',
+   choices:[{t:I.kind==='s'?'אני בדרך':'קבל — אני בדרך',set:{'mb:acc':I.key},end:true},{t:'אחר כך',end:true}]}}})}catch(e){err('dlg',e)}return id}
+ function call(key){const I=info(key);if(!I)return false;const id=callDlg(I);try{g77CallIn(I.who,id,{voice:msgText(I,'fill')})}catch(e){err('call',e);return false}return true}
+ function navTo(I){if(!I||!I.poi)return false;try{if(PlayerProfile.activeMission)return toast('במשימה פעילה הניווט נעול ליעד המשימה'),false;return setNavigationTarget(I.poi,{silent:quiet()})===true}catch(e){err('nav',e);return false}}
+ /* the buttons: קבל (start / go there), נווט, התקשר, אחר כך — from the card, the journal, the message, the call */
+ function act(k,key){const b=B(),now=gm(),isOffer=!!(b.offer&&b.offer.key===key);let it=b.side.find(q=>q.key===key);
+  if(String(key).slice(0,2)==='s:'){const id=String(key).slice(2);if(k==='call'){closeCard(key);return call(key)}if(k!=='later'){try{TCSTORY.focus(id)}catch(e){err('focus',e)}const I=sInfo(id);if(I&&I.poi&&!(State.navigation&&State.navigation.targetId===I.poi))navTo(I)}closeCard(key);try{if(State.phoneOpen)renderPhone()}catch(e){}return true}   /* a mission of the story: always active — "קבל" / "נווט" = to it now */
+  if(k==='later'){if(isOffer){b.drop[key]=now+T.dropCool;b.offer=null}closeCard(key);return true}
+  if(k==='call'){closeCard(key);return call(key)}
+  if(!it&&!isOffer){if(!quiet())toast('המשימה כבר לא על הלוח');closeCard(key);return false}
+  if(!it){if(b.side.length>=LIM.sideMax&&!b.side.some(evictable)){if(!quiet())toast('יש כבר '+LIM.sideMax+' משימות צד בביצוע — סיים אחת קודם');return false}const o=b.offer;b.offer=null;it={key,kind:o.kind,id:o.id,at:now,acc:0,src:'offer'};put(b,it)}
+  if(!it.acc){it.acc=1;b.n.acc=(b.n.acc||0)+1}const I=info(key);
+  if(k==='acc'&&it.kind==='z'&&(S9STORY.step(it.id)||0)<1){const S=S9STORY.ST[it.id];E.sup=S&&S.intro?[S.intro[0],S.intro[1]]:null;try{S9STORY.start(it.id,quiet())}catch(e){err('start',e)}finally{E.sup=null}}
+  else if(k==='go'&&it.kind==='j'){try{startMission(it.id)}catch(e){err('job',e)}}
+  else navTo(I);
+  closeCard(key);try{if(State.phoneOpen)renderPhone()}catch(e){}return true}
+ /* ---------- the tick ---------- */
+ function step(){const b=B(),now=gm(),ss=storySteps(),F=g77St().flags;
+  /* (1) out: done, or not valid any more (a lock, a licence, a job that is gone) */
+  b.side=b.side.filter(q=>{const I=info(q.key);if(!I)return false;if(q.kind==='z'){if(I.done){b.n.done=(b.n.done||0)+1;log('done',q.key);return false}return I.run||zoneOk(q.id)}
+   if(E.jobsDone.includes(q.id)){b.n.done=(b.n.done||0)+1;b.drop[q.key]=now+T.dropCool;log('done',q.key);return false}return I.run||jobOk(q.id,true)});E.jobsDone.length=0;
+  /* (2) in: what the player started himself (F at the place / the list of the jobs) */
+  for(const id of Object.keys(S9STORY.ST)){if(ss.z.has(id)||S9STORY.done(id)||!((S9STORY.step(id)||0)>0)||has(b,'z:'+id))continue;put(b,{key:'z:'+id,kind:'z',id,at:now,acc:1,src:'player'});b.n.player=(b.n.player||0)+1;mine('z:'+id)}
+  const A=PlayerProfile.activeMission;if(A&&A.id&&!A.qa&&MISSION_DEFS[A.id]&&!/^M-ST-/.test(A.id)&&!ss.j.has(A.id)&&!has(b,'j:'+A.id)&&!zsJob(A.id)){put(b,{key:'j:'+A.id,kind:'j',id:A.id,at:now,acc:1,src:'player'});b.n.player=(b.n.player||0)+1;mine('j:'+A.id)}
+  /* (2א) an old save with more than 6 stories that started by their hour: the ones that only got their first message go back (the progress of the others stays) */
+  if(running(b)>LIM.sideMax){for(const q of b.side.slice().reverse()){if(running(b)<=LIM.sideMax)break;if(q.kind!=='z'||(S9STORY.step(q.id)||0)!==1||q.src!=='player')continue;F['s9:'+q.id]=0;try{const s=g77St();s.journal=s.journal.filter(j=>j.id!==q.id)}catch(e){}
+   b.side=b.side.filter(x=>x!==q);b.drop[q.key]=now+T.evictCool;E.parked++;log('park',q.key)}}
+  /* (3) the floor: fewer than 4 → new ones now */
+  if(b.side.length<LIM.sideMin){const C=pool(b,now,LIM.sideMin-b.side.length).slice(0,LIM.sideMin-b.side.length);for(const c of C){put(b,{key:c.key,kind:c.kind,id:c.id,at:now,acc:0,src:'fill'});b.n.fill=(b.n.fill||0)+1;announce(c,'fill')}}
+  /* (4) one offer at most, when there is room (5–6) */
+  if(b.offer&&(has(b,b.offer.key)||now-b.offer.at>T.offerLife||!validNew(b.offer.key))){if(!has(b,b.offer.key))b.drop[b.offer.key]=now+T.dropCool;b.offer=null}
+  if(!b.offer&&b.side.length>=LIM.sideMin&&b.side.length<LIM.sideMax&&now-(b.t||-1e9)>=T.offerGap){const c=pool(b,now)[0];b.t=now;if(c){b.offer={key:c.key,kind:c.kind,id:c.id,at:now};b.n.offer=(b.n.offer||0)+1;announce(c,'offer')}}
+  /* (5) "קבל" from a call */
+  if(F['mb:acc']){const k=F['mb:acc'];delete F['mb:acc'];act('acc',k)}
+  /* (5א) a mission of the story that opened now — its card (once); the story counts 1–3 (074ze: MAXOPEN) */
+  {const so=storyOpen(),seen=b.ss||(b.ss={});for(const q of so)if(!seen[q.id]){seen[q.id]=now;if(!quiet()){E.cardQ=E.cardQ.filter(x=>x.key!=='s:'+q.id);E.cardQ.push({key:'s:'+q.id,why:'story'})}}}
+  /* (6) an accepted job: at its start — the card "להתחיל" (startMission, like the list) */
+  if(!quiet()&&!PlayerProfile.activeMission){let a=null;try{a=playerActor()}catch(e){}for(const q of b.side){if(q.kind!=='j'||!q.acc)continue;const I=info(q.key);if(!I||!isFinite(I.x)||!a)continue;const d=Math.hypot(a.x-I.x,a.y-I.y);
+   if(d<T.startR){if(!E.prompt[q.key]){E.prompt[q.key]=1;E.cardQ=E.cardQ.filter(x=>x.key!==q.key);E.cardQ.unshift({key:q.key,why:'start'})}}else if(d>T.startR*1.6)delete E.prompt[q.key]}}
+  showCard()}
+ function tick(){if(!active())return;try{if(typeof TCO!=='undefined'&&(TCO.mode==='boot'||TCO.mode==='open'))return}catch(e){}   /* the opening screens (in #dev / without the opening — 'off') */const t0=performance.now();E.ticks++;try{step()}catch(e){err('tick',e)}const d=performance.now()-t0;E.ms+=d;if(d>E.msMax)E.msMax=d;
+  if(E.card&&E.el){const hide=uiBusy();E.el.style.display=hide?'none':'block';if(hide)E.cardT+=1000}   /* the phone / the map / a dialog over it — the card waits under them */
+  if(E.card&&performance.now()>E.cardT)closeCard(E.card.key)}
+ setInterval(tick,1000);
+ /* ---------- the counts (the one count of everything) ---------- */
+ function storyOpen(){try{return TCSTORY.open()}catch(e){return[]}}
+ function storyNext(){try{return TCSTORY.next()}catch(e){return null}}
+ function counts(){const b=bR();const so=storyOpen(),nx=so.length?null:storyNext();return{story:so.length||(nx?1:0),storyOpen:so.length,storyWait:!!nx,side:b?b.side.length:0,offer:b&&b.offer?1:0,running:b?running(b):0,acc:b?b.side.filter(q=>q.acc).length:0}}
+ /* ---------- the map (074zn asks here): only what is on the board, the story, the job that runs ---------- */
+ function mapOk(kind,id){if(!active())return true;const b=bR();if(!b)return true;if(kind==='story'||kind==='trial')return true;
+  if(kind==='zone')return has(b,'z:'+id);if(kind==='friend')return has(b,'z:'+id)||storySteps().z.has(id);   /* a story of a zone that is a step of the main story — only while it runs */
+  if(kind==='side'||kind==='job'){const A=PlayerProfile.activeMission;return !!(A&&A.id===id)||has(b,'j:'+id)}return true}
+ /* ---------- the card that pops up (one at a time) ---------- */
+ function cardEl(){if(E.el)return E.el;try{g77MsgCss()}catch(e){}   /* the avatar of the contact (the same as in the messages) */const st=document.createElement('style');st.textContent='body.tcCutOn #tcMbCard{visibility:hidden!important}#tcMbCard{position:fixed;right:18px;top:150px;z-index:55;width:min(350px,calc(100vw - 32px));direction:rtl;font:14px/1.5 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif;color:#eef5fa;background:rgba(10,32,24,.95);border:2px solid #4fdc78;border-radius:14px;box-shadow:0 10px 30px #000a;padding:11px 13px;display:none;animation:tcMbIn .35s ease-out}'+
+  '@keyframes tcMbIn{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}#tcMbCard.of{border-color:#ffd36a;background:rgba(36,30,10,.95)}#tcMbCard.go{border-color:#6cb6ff}#tcMbCard .hd{display:flex;align-items:center;gap:10px}#tcMbCard .hd b{display:block}#tcMbCard small{color:#9fc7b6}#tcMbCard .tx{margin:7px 0 3px}'+
+  '#tcMbCard .bt{display:flex;gap:6px;margin-top:8px}#tcMbCard button{all:unset;cursor:pointer;flex:1;text-align:center;padding:7px 0;border-radius:9px;font-weight:700;color:#fff;background:#3a4a58}#tcMbCard button.a{background:#2f8f6b}#tcMbCard button.n{background:#2f6f9f}#tcMbCard button.c{background:#5a4a9f}';
+  document.head.appendChild(st);const d=document.createElement('div');d.id='tcMbCard';d.addEventListener('click',e=>{const x=e.target.closest('[data-mb]');if(!x)return;const [k,key]=x.dataset.mb.split('|');act(k,key);try{focusGame()}catch(q){}});document.body.appendChild(d);E.el=d;return d}
+ function uiBusy(){try{if(document.body.classList.contains('tcCutOn')||(typeof TCCUT!=='undefined'&&TCCUT.playing()))return true}catch(e){}   /* a scene of the story (074zu_cutscenes) — the card waits under it */
+  try{if(g77S().open||State.mapOpen||State.phoneOpen||(typeof TCSHOW!=='undefined'&&TCSHOW.on)||g77Sp().ring)return true;if(typeof TCO!=='undefined'&&(TCO.ui||TCO.mode==='boot'||TCO.mode==='open'))return true}catch(e){}return false}
+ function btns(key,I,why,cls){if(I&&I.kind==='s')return(I.focus?'':'<button class="a" data-mb="acc|'+esc(key)+'">לעבור אליה</button>')+(I.poi?'<button class="n" data-mb="nav|'+esc(key)+'">נווט</button>':'')+'<button class="c" data-mb="call|'+esc(key)+'">התקשר</button>'+(cls==='card'?'<button data-mb="later|'+esc(key)+'">אחר כך</button>':'');
+  if(why==='start')return '<button class="a" data-mb="go|'+esc(key)+'">להתחיל עכשיו</button><button data-mb="later|'+esc(key)+'">אחר כך</button>';
+  const b=bR(),it=b&&b.side.find(q=>q.key===key),run=I&&I.run;return(run?'':'<button class="a" data-mb="acc|'+esc(key)+'">'+(it&&it.acc&&I&&I.kind==='j'?'לנווט להתחלה':'קבל')+'</button>')+'<button class="n" data-mb="nav|'+esc(key)+'">נווט</button><button class="c" data-mb="call|'+esc(key)+'">התקשר</button>'+(cls==='card'?'<button data-mb="later|'+esc(key)+'">אחר כך</button>':'')}
+ function line(I){let km='';try{const a=playerActor();if(isFinite(I.x)){const m=Math.hypot(a.x-I.x,a.y-I.y)*WORLD_METERS_PER_PX;km=m<1000?Math.max(10,Math.round(m/10)*10)+' מ׳ ממך':(m/1000).toFixed(1)+' ק"מ ממך'}}catch(e){}return[I.label+(I.zone?' · '+I.zone:''),km,I.kind==='j'?(I.walk?'ברגל':'ברכב'):'סיפור של אזור'].filter(Boolean).join(' · ')}
+ function showCard(){if(E.card||!E.cardQ.length||uiBusy())return;const c=E.cardQ.shift(),b=bR(),I=info(c.key);if(!I||!b||(I.kind!=='s'&&!has(b,c.key)&&!(b.offer&&b.offer.key===c.key)))return;
+  const C=(()=>{try{return g77MsgContact(I.who)}catch(e){return{name:I.who,color:'#2f8f6b'}}})(),n=b.side.length,d=cardEl();
+  const so=storyOpen().length;
+  const head=c.why==='story'?'משימת סיפור · '+so+'/'+LIM.storyMax+(so>1?' (בכל סדר)':''):c.why==='offer'?'הצעה · לא נספרת עד "קבל" ('+n+'/'+LIM.sideMax+')':c.why==='start'?'הגעת · '+(I.kind==='j'?'עבודה':'סיפור'):'משימת צד · '+(b.side.findIndex(q=>q.key===c.key)+1)+'/'+LIM.sideMax;
+  d.className=c.why==='offer'?'of':c.why==='start'||c.why==='story'?'go':'';
+  d.innerHTML='<div class="hd">'+(()=>{try{return g77MsgAv(C)}catch(e){return ''}})()+'<div><b>'+esc(C.name)+' · '+esc(head)+'</b><small>"'+esc(I.name)+'"'+(I.reward?' · '+money(I.reward):'')+'</small></div></div><div class="tx">'+esc(I.kind==='z'?I.text:(I.text||I.name))+'</div><small>'+esc(line(I))+'</small><div class="bt">'+btns(c.key,I,c.why,'card')+'</div>';
+  d.style.display='block';E.card=c;E.cardT=performance.now()+T.cardSec*1000}
+ function closeCard(key){if(!E.card||(key&&E.card.key!==key))return;E.card=null;if(E.el)E.el.style.display='none';setTimeout(()=>{try{showCard()}catch(e){}},1500)}
+ /* ---------- the journal: one card of all that is active (the story 1–3, the side 4–6, the offer) ---------- */
+ function chip(t,k){try{return pchip(t,k)}catch(e){return '['+t+']'}}
+ function jrBoard(){const b=bR();if(!b||!active())return '';const C=counts(),so=storyOpen(),nx=so.length?null:storyNext();let h='';
+  h+='<div class="missionRow" style="display:block"><b>הסיפור · '+C.story+' / '+LIM.storyMax+'</b>';
+  for(const q of so){const I=sInfo(q.id);h+='<div data-mb-row="s:'+esc(q.id)+'"><small>'+(q.focus?'▶ ':'')+esc(q.name)+' — '+esc(q.text)+'</small>'+(I?'<div class="phoneActions">'+btns('s:'+q.id,I,'','jr')+'</div>':'')+'</div>'}
+  if(nx)h+='<div><small>הבאה: '+esc(nx.name)+(nx.why==='delay'?' — מתחילה בעוד '+nx.left+' דק׳ משחק':nx.why==='hours'?' — בשעות שלה':nx.why==='busy'?' — אחרי העבודה / המבחן שעכשיו':'')+'</small></div>';
+  if(!so.length&&!nx)h+='<div><small>'+esc('הפרק הבא — בקרוב')+'</small></div>';h+='</div>';
+  h+='<div class="missionRow" style="display:block"><b>משימות צד על המפה · '+b.side.length+' / '+LIM.sideMax+'</b> <small>(לפחות '+LIM.sideMin+')</small></div>';
+  for(const q of b.side){const I=info(q.key);if(!I)continue;h+='<div class="missionRow" style="display:block" data-mb-row="'+esc(q.key)+'"><b>'+esc(I.name)+'</b> '+chip(I.run?'בביצוע'+(I.steps?' · שלב '+I.step+'/'+I.steps:''):q.acc?'התקבלה':'חדשה',I.run?'ok':q.acc?'ok':'')+'<div><small>'+esc(line(I))+'</small></div><div class="phoneActions">'+btns(q.key,I,'','jr')+'</div></div>'}
+  if(b.offer){const I=info(b.offer.key);if(I)h+='<div class="missionRow" style="display:block"><b>הצעה: '+esc(I.name)+'</b> '+chip('לא נספרת עד "קבל"','')+'<div><small>'+esc(line(I))+'</small></div><div class="phoneActions"><button data-mb="acc|'+esc(b.offer.key)+'">קבל</button><button data-mb="call|'+esc(b.offer.key)+'">התקשר</button><button data-mb="later|'+esc(b.offer.key)+'">אחר כך</button></div></div>'}
+  try{return pcard('המשימות הפעילות',h,'journal')}catch(e){return h}}
+ {const b=g77JrApp;g77JrApp=function(){let h='';try{h=jrBoard()}catch(e){err('jr',e)}return h+b.apply(this,arguments)}}
+ /* the list of the jobs (the catalog — the player chooses): one line of the same count, and which of them are on the board now */
+ {const b=PHONE_VIEWS.missions;if(typeof b==='function')PHONE_VIEWS.missions=function(){const h=b.apply(this,arguments);try{const B0=bR();if(!B0||!active())return h;const on=B0.side.filter(q=>q.kind==='j').map(q=>(info(q.key)||{}).name).filter(Boolean);
+   return pnote('משימות צד פעילות על המפה: '+B0.side.length+' / '+LIM.sideMax+(on.length?' · מהרשימה: '+esc(on.join(' · ')):'')+' — הכרטיסים ביומן. עבודה שמתחילים מכאן נכנסת ללוח.')+h}catch(e){err('list',e);return h}}}
+ {const b=missionCardHtml;missionCardHtml=function(d){let h=b.apply(this,arguments);try{const B0=bR();if(d&&B0&&active()&&has(B0,'j:'+d.id)){h=String(h).replace('<div class="missionRow">','<div class="missionRow" style="box-shadow:inset 0 0 0 2px #4fdc78">').replace('<b>'+d.name+'</b>','<b>'+d.name+' · על הלוח</b>')}}catch(e){err('row',e)}return h}}   /* the row of a job that is on the board */
+ /* ---------- the message thread: the same buttons under the message of the mission ---------- */
+ {const b=g77MsgThread;g77MsgThread=function(k){let h=b.apply(this,arguments);try{const B0=bR();if(!B0||!active())return h;for(const m of g77St().msgs){if(m.who!==k)continue;if(m.mbs&&!m.mb){const I=sInfo(m.mbs);const x=I?'<div class="phoneActions">'+btns('s:'+m.mbs,I,'','jr')+'</div>':'<small>'+esc('המשימה של הסיפור הושלמה')+'</small>';const a='data-msg-id="'+esc(m.id)+'"',i=h.indexOf(a);if(i<0)continue;const j=h.indexOf('</small></div>',i);if(j<0)continue;h=h.slice(0,j+8)+x+h.slice(j+8);continue}
+    if(!m.mb)continue;const on=has(B0,m.mb),of=B0.offer&&B0.offer.key===m.mb;let x='';
+    if(on||of){const I=info(m.mb);x='<div class="phoneActions">'+(of?'<button data-mb="acc|'+esc(m.mb)+'">קבל</button><button data-mb="later|'+esc(m.mb)+'">אחר כך</button>':btns(m.mb,I,'','jr'))+'</div>'}else x='<small>'+esc('המשימה כבר לא על הלוח')+'</small>';
+    const a='data-msg-id="'+esc(m.id)+'"',i=h.indexOf(a);if(i<0)continue;const j=h.indexOf('</small></div>',i);if(j<0)continue;h=h.slice(0,j+8)+x+h.slice(j+8)}}catch(e){err('thread',e)}return h}}
+ document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('#phoneBody [data-mb]');if(!x)return;e.stopPropagation();const [k,key]=x.dataset.mb.split('|');act(k,key);try{renderPhone()}catch(q){}},true);
+ /* ---------- the gates: a story of a zone does not start by its hour (the board brings it); a start when 6 already run — not ---------- */
+ {const b=S9STORY.start;S9STORY.start=function(id,q,auto){if(auto&&active()&&!storySteps().z.has(id)){E.autoBlocked=(E.autoBlocked||0)+1;return false}return b.apply(this,arguments)}}
+ {const b=S9STORY.card;S9STORY.card=function(poiId){let h=b.apply(this,arguments);try{const B0=bR();if(!B0||!active()||B0.side.length<LIM.sideMax||B0.side.some(evictable))return h;
+   h=String(h).replace(/<button data-s9-start="([^"]+)">[^<]*<\/button>/g,(all,id)=>has(B0,'z:'+id)||storySteps().z.has(id)?all:'<small>יש כבר '+LIM.sideMax+' משימות צד בביצוע — כשתסיים אחת, הסיפור הזה מחכה כאן.</small>')}catch(e){err('card',e)}return h}}
+ {const b=startMission;startMission=function(id){try{const B0=bR();if(B0&&active()&&!/^M-ST-/.test(String(id))&&!storySteps().j.has(id)&&!has(B0,'j:'+id)&&B0.side.length>=LIM.sideMax&&!B0.side.some(evictable))return toast('יש כבר '+LIM.sideMax+' משימות צד בביצוע — סיים אחת קודם')}catch(e){err('gate',e)}return b.apply(this,arguments)}}
+ {const b=missionComplete;missionComplete=function(){const A=PlayerProfile.activeMission,id=A&&A.id,r=b.apply(this,arguments);try{if(id&&!PlayerProfile.activeMission)E.jobsDone.push(id)}catch(e){}return r}}
+ {const b=g77MsgIn;g77MsgIn=function(who,text){if(E.sup&&who===E.sup[0]&&String(text)===String(E.sup[1])){E.sup=null;return null}const r=b.apply(this,arguments);try{const sb=TCSTORY.E.beg;if(r&&sb)r.mbs=sb}catch(e){}return r}}   /* the first message of a story — already sent by the board */
+ /* ---------- the check (roadAudit → mission_board): fill, the four channels, done → a new one, the offer, "later", the ceiling, the player's own start, a save and a load — without a trace ---------- */
+ function qa(){const keep=cloneJson(g77St()),k={f:E.force,nav:State.navigation,am:PlayerProfile.activeMission,cm:(PlayerProfile.progression.completedMissions||[]).slice(),cq:E.cardQ.slice(),card:E.card,pr:E.prompt,R:E.R,Rt:E.Rt},o={why:[]},t0=performance.now();const chk=(ok,w)=>{if(!ok)o.why.push(w);return ok};
+  const four=(b,w)=>{const jh=jrBoard(),msgs=g77St().msgs;for(const q of b.side){const I=info(q.key);chk(!!(I&&I.poi&&reg()[I.poi]),w+':nav '+q.key);chk(msgs.some(m=>m.mb===q.key),w+':msg '+q.key);chk(jh.indexOf('data-mb-row="'+q.key+'"')>=0,w+':card '+q.key);chk(mapOk(q.kind==='z'?(I&&I.run?'friend':'zone'):'side',q.id),w+':map '+q.key)}};
+  try{E.force=true;E.qa=1;E.cardQ=[];E.card=null;E.R=null;PlayerProfile.activeMission=null;const s=g77St();delete s.board;
+   step();let b=B();o.fill=b.side.length;chk(b.side.length===LIM.sideMin,'fill '+b.side.length);four(b,'fill');chk(!b.offer,'no-offer-yet');
+   chk(b.side.every(q=>{const I=info(q.key);return I&&!locked(I.kind==='z'?'area':'job',I.id)}),'open-area');
+   chk(new Set(b.side.map(q=>(info(q.key)||{}).zone)).size>=Math.min(3,b.side.length),'spread');
+   /* the map — only the board (no marker of a zone story / a job that is not on it) */
+   try{const MS=window.__TC_MMIS;if(MS){MS.tick(true);const bad=MS.S.list.filter(m=>(m.kind==='zone'||m.kind==='friend'||m.kind==='side'||m.kind==='job')&&!mapOk(m.kind,m.id));chk(!bad.length,'markers '+bad.length);o.markers=MS.S.list.filter(m=>m.kind!=='story').length}}catch(e){o.why.push('mmis '+e)}
+   /* done → a new one at once */
+   const z=b.side.find(q=>q.kind==='z');if(z){s.flags['s9:'+z.id+':done']=1;step();b=B();chk(b.side.length===LIM.sideMin&&!has(b,z.key),'refill');o.refill=b.side.length}
+   const j=b.side.find(q=>q.kind==='j');if(j){E.jobsDone.push(j.id);PlayerProfile.progression.completedMissions.push(j.id);step();b=B();chk(b.side.length===LIM.sideMin&&!has(b,j.key),'refill-job')}
+   /* the offer: not counted, no marker; קבל → 5 */
+   b.t=-1e9;step();b=B();chk(!!b.offer&&b.side.length===LIM.sideMin,'offer');const of=b.offer;if(of){chk(!mapOk(of.kind==='z'?'zone':'side',of.id),'offer-marker');chk(g77St().msgs.some(m=>m.mb===of.key&&m.mbw==='offer'),'offer-msg');act('acc',of.key);b=B();chk(b.side.length===LIM.sideMin+1&&has(b,of.key)&&!b.offer,'offer-acc');four(b,'acc')}
+   /* אחר כך → the offer goes, and does not come back soon */
+   b.t=-1e9;step();b=B();const of2=b.offer;chk(!!of2,'offer2');if(of2){act('later',of2.key);b=B();chk(!b.offer&&!has(b,of2.key)&&(b.drop[of2.key]||0)>gm(),'later')}
+   /* up to 6, and no 7th (offers stop) */
+   for(let i=0;i<4;i++){b.t=-1e9;step();b=B();if(b.offer)act('acc',b.offer.key)}b=B();chk(b.side.length===LIM.sideMax,'max '+b.side.length);b.t=-1e9;step();b=B();chk(!b.offer&&b.side.length===LIM.sideMax,'cap');o.max=b.side.length;
+   /* the player starts a story of a zone himself when the board is full: one that did not start goes out */
+   const cand=Object.keys(S9STORY.ST).find(id=>zoneOk(id)&&!has(b,'z:'+id));if(cand){s.flags['s9:'+cand]=1;step();b=B();chk(has(b,'z:'+cand)&&b.side.length===LIM.sideMax,'player-start '+b.side.length);chk(g77St().msgs.some(m=>m.mb==='z:'+cand),'player-msg');s.flags['s9:'+cand]=0}
+   /* the hour does not start a story by itself */
+   const cz=Object.keys(S9STORY.ST).find(id=>zoneOk(id)&&!has(b,'z:'+id));if(cz){const r=S9STORY.start(cz,true,true);chk(r===false&&!(S9STORY.step(cz)>0),'auto-blocked')}
+   /* an old save: many stories that started by their hour (only the first message) → back to waiting, at most 6 run */
+   {const many=Object.keys(S9STORY.ST).filter(id=>zoneOk(id)).slice(0,10);for(const id of many)s.flags['s9:'+id]=1;delete s.board;step();b=B();o.parkRun=running(b);chk(running(b)<=LIM.sideMax&&b.side.length<=LIM.sideMax,'old-save '+running(b)+'/'+b.side.length);for(const id of many)s.flags['s9:'+id]=0;delete s.board;step()}
+   /* the counts of the story: 1–3 (the groups) */
+   chk(E.groups===GROUPS.length,'groups '+E.groups);
+   /* a save and a load */
+   const a=JSON.stringify(B().side.map(q=>q.key)),snap=cloneJson(collectSaveState().story);g77StRestore(snap);chk(JSON.stringify(B().side.map(q=>q.key))===a,'save');
+   /* a scene of the story (074zu_cutscenes, body.tcCutOn): a card that is up hides at once, and a new one waits */
+   if(!uiBusy()){const bd=document.body.classList,had=bd.contains('tcCutOn'),k0=B().side[0].key;E.card=null;E.cardQ=[{key:k0,why:'side'}];showCard();chk(!!E.card,'card');
+    bd.add('tcCutOn');try{chk(!E.el||getComputedStyle(E.el).visibility==='hidden','cut-hide');chk(uiBusy(),'cut-busy');E.card=null;E.cardQ=[{key:k0,why:'side'}];showCard();chk(!E.card&&E.cardQ.length===1,'cut-wait')}finally{if(!had)bd.remove('tcCutOn')}
+    o.cut=!o.why.some(w=>/^cut|^card$/.test(w));E.card=null;E.cardQ=[];if(E.el)E.el.style.display='none'}
+   chk(!E.err,'err')}
+  catch(e){o.why.push('error');o.error=String(e&&e.stack||e).slice(0,400)}
+  finally{E.qa=0;E.force=k.f;g77StRestore(keep);State.navigation=k.nav;PlayerProfile.activeMission=k.am;PlayerProfile.progression.completedMissions=k.cm;E.cardQ=k.cq;E.card=k.card;E.prompt=k.pr;E.jobsDone.length=0;E.R=k.R;E.Rt=k.Rt;if(E.el&&!E.card)E.el.style.display='none'}
+  o.ms=Math.round(performance.now()-t0);o.ok=!o.why.length;return o}
+ {const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);try{const q=qa(),L=r.checks||r.results;if(Array.isArray(L))L.push({name:'mission_board',id:'mission_board',ok:q.ok,pass:q.ok,detail:q.ok?'D‑693: מילוי ל-'+q.fill+', השלמה → חדשה מיד, הצעה אחת (לא נספרת, בלי סמן), קבל → 5, אחר כך, תקרה '+q.max+', התחלה של השחקן, השעה לא מתחילה סיפור, שמירה וטעינה, אין כרטיס מעל סצנה'+(q.cut?'':' (לא נבדק)')+' · הודעה + כרטיס + סמן + ניווט לכל משימה · '+q.ms+' מ"ש':'נכשל: '+q.why.slice(0,10).join(' | ')+(q.error?' · '+q.error:'')});if(!q.ok){r.ok=false;(r.issues||[]).push('mission_board')}}catch(e){err('audit',e)}return r}}
+ const api={LIM,T,E,GROUPS,active,onBoard:k=>has(bR(),k),force:v=>{E.force=v==null?null:!!v;return active()},tick,step,act,counts,mapOk,info,qa,pool:()=>pool(B(),gm()).slice(0,12),board:()=>cloneJson(bR()),jr:jrBoard,
+  state:()=>{const b=bR();return{active:active(),...counts(),items:b?b.side.map(q=>({key:q.key,acc:!!q.acc,src:q.src,run:!!(info(q.key)||{}).run,poi:(info(q.key)||{}).poi||null})):[],offer:b&&b.offer?b.offer.key:null,n:b?b.n:null,err:E.err,errs:E.errs,ticks:E.ticks,msAvg:E.ticks?+(E.ms/E.ticks).toFixed(3):0,msMax:+E.msMax.toFixed(2),autoBlocked:E.autoBlocked||0,parked:E.parked,groups:E.groups}}};
+ window.__TC_MB=api;return api})();

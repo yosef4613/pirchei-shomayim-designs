@@ -1,0 +1,59 @@
+/* ==== fieldfix 17.11 · (2ב) מחזור התחזוקה — "המטוסים בהאנגרים אחרי זמן הם מתוקנים וחוזרים לטיסות סדירות, ומטוס אחר מהטיסות נצרך לתחזוקה מגיע לשם"
+   (הבעלים, Owner_requests סעיף 9; ההערה של planrev 17.11 סעיף 1) ====
+   מצאתי: ‏074zo (R3) מוציא בכל לילה מטוס מההאנגרים להרצת מנועים וחוזר לאותו האנגר — אבל אף מטוס מההאנגר לא חוזר ללוח, ואף מטוס מהלוח לא נכנס לתחזוקה.
+   כאן (שדרוג של אותם נתונים — FFR3.build(), ‏S15SIM.flights, ‏S15SIM.sched — בלי מנגנון ציור חדש): לכל מטוס של האנגר — טיסה בלוח מאותו דגם
+   (א׳ AC-RJ-01 ↔ FL-P4, ‏ב׳ AC-BJ-01 ↔ FL-GA1, ‏ג׳ AC-LT-01 ↔ FL-GA6). כל FFMX.N ימי משחק (ברירת המחדל 3; כל זוג בהיסט של יום) הם מתחלפים:
+   המטוס שבהאנגר "תוקן" — הזהות שלו (החברה והצבעים) עוברת לטיסה ויוצאת ללוח; והמטוס שטס עד אז "נכנס לתחזוקה" — הזהות שלו עוברת להאנגר
+   (והוא זה שמריץ מנועים ב-R3 בלילה — 074zo). ההחלפה נעשית רק ברגע שהטיסה מחוץ לעולם (באוויר, בין ההמראה לגישה) וההאנגר לא במבט —
+   כך שאף מטוס לא "מתחלף" מול העיניים. היום-של-השירות מתחיל ב-05:00 (אחרי החזרה מ-R3 ב-04:45). FFMX.on=false — כמו קודם.
+   מה עוד לא: הגרירה הנראית של המטוס מהעמדה אל ההאנגר ביום ההחלפה (צריך חלון ב-C / B מול כל הלוח — הכלי של fieldfix_r3) — השלב הבא. ==== */
+var FFMX={on:!/[?&#]ffmx=0\b/.test(String(location.href)),N:3,pairs:null,n:{commit:0,defer:0},log:[],err:''};
+function ffmxPairs(){if(FFMX.pairs)return FFMX.pairs;const P=[];try{const M=FFR3.build(),used=new Set();
+ for(let i=0;i<M.length;i++){const m=M[i],f=S15SIM.flights.find(q=>q.model===m.ac&&!used.has(q.id));if(!f)continue;used.add(f.id);
+  P.push({i,m,f,hAl:m.al,fAl:f.airline,swapped:false})}}catch(e){FFMX.err='pairs '+e}
+ if(S15SIM.flights.some(f=>f.id==='FL-GA1')||!(typeof FFFL!=='undefined'&&FFFL.on))FFMX.pairs=P;return P}   // אחרי שטיסת המנהלים נכנסה (074zp — setTimeout)
+function ffmxSvcDay(clk){const d=Math.floor(clk.abs/2/1440);return d-(clk.min<5*60?1:0)}
+function ffmxWant(p,sd){return Math.floor((sd+p.i)/FFMX.N)%2===1}   // true — המטוס של ההאנגר בלוח, והמטוס של הטיסה בתחזוקה
+function ffmxSet(p,sw){const hA=sw?p.fAl:p.hAl,fA=sw?p.hAl:p.fAl;p.m.al=hA;if(p.m.h)p.m.h.air=hA;p.f.airline=fA;
+ try{const r=S15SIM.sched.find(s=>s[0]===p.f.home&&s[1]===p.f.model);if(r)r[2]=fA}catch(e){}
+ try{if(p.m.stat&&S15_STAT){const o=S15_STAT.find(q=>q.key===p.m.stat);if(o){o.al=hA;o.lv=S15_LV[hA]}}}catch(e){}p.swapped=sw}
+function ffmxStep(clk){if(!FFMX.on)return;const P=ffmxPairs();if(!P.length)return;const sd=ffmxSvcDay(clk),tc=s15Tc(clk.abs);
+ for(const p of P){const w=ffmxWant(p,sd);if(w===p.swapped)continue;
+  const F=s15PoseAt(p.f,tc),off=!F,hx=p.m.start[0],hy=p.m.start[1],seen=typeof e3InView==='function'&&e3InView(hx-260,hy-260,520,520,20)||(FFR3.cur===p.m.key);
+  if(!off||seen){FFMX.n.defer++;continue}
+  ffmxSet(p,w);FFMX.n.commit++;FFMX.log.push('יום '+sd+' · '+p.m.id+' ⇄ '+p.f.id+' · בלוח: '+p.f.airline+' · בתחזוקה: '+p.m.al);if(FFMX.log.length>12)FFMX.log.shift()}}
+(function(){try{const h0=s15HgrPose;s15HgrPose=function(clk){try{ffmxStep(clk)}catch(e){FFMX.err='step '+e}return h0.apply(this,arguments)}}catch(e){FFMX.err='init '+e}})();
+/* הבדיקה (fieldfix_maint, בתוך roadAudit): לכל זוג — אותו דגם, שתי זהויות שונות (או אותה חברה — ואז רק המטוס מתחלף), המחזור מחליף בכל N ימים
+   (על 4N ימים: 4 החלפות לכל זוג), החברה של הלו״ז = של הטיסה, וכל חברה — עם צבעים (S15_LV); וברגע ההחלפה — הטיסה מחוץ לעולם */
+function ffmxAudit(){const r={ok:true,issues:[],pairs:[]};try{const P=ffmxPairs();if(!P.length)r.issues.push('אין זוגות');
+ for(const p of P){let ch=0,prev=null;for(let d=0;d<4*FFMX.N;d++){const w=ffmxWant(p,d);if(prev!==null&&w!==prev)ch++;prev=w}
+  if(p.m.ac!==p.f.model)r.issues.push(p.m.id+': דגם שונה');if(ch<3)r.issues.push(p.m.id+': '+ch+' החלפות ב-'+4*FFMX.N+' ימים');
+  for(const al of [p.hAl,p.fAl])if(!S15_LV[al])r.issues.push(p.m.id+': אין צבעים ל-'+al);
+  const s=S15SIM.sched.find(q=>q[0]===p.f.home&&q[1]===p.f.model);if(s&&s[2]!==p.f.airline)r.issues.push(p.f.id+': הלו״ז '+s[2]+' ≠ '+p.f.airline);
+  let offT=0;for(let t=0;t<S15SIM.T;t+=2)if(!s15PoseAt(p.f,t))offT+=2;if(offT<6)r.issues.push(p.f.id+': אין רגע מחוץ לעולם להחלפה');
+  r.pairs.push(p.m.id+' ('+p.m.ac+', '+p.hAl+') ⇄ '+p.f.id+' ('+p.fAl+')'+(p.hAl===p.fAl?' — אותה חברה':'')+' · '+ch+' החלפות ב-'+4*FFMX.N+' ימים · מחוץ לעולם '+offT+' ש׳ במחזור')}
+ if(FFMX.err)r.issues.push(FFMX.err)}catch(e){r.issues.push(String(e))}r.ok=!r.issues.length;return r}
+(function(){const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);try{if(!FFMX.on)return r;const A=ffmxAudit(),L=r.checks||r.results;
+ if(Array.isArray(L))L.push({name:'fieldfix_maint',id:'fieldfix_maint',ok:A.ok,pass:A.ok,detail:(A.ok?'':'נכשל: '+A.issues.join(' | ')+' · ')+'כל '+FFMX.N+' ימים · '+A.pairs.join(' | ')});if(!A.ok){r.ok=false;(r.issues||[]).push('fieldfix_maint')}}catch(e){}return r}})();
+window.__TC_FIELDFIX=Object.assign(window.__TC_FIELDFIX||{},{maint:()=>({on:FFMX.on,N:FFMX.N,n:FFMX.n,log:FFMX.log,err:FFMX.err,pairs:ffmxPairs().map(p=>({hgr:p.m.id,ac:p.m.ac,fl:p.f.id,hAl:p.hAl,fAl:p.fAl,swapped:p.swapped,now:{hgr:p.m.al,fl:p.f.airline}}))}),maintAudit:ffmxAudit});
+/* ---- העבודה בהאנגר — מהמנוע הישן (046:s6aHangarXray, ‏GATE-77 S6a · D‑105: "ההאנגרים מראים מה בפנים"): ליד המנוע — המכסה פתוח, במת עבודה צהובה
+   ושני מכונאים (046:s6aDrawLoader — אותו צייר). בישן זה היה בעמדות M1–M3 שבתוך ההאנגרים הישנים (042:365); ב-S15 ההאנגרים חדשים (074k:s15bAc —
+   המטוס מצויר דרך הגג השקוף), ולכן אותו ציור על המטוס של S15 — המיקום מהעוגנים של אותו מטוס (APTT_SPEC.ac[...].an — "Engine R/L" מול "Nose Gear"),
+   בקנה של S15 (10 פיקס׳ למטר מול A34_PXM). רק כשהמטוס בהאנגר (לא כשהוא בחוץ ב-R3). FFMX.work=false — בלי. ---- */
+FFMX.work=true;FFMX.n.work=0;
+function ffmxWork(c,id,x,y,th,now){try{if(typeof APTT_SPEC==='undefined'||typeof s6aDrawLoader!=='function')return;const S=APTT_SPEC.ac&&APTT_SPEC.ac[id];if(!S||!S.an)return;
+ const ng=S.an['Nose Gear'],e=S.an['Engine R']||S.an['Engine L'];if(!ng||!e)return;const k=10/(typeof A34_PXM!=='undefined'?A34_PXM:7.47),cs=Math.cos(th),sn=Math.sin(th),ea=(e[0]-ng[0])*k,ed=(e[1]-ng[1])*k,side=Math.sign(e[1]-ng[1]||1);
+ const P=(a,d)=>[x+cs*a-sn*d,y+sn*a+cs*d],E=P(ea,ed),plat=P(ea,ed+side*9*k),m1=P(ea+4*k,ed+side*15*k),m2=P(ea-10*k,ed+side*4*k),t=now/1000;
+ c.save();c.translate(E[0],E[1]);c.rotate(th);c.scale(k,k);c.fillStyle='rgba(20,26,32,.75)';c.fillRect(-4,-2.6,8,5.2);c.strokeStyle='#d9dee2';c.lineWidth=.6;c.strokeRect(-4,-2.6,8,5.2);c.restore();   // המכסה הפתוח
+ c.save();c.translate(plat[0],plat[1]);c.rotate(th);c.scale(k,k);c.fillStyle='rgba(8,18,26,.25)';c.fillRect(-6,-3,14,8);c.fillStyle='#e8b92b';c.fillRect(-7,-4,14,8);c.strokeStyle='#1e2124';c.lineWidth=.5;
+ for(let q=-6;q<7;q+=2.5){c.beginPath();c.moveTo(q,-4);c.lineTo(q+1.5,4);c.stroke()}c.fillStyle='#8f989f';c.fillRect(-7,-4,14,1);c.restore();   // במת העבודה
+ for(const [p,h,tt] of [[m1,th+Math.PI/2+Math.sin(t*.7)*.4,t],[[m2[0]+Math.sin(t*.5)*1.5,m2[1]],th-Math.PI/2,t*1.3]]){c.save();c.translate(p[0],p[1]);c.scale(k,k);s6aDrawLoader(c,0,0,h,tt);c.restore()}   // שני מכונאים
+ FFMX.n.work++}catch(e){if(!FFMX.err)FFMX.err='work '+e}}
+(function(){try{const b0=s15bAc;s15bAc=function(c,id,x,y,th,key,airline,now){const r=b0.apply(this,arguments);try{if(FFMX.on&&FFMX.work&&/^MX-/.test(String(key))&&!(FFR3.on&&FFR3.cur===key))ffmxWork(c,id,x,y,th,now==null?performance.now():now)}catch(e){}return r}}catch(e){FFMX.err='work init '+e}})();
+/* ---- התווית של הישן (051:g77MlvPeople… — "תחזוקה · <מה>" מעל המטוס בזמן הבדיקה בחוץ, מזום 0.7): מעל המטוס ב-R3 בזמן ההרצה בלילה — מה הוא עושה,
+   ושל איזו חברה הוא (אחרי ההחלפה — המטוס שנכנס לתחזוקה מהלוח). G77_MLV.what — הטקסטים של הישן לכל דגם; לשאר — "הרצת מנועים אחרי טיפול". ---- */
+FFMX.label=true;
+try{S15H.live.air.push((now,tc,clk)=>{if(!FFMX.on||!FFMX.label||!FFR3.on||typeof Camera==='undefined'||Camera.zoom<.7)return;const S=FFR3.state(clk);if(!S||!S.runup||!S.p)return;
+ const [x,y]=S.p,A=S.mem;if(typeof e3InView==='function'&&!e3InView(x-200,y-200,400,400,20))return;const W=(typeof G77_MLV!=='undefined'&&G77_MLV.what&&G77_MLV.what[A.ac])||'הרצת מנועים אחרי טיפול';
+ const fs=Math.max(6,9/Camera.zoom),lab='תחזוקה · '+W+' · '+(A.al||'');ctx.save();ctx.font='bold '+fs+'px sans-serif';ctx.textAlign='center';ctx.lineWidth=fs*.25;ctx.strokeStyle='rgba(10,14,20,.85)';ctx.fillStyle='#ffd166';
+ const yy=y-(A.Lpx||272)*.55;ctx.strokeText(lab,x,yy);ctx.fillText(lab,x,yy);ctx.restore()})}catch(e){FFMX.err='label '+e}

@@ -1,0 +1,551 @@
+var C3_LOTS=[{"id":"C3-V1","kind":"villa","x":2648,"y":1760,"w":394,"h":166,"label":"מגרש · רחוב הווילות 1","frontage":"LC-C3","frontageRoadId":"TC-C3-R009","side":"west"},{"id":"C3-V2","kind":"villa","x":2630,"y":1926,"w":412,"h":166,"label":"מגרש · רחוב הווילות 3","frontage":"LC-C3","frontageRoadId":"TC-C3-R009","side":"west"},{"id":"C3-V3","kind":"villa","x":2630,"y":2092,"w":412,"h":165,"label":"מגרש · רחוב הווילות 5","frontage":"LC-C3","frontageRoadId":"TC-C3-R009","side":"west"},{"id":"C3-V4","kind":"villa","x":3178,"y":1850,"w":412,"h":203,"label":"מגרש · רחוב הווילות 2","frontage":"LC-C3","frontageRoadId":"TC-C3-R009","side":"east"},{"id":"C3-V5","kind":"villa","x":3178,"y":2053,"w":412,"h":204,"label":"מגרש · רחוב הווילות 4","frontage":"LC-C3","frontageRoadId":"TC-C3-R009","side":"east"},{"id":"C3-PH","kind":"player","x":2630,"y":2266,"w":960,"h":279,"label":"מגרש בית השחקן — שני אגפים סביב מעגל הסיבוב","frontage":"LC-C3","frontageRoadId":"TC-C3-R009","parts":[[2636,2272,2972,2540],[3248,2272,3584,2540],[2980,2512,3240,2540]]}];
+var C3_VILLAS=[
+ b4Bld40('C3-V1','VILLAA',0,2836,1790,'וילה · רחוב הווילות 1','villa',18,108),
+ b4Bld40('C3-V2','VILLAB',0,2810,1946,'וילה · רחוב הווילות 3','villa',140,118),
+ b4Bld40('C3-V3','VILLAC',0,2840,2120,'וילה · רחוב הווילות 5','villa',17,113),
+ b4Bld40('C3-V4','VILLAD',0,3244,1880,'וילה · רחוב הווילות 2','villa',149,123),
+ b4Bld40('C3-V5','VILLAE',0,3244,2077,'וילה · רחוב הווילות 4','villa',19,128)
+];
+C4_BUILDINGS.push(...C3_VILLAS);
+var C3_STALLS=[   // the villas' pads, 2.8 × 5.6 m (D‑327), paved (D‑328)
+ {id:'C3-V1-S1',x:2986,y:1815,w:56,h:28,rot:0,pave:true,house:'C3-V1'},
+ {id:'C3-V1-S2',x:2986,y:1843,w:56,h:28,rot:0,pave:true,house:'C3-V1'},
+ {id:'C3-V2-S1',x:2986,y:1967,w:56,h:28,rot:0,pave:true,house:'C3-V2'},
+ {id:'C3-V2-S2',x:2986,y:1995,w:56,h:28,rot:0,pave:true,house:'C3-V2'},
+ {id:'C3-V2-S3',x:2986,y:2023,w:56,h:28,rot:0,pave:true,house:'C3-V2'},
+ {id:'C3-V3-S1',x:2986,y:2119,w:56,h:28,rot:0,pave:true,house:'C3-V3'},
+ {id:'C3-V3-S2',x:2986,y:2147,w:56,h:28,rot:0,pave:true,house:'C3-V3'},
+ {id:'C3-V3-S3',x:2986,y:2175,w:56,h:28,rot:0,pave:true,house:'C3-V3'},
+ {id:'C3-V3-S4',x:2986,y:2203,w:56,h:28,rot:0,pave:true,house:'C3-V3'},
+ {id:'C3-V4-S1',x:3178,y:1882,w:56,h:28,rot:Math.PI,pave:true,house:'C3-V4'},
+ {id:'C3-V4-S2',x:3178,y:1910,w:56,h:28,rot:Math.PI,pave:true,house:'C3-V4'},
+ {id:'C3-V4-S3',x:3178,y:1938,w:56,h:28,rot:Math.PI,pave:true,house:'C3-V4'},
+ {id:'C3-V4-S4',x:3178,y:1966,w:56,h:28,rot:Math.PI,pave:true,house:'C3-V4'},
+ {id:'C3-V4-S5',x:3178,y:1994,w:56,h:28,rot:Math.PI,pave:true,house:'C3-V4'},
+ {id:'C3-V5-S1',x:3178,y:2127,w:56,h:28,rot:Math.PI,pave:true,house:'C3-V5'},
+ {id:'C3-V5-S2',x:3178,y:2155,w:56,h:28,rot:Math.PI,pave:true,house:'C3-V5'}
+];
+for(const l of [{"id":"C3-V1-DW","label":"שביל הרכב של רחוב הווילות 1","yard":{"x":2986,"y":1815,"w":56,"h":56},"acc":[{"x":3042,"y":1815,"w":20,"h":56}]},{"id":"C3-V2-DW","label":"שביל הרכב של רחוב הווילות 3","yard":{"x":2986,"y":1967,"w":56,"h":56},"acc":[{"x":3042,"y":1967,"w":20,"h":56}]},{"id":"C3-V3-DW","label":"שביל הרכב של רחוב הווילות 5","yard":{"x":2986,"y":2119,"w":56,"h":56},"acc":[{"x":3042,"y":2119,"w":20,"h":56}]},{"id":"C3-V4-DW","label":"שביל הרכב של רחוב הווילות 2","yard":{"x":3178,"y":1882,"w":56,"h":56},"acc":[{"x":3158,"y":1882,"w":20,"h":56}]},{"id":"C3-V5-DW","label":"שביל הרכב של רחוב הווילות 4","yard":{"x":3178,"y":2127,"w":56,"h":56},"acc":[{"x":3158,"y":2127,"w":20,"h":56}]}]){C4_YARDS.push({id:l.id+'-YARD',...l.yard,label:l.label,skin:true,pave:true});l.acc.forEach((a,i)=>C4_ACCESS.push({id:l.id+'-ACC'+(i+1),...a}))}C4_STALLS.push(...C3_STALLS);
+var C3_CAR_PLAN=[["C3-V1-S1","VH-HB-02","Compact"],["C3-V2-S1","VH-SU-03","SUV"],["C3-V2-S3","VH-SD-02","Sedan"],["C3-V3-S2","VH-MV-02","Minivan"],["C3-V4-S2","VH-HB-02","Compact"],["C3-V4-S4","VH-SU-03","SUV"],["C3-V5-S1","VH-SD-02","Sedan"]];
+PARKED_CARS.push(...C3_CAR_PLAN.map(([sid,asset,ref],i)=>{const st=C3_STALLS.find(q=>q.id===sid);return parkInRect('PC-C3-'+(i+1),asset,ref,st,st.rot)}));
+var C3PH_B=C3LV.map(L=>L.buildings.map(b=>b4Bld40(b.id,b.type,b.rot,b.x,b.y,b.label,'player',b.ent[0]-b.x,b.ent[1]-b.y)));
+GRAPHICS_RUNTIME_INFO.required.push(...["AC-HL-01","AC-HL-02","PR-01","PR-14","PR-17","SL-PRK","SL-RES","TP-BD-01","TP-BD-02","TP-PK-01","TP-PK-02","TP-SH-01","TP-SH-02","TP-SH-03","TP-UR-01","TP-UR-02","TP-UR-03"]);
+var C3_TURN_P={id:'C3-TURN',label:'מעגל הסיבוב של רחוב הווילות'},C3_DRIVE_P={id:'C3-PH-DRIVE',label:'שביל הרכב של בית השחקן'};
+function c3Lv(){let n=1;try{n=PlayerProfile.home.homeLevel||1}catch(e){}return clamp(n,1,8)}
+var C3LOOK_=null,C3LOOK_N=0,C3CUR=null;
+function c3Merge(n){const L=C3LV[n-1],B=C3D,M=Object.assign({},B);M.pave=B.pave.concat(L.pave);M.lamps=B.lamps.concat(L.lamps);M.trees=B.trees.concat(L.trees);M.flowers=B.flowers.concat(L.flowers);M.props=B.props.concat(L.props);M.garages=[];M.lvPool=L.pool;M.pad=L.pad;M.flag=L.flag;M.gateOpen=C3CUR?C3CUR.gateOpen||0:0;return M}
+function c3Look(){const n=c3Lv();if(!C3LOOK_)C3LOOK_=ZONELOOK.create();if(C3LOOK_N!==n){C3CUR=c3Merge(n);C3LOOK_.set(C3CUR);C3LOOK_N=n}return C3LOOK_}
+function c3InView(m){return e3InView(2392,1700,1208,860,m)}
+function drawC3Ground(now){if(!c3InView(60))return;ctx.save();const L=c3Look();L.ground(ctx,b3View());C3LOOK.ground(ctx,C3CUR,false);
+ for(const s of C3LV[C3LOOK_N-1].stalls){c4Pavers(s.x,s.y,s.w,s.h);ctx.fillStyle='rgba(60,55,45,.18)';ctx.fillRect(s.x+7,s.y+4,6,s.h-8);ctx.fillRect(s.x+s.w-13,s.y+4,6,s.h-8)}ctx.restore()}
+function drawC3Items(now){if(!c3InView(90))return;const n=c3Lv(),L=c3Look();for(const o of C3PH_B[n-1])b4Bld40Draw(o);L.items(ctx,now,b3View());C3LOOK.items(ctx,C3CUR,false);
+ for(const l of C3_LOTS)Targets.add({id:l.id,label:l.label,category:'lot',x:l.x+l.w/2,y:l.y+l.h/2,w:l.w,h:l.h});for(const o of C3PH_B[n-1])Targets.add({id:o.id,label:'בית השחקן · רמה '+n+' · '+o.label,category:'building',x:o.x+o.w/2,y:o.y+o.h/2,w:o.w,h:o.h})}
+var C3_LV_SEEN=0;   /* a new level: the 3/4 kit forgets the trees, lamps and flowers of the player's lot (it registers an item once — p416) and the tiles over the lot are rebuilt, so the new level's items register */
+function c3LevelChange(){const n=c3Lv();if(C3_LV_SEEN&&C3_LV_SEEN!==n){const R=[2620,2256,3600,2560];try{if(typeof K34C!=='undefined'&&K34C.list){const keep=it=>!(it.x>=R[0]&&it.x<=R[2]&&it.y>=R[1]&&it.y<=R[3]);K34C.list=K34C.list.filter(keep);for(const [k,a] of [...K34C.grid.entries()]){const b=a.filter(keep);if(b.length)K34C.grid.set(k,b);else K34C.grid.delete(k)}}}catch(e){}try{wtcDirty(R[0]-60,R[1]-120,R[2]-R[0]+120,R[3]-R[1]+180)}catch(e){}}C3_LV_SEEN=n}
+function c3Live(now){c3LevelChange();if(Camera.zoom<=.55||!c3InView(90))return;   /* p472 · R-50: מתחת ל-.55 הפרטים לא נראים */const L=c3Look(),a=playerActor(),G=C3CUR.gate,want=Math.hypot(a.x-(G.x+9),a.y-G.axis)<90?1:0,o=C3CUR.gateOpen||0;
+ C3CUR.gateOpen=o+Math.max(-.04,Math.min(.04,want-o));window.C3RES=p599Res(Camera.zoom*dpr);L.live(ctx,now,b3View());C3LOOK.live(ctx,C3CUR,now,false)}   /* D‑339: what moves in C3 */
+function c3PhSolidAt(x,y,r){if(!C3PH_B)return null;for(const o of C3PH_B[c3Lv()-1])if(circleRectHit(x,y,r,o))return o.id;return null}
+function c3PavedAt(x,y){if(!C3D)return null;const T=C3D.turn;if(Math.hypot(x-T.c[0],y-T.c[1])<=T.ra)return C3_TURN_P;const L=C3LV[c3Lv()-1],d=L.drive;if(x>=d[0]&&x<=d[2]&&y>=d[1]&&y<=d[3])return C3_DRIVE_P;for(const s of L.stalls)if(x>=s.x&&x<=s.x+s.w&&y>=s.y&&y<=s.y+s.h)return s;return null}
+window.__TC_C3={data:()=>({base:C3D,levels:C3LV,lots:C3_LOTS,villas:C3_VILLAS.length,stalls:C3_STALLS.length,level:c3Lv(),cur:C3CUR}),look:c3Look};
+/* p472: D3 בגרסה 2 — שש הווילות, תחנת הדלק עם 4 עמדות, הסוכנות והמוסך (הבעלים 17:23; d3v1.json, הגיליון v2). var ולא const: פונקציות
+   מורמות (parkingInfoAt, d3SolidAt, d3ServicePoints) יכולות לרוץ לפני הבלוק הזה. */
+/* D3LOOK (1.11 · D3 v1) — what D3 adds to the zone's look (ZONELOOK): the lane's turning circle, the asphalt of the fuel station, the dealer
+   and the garage, the pools, the fuel islands and the canopy, the tanker's bay, the display and its turntable, the garage's lift — and what
+   moves there (D‑339): a car that comes in, fills up and leaves; the tanker that backs into its bay, unloads and leaves; the car on the
+   turntable; the flags; the car on the lift and the mechanic by it; the gardener; the pools' water.
+   ground(ctx, D, N) under the buildings; items(ctx, D, N) with them; live(ctx, D, now, N) every frame. Sizes are real (10 px = 1 m). */
+(function () {
+  var K6 = 6;                                                                                         // 1 m of height = 6 px up (BLD40: M 10 × K .6)
+  function disc(ctx, x, y, r, c) { ctx.fillStyle = c; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill(); }
+  function asphalt(ctx, r, N) { ctx.fillStyle = N ? '#2f3338' : '#5a5f66'; ctx.fillRect(r[0], r[1], r[2] - r[0], r[3] - r[1]);
+    ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 1; ctx.strokeRect(r[0] + .5, r[1] + .5, r[2] - r[0] - 1, r[3] - r[1] - 1); }
+  function arrow(ctx, x, y, a, N) { cityArrow(ctx, x, y, a, 's', N, 1); }   /* p487 */
+  function ground(ctx, D, N) {
+    (D.asph || []).forEach(function (r) { asphalt(ctx, r, N); });
+    var T = D.turn;
+    if (T) { var x = T.c[0], y = T.c[1], AT = N ? '#2f3338' : '#4b5057', hw = 48, ha = Math.asin(hw / T.ra);   // הבעלים 17:50: מעגל מסודר
+      disc(ctx, x, y, T.r, '#cdc8bc');                                                                  // המדרכה סביב המעגל
+      ctx.fillStyle = '#cdc8bc'; ctx.fillRect(x - hw - 20, y + 50, 20, T.r - 30); ctx.fillRect(x + hw, y + 50, 20, T.r - 30);   // המדרכות של הסמטה ממשיכות לתוך המדרכה של המעגל, בלי מדרגה
+      ctx.strokeStyle = 'rgba(95,90,78,.45)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, y, T.r - .6, Math.PI / 2 + Math.asin((hw + 20) / T.r), Math.PI / 2 - Math.asin((hw + 20) / T.r) + 2 * Math.PI); ctx.stroke();   // שפת הדשא
+      disc(ctx, x, y, T.ra, AT); ctx.fillStyle = AT; ctx.fillRect(x - hw, y + 40, 2 * hw, T.r - 26);     // האספלט, והפתח של הסמטה בלי מדרכה באמצע
+      ctx.strokeStyle = '#8f949a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, T.ra - .8, Math.PI / 2 + ha, Math.PI / 2 - ha + 2 * Math.PI); ctx.stroke();   // שפת המדרכה — חוץ מהפתח
+      ctx.beginPath(); ctx.moveTo(x - hw + .8, y + Math.cos(ha) * T.ra); ctx.lineTo(x - hw + .8, y + T.r + 14); ctx.moveTo(x + hw - .8, y + Math.cos(ha) * T.ra); ctx.lineTo(x + hw - .8, y + T.r + 14); ctx.stroke();
+      disc(ctx, x, y, 30, '#c8c2b2'); disc(ctx, x, y, 27, N ? '#24402c' : '#5b9a41');                 // האי: שפה, דשא ועץ זית
+      disc(ctx, x, y, 9, N ? '#3a3226' : '#6b5a3e'); }
+    var AS = N ? '#2f3338' : '#4b5057';                                                                  // גרסה 2: אספלט במקום המדרכה בכל כניסה ובכל חיבור
+    (D.joins || []).concat(D.cuts || [], D.aprons || []).forEach(function (r) { ctx.fillStyle = AS; ctx.fillRect(r[0], r[1], r[2] - r[0], r[3] - r[1]); });
+    (D.cuts || []).concat(D.aprons || []).forEach(function (r) { ctx.fillStyle = '#9a958a'; var v = (r[3] - r[1]) > (r[2] - r[0]);   // שפת ההנמכה — קו בהיר בשני הצדדים
+      if (v) { ctx.fillRect(r[0], r[1] - 1.5, r[2] - r[0], 1.5); ctx.fillRect(r[0], r[3], r[2] - r[0], 1.5); } else { ctx.fillRect(r[0] - 1.5, r[1], 1.5, r[3] - r[1]); ctx.fillRect(r[2], r[1], 1.5, r[3] - r[1]); } });
+    (D.caps || []).forEach(function (r) { ctx.fillStyle = '#cdc8bc'; ctx.fillRect(r[0], r[1], r[2] - r[0], r[3] - r[1]); });
+    if (!window.D3ZEBRALATE) marks(ctx, D, N);
+    (D.pools || []).forEach(function (p) { ctx.fillStyle = N ? '#5d5a52' : '#e9e4d8'; ctx.fillRect(p[0] - 3, p[1] - 3, p[2] - p[0] + 6, p[3] - p[1] + 6);
+      var g = ctx.createLinearGradient(p[0], p[1], p[2], p[3]); g.addColorStop(0, N ? '#1d4a63' : '#5cc0e4'); g.addColorStop(1, N ? '#163a50' : '#2c8cc0');
+      ctx.fillStyle = g; ctx.fillRect(p[0], p[1], p[2] - p[0], p[3] - p[1]); ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.fillRect(p[0] + 4, p[1] + 2, 6, 3); });
+    var F = D.fuel;
+    if (F) { var C = F.canopy;
+      ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(C[0] + 10, C[1] + 14, C[2] - C[0], C[3] - C[1]);   // the canopy's shadow (the one sun, D‑277: to the south-east)
+      F.islands.forEach(function (r) { ctx.fillStyle = '#b9b4a8'; ctx.fillRect(r[0], r[1], r[2] - r[0], r[3] - r[1]); ctx.fillStyle = '#e8c33a'; ctx.fillRect(r[0], r[1], 4, r[3] - r[1]); ctx.fillRect(r[2] - 4, r[1], 4, r[3] - r[1]); });
+      (F.bays || []).forEach(function (b, i) { ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 1.4; ctx.strokeRect(b[0] + .7, b[1] + .7, b[2] - 1.4, b[3] - 1.4);   // 4 עמדות התדלוק
+        ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '700 9px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(i + 1), b[0] + (i % 2 ? b[2] - 8 : 8), b[1] + b[3] / 2); ctx.textBaseline = 'alphabetic'; });
+      var B = F.bay; ctx.save(); ctx.setLineDash([8, 5]); ctx.strokeStyle = '#f2c230'; ctx.lineWidth = 2; ctx.strokeRect(B[0] + 1, B[1] + 1, B[2] - B[0] - 2, B[3] - B[1] - 2); ctx.restore();
+      F.lids.forEach(function (l) { disc(ctx, l[0], l[1], 4.5, '#3d4248'); disc(ctx, l[0], l[1], 3, l[2]); });
+      arrow(ctx, F.inAt[0], F.inAt[1], Math.PI, N); arrow(ctx, F.outAt[0], F.outAt[1], 0, N); }
+    var L = D.lane; if (L) { arrow(ctx, (L[0] + L[2]) / 2, L[3] - 40, -Math.PI / 2, N); arrow(ctx, (L[0] + L[2]) / 2, L[1] + 60, Math.PI / 2, N); }
+    var G = D.garage;
+    if (G) { ctx.strokeStyle = '#f2c230'; ctx.lineWidth = 1.6; G.bays.forEach(function (b) { ctx.strokeRect(b[0] + .8, b[1] + .8, b[2] - b[0] - 1.6, b[3] - b[1] - 1.6); }); }
+    var TT = D.turntable;
+    if (TT) { disc(ctx, TT.c[0], TT.c[1], TT.r + 3, '#8b9096'); disc(ctx, TT.c[0], TT.c[1], TT.r, N ? '#3a3f45' : '#c4c8cc'); }
+  }
+  function marks(ctx, D, N) {                                                                         // מעברי החצייה — במשחק מעל שכבת הכבישים (המבקר מ-17)
+    (D.zebra || []).forEach(function (z) { ctx.fillStyle = N ? 'rgba(220,220,215,.5)' : 'rgba(245,245,240,.9)';
+      if (z[4] === 'v') for (var yy = z[1] + 4; yy < z[3] - 4; yy += 9) ctx.fillRect(z[0], yy, z[2] - z[0], 4.5); else for (var xx = z[0] + 4; xx < z[2] - 4; xx += 9) ctx.fillRect(xx, z[1], 4.5, z[3] - z[1]); });
+  }
+  function box(ctx, x, y, w, d, h, top, side) {                                                      // a standing box: its front face to the south, its top h m up
+    var H = h * K6; ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.fillRect(x + 2, y + 2, w + 3, d + 2);
+    ctx.fillStyle = side; ctx.fillRect(x, y + d - H, w, H); ctx.fillStyle = top; ctx.fillRect(x, y - H, w, d); }
+  function items(ctx, D, N) {
+    var F = D.fuel;
+    if (F) { F.pumps.forEach(function (p) { box(ctx, p[0] - 6, p[1] - 2.5, 12, 5, 1.9, '#e9edf0', '#b5352b');                  // משאבה: 1.2 × 0.5 מ׳, גובה 1.9 מ׳
+        ctx.fillStyle = N ? '#9fe3ff' : '#2b3a44'; ctx.fillRect(p[0] - 3.5, p[1] + 2.5 - 1.9 * K6 + 2, 7, 4); });
+      var C = F.canopy, h = 5.0 * K6;                                                                   // עמודי הגגון — על האי (המבקר מ-1); הגג מצויר אחרון, מעל המכוניות
+      (F.posts || [[C[0] + 26, C[1] + 22], [C[2] - 26, C[1] + 22], [C[0] + 26, C[3] - 22], [C[2] - 26, C[3] - 22]]).forEach(function (q) { box(ctx, q[0] - 3, q[1] - 3, 6, 6, 5.0, '#dfe3e6', '#b9bfc4'); });
+      var S = F.sign; box(ctx, S[0] - 4, S[1] - 2, 8, 4, 6, '#2b2f33', '#2b2f33'); var BR = F.brand; ctx.fillStyle = BR ? BR.c1 : '#b5352b'; ctx.fillRect(S[0] - 9, S[1] - 6.2 * K6, 18, 26);
+      ctx.fillStyle = BR ? BR.c2 : '#ffffff'; ctx.font = '700 ' + (BR ? 4.2 : 6) + 'px Arial'; ctx.textAlign = 'center'; ctx.fillText(BR ? BR.name : 'דלק', S[0], S[1] - 6.2 * K6 + 9);   /* p477 */ ctx.fillStyle = '#f2c230'; ctx.fillRect(S[0] - 7, S[1] - 6.2 * K6 + 13, 14, 9); }
+    if (!window.D3INGAME || (typeof MAPBASE !== 'undefined' && MAPBASE.pass) || (typeof WTC !== 'undefined' && (WTC_MODE === 1 ? WTC.bake : Camera.zoom <= .55))) showRow(ctx, D, N);   /* kit34 (11.11): in the game the showroom row is drawn in live() — every frame, through C34 (follows C34.r70); items() is baked into the tiles once (WTC), so a car pushed from here was drawn into the tile in the old painter and never changed. Here — only where live() is not drawn, as before: the sheet, the city map, the far tiles (zoom < .6, WTC.bake) */
+    (D.bins || []).forEach(function (r) { var w = r[2] - r[0], d = r[3] - r[1];                         // מסתור הפחים: קיר נמוך של 1.4 מ׳ ובתוכו שלושה פחים
+      box(ctx, r[0], r[1], w, d, 1.4, N ? '#55524c' : '#a29a8c', N ? '#46433e' : '#8a8274');
+      for (var k = 0; k < 3; k++) box(ctx, r[0] + 3 + k * (w - 6) / 3, r[1] + 4, (w - 6) / 3 - 2, d - 8, 1.2, ['#2e7d32', '#1f4f7a', '#5d6166'][k], ['#245f27', '#173c5d', '#46494d'][k]); });
+    if (!window.D3INGAME) (D.bus || []).forEach(function (b) { var x = b[0], y = b[1], w = b[2] === 'W', sg = w ? -1 : 1, cx = 4611 + sg * 127;   // 2.4: עורק ראשי 3+3   // התחנה ST-01 (בגיליון; במשחק — של המשחק): מפרץ, רציף, סככה ושלט אחד לכל הקווים
+      function q(d, s) { return [cx + sg * d, y + s]; } function pl(Q, f) { ctx.fillStyle = f; ctx.beginPath(); Q.forEach(function (p, k) { ctx[k ? 'lineTo' : 'moveTo'](p[0], p[1]); }); ctx.closePath(); ctx.fill(); }
+      if (b[4]) { pl([q(0, -123), q(50, -123), q(50, 123), q(0, 123)], N ? '#6d6a63' : '#d6d1c6'); pl([q(-1, -115), q(30, -75), q(30, 75), q(-1, 115)], N ? '#2f3338' : '#5d6269');
+        ctx.strokeStyle = '#ece7da'; ctx.lineWidth = 2.4; ctx.beginPath(); [q(0, -115), q(30, -75), q(30, 75), q(0, 115)].forEach(function (p, k) { ctx[k ? 'lineTo' : 'moveTo'](p[0], p[1]); }); ctx.stroke(); }
+      var d0 = b[4] ? 3 : -27, d1 = b[4] ? 27 : -3, A = q(d0, -69), B = q(d1, 69); ctx.save(); ctx.setLineDash([9, 5]); ctx.strokeStyle = '#f2c230'; ctx.lineWidth = 2.2;
+      ctx.strokeRect(Math.min(A[0], B[0]), A[1], Math.abs(B[0] - A[0]), B[1] - A[1]); ctx.restore(); ctx.fillStyle = 'rgba(242,194,48,.9)'; ctx.font = '700 9px Arial'; ctx.textAlign = 'center'; ctx.fillText('תחנה', (A[0] + B[0]) / 2, y + 3);
+      box(ctx, x - 6, y - 20, 12, 40, 2.6, N ? '#3c4a55' : '#5b7a8c', N ? 'rgba(160,210,240,.35)' : 'rgba(170,215,235,.75)');
+      ctx.fillStyle = '#6b7378'; ctx.fillRect(x - 1, y + 26 - 2.9 * K6, 2, 2.9 * K6); ctx.fillStyle = '#1f4f7a'; ctx.fillRect(x - 13, y + 26 - 2.9 * K6 - 2, 26, 10);
+      ctx.fillStyle = '#ffffff'; ctx.font = '700 5px Arial'; ctx.fillText(b[3], x, y + 26 - 2.9 * K6 + 5); });
+    var G = D.garage;
+    if (G) { var B = G.lift; ctx.fillStyle = '#f2c230'; ctx.fillRect(B[0] - 3, B[1] + 8, 3, 40); ctx.fillRect(B[2], B[1] + 8, 3, 40); }
+  }
+  var LIVEQ = false, PENDING = [], ROOFQ = [];   /* p489: הגגות של תחנות הדלק — בשכבה העליונה */                                                                   // במשחק: המכוניות שזזות נאספות כאן ומצוירות עם שאר הרכבים (המבקר מ-9)
+  function car(ctx, x, y, a, N, id, up, col) { if (LIVEQ && window.D3INGAME) { PENDING.push([ctx, x, y, a, N, id, up, col]); return; } carNow(ctx, x, y, a, N, id, up, col); }
+  function flushCars() { var L = PENDING; PENDING = []; L.forEach(function (c) {                          // במבט 3/4 — כמו רכב חונה של המשחק (c34Parked), אחרת — ישר
+      if (c[0] === 'TANKER') { if (typeof c34Parked === 'function' && window.TurboCity) { var T = TurboCity.info('LV-TK-01', {}); try { c34Parked({ asset: 'LV-TK-01', scale: 110 / T.fp[2], x: c[1], y: c[2], heading: c[3], state: { c: 3, r: 0, L: {} }, ref: 'D3-TANKER' }); } catch (e) {} } return; }
+      var id = c[5] || 'VH-SD-02', ok = false;
+      if (typeof c34Parked === 'function' && window.TurboCity) { var F = TurboCity.info(id, {}), sc = 47 / F.fp[2];
+        try { ok = c34Parked({ asset: id, scale: sc, x: c[1], y: c[2] - (c[6] || 0) * K6, heading: c[3], state: { c: c[7] == null ? 4 : c[7], r: 0, L: { lights: !!c[4] } }, ref: 'D3-LIVE' }); } catch (e) { ok = false; } }
+      if (!ok) carNow.apply(null, c); }); }
+  function carNow(ctx, x, y, a, N, id, up, col) { if (!window.TurboCity) return; id = id || 'VH-SD-02';                 // col — מספר הצבע של הדגם
+    var F = TurboCity.info(id, {}), sc = 47 / F.fp[2], I = TurboCity.info(id, { scale: sc });
+    if (up) { ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillRect(-23, -9, 46, 18); ctx.restore(); }
+    ctx.save(); ctx.translate(x, y - (up || 0) * K6); ctx.rotate(a); TurboCity.draw(ctx, id, -I.w / 2, -I.h / 2, { mode: 'runtime', scale: sc, time: 0, state: { c: col == null ? 4 : col, r: 0, L: { lights: !!N } } }); ctx.restore(); }
+  // ‏3/4 (D‑255): גוף מסובב — הבסיס בגובה z0, הגג בגובה z0 + h; רואים את הדפנות שפונות דרומה, אל המצלמה, ואת הגג
+  function prism(ctx, P, z0, h, top, side) {
+    var n = P.length, u0 = z0 * K6, u1 = (z0 + h) * K6, cx = 0, cy = 0, k;
+    for (k = 0; k < n; k++) { cx += P[k][0] / n; cy += P[k][1] / n; }
+    for (k = 0; k < n; k++) { var a = P[k], b = P[(k + 1) % n], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, nx = b[1] - a[1], ny = a[0] - b[0];
+      if (nx * (mx - cx) + ny * (my - cy) < 0) { nx = -nx; ny = -ny; }
+      if (ny <= 0) continue;
+      ctx.fillStyle = side; ctx.beginPath(); ctx.moveTo(a[0], a[1] - u0); ctx.lineTo(b[0], b[1] - u0); ctx.lineTo(b[0], b[1] - u1); ctx.lineTo(a[0], a[1] - u1); ctx.closePath(); ctx.fill(); }
+    ctx.fillStyle = top; ctx.beginPath(); for (k = 0; k < n; k++) ctx[k ? 'lineTo' : 'moveTo'](P[k][0], P[k][1] - u1); ctx.closePath(); ctx.fill(); }
+  function rectAt(f, r, w) { var dx = f[0] - r[0], dy = f[1] - r[1], L = Math.hypot(dx, dy) || 1, px = -dy / L * w / 2, py = dx / L * w / 2;   // מלבן מ-f עד r ברוחב w
+    return [[f[0] + px, f[1] + py], [f[0] - px, f[1] - py], [r[0] - px, r[1] - py], [r[0] + px, r[1] + py]]; }
+  function atLen(P, d) { var k, l, a, b;                                                              // הנקודה במרחק d לאורך המסלול; לפני ההתחלה ואחרי הסוף — בהמשך הקו
+    if (d <= 0) { a = P[0]; b = P[1]; l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [a[0] + (b[0] - a[0]) / l * d, a[1] + (b[1] - a[1]) / l * d]; }
+    for (k = 0; k + 1 < P.length; k++) { a = P[k]; b = P[k + 1]; l = Math.hypot(b[0] - a[0], b[1] - a[1]); if (d <= l) return [a[0] + (b[0] - a[0]) * d / l, a[1] + (b[1] - a[1]) * d / l]; d -= l; }
+    a = P[P.length - 2]; b = P[P.length - 1]; l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [b[0] + (b[0] - a[0]) / l * d, b[1] + (b[1] - a[1]) / l * d]; }
+  function plen(P) { var s = 0; for (var k = 0; k + 1 < P.length; k++) s += Math.hypot(P[k + 1][0] - P[k][0], P[k + 1][1] - P[k][1]); return s; }
+  function shadow(ctx, Q) { ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.beginPath(); Q.forEach(function (q, i) { ctx[i ? 'lineTo' : 'moveTo'](q[0] + 4, q[1] + 3); }); ctx.fill(); }
+  // המכלית ב-3/4 (הבעלים 19:03: "כמו בשדה, ברמה גבוהה … עגול"): משאית מכלית של 11 מ׳ — במשחק הציור של המכלית של השדה (LV-TK-01), בגיליון — מיכל עגול
+  function cyl34(ctx, f, r_, rad, z0, cols) {                                                         // מיכל עגול: גליל בין f ל-r_, ברדיוס rad, מעל z0; 12 פאות, מהרחוקה לקרובה
+    var dx = f[0] - r_[0], dy = f[1] - r_[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L, F = [], k;
+    for (k = 0; k < 12; k++) { var a0 = k / 12 * 6.2832, a1 = (k + 1) / 12 * 6.2832, am = (a0 + a1) / 2;
+      F.push({ a0: a0, a1: a1, depth: Math.cos(am) * ny + Math.sin(am) * .9, lit: .55 + .45 * Math.max(0, Math.sin(am) * .8 + Math.cos(am) * .35 * (ny >= 0 ? 1 : -1)) }); }
+    F.sort(function (p, q) { return p.depth - q.depth; });
+    function P3(base, a) { var lat = Math.cos(a) * rad, h = (z0 + rad / 10 + Math.sin(a) * rad / 10) * K6; return [base[0] + nx * lat, base[1] + ny * lat - h]; }
+    F.forEach(function (q) { var A = P3(f, q.a0), B = P3(f, q.a1), C = P3(r_, q.a1), D = P3(r_, q.a0), c = Math.round(150 + 105 * q.lit);
+      ctx.fillStyle = cols ? cols(q.lit) : 'rgb(' + c + ',' + (c + 3) + ',' + (c + 6) + ')'; ctx.beginPath(); ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]); ctx.lineTo(C[0], C[1]); ctx.lineTo(D[0], D[1]); ctx.closePath(); ctx.fill(); });
+    var E = []; for (k = 0; k <= 16; k++) E.push(P3(f, k / 16 * 6.2832)); ctx.fillStyle = '#d9dee2'; ctx.beginPath(); E.forEach(function (q, i) { ctx[i ? 'lineTo' : 'moveTo'](q[0], q[1]); }); ctx.fill(); }   // הדופן של החזית
+  function tanker34(ctx, P, s, N, hose, t, lid) {
+    var cf = atLen(P, s), tr = atLen(P, s - 110), mid = atLen(P, s - 55), hd = Math.atan2(cf[1] - tr[1], cf[0] - tr[0]);
+    if (hose) { var h = atLen(P, s - 70); ctx.strokeStyle = '#1f2326'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(h[0], h[1] - 1.2 * K6); ctx.quadraticCurveTo((h[0] + lid[0]) / 2, Math.max(h[1], lid[1]) + 8, lid[0], lid[1]); ctx.stroke();
+      ctx.fillStyle = (Math.floor(t * 2) % 2) ? '#ffb000' : '#7a5400'; ctx.fillRect(h[0] - 2, h[1] - 1.2 * K6 - 2, 4, 4); }
+    if (LIVEQ && window.D3INGAME) { PENDING.push(['TANKER', mid[0], mid[1], hd]); return; }                 // במשחק: הציור של המכלית של השדה, עם שאר הרכבים
+    shadow(ctx, rectAt(cf, tr, 25));
+    function body() { prism(ctx, rectAt(atLen(P, s - 26), tr, 21), .3, .9, '#2b2f33', '#1f2326'); cyl34(ctx, atLen(P, s - 29), atLen(P, s - 108), 12, 1.1); var u = 3.5 * K6, a = atLen(P, s - 34), b = atLen(P, s - 104);
+      ctx.strokeStyle = '#b5352b'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(a[0], a[1] - u + 1); ctx.lineTo(b[0], b[1] - u + 1); ctx.stroke(); }
+    function cab() { prism(ctx, rectAt(cf, atLen(P, s - 25), 25), .5, 2.6, '#c0392b', '#94291f'); var W = rectAt(atLen(P, s - 2), atLen(P, s - 8), 23); ctx.fillStyle = N ? '#9fd8ff' : '#2b3a44'; ctx.beginPath(); W.forEach(function (q, i) { ctx[i ? 'lineTo' : 'moveTo'](q[0], q[1] - 3.1 * K6); }); ctx.fill(); }
+    if (cf[1] < tr[1]) { cab(); body(); } else { body(); cab(); } }
+  function along(P, f) { var L = [], tot = 0; for (var k = 0; k + 1 < P.length; k++) { var l = Math.hypot(P[k + 1][0] - P[k][0], P[k + 1][1] - P[k][1]); L.push(l); tot += l; }
+    var d = Math.max(0, Math.min(1, f)) * tot, q = 0; while (q < L.length - 1 && d > L[q]) { d -= L[q]; q++; } var A = P[q], B = P[q + 1], u = L[q] ? d / L[q] : 0;
+    return [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u, Math.atan2(B[1] - A[1], B[0] - A[0])]; }
+  function alongT(P, TT, u) { var k = 0; while (k < TT.length - 2 && u > TT[k + 1]) k++;           // במהירות של כל קטע (הבעלים 18:33): הזמן של כל נקודה מחושב מראש
+    var A = P[k], B = P[k + 1], f = TT[k + 1] > TT[k] ? Math.max(0, Math.min(1, (u - TT[k]) / (TT[k + 1] - TT[k]))) : 1; return [A[0] + (B[0] - A[0]) * f, A[1] + (B[1] - A[1]) * f, Math.atan2(B[1] - A[1], B[0] - A[0])]; }
+  function ease(u) { return u < 0 ? 0 : u > 1 ? 1 : u * u * (3 - 2 * u); }
+  function loopAlong(P, d) { var seg = [], per = 0; for (var k = 0; k < P.length; k++) { var a = P[k], b = P[(k + 1) % P.length], l = Math.hypot(b[0] - a[0], b[1] - a[1]); seg.push([a, b, l]); per += l; }
+    d = d % per; var q = 0; while (d > seg[q][2]) { d -= seg[q][2]; q++; } var A = seg[q][0], B = seg[q][1], f = d / seg[q][2]; return [A[0] + (B[0] - A[0]) * f, A[1] + (B[1] - A[1]) * f, Math.atan2(B[1] - A[1], B[0] - A[0])]; }
+  function showRow(ctx, D, N) { (D.display_cars || []).forEach(function (q, i) { if (q.hide) return; car(ctx, q[0], q[1], q.length > 2 ? q[2] : (i % 2 ? .32 : -.32), N, q.asset || ['VH-SU-03', 'VH-SP-02', 'VH-SD-04', 'VH-PK-02'][i % 4], 0, q.color != null ? q.color : [1, 6, 2, 7][i % 4]); }); }   /* carrier 17.11: מקום בשורה יכול להתחלף (q.asset / q.color — המכונית שהגיעה במוביל) או להיות ריק בזמן ההחלפה (q.hide) — 074p1 */   /* the showroom row (SU-03 · SP-02 · SD-04 · PK-02) */
+  function live(ctx, D, now, N) { var t = (now || 0) / 1000, RES = window.D3RES || 2;   /* p472 */
+    if (window.D3INGAME && D.display_cars) showRow(ctx, D, N);   /* kit34: the showroom row with the turntable — every frame, in the 3/4 queue (flushCars → c34Parked → C34) */
+    var PV=(function(m,W,H){if(!m||!m.a||m.b||m.c||!m.d)return null;var x0=-m.e/m.a,x1=(W-m.e)/m.a,y0=-m.f/m.d,y1=(H-m.f)/m.d;return[Math.min(x0,x1)-8,Math.min(y0,y1)-8,Math.max(x0,x1)+8,Math.max(y0,y1)+8]})(ctx.getTransform&&ctx.getTransform(),ctx.canvas.width,ctx.canvas.height);   /* p513 */ (D.pools || []).forEach(function (p, i) { if(PV&&!(p[2]>PV[0]&&p[0]<PV[2]&&p[3]>PV[1]&&p[1]<PV[3]))return;   /* p513: מחוץ למסך */ ctx.save(); ctx.beginPath(); ctx.rect(p[0], p[1], p[2] - p[0], p[3] - p[1]); ctx.clip(); ctx.strokeStyle = 'rgba(255,255,255,.38)'; ctx.lineWidth = 1;
+      for (var y = p[1] + 4; y < p[3]; y += 7) { ctx.beginPath(); for (var x = p[0]; x <= p[2]; x += 6) { var yy = y + Math.sin(x * .09 + t * 2.1 + i + y) * 1.4; x === p[0] ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy); } ctx.stroke(); }
+      ctx.restore(); });
+    var F = D.fuel;
+    if (F) { var T = t % (F.cycle || 120);                                                                         // ציר זמן של 120 שנ׳: המכלית 0–68, ארבע מכוניות בתורן — כל אחת לעמדה שלה
+      var TK = F.tank || { t_in: 10, dwell: 45, t_out: 13 }, TE = TK.t_in + TK.dwell + TK.t_out;      // המכלית: נכנסת, פורקת ויוצאת; החזית במרחק s על המסלול המלא
+      if (!F.full) { F.full = F.tIn.concat(F.tOut.slice(1)); F.l1 = plen(F.tIn); F.l2 = plen(F.full); }
+      if (T < TE && !window.FUEL_REAL) { var s, hose = false, FULL = F.full;
+        if (T < TK.t_in) { var u0 = T / TK.t_in; s = F.l1 * (1 - (1 - u0) * (1 - u0)); }               // מאטה עד המפרץ
+        else if (T < TK.t_in + TK.dwell) { s = F.l1; hose = T > TK.t_in + 2 && T < TK.t_in + TK.dwell - 2; }
+        else { var u1 = (T - TK.t_in - TK.dwell) / TK.t_out; s = F.l1 + (F.l2 - F.l1) * u1 * u1; }     // מאיצה מהמפרץ
+        ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, T / 1.5, (TE - T) / 1.5)); tanker34(ctx, FULL, s, N, hose, t, F.lids[1]); ctx.restore(); }
+      (window.FUEL_REAL ? [] : (F.trips || [])).forEach(function (q, qi) { var u = T - q.t0, ti = q.inT ? q.inT[q.inT.length - 1] : 7, to = q.outT ? q.outT[q.outT.length - 1] : 8; if (u < 0 || u > ti + q.dwell + to) return; var p, an; if (window.D3BUSY && D3BUSY(qi)) return;
+        ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, u / 1.2, (ti + q.dwell + to - u) / 1.2));
+        if (u < ti) { p = q.inT ? alongT(q.inP, q.inT, u) : along(q.inP, ease(u / ti)); an = p[2]; } else if (u < ti + q.dwell) { p = along(q.inP, 1); an = q.a; } else { p = q.outT ? alongT(q.outP, q.outT, u - ti - q.dwell) : along(q.outP, ease((u - ti - q.dwell) / to)); an = p[2]; }
+        car(ctx, p[0], p[1], an, N, q.car, 0, q.col);
+        if (u >= ti + 1 && u < ti + q.dwell - 1) { var pu = null, bd = 1e9; F.pumps.forEach(function (m) { var d = Math.hypot(m[0] - p[0], m[1] - p[1]); if (d < bd) { bd = d; pu = m; } });   // הצינור מהמשאבה של העמדה
+          ctx.strokeStyle = '#1f2326'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(pu[0], pu[1] - 6); ctx.quadraticCurveTo((pu[0] + p[0]) / 2, pu[1] - 14, p[0] + 6, p[1] - 4); ctx.stroke(); } ctx.restore(); });
+      var roofF = function (ctx) { var C = F.canopy, h = 5.0 * K6; ctx.save(); ctx.globalAlpha = .62;                                // the canopy's roof, 5 m up, over the car under it — see-through enough to show it
+      ctx.fillStyle = N ? '#d9dde0' : '#f4f6f7'; ctx.fillRect(C[0], C[1] - h, C[2] - C[0], C[3] - C[1]); ctx.globalAlpha = 1;
+      var BR = F.brand; ctx.fillStyle = BR ? BR.c1 : '#b5352b'; ctx.fillRect(C[0], C[3] - h - 2, C[2] - C[0], 7); ctx.fillStyle = BR ? BR.c2 : '#ffffff'; ctx.font = '700 6px Arial'; ctx.textAlign = 'center'; ctx.fillText(BR ? BR.name : 'דלק', (C[0] + C[2]) / 2, C[3] - h + 3.6);   /* p477 */
+      if (N) { ctx.fillStyle = 'rgba(255,248,214,.16)'; ctx.fillRect(C[0] - 10, C[1] - 6, C[2] - C[0] + 20, C[3] - C[1] + 16); }
+      ctx.restore(); };
+      if (LIVEQ && window.D3INGAME) { if (ROOFQ.length > 8) ROOFQ.shift(); ROOFQ.push([ctx, roofF]); } else roofF(ctx); }   /* p489 */
+    var TT = D.turntable;
+    if (TT) { var an = t * .22; ctx.save(); ctx.translate(TT.c[0], TT.c[1]); ctx.rotate(an); ctx.strokeStyle = 'rgba(80,86,92,.5)'; ctx.lineWidth = 1;
+        for (var k = 0; k < 6; k++) { ctx.rotate(Math.PI / 6); ctx.beginPath(); ctx.moveTo(-TT.r + 2, 0); ctx.lineTo(TT.r - 2, 0); ctx.stroke(); } ctx.restore();
+      car(ctx, TT.c[0], TT.c[1], an, N, 'VH-SP-01', 0, 0); }
+    (D.flags || []).forEach(function (f, i) { var x = f[0], y = f[1], h = 8 * K6; ctx.fillStyle = '#9aa0a6'; ctx.fillRect(x - 1, y - h, 2, h);
+      ctx.fillStyle = i === 2 ? '#b5352b' : '#1f4f7a'; ctx.beginPath(); ctx.moveTo(x + 1, y - h); for (var s = 0; s <= 6; s++) ctx.lineTo(x + 1 + s * 3, y - h + Math.sin(t * 4 + s * .9 + i) * 1.6);
+      for (var s = 6; s >= 0; s--) ctx.lineTo(x + 1 + s * 3, y - h + 11 + Math.sin(t * 4 + s * .9 + i) * 1.6); ctx.fill(); });
+    var G = D.garage;
+    if (G) { var u = t % 20, lift = u < 4 ? u / 4 : u < 14 ? 1 : u < 18 ? 1 - (u - 14) / 4 : 0, B = G.lift;
+      car(ctx, (B[0] + B[2]) / 2, (B[1] + B[3]) / 2, -Math.PI / 2, N, G.car, lift * 1.6, 2);
+      var mw = lift > .9 ? 0 : Math.sin(t * .7), mx = G.mech.at[0] + 14 * mw, mh = Math.cos(t * .7) >= 0 ? 0 : Math.PI;   // המכונאי הולך הלוך ושוב ליד המעלית (המבקר מ-26)
+      if (window.P34) P34.draw(ctx, mx, G.mech.at[1], G.mech.look, lift > .9 ? 'stand' : 'walk', lift > .9 ? Math.PI : mh, lift > .9 ? 0 : (t * .8) % 1, RES); }
+    (D.gardeners || []).forEach(function (g, gi) { var d = t * g.speed + gi * 37, p = loopAlong(g.path, d), an = p[2], cyc = window.P34 ? P34.cycle(g.look, 'walk') * 10 : 14;
+      var mf = [p[0] + Math.cos(an) * 11, p[1] + Math.sin(an) * 11], mr = [p[0] + Math.cos(an) * 2, p[1] + Math.sin(an) * 2], MQ = rectAt(mf, mr, 6);   // המכסחה ב-3/4 (המבקר מ-2)
+      shadow(ctx, MQ); prism(ctx, MQ, .1, .35, '#2e86c1', '#1f5f8c'); ctx.strokeStyle = '#2b2f33'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(mr[0], mr[1] - .45 * K6); ctx.lineTo(p[0] - Math.cos(an) * 3, p[1] - Math.sin(an) * 3 - .95 * K6); ctx.stroke();
+      if (window.P34) P34.draw(ctx, p[0] - Math.cos(an) * 6, p[1] - Math.sin(an) * 6, g.look, { k: 'carry' }, an, (d / cyc) % 1, RES); });
+    (D.sprinklers || []).forEach(function (s, i) { var a = t * 1.6 + i; ctx.strokeStyle = 'rgba(200,230,255,.6)'; ctx.lineWidth = 1;
+      for (var k = 0; k < 5; k++) { var r = 3 + k * 2.4; ctx.beginPath(); ctx.arc(s.x, s.y, r, a - .25, a + .25); ctx.stroke(); } });
+  }
+  function liveQ(ctx, D, now, N) { LIVEQ = true; try { live(ctx, D, now, N); } finally { LIVEQ = false; } }
+  function flushRoofs() { var L = ROOFQ; ROOFQ = []; L.forEach(function (q) { q[1](q[0]); }); }   /* p489 */
+  window.D3LOOK = { ground: ground, items: items, live: liveQ, marks: marks, flushCars: flushCars, flushRoofs: flushRoofs };
+})();
+
+var D3ND={"lawn":[[3605,1752,3831,2482],[3967,1752,4193,2482],[3600,1752,4459,1760],[4193,1760,4203,2482]],"pave":[[4404,2096,4434,2232,"stone"],[3733,1817,3831,1829,"stone"],[3760,2012,3831,2024,"stone"],[3755,2306,3831,2318,"stone"],[3967,1816,4067,1828,"stone"],[3967,2010,4035,2022,"stone"],[3967,2270,4030,2282,"stone"]],"play":null,"beds":[],"hedges":[[3630,1975],[3667,1975],[3705,1975],[3742,1975],[3609,1774,"v"],[3609,1786,"v"],[3609,1798,"v"],[3609,1810,"v"],[3609,1822,"v"],[3609,1834,"v"],[3609,1846,"v"],[3609,1858,"v"],[3609,1870,"v"],[3609,1881,"v"],[3609,1893,"v"],[3609,1905,"v"],[3609,1917,"v"],[3609,1929,"v"],[3609,1941,"v"],[3609,1953,"v"],[3609,1965,"v"],[3630,2234],[3667,2234],[3705,2234],[3742,2234],[3609,1993,"v"],[3609,2005,"v"],[3609,2017,"v"],[3609,2030,"v"],[3609,2042,"v"],[3609,2054,"v"],[3609,2066,"v"],[3609,2078,"v"],[3609,2090,"v"],[3609,2102,"v"],[3609,2115,"v"],[3609,2127,"v"],[3609,2139,"v"],[3609,2151,"v"],[3609,2163,"v"],[3609,2175,"v"],[3609,2187,"v"],[3609,2200,"v"],[3609,2212,"v"],[3609,2224,"v"],[3609,2252,"v"],[3609,2264,"v"],[3609,2276,"v"],[3609,2288,"v"],[3609,2300,"v"],[3609,2312,"v"],[3609,2324,"v"],[3609,2336,"v"],[3609,2348,"v"],[3609,2360,"v"],[3609,2372,"v"],[3609,2384,"v"],[3609,2396,"v"],[3609,2408,"v"],[3609,2420,"v"],[3609,2432,"v"],[3609,2444,"v"],[3609,2456,"v"],[3609,2468,"v"],[4056,1986],[4093,1986],[4131,1986],[4168,1986],[4189,1774,"v"],[4189,1786,"v"],[4189,1798,"v"],[4189,1810,"v"],[4189,1822,"v"],[4189,1833,"v"],[4189,1845,"v"],[4189,1857,"v"],[4189,1869,"v"],[4189,1881,"v"],[4189,1893,"v"],[4189,1905,"v"],[4189,1917,"v"],[4189,1928,"v"],[4189,1940,"v"],[4189,1952,"v"],[4189,1964,"v"],[4189,1976,"v"],[4056,2234],[4093,2234],[4131,2234],[4168,2234],[4189,2004,"v"],[4189,2016,"v"],[4189,2029,"v"],[4189,2041,"v"],[4189,2053,"v"],[4189,2065,"v"],[4189,2077,"v"],[4189,2090,"v"],[4189,2102,"v"],[4189,2114,"v"],[4189,2126,"v"],[4189,2138,"v"],[4189,2151,"v"],[4189,2163,"v"],[4189,2175,"v"],[4189,2187,"v"],[4189,2199,"v"],[4189,2212,"v"],[4189,2224,"v"],[4189,2252,"v"],[4189,2264,"v"],[4189,2276,"v"],[4189,2288,"v"],[4189,2300,"v"],[4189,2312,"v"],[4189,2324,"v"],[4189,2336,"v"],[4189,2348,"v"],[4189,2360,"v"],[4189,2372,"v"],[4189,2384,"v"],[4189,2396,"v"],[4189,2408,"v"],[4189,2420,"v"],[4189,2432,"v"],[4189,2444,"v"],[4189,2456,"v"],[4189,2468,"v"],[3627,1764],[3661,1764],[3695,1764],[3729,1764],[3763,1764],[4030,1792],[4065,1792],[4101,1792],[4137,1792],[4172,1792]],"trees":[["TP-UR-03",3790,1775,22],["TP-UR-01",3792,1952,18],["TP-UR-01",3625,2020,22],["TP-UR-03",3800,2215,22],["TP-UR-01",3720,2275,22],["TP-UR-01",3790,2460,22],["TP-UR-01",4030,1945,18],["TP-UR-01",3990,1955,18],["TP-UR-01",4170,2010,22],["TP-UR-03",4180,2140,22],["TP-UR-01",4185,2252,18],["TP-UR-01",4180,2470,22],["TP-UR-03",4471,1860,20],["TP-UR-03",3899,1880,14],["TP-UR-02",4385,2392,18],["TP-UR-02",4471,2378,18],["TP-UR-02",4471,2434,18],["TP-UR-02",3616,1756,24],["TP-UR-02",3668,1756,24],["TP-UR-02",3720,1756,24],["TP-UR-02",3837,1756,24],["TP-UR-02",3889,1756,24],["TP-UR-02",3941,1756,24],["TP-UR-02",4227,1756,24],["TP-UR-02",4279,1756,24],["TP-UR-02",4331,1756,24],["TP-UR-02",4383,1756,24]],"shrubs":[["TP-SH-02",3700,2234,18],["TP-SH-03",4120,2234,18],["TP-SH-01",4422,2086,16],["TP-SH-02",4430,2338,16]],"flowers":[["TP-BD-01",3775,1932,22],["TP-BD-02",4000,2200,22],["TP-BD-01",4300,2085,22]],"props":[["PR-14",3630,2140,0.7],["PR-14",4112,2152,0.7],["PR-01",4197,2060,0.9]],"lamps":[["SL-RES",3745,1958,22],["SL-RES",4120,2246,22],["SL-PKL",4197,1990,26],["SL-PKL",4196,2200,26],["SL-PKL",4196,2440,26]],"sprinklers":[{"x":3640,"y":2062,"r":14},{"x":4105,"y":2006,"r":12}],"flag":null,"marks":[],"turn":{"c":[3899,1880],"r":110,"ra":90},"pools":[[3640,2160,3780,2210],[3618,2300,3644,2440],[4060,2168,4170,2224],[4153,2262,4178,2420]],"gardeners":[{"path":[[4068,2428],[4142,2428],[4142,2462],[4068,2462]],"look":{"h":1.76,"skin":"#d9a77f","hair":{"t":"cap","c":"#9a2b2b"},"top":{"t":"polo","c":"#3a6ea5"},"legs":{"t":"jeans","c":"#2d3e50"},"shoes":{"t":"sneaker","c":"#e5e5e5"}},"speed":8}],"asph":[[4203,1764,4459,1984],[4203,1984,4434,2076],[4205,2300,4247,2482],[4205,2176,4404,2226],[4412,2236,4459,2310],[4247,2298,4268,2312],[4246,2482,4290,2502],[4205,2226,4412,2300],[4247,2412,4459,2482],[4247,2312,4320,2412],[3787,1852,3813,1908],[3985,1852,4011,1908]],"fuel":{"cycle":185,"canopy":[4290,1810,4450,1912],"islands":[[4308,1855,4434,1871]],"posts":[[4314,1863],[4428,1863]],"tank":{"t_in":18,"dwell":35,"t_out":26},"pumps":[[4340,1858],[4402,1858],[4340,1868],[4402,1868]],"bay":[4228,1766,4406,1800],"lids":[[4306,1806,"#2e7d32"],[4328,1806,"#f2c230"],[4350,1806,"#c0392b"]],"inAt":[4446,1786],"outAt":[4446,1944],"tIn":[[4503,700],[4503.0,1703.0],[4502.0,1715.5],[4499.1,1727.7],[4494.3,1739.3],[4487.7,1750.0],[4479.6,1759.6],[4470.0,1767.7],[4459.3,1774.3],[4447.7,1779.1],[4435.5,1782.0],[4423.0,1783.0],[4300,1783]],"tOut":[[4300,1783],[4300.0,1783.0],[4275.3,1786.9],[4253.0,1798.3],[4235.3,1816.0],[4223.9,1838.3],[4220.0,1863.0],[4223.9,1887.7],[4235.3,1910.0],[4253.0,1927.7],[4275.3,1939.1],[4300.0,1943.0],[4423,1943],[4423.0,1943.0],[4435.5,1944.0],[4447.7,1946.9],[4459.3,1951.7],[4470.0,1958.3],[4479.6,1966.4],[4487.7,1976.0],[4494.3,1986.7],[4499.1,1998.3],[4502.0,2010.5],[4503.0,2023.0],[4503,3300]],"trips":[{"inP":[[4503,1440],[4503,1750],[4474,1788],[4440,1815],[4430,1840],[4402,1841]],"dwell":12,"outP":[[4402,1841],[4320,1842],[4280,1846],[4245,1872],[4240,1905],[4265,1932],[4410,1936],[4452,1942],[4484,1962],[4503,2005],[4503,2400]],"car":"VH-HB-01","col":5,"a":3.1416,"inT":[0.0,3.88,4.48,5.72,6.49,7.29],"outT":[0.0,2.34,3.49,4.74,5.69,6.74,10.88,12.09,13.17,13.76,18.7],"dur":38.0,"t0":82},{"inP":[[4503,1440],[4503,1750],[4474,1788],[4440,1815],[4290,1815],[4252,1830],[4240,1870],[4252,1902],[4286,1906],[4310,1890],[4340,1885]],"dwell":12,"outP":[[4340,1885],[4430,1886],[4462,1915],[4490,1950],[4503,2000],[4503,2400]],"car":"VH-SU-01","col":3,"a":0,"inT":[0.0,3.88,4.48,5.72,10.01,11.18,12.37,13.35,14.33,15.15,16.02],"outT":[0.0,2.57,3.8,5.08,5.73,10.73],"dur":38.8,"t0":84},{"inP":[[4503,1440],[4503,1750],[4474,1788],[4440,1815],[4390,1818],[4365,1838],[4340,1841]],"dwell":12,"outP":[[4340,1841],[4280,1846],[4245,1872],[4240,1905],[4265,1932],[4410,1936],[4452,1942],[4484,1962],[4503,2005],[4503,2400]],"car":"VH-SD-03","col":1,"a":3.1416,"inT":[0.0,3.88,4.48,5.72,7.15,8.06,8.78],"outT":[0.0,1.72,2.97,3.92,4.97,9.11,10.32,11.4,11.99,16.93],"dur":37.7,"t0":124},{"inP":[[4503,1440],[4503,1750],[4474,1788],[4440,1815],[4290,1815],[4252,1830],[4240,1870],[4252,1902],[4286,1906],[4310,1890],[4370,1888],[4402,1885]],"dwell":12,"outP":[[4402,1885],[4440,1886],[4468,1915],[4494,1950],[4503,2000],[4503,2400]],"car":"VH-MV-01","col":6,"a":0,"inT":[0.0,3.88,4.48,5.72,10.01,11.18,12.37,13.35,14.33,15.15,16.87,17.79],"outT":[0.0,1.09,2.24,3.49,4.13,9.13],"dur":38.9,"t0":126}],"bays":[[4312,1827,56,28],[4374,1827,56,28],[4312,1871,56,28],[4374,1871,56,28]],"sign":[4214,1774]},"lane":[4205,2300,4247,2482],"garage":{"bays":[[4315,2414,4359,2476],[4360,2414,4404,2476],[4405,2414,4449,2476]],"lift":[4322,2418,4350,2474],"car":"VH-HB-02","mech":{"at":[4362,2450],"look":{"h":1.8,"skin":"#b98563","hair":{"t":"short","c":"#20180f"},"top":{"t":"shirt","c":"#2f5a74"},"legs":{"t":"trousers","c":"#2f5a74"},"shoes":{"t":"boot","c":"#3a2c22"}}}},"display_cars":[[4423,2142,1.5708],[4423,2196,1.5708],[4233.5,2206,0],[4280.5,2206,0],[4327.5,2206,0]],"turntable":{"c":[4380,2215],"r":22},"carrierBay":[4305,2239,4405,2265],"showStalls":[[4210,2194,4257,2218],[4257,2194,4304,2218],[4304,2194,4351,2218]],"exitE":[4459,2232,4484,2310],"flags":[[4423,2106],[4408,2246],[4210,1824]],"bins":[[4406,2050,4434,2072],[4252,2432,4280,2456]],"cuts":[[4459,2232,4484,2310],[4459,1752,4484,1812],[4459,1905,4484,1984],[4205,2482,4290,2502],[4300,2482,4370,2502],[3831,2080,3851,2136],[3831,2325,3851,2409],[3947,2052,3967,2164],[3947,2325,3967,2409]],"aprons":[[3787,1852,3813,1908],[3985,1852,4011,1908]],"joins":[[4459,2502,4484,2598],[3851,2482,3947,2502]],"caps":[[3831,2502,3851,2598]],"zebra":[[4412,2502,4448,2598,"v"],[3851,2432,3947,2468,"h"]],"live":[{"kind":"רכב עם משימה","what":"מכונית נכנסת מהשדרה, מתדלקת ויוצאת"},{"kind":"רכב עם משימה","what":"המכלית מגיעה למפרץ שלה, פורקת ויוצאת"},{"kind":"רכב עם משימה","what":"מכונית על המעלית במוסך עולה ויורדת"},{"kind":"אנשים בפעולה","what":"המכונאי עובד ליד המכונית"},{"kind":"אנשים בפעולה","what":"גנן עם מכסחה בגינה של וילה 6"},{"kind":"רוח","what":"שלושה דגלים בסוכנות ובתחנת הדלק"},{"kind":"תנועה","what":"מכונית התצוגה מסתובבת על הבמה"},{"kind":"מים","what":"הבריכות של ארבע וילות"},{"kind":"מים","what":"שתי ממטרות בגינות"}],"stalls":[{"id":"D3-V1-S1","x":3733,"y":1852,"w":56,"h":28},{"id":"D3-V1-S2","x":3733,"y":1880,"w":56,"h":28},{"id":"D3-V2-S1","x":3775,"y":2080,"w":56,"h":28},{"id":"D3-V2-S2","x":3775,"y":2108,"w":56,"h":28},{"id":"D3-V3-S1","x":3775,"y":2325,"w":56,"h":28},{"id":"D3-V3-S2","x":3775,"y":2353,"w":56,"h":28},{"id":"D3-V3-S3","x":3775,"y":2381,"w":56,"h":28},{"id":"D3-V4-S1","x":4009,"y":1852,"w":56,"h":28},{"id":"D3-V4-S2","x":4009,"y":1880,"w":56,"h":28},{"id":"D3-V5-S1","x":3967,"y":2052,"w":56,"h":28},{"id":"D3-V5-S2","x":3967,"y":2080,"w":56,"h":28},{"id":"D3-V5-S3","x":3967,"y":2108,"w":56,"h":28},{"id":"D3-V5-S4","x":3967,"y":2136,"w":56,"h":28},{"id":"D3-V6-S1","x":3967,"y":2325,"w":56,"h":28},{"id":"D3-V6-S2","x":3967,"y":2353,"w":56,"h":28},{"id":"D3-V6-S3","x":3967,"y":2381,"w":56,"h":28},{"id":"D3-FUEL-B1","x":4312,"y":1827,"w":56,"h":28},{"id":"D3-FUEL-B2","x":4374,"y":1827,"w":56,"h":28},{"id":"D3-FUEL-B3","x":4312,"y":1871,"w":56,"h":28},{"id":"D3-FUEL-B4","x":4374,"y":1871,"w":56,"h":28},{"id":"D3-FUEL-P1","x":4222,"y":1990,"w":28,"h":56},{"id":"D3-FUEL-P2","x":4250,"y":1990,"w":28,"h":56},{"id":"D3-FUEL-P3","x":4278,"y":1990,"w":28,"h":56},{"id":"D3-DEALER-P2","x":4298,"y":2270,"w":56,"h":28},{"id":"D3-DEALER-P3","x":4354,"y":2270,"w":56,"h":28},{"id":"D3-GARAGE-P1","x":4250,"y":2316,"w":56,"h":28},{"id":"D3-GARAGE-P2","x":4250,"y":2344,"w":56,"h":28},{"id":"D3-GARAGE-P3","x":4250,"y":2372,"w":56,"h":28},{"id":"D3-GARAGE-P4","x":4250,"y":2400,"w":56,"h":28}],"garages":[]};
+p486Ops('D3ND',D3ND,[["F-026","add","lamps","SL-AV2",4748,1977,null,null,28],["F-029","add","lamps","SL-AV2",4474,2150,null,null,28],["F-093","add","trees","TP-UR-02",4771,1786,null,null,24],["F-094","add","trees","TP-UR-02",4771,1844,null,null,24],["F-095","add","trees","TP-UR-02",4771,1902,null,null,24],["F-096","add","trees","TP-UR-02",4771,1960,null,null,24],["F-097","add","trees","TP-UR-02",4771,2238,null,null,24],["F-123","move","trees","TP-UR-03",3790,1775,3778,1760,22],["F-124","move","trees","TP-UR-02",3889,1756,3895,1760,24],["F-125","move","trees","TP-UR-02",3941,1756,3953,1760,24],["F-137","add","props","PR-29",4372,2084,null,null,1],["F-138","add","props","PR-29",4431,2303,null,null,1]]);   /* p486 */
+var D3N_BLD=[
+ b4Bld40('D3-V1','VILLAH',3,3623,1801,'וילה · סמטת הווילות 1','villa',118,22),
+ b4Bld40('D3-V2','VILLAG',3,3660,2000,'וילה · סמטת הווילות 3','villa',108,18),
+ b4Bld40('D3-V3','VILLAJ',3,3650,2300,'וילה · סמטת הווילות 5','villa',113,12),
+ b4Bld40('D3-V4','VILLAK',1,4067,1806,'וילה · סמטת הווילות 2','villa',-8,16),
+ b4Bld40('D3-V5','VILLAF',1,4035,1998,'וילה · סמטת הווילות 4','villa',-8,18),
+ b4Bld40('D3-V6','VILLAI',1,4030,2258,'וילה · סמטת הווילות 6','villa',-8,18),
+ b4Bld40('D3-FUEL-SHOP','FUELSHOP',2,4312,1964,'החנות של תחנת הדלק','service',60,-8),
+ (o=>{o.drawY=o.y;o.y=2076;o.h=100;o.info={w:o.w,h:100,fp:[0,0,o.w,100],an:[['Entrance',100,108]]};return o})(b4Bld40('D3-DEALER-SHOW','SHOWROOM',0,4204,2046,'אולם התצוגה של הסוכנות','service',100,138)),
+ b4Bld40('D3-GARAGE-WS','WORKSHOP2',0,4307,2312,'המוסך','service',75,108)
+];
+C4_BUILDINGS.push(...D3N_BLD);
+var D3N_STALLS=[   // 2.8 × 5.6 מ׳ (D‑327); עמדות התדלוק — kind:'fuel', לא חונים בהן
+ {id:'D3-V1-S1',x:3733,y:1852,w:56,h:28,rot:0,pave:true,house:'D3-V1'},
+ {id:'D3-V1-S2',x:3733,y:1880,w:56,h:28,rot:0,pave:true,house:'D3-V1'},
+ {id:'D3-V2-S1',x:3775,y:2080,w:56,h:28,rot:0,pave:true,house:'D3-V2'},
+ {id:'D3-V2-S2',x:3775,y:2108,w:56,h:28,rot:0,pave:true,house:'D3-V2'},
+ {id:'D3-V3-S1',x:3775,y:2325,w:56,h:28,rot:0,pave:true,house:'D3-V3'},
+ {id:'D3-V3-S2',x:3775,y:2353,w:56,h:28,rot:0,pave:true,house:'D3-V3'},
+ {id:'D3-V3-S3',x:3775,y:2381,w:56,h:28,rot:0,pave:true,house:'D3-V3'},
+ {id:'D3-V4-S1',x:4009,y:1852,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V4'},
+ {id:'D3-V4-S2',x:4009,y:1880,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V4'},
+ {id:'D3-V5-S1',x:3967,y:2052,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V5'},
+ {id:'D3-V5-S2',x:3967,y:2080,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V5'},
+ {id:'D3-V5-S3',x:3967,y:2108,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V5'},
+ {id:'D3-V5-S4',x:3967,y:2136,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V5'},
+ {id:'D3-V6-S1',x:3967,y:2325,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V6'},
+ {id:'D3-V6-S2',x:3967,y:2353,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V6'},
+ {id:'D3-V6-S3',x:3967,y:2381,w:56,h:28,rot:Math.PI,pave:true,house:'D3-V6'},
+ {id:'D3-FUEL-B1',x:4312,y:1827,w:56,h:28,rot:Math.PI,pave:false,house:'D3-FUEL',kind:'fuel'},
+ {id:'D3-FUEL-B2',x:4374,y:1827,w:56,h:28,rot:Math.PI,pave:false,house:'D3-FUEL',kind:'fuel'},
+ {id:'D3-FUEL-B3',x:4312,y:1871,w:56,h:28,rot:0,pave:false,house:'D3-FUEL',kind:'fuel'},
+ {id:'D3-FUEL-B4',x:4374,y:1871,w:56,h:28,rot:0,pave:false,house:'D3-FUEL',kind:'fuel'},
+ {id:'D3-FUEL-P1',x:4222,y:1990,w:28,h:56,rot:-Math.PI/2,pave:false,house:'D3-FUEL'},
+ {id:'D3-FUEL-P2',x:4250,y:1990,w:28,h:56,rot:-Math.PI/2,pave:false,house:'D3-FUEL'},
+ {id:'D3-FUEL-P3',x:4278,y:1990,w:28,h:56,rot:-Math.PI/2,pave:false,house:'D3-FUEL'},
+ /* p624: D3-DEALER-P1 out — the way of the car carrier */
+ {id:'D3-DEALER-P2',x:4298,y:2270,w:56,h:28,rot:Math.PI,pave:false,house:'D3-DEALER'},
+ {id:'D3-DEALER-P3',x:4354,y:2270,w:56,h:28,rot:Math.PI,pave:false,house:'D3-DEALER'},
+ {id:'D3-GARAGE-P1',x:4250,y:2316,w:56,h:28,rot:Math.PI,pave:false,house:'D3-GARAGE'},
+ {id:'D3-GARAGE-P2',x:4250,y:2344,w:56,h:28,rot:Math.PI,pave:false,house:'D3-GARAGE'},
+ {id:'D3-GARAGE-P3',x:4250,y:2372,w:56,h:28,rot:Math.PI,pave:false,house:'D3-GARAGE'},
+ {id:'D3-GARAGE-P4',x:4250,y:2400,w:56,h:28,rot:Math.PI,pave:false,house:'D3-GARAGE'}
+];
+for(const l of [{"id":"D3-V1-DW","label":"שביל הרכב של סמטת הווילות 1","yard":{"x":3733,"y":1852,"w":56,"h":56}},{"id":"D3-V2-DW","label":"שביל הרכב של סמטת הווילות 3","yard":{"x":3775,"y":2080,"w":56,"h":56}},{"id":"D3-V3-DW","label":"שביל הרכב של סמטת הווילות 5","yard":{"x":3775,"y":2325,"w":56,"h":84}},{"id":"D3-V4-DW","label":"שביל הרכב של סמטת הווילות 2","yard":{"x":4009,"y":1852,"w":56,"h":56}},{"id":"D3-V5-DW","label":"שביל הרכב של סמטת הווילות 4","yard":{"x":3967,"y":2052,"w":56,"h":112}},{"id":"D3-V6-DW","label":"שביל הרכב של סמטת הווילות 6","yard":{"x":3967,"y":2325,"w":56,"h":84}}]){C4_YARDS.push({id:l.id+'-YARD',...l.yard,label:l.label,skin:true,pave:true})}
+C4_STALLS.push(...D3N_STALLS);
+C4_ACCESS.push(...[{"id":"D3-CUT-0","x":4459,"y":1752,"w":25,"h":60,"horiz":true,"top":[4459,4484],"bottom":[4459,4484]},{"id":"D3-CUT-1","x":4459,"y":1905,"w":25,"h":79,"horiz":true,"top":[4459,4484],"bottom":[4459,4484]},{"id":"D3-CUT-2","x":4205,"y":2482,"w":42,"h":20},{"id":"D3-CUT-3","x":4300,"y":2482,"w":70,"h":20},{"id":"D3-CUT-4","x":3831,"y":2080,"w":20,"h":56,"horiz":true,"top":[3831,3851],"bottom":[3831,3851]},{"id":"D3-CUT-5","x":3831,"y":2325,"w":20,"h":84,"horiz":true,"top":[3831,3851],"bottom":[3831,3851]},{"id":"D3-CUT-6","x":3947,"y":2052,"w":20,"h":112,"horiz":true,"top":[3947,3967],"bottom":[3947,3967]},{"id":"D3-CUT-7","x":3947,"y":2325,"w":20,"h":84,"horiz":true,"top":[3947,3967],"bottom":[3947,3967]},{"id":"D3-CUT-8","x":3787,"y":1852,"w":26,"h":56,"horiz":true,"top":[3787,3813],"bottom":[3787,3813]},{"id":"D3-CUT-9","x":3985,"y":1852,"w":26,"h":56,"horiz":true,"top":[3985,4011],"bottom":[3985,4011]}]);   // כל הנמכה — גם רצועת גישה (בלי פנס מולה, K‑187)
+var D3N_CAR_PLAN=[["D3-V1-S1","VH-SD-02","Sedan"],["D3-V2-S1","VH-SU-03","SUV"],["D3-V3-S1","VH-HB-02","Compact"],["D3-V3-S3","VH-MV-02","Minivan"],["D3-V4-S2","VH-SD-04","Sedan"],["D3-V5-S2","VH-SD-02","Sedan"],["D3-V5-S4","VH-SU-03","SUV"],["D3-V6-S2","VH-HB-02","Compact"],["D3-FUEL-P1","VH-MV-02","Minivan"],["D3-FUEL-P3","VH-SD-04","Sedan"],["D3-DEALER-P2","VH-SD-02","Sedan"],["D3-GARAGE-P1","VH-SU-03","SUV"],["D3-GARAGE-P3","VH-HB-02","Compact"]];
+PARKED_CARS.push(...D3N_CAR_PLAN.map(([sid,asset,ref],i)=>{const st=D3N_STALLS.find(q=>q.id===sid);return parkInRect('PC-D3N-'+(i+1),asset,ref,st,st.rot)}));
+GRAPHICS_RUNTIME_INFO.required.push(...["PR-01","PR-14","SL-PKL","SL-RES","TP-BD-01","TP-BD-02","TP-SH-01","TP-SH-02","TP-SH-03","TP-UR-01","TP-UR-02","TP-UR-03","VH-HB-01","VH-HB-02","VH-MV-01","VH-PK-02","VH-SD-03","VH-SD-04","VH-SP-01","VH-SP-02","VH-SU-01","VH-SU-03"]);
+var D3N_SVC_PTS={"D3-FUEL":[[4340.0,1841.0],[4402.0,1841.0],[4340.0,1885.0],[4402.0,1885.0]],"D3-GARAGE":[[4395,2450]],"D3-DEALER":[[4304,2229]]};
+var D3N_K187=[{"id":"D3-K187-0","x":4459,"y":1727,"w":25,"h":110},{"id":"D3-K187-1","x":4459,"y":1880,"w":25,"h":129},{"id":"D3-K187-2","x":4180,"y":2482,"w":92,"h":20},{"id":"D3-K187-3","x":4275,"y":2482,"w":120,"h":20},{"id":"D3-K187-4","x":3831,"y":2055,"w":20,"h":106},{"id":"D3-K187-5","x":3831,"y":2300,"w":20,"h":134},{"id":"D3-K187-6","x":3947,"y":2027,"w":20,"h":162},{"id":"D3-K187-7","x":3947,"y":2300,"w":20,"h":134}];K187_LISTS.push('D3N_K187');window.D3ZEBRALATE=true;window.D3INGAME=true;   // המבקר מ-4: פנס לפחות 2.5 מ׳ מכל הנמכה; מעבר החצייה מעל הכביש
+var D3N_TURN_P={id:'D3-TURN',label:'מעגל הסיבוב של סמטת הווילות'},D3N_PAVE_P={id:'D3-PAVED',label:'המשטח של העסקים ב-D3'};
+for(const s of [["D3-FUEL-ISLAND",4308,1855,4434,1871],["D3-DISPLAY2",4404,2096,4434,2232],["D3-TURNTABLE",4358,2193,4402,2237],["D3-BINS-0",4406,2050,4434,2072],["D3-BINS-1",4252,2432,4280,2456],["D3-POOL-0",3640,2160,3780,2210],["D3-POOL-1",3618,2300,3644,2440],["D3-POOL-2",4060,2168,4170,2224],["D3-POOL-3",4153,2262,4178,2420]])d3SolidRect(s[0],s[1],s[2],s[3]-s[1],s[4]-s[2]);
+for(const p of [[4314,1863],[4428,1863]])d3SolidDisc('D3-CANOPY-POST',p[0],p[1],3);
+d3SolidDisc('D3-TURNTABLE',D3ND.turntable.c[0],D3ND.turntable.c[1],D3ND.turntable.r);
+/* p624: the display stalls by the showroom, the car carrier's bay, the exit to the avenue (right only) */
+function p624Ground(g){const D=D3ND;g.save();g.strokeStyle='rgba(255,255,255,.9)';g.lineWidth=1.2;for(const r of (D.showStalls||[]))g.strokeRect(r[0]+.6,r[1]+.6,r[2]-r[0]-1.2,r[3]-r[1]-1.2);
+ const B=D.carrierBay;if(B){g.setLineDash([8,5]);g.strokeStyle='#f2c230';g.lineWidth=2;g.strokeRect(B[0]+1,B[1]+1,B[2]-B[0]-2,B[3]-B[1]-2);g.setLineDash([]);g.fillStyle='rgba(242,194,48,.95)';g.font='600 6px Arial, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('מוביל רכב',(B[0]+B[2])/2,(B[1]+B[3])/2)}
+ const E=D.exitE;if(E){p690Exit(g,E)}if(false){const x=(E[0]+E[2])/2-26,y=(E[1]+E[3])/2+18;g.fillStyle='rgba(255,255,255,.92)';g.save();g.translate(x,y);g.beginPath();g.moveTo(9,0);g.lineTo(1,-5);g.lineTo(1,-2);g.lineTo(-9,-2);g.lineTo(-9,2);g.lineTo(1,2);g.lineTo(1,5);g.closePath();g.fill();g.restore();
+  g.font='600 5px Arial, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('יציאה — ימינה בלבד',x-2,y-12)}g.restore()}
+/* p690 (the owner 08:55): the dealer's exit to the east avenue — the lowered kerb, the apron, the give-way line, the right-turn arrow and the words */
+function p690Exit(g,E){const x0=E[0],x1=E[2],y0=E[1]+4,y1=E[3];g.save();
+ g.fillStyle='rgba(245,245,235,.95)';for(let y=y0+4;y<y1-4;y+=9)g.fillRect(x0-6,y,3,5);   /* give way */
+ const ax=x0-22,ay=(y0+y1)/2+4;g.strokeStyle='rgba(255,255,255,.95)';g.lineWidth=3.2;g.lineCap='round';g.beginPath();g.moveTo(ax-18,ay-10);g.lineTo(ax-2,ay-10);g.quadraticCurveTo(ax+8,ay-10,ax+8,ay+2);g.lineTo(ax+8,ay+8);g.stroke();
+ g.fillStyle='rgba(255,255,255,.95)';g.beginPath();g.moveTo(ax+2,ay+6);g.lineTo(ax+14,ay+6);g.lineTo(ax+8,ay+16);g.closePath();g.fill();
+ g.font='700 6px "Segoe UI","Noto Sans Hebrew",Arial,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillStyle='rgba(255,255,255,.95)';g.fillText('יציאה — ימינה בלבד',x0-35,y0+10);g.restore()}
+/* the apron over the sidewalk — drawn after the roads (with the turning circles), so the sidewalk does not cover it */
+function p690ExitTop(){const E=D3ND&&D3ND.exitE;if(!E||typeof e3InView==='function'&&!e3InView(E[0]-20,E[1]-20,60,E[3]-E[1]+40,0))return;const g=ctx,x0=E[0],x1=E[2],y0=E[1]+4,y1=E[3];g.save();
+ g.fillStyle='#8e8a82';g.fillRect(x0,y0,x1-x0,y1-y0);g.fillStyle='#a19d94';g.beginPath();g.moveTo(x0,y0);g.lineTo(x1,y0-8);g.lineTo(x1,y0);g.closePath();g.fill();g.beginPath();g.moveTo(x0,y1);g.lineTo(x1,y1+8);g.lineTo(x1,y1);g.closePath();g.fill();
+ g.strokeStyle='rgba(60,58,54,.35)';g.lineWidth=.8;for(let y=y0+8;y<y1;y+=10){g.beginPath();g.moveTo(x0,y);g.lineTo(x1,y);g.stroke()}
+ g.fillStyle='#cfcac0';for(let y=y0-6;y<y1+6;y+=7)g.fillRect(x1-2.2,y,2.2,4.2);   /* the lowered kerb at the road */
+ g.restore()}
+var D3LOOK_=null;function d3NLook(){if(!D3LOOK_){D3LOOK_=ZONELOOK.create();D3LOOK_.set(D3ND)}return D3LOOK_}
+function d3NInView(m){return e3InView(3590,1690,1150,940,m)}
+function drawD3NGround(now){if(!d3NInView(60))return;ctx.save();const L=d3NLook();L.ground(ctx,b3View());D3LOOK.ground(ctx,D3ND,false);try{p624Ground(ctx)}catch(e){}
+ for(const s of D3N_STALLS){if(!s.pave)continue;c4Pavers(s.x,s.y,s.w,s.h);ctx.fillStyle='rgba(60,55,45,.18)';ctx.fillRect(s.x+4,s.y+7,s.w-8,6);ctx.fillRect(s.x+4,s.y+s.h-13,s.w-8,6)}ctx.restore()}
+function drawD3NItems(now){if(!d3NInView(90))return;const L=d3NLook();L.items(ctx,now,b3View());D3LOOK.items(ctx,D3ND,false);D3LOOK.marks(ctx,D3ND,false);
+ for(const o of D3N_BLD)Targets.add({id:o.id,label:o.label,category:'building',x:o.x+o.w/2,y:o.y+o.h/2,w:o.w,h:o.h})}
+window.D3BUSY=function(qi){try{const b=D3ND.fuel.bays[[1,2,0,3][qi]],a=playerActor();return a.x>=b[0]-6&&a.x<=b[0]+b[2]+6&&a.y>=b[1]-6&&a.y<=b[1]+b[3]+6}catch(e){return false}};
+function d3NLive(now){if(Camera.zoom<=.55||!d3NInView(90))return;const L=d3NLook();window.D3RES=p599Res(Camera.zoom*dpr);L.live(ctx,now,b3View());D3LOOK.live(ctx,D3ND,now,false);try{D3ANIM.live(ctx,now,b3View(),Math.max(0,Math.min(1,+window.__TC_NIGHT||0)))}catch(e){D3ANIM_ERR=D3ANIM_ERR||String(e&&e.message||e)}}   /* D‑339: מה שזז ב-D3 · p656: D3ANIM */
+function d3NPavedAt(x,y){if(!D3ND)return null;const T=D3ND.turn;if(Math.hypot(x-T.c[0],y-T.c[1])<=T.ra)return D3N_TURN_P;for(const r of D3ND.asph.concat(D3ND.cuts,D3ND.aprons))if(x>=r[0]&&x<=r[2]&&y>=r[1]&&y<=r[3])return D3N_PAVE_P;return null}
+window.__TC_D3={data:()=>({base:D3ND,buildings:D3N_BLD.length,stalls:D3N_STALLS.length,fuelBays:D3N_STALLS.filter(s=>s.kind==='fuel').length}),look:d3NLook};
+/* p477: C4 ו-D4 של המפה (שלב S5) — המבנים של BLD45, הקרקע, הפריטים ומה שזז. var ולא const: פונקציות מורמות (parkingInfoAt,
+   d4SolidAt) יכולות לרוץ לפני הבלוק הזה. */
+// 2.11 · C4D4LOOK — מה שמצויר ב-C4 וב-D4 מעבר ל-ZONELOOK ול-D3LOOK: רחבת הכבאיות, חצר האימונים, מפרצי המשאיות, חצר הסיבוב,
+// סימוני הרציפים של מרכז ההפצה, השער עם האי והביתן, המחסומים, הסימונים בחניון העובדים. הכול מהנתונים (c4d4v1.json).
+(function () {
+  var K6 = 6;                                                                                         // 1 m of height = 6 px up
+  function box(ctx, x, y, w, d, h, top, side) { var H = h * K6; ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.fillRect(x + 2, y + 2, w + 3, d + 2);
+    ctx.fillStyle = side; ctx.fillRect(x, y + d - H, w, H); ctx.fillStyle = top; ctx.fillRect(x, y - H, w, d); }
+  function hatch(ctx, r, col) { ctx.save(); ctx.beginPath(); ctx.rect(r[0], r[1], r[2] - r[0], r[3] - r[1]); ctx.clip(); ctx.strokeStyle = col; ctx.lineWidth = 2.2;
+    for (var k = r[0] - (r[3] - r[1]); k < r[2]; k += 9) { ctx.beginPath(); ctx.moveTo(k, r[3]); ctx.lineTo(k + (r[3] - r[1]), r[1]); ctx.stroke(); } ctx.restore();
+    ctx.strokeStyle = col; ctx.lineWidth = 1.6; ctx.strokeRect(r[0] + .8, r[1] + .8, r[2] - r[0] - 1.6, r[3] - r[1] - 1.6); }
+  function dash(ctx, r, col, w) { ctx.save(); ctx.setLineDash([8, 5]); ctx.strokeStyle = col; ctx.lineWidth = w || 2; ctx.strokeRect(r[0] + 1, r[1] + 1, r[2] - r[0] - 2, r[3] - r[1] - 2); ctx.restore(); }
+  function text(ctx, t, x, y, fs, col, rot) { ctx.save(); ctx.translate(x, y); if (rot) ctx.rotate(rot); ctx.fillStyle = col; ctx.font = '700 ' + fs + 'px "Segoe UI",Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'rtl'; ctx.fillText(t, 0, 0); ctx.restore(); }
+  function arrow(ctx, x, y, a, N) { cityArrow(ctx, x, y, a, 's', N, 1); }   /* p487 (C4 · D4) */
+  function joints(ctx, r, step) { ctx.strokeStyle = 'rgba(30,30,28,.16)'; ctx.lineWidth = .8; ctx.beginPath();
+    for (var x = r[0] + step; x < r[2] - 1; x += step) { ctx.moveTo(x, r[1]); ctx.lineTo(x, r[3]); } for (var y = r[1] + step; y < r[3] - 1; y += step) { ctx.moveTo(r[0], y); ctx.lineTo(r[2], y); } ctx.stroke(); }
+  var LOGO = {};
+  function logo(key, svg) { if (LOGO[key] || typeof TCSVG === 'undefined' || !svg) return LOGO[key] || null; LOGO[key] = TCSVG.canvas(svg, 256); return LOGO[key]; }   /* r17 · כלל 17: קנבס מאותו SVG (029z TCSVG) */
+
+  // ---------------- C4 ----------------
+  function groundC4(ctx, C, N) {
+    var F = C.fire;
+    F.doors.forEach(function (y) { hatch(ctx, [F.apron[0] + 3, y - 23, F.apron[2] - 2, y + 23], N ? 'rgba(242,194,48,.5)' : 'rgba(242,194,48,.9)'); });   // the doors' fronts: keep clear
+    text(ctx, 'יציאת כבאיות · לא לחנות', (F.apron[0] + F.apron[2]) / 2, (F.apron[1] + F.doors[0] - 23) / 2 + 2, 6, 'rgba(255,240,200,.85)', 0);
+    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(2731, 3283, 22, 0, 6.2832); ctx.stroke(); text(ctx, 'אימונים', 2731, 3283, 6, 'rgba(255,255,255,.75)');
+    (C.trucks || []).forEach(function (t) { dash(ctx, t.bay, '#f2c230', 1.8); });
+    var B = C.fuel.bay; text(ctx, 'מכלית בלבד', (B[0] + B[2]) / 2, (B[1] + B[3]) / 2, 6, 'rgba(242,194,48,.95)', -Math.PI / 2);
+    var Yd = C.yard; text(ctx, 'חצר סיבוב', (Yd[0] + Yd[2]) / 2, Yd[1] + 40, 7, 'rgba(255,255,255,.7)');
+    ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc((Yd[0] + Yd[2]) / 2, Yd[1] + 120, 34, Math.PI * .1, Math.PI * 1.9); ctx.stroke(); arrow(ctx, (Yd[0] + Yd[2]) / 2 + 32, Yd[1] + 109, -Math.PI / 2 - .3, N);
+    arrow(ctx, 2955, 2700, Math.PI / 2, N); arrow(ctx, 2955, 2600, -Math.PI / 2, N); arrow(ctx, 3272, 3207, Math.PI, N); arrow(ctx, 3200, 3207, 0, N);   // the parkings' aisles
+  }
+  function itemsC4(ctx, C, N) {
+    var F = C.fire, T = F.tower; box(ctx, T[0], T[1], T[2] - T[0], T[3] - T[1], 9, N ? '#5a4b40' : '#b9573f', N ? '#4a3c33' : '#93422f');   // the drill tower, 9 m
+    for (var k = 1; k < 4; k++) { ctx.fillStyle = N ? '#2b2f33' : '#3b3f43'; ctx.fillRect(T[0] + 8, T[3] - k * 2.2 * K6 - 5, 12, 5); }
+    var H = F.hydrant; box(ctx, H[0] - 2.5, H[1] - 2.5, 5, 5, .8, '#e0463a', '#b5352b');
+    var S = C.fuel.sign, br = C.fuel.brand, im = logo('fuel', C.logos && C.logos.fuel);                // the price pylon of the station, in the brand's colours, with the chosen logo
+    if (im) { var ph = 6.4 * K6; ctx.drawImage(im, S[0] - 8, S[1] - ph - 18, 16, 16); }
+  }
+
+  // ---------------- D4 ----------------
+  function groundD4(ctx, D, N) {
+    (D.asph || []).slice(0, 3).forEach(function (r) { joints(ctx, r, 40); });
+    var X = D.dockX, L = D.lsemi;
+    D.docksY.forEach(function (y, i) {                                                                // the four docks of the semis: bumpers, the guide lines of a trailer, the number
+      ctx.fillStyle = '#1d1f22'; ctx.fillRect(X, y - 18, 6, 5); ctx.fillRect(X, y + 13, 6, 5);
+      ctx.fillStyle = '#f2c230'; ctx.fillRect(X + 6, y - 19, L * .82, 1.6); ctx.fillRect(X + 6, y + 17.4, L * .82, 1.6);
+      ctx.fillStyle = N ? 'rgba(255,214,140,.4)' : 'rgba(255,255,255,.7)'; ctx.fillRect(X + 6, y - .6, 30, 1.2);
+      text(ctx, String(i + 1), X + 18, y - 9, 8, 'rgba(255,255,255,.85)'); });
+    text(ctx, 'רציפי מרכז ההפצה', X + 120, D.docksY[0] - 34, 7, 'rgba(255,255,255,.7)');
+    for (var k = 0; k < 6; k++) { var dx = 3925 + 70 + 58 * k; ctx.fillStyle = '#1d1f22'; ctx.fillRect(dx - 1, 2752, 4, 4); ctx.fillRect(dx + 27, 2752, 4, 4); ctx.fillStyle = 'rgba(242,194,48,.85)'; ctx.fillRect(dx, 2758, 30, 1.4); }   // the warehouse's six docks
+    var G = D.gate;                                                                                     // 2.11 (S7F193): the gate — a 12 m opening, no island; the booth beside it
+    arrow(ctx, 4446, G.yin, Math.PI, N); text(ctx, 'כניסה לסמיטריילרים', 4392, G.gap[1] - 8, 6, 'rgba(255,255,255,.75)');
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillRect(4433, G.gap[0] + 6, 2.5, G.gap[1] - G.gap[0] - 12);
+    ctx.save(); ctx.setLineDash([10, 8]); ctx.strokeStyle = N ? 'rgba(242,194,48,.35)' : 'rgba(242,194,48,.6)'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(G.xl, G.yin - G.r2); ctx.lineTo(G.xl, G.ystrip + G.Rs); ctx.stroke(); ctx.restore();   // the yard's lane (in and out, one at a time)
+    text(ctx, 'נתיב תמרון', G.xl + 14, 2960, 6, 'rgba(255,255,255,.6)', -Math.PI / 2);
+    for (var x = 4000; x <= 4200; x += 100) arrow(ctx, x, G.ystrip, Math.PI, N);                        // out: along the warehouse strip to the warehouse street
+    text(ctx, 'יציאה לרחוב המחסנים', 3990, G.ystrip + 20, 6.5, 'rgba(255,255,255,.75)'); arrow(ctx, 3850, 2830, Math.PI / 2, N);
+    text(ctx, 'מגרש המכולות', 4290, 3176, 6.5, 'rgba(255,255,255,.7)');   // 2.11 (S7F195): ליד המכולות
+    (D.vans || []).forEach(function (v) { dash(ctx, v.bay, 'rgba(242,194,48,.85)', 1.4); });
+    arrow(ctx, 4200, 3236, Math.PI, N); arrow(ctx, 4400, 3290, -Math.PI / 2, N);                       // the staff lot: in from the industrial street, along the aisle
+    text(ctx, 'חניון עובדים', 4140, 3236, 6.5, 'rgba(255,255,255,.7)');
+  }
+  function itemsD4(ctx, D, N, arms) {                                                                    // the two barrier arms at the gate's line: they rise when a semi comes
+    var G = D.gate, A = G.arm; [[A[0], A[1], A[2], arms.in, A[3]]].forEach(function (a) {   // 2.11 (S7F193): one arm across the 12 m opening, pivot at its south end
+      var x = a[0], y = a[1], sg = a[2], up = Math.max(0, Math.min(1, a[3])); box(ctx, x - 3, y - 3, 6, 6, 1.1, '#2b2f33', '#1d1f22');
+      ctx.save(); ctx.translate(x, y - 1.0 * K6); var len = a[4] * (1 - up * .82); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, sg * len); ctx.stroke();
+      ctx.strokeStyle = '#d23b2f'; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, sg * len); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); });
+  }
+  window.C4D4LOOK = { groundC4: groundC4, itemsC4: itemsC4, groundD4: groundD4, itemsD4: itemsD4 };
+})();
+
+var C4ND={"buildings":[{"id":"C4-HARDWARE","type":"HWSTORE","rot":3,"x":2641,"y":2575,"foot":[2641,2575,2851,2775],"band":[2641,2575,2851,2575],"ent":[2851,2675],"svc":[2862,2675],"label":"ארגז הכלים · חנות כלי עבודה","kind":"shop","lot":[2631,2560,2861,2800]},{"id":"C4-FUEL-SHOP","type":"FUELSHOP2","rot":1,"x":2895,"y":2835,"foot":[2895,2835,2975,2955],"band":[2895,2835,2975,2835],"ent":[2895,2895],"svc":[2884,2895],"label":"דלק טורבו 2 — החנות","kind":"service","lot":[2631,2800,2981,2990]},{"id":"C4-FIRE2","type":"FIRESTN2","rot":1,"x":2691,"y":3000,"foot":[2691,3000,2831,3250],"band":[2691,3000,2831,3000],"ent":[2691,3125],"svc":[2660,3125],"label":"תחנת כיבוי 2","kind":"public","lot":[2631,3000,2831,3250]},{"id":"C4-DEPOT","type":"DEPOTC4","rot":0,"x":2848,"y":2998,"foot":[2848,2998,3008,3218],"band":[2848,2998,3008,2998],"ent":[2996,3218],"svc":[2996,3229],"label":"מחסן הובלה קלה","kind":"depot","lot":[2841,2995,3015,3235]},{"id":"C4-FAB","type":"FABC4","rot":0,"x":3188,"y":2620,"foot":[3188,2620,3488,2870],"band":[3188,2620,3488,2620],"ent":[3379,2870],"svc":[3379,2884],"label":"מטרו עבודות מתכת","kind":"factory","lot":[3186,2616,3490,2874]},{"id":"C4-DOCKS","type":"DOCKC4","rot":1,"x":3402,"y":2886,"foot":[3402,2886,3542,3086],"band":[3402,2886,3542,2886],"ent":[3402,3070],"svc":[3390,3070],"label":"מסוף רציפי משאיות","kind":"dock-terminal","lot":[3400,2884,3544,3089]},{"id":"C4-DISPATCH","type":"OFFC4","rot":0,"x":3382,"y":3116,"foot":[3382,3116,3592,3256],"band":[3382,3116,3592,3116],"ent":[3445,3256],"svc":[3445,3268],"label":"משרד שילוח C4","kind":"office","lot":[3378,3114,3596,3259]}],"lawn":[[2628,2550,3600,2562],[3176,2556,3600,2606],[3490,2606,3600,2870],[3544,2870,3600,3104],[3368,3104,3600,3116],[3015,2990,3042,3005],[2981,2800,2991,2990]],"pave":[[2851,2566,2869,2775,"concrete"],[2628,2775,2869,2797,"pavers"],[2631,3250,2841,3316,"concrete"],[3368,3256,3600,3316,"pavers"],[3015,3005,3042,3225,"pavers"]],"play":null,"beds":[],"hedges":[],"trees":[["TP-UR-03",3200,2588,26],["TP-UR-02",3246,2588,26],["TP-UR-03",3292,2588,26],["TP-UR-02",3338,2588,26],["TP-UR-03",3384,2588,26],["TP-UR-02",3430,2588,26],["TP-UR-03",3476,2588,26],["TP-UR-02",3522,2588,26],["TP-UR-03",3568,2588,26],["TP-UR-01",3530,2700,24],["TP-UR-01",3560,2800,22],["TP-UR-02",3572,3040,22],["TP-UR-03",3570,2930,22],["TP-UR-01",3510,2640,22],["TP-UR-02",3578,2640,22],["TP-UR-03",3510,2760,22],["TP-UR-01",3580,2720,22],["TP-UR-02",3510,2850,22],["TP-UR-03",3576,2985,22],["TP-UR-01",3574,3085,22],["TP-UR-02",3508,3112,22]],"shrubs":[["TP-SH-02",2640,2790,16],["TP-SH-03",3372,3300,16]],"flowers":[["TP-BD-01",3480,3290,22]],"props":[["PR-31",3220,3092,0.8],["PR-30",3244,3092,0.8],["PR-31",3268,3092,0.8],["PR-30",2850,3296,0.8],["PR-32",3030,3290,0.9]],"lamps":[["SL-PKL",2955,2566,26],["SL-PKL",2860,2700,26],["SL-IND",3060,2575,24],["SL-IND",3160,3090,24],["SL-IND",3020,3304,24],["SL-PKL",3364,3184,26],["SL-IND",2780,3262,24],["SL-IND",3300,2878,24],["SL-PKL",2972,2826,26]],"sprinklers":[],"flag":null,"marks":[],"acc":["C4-HW-W4","C4-HW-W5","C4-DS-N6","C4-DS-S6"],"stalls":[{"id":"C4-HW-W1","lot":"C4-HARDWARE","x":2871,"y":2568,"w":56,"h":28,"o":"h","rot":"W"},{"id":"C4-HW-W2","lot":"C4-HARDWARE","x":2871,"y":2596,"w":56,"h":28,"o":"h","rot":"W"},{"id":"C4-HW-W3","lot":"C4-HARDWARE","x":2871,"y":2624,"w":56,"h":28,"o":"h","rot":"W"},{"id":"C4-HW-W4","lot":"C4-HARDWARE","x":2871,"y":2652,"w":56,"h":28,"o":"h","rot":"W","acc":true},{"id":"C4-HW-W5","lot":"C4-HARDWARE","x":2871,"y":2680,"w":56,"h":28,"o":"h","rot":"W","acc":true},{"id":"C4-HW-W6","lot":"C4-HARDWARE","x":2871,"y":2708,"w":56,"h":28,"o":"h","rot":"W"},{"id":"C4-HW-W7","lot":"C4-HARDWARE","x":2871,"y":2736,"w":56,"h":28,"o":"h","rot":"W"},{"id":"C4-HW-E1","lot":"C4-HARDWARE","x":2983,"y":2568,"w":56,"h":28,"o":"h","rot":"E"},{"id":"C4-HW-E2","lot":"C4-HARDWARE","x":2983,"y":2596,"w":56,"h":28,"o":"h","rot":"E"},{"id":"C4-HW-E3","lot":"C4-HARDWARE","x":2983,"y":2624,"w":56,"h":28,"o":"h","rot":"E"},{"id":"C4-HW-E4","lot":"C4-HARDWARE","x":2983,"y":2652,"w":56,"h":28,"o":"h","rot":"E"},{"id":"C4-HW-E5","lot":"C4-HARDWARE","x":2983,"y":2680,"w":56,"h":28,"o":"h","rot":"E"},{"id":"C4-HW-E6","lot":"C4-HARDWARE","x":2983,"y":2708,"w":56,"h":28,"o":"h","rot":"E"},{"id":"C4-HW-E7","lot":"C4-HARDWARE","x":2983,"y":2736,"w":56,"h":28,"o":"h","rot":"E"},{"id":"C4-DS-N1","lot":"C4-DISPATCH","x":3184,"y":3118,"w":28,"h":56,"o":"v","rot":"N"},{"id":"C4-DS-N2","lot":"C4-DISPATCH","x":3212,"y":3118,"w":28,"h":56,"o":"v","rot":"N"},{"id":"C4-DS-N3","lot":"C4-DISPATCH","x":3240,"y":3118,"w":28,"h":56,"o":"v","rot":"N"},{"id":"C4-DS-N4","lot":"C4-DISPATCH","x":3268,"y":3118,"w":28,"h":56,"o":"v","rot":"N"},{"id":"C4-DS-N5","lot":"C4-DISPATCH","x":3296,"y":3118,"w":28,"h":56,"o":"v","rot":"N"},{"id":"C4-DS-N6","lot":"C4-DISPATCH","x":3324,"y":3118,"w":28,"h":56,"o":"v","rot":"N","acc":true},{"id":"C4-DS-S1","lot":"C4-DISPATCH","x":3184,"y":3240,"w":28,"h":56,"o":"v","rot":"S"},{"id":"C4-DS-S2","lot":"C4-DISPATCH","x":3212,"y":3240,"w":28,"h":56,"o":"v","rot":"S"},{"id":"C4-DS-S3","lot":"C4-DISPATCH","x":3240,"y":3240,"w":28,"h":56,"o":"v","rot":"S"},{"id":"C4-DS-S4","lot":"C4-DISPATCH","x":3268,"y":3240,"w":28,"h":56,"o":"v","rot":"S"},{"id":"C4-DS-S5","lot":"C4-DISPATCH","x":3296,"y":3240,"w":28,"h":56,"o":"v","rot":"S"},{"id":"C4-DS-S6","lot":"C4-DISPATCH","x":3324,"y":3240,"w":28,"h":56,"o":"v","rot":"S","acc":true}],"asph":[[2869,2562,3042,2800],[3042,2764,3054,2800],[3054,2560,3166,2800],[3042,2790,3178,2812],[2631,2800,2981,2990],[2991,2806,3042,2990],[2631,3000,2691,3250],[2841,3218,3042,3318],[3176,2870,3402,3104],[3178,3114,3368,3316]],"cuts":[[2608,2862,2628,2928],[2608,3010,2628,3240],[2846,3318,2914,3338],[3158,2964,3178,3024],[3158,3186,3178,3246],[3042,2806,3062,2984]],"aprons":[],"joins":[],"caps":[],"zebra":[],"bins":[[2955,2950,2979,2972],[3536,3096,3560,3112]],"fuel":{"cycle":112,"canopy":[2680,2846,2840,2948],"islands":[[2698,2891,2824,2907]],"posts":[[2704,2899],[2818,2899]],"tank":{"t_in":0,"dwell":0,"t_out":0},"pumps":[[2730,2894],[2792,2894],[2730,2904],[2792,2904]],"bay":[2991,2806,3042,2984],"lids":[[2999,2900,"#2e7d32"],[2999,2920,"#f2c230"],[2999,2940,"#c0392b"]],"inAt":[2650,2908],"outAt":[2650,2878],"tIn":[[2600,3300],[2600,3200]],"tOut":[[2600,3200],[2600,3100]],"trips":[{"t0":0,"inP":[[2580,3150],[2580,2960],[2610,2925],[2650,2912],[2700,2914],[2850,2925],[2880,2895],[2860,2860],[2770,2877],[2730,2877]],"outP":[[2730,2877],[2690,2877],[2700,2836],[2655,2868],[2618,2876],[2580,2840],[2580,2600]],"dwell":14,"car":"VH-HB-01","col":5,"a":3.141592653589793},{"t0":28,"inP":[[2580,3150],[2580,2960],[2610,2925],[2650,2912],[2700,2914],[2850,2925],[2880,2895],[2860,2860],[2832,2877],[2792,2877]],"outP":[[2792,2877],[2752,2877],[2700,2836],[2655,2868],[2618,2876],[2580,2840],[2580,2600]],"dwell":14,"car":"VH-SD-02","col":2,"a":3.141592653589793},{"t0":56,"inP":[[2580,3150],[2580,2960],[2610,2925],[2650,2912],[2700,2914],[2700,2921],[2730,2921]],"outP":[[2730,2921],[2855,2930],[2880,2890],[2860,2845],[2850,2840],[2700,2836],[2655,2868],[2618,2876],[2580,2840],[2580,2600]],"dwell":14,"car":"VH-SU-03","col":6,"a":0.0},{"t0":84,"inP":[[2580,3150],[2580,2960],[2610,2925],[2650,2912],[2700,2914],[2762,2921],[2792,2921]],"outP":[[2792,2921],[2855,2930],[2880,2890],[2860,2845],[2850,2840],[2700,2836],[2655,2868],[2618,2876],[2580,2840],[2580,2600]],"dwell":14,"car":"VH-SD-04","col":1,"a":0.0}],"bays":[[2702,2863,56,28],[2764,2863,56,28],[2702,2907,56,28],[2764,2907,56,28]],"sign":[2646,2960],"brand":{"c1":"#f5953a","c2":"#0b2a55","name":"דלק טורבו"}},"fire":{"apron":[2631,3000,2691,3250],"doors":[3051,3125,3199],"tower":[2650,3262,2680,3290],"hydrant":[2700,3304]},"trucks":[{"id":"C4-TRK-DEPOT","bay":[2866,3217,2894,3319],"rot":"S"},{"id":"C4-TRK-DOCK","bay":[3298,2972,3400,3000],"rot":"W"}],"flags":[[2660,3005]],"gardeners":[{"path":[[3190,2566],[3586,2566],[3586,2600],[3190,2600]],"speed":8,"look":{"h":1.78,"skin":"#c99a74","hair":{"t":"cap","c":"#2f6b45"},"top":{"t":"polo","c":"#f2c230"},"legs":{"t":"trousers","c":"#3b3f43"},"shoes":{"t":"boot","c":"#3a2c22"}}}],"yard":[3054,2560,3166,2800],"logos":{"tools":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-14 -14 28 28\"><circle r=\"13\" fill=\"#3f444a\"/><circle r=\"11.2\" fill=\"none\" stroke=\"#f2c230\" stroke-width=\"1.1\"/><g transform=\"scale(.74)\"><g transform=\"rotate(-35)\"><path d=\"M-1.5 -4H1.5V11H-1.5Z\" fill=\"#f2c230\"/><path d=\"M-8 -9.5H5L8 -6.5V-4H-8Z\" fill=\"#f2c230\"/></g></g></svg>","fuel":"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-14 -14 28 28\"><path d=\"M-11.5 -12.5H11.5V-1.5C11.5 6.5 5.5 11.3 0 13.6C-5.5 11.3 -11.5 6.5 -11.5 -1.5Z\" fill=\"#f5953a\"/><path d=\"M-11.5 -12.5H11.5V-8.3H-11.5Z\" fill=\"#1f8a70\"/><g transform=\"translate(0 2.2) scale(.66)\"><path d=\"M-8 -9h10v18h-10Z\" fill=\"#0b2a55\"/><path d=\"M-6 -7h6v5h-6Z\" fill=\"rgba(0,0,0,.42)\"/><path d=\"M2 -5H5.5V5.5A1.6 1.6 0 0 0 8.7 5.5V-3.5L6.5 -7\" fill=\"none\" stroke=\"#0b2a55\" stroke-width=\"1.9\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M-9.5 8.5h13v2h-13Z\" fill=\"#0b2a55\"/></g></svg>"},"live":[{"kind":"רכב עם משימה","what":"מכוניות נכנסות לדלק טורבו 2, מתדלקות ויוצאות לשדרה"},{"kind":"סימן","what":"דגל תחנת הכיבוי"},{"kind":"אנשים","what":"גנן מכסח את חיץ העצים מול C3"}]};
+p486Ops('C4ND',C4ND,[["F-006","remove","lamps","SL-IND",3160,3090,null,null,null],["F-037","add","lamps","SL-RES",3168,3156,null,null,22],["F-078","add","trees","TP-UR-02",2648,2568,null,null,24],["F-128","add","trees","TP-UR-01",3400,3300,null,null,22],["F-129","add","trees","TP-UR-01",3458,3300,null,null,22],["F-130","add","trees","TP-UR-01",3516,3300,null,null,22],["F-131","add","trees","TP-UR-01",3574,3300,null,null,22],["F-139","add","props","PR-29",2849,2789,null,null,1],["F-140","add","props","PR-29",2691,3257,null,null,1],["F-141","add","props","PR-29",3421,3268,null,null,1],["F-165","add","trees","TP-UR-01",2682,2558,null,null,22],["F-166","add","trees","TP-UR-02",2708,2558,null,null,22],["F-167","add","trees","TP-UR-03",2734,2558,null,null,22],["F-168","add","trees","TP-UR-01",2760,2558,null,null,22],["F-169","add","trees","TP-UR-02",2786,2558,null,null,22],["F-170","add","trees","TP-UR-03",2812,2558,null,null,22],["F-171","add","trees","TP-UR-01",2838,2558,null,null,22],["F-172","add","trees","TP-UR-02",3048,2558,null,null,22]]);   /* p486 */
+var C4N_BLD=[
+ b4Bld40('C4-HARDWARE','HWSTORE',3,2641,2575,'ארגז הכלים · חנות כלי עבודה','shop',210,100),
+ b4Bld40('C4-FUEL-SHOP','FUELSHOP2',1,2895,2835,'דלק טורבו 2 — החנות','service',0,60),
+ b4Bld40('C4-FIRE2','FIRESTN2',1,2691,3000,'תחנת כיבוי 2','public',0,125),
+ b4Bld40('C4-DEPOT','DEPOTC4',0,2848,2998,'מחסן הובלה קלה','depot',148,220),
+ b4Bld40('C4-FAB','FABC4',0,3188,2620,'מטרו עבודות מתכת','factory',191,250),
+ b4Bld40('C4-DOCKS','DOCKC4',1,3402,2886,'מסוף רציפי משאיות','dock-terminal',0,184),
+ b4Bld40('C4-DISPATCH','OFFC4',0,3382,3116,'משרד שילוח C4','office',63,140)
+];C4_BUILDINGS.push(...C4N_BLD);
+var D4N_BLD=[
+ b4Bld40('D4-WH','WHD4',0,3925,2632,'מחסן גדול','warehouse',25,120),
+ b4Bld40('D4-DC','DCD4',3,3926,2826,'מרכז הפצה','distribution',0,235),
+ b4Bld40('D4-DOCKS','DOCKD4',3,3638,2846,'מסוף רציפי משאיות D4','dock-terminal',80,34),
+ b4Bld40('D4-RAIL','RAILD4',3,3615,2632,'מחסן מטענים ברכבת','rail-warehouse',150,85),
+ b4Bld40('D4-GATE','BOOTHD4',0,4398,3196,'שער לוגיסטיקה D4','gatehouse',16,20)
+];D4_BUILDINGS.push(...D4N_BLD);for(const o of D4N_BLD)D4_B[o.id]=o;C4_BUILDINGS.push(...D4N_BLD);
+var C4N_CAR_PLAN=[["C4-HW-W1","VH-SD-02","Sedan"],["C4-HW-W3","VH-SU-03","SUV"],["C4-HW-W7","VH-HB-02","Compact"],["C4-HW-E2","VH-MV-02","Minivan"],["C4-HW-E4","VH-SD-04","Sedan"],["C4-HW-E6","VH-HB-01","Compact"],["C4-DS-N1","VH-SD-02","Sedan"],["C4-DS-N3","VH-SU-03","SUV"],["C4-DS-N5","VH-HB-02","Compact"],["C4-DS-S1","VH-MV-02","Minivan"],["C4-DS-S3","VH-SD-04","Sedan"],["C4-DS-S5","VH-HB-01","Compact"]],D4N_CAR_PLAN=[["D4-ST-1","VH-MV-02","Minivan"],["D4-ST-3","VH-SD-04","Sedan"],["D4-ST-4","VH-HB-01","Compact"],["D4-ST-6","VH-SD-02","Sedan"],["D4-ST-7","VH-SU-03","SUV"],["D4-ST-9","VH-HB-02","Compact"]],C4N_TRUCKS=[["C4-TRK-DEPOT","VH-TR-01","Truck",[2866,3217,2894,3319],"S"],["C4-TRK-DOCK","VH-TR-01","Truck",[3298,2972,3400,3000],"W"],["D4-VAN-2","VH-VN-01","Van",[3718,2982,3782,3008],"E"],["D4-VAN-4","VH-VN-01","Van",[3718,3122,3782,3148],"E"]];
+PARKED_CARS.push(...C4N_CAR_PLAN.map(([sid,asset,ref],i)=>{const st=C4_STALLS.find(q=>q.id===sid);return parkInRect('PC-C4N-'+(i+1),asset,ref,st,st.rot)}),
+ ...D4N_CAR_PLAN.map(([sid,asset,ref],i)=>{const st=D4_STAFF_STALLS.find(q=>q.id===sid);return parkInRect('PC-D4-'+(i+1),asset,ref,st,st.rot)}),
+ ...C4N_TRUCKS.map(([id,asset,ref,r,rot])=>parkInRect('PC-X'+id,asset,ref,{x:r[0],y:r[1],w:r[2]-r[0],h:r[3]-r[1]},{N:-Math.PI/2,S:Math.PI/2,E:0,W:Math.PI}[rot])));
+GRAPHICS_RUNTIME_INFO.required.push(...["CT-20-01","Compact","LV-FK-01","LV-RS-01","Minivan","PR-30","PR-31","PR-32","SL-IND","SL-PKL","SUV","Sedan","TP-BD-01","TP-SH-02","TP-SH-03","TP-UR-01","TP-UR-02","TP-UR-03","VH-TR-01","VH-VN-01"]);
+var C4N_K187=[{"id":"C4-K187-0","x":2608,"y":2837,"w":20,"h":116},{"id":"C4-K187-1","x":2608,"y":2985,"w":20,"h":280},{"id":"C4-K187-2","x":2780,"y":3318,"w":200,"h":20},{"id":"C4-K187-3","x":3158,"y":2939,"w":20,"h":110},{"id":"C4-K187-4","x":3158,"y":3161,"w":20,"h":110},{"id":"C4-K187-5","x":3042,"y":2781,"w":20,"h":228},{"id":"D4-K187-0","x":4459,"y":3030,"w":25,"h":185},{"id":"D4-K187-1","x":3782,"y":2875,"w":20,"h":380},{"id":"D4-K187-2","x":4345,"y":3318,"w":110,"h":20}];K187_LISTS.push('C4N_K187');
+for(const s of [["C4-FUEL-ISLAND",2698,2891,2824,2907],["C4-BINS-0",2955,2950,2979,2972],["C4-BINS-1",3536,3096,3560,3112],["C4-TOWER",2650,3262,2680,3290]])d4Solid(s[0],s[1],s[2],s[3]-s[1],s[4]-s[2]);
+for(const p of C4ND.fuel.posts)d4Solid('C4-CANOPY-POST',p[0]-3,p[1]-3,6,6);
+D4ND.fuel=null;D3ND.fuel.brand=C4ND.fuel.brand;   /* דלק טורבו בצבעים שלו בשתי התחנות (הבעלים 1.11 01:03) */
+function c4NInView(m){return e3InView(2600,2550,1900,800,m)}
+var C4LOOK_=null,D4LOOK_=null;function c4NLook(){if(!C4LOOK_){C4LOOK_=ZONELOOK.create();C4LOOK_.set(C4ND)}return C4LOOK_}function d4NLook(){if(!D4LOOK_){D4LOOK_=ZONELOOK.create();D4LOOK_.set(D4ND)}return D4LOOK_}
+/* p626: the delivery bay of the hardware store (C4) */
+var C4_DELIVERY={id:'C4-HW-BAY',r:[2872,2768,2972,2800],in:'DW-C4-FUEL',out:'DW-C4-HARDWARE'};
+function p626Bay(g){const B=C4_DELIVERY.r;g.save();g.setLineDash([8,5]);g.strokeStyle='#f2c230';g.lineWidth=2;g.strokeRect(B[0]+1,B[1]+1,B[2]-B[0]-2,B[3]-B[1]-2);g.setLineDash([]);g.fillStyle='rgba(242,194,48,.95)';g.font='600 6px Arial, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('פריקה',(B[0]+B[2])/2,(B[1]+B[3])/2);g.restore()}
+function drawC4NGround(now){if(!c4NInView(60))return;ctx.save();const v=b3View();c4NLook().ground(ctx,v);
+ for(const o of [...C4N_BLD,...D4N_BLD]){ctx.fillStyle='#cfcac0';ctx.fillRect(o.x,o.y,o.w,o.h);ctx.fillStyle='rgba(120,112,96,.35)';ctx.fillRect(o.x,o.y,o.w,1.5);ctx.fillRect(o.x,o.y,1.5,o.h);ctx.fillRect(o.x+o.w-1.5,o.y,1.5,o.h)}   /* בטון מתחת לכל מבנה — המנוע מצייר את המבנה בחלק הדרומי של השטח שלו */
+D3LOOK.ground(ctx,C4ND,false);C4D4LOOK.groundC4(ctx,C4ND,false);d4NLook().ground(ctx,v);D3LOOK.ground(ctx,D4ND,false);try{p626Bay(ctx)}catch(e){}ctx.restore()}
+function drawC4NItems(now){if(!c4NInView(90))return;const v=b3View();c4NLook().items(ctx,now,v);D3LOOK.items(ctx,C4ND,false);C4D4LOOK.itemsC4(ctx,C4ND,false);d4NLook().items(ctx,now,v);
+ for(const o of C4N_BLD)Targets.add({id:o.id,label:o.label,category:'C4-industry',x:o.x+o.w/2,y:o.y+o.h/2,w:o.w,h:o.h})}
+function c4Busy(qi){try{const b=C4ND.fuel.bays[[1,2,0,3][qi]||0],a=playerActor();return a.x>=b[0]-6&&a.x<=b[0]+b[2]+6&&a.y>=b[1]-6&&a.y<=b[1]+b[3]+6}catch(e){return false}}
+function c4NLive(now){const t=(now||0)/1000;D4ANIM.sync(t);   /* p657: forklifts B and C — their stories */
+ if(Camera.zoom<=.55||!c4NInView(90))return;for(const e of D4_EQUIPMENT){if(!e.path||!e3InView(e.x-30,e.y-30,60,60,20))continue;/* p657: drawn by D4ANIM (through the 3/4 queue) */Targets.add({id:e.id,label:e.label,category:'D4-yard-equipment',x:e.x,y:e.y,shape:'circle',r:18/Camera.zoom})}   /* p494 */window.D3RES=p599Res(Camera.zoom*dpr);c4NLook().live(ctx,now,b3View());const busy=window.D3BUSY;window.D3BUSY=c4Busy;try{D3LOOK.live(ctx,C4ND,now,false)}finally{window.D3BUSY=busy}try{C4ANIM.live(ctx,now,b3View(),Math.max(0,Math.min(1,+window.__TC_NIGHT||0)))}catch(e){C4ANIM_ERR=C4ANIM_ERR||String(e&&e.message||e)}try{D4ANIM.live(ctx,now,b3View(),Math.max(0,Math.min(1,+window.__TC_NIGHT||0)))}catch(e){D4ANIM_ERR=D4ANIM_ERR||String(e&&e.message||e)}}   /* p520 · p657 */
+/* p520 (D‑396): C4 — מה שזז בתעשייה הקלה; ממשק: live(ctx, now, v, nt) · movers(t, all) */
+/* p656 (builder 10): D3 — the villas and the cars: what moves, real to the place. People from the game's generator (P34), men and boys only.
+   live(ctx, now, v, nt) every frame · movers(now) for liveAudit. Sizes are real (10 px = 1 m; 1 m of height = 6 px up). */
+var D3ANIM_ERR=null;
+var D3ANIM=(function(){
+ const TAU=Math.PI*2,K6=6,cl=(v,a,b)=>v<a?a:v>b?b:v,sm=u=>{u=cl(u,0,1);return u*u*(3-2*u)},lerp=(a,b,u)=>a+(b-a)*u;
+ const inV=(v,x0,y0,x1,y1)=>!v||(x1>v[0]&&x0<v[2]&&y1>v[1]&&y0<v[3]);
+ const RES=()=>{try{return p599Res(Camera.zoom*(window.devicePixelRatio||1))}catch(e){return 2}};
+ const wind=t=>{try{return tcWind(t)}catch(e){return{a:0,s:.7,x:.7,y:0}}};
+ function man(ctx,x,y,look,act,h,ph){try{if(window.P34){P34.draw(ctx,x,y,look,{k:act},h,ph,RES());return}}catch(e){}ctx.fillStyle=look.top.c;ctx.beginPath();ctx.arc(x,y-8,3,0,TAU);ctx.fill()}
+ const CY=new Map();function cyc(look){let c=CY.get(look);if(c==null){try{c=P34.cycle(look)*10}catch(e){c=14}CY.set(look,c)}return c}
+ function plen(P){let L=0;for(let i=1;i<P.length;i++)L+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);return L}
+ function along(P,f){let L=plen(P),d=cl(f,0,1)*L,i=0;const seg=[];for(let k=1;k<P.length;k++)seg.push(Math.hypot(P[k][0]-P[k-1][0],P[k][1]-P[k-1][1]));while(i<seg.length-1&&d>seg[i]){d-=seg[i];i++}
+  const a=P[i],b=P[i+1],g=seg[i]?d/seg[i]:0;return{x:lerp(a[0],b[0],g),y:lerp(a[1],b[1],g),h:Math.atan2(b[1]-a[1],b[0]-a[0]),d:L*cl(f,0,1)}}
+ const rev=P=>P.slice().reverse();
+ // ---- the looks: boys (1.42 / 1.48 m) and men ----
+ const LK={boyA:{h:1.48,skin:'#d9a57f',hair:{t:'short',c:'#3b2a1f'},top:{t:'tee',c:'#d23c3c'},legs:{t:'shorts',c:'#24324a'},shoes:{t:'sneaker',c:'#f2f2f2'}},
+  boyB:{h:1.42,skin:'#c99a74',hair:{t:'side',c:'#1f1712'},top:{t:'tee',c:'#2e86c1'},legs:{t:'shorts',c:'#3d3d3d'},shoes:{t:'sneaker',c:'#ffd400'}},
+  hose:{h:1.78,skin:'#e0b48c',hair:{t:'short',c:'#6b4a2e'},top:{t:'polo',c:'#5a8f3c'},legs:{t:'shorts',c:'#c8b48a'},shoes:{t:'sneaker',c:'#e5e5e5'}}};
+ // =================================================================================================================
+ // (1) the ball (villa of סמטת הווילות 5, the lawn north of the house, by the tree): two boys come from behind the house,
+ //     pass the ball 24 times — a roll with a small hop, the other stops it and passes back — and go in; the ball is carried in and out
+ const BT=360,BT0=0,BDOOR=[3748,2332],BA=[3676,2296],BB=[3762,2288],PA=[BDOOR,[3740,2318],[3700,2306],BA],PB=[BDOOR,[3752,2318],BB],BV=12,NP=24,PT=4.4;
+ const bIn=Math.max(plen(PA),plen(PB))/BV,bPlay0=bIn+1.5,bPlay1=bPlay0+NP*PT,bEnd=bPlay1+1+bIn;
+ function ballOn(){return Math.ceil(bEnd+1)}
+ function spotOf(k,who){const o=k<=0?0:Math.sin(k*1.7+(who?1:0))*7;return who?[BB[0]+o*.4,BB[1]+o]:[BA[0]-o*.4,BA[1]-o]}
+ function ballAt(t){const u=(((t-BT0)%BT)+BT)%BT,o={u,on:false};if(u>=bEnd)return o;o.on=true;
+  const face=(p,q)=>Math.atan2(q[1]-p[1],q[0]-p[0]);
+  if(u<bPlay0){const fa=cl(u/(plen(PA)/BV),0,1),fb=cl((u-.6)/(plen(PB)/BV),0,1),a=along(PA,fa),b=along(PB,fb);
+   o.a={x:a.x,y:a.y,h:fa<1?a.h:face(BA,BB),act:fa<1?'walk':'stand',d:a.d};o.b={x:b.x,y:b.y,h:fb<1&&fb>0?b.h:face(BB,BA),act:fb<1&&fb>0?'walk':'stand',d:b.d};
+   o.ball={x:o.b.x+2,y:o.b.y,z:4.5,held:1};if(u>bPlay0-1.2){const f=sm((u-(bPlay0-1.2))/1.2);o.ball={x:lerp(o.b.x+2,BB[0]-4,f),y:lerp(o.b.y,BB[1]+1,f),z:4.5*(1-f)}}return o}
+  if(u<bPlay1){const r=u-bPlay0,k=Math.floor(r/PT),v=r-k*PT,fromB=k%2===0,P0=fromB?spotOf(k,1):spotOf(k,0),P1=fromB?spotOf(k+1,0):spotOf(k+1,1),fl=1.7;
+   const kick=v<.35,f=cl((v-.35)/fl,0,1),bx=lerp(P0[0],P1[0],sm(f)),by=lerp(P0[1],P1[1],sm(f)),hop=f>0&&f<1?Math.abs(Math.sin(f*Math.PI*2))*(1-f)*3:0;
+   const ball={x:f<=0?P0[0]+(fromB?-4:4):f>=1?P1[0]+(fromB?4:-4):bx,y:f<=0?P0[1]+1:f>=1?P1[1]+1:by+1,z:hop,spin:f};
+   const kp=fromB?'b':'a',rp=fromB?'a':'b',kpos=P0,rprev=fromB?spotOf(k-1>=0?k-1:0,0):spotOf(k-1,1),rgo=sm(cl(v/1.6,0,1)),rpos=[lerp(rprev[0],P1[0],rgo),lerp(rprev[1],P1[1],rgo)];
+   const H=face(kpos,P1);o[kp]={x:kpos[0],y:kpos[1],h:H,act:kick?'walk':'stand',d:kick?v*20:0};o[rp]={x:rpos[0],y:rpos[1],h:H+Math.PI,act:rgo>0&&rgo<1?'walk':'stand',d:rgo*12};o.ball=ball;return o}
+  const w=u-bPlay1;if(w<1){const f=sm(w),la=spotOf(NP-1,0),lb=spotOf(NP,1);o.a={x:lerp(la[0],BA[0],f),y:lerp(la[1],BA[1],f),h:face(BA,BB),act:f>0&&f<1?'walk':'stand',d:w*8};o.b={x:lerp(lb[0],BB[0],f),y:lerp(lb[1],BB[1],f),h:face(BB,BA),act:f>0&&f<1?'walk':'stand',d:w*8};
+   o.ball={x:lerp(lb[0]-4,o.b.x+2,f),y:lerp(lb[1]+1,o.b.y,f),z:4.5*f,held:f>=1?1:0};return o}
+  const ww=w-1,fa=cl(ww/(plen(PA)/BV),0,1),fb=cl(ww/(plen(PB)/BV),0,1),a=along(rev(PA),fa),b=along(rev(PB),fb);
+  o.a={x:a.x,y:a.y,h:a.h,act:fa<1?'walk':'stand',d:a.d};o.b={x:b.x,y:b.y,h:b.h,act:fb<1?'walk':'stand',d:b.d};o.ball={x:o.b.x+2,y:o.b.y,z:4.5,held:1};
+  if(fa>=1)o.a=null;if(fb>=1){o.b=null;o.ball=null}return o}
+ function ballDraw(ctx,B,t){if(!B)return;const x=B.x,y=B.y,z=B.z||0,r=1.5;ctx.fillStyle='rgba(0,0,0,'+(.25-.02*z).toFixed(3)+')';ctx.beginPath();ctx.ellipse(x+.6,y+.4,r*1.1,r*.55,0,0,TAU);ctx.fill();
+  const cy=y-r-z;ctx.fillStyle='#fbfbfb';ctx.beginPath();ctx.arc(x,cy,r,0,TAU);ctx.fill();ctx.strokeStyle='rgba(40,40,40,.55)';ctx.lineWidth=.25;ctx.stroke();
+  const a=(B.spin||0)*9;ctx.fillStyle='#202020';for(let i=0;i<3;i++){const b=a+i*2.1;ctx.beginPath();ctx.arc(x+Math.cos(b)*.8,cy+Math.sin(b)*.7,.38,0,TAU);ctx.fill()}}
+ function ball(ctx,t,N){const o=ballAt(t);if(!o.on||!inV(VV,3640,2240,3800,2340))return;const L=[];
+  if(o.a)L.push([o.a.y,()=>man(ctx,o.a.x,o.a.y,LK.boyA,o.a.act,o.a.h,(o.a.d/cyc(LK.boyA))%1)]);if(o.b)L.push([o.b.y,()=>man(ctx,o.b.x,o.b.y,LK.boyB,o.b.act,o.b.h,(o.b.d/cyc(LK.boyB))%1)]);
+  if(o.ball)L.push([o.ball.y+(o.ball.held?.5:0),()=>ballDraw(ctx,o.ball,t)]);L.sort((p,q)=>p[0]-q[0]);for(const q of L)q[1]()}
+ // =================================================================================================================
+ // (2) the hose (villa of סמטת הווילות 4): out of the front door, takes the hose from the tap on the wall, waters the flower bed by the
+ //     driveway (a jet that sweeps the bed, the soil darkens), puts the hose back and goes in; the wet soil dries before he is in
+ const HT=360,HT0=180,HDOOR=[4046,2146],TAP=[4054,2141],HSPOT=[4024,2196],BED=[3999,2197],HP=[HDOOR,[4040,2160],[4030,2184],HSPOT],HV=11,HW=62;
+ const hIn=plen(HP)/HV,hW0=hIn+1.2,hW1=hW0+HW,hEnd=hW1+1.2+hIn;
+ function hoseOn(){return Math.ceil(hEnd+1)}
+ function hoseAt(t){const u=(((t-HT0)%HT)+HT)%HT,o={u,on:false};if(u>=hEnd)return o;o.on=true;
+  if(u<hIn){const q=along(HP,u/hIn);Object.assign(o,{x:q.x,y:q.y,h:q.h,act:'walk',d:q.d,hose:u>1.2});return o}
+  if(u<hW1){const s=u-hIn;Object.assign(o,{x:HSPOT[0],y:HSPOT[1],h:Math.PI,act:'stand',d:0,hose:true,jet:s>1.2&&s<HW+1.2-1,sw:Math.sin(s*.55)*9,wet:cl((s-1.2)/18,0,1)*.9});return o}
+  if(u<hW1+1.2){Object.assign(o,{x:HSPOT[0],y:HSPOT[1],h:-Math.PI/2,act:'stand',d:0,hose:true,wet:.9*(1-sm((u-hW1)/(1.2+hIn)))});return o}
+  const f=(u-hW1-1.2)/hIn,q=along(rev(HP),f);Object.assign(o,{x:q.x,y:q.y,h:q.h,act:'walk',d:q.d,hose:f<.75,wet:.9*(1-sm((u-hW1)/(1.2+hIn)))});return o}
+ function hose(ctx,t,N){const C=TAP;if(inV(VV,C[0]-6,C[1]-10,C[0]+6,C[1]+4)){ctx.fillStyle='#2f6b3a';ctx.beginPath();ctx.ellipse(C[0]+2,C[1]-2.2,3.2,1.6,0,0,TAU);ctx.fill();ctx.strokeStyle='#4f9a5b';ctx.lineWidth=.5;ctx.beginPath();ctx.ellipse(C[0]+2,C[1]-2.2,2,1,0,0,TAU);ctx.stroke();ctx.fillStyle='#9aa0a6';ctx.fillRect(C[0]-.8,C[1]-5.5,1.6,1.6)}   // the coil and the tap (always there)
+  const o=hoseAt(t);if(!o.on||!inV(VV,3975,2130,4060,2215))return;
+  if(o.wet>0){ctx.fillStyle='rgba(58,38,22,'+(.32*o.wet).toFixed(3)+')';ctx.beginPath();ctx.ellipse(BED[0],BED[1]+1,15,5.6,0,0,TAU);ctx.fill()}
+  const hx=o.x+Math.cos(o.h)*3,hy=o.y+Math.sin(o.h)*1.5-1.1*K6;
+  if(o.hose){ctx.strokeStyle='#2f6b3a';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(C[0],C[1]-4);ctx.quadraticCurveTo((C[0]+o.x)/2+3,Math.max(C[1],o.y)+6,hx,hy);ctx.stroke()}
+  man(ctx,o.x,o.y,LK.hose,o.act,o.h,(o.d/cyc(LK.hose))%1);
+  if(o.jet){const ex=BED[0]+o.sw,ey=BED[1]-1;ctx.strokeStyle='rgba(205,232,255,.85)';ctx.lineWidth=.9;ctx.setLineDash([2.2,1.6]);ctx.lineDashOffset=-t*30;ctx.beginPath();ctx.moveTo(hx-2,hy);ctx.quadraticCurveTo((hx+ex)/2,Math.min(hy,ey)-7,ex,ey);ctx.stroke();ctx.setLineDash([]);
+   ctx.fillStyle='rgba(225,242,255,.85)';for(let i=0;i<6;i++){const f=((t*2.7+i/6)%1),a=i*2.3;ctx.beginPath();ctx.arc(ex+Math.cos(a)*f*5,ey+Math.sin(a)*f*2-f*1.5+f*f*3,.55,0,TAU);ctx.fill()}}}
+ // =================================================================================================================
+ // (3) the laundry (villa of סמטת הווילות 2, the yard north of the house): a line between two posts, six pieces, in the one wind
+ const LP=[[4090,1830],[4160,1830]],LH=1.8*K6,LAUND=[['#2f6fb0',9,6.5],['#f4f4f0',8,7],['#e98b2a',8,6.6],['#3e8e4f',9,6.2],['#7c8288',6,8.4],['#f2d048',8,6.8]];
+ function laundry(ctx,t){if(!inV(VV,4080,1800,4170,1836))return;const W=wind(t),x0=LP[0][0],x1=LP[1][0],y=LP[0][1];
+  ctx.fillStyle='rgba(0,0,0,.16)';ctx.fillRect(x0+2,y+1,x1-x0,1.6);
+  for(const p of LP){ctx.fillStyle='#8e959c';ctx.fillRect(p[0]-.6,p[1]-LH,1.2,LH);ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(p[0]+1,p[1]+.6,1.6,.7,0,0,TAU);ctx.fill()}
+  const sag=x=>{const f=(x-x0)/(x1-x0);return y-LH+f*(1-f)*4};ctx.strokeStyle='#d8d8d8';ctx.lineWidth=.35;ctx.beginPath();for(let x=x0;x<=x1;x+=5)x===x0?ctx.moveTo(x,sag(x)):ctx.lineTo(x,sag(x));ctx.stroke();
+  let x=x0+4;for(let i=0;i<LAUND.length;i++){const [c,w,h]=LAUND[i],top=sag(x+w/2),k=Math.sin(t*(3.1+.4*i)+i*1.3)*(.5+W.s)*1.5+W.x*2.2;
+   ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x+w,top);ctx.quadraticCurveTo(x+w+k*.6,top+h*.5,x+w+k,top+h);ctx.lineTo(x+k,top+h);ctx.quadraticCurveTo(x+k*.6,top+h*.5,x,top);ctx.fill();
+   ctx.fillStyle='rgba(0,0,0,'+(.1+.06*Math.sin(t*3+i)).toFixed(3)+')';ctx.fillRect(x+k*.5+w*.55,top+1,w*.35,h-1.5);ctx.fillStyle='#cfcfcf';ctx.fillRect(x+1,top-.6,.8,1.2);ctx.fillRect(x+w-1.8,top-.6,.8,1.2);x+=w+2.6}}
+ // =================================================================================================================
+ // (4) the robot mower (villa of סמטת הווילות 1, the lawn north of the house): rows west–east, back to its dock, and charges
+ const RX0=3632,RX1=3704,RY=[1782,1790,1798,1806,1814,1822,1830,1838],RV=4,DOCK=[3626,1778];
+ const rRow=(RX1-RX0)/RV+2.2,rMow=RY.length*rRow,rBack=Math.hypot(RX0-DOCK[0],RY[RY.length-1]-DOCK[1])/RV,RT=Math.ceil(rMow+rBack+70);
+ function robotAt(t){const u=((t%RT)+RT)%RT;if(u<rMow){const k=Math.floor(u/rRow),v=u-k*rRow,dir=k%2?-1:1,run=(RX1-RX0)/RV;
+   if(v<run){const f=v/run;return{x:dir>0?lerp(RX0,RX1,f):lerp(RX1,RX0,f),y:RY[k],h:dir>0?0:Math.PI,mv:1}}const yn=RY[Math.min(RY.length-1,k+1)],f=sm((v-run)/2.2);return{x:dir>0?RX1:RX0,y:lerp(RY[k],yn,f),h:Math.PI/2,mv:1}}
+  if(u<rMow+rBack){const f=(u-rMow)/rBack,sx=RY.length%2?RX1:RX0,sy=RY[RY.length-1];return{x:lerp(sx,DOCK[0]+6,f),y:lerp(sy,DOCK[1],f),h:Math.atan2(DOCK[1]-sy,DOCK[0]+6-sx),mv:1}}
+  return{x:DOCK[0]+6,y:DOCK[1],h:Math.PI,mv:0,charge:1}}
+ function robot(ctx,t,nt){if(!inV(VV,3620,1768,3712,1846))return;const d=DOCK;ctx.fillStyle='#3b4045';ctx.fillRect(d[0]-3,d[1]-3,4,6);ctx.fillStyle='#6b7177';ctx.fillRect(d[0]-3,d[1]-5,4,2);
+  const r=robotAt(t);ctx.save();ctx.translate(r.x,r.y);ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(.8,.8,3.6,2.6,0,0,TAU);ctx.fill();ctx.rotate(r.h);
+  ctx.fillStyle='#2c3136';ctx.beginPath();ctx.ellipse(0,-1.2,3.4,2.5,0,0,TAU);ctx.fill();ctx.fillStyle='#e8892c';ctx.beginPath();ctx.ellipse(.4,-1.9,2.5,1.7,0,0,TAU);ctx.fill();ctx.fillStyle='#1f2326';ctx.fillRect(1.4,-2.5,.9,1.2);ctx.restore();
+  const on=r.charge?(((t*.8)%1)<.5):1;if(on){ctx.fillStyle=r.charge?'rgba(60,220,90,.95)':'rgba(255,255,255,.9)';ctx.fillRect(r.x-.4,r.y-4.2,.8,.8)}}
+ // =================================================================================================================
+ // (5) at night: the lights in the pools — a soft glow under the water that moves with it
+ function poolLights(ctx,t,nt){if(nt<.05)return;const op=ctx.globalCompositeOperation;for(let i=0;i<(D3ND.pools||[]).length;i++){const p=D3ND.pools[i];if(!inV(VV,p[0]-4,p[1]-4,p[2]+4,p[3]+4))continue;const w=p[2]-p[0],h=p[3]-p[1],long=w>=h;
+  ctx.save();ctx.beginPath();ctx.rect(p[0],p[1],w,h);ctx.clip();ctx.fillStyle='rgba(8,40,70,'+(.45*nt).toFixed(3)+')';ctx.fillRect(p[0],p[1],w,h);   // the water dark at night
+  ctx.globalCompositeOperation='lighter';const n=Math.max(2,Math.round((long?w:h)/40));for(let k=0;k<n;k++){const f=(k+.5)/n,lx=long?p[0]+w*f:p[0]+2,ly=long?p[3]-2:p[1]+h*f,R=(long?h:w)*1.1,fl=.8+.2*Math.sin(t*2.3+k*1.7+i);
+   const g=ctx.createRadialGradient(lx,ly,.5,lx,ly,R);g.addColorStop(0,'rgba(120,230,255,'+(.75*nt*fl).toFixed(3)+')');g.addColorStop(.5,'rgba(40,170,230,'+(.32*nt*fl).toFixed(3)+')');g.addColorStop(1,'rgba(20,90,160,0)');ctx.fillStyle=g;ctx.fillRect(p[0],p[1],w,h)}
+  ctx.strokeStyle='rgba(200,250,255,'+(.35*nt).toFixed(3)+')';ctx.lineWidth=.5;for(let y=p[1]+3;y<p[3];y+=5){ctx.beginPath();for(let x=p[0];x<=p[2];x+=4){const yy=y+Math.sin(x*.21+t*1.7+y*.3+i)*1.1;x===p[0]?ctx.moveTo(x,yy):ctx.lineTo(x,yy)}ctx.stroke()}   // the caustics
+  ctx.globalCompositeOperation=op;ctx.restore();
+  for(let k=0;k<n;k++){const f=(k+.5)/n,lx=long?p[0]+w*f:p[0]+.8,ly=long?p[3]-.8:p[1]+h*f;ctx.fillStyle='rgba(235,252,255,.95)';ctx.fillRect(lx-.9,ly-.6,1.8,1.2)}}}   // the lamps in the wall
+ // ---- live ----
+ let VV=null;
+ function live(ctx,now,v,nt){const t=(now||0)/1000;nt=nt||0;VV=v||null;const day=nt<=.5;ctx.save();
+  try{poolLights(ctx,t,nt);robot(ctx,t,nt);laundry(ctx,t);if(day){hose(ctx,t,nt);ball(ctx,t,nt)}else hoseTap(ctx)}catch(e){D3ANIM_ERR=D3ANIM_ERR||String(e&&e.message||e)}ctx.restore()}
+ function hoseTap(ctx){const C=TAP;if(!inV(VV,C[0]-6,C[1]-10,C[0]+6,C[1]+4))return;ctx.fillStyle='#2f6b3a';ctx.beginPath();ctx.ellipse(C[0]+2,C[1]-2.2,3.2,1.6,0,0,TAU);ctx.fill();ctx.fillStyle='#9aa0a6';ctx.fillRect(C[0]-.8,C[1]-5.5,1.6,1.6)}
+ // ---- the list for liveAudit (zone D3); what was there before (D3LOOK, D‑339) and what is new ----
+ function movers(now){const L=[],add=(k,id,act,when,b,st)=>L.push(Object.assign({zone:'D3',kind:k,id,act,when,box:b.map(Math.round)},st?{story:st}:{}));const D=D3ND;
+  (D.pools||[]).forEach((p,i)=>add('מים','D3-POOL-'+(i+1),'המים בבריכה של הווילה: אדוות קטנות','תמיד',[p[0],p[1],p[2],p[3]]));
+  (D.sprinklers||[]).forEach((s,i)=>add('מים','D3-SPRINKLER-'+(i+1),'ממטרה מסתובבת ומשקה את הדשא בגינה של הווילה','תמיד',[s.x-s.r,s.y-s.r,s.x+s.r,s.y+s.r]));   /* as the check of the sprinklers (live_not_on_structure) */
+  (D.flags||[]).forEach((f,i)=>add('רוח','D3-FLAG-'+(i+1),i===2?'הדגל של תחנת הדלק ברוח':'דגל של סוכנות הרכב ברוח','תמיד',[f[0]-2,f[1]-52,f[0]+23,f[1]-34]));
+  if(D.turntable){const c=D.turntable.c;add('רכב','D3-TURNTABLE-CAR','מכונית התצוגה של הסוכנות מסתובבת לאט על הבמה','תמיד',[c[0]-30,c[1]-30,c[0]+30,c[1]+26])}
+  if(D.garage){const B=D.garage.lift,m=D.garage.mech.at;add('רכב','D3-LIFT-CAR','מכונית על המעלית במוסך: עולה, נשארת למעלה לטיפול ויורדת','תמיד',[B[0]-4,B[1]-24,B[2]+4,B[3]+4]);
+   add('אנשים','D3-MECHANIC','המכונאי הולך הלוך ושוב ליד המעלית, ועומד מתחת למכונית כשהיא למעלה','תמיד',[m[0]-18,m[1]-26,m[0]+18,m[1]+6])}
+  (D.gardeners||[]).forEach((g,i)=>{const xs=g.path.map(p=>p[0]),ys=g.path.map(p=>p[1]);add('אנשים','D3-GARDENER-'+(i+1),'גנן דוחף מכסחה סביב הדשא של הווילה בסמטת הווילות 6','תמיד',[Math.min(...xs)-16,Math.min(...ys)-26,Math.max(...xs)+16,Math.max(...ys)+8])});
+  add('אנשים','D3-BALL','שני נערים יוצאים מאחורי הווילה של סמטת הווילות 5, מוסרים כדור בדשא ליד העץ — 24 מסירות, בגלגול ובקפיצה קטנה — ונכנסים עם הכדור','יום · סיפור — כל 6 דק׳',[3650,2240,3800,2300],{T:BT,t0:BT0,on:[0,ballOn()]});   /* the feet line on the lawn, north of the house (live_not_on_structure); the story's box below is the whole walk */
+  add('מים','D3-HOSE','בעל הווילה של סמטת הווילות 4 לוקח את הצינור מהברז שבקיר, משקה את ערוגת הפרחים שליד החניה — האדמה מתכהה — מחזיר את הצינור ונכנס','יום · סיפור — כל 6 דק׳',[3975,2136,4033,2215],{T:HT,t0:HT0,on:[0,hoseOn()]});   /* the water off the house (live_not_on_structure) */
+  add('רוח','D3-LAUNDRY','כביסה על החבל בחצר של הווילה בסמטת הווילות 2 מתנפנפת ברוח האחת','תמיד',[4083,1806,4167,1834]);
+  add('מכונה','D3-ROBOT-MOWER','רובוט כיסוח בדשא של הווילה בסמטת הווילות 1: שורות לאורך הגינה, חוזר לעמדת הטעינה ונטען','תמיד',[3620,1768,3712,1846]);
+  const p=(D.pools||[])[0];if(p)add('אור','D3-POOL-LIGHTS','בלילה — תאורה בתוך הבריכות של הווילות, שזזה עם המים','לילה',[p[0],p[1],p[2],p[3]]);
+  return L}
+ return{live,movers,ballAt,hoseAt,robotAt,ballOn,hoseOn,BT,BT0,HT,HT0,RT}})();

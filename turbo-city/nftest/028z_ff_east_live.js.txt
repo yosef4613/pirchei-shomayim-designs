@@ -1,0 +1,54 @@
+/* ===== fieldfix · 17.11.2026 — "אזור מצויר שלא חי": מנגנון אחד להוספת אזור לחיים — tcLiveAdd (וראשון בו: השדה המזרחי G3, ‏H0–H3) =====
+   מצאתי (כלל 19): הגדר של השדה (019m:S15_POLY) והציור של S15 מגיעים עד x 9600 (המסלול עד 9300, מסלול ההסעה B ב-x 9325–9475, הרחבה הדרומית
+   ומנחתי המסוקים ב-G3 / H3) — אבל 016:ACTIVE_REGIONS (52 מלבנים) ו-028:MAP_ACTIVE_IDS (51) נגמרים ב-G0–G2. לכן 016:inActiveRegion מחזיר false
+   בכל G3 ו-H0–H3, ו-027:blockedAt / ‏028:personBlockedAt עוצרים שם ב-'WORLD' (סוף העולם) לפני שהם מגיעים לגדר של השדה ('APT-AIRFIELD').
+   ועוד: שלוש בדיקות סופרות את הרשימות במספר קבוע (058: ‏ACTIVE_REGIONS.length===52, ‏059 / 073: ‏MAP_ACTIVE_IDS.size===51) — לכן מי שהוסיף
+   אזור (island ב-H8, try6723) שבר אותן ועבר לעטיפה משלו של inActiveRegion. שתי דרכים לאותה בעיה — המנגנון כאן הוא אחד לכולם:
+
+   tcLiveAdd(id, {mode, rect, fn, note, by})  — מוסיף אזור לחיים, ונרשם ב-TC_LIVE_ADD (הבדיקות סופרות לפי הרישום — לא מספר קבוע):
+     mode 'zone' (ברירת המחדל) — תא יבשה שלם מ-80 האזורים (MAP_CHUNKS): המלבן של התא נכנס ל-ACTIVE_REGIONS והמזהה ל-MAP_ACTIVE_IDS —
+         הכול רואה אותו כחי: התנועה (inActiveRegion → blockedAt / personBlockedAt), הקרקע (062:wtcPaintL0 — דשא), המפות (028 / 062 / mapfix), F9.
+     mode 'walk' — שטח חלקי (rect, ו/או fn(x,y) לצורה) בתוך תא שאינו חי — למשל היבשה בתא של ים (H8 של island): רק inActiveRegion
+         (אפשר ללכת / לנסוע) — בלי דשא, בלי מפה ובלי ספירה (כמו הסיפונים של 019k). לא נוגע ב-ACTIVE_REGIONS ולא ב-MAP_ACTIVE_IDS.
+   מחזיר את הרשומה (או null, והסיבה ב-TC_LIVE_ADD.err). אותו id פעמיים — נכנס פעם אחת. קוראים לו בטעינה (בחלק שנטען אחרי החלק הזה).
+   הבדיקות: 058 — ‏52 + TC_LIVE_ADD.zones.length; ‏059 / 073 — ‏51 + TC_LIVE_ADD.zones.length; ובתוך roadAudit (074zo) — live_add:
+   כל רשומה נבדקת (zone: ברשימות, inActiveRegion בכל נקודה ברשת של 100 פיקס׳, ההתאמה של MAP_ACTIVE_IDS ל-ACTIVE_REGIONS כמו 059; ‏walk: inActiveRegion
+   בכל נקודה של הצורה). ‎#liveadd=0 — המנגנון כבוי (בלי תוספות — בדיוק כמו קודם); ‎#ffeast=0 — רק בלי השדה המזרחי. */
+var TC_LIVE_ADD={on:!/[?&#]liveadd=0\b/.test(String(location.href)),base:{regions:ACTIVE_REGIONS.length,ids:MAP_ACTIVE_IDS.size},zones:[],walk:[],err:[]};
+function tcLiveAdd(id,o){o=o||{};const L=TC_LIVE_ADD,mode=o.mode||'zone';if(!L.on)return null;
+ try{const had=L.zones.concat(L.walk).find(z=>z.id===id);if(had)return had;
+  if(mode==='zone'){const q=MAP_CHUNKS.find(c=>c.id===id);if(!q){L.err.push(id+': אין תא כזה ב-MAP_CHUNKS');return null}
+   if(MAP_ACTIVE_IDS.has(id)){L.err.push(id+': כבר חי');return null}if(q.cat==='sea'){L.err.push(id+': תא של ים — mode walk ליבשה שבו');return null}
+   const r=o.rect||{x:q.x,y:q.y,w:q.w,h:q.h};if(r.x!==q.x||r.y!==q.y||r.w!==q.w||r.h!==q.h){L.err.push(id+': zone = תא שלם בלבד (לשטח חלקי — mode walk)');return null}
+   ACTIVE_REGIONS.push(r);MAP_ACTIVE_IDS.add(id);const e={id,mode,r,note:o.note||'',by:o.by||''};L.zones.push(e);return e}
+  if(mode==='walk'){const r=o.rect||null,fn=typeof o.fn==='function'?o.fn:null;if(!r&&!fn){L.err.push(id+': walk בלי rect / fn');return null}
+   const e={id,mode,r,fn,note:o.note||'',by:o.by||''};L.walk.push(e);return e}
+  L.err.push(id+': mode לא מוכר — '+mode);return null}catch(x){L.err.push(id+': '+String(x&&x.message||x).slice(0,120));return null}}
+function tcLiveWalkAt(x,y){const W=TC_LIVE_ADD.walk;for(let i=0;i<W.length;i++){const e=W[i],r=e.r;if(r&&!(x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h))continue;try{if(e.fn&&!e.fn(x,y))continue}catch(er){continue}return true}return false}
+/* העטיפה (אחת) של inActiveRegion — רק לשטחים של walk; ה-zone כבר בתוך ACTIVE_REGIONS */
+{const pA=inActiveRegion;inActiveRegion=function(x,y){return pA.apply(this,arguments)||(TC_LIVE_ADD.walk.length>0&&tcLiveWalkAt(x,y))}}
+/* הבדיקה של כל הרשומות (live_add, בתוך roadAudit — 074zo) */
+function tcLiveAddAudit(){const L=TC_LIVE_ADD,o={ok:true,issues:L.err.slice(0,8),zones:L.zones.map(z=>z.id),walk:L.walk.map(z=>z.id),pts:0,regions:ACTIVE_REGIONS.length,ids:MAP_ACTIVE_IDS.size};try{
+ if(ACTIVE_REGIONS.length!==L.base.regions+L.zones.length)o.issues.push('ACTIVE_REGIONS '+ACTIVE_REGIONS.length+' ≠ '+L.base.regions+'+'+L.zones.length);
+ if(MAP_ACTIVE_IDS.size!==L.base.ids+L.zones.length)o.issues.push('MAP_ACTIVE_IDS '+MAP_ACTIVE_IDS.size+' ≠ '+L.base.ids+'+'+L.zones.length);
+ for(const z of L.zones){if(!ACTIVE_REGIONS.includes(z.r))o.issues.push(z.id+':regions');if(!MAP_ACTIVE_IDS.has(z.id))o.issues.push(z.id+':ids');
+  for(let x=z.r.x+50;x<z.r.x+z.r.w;x+=100)for(let y=z.r.y+50;y<z.r.y+z.r.h;y+=100){o.pts++;if(!inActiveRegion(x,y)){o.issues.push(z.id+':region@'+x+','+y);break}}}
+ for(const z of L.walk){if(MAP_ACTIVE_IDS.has(z.id))o.issues.push(z.id+':walk-in-ids');const r=z.r;if(!r)continue;
+  for(let x=r.x+Math.min(50,r.w/2);x<r.x+r.w;x+=100)for(let y=r.y+Math.min(50,r.h/2);y<r.y+r.h;y+=100){if(z.fn&&!z.fn(x,y))continue;o.pts++;if(!inActiveRegion(x,y)){o.issues.push(z.id+':walk@'+x+','+y);break}}}
+ const mapIds=[...MAP_ACTIVE_IDS].sort().join(),regIds=MAP_CHUNKS.filter(q=>ACTIVE_REGIONS.some(r=>q.x>=r.x&&q.x<r.x+r.w&&q.y>=r.y&&q.y<r.y+r.h)).map(q=>q.id).sort().join();
+ if(mapIds!==regIds)o.issues.push('MAP_ACTIVE_IDS ≠ ACTIVE_REGIONS')}catch(e){o.issues.push('err: '+String(e&&e.message||e).slice(0,120))}
+ o.issues=[...new Set(o.issues)].slice(0,16);o.ok=!o.issues.length;return o}
+window.__TC_LIVEADD={add:tcLiveAdd,audit:tcLiveAddAudit,list:()=>({base:TC_LIVE_ADD.base,zones:TC_LIVE_ADD.zones.map(z=>z.id+(z.by?' ('+z.by+')':'')),walk:TC_LIVE_ADD.walk.map(z=>z.id+(z.by?' ('+z.by+')':'')),err:TC_LIVE_ADD.err})};
+
+/* ---- הראשון שמשתמש: השדה המזרחי (fieldfix). היום הצד האווירי סגור לשחקן בכל מקרה (074j — "בלי היתר (S16)"), אבל הסיבה הייתה שגויה
+   (סוף העולם באמצע שדה מצויר), וכשהצד האווירי ייפתח — החצי המזרחי היה נשאר חסום. השטח נשאר סגור — בגדר של השדה, כמו G0–G2. ---- */
+var FFEAST={on:!/[?&#]ffeast=0\b/.test(String(location.href)),ids:['G3','H0','H1','H2','H3'],added:[]};
+if(FFEAST.on)for(const id of FFEAST.ids){const e=tcLiveAdd(id,{mode:'zone',by:'fieldfix',note:'השדה — הצד האווירי המזרחי (S15)'});if(e)FFEAST.added.push(id)}
+/* הבדיקה של השדה (fieldfix_east, בתוך roadAudit — 074zo): בכל נקודה ברשת — החסימה היא הגדר של השדה ('APT-AIRFIELD'): לא סוף העולם, ולא פתוח */
+function ffEastAudit(){const o={ok:true,issues:[],cells:[],pts:0,world:0,open:0};try{
+ if(!FFEAST.on||!TC_LIVE_ADD.on){o.off=true;return o}
+ for(const id of FFEAST.ids){const z=TC_LIVE_ADD.zones.find(e=>e.id===id);if(!z){o.issues.push(id+':not-added');continue}const r=z.r;
+  let w=0,op=0,n=0;for(let x=r.x+50;x<r.x+r.w;x+=100)for(let y=r.y+50;y<r.y+r.h;y+=100){n++;const b=blockedAt(x,y,8),p=personBlockedAt(x,y);if(b==='WORLD'||p==='WORLD')w++;if(!b||!p)op++}
+  o.pts+=n;o.world+=w;o.open+=op;if(w)o.issues.push(id+':world '+w);if(op)o.issues.push(id+':open '+op);o.cells.push(id+' '+n)}
+ o.regions=ACTIVE_REGIONS.length;o.live=MAP_ACTIVE_IDS.size}catch(e){o.issues.push('err: '+String(e&&e.message||e).slice(0,120))}
+ o.issues=[...new Set(o.issues)].slice(0,16);o.ok=!o.issues.length;return o}

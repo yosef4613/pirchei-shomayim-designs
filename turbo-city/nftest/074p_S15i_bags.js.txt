@@ -1,0 +1,340 @@
+/* ==== שדה 5 (s15i) · הכבודה, המטען והגרר — מוצאים ומחזירים (D‑663; הבעלים 20:37, ‏20:43, ‏20:52) ====
+   "לכל כלי היה מיקום מדויק ליד המטוס … צריך לקחת ולחשב למה שיש היום": המיקומים של הישן — נמדדו בבנייה הישנה S7F284 (הכלי
+   deliver/2026-11-10/s15i/tools/old_layout.js, מהמשימות של AO.fleet ומ-s6aBagLay של 046) — במערכת של המטוס, במטרים מגלגל האף
+   (a — קדימה אל האף, d — לצד הימני של המטוס, h — הכיוון של הרכב פחות הכיוון של המטוס). כאן הם מחושבים לעמדות ולמטוסים של היום (S15SIM / S15D,
+   10 פיקס׳ למטר): נקודות העצירה של המסוע (BL), רכבת הכבודה (BT) והגרר (PT) — רק קוד חיבור, בלי צייר חדש (הרכבים מצוירים בצייר 3/4 הישן C34
+   דרך s15grVeh של S15 ג). מה שהוכח שחסר ונבנה על הישן: המוט של הגרר (הבעלים: "מתחבר לגלגל האף — מוט"; בישן לא היה — חיפוש "tow.?bar" = 0),
+   והעובדים של הכבודה לפי הנקודות של הישן (s6aBagCrew / s6aBagFly / g77BwLay: ליד העגלה, בבטן, וביד כשאין מסוע). */
+var S15I={on:true,err:'',nErr:0,n:{retarget:0,home:0,crew:0,bags:0,bar:0,door:0},moved:[]};
+function s15iErr(w,e){S15I.nErr++;if(!S15I.err)S15I.err=w+': '+String(e&&e.message||e).slice(0,200)}
+/* (1) הישן — במטרים, במערכת של המטוס (נמדד ב-S7F284; ראו old_layout_284b.json) */
+const S15I_OLD={
+ // המסוע (s6aBagLay של 046:316, ‏p214): c — מרכז הרכב, h — הכיוון שלו (החזית = ראש המסוע בדלת הבטן), F — ראש המסוע, B — הקצה התחתון (מול העגלה הראשונה)
+ BL:{'AC-NB-01':{c:[-2.26,5.78],h:-2.094,F:[-4.13,2.54],B:[-.38,9.03]},'AC-LG-01':{c:[-7.31,6.76],h:-2.094,F:[-9.19,3.52],B:[-5.44,10.01]},'AC-MW-01':{c:[-6.29,6.67],h:-2.094,F:[-8.17,3.42],B:[-4.42,9.91]}},
+ // הטרקטור (LY.ws / LY.c1 של s6aBagLay = מה שנמדד במשימות): t — הטרקטור, h — הכיוון שלו; cart0 — העגלה הראשונה (בקצה התחתון של המסוע / מול הדלת ביד)
+ BT:{'AC-NB-01':{t:[-2.93,10.5],h:Math.PI,cart0:[-.39,10.5]},'AC-RJ-01':{t:[-6.03,6.76],h:Math.PI,cart0:[-3.49,6.76]},'AC-LG-01':{t:[-7.98,11.48],h:Math.PI,cart0:[-5.44,11.48]},'AC-MW-01':{t:[-6.96,11.39],h:Math.PI,cart0:[-4.42,11.39]}},
+ // ביד (S6A_HAND — הישן: הרגיונלי והטורבו-פרופ בלי מסוע): door — דלת הבטן, man — המעמיס בין העגלה לדלת (s6aBagCrew / s6aBagFly)
+ HAND:{'AC-RJ-01':{door:[-3.48,1.51],man:[-3.48,3.7]},'AC-TP-01':{door:[-1.9,1.4],man:[-1.9,3.8]},'AC-NB-01':{door:[-4.13,2.54],man:null},'AC-LG-01':{door:[-9.19,3.52],man:null}},
+ // הגרר: מרכז הגרר לפני גלגל האף (a, מ׳), בהמתנה ובדחיפה — הגוף לא נוגע באף (הרווח = המוט)
+ PT:{'AC-NB-01':10.59,'AC-RJ-01':9.59,'AC-MW-01':14.88,'AC-BJ-01':6.31,'AC-AM-01':5.4,'AC-CG-01':13.54,'AC-TP-01':8.82},
+ BELT_AC:{'AC-NB-01':1,'AC-LG-01':1,'AC-MW-01':1}   // S6A_BELT (046:309): רק לאלה יש מסוע; RJ / TP — ביד (S6A_HAND)
+};
+const S15I_PX=10;
+const S15I_HAND_AC={'AC-RJ-01':1,'AC-QJ-01':1,'AC-TP-01':1};   // S6A_HAND (046:310)
+// המסוע נוגע בגוף (p216 — במגע); הבדיקה של S15 (s15SimAudit / s15Boxes) רואה את הרכב באורך של הסימולציה (75) ואת הגוף עם שוליים של ~0.5 מ׳ —
+// לכן המרכז זז החוצה (בצד של המטוס) עד שהקופסה של הבדיקה לא נוגעת; הראש המצויר (×1.125) נשאר על העור. ההזזה נשמרת ב-S15I.nudge
+// רכב של בעלים אחר (S15SIM) שעומד באותו זמן על המקום של הישן (למשל FT-1 של שדה 3 ב-P4, ‏(7693, 706) — המקום של הרכבת בישן): הרכבת זזה החוצה (לצד)
+// עד שהקופסאות של s15SimAudit לא נוגעות. כשהבעלים יזיז את הרכב שלו — החישוב בטעינה מחזיר את הרכבת בדיוק למקום של הישן
+function s15iClearVeh(v,A,Q,S){const T=S15SIM.T,md=x=>((x%T)+T)%T,a0=md(S.t0),d0=S.t1-S.t0,nx=-Math.sin(A.th),ny=Math.cos(A.th),ov=(b0,db)=>{for(const k of [-T,0,T])if(b0+k<a0+d0&&a0<b0+k+db)return true;return false};
+ const O=[];for(const w of S15SIM.veh){if(w===v)continue;for(const g of w.legs){if(g.h==null||g.f!==8||!ov(md(g.t0),g.t1-g.t0))continue;O.push(s15Boxes(w,[g.p[0][0],g.p[0][1],g.h,0]))}}
+ let k=0;for(;k<120;k++){const B=s15Boxes(v,[Q[0]+nx*k*.5,Q[1]+ny*k*.5,Q[2],0]);if(!O.some(o=>o.some(f=>B.some(b=>s15ObbHit(b,f)))))break}if(!k)return Q;
+ const d=k*.5+.5;(S15I.side||(S15I.side={}))[v.id]=+(d/S15I_PX).toFixed(2);return[Q[0]+nx*d,Q[1]+ny*d,Q[2]]}
+function s15iClear(v,A,Q,ac,fwd){const L=(typeof S15_LPX!=='undefined'&&S15_LPX[ac])||376,W=({'AC-LG-01':648,'AC-NB-01':358,'AC-RJ-01':260})[ac]||300,fa=A.f&&A.f.L?A.f:{kind:'ac',model:ac,L,W},nx=fwd?Math.cos(A.th):-Math.sin(A.th),ny=fwd?Math.sin(A.th):Math.cos(A.th);let k=0;
+ for(;k<80;k++){const q=[Q[0]+nx*k*.5,Q[1]+ny*k*.5,Q[2],0],B=s15Boxes(v,q),F=s15Boxes(fa,[A.x,A.y,A.th,0]);if(!B.some(b=>F.some(f=>s15ObbHit(b,f))))break}
+ const d=Math.min(k,79)*.5+.5;(S15I.nudge||(S15I.nudge={}))[v.id]=+(d/S15I_PX).toFixed(2);return[Q[0]+nx*d,Q[1]+ny*d,Q[2]]}
+const S15I_HW={'AC-NB-01':2.0,'AC-RJ-01':1.5,'AC-LG-01':2.98,'AC-MW-01':2.88,'AC-TP-01':1.4};   // חצי רוחב הגוף (מ׳) — LY.hw של הישן
+// העגלה הראשונה בעולם: עם מסוע — מהקצה התחתון האמיתי (המסוע ×1.125 של היום) באותו הפרש של הישן ×1.125; ביד — הצד של הישן מחוץ לגוף ×1.125
+function s15iCart0(A,ac){const O=S15I_OLD,B=O.BT[ac]||O.BT['AC-NB-01'],V=S15GR.VK,hw=S15I_HW[ac]||2;if(O.BL[ac]&&O.BELT_AC[ac]){const L=O.BL[ac],Lm=s15grDims('BL')[0]/S15I_PX,ux=Math.cos(L.h),uy=Math.sin(L.h),Ba=L.F[0]-ux*Lm,Bd=L.F[1]-uy*Lm;
+  return s15iW(A,Ba+(B.cart0[0]-L.B[0])*V,Bd+(B.cart0[1]-L.B[1])*V)}return s15iW(A,B.cart0[0],hw+(B.cart0[1]-hw)*V)}
+// המטר של הגרר לסוג שלא נמדד: האף (S15SIM.ngf × L) + הרווח של סוג קרוב שנמדד (BJ לקטנים, NB לשאר)
+// הרווח של הישן בין הגב של הגרר (6.0 מ׳, S6A_TYPES) לאף = המוט; היום הגרר מצויר ×1.125 — אותו רווח, והמרכז זז בחצי האורך המצויר
+function s15iNoseM(ac){const L=(typeof S15_LPX!=='undefined'&&S15_LPX[ac])||({'AC-LG-01':668,'AC-NB-01':376,'AC-RJ-01':317,'AC-BJ-01':144,'AC-TP-01':272,'AC-LT-01':91,'AC-PR-01':83,'AC-CG-01':549})[ac]||300;return(S15SIM.ngf[ac]||.12)*L/S15I_PX}
+function s15iPtGap(ac){const O=S15I_OLD.PT,small=/BJ|LT|PR|CN/.test(ac),k=O[ac]!=null?ac:ac==='AC-TB-01'?'AC-TP-01':(small?'AC-BJ-01':'AC-NB-01');   /* TB ב-C2 — כמו ה-TP שעמד ב-C2 בישן (PW 8.82 מ׳) */return O[k]-3.0-s15iNoseM(k)}
+function s15iPtA(ac){return s15iNoseM(ac)+s15iPtGap(ac)+s15grDims('PT')[0]/2/S15I_PX}
+// מטוס (גלגל האף x, ‏y, הכיוון th) + נקודה במטרים (a, d) → העולם. d חיובי = הצד הימני של המטוס (כשהאף דרומה — מערב)
+function s15iW(A,a,d){const c=Math.cos(A.th),s=Math.sin(A.th),X=S15I_PX;return[A.x+(c*a-s*d)*X,A.y+(s*a+c*d)*X]}
+/* (2) החיבור לסימולציה: נקודות העצירה של היום מחושבות מהישן (פעם אחת בטעינה) */
+function s15iLen(P){let l=0;for(let i=1;i<P.length;i++)l+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);return l}
+// הנקודה הקרובה על קו שבור: {i (הקטע), q (הנקודה)}
+function s15iNear(P,x,y){let best=null;for(let i=0;i<P.length-1;i++){const a=P[i],b=P[i+1],dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy||1e-9,u=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/l2)),q=[a[0]+dx*u,a[1]+dy*u],d=Math.hypot(q[0]-x,q[1]-y);if(!best||d<best.d)best={i,q,d}}return best}
+// פינות מעוגלות (רדיוס r) בנקודות החדשות — כדי שהכיוון לא יקפוץ בדגימה אחת (ממצא 6)
+function s15iRound(P,r){if(P.length<3)return P;const out=[P[0]];for(let i=1;i<P.length-1;i++){const a=P[i-1],b=P[i],c=P[i+1],l1=Math.hypot(b[0]-a[0],b[1]-a[1]),l2=Math.hypot(c[0]-b[0],c[1]-b[1]);
+  const t1=Math.atan2(b[1]-a[1],b[0]-a[0]),t2=Math.atan2(c[1]-b[1],c[0]-b[0]),dt=Math.atan2(Math.sin(t2-t1),Math.cos(t2-t1));if(Math.abs(dt)<.05||l1<2||l2<2){out.push(b);continue}
+  const k=Math.min(r*Math.tan(Math.abs(dt)/2),l1*.45,l2*.45),p0=[b[0]-Math.cos(t1)*k,b[1]-Math.sin(t1)*k],p1=[b[0]+Math.cos(t2)*k,b[1]+Math.sin(t2)*k],n=Math.max(2,Math.ceil(Math.abs(dt)/.35));
+  for(let j=0;j<=n;j++){const u=j/n,m=[(1-u)*(1-u)*p0[0]+2*u*(1-u)*b[0]+u*u*p1[0],(1-u)*(1-u)*p0[1]+2*u*(1-u)*b[1]+u*u*p1[1]];out.push(m)}}
+ out.push(P[P.length-1]);return out.map(p=>[+p[0].toFixed(1),+p[1].toFixed(1)])}
+// המהירויות של רגל לפי האורך החדש (אותו זמן): s15PoseLeg — המרחק = (v0+v1)/2 × הזמן
+function s15iFit(g){const T=g.t1-g.t0,L=s15iLen(g.p),L0=(g.v0+g.v1)/2*T;if(L0>1e-6&&T>1e-6){const k=L/L0;g.v0*=k;g.v1*=k}}
+// רגל ההגעה / השירות / היציאה של ביקור אחד → נקודה חדשה Q = [x, y, h]. הגישה: מהכביש (הנקודה של הקו הישן שהכי קרובה ל-Ld) → Ld (lead פיקס׳
+// לפני Q, בכיוון h) → Q; היציאה: back — לאחור עד Ld (המסוע — "straight back along it" כמו בישן), ואז אל הקו הישן; בלי back — ישר מ-Q אל הקו הישן
+function s15iRetarget(v,j,Q,lead,back,xo){xo=xo||0;const L=v.legs,A=L[j-1],S=L[j],R=L[j+1];if(!A||!S||!R||A.h!=null||R.h!=null||A.att||R.att)return false;
+ const c=Math.cos(Q[2]),s=Math.sin(Q[2]),Ld=[Q[0]-c*lead,Q[1]-s*lead],yRoad=A.p.length>2?A.p[A.p.length-3][1]:A.p[0][1],M=[Ld[0]+xo,Ld[1]],Lr=[M[0],Math.max(M[1],yRoad)];
+ const nA=s15iNear(A.p,Lr[0],Lr[1]),pa=A.p.slice(0,nA.i+1).concat([nA.q]);for(const q of [Lr,M,Ld])if(Math.hypot(q[0]-pa[pa.length-1][0],q[1]-pa[pa.length-1][1])>1)pa.push(q);pa.push([Q[0],Q[1]]);
+ A.p=s15iRound(pa,9);s15iFit(A);S.p=[[Q[0],Q[1]]];S.h=+Q[2].toFixed(3);
+ const yR=R.p[Math.min(2,R.p.length-1)][1],Lr2=[M[0],Math.max(M[1],yR)],nR=s15iNear(R.p,Lr2[0],Lr2[1]),rest=[nR.q].concat(R.p.slice(nR.i+1)),mid=[];for(const q of [M,Lr2])if(Math.hypot(q[0]-(mid.length?mid[mid.length-1]:Ld)[0],q[1]-(mid.length?mid[mid.length-1]:Ld)[1])>1)mid.push(q);
+ if(back){const T=R.t1-R.t0,l1=lead,l2=s15iLen([Ld].concat(mid,rest)),t1=R.t0+T*Math.max(.25,Math.min(.6,l1/(l1+l2)));
+  const B={p:[[Q[0],Q[1]],Ld],t0:R.t0,t1,v0:0,v1:0,r:1,z0:0,z1:0,f:1};B.v0=B.v1=l1/Math.max(.1,t1-R.t0);
+  const F=Object.assign({},R,{p:s15iRound([Ld].concat(mid,rest),9),t0:t1});s15iFit(F);L.splice(j+1,1,B,F)}
+ else{R.p=s15iRound([[Q[0],Q[1]]].concat(mid.length?mid:[Lr2],rest),9);s15iFit(R)}
+ return true}
+// המסוע בישן (046:322): "up its column from the road, into the 60° line; out: straight back along it, back down the column" — כאן: מהכביש צפונה בעמודה,
+// קשת ברדיוס r אל הקו של המסוע (60° לגוף) ועצירה בדלת; ביציאה — לאחור באותה קשת ובעמודה עד הכביש, ומשם קדימה. r נבחר כך שהעמודה לא עוברת בכיס חונה
+function s15iArcPts(Q,h0,r,n){const h1=Q[2],k=n||8,pts=[];for(let i=0;i<=k;i++){const h=h0+(h1-h0)*i/k;pts.push([Q[0]-r*(Math.sin(h1)-Math.sin(h)),Q[1]-r*(Math.cos(h)-Math.cos(h1))])}return pts}
+function s15iRetargetArc(v,j,Q,r){const L=v.legs,A=L[j-1],S=L[j],R=L[j+1];if(!A||!S||!R||A.h!=null||R.h!=null||A.att||R.att)return false;const h0=-Math.PI/2;
+ const arc=s15iArcPts(Q,h0,r),S0=arc[0],yRoad=A.p.length>2?A.p[A.p.length-3][1]:A.p[0][1],Lr=[S0[0],Math.max(S0[1],yRoad)];
+ const nA=s15iNear(A.p,Lr[0],Lr[1]),pa=A.p.slice(0,nA.i+1).concat([nA.q]);if(Math.hypot(Lr[0]-nA.q[0],Lr[1]-nA.q[1])>1)pa.push(Lr);
+ A.p=s15iRound(pa,9).concat(arc.slice(Lr[1]-S0[1]>1?0:1).map(p=>[+p[0].toFixed(1),+p[1].toFixed(1)]));s15iFit(A);S.p=[[Q[0],Q[1]]];S.h=+Q[2].toFixed(3);
+ const yR=R.p[Math.min(2,R.p.length-1)][1],Lr2=[S0[0],Math.max(S0[1],yR)],nR=s15iNear(R.p,Lr2[0],Lr2[1]),rest=[nR.q].concat(R.p.slice(nR.i+1));
+ const bp=arc.slice().reverse().concat(Lr2[1]-S0[1]>1?[Lr2]:[]).map(p=>[+p[0].toFixed(1),+p[1].toFixed(1)]),T=R.t1-R.t0,l1=s15iLen(bp),l2=s15iLen([Lr2].concat(rest)),t1=R.t0+T*Math.max(.3,Math.min(.7,l1/(l1+l2)));
+ const B={p:bp,t0:R.t0,t1,v0:0,v1:0,r:1,z0:0,z1:0,f:1};B.v0=B.v1=l1/Math.max(.1,t1-R.t0);const F=Object.assign({},R,{p:s15iRound([Lr2].concat(rest),9),t0:t1});s15iFit(F);L.splice(j+1,1,B,F);return true}
+// הבדיקה של S15 (s15SimAudit) לרכב אחד בחלון זמן: כמה פעמים הקופסאות שלו נוגעות ברכב / מטוס אחר (כל 0.5 ש׳) — כדי לבחור את הנתיב בין החונים
+function s15iHits(v,t0,t1){const T=S15SIM.T,ALL=[...S15SIM.flights,...S15SIM.veh].filter(a=>a!==v),act=new Set(S15SIM.sched.map(q=>q[0])),PK=[];let n=0;
+ for(const [sid,ac] of Object.entries(S15D.parked)){if(!ac||act.has(sid))continue;const st=S15D.stands[sid],L=({'AC-LG-01':668,'AC-NB-01':376,'AC-RJ-01':317,'AC-CG-01':549,'AC-TB-01':120,'AC-LT-01':91,'AC-PR-01':83,'AC-BJ-01':144,'AC-CN-01':144})[ac]||300,Sp=({'AC-LG-01':648,'AC-NB-01':358,'AC-RJ-01':260,'AC-CG-01':476,'AC-TB-01':200,'AC-LT-01':112,'AC-PR-01':110,'AC-BJ-01':158,'AC-CN-01':140})[ac]||300;
+  PK.push(s15Boxes({kind:'ac',model:ac,L,W:Sp},[st.cx,st.nose-(S15SIM.ngf[ac]||.12)*L,Math.PI/2,0]))}
+ for(let t=t0;t<=t1;t+=.5){const tc=((t%T)+T)%T,q=s15PoseAt(v,tc);if(!q)continue;const B=s15Boxes(v,q);
+  for(const a of ALL){const p=s15PoseAt(a,tc);if(!p||(a.kind==='veh'&&p[4]===16))continue;if(a.kind==='veh'&&a.home===v.home&&p[4]===0&&q[4]===0)continue;const C=s15Boxes(a,p);if(B.some(x=>C.some(y=>s15ObbHit(x,y)))){n++;break}}
+  for(const C of PK)if(B.some(x=>C.some(y=>s15ObbHit(x,y)))){n++;break}}
+ return n}
+function s15iHits1(v){const A=v.legs.find(g=>g.f===1),Z=v.legs.slice().reverse().find(g=>g.f===1);if(!A||!Z)return 0;let n=0;const T=S15SIM.T;for(let t=Math.ceil(A.t0);t<=Z.t1;t+=1){const st=s15iHitsAt(v,((t%T)+T)%T);if(st)n++}return n}
+function s15iHitsAt(v,tc){const q=s15PoseAt(v,tc);if(!q)return 0;const B=s15Boxes(v,q);for(const a of [...S15SIM.flights,...S15SIM.veh]){if(a===v)continue;const p=s15PoseAt(a,tc);if(!p||(a.kind==='veh'&&p[4]===16))continue;if(a.kind==='veh'&&a.home===v.home&&p[4]===0&&q[4]===0)continue;if(B.some(x=>s15Boxes(a,p).some(y=>s15ObbHit(x,y))))return 1}return 0}
+// הנתיב אל המקום של הישן: הקו מהכביש — קודם בדיוק מול נקודת הכניסה, ואם הוא עובר דרך רכב חונה / עומד — הצידה בצעדים של 6 פיקס׳ (עד 60)
+function s15iRetargetSafe(v,j,Q,lead,back){const keep=JSON.stringify(v.legs);let best=null;
+ if(back){for(const r of [50,40,60,30,70,25,80,90,100,110,120]){v.legs=JSON.parse(keep);if(!s15iRetargetArc(v,j,Q,r)){v.legs=JSON.parse(keep);return false}const A=v.legs[j-1],R=v.legs[j+2],h=s15iHits(v,A.t0,R.t1);
+   if(!best||h<best.h)best={h,xo:'r'+r,legs:JSON.stringify(v.legs)};if(!h)break}}
+ if(!best||best.h)
+ for(const xo of [0,6,-6,12,-12,18,-18,24,-24,30,-30,36,-36,42,-42,48,-48,54,-54,60,-60]){if(back&&best&&!best.h)break;v.legs=JSON.parse(keep);if(!s15iRetarget(v,j,Q,lead,back,xo)){v.legs=JSON.parse(keep);return false}
+  const A=v.legs[j-1],R=v.legs[j+1+(back?1:0)],h=s15iHits(v,A.t0,R.t1);if(!best||h<best.h)best={h,xo,legs:JSON.stringify(v.legs)};if(!h)break}
+ v.legs=JSON.parse(best.legs);if(best.xo)(S15I.lane||(S15I.lane={}))[v.id]=best.xo;if(best.h)(S15I.hitsLeft||(S15I.hitsLeft={}))[v.id]=best.h;return true}
+// ביקור של מסוע אצל סוג שבישן הועמס ביד (S6A_HAND): הרכב נשאר בבית (כמו בישן — אין מסוע לרגיונלי)
+function s15iStayHome(v,j){const L=v.legs,A=L[j-1],R=L[j+1],H=L.find(g=>g.h!=null&&g.f===0);if(!A||!R||!H)return false;const t0=A.t0,t1=R.t1;
+ L.splice(j-1,3,{p:[H.p[0].slice()],t0,t1,h:H.h,f:0});return true}
+// העמדה של רכב: מהמקום שלו ב-S15D.spots (serves)
+function s15iStand(v){if(/^PT/.test(String(v.id))){for(const g of v.legs)if(g.att&&S15_FL[g.att])return S15_FL[g.att].home}const s=S15D.spots[v.id];if(!s||!s.serves)return null;return String(s.serves).split(/\s*\/\s*/)[0]}
+/* (5) הבעלים 21:25 ("בשדה ברור שצריך שיהיו, ושיהיה מקום"): הרכבים של הישן שלא היו בסימולציה — מקום חניה ב-S15D.spots ורכב ב-S15SIM.
+   הנתיב — בדפוס של side() של S15 (s15_sim.py: מהבית אל הנתיב של הכביש, אל המטוס, המתנה, חזרה בנתיב השני), ואז המקום של הישן (s15iRetargetVeh);
+   זמן הכניסה נבחר כך שאין נגיעה בבדיקה של S15 (כל שנייה). כל מסוע — לפי S6A_BELT של הישן (כל עמדת שרוול של צר-גוף / רחב-גוף) */
+const S15I_ADD=[
+ // id, הסוג, הדגם, L, W, הכיס, המקום (מלבן — 22 × 75 כמו המסועים של S15), העמדה, זמני כניסה לנסות (ש׳ במחזור), זמן בעמדה
+ {id:'BL-P3',t:'BL',model:'G7-BL',L:75,W:22,pocket:'AIR-GSE-P2|P3',rect:[7190,684,7212,759],serves:'P3',tin:'win+20',stay:'win-170'},
+ {id:'BL-P5',t:'BL',model:'G7-BL',L:75,W:22,pocket:'AIR-GSE-P4|P5',rect:[8000,684,8022,759],serves:'P5',tin:[380,440,500,560,100,160,220],stay:150}];
+S15GR_T.HL=S15GR_T.HL||['hilo','HL'];S15GR_T.PW=S15GR_T.PW||['ptug','PW'];   // הערכות 3/4 של הישן (C34_GSE: ‏G7-HL → hilo, ‏LV-PT-01 → ptug) לסוגים של שדה 5
+function s15iMv(v,P,v0,v1,t0,r){P=s15iRound(P,9);const L=s15iLen(P),dur=2*L/(v0+v1);v.legs.push({p:P,t0:+t0.toFixed(2),t1:+(t0+dur).toFixed(2),v0,v1,r:r?1:0,z0:0,z1:0,f:1});return t0+dur}
+function s15iWt(v,p,h,t0,t1,f){v.legs.push({p:[[+p[0].toFixed(1),+p[1].toFixed(1)]],t0:+t0.toFixed(2),t1:+t1.toFixed(2),h:+h.toFixed(3),f});return t1}
+function s15iSideV(o,tin,stay){const T=S15SIM.T,r=o.rect,home=[(r[0]+r[2])/2,(r[1]+r[3])/2],st=S15D.stands[o.serves],A=s15grAcAt(o.serves,tin+30)||{x:st.cx,y:st.nose-45},tgt=[st.cx-40,A.y+30];
+ const lo=tgt[0]>home[0]?864:820,lb=tgt[0]>home[0]?820:864,v={id:o.id,kind:'veh',model:o.model,home:o.pocket,L:o.L,W:o.W,legs:[]};
+ let t=s15iMv(v,[home,[home[0],lo],[tgt[0],lo],tgt],40,8,tin);t=s15iWt(v,tgt,-Math.PI/2,t,t+stay,8);t=s15iMv(v,[tgt,[tgt[0],lb],[home[0],lb],home],40,8,t);s15iWt(v,home,Math.PI/2,t,tin+T,0);return v}
+function s15iAddVeh(){const T=S15SIM.T;S15I.added=[];
+ for(const o of S15I_ADD){if(S15SIM.veh.some(v=>v.id===o.id))continue;
+  S15D.spots[o.id]={t:o.t,home:o.pocket,rect:o.rect,serves:o.serves,h:'S',s15i:1};
+  let tins=o.tin,stay=o.stay;const fl=S15SIM.flights.find(f=>f.home===o.serves);
+  // הסדר של הישן (g77SvcPlan 'early' ‏042:659 ו-K‑78): המסוע מגיע לפני הרכבת ועוזב אחריה ("the belt stays until ~4 s before ready")
+  if(fl){const L=fl.legs[fl.legs.length-1],p0=L.t0,bt=S15SIM.veh.find(w=>w.id==='BT-'+o.serves),bi=bt&&bt.legs.findIndex(g=>g.h!=null&&g.f===8);
+   if(bt&&bi>0){const tIn=bt.legs[bi-1].t0,tOut=bt.legs[bi+1].t1+(bt.legs[bi+2]&&bt.legs[bi+2].h==null?bt.legs[bi+2].t1-bt.legs[bi+1].t1:0);tins=[p0+3,p0+6,p0+10,p0+14].filter(x=>x+18<tIn+4);stay=null;o.__out=tOut+3}
+   else{tins=[p0+20];stay=Math.max(60,(L.t1-p0)-170)}}
+  let best=null;
+  for(const tin of tins){const v=s15iSideV(o,tin,stay!=null?stay:Math.max(60,o.__out-(tin+18)));S15SIM.veh.push(v);S15_MOVING.add(v.id);s15iRetargetVeh(v);const h=s15iHits1(v);
+   if(!best||h<best.h)best={h,tin,legs:JSON.stringify(v.legs)};S15SIM.veh.splice(S15SIM.veh.indexOf(v),1);if(!h)break}
+  const v={id:o.id,kind:'veh',model:o.model,home:o.pocket,L:o.L,W:o.W,legs:JSON.parse(best.legs),s15i:1};S15SIM.veh.push(v);S15_MOVING.add(v.id);v.__done=1;
+  S15I.added.push(o.id+' ('+o.serves+', כניסה '+best.tin.toFixed(0)+' ש׳'+(best.h?', נגיעות '+best.h:'')+')')}}
+/* (6) ה-HL של הישן במטוס המשא החונה ב-C1 (הבעלים 21:25 — "שיהיו, ושיהיה מקום"): נוצר בכלי s15i/tools/s15i_hl.py (הפונקציות של s15_sim.py, מול הנתונים של הענף).
+   C1: האף במפה 2.9 מ׳ מהגדר — אין מקום ל-HL בדלת הקדמית (בישן: a 4.3, ‏d −4.78 מ׳); ברירת המחדל (לאישורך): המטוס עומד 9 מ׳ צפונה בתוך המלבן של העמדה (הזנב ב-y 57). */
+const S15I_HL={"veh":{"id":"HL-C1","kind":"veh","model":"G7-HL","home":"AIR-GSE-CN","L":80,"W":30,"legs":[{"p":[[5873.0,249.0],[5873.0,460.0],[5872.8,464.2],[5872.1,468.3],[5871.0,472.4],[5869.5,476.3],[5867.6,480.0],[5865.4,483.5],[5862.7,486.8],[5859.8,489.7],[5856.5,492.4],[5853.0,494.6],[5849.3,496.5],[5845.4,498.0],[5841.3,499.1],[5837.2,499.8],[5833.0,500.0],[5757.0,500.0],[5752.8,500.2],[5748.7,500.9],[5744.6,502.0],[5740.7,503.5],[5737.0,505.4],[5733.5,507.6],[5730.2,510.3],[5727.3,513.2],[5724.6,516.5],[5722.4,520.0],[5720.5,523.7],[5719.0,527.6],[5717.9,531.7],[5717.2,535.8],[5717.0,540.0],[5717.0,705.0],[5716.8,709.2],[5716.1,713.3],[5715.0,717.4],[5713.5,721.3],[5711.6,725.0],[5709.4,728.5],[5706.7,731.8],[5703.8,734.7],[5700.5,737.4],[5697.0,739.6],[5693.3,741.5],[5689.4,743.0],[5685.3,744.1],[5681.2,744.8],[5677.0,745.0],[5459.0,745.0],[5454.5,744.7],[5450.1,744.0],[5445.8,742.7],[5441.6,741.0],[5437.7,738.8],[5434.0,736.2],[5411.0,717.8],[5407.3,715.2],[5403.4,713.0],[5399.2,711.3],[5394.9,710.0],[5390.5,709.3],[5386.0,709.0],[5198.8,709],[5193.3,707.9],[5191.1,707.4],[5189.0,706.6],[5187.0,705.6],[5185.1,704.5],[5184.2,703.9],[5182.4,702.6],[5180.7,701.1],[5179.2,699.4],[5177.9,697.6],[5177.3,696.7],[5176.2,694.8],[5175.2,692.8],[5174.4,690.7],[5173.9,688.5],[5172.8,683.0],[5172.8,594.1]],"t0":306,"t1":375.9,"v0":30,"v1":6,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5172.8,594.1]],"t0":375.9,"t1":465.9,"h":-1.57,"f":8},{"p":[[5172.8,594.1],[5172.8,683],[5171.7,688.5],[5171.2,690.7],[5170.4,692.8],[5169.4,694.8],[5168.3,696.7],[5167.7,697.6],[5166.4,699.4],[5164.9,701.1],[5163.2,702.6],[5161.4,703.9],[5160.5,704.5],[5158.6,705.6],[5156.6,706.6],[5154.5,707.4],[5152.3,707.9],[5146.8,709.0]],"t0":465.9,"t1":487.42,"v0":6,"v1":6,"r":1,"z0":0,"z1":0,"f":1},{"p":[[5146.8,709.0],[5386.0,709.0],[5390.5,709.3],[5394.9,710.0],[5399.2,711.3],[5403.4,713.0],[5407.3,715.2],[5411.0,717.8],[5434.0,736.2],[5437.7,738.8],[5441.6,741.0],[5445.8,742.7],[5450.1,744.0],[5454.5,744.7],[5459.0,745.0],[5677.0,745.0],[5681.2,744.8],[5685.3,744.1],[5689.4,743.0],[5693.3,741.5],[5697.0,739.6],[5700.5,737.4],[5703.8,734.7],[5706.7,731.8],[5709.4,728.5],[5711.6,725.0],[5713.5,721.3],[5715.0,717.4],[5716.1,713.3],[5716.8,709.2],[5717.0,705.0],[5717.0,540.0],[5717.2,535.8],[5717.9,531.7],[5719.0,527.6],[5720.5,523.7],[5722.4,520.0],[5724.6,516.5],[5727.3,513.2],[5730.2,510.3],[5733.5,507.6],[5737.0,505.4],[5740.7,503.5],[5744.6,502.0],[5748.7,500.9],[5752.8,500.2],[5757.0,500.0],[5833.0,500.0],[5837.2,499.8],[5841.3,499.1],[5845.4,498.0],[5849.3,496.5],[5853.0,494.6],[5856.5,492.4],[5859.8,489.7],[5862.7,486.8],[5865.4,483.5],[5867.6,480.0],[5869.5,476.3],[5871.0,472.4],[5872.1,468.3],[5872.8,464.2],[5873.0,460.0],[5873.0,249.0]],"t0":487.42,"t1":553.03,"v0":30,"v1":6,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5873.0,249.0]],"t0":553.03,"t1":1026,"h":1.57,"f":0}]},"spot":{"t":"HL","home":"AIR-GSE-CN","rect":[5858,209,5888,289],"serves":"C1","h":"S"},"shift":90,"ng":[5123,551.1]};
+function s15iHL(){const H=S15I_HL;if(!H||S15SIM.veh.some(v=>v.id===H.veh.id))return;const st=S15D.stands.C1;if(st&&!st.__s15i){st.nose-=H.shift;st.__s15i=1}
+ S15D.spots[H.veh.id]=H.spot;S15SIM.veh.push(H.veh);S15_MOVING.add(H.veh.id);try{S15_STAT=null}catch(e){}S15I.hl={stop:H.veh.legs.find(g=>g.f===8)}}
+/* (7) טיסת משא (הבעלים 21:25: "גם צריך שיהיו טיסות משא"): AC-TB-01 ל-C2 — נוצרה בכלי s15i/tools/s15i_cargo_c2.py (הפונקציות של s15_sim.py של שדה 1 — arrival / departure /
+   takeoff / ac_conflict, כל שנייה — מול הטיסות והרכבים של הענף, בלי לערוך את 019l): נוחת, מגיע ל-C2, 376 ש׳ בעמדה, נדחף בגרר המשא PT-C (PW של הישן — ב-C2 בישן: TP עם PW 8.82 מ׳)
+   ומסיע ל-A1. ‏BL-C (של S15) — בחלון של המטוס. (C1 — המטוס הגדול: אין זמן במחזור בלי חפיפה ב-A1; נשאר חונה, עם ה-HL.) */
+const S15I_CARGO2={"flight":{"id":"FL-C2","kind":"ac","model":"AC-TB-01","home":"C2","L":120.0,"W":200.0,"legs":[{"p":[[5536,672.0],[5536,-50],[5536.7,-62.5],[5538.6,-74.9],[5541.9,-87.1],[5546.4,-98.8],[5552.1,-110.0],[5558.9,-120.5],[5566.8,-130.3],[5575.7,-139.2],[5585.5,-147.1],[5596.0,-153.9],[5607.2,-159.6],[5618.9,-164.1],[5631.1,-167.4],[5643.5,-169.3],[5656.0,-170.0]],"t0":456,"t1":527.13,"v0":16,"v1":9.6,"r":1,"z0":0,"z1":0,"f":2},{"p":[[5656.0,-170.0]],"t0":527.13,"t1":541.13,"h":3.14,"f":1},{"p":[[5656.0,-170.0],[5340,-170.0],[5327.2,-170.9],[5314.6,-173.6],[5302.6,-178.1],[5291.3,-184.3],[5281.1,-192.0],[5272.0,-201.1],[5264.3,-211.3],[5258.1,-222.6],[5253.6,-234.6],[5250.9,-247.2],[5250.0,-260.0],[5250.0,-430.0]],"t0":541.13,"t1":557.21,"v0":60,"v1":18,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5250.0,-430.0]],"t0":557.21,"t1":561.21,"h":-1.57,"f":1},{"p":[[5250.0,-430.0],[5250.0,-600.0],[5250.9,-612.8],[5253.6,-625.4],[5258.1,-637.4],[5264.3,-648.7],[5272.0,-658.9],[5281.1,-668.0],[5291.3,-675.7],[5302.6,-681.9],[5314.6,-686.4],[5327.2,-689.1],[5340.0,-690.0]],"t0":561.21,"t1":576.77,"v0":18,"v1":22,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5340.0,-690.0],[7600,-690.0]],"t0":576.77,"t1":583.6,"v0":22,"v1":640,"r":0,"z0":0,"z1":0,"f":1},{"p":[[7600,-690.0],[9600,-690.0],[11600,-690.0]],"t0":583.6,"t1":589.31,"v0":640,"v1":760,"r":0,"z0":0,"z1":520,"f":4},{"p":[[-2400,-690.0],[5300,-690.0]],"t0":649.15,"t1":660.0,"v0":720,"v1":700,"r":0,"z0":620,"z1":0,"f":4},{"p":[[5300,-690.0],[9090,-690.0]],"t0":660.0,"t1":669.97,"v0":700,"v1":60,"r":0,"z0":0,"z1":0,"f":1},{"p":[[9090,-690.0],[9102.1,-689.3],[9113.9,-687.1],[9125.5,-683.5],[9136.5,-678.5],[9146.8,-672.3],[9156.3,-664.9],[9164.9,-656.3],[9172.3,-646.8],[9178.5,-636.5],[9183.5,-625.5],[9187.1,-613.9],[9189.3,-602.1],[9190.0,-590.0]],"t0":669.97,"t1":673.46,"v0":50,"v1":40,"r":0,"z0":0,"z1":0,"f":1},{"p":[[9190.0,-590.0],[9190.0,-280]],"t0":673.46,"t1":681.21,"v0":40,"v1":40,"r":0,"z0":0,"z1":0,"f":1},{"p":[[9190.0,-280],[9189.3,-267.7],[9187.2,-255.5],[9183.8,-243.7],[9179.1,-232.3],[9173.1,-221.5],[9166.0,-211.4],[9157.8,-202.2],[9148.6,-194.0],[9138.5,-186.9],[9127.7,-180.9],[9116.3,-176.2],[9104.5,-172.8],[9092.3,-170.7],[9080.0,-170.0]],"t0":681.21,"t1":685.53,"v0":40,"v1":40,"r":0,"z0":0,"z1":0,"f":1},{"p":[[9080.0,-170.0],[5646,-170.0]],"t0":685.53,"t1":771.38,"v0":40,"v1":40,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5646,-170.0],[5633.7,-169.3],[5621.5,-167.2],[5609.7,-163.8],[5598.3,-159.1],[5587.5,-153.1],[5577.4,-146.0],[5568.2,-137.8],[5560.0,-128.6],[5552.9,-118.5],[5546.9,-107.7],[5542.2,-96.3],[5538.8,-84.5],[5536.7,-72.3],[5536.0,-60.0]],"t0":771.38,"t1":775.7,"v0":40,"v1":40,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5536.0,-60.0],[5536,672.0]],"t0":775.7,"t1":800.1,"v0":60,"v1":0,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5536,672.0]],"t0":800.1,"t1":1176,"h":1.57,"f":0}],"airline":"Turbo Cargo"},"sched":["C2","AC-TB-01","Turbo Cargo",660,456],"veh":[{"id":"PT-C","kind":"veh","model":"LV-PT-01","home":"AIR-GSE-CN","L":60,"W":22,"legs":[{"p":[[5721.0,239.0],[5721.0,728.0],[5720.8,732.2],[5720.1,736.3],[5719.0,740.4],[5717.5,744.3],[5715.6,748.0],[5713.4,751.5],[5710.7,754.8],[5707.8,757.7],[5704.5,760.4],[5701.0,762.6],[5697.3,764.5],[5693.4,766.0],[5689.3,767.1],[5685.2,767.8],[5681.0,768.0],[5553.1,768.0],[5548.7,767.4],[5544.6,765.7],[5541.0,763.0],[5538.3,759.4],[5536.6,755.3],[5536.0,750.9],[5536,730.0]],"t0":418.67,"t1":448.97,"v0":40,"v1":8,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5536,730.0]],"t0":448.97,"t1":456,"h":-1.57,"f":8},{"p":[[5536,672.0],[5656.0,-170.0]],"t0":456,"t1":527.13,"att":"FL-C2","f":16},{"p":[[5598.0,-170.0]],"t0":527.13,"t1":528.13,"h":6.28,"f":8},{"p":[[5598.0,-170.0],[5598.0,245]],"t0":528.13,"t1":540.9,"v0":45,"v1":20,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5598.0,245],[5718.3,245.0],[5719.3,244.8],[5720.2,244.2],[5720.8,243.3],[5721.0,242.3],[5721.0,239.0]],"t0":540.9,"t1":550.03,"v0":20,"v1":8,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5721.0,239.0]],"t0":550.03,"t1":1138.67,"h":1.57,"f":0}]},{"id":"BL-C","kind":"veh","model":"G7-BL","home":"AIR-GSE-CN","L":75,"W":22,"legs":[{"p":[[5793.0,246.5],[5793.0,552.0],[5792.2,555.8],[5790.1,559.1],[5786.8,561.2],[5783.0,562.0],[5430.0,562.0],[5426.2,562.8],[5422.9,564.9],[5420.8,568.2],[5420.0,572.0],[5420.0,680.0],[5420.8,683.8],[5422.9,687.1],[5426.2,689.2],[5430.0,690.0],[5468,690]],"t0":880.1,"t1":948.21,"v0":20,"v1":5,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5468,690]],"t0":948.21,"t1":1058.21,"h":0,"f":8},{"p":[[5468,690],[5430.0,690.0],[5426.2,689.2],[5422.9,687.1],[5420.8,683.8],[5420.0,680.0],[5420.0,572.0],[5420.8,568.2],[5422.9,564.9],[5426.2,562.8],[5430.0,562.0],[5783.0,562.0],[5786.8,561.2],[5790.1,559.1],[5792.2,555.8],[5793.0,552.0],[5793.0,246.5]],"t0":1058.21,"t1":1126.31,"v0":20,"v1":5,"r":0,"z0":0,"z1":0,"f":1},{"p":[[5793.0,246.5]],"t0":1126.31,"t1":1600.1,"h":1.57,"f":0}]}],"window":[800.1,1176]};
+function s15iCargo2(){const C=S15I_CARGO2;if(!C||S15SIM.flights.some(f=>f.id===C.flight.id))return;S15SIM.flights.push(C.flight);S15_FL[C.flight.id]=C.flight;S15SIM.sched.push(C.sched);
+ for(const v of C.veh){const i=S15SIM.veh.findIndex(w=>w.id===v.id);if(i>=0)S15SIM.veh[i]=v;else S15SIM.veh.push(v);S15_MOVING.add(v.id)}try{S15_STAT=null}catch(e){}S15I.cargo={flight:C.flight.id,window:C.window,veh:C.veh.map(v=>v.id)}}
+function s15iRetargetAll(){if(typeof S15SIM==='undefined'||typeof s15grAcAt!=='function')return;const O=S15I_OLD,X=S15I_PX;
+ const [LtB]=s15grDims('BT'),C=S15GR_CART,Lc=C.L*X*S15GR.VK,g=C.gap*X,cartOff=LtB/2+g+Lc/2;   // מהטרקטור לעגלה הראשונה (הרכבת של S15 ג, ×1.125)
+ const [LwBL]=s15grDims('BL');
+ try{s15iCargo2()}catch(e){s15iErr('cargo',e)}
+ try{s15iHL()}catch(e){s15iErr('hl',e)}
+ s15iAddVeh();
+ for(const v of S15SIM.veh)if(!v.__done)s15iRetargetVeh(v);
+ s15iTugAttach()}
+function s15iRetargetVeh(v){const O=S15I_OLD,X=S15I_PX,[LtB]=s15grDims('BT'),C=S15GR_CART,Lc=C.L*X*S15GR.VK,g=C.gap*X,cartOff=LtB/2+g+Lc/2,[LwBL]=s15grDims('BL');
+ {const t=String(v.id).split('-')[0];if(t!=='BL'&&t!=='BT'&&t!=='PT')return;const sid=s15iStand(v);
+  for(let j=0;j<v.legs.length;j++){const S=v.legs[j];if(S.h==null||S.f!==8)continue;const prev=v.legs[j-1];if(!prev||prev.att)continue;const next=v.legs[j+1];if(t==='PT'&&!(next&&next.att))continue;
+   const A=s15grAcAt(sid||'',S.t0+.5);if(!A)continue;const ac=A.ac;let Q=null,lead=0,back=false;
+   try{
+    if(t==='BL'){if(!O.BELT_AC[ac]&&!S15I_HAND_AC[ac])continue;if(!O.BELT_AC[ac]){if(s15iStayHome(v,j)){S15I.n.home++;S15I.moved.push(v.id+'@'+sid+' '+ac+': ביד (S6A_HAND) — המסוע בבית');j=0}continue}
+     const B=O.BL[ac];if(!B)continue;const F=s15iW(A,B.F[0],B.F[1]),h=A.th+B.h,u=[Math.cos(h),Math.sin(h)];   // הראש בדלת; המרכז — חצי אורך (הרכב ×1.125) מאחור
+     Q=[F[0]-u[0]*LwBL/2,F[1]-u[1]*LwBL/2,h];Q=s15iClear(v,A,Q,ac);lead=LwBL*.55;back=true}
+    else if(t==='BT'){const c0=s15iCart0(A,ac),B=O.BT[ac]||O.BT['AC-NB-01'],h=A.th+B.h;Q=[c0[0]+Math.cos(h)*cartOff,c0[1]+Math.sin(h)*cartOff,h];Q=s15iClear(v,A,Q,ac,true);Q=s15iClearVeh(v,A,Q,S);lead=cartOff+Lc*1.6}
+    else if(t==='PT'){const a=s15iPtA(ac),P=s15iW(A,a,0);Q=[P[0],P[1],A.th+Math.PI];lead=0}
+   }catch(e){s15iErr('layout '+v.id,e);continue}
+   if(!Q)continue;
+   if(t==='PT'){// על אותו קו של הגישה הישנה (צפונה אל האף): רק נקודת הסוף זזה
+    const P=prev.p,E=P[P.length-1];P[P.length-1]=[+Q[0].toFixed(1),+Q[1].toFixed(1)];s15iFit(prev);S.p=[[P[P.length-1][0],P[P.length-1][1]]];S15I.n.retarget++;S15I.moved.push(v.id+'@'+sid+' '+ac+': '+E.map(Math.round)+' → '+S.p[0].map(Math.round)+' (a '+s15iPtA(ac).toFixed(2)+' מ׳)');continue}
+   const E=prev.p[prev.p.length-1].slice();if(s15iRetargetSafe(v,j,Q,lead,back)){S15I.n.retarget++;S15I.moved.push(v.id+'@'+sid+' '+ac+': '+E.map(Math.round)+' → '+[Q[0],Q[1]].map(Math.round)+' h '+Q[2].toFixed(2))}}}
+}
+function s15iTugAttach(){
+ // הגרר מחובר (f 16): s15PoseAt (019m:209) שם אותו ב-ngf×L + L/2 + 4 פיקס׳ מגלגל האף — 0.4 מ׳ מהאף, והגרר המצויר (×1.125) נכנס בגוף (ממצא 8).
+ // עכשיו — המרחק של הישן; והעצירה שאחרי הניתוק זזה באותו הפרש (בלי קפיצה)
+ const pa=s15PoseAt;s15PoseAt=function(a,tc){const P=pa.apply(this,arguments);if(!S15I.on||!P||P[4]!==16||!a||!/^P[TW]/.test(String(a.id)))return P;
+  try{const T=S15SIM.T;for(const k of [0,T,-T,2*T]){const t=tc+k;for(const g of a.legs){if(!g.att||t<g.t0-1e-6||t>g.t1+1e-6)continue;const b=S15_FL[g.att],Q=b&&pa(b,tc);if(!Q)return P;
+     const off=s15iPtA(b.model)*S15I_PX;return[Q[0]+off*Math.cos(Q[2]),Q[1]+off*Math.sin(Q[2]),Q[2]+Math.PI,0,16]}}}catch(e){s15iErr('pose',e)}return P};
+ for(const v of S15SIM.veh){if(!/^PT/.test(v.id))continue;for(let j=0;j<v.legs.length;j++){const g=v.legs[j];if(!g.att)continue;const b=S15_FL[g.att];if(!b)continue;const Q=pa(b,g.t1-1e-4);if(!Q)continue;
+   const o0=S15SIM.ngf[b.model]*b.L+v.L/2+4,o1=s15iPtA(b.model)*S15I_PX,dx=(o1-o0)*Math.cos(Q[2]),dy=(o1-o0)*Math.sin(Q[2]),n=v.legs[j+1],m=v.legs[j+2];
+   if(n&&n.h!=null){n.p=[[+(n.p[0][0]+dx).toFixed(1),+(n.p[0][1]+dy).toFixed(1)]];if(m&&m.h==null&&m.p.length){m.p[0]=[n.p[0][0],n.p[0][1]];s15iFit(m)}}}}
+ try{if(S15GR&&S15GR.path)S15GR.path.clear()}catch(e){}}
+try{s15iRetargetAll()}catch(e){s15iErr('retarget',e)}
+/* (3) העבודה ליד המטוס — הנקודות של הישן (g77BwLay / s6aBagCrew / s6aBagFly), הציור של היום (האנשים ב-3/4 s15Man, המזוודות s15grBag של S15 ג) */
+function s15iSvcLeg(v,tc){const T=S15SIM.T;for(const g of v.legs){if(g.h==null||g.f!==8||g.hall)continue;const u=(((tc-g.t0)%T)+T)%T;if(u<=g.t1-g.t0)return{g,u,d:g.t1-g.t0}}return null}
+function s15iBeltAt(sid,tc){for(const w of S15SIM.veh){if(!/^BL/.test(w.id)||s15iStand(w)!==sid)continue;const q=s15iSvcLeg(w,tc);if(q)return{v:w,q}}return null}
+// הדלת (S15DOOR של שדה 2): נפתחת 2 ש׳ אחרי שהרכב נצמד ונסגרת 2 ש׳ לפני שהוא נוסע
+function s15iDoor(sid,door,q,who){try{const D=window.S15DOOR;if(!D||typeof D.set!=='function')return;const k=Math.max(0,Math.min(1,Math.min(q.u-1,q.d-2-q.u)/2));D.set(sid,door,k,who);S15I.n.door++}catch(e){s15iErr('door',e)}}
+function s15iLift(c,x,y,z){return[x,y-s15grK()*z*S15I_PX]}
+function s15iCrew(c,v,P,now,tc){const t=String(v.id).split('-')[0],sid=s15iStand(v);if(!sid)return;const q=s15iSvcLeg(v,tc);if(!q)return;const A=s15grAcAt(sid,tc);if(!A||A.away)return;const ac=A.ac,O=S15I_OLD,K=s15grK();
+ if(t==='BL'){const B=O.BL[ac];if(!B)return;s15iDoor(sid,'FH',q,'BL');
+  {const bt=S15SIM.veh.find(w=>w.id==='BT-'+sid),qb=bt&&s15iSvcLeg(bt,tc);if(qb){const BP=s15iBagPlan(bt,qb),[Lw]=s15grDims('BL'),cs=Math.cos(P[2]),sn=Math.sin(P[2]);
+   for(const b of BP.belt(qb.u)){const uu=-Lw/2+2+(Lw-4)*b.a,z=(.9+2.1*b.a)*S15GR.VK+.12;s15iBag(c,P[0]+cs*uu,P[1]+sn*uu,z/S15GR.VK,b.col)}}}
+  // העובד בבטן (g77BwLay: T — ליד הראש, 0.45 מ׳ הצידה): בגובה הסף
+  const F=s15iW(A,B.F[0]-Math.cos(B.h)*1.1,B.F[1]-Math.sin(B.h)*1.1),z=(A.ac==='AC-LG-01'?3.6:2.9);   /* בפתח הבטן, על הראש של המסוע (לא מאחורי הגוף) */const p=s15iLift(c,F[0],F[1],z);s15Man(c,p[0],p[1],s15Look('ground',440+(s15Hash(v.id)%6)),'stand',A.th+Math.PI/2,0);S15I.n.crew++;return}
+ if(t!=='BT')return;const belt=s15iBeltAt(sid,tc),Lt=s15grDims('BT')[0],Q=s15grTrain(v,tc,Lt,P);if(!Q.length)return;
+ // הצוות של הישן (g77BwLay / g77BwSched ‏050:525–575, ‏s6aBagCrew ‏046:356, ‏p217 — מיד ליד): נהג במושב, שני מעמיסים שמתחלפים (nC = 2) — לוקחים מזוודה מהעגלה,
+ // הולכים איתה ומניחים על הקצה התחתון של המסוע (או מעבירים לתופס, ביד), וחוזרים; בפריקה — הפוך. הזמנים — מהלוח s15iBagPlan (הזמן של המשחק, כמו העגלות), כך שאותה מזוודה
+ // באותו צבע עוברת מהעגלה למסוע ולבטן. אנשים 3/4 של המשחק (s15Man → P34)
+ const X=S15I_PX,VK=S15GR.VK,lk=k=>s15Look('ground',440+((s15Hash(v.id)+k*7)%12)),BP=s15iBagPlan(v,q);
+ const man=(x,y,k,act,h,z)=>{const p=z?s15iLift(c,x,y,z):[x,y];s15Man(c,p[0],p[1],lk(k),act,h,0);S15I.n.crew++};
+ {const s=[P[0]+Math.cos(P[2])*Lt*.15,P[1]+Math.sin(P[2])*Lt*.15];man(s[0],s[1],0,'stand',P[2],.7)}   // הנהג — במושב (Ly.seat של הישן)
+ let M,D,T=null,zs,mode;
+ if(belt&&O.BL[ac]){const LB=O.BL[ac],Lm=s15grDims('BL')[0]/X;M=s15iW(A,LB.F[0]-Math.cos(LB.h)*Lm,LB.F[1]-Math.sin(LB.h)*Lm);D=s15iW(A,LB.F[0],LB.F[1]);mode='belt';zs=3.0}
+ else{const H=O.HAND[ac]||O.HAND['AC-NB-01'];D=s15iW(A,H.door[0],H.door[1]);const c0=Q[0];M=H.man?s15iW(A,H.man[0],H.man[1]):[(c0[0]+D[0])/2,(c0[1]+D[1])/2];mode='hand';
+  zs=ac==='AC-RJ-01'?1.6:ac==='AC-TP-01'?1.4:2.2;const nx=D[0]-M[0],ny=D[1]-M[1],nl=Math.hypot(nx,ny)||1;T=[D[0]-nx/nl*6,D[1]-ny/nl*6];s15iDoor(sid,'FH',q,'BT')}
+ const act=BP.active(q.u),u=q.u;
+ for(let w=0;w<2;w++){const ci=act&&act.unload?Math.min(1,Q.length-1):0,cp=Q[ci],cs=Math.cos(cp[2]),sn=Math.sin(cp[2]),sd=Math.sign((M[0]-cp[0])*(-sn)+(M[1]-cp[1])*cs)||1,
+   S=[cp[0]-sn*sd*12+cs*(w?-8:8),cp[1]+cs*sd*12+sn*(w?-8:8)],mine=act&&act.j%2===w;
+  if(!mine){man(S[0],S[1],1+w,'stand',Math.atan2(cp[1]-S[1],cp[0]-S[0]),0);continue}
+  const f=act.f,there=f<BP.walk?f/BP.walk:Math.max(0,1-(f-BP.walk)/(1-BP.walk)),to=mode==='belt'?M:M,px=S[0]+(to[0]-S[0])*there*.92,py=S[1]+(to[1]-S[1])*there*.92,
+   withBag=act.unload?(f>=BP.walk):(f<BP.walk),hd=Math.atan2(to[1]-S[1],to[0]-S[0])+(f<BP.walk?0:Math.PI);
+  man(px,py,1+w,withBag?'carry':'walk',hd,0);if(withBag)s15iBag(c,px,py-1,1.0,act.col)}
+ if(mode==='hand'){// התופס (man של הישן) ומי שמתחת לדלת מעבירים מיד ליד, ועובד בבטן מקבל
+  man(M[0],M[1],3,'stand',Math.atan2(D[1]-M[1],D[0]-M[0]),0);man(T[0],T[1],4,'stand',Math.atan2(D[1]-T[1],D[0]-T[0]),0);
+  const hop=BP.hand(u);if(hop){const pts=[M,T,D],seg=Math.min(1,Math.floor(hop.k*2)),ff=hop.k*2-seg,a=pts[seg],b=pts[seg+1];s15iBag(c,a[0]+(b[0]-a[0])*ff,a[1]+(b[1]-a[1])*ff,1.1+(seg+ff)*(zs-1.1)/2,hop.col)}
+  {const pd=s15iLift(c,D[0],D[1],zs);s15Man(c,pd[0],pd[1],lk(5),'stand',A.th+Math.PI/2,0);S15I.n.crew++}}}
+// הלוח של המזוודות בביקור (כמו f2BagTimes / g77BwSched של הישן): n מזוודות לכל כיוון (f2BagN ‏049:340, עד cap 6 של עגלה — F2_BAG ‏049:324);
+// פריקה מהשנייה ה-E של העבודה, מזוודה כל cad ש׳ — אל עגלה 2 (תא j); העמסה מאמצע העבודה — מעגלה 1 (מהתא האחרון). הצבע — של התא בעגלה (כמו s15grCarts), לכל אורך הדרך
+const S15I_BW={cad:5,walk:.55,E:4,belt:3.4,hand:1.2};
+function s15iBagN(v){let n=6;try{const f=S15SIM.flights.find(q=>q.home===s15iStand(v));if(typeof f2BagN==='function'&&f)n=f2BagN(f.id)}catch(e){}return Math.max(1,Math.min(6,n))}
+function s15iBagPlan(v,q){const B=S15I_BW,n=s15iBagN(v),h=s15Hash(v.id),d=q.d,u0=B.E,u1=d/2+B.E,col=(k,i)=>S15GR_BAGC[(h+k*3+i)%8];
+ return{n,walk:B.walk,
+  // הפעולה עכשיו: {j, f (0…1 בתוך המחזור), unload, col}
+  active(u){if(u>=u0&&u<u0+n*B.cad){const j=Math.floor((u-u0)/B.cad);return{j,f:(u-u0)/B.cad-j,unload:true,col:col(1,j)}}
+   if(u>=u1&&u<u1+n*B.cad){const j=Math.floor((u-u1)/B.cad);return{j,f:(u-u1)/B.cad-j,unload:false,col:col(0,n-1-j)}}return null},
+  // כמה בכל עגלה (0…n): עגלה 1 — ההמראה, עגלה 2 — הנחיתה
+  counts(u){const c2=u<u0?0:Math.min(n,Math.floor((u-u0)/B.cad)),c1=u<u1?n:n-Math.min(n,Math.floor((u-u1)/B.cad)+1);return[c1,u>=u1?n:c2]},   // פריקה: נכנסת לעגלה בסוף המחזור; העמסה: יוצאת מהעגלה בתחילתו
+  // המזוודות על המסוע: [{a (0 = הקצה התחתון … 1 = הראש), col}]
+  belt(u){const out=[];for(let j=0;j<n;j++){const tp=u0+(j+B.walk)*B.cad;if(u>=tp-B.belt&&u<tp)out.push({a:1-(u-(tp-B.belt))/B.belt,col:col(1,j)});
+    const tl=u1+(j+B.walk)*B.cad;if(u>=tl&&u<tl+B.belt)out.push({a:(u-tl)/B.belt,col:col(0,n-1-j)})}return out},
+  // ביד: המזוודה בין התופס לדלת: {k 0 = אצל התופס … 1 = בדלת, col}
+  hand(u){for(let j=0;j<n;j++){const tp=u0+(j+B.walk)*B.cad;if(u>=tp-B.hand&&u<tp)return{k:1-(u-(tp-B.hand))/B.hand,col:col(1,j)};const tl=u1+(j+B.walk)*B.cad;if(u>=tl&&u<tl+B.hand)return{k:(u-tl)/B.hand,col:col(0,n-1-j)}}return null}}}
+function s15iBag(c,x,y,z,col){s15grBag(c,x,y,z*S15GR.VK,.55,.4,.34,col);S15I.n.bags++}
+// המוט של הגרר: מהחזית של הגרר (הוא פונה אל המטוס) אל גלגל האף (מחובר — f 16, ובהמתנה לפני הדחיפה) — בגובה 0.5 מ׳, כמו אמיתי (3.5–6 מ׳)
+function s15iBar(c,v,P,tc){const sid=s15iStand(v);let A=null;if(P[4]===16){for(const g of v.legs)if(g.att){const b=S15_FL[g.att],Q=b&&s15PoseAt(b,tc);if(Q){A={x:Q[0],y:Q[1],th:Q[2]};break}}}
+ else{const q=s15iSvcLeg(v,tc);if(!q||!sid)return;const n=v.legs[v.legs.indexOf(q.g)+1];if(!n||!n.att)return;const B=s15grAcAt(sid,tc);if(!B||B.away)return;A=B}
+ if(!A)return;const L=s15grDims('PT')[0],rx=P[0]+Math.cos(P[2])*L/2,ry=P[1]+Math.sin(P[2])*L/2,z=s15grK()*.5*S15I_PX,d=Math.hypot(A.x-rx,A.y-ry);if(d<5||d>90)return;
+ c.save();c.lineCap='round';c.strokeStyle='rgba(8,18,26,.25)';c.lineWidth=3;c.beginPath();c.moveTo(rx+2,ry+2);c.lineTo(A.x+2,A.y+2);c.stroke();
+ c.strokeStyle='#2b3138';c.lineWidth=2.4;c.beginPath();c.moveTo(rx,ry-z);c.lineTo(A.x,A.y-z);c.stroke();c.strokeStyle='#e8b92b';c.lineWidth=1;c.setLineDash([3,3]);c.beginPath();c.moveTo(rx,ry-z-.6);c.lineTo(A.x,A.y-z-.6);c.stroke();c.setLineDash([]);c.restore();S15I.n.bar++}
+(function(){try{const gb=s15grBelt;s15grBelt=function(c,v){if(S15I.on&&/^BL/.test(String(v&&v.id)))return;return gb.apply(this,arguments)};   // המסוע: המזוודות מהלוח של הרכבת (s15iBagPlan), לא 3 מזוודות במחזור קבוע
+ const gl=s15grLoad;s15grLoad=function(v,tc){if(S15I.on&&v&&/^BT/.test(String(v.id))){try{const q=s15iSvcLeg(v,tc);if(q){const c=s15iBagPlan(v,q).counts(q.u);return[c[0]/6,c[1]/6]}
+   const hg=v.legs.find(g=>g.hall);if(hg){const T=S15SIM.T,md=x=>((x%T)+T)%T,u=md(tc-hg.t0),n=s15iBagN(v);if(u<=hg.t1-hg.t0){const c=s15iHallPlan(v,hg).counts(u);return[c[0]/6,c[1]/6]}
+    const sg=v.legs.find(g=>g.h!=null&&g.f===8&&!g.hall),us=md(tc-sg.t1),uh=md(hg.t0-sg.t1);return us<uh?[0,n/6]:[n/6,0]}}catch(e){}}return gl.apply(this,arguments)};   // בדרך לאולם [0, n], מהאולם הביתה ובבית ובדרך למטוס [n, 0]
+ const dv=s15DrawVeh;s15DrawVeh=function(c,v,P,now){const k0=S15GR.n.kit,r=dv.apply(this,arguments);if(S15GR.n.kit===k0)return r;if(v&&v.id)(S15I.drawn||(S15I.drawn={}))[v.id]=performance.now();if(!S15I.on||c!==ctx||!v||!v.legs)return r;const t=String(v.id).split('-')[0];if(t!=='BL'&&t!=='BT'&&t!=='PT')return r;
+  try{if(!s15grLive())return r;const tc=S15GR.tc!=null?S15GR.tc:s15Tc(s15Clock().abs);if(t==='PT')s15iBar(c,v,P,tc);else s15iCrew(c,v,P,now,tc)}catch(e){s15iErr('draw '+v.id,e)}return r}}catch(e){s15iErr('hook',e)}})();
+/* (4) הבדיקה (גם window.__TC_S15I.audit()): כל ביקור — העצירה במקום של הישן (≤ 0.5 מ׳), הגרר לא נכנס בגוף (הרווח מהאף ≥ 1 מ׳), אין קפיצה בין רגליים (≤ 2 פיקס׳), אין שגיאות */
+
+/* ==== (8) אולם הכבודה באגף השערים (D‑674; הציור F3u7ywrmgwbKCw6rfabsom — ברירת מחדל לפי D‑671) ====
+   הישן: הרכבת נסעה מהמטוס אל מסוע המיון בטרמינל (F2_BAG ‏049:324: המסוע, העצירה לידו), והמזוודות של הרכבת עצמה עברו בין העגלות לסרט — אחת אחת, בצבע שלה
+   (p247 ‏052:407, ‏g77MubBags); המלאי — f2BagN ‏049:340, ‏cap 6 לעגלה. היום: האולם בין P3 ל-P4, בקומת הרחבה של אגף השערים (מתחת לגג הזכוכית):
+   שתי דלתות לשביל השירות (כניסה ממערב, יציאה ממזרח), נתיב לרכבת, מסוע המיון לאורכו, מסוע אל הקרוסלה (דרומה, אל אולם הנוסעים — שדה 6) ומסוע מהצ׳ק-אין.
+   המחזור של כל רכבת: הבית ← המטוס (פריקה לעגלה 2, העמסה מעגלה 1) ← האולם (עגלה 2 מתרוקנת לסרט ← הקרוסלה; עגלה 1 מתמלאת מהצ׳ק-אין) ← הבית. */
+// במבט 3/4 הקיר הצפוני של הטרמינל (15 מ׳, ‏y 1033) מסתיר את כל מה שמדרום ל-y ~943 — לכן הנתיב והמסוע בצפון האולם (נמדד בצילום של try4502; ל-שדה 6)
+const S15I_HALL={r:[7600,905,7820,1015],wallY:886,doorIn:[7620,7660],doorOut:[7780,7818],lane:948,stopX:7790,belt:[7655,7775,921],toCar:[[7775,921],[7805,921],[7805,1033]],fromCI:[[7628,1033],[7628,921],[7655,921]],
+ cad:5,walk:.55,E:4,v:25,on:true,trains:[]};
+function s15iHallPlan(v,g){const H=S15I_HALL,n=s15iBagN(v),h=s15Hash(v.id),d=g.t1-g.t0,u0=H.E,u1=H.E+n*H.cad+4,col=(k,i)=>S15GR_BAGC[(h+k*3+i)%8];
+ return{n,d,walk:H.walk,u0,u1,
+  // עגלה 2 מתרוקנת (מהתא האחרון) לסרט; עגלה 1 מתמלאת (מהתא הראשון) מהצ׳ק-אין
+  active(u){if(u>=u0&&u<u0+n*H.cad){const j=Math.floor((u-u0)/H.cad);return{j,f:(u-u0)/H.cad-j,unload:true,col:col(1,n-1-j),ci:1}}
+   if(u>=u1&&u<u1+n*H.cad){const j=Math.floor((u-u1)/H.cad);return{j,f:(u-u1)/H.cad-j,unload:false,col:col(0,j),ci:0}}return null},
+  counts(u){const c2=u<u0?n:n-Math.min(n,Math.floor((u-u0)/H.cad)+1),c1=u<u1?0:Math.min(n,Math.floor((u-u1)/H.cad));return[c1,c2]},
+  bags(u){const out=[],B=H.belt,[Lt]=s15grDims('BT'),C=S15GR_CART,Lc=C.L*S15I_PX*S15GR.VK,c1=H.stopX-(Lt/2+C.gap*S15I_PX+Lc/2),c2=c1-(Lc+C.gap*S15I_PX);   // על הסרט: {x, y, col}; ‏c1 / c2 — מול העגלות
+   for(let j=0;j<n;j++){const tp=u0+(j+H.walk)*H.cad;if(u>=tp){const s=(u-tp)*H.v,P=[[c2+((n-1-j)%3-1)*7,B[2]]].concat([[B[1],B[2]]],H.toCar),q=s15iAlong(P,s);if(q)out.push({x:q[0],y:q[1],col:col(1,n-1-j)})}
+    const ta=u1+(j+H.walk)*H.cad,P2=H.fromCI.concat([[c1+(j%3-1)*7,B[2]]]),L2=s15iLen(P2),s2=L2-(ta-u)*H.v;if(u<ta&&s2>=0){const q=s15iAlong(P2,s2);if(q)out.push({x:q[0],y:q[1],col:col(0,j)})}}
+   return out}}}
+function s15iAlong(P,s){for(let i=1;i<P.length;i++){const l=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);if(s<=l){const f=l?s/l:0;return[P[i-1][0]+(P[i][0]-P[i-1][0])*f,P[i-1][1]+(P[i][1]-P[i-1][1])*f]}s-=l}return null}
+// הנסיעה: מהעמדה אל האולם (דרך הדלת המערבית), עצירה ליד מסוע המיון (הטרקטור מזרחה, העגלות לאורך הסרט), יציאה בדלת המזרחית צפונה, ובחזרה הביתה בנתיב המערבי
+function s15iHallLegs(v,j,delay){const L=v.legs,S=L[j],R=L[j+1],Hm=L[j+2];if(!S||!R||!Hm||R.h!=null||Hm.h==null||Hm.f!==0)return null;const H=S15I_HALL,T=S15SIM.T,n=s15iBagN(v);
+ const st=S.p[0],home=Hm.p[0],ln=H.doorIn[0]+20>st[0]?864:820,xi=(H.doorIn[0]+H.doorIn[1])/2,xo=(H.doorOut[0]+H.doorOut[1])/2;
+ const legs=L.slice(0,j+1).map(g=>Object.assign({},g));const S2=legs[j];S2.t1=+(S2.t1+delay).toFixed(2);let t=S2.t1;
+ const mv=(P,v0,v1,f)=>{P=s15iRound(P,9);const len=s15iLen(P),dur=2*len/(v0+v1);legs.push({p:P,t0:+t.toFixed(2),t1:+(t+dur).toFixed(2),v0,v1,r:0,z0:0,z1:0,f:f||1});t+=dur};
+ mv([st,[st[0],ln],[xi,ln],[xi,H.lane],[H.stopX,H.lane]],25,5);
+ const hd=2*H.E+2*n*H.cad+8;legs.push({p:[[H.stopX,H.lane]],t0:+t.toFixed(2),t1:+(t+hd).toFixed(2),h:0,f:8,hall:1});t+=hd;
+ mv([[H.stopX,H.lane],[xo,H.lane],[xo,820],[home[0],820],home],25,5);
+ const tEnd=Hm.t1;if(t>tEnd-10)return null;legs.push({p:[home.slice()],t0:+t.toFixed(2),t1:tEnd,h:Hm.h,f:0});return legs}
+function s15iHallAll(){const H=S15I_HALL;H.trains=[];const done=[];
+ for(const id of ['BT-P2','BT-P3','BT-P4']){const v=S15SIM.veh.find(w=>w.id===id);if(!v)continue;const j=v.legs.findIndex(g=>g.h!=null&&g.f===8&&!g.hall);if(j<0)continue;const keep=v.legs;let ok=null;
+  for(const dl of [0,4,8,12,16,20,26,32,40,50,60]){const L=s15iHallLegs(v,j,dl);if(!L)continue;v.legs=L;S15GR.path&&S15GR.path.delete(v.id);
+   // האולם — רכבת אחת בכל פעם
+   const hg=L.find(g=>g.hall),busy=done.some(o=>o[0]<hg.t1+6&&hg.t0<o[1]+6||o[0]<hg.t1+6+S15SIM.T&&hg.t0+S15SIM.T<o[1]+6);
+   if(!busy&&!s15iHits1(v)){ok={dl,hg};break}}
+  if(ok){done.push([ok.hg.t0,ok.hg.t1]);H.trains.push(id+' (עיכוב '+ok.dl+' ש׳, באולם '+ok.hg.t0.toFixed(0)+'–'+ok.hg.t1.toFixed(0)+')')}else{v.legs=keep;H.trains.push(id+' — לא נמצא נתיב בלי נגיעה')}}
+ try{S15GR.path.clear()}catch(e){}}
+// הציור: הרצפה, הדלתות, המסועים (לפני הרכבים — הרכבת בתוך האולם על הרצפה); המזוודות והמעמיסים (אחרי)
+function s15iHallFloor(c,N){const H=S15I_HALL,r=H.r,K=s15grK();if(!e3InView(r[0]-30,H.wallY-40,r[2]-r[0]+60,r[3]-H.wallY+80,10))return;
+ c.save();c.fillStyle=N?'#3a3f43':'#9ea6ab';c.fillRect(r[0],r[1],r[2]-r[0],r[3]-r[1]);   // רצפת בטון
+ c.strokeStyle=N?'rgba(232,185,43,.5)':'rgba(232,185,43,.9)';c.lineWidth=1.4;c.setLineDash([6,4]);c.strokeRect(r[0]+4,H.lane-14,r[2]-r[0]-8,28);c.setLineDash([]);   // נתיב הרכבת
+ for(const [x0,x1] of [H.doorIn,H.doorOut]){c.fillStyle=N?'#2a2e31':'#5d656b';c.fillRect(x0,H.wallY,x1-x0,r[1]-H.wallY);for(let x=x0;x<x1;x+=6){c.fillStyle=(Math.floor((x-x0)/6)%2)?'#1e2124':'#e8b92b';c.fillRect(x,H.wallY,6,3)}}   // הדלתות (פסי אזהרה)
+ const belt=(P,w)=>{c.lineCap='butt';c.strokeStyle='rgba(8,18,26,.25)';c.lineWidth=w+3;c.beginPath();P.forEach((p,i)=>i?c.lineTo(p[0]+2,p[1]+3):c.moveTo(p[0]+2,p[1]+3));c.stroke();
+  c.strokeStyle='#8d959b';c.lineWidth=w+2;c.beginPath();P.forEach((p,i)=>i?c.lineTo(p[0],p[1]-K*8):c.moveTo(p[0],p[1]-K*8));c.stroke();c.strokeStyle='#2c3136';c.lineWidth=w;c.beginPath();P.forEach((p,i)=>i?c.lineTo(p[0],p[1]-K*8):c.moveTo(p[0],p[1]-K*8));c.stroke();
+  c.strokeStyle='rgba(255,255,255,.18)';c.lineWidth=w-2;c.setLineDash([1.5,4]);c.lineDashOffset=-(performance.now()/1000*H.v)%5.5;c.beginPath();P.forEach((p,i)=>i?c.lineTo(p[0],p[1]-K*8):c.moveTo(p[0],p[1]-K*8));c.stroke();c.setLineDash([])};
+ const B=H.belt;belt([[B[0],B[2]],[B[1],B[2]]],8);belt(H.toCar,7);belt(H.fromCI,7);
+ c.fillStyle=N?'rgba(255,255,255,.55)':'rgba(20,40,60,.75)';c.font='700 9px system-ui,Arial';c.textAlign='center';c.fillText('אולם הכבודה',(r[0]+r[2])/2,H.lane+28);c.restore()}
+function s15iHallLive(c,tc,now){const H=S15I_HALL,r=H.r;if(!e3InView(r[0]-30,H.wallY-40,r[2]-r[0]+60,r[3]-H.wallY+80,10))return;
+ for(const v of S15SIM.veh){if(!/^BT/.test(v.id))continue;const T=S15SIM.T;for(const g of v.legs){if(!g.hall)continue;const u=(((tc-g.t0)%T)+T)%T;if(u>g.t1-g.t0)continue;const P=s15PoseAt(v,tc);if(!P)continue;if(!(S15I.drawn&&performance.now()-(S15I.drawn[v.id]||-1e9)<250))continue;   /* R-37: רק כשהרכבת עצמה מצוירת */
+   const HP=s15iHallPlan(v,g),B=H.belt,K=s15grK();for(const b of HP.bags(u))s15iBag(c,b.x,b.y,.85,b.col);
+   const Lt=s15grDims('BT')[0],Q=s15grTrain(v,tc,Lt,P),lk=k=>s15Look('ground',440+((s15Hash(v.id)+k*7)%12)),a=HP.active(u);
+   {const sx=P[0]+Math.cos(P[2])*Lt*.15,sy=P[1]+Math.sin(P[2])*Lt*.15,pp=s15iLift(c,sx,sy,.7);s15Man(c,pp[0],pp[1],lk(0),'stand',P[2],0);S15I.n.crew++}
+   for(let w=0;w<2;w++){const ci=a?a.ci:1,cp=Q[Math.min(ci,Q.length-1)];if(!cp)continue;const S=[cp[0]+(w?-9:9),(cp[1]+B[2])/2-1],M=[cp[0]+(w?-9:9),B[2]+5],mine=a&&a.j%2===w;
+    if(!mine){s15Man(c,S[0],S[1],lk(1+w),'stand',-Math.PI/2,0);S15I.n.crew++;continue}
+    const f=a.f,there=f<HP.walk?f/HP.walk:Math.max(0,1-(f-HP.walk)/(1-HP.walk)),from=a.unload?[cp[0],cp[1]-6]:M,to=a.unload?M:[cp[0],cp[1]-6],withBag=f<HP.walk,
+     px=from[0]+(to[0]-from[0])*there,py=from[1]+(to[1]-from[1])*there;s15Man(c,px,py,lk(1+w),withBag?'carry':'walk',a.unload?-Math.PI/2:Math.PI/2,0);S15I.n.crew++;if(withBag)s15iBag(c,px,py-1,1.0,a.col)}}}}
+(function(){try{
+ // הטרקלין של S15 ב (מושבים, מסלול הליכה y 930) עובר באותו מקום בקומה שמעל — עד ששדה 6 יעביר אותו: לא מצוירים בתוך האולם
+ const tp=s15bTermPeople;s15bTermPeople=function(now,N){if(!S15I.on||!S15I_HALL.on)return tp.apply(this,arguments);const r=S15I_HALL.r,c=ctx;c.save();c.beginPath();c.rect(-1e5,-1e5,2e5,2e5);c.rect(r[0],S15I_HALL.wallY,r[2]-r[0],r[3]-S15I_HALL.wallY);c.clip('evenodd');try{return tp.apply(this,arguments)}finally{c.restore()}};
+ const sl=s15Live;s15Live=function(now,layer){if(layer!=='ground'||!S15I.on||!S15I_HALL.on||!S15X.on)return sl.apply(this,arguments);let tc=null;try{const O=S15X.ovr;tc=O?O.tc:s15Tc(s15Clock().abs)}catch(e){}
+  try{s15iHallFloor(ctx,s9Night())}catch(e){s15iErr('hall floor',e)}const r=sl.apply(this,arguments);try{if(tc!=null)s15iHallLive(ctx,tc,now)}catch(e){s15iErr('hall live',e)}return r}}catch(e){s15iErr('hall hook',e)}})();
+try{s15iHallAll()}catch(e){s15iErr('hall',e)}
+function s15iAudit(){const out=[],push=(id,ok,det)=>out.push({id,ok:!!ok,det:String(det)}),O=S15I_OLD,T=S15SIM.T;let nV=0,worst=0,jump=0,gapMin=1e9,why=[];
+ for(const v of S15SIM.veh){const t=String(v.id).split('-')[0];if(t!=='BL'&&t!=='BT'&&t!=='PT')continue;const sid=s15iStand(v);
+  for(let j=1;j<v.legs.length;j++){const a=v.legs[j-1],b=v.legs[j];if(a.att||b.att)continue;const pa=s15PoseLeg(a,a.t1-1e-6),pb=s15PoseLeg(b,b.t0+1e-6);if(pa&&pb){const d=Math.hypot(pa[0]-pb[0],pa[1]-pb[1]);if(d>jump){jump=d;if(d>2)why.push(v.id+' רגל '+j+' '+d.toFixed(1))}}}
+  for(let j=1;j<v.legs.length;j++){const S=v.legs[j];if(S.h==null||S.f!==8||S.hall||v.legs[j-1].att)continue;if(t==='PT'&&!(v.legs[j+1]&&v.legs[j+1].att))continue;const A=s15grAcAt(sid||'',S.t0+.5);if(!A)continue;const ac=A.ac,P=S.p[0];let E=null;
+   if(t==='BL'&&O.BL[ac]){const B=O.BL[ac],F=s15iW(A,B.F[0],B.F[1]),h=A.th+B.h,[Lw]=s15grDims('BL'),nd=((S15I.nudge||{})[v.id]||0)*S15I_PX;E=[F[0]-Math.cos(h)*Lw/2-Math.sin(A.th)*nd,F[1]-Math.sin(h)*Lw/2+Math.cos(A.th)*nd]}
+   else if(t==='PT'){const a=s15iPtA(ac);E=s15iW(A,a,0);const nose=(S15SIM.ngf[ac]||.12)*((typeof S15_LPX!=='undefined'&&S15_LPX[ac])||376)/S15I_PX,rear=a-s15grDims('PT')[0]/2/S15I_PX;gapMin=Math.min(gapMin,rear-nose)}
+   else if(t==='BT'){const B=O.BT[ac]||O.BT['AC-NB-01'];E=s15iCart0(A,ac);const h=A.th+B.h,[Lt]=s15grDims('BT'),C=S15GR_CART,off=Lt/2+C.gap*S15I_PX+C.L*S15I_PX*S15GR.VK/2;const nd=((S15I.nudge||{})[v.id]||0)*S15I_PX,sd=((S15I.side||{})[v.id]||0)*S15I_PX;E=[E[0]+Math.cos(h)*off+Math.cos(A.th)*nd-Math.sin(A.th)*sd,E[1]+Math.sin(h)*off+Math.sin(A.th)*nd+Math.cos(A.th)*sd]}
+   if(!E)continue;nV++;const d=Math.hypot(P[0]-E[0],P[1]-E[1])/S15I_PX;worst=Math.max(worst,d)}}
+ const nd=Object.values(S15I.nudge||{});push('s15i_old_spots',worst<=.5&&nV>0,nV+' עצירות במקום של הישן; הסטייה הגדולה '+worst.toFixed(2)+' מ׳'+(nd.length?' · הוזזו מהקופסה של s15SimAudit עד '+Math.max(...nd).toFixed(2)+' מ׳ ('+Object.entries(S15I.nudge).filter(q=>q[1]>.06).map(q=>q[0]+' '+q[1]).join(', ')+')'+(S15I.side?' · לצד, מרכב של בעלים אחר: '+Object.entries(S15I.side).map(q=>q[0]+' '+q[1]+' מ׳').join(', '):''):''));
+ push('s15i_tug_gap',gapMin>=1,'הרווח בין הגרר לאף (המוט) '+(gapMin<1e8?gapMin.toFixed(2):'—')+' מ׳');
+ push('s15i_no_jump',jump<=2,'הקפיצה הגדולה בין רגליים '+jump.toFixed(2)+' פיקס׳'+(why.length?' · '+why.slice(0,3).join(' · '):''));
+ // (הסף כמו s15SimAudit של S15 — דגימה כל שנייה; הדגימה של חצי שנייה מדווחת לידיעה)
+ let n1=0;for(const v of S15SIM.veh){if(!(S15I.hitsLeft||{})[v.id])continue;n1+=s15iHits1(v)}
+ push('s15i_paths',!n1,(n1?'נגיעות בנתיב (כל שנייה): '+n1+' · ':'')+(S15I.hitsLeft?'לידיעה — נגיעות של חצי שנייה (דגימה כל 0.5 ש׳): '+JSON.stringify(S15I.hitsLeft):'הנתיבים אל המקומות של הישן — 0 נגיעות ברכבים ובמטוסים (הבדיקה של s15SimAudit)')+(S15I.lane?' · הקו מהכביש / הקשת: '+JSON.stringify(S15I.lane):''));
+ push('s15i_added',(S15I.added||[]).length===S15I_ADD.length&&!(S15I.added||[]).some(x=>/נגיעות/.test(x)),'רכבים שנוספו (מקום + נסיעה): '+((S15I.added||[]).join(' · ')||'—'));
+ {// המזוודות: אותה מזוודה — אותו צבע מהעגלה למסוע ולבטן; מספר המזוודות בעגלות + בדרך = 2n תמיד; מעמיס בעבודה בכל רגע שמזוודה על המסוע
+  let bad=0,lost=0,idle=0,n0=0;for(const v of S15SIM.veh){if(!/^BT/.test(v.id))continue;const g=v.legs.find(q=>q.h!=null&&q.f===8);if(!g)continue;const d=g.t1-g.t0,q={g,d,u:0},BP=s15iBagPlan(v,q),seen={};
+   for(let u=0;u<=d;u+=.5){q.u=u;const c=BP.counts(u),a=BP.active(u),onB=BP.belt(u),fly=(a&&((a.unload&&a.f>=BP.walk)||(!a.unload&&a.f<BP.walk)))?1:0;n0++;
+    if(c[0]+c[1]+fly+onB.length+(BP.hand(u)?1:0)>2*BP.n||c[0]+c[1]+fly+onB.length+(BP.hand(u)?1:0)<Math.min(c[0]+c[1],2*BP.n)-0)lost++;if(onB.length&&!a&&!BP.active(u+S15I_BW.belt)&&!BP.active(Math.max(0,u-S15I_BW.belt)))idle++;
+    for(const b of onB.concat(a?[{col:a.col,j:a.j,un:a.unload}]:[])){}}
+   for(let j=0;j<BP.n;j++){const tp=S15I_BW.E+(j+S15I_BW.walk)*S15I_BW.cad;q.u=tp-.2;const b=BP.belt(q.u).find(x=>x.a<.15);const a=BP.active(tp+.05);if(b&&a&&b.col!==a.col)bad++}}
+  push('s15i_bag_colour',!bad,bad?bad+' מזוודות שמשנות צבע בין המסוע ליד':'אותה מזוודה — אותו צבע מהבטן, במסוע, ביד ובעגלה (נבדק לכל מזוודה בכל רכבת)');
+  push('s15i_loaders',!idle,idle?idle+' רגעים עם מזוודה על המסוע בלי מעמיס בעבודה':'בכל רגע שמזוודה על המסוע — מעמיס בעבודה ('+n0+' דגימות)')}
+ {const h=S15I.hl&&S15I.hl.stop,A=s15grAcAt('C1',h?h.t0+1:0);let det='אין';if(h&&A){const E=s15iW(A,4.3,-4.78),d=Math.hypot(h.p[0][0]-E[0],h.p[0][1]-E[1])/S15I_PX;det='HL-C1 בדלת המטען הקדמית של '+A.ac+' — '+d.toFixed(2)+' מ׳ מהמקום של הישן (a 4.3, ‏d −4.78; ההפרש — הקופסה של s15SimAudit), ש׳ '+h.t0.toFixed(0)+'–'+h.t1.toFixed(0)}
+  push('s15i_hl',!!(h&&A),det)}
+ {// ממצא 13 של s15qa — הכבודה כזרימה, לכל רכבת: הבית [n,0] ← המטוס (עגלה 2 מתמלאת, עגלה 1 מתרוקנת) ← [0,n] ← האולם (עגלה 2 מתרוקנת לסרט, עגלה 1 מתמלאת מהצ׳ק-אין) ← [n,0];
+  // המזוודה שירדה מהמטוס היא זו שנפרקת באולם (אותו תא, אותו צבע); רכבת אחת באולם בכל פעם
+  const T=S15SIM.T,md=x=>((x%T)+T)%T,rows=[];let bad=[],occ=[];for(const v of S15SIM.veh){if(!/^BT/.test(v.id))continue;const hg=v.legs.find(g=>g.hall),sg=v.legs.find(g=>g.h!=null&&g.f===8&&!g.hall);if(!hg||!sg)continue;occ.push([v.id,hg.t0,hg.t1,hg.hallId]);
+   const n=s15iBagN(v),seq=[];for(let t=0;t<T;t+=1){const c=s15grLoad(v,t);seq.push([t,Math.round(c[0]*6),Math.round(c[1]*6)])}
+   const at=t=>{const c=s15grLoad(v,md(t));return[Math.round(c[0]*6),Math.round(c[1]*6)]};const a0=at(sg.t0-2),a1=at(sg.t1+2),h0=at(hg.t0+.5),h1=at(hg.t1+2);
+   if(a0+''!==[n,0]+'')bad.push(v.id+' לפני המטוס '+a0);if(a1+''!==[0,n]+'')bad.push(v.id+' אחרי המטוס '+a1);if(h0+''!==[0,n]+'')bad.push(v.id+' בכניסה לאולם '+h0);if(h1+''!==[n,0]+'')bad.push(v.id+' אחרי האולם '+h1);
+   for(let i=1;i<seq.length;i++){const d0=Math.abs(seq[i][1]-seq[i-1][1])+Math.abs(seq[i][2]-seq[i-1][2]);if(d0>1)bad.push(v.id+' קפיצה ב-ש׳ '+seq[i][0])}
+   const HP=s15iHallPlan(v,hg),BP=s15iBagPlan(v,{g:sg,d:sg.t1-sg.t0,u:0});for(let j=0;j<n;j++){const cs=BP.active(S15I_BW.E+(j+.1)*S15I_BW.cad),ch=HP.active(HP.u0+(n-1-j+.1)*S15I_HALL.cad);if(cs&&ch&&cs.col!==ch.col)bad.push(v.id+' מזוודה '+j+' משנה צבע בין המטוס לאולם')}
+   rows.push(v.id+': בית ['+n+',0] ← מטוס ש׳ '+sg.t0.toFixed(0)+'–'+sg.t1.toFixed(0)+' ← אולם '+hg.t0.toFixed(0)+'–'+hg.t1.toFixed(0)+' ← בית')}
+  for(let i=0;i<occ.length;i++)for(let k=i+1;k<occ.length;k++){const a=occ[i],b=occ[k];if(a[3]!==b[3])continue;for(const s of [-T,0,T])if(a[1]<b[2]+s&&b[1]+s<a[2])bad.push('שתי רכבות באולם: '+a[0]+' / '+b[0])}   // fieldcalc: לכל עמדה (074zr — hallId)
+  push('s15i_hall_flow',rows.length>=3&&!bad.length,(bad.length?bad.slice(0,4).join(' · ')+' · ':'')+rows.join(' · '))}
+ push('s15i_errors',!S15I.err,S15I.err||'אין');
+ return out}
+window.__TC_S15I={audit:s15iAudit,S:S15I,OLD:S15I_OLD};
+(function(){try{const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);try{const C=s15iAudit(),ok=C.every(q=>q.ok),L=r.checks||r.results;if(Array.isArray(L))L.push({name:'s15i_bags',id:'s15i_bags',ok,pass:ok,detail:C.map(q=>(q.ok?'✓ ':'✗ ')+q.id+': '+q.det).join(' | ')});if(!ok){r.ok=false;(r.issues||[]).push('s15i_bags')}}catch(e){}return r}}catch(e){s15iErr('audit hook',e)}})();

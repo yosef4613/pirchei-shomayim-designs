@@ -1,0 +1,66 @@
+/* ==== seatrees · 17.11 — אין עץ שהגזע שלו על המים, ואין עצים במגרשים ובמנחתים (HANDOFF_NEXT שורות 20, 49 §7; הביקורת 12.11: 19–21, 41, 43–44) ====
+   מה היה: כל רשימה של עצים שמה עצים לפי המפה שלה (S9 / S10 / S12 / KIT34 / VEG_D של 11.11), ואף אחד לא בדק את הגזע מול המים — כך נשארו
+   שלושה דקלים של הגינה G-F4-PALM (019c, ‏y 2600) בתוך הים של F4; ושכבת הצמחייה החדשה (VEG_D, ‏074zg / 074zh) שתלה 15 עצים על מגרש
+   הכדורסל של B4, ו-40 עצים במגרש של בית השחקן (C3-PH) — חמישה מהם בתוך עיגול המנחת של רמות 7–8 ועוד ארבעה בתחום הבטיחות שלו.
+   עכשיו — שומר אחד לכל העולם, מעל הקיים (כלל 19א), בשלוש נקודות החנק של הציור:
+   1. TurboCity.draw של כל פריט צמחייה (TP-*, חוץ מצמחי המים TP-WP-*) ו-k34Take (הרישום של K34C — העצים הגבוהים שמצוירים בכל פריים),
+   2. KIT34.draw / drawBody / drawShadow של כל סוג צמחייה (העצים, הדקלים, השיחים, הגדרות החיות, הערוגות; חוץ מ-lily_pads ו-reeds),
+   3. הנתונים של VEG (הקבוצות VEG_D.t והעצים האפויים VEG_D.b) ושל S12 — מסוננים פעם אחת כשהם נטענים.
+   הנקודה נמדדת בעולם מהמטריצה של ההקשר עצמו (המצלמה / האריח / מעבר הסריקה), כלומר — במקום שבו הגזע באמת מצויר; גזע על WATER (הים או
+   האגם, ולא מזח / רציף / גשר — WATERWALK.water) — לא מצויר, בכל העולם, בלי קופסה של אזור. ל-VEG גם: מגרשי הספורט (B4 ו-A4_COURTS),
+   מגרש בית השחקן C3-PH (התוכן של כל רמה — C3LV — נשאר כמו שהוא), עיגולי הבטיחות של המנחתים (בית השחקן 7–8, השדה S15, האי).
+   ‎?noseatrees — כבוי (בדיוק כמו master). הבדיקה: window.__TC_SEATREES.audit() (בתוך המשחק) והכלי tree_sweep.js (deliver/2026-11-17/seatrees/tools). */
+var SEAT={on:!/[?&#]noseatrees\b/.test(String(location.search)+String(location.hash)),n:{asset:0,k34:0,kit:0,veg:0,vegB:0,s12:0,checks:0},blocked:new Map(),veg:[],zones:null,err:'',onDraw:null,info:new Map(),kitWrapped:false};
+function seatErr(e){if(!SEAT.err)SEAT.err=String(e&&e.stack||e).slice(0,240)}
+const SEAT_KIT=/^(tree_|palm_|bush_|hedge|bed_|fern|grass_)/;   // סוגי הצמחייה של KIT34 (lily_pads ו-reeds — צמחי מים, מותרים במים)
+function seatIsVegId(id){return typeof id==='string'&&id.charCodeAt(0)===84&&id.charCodeAt(1)===80&&id.charCodeAt(2)===45&&!(id.charCodeAt(3)===87&&id.charCodeAt(4)===80)}   // TP-* חוץ מ-TP-WP-*
+// הגזע על המים: הים או האגם, לא על משטח מותר (מזח, רציף, גשר)
+function seatWater(x,y){try{return WATERWALK.water(x,y,false)==='WATER'}catch(e){return false}}
+// הנקודה בעולם של (x, y) בהקשר c: המשחק (המצלמה), אריח שנבנה (VIEW_OVR), מעבר סריקה (קנבס של 2 פיקס׳ — העולם עצמו); אחרת — לא ידוע (תמונה שמורה וכו׳)
+function seatWorld(c,x,y){let m;try{m=c.getTransform()}catch(e){return null}const px=m.a*x+m.c*y+m.e,py=m.b*x+m.d*y+m.f;
+ if(typeof GAME_CTX!=='undefined'&&c===GAME_CTX){const q=c34CamM();return[(px-q[1])/q[0],(py-q[2])/q[0]]}
+ const cw=c.canvas?c.canvas.width:0;
+ if(typeof WTC!=='undefined'&&c===WTC.ctxBuilding){const V=VIEW_OVR;if(cw<=2||!V)return[px,py];const hw=V.hw-WTC.margin,hh=V.hh-WTC.margin;if(hw<=0)return null;const S=cw/(2*hw);return[px/S+(V.cx-hw),py/S+(V.cy-hh)]}
+ if(cw>0&&cw<=2)return[px,py];return null}
+function seatNote(src,id,w,blk){if(blk){const k=src+'|'+id+'|'+Math.round(w[0])+'|'+Math.round(w[1]);if(!SEAT.blocked.has(k))SEAT.blocked.set(k,{src,id,x:Math.round(w[0]),y:Math.round(w[1])})}if(SEAT.onDraw)try{SEAT.onDraw(src,id,w[0],w[1],blk)}catch(e){}}
+// פריט של הספרייה (TP-*): נקודת הקרקע — מרכז התמונה (כמו K34C לעצים)
+function seatAssetPt(id,x,y,o){o=o||{};const k=id+'|'+(o.scale??'')+'|'+(o.targetWidth??'');let I=SEAT.info.get(k);if(!I){I=[20,20];try{const q=TurboCity.info(id,o);if(q&&q.w>0)I=[q.w/2,q.h/2]}catch(e){}SEAT.info.set(k,I)}return[x+I[0],y+I[1]]}
+function seatBlockAsset(c,id,x,y,o,src){if(!SEAT.on||!seatIsVegId(id))return false;try{const p=seatAssetPt(id,x,y,o),w=seatWorld(c,p[0],p[1]);if(!w)return false;SEAT.n.checks++;const blk=seatWater(w[0],w[1]);seatNote(src,id,w,blk);if(blk){SEAT.n[src==='k34'?'k34':'asset']++;return true}}catch(e){seatErr(e)}return false}
+function seatBlockKit(c,x,y,t){if(!SEAT.on||typeof t!=='string'||!SEAT_KIT.test(t))return false;try{const w=seatWorld(c,x,y);if(!w)return false;SEAT.n.checks++;const blk=seatWater(w[0],w[1]);seatNote('kit',t,w,blk);if(blk){SEAT.n.kit++;return true}}catch(e){seatErr(e)}return false}
+/* ---- האזורים בלי עצים חדשים (VEG): מגרשים, מגרש הבית, המנחתים — [סוג, מזהה, מלבן] או [סוג, מזהה, מרכז, רדיוס] ---- */
+function seatZones(){if(SEAT.zones)return SEAT.zones;const Z=[];
+ const CM=r=>[r[0]-20,r[1]-20,r[2]+20,r[3]+50];   // המגרש וסביבת התנועה שלו: 2 מ׳ מכל צד, ו-5 מ׳ מדרום — שם הצמרת של עץ נופלת על המגרש במבט 3/4
+ try{const d=B4LOOK.data();if(d&&d.court)Z.push(['rect','B4-COURT',CM(d.court)])}catch(e){}if(!Z.length)Z.push(['rect','B4-COURT',CM([2090,3240,2370,3390])]);
+ try{for(const c of A4_COURTS)Z.push(['rect',c.id,CM([c.x,c.y,c.x+c.w,c.y+c.h])])}catch(e){}
+ try{for(const l of C3_LOTS)if(l.kind==='player')Z.push(['rect',l.id,[l.x,l.y,l.x+l.w,l.y+l.h]])}catch(e){}
+ try{const seen=new Set();for(const L of C3LV)if(L.pad){const k=L.pad.c.join(',');if(seen.has(k))continue;seen.add(k);Z.push(['circle','C3-PAD',L.pad.c,L.pad.safety||L.pad.r])}}catch(e){}
+ try{for(const h of S15D.helipads)Z.push(['circle',h.id,h.c,h.ring||h.pad])}catch(e){}
+ try{for(const q of[...(S13D.lots||[]),...(S13D.build||[])])if(/HELI/.test(q.id)&&q.rect)Z.push(['rect',q.id,q.rect])}catch(e){}
+ return SEAT.zones=Z}
+function seatZoneAt(x,y){for(const z of seatZones()){if(z[0]==='rect'){const r=z[2];if(x>=r[0]&&x<=r[2]&&y>=r[1]&&y<=r[3])return z[1]}else if(Math.hypot(x-z[2][0],y-z[2][1])<=z[3])return z[1]}return null}
+function seatVegWhy(x,y){if(seatWater(x,y))return 'WATER';return seatZoneAt(x,y)}
+/* ---- 3. הנתונים: VEG (הקבוצות והאפויים) ו-S12 ---- */
+function seatVegG(){let n=0;try{for(const g of VEG.G){const keep=[];for(const it of g.it){const w=seatVegWhy(it[0],it[1]);if(w){SEAT.veg.push([Math.round(it[0]),Math.round(it[1]),vegType(it[2]),w,'t']);n++}else keep.push(it)}if(keep.length!==g.it.length){g.it=keep;if(!keep.length)g.ok=false;if(g.c){vegFree(g.c);g.c=null}}}}catch(e){seatErr(e)}SEAT.n.veg+=n;return n}
+function seatVegB(){let n=0;try{for(const o of VEG.B){if(o[5])continue;const w=seatVegWhy(o[0],o[1]);if(w){o[5]=1;SEAT.veg.push([o[0],o[1],vegType(o[2]),w,'b']);n++}}}catch(e){seatErr(e)}SEAT.n.vegB+=n;return n}
+function seatS12(){try{if(typeof S12_TREES==='undefined')return;for(let i=S12_TREES.length-1;i>=0;i--){const t=S12_TREES[i];if(seatWater(t[0],t[1])){SEAT.blocked.set('s12|'+t[2]+'|'+t[0]+'|'+t[1],{src:'s12',id:t[2],x:t[0],y:t[1]});S12_TREES.splice(i,1);SEAT.n.s12++}}}catch(e){seatErr(e)}}
+/* ---- 2. KIT34 (נטען מאוחר, ב-k34Lib): עוטפים כשהוא מופיע ---- */
+function seatWrapKit(){if(SEAT.kitWrapped||!window.KIT34)return;SEAT.kitWrapped=true;const B=window.KIT34;
+ for(const f of['draw','drawBody','drawShadow']){const f0=B[f];if(typeof f0!=='function')continue;B[f]=function(c,x,y,t){if(seatBlockKit(c,x,y,t))return;return f0.apply(this,arguments)}}}
+/* ---- החיבורים: אחרי המקור, לא במקומו ---- */
+(function(){try{
+ {const d0=TurboCity.draw;TurboCity.draw=function(c,id,x,y,o){if(seatBlockAsset(c,id,x,y,o,'asset'))return;return d0.apply(this,arguments)}}   // הפנימי (SBC, האריחים, הספרייה)
+ {const t0=k34Take;k34Take=function(c,id,x,y,o){if(seatBlockAsset(c,id,x,y,o,'k34'))return true;return t0.apply(this,arguments)}}   // K34C (נעטף מעל — k34Wrap): לא נרשם ולא מצויר
+ {const l0=k34Lib;k34Lib=function(){const r=l0.apply(this,arguments);if(r&&!SEAT.kitWrapped)seatWrapKit();return r}}
+ {const i0=vegInit;vegInit=function(){const was=VEG.ready,r=i0.apply(this,arguments);if(r&&!was&&SEAT.on)seatVegG();return r}}
+ {const f0=vegFurnInit;vegFurnInit=function(){const had=!!VEG.F,r=f0.apply(this,arguments);if(!had&&SEAT.on)seatVegB();return r}}
+ if(SEAT.on)seatS12();
+}catch(e){seatErr(e)}})();
+/* ---- הבדיקה (חוסמת): כל המקורות — 0 גזעים על מים בכל העולם, 0 עצים חדשים במגרשים / במגרש הבית / במנחתים ---- */
+function seatAudit(){const out={on:SEAT.on,err:SEAT.err,n:Object.assign({},SEAT.n),water:[],zones:[],sources:{},blocked:SEAT.blocked.size,vegOut:SEAT.veg.length};const add=(src,id,x,y)=>{out.sources[src]=(out.sources[src]||0)+1;if(seatWater(x,y)&&!/^TP-WP-|^(lily_pads|reeds)$/.test(id))out.water.push([src,id,Math.round(x),Math.round(y)])};
+ try{vegInit();vegFurnInit();for(const g of VEG.G){if(!g.ok)continue;for(const it of g.it){add('VEG_D.t',vegType(it[2]),it[0],it[1]);const z=seatZoneAt(it[0],it[1]);if(z)out.zones.push(['VEG_D.t',vegType(it[2]),it[0],it[1],z])}}
+  for(const o of VEG.B){if(o[5])continue;add('VEG_D.b',vegType(o[2]),o[0],o[1]);const z=seatZoneAt(o[0],o[1]);if(z)out.zones.push(['VEG_D.b',vegType(o[2]),o[0],o[1],z])}}catch(e){out.vegErr=String(e)}
+ try{for(const it of K34C.list)if(seatIsVegId(it.id))add('K34C.list',it.id,it.x,it.y)}catch(e){}
+ try{for(const t of S12_TREES)add('S12_TREES',t[2],t[0],t[1])}catch(e){}
+ try{out.listsOnWater=[];for(const L of[B2_TREES,D2_TREES,D4_TREES,E5_TREES,B6_TREES,B5_TREES,C5_TREES,A4_TREES])for(const o of L)if(seatIsVegId(o.asset)&&seatWater(o.x,o.y))out.listsOnWater.push([o.id||o.asset,Math.round(o.x),Math.round(o.y)])}catch(e){}   // ברשימות של הקוד הישן — נחסמות בציור (TurboCity.draw)
+ out.ok=!out.water.length&&!out.zones.length;return out}
+window.__TC_SEATREES={stats:()=>({on:SEAT.on,err:SEAT.err,n:Object.assign({},SEAT.n),blocked:[...SEAT.blocked.values()],veg:SEAT.veg.slice(),zones:seatZones().map(z=>z.slice())}),audit:seatAudit};

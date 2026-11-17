@@ -1,0 +1,294 @@
+/* ===== EVT · אירועים אקראיים בעולם — אש, אדם נופל, אדם בורח (17.11.2026, הענף t17_events; הציור: deliver/2026-11-17/events/draw/Events_plan.html) =====
+   מה שכבר היה ולא נבנה מחדש (כללים 16 / 19א) — כאן רק נותנים לו אירוע אמיתי לטפל בו:
+   (1) אש: תחנת כיבוי 2 ב-C4 (074x2_c4fire — C4F, ‏c4fDepart): הכבאית יוצאת מהתא במנוע הכבישים ונעמדת במקום הקריאה. האירוע נותן לה קריאה עם אש
+       שרואים (להבות ועשן במבנה או ברכב), מחזיק אותה במקום (u.sceneT) עד ששני כבאים עם זרנוק מכבים, ואז היא חוזרת לאותו תא כמו תמיד.
+   (2) אדם נופל: הולך רגל של העיר (NPC_PEDESTRIANS, ‏NPC-PED-n) נופל ושוכב על המדרכה; האמבולנס הקרוב והפנוי של התנועה (VS-AM, ‏kind 'ambulance')
+       נשלח במנוע הכבישים (clTaxiRouteTo / routeTaxiCar, כמו הניידת של CITYSVC), שני חובשים מעלים אותו על אלונקה, והאמבולנס מביא אותו
+       לכניסת המיון של בית החולים A2 (A2-ER-LANE); האלונקה נכנסת לדלת, האמבולנס חוזר לתנועה, ואחרי זמן האיש יוצא מהדלת הראשית.
+   (3) אדם בורח: הולך רגל של העיר מתחיל לרוץ (בגרף ההולכים — רק במעברי החצייה); הניידת הפנויה של התנועה (VS-PL) נשלחת ומתעדכנת כל 4 שנ׳,
+       שוטר יורד ורודף ברגל באותה דרך, תופס, אוזק, ושניהם נוסעים לתחנת המשטרה A5 (CSVC_POIS['A5-POLICE']) ונכנסים לדלת. משתחרר אחרי זמן.
+   כללים 25 / 32: אין רכב מזויף — רק הכבאיות של C4F והרכבים של התנועה; שום רכב לא מופיע ולא נעלם, ושום אדם לא נעלם (נכנס לרכב / לבניין ויוצא).
+   אקראי, בשטח הפתוח (locked('zone') של מנוע הסיפור; בלי השדה, הנמל והאי), לא צפוף: לכל היותר אחד מכל סוג ושניים יחד. הודעה קצרה בהתחלה ובסוף,
+   סמן במפה הקטנה, במפה הגדולה ובעולם. F9 ← אירועים: שלושה כפתורים — "עכשיו", ליד השחקן, והמצלמה עוברת לאירוע. */
+var EVT={on:true,err:null,t:0,serial:0,act:[],done:[],log:[],scars:[],f9:0,follow:null,
+ next:{fire:95,fall:150,flee:220},
+ cfg:{gap:{fire:[300,620],fall:[240,560],flee:[260,580]},maxAll:2,spaceR:600,zones:/^[A-D][0-7]$|^E[3-6]$/,stillMax:60,
+  fire:{grow:8,spray:22,smoke:10,wait:300,self:25,crewV:40,hose:70},
+  fall:{wait:180,crewV:36,er:{x:1092,y:1325},door:{x:1042,y:1325},home:90,main:{x:720,y:1556}},
+  flee:{run:70,tire:32,tireV:44,off:98,catchR:13,reroute:4,custody:150,wait:120,door:{x:806,y:3770},kerb:{x:640,y:3772},near:170}},
+ st:{fire:{n:0,done:0,self:0,wait:0},fall:{n:0,done:0,up:0,lost:0},flee:{n:0,done:0,none:0,lost:0},still:0,stillMax:0,stuck:[],reroutes:0}};
+try{const b=A5_BLD.find(q=>q.id==='A5-POLICE');if(b&&b.entrance){EVT.cfg.flee.door={x:b.entrance.x,y:b.entrance.y};EVT.cfg.flee.kerb={x:640,y:b.entrance.y+2}}}catch(e){}
+try{const b=A2_BLD.find(q=>q.id==='A2-HOSP');if(b&&b.entrance)EVT.cfg.fall.main={x:b.entrance.x,y:b.entrance.y+6}}catch(e){}
+const EVT_LBL={fire:'אש',fall:'אדם נפל',flee:'אדם בורח'},EVT_COL={fire:'#ff5a2a',fall:'#20c070',flee:'#4f7cff'};
+function evtLog(w){EVT.log.push([+EVT.t.toFixed(1),w]);if(EVT.log.length>160)EVT.log.shift()}
+function evtErr(k,e){EVT.err=EVT.err||k+' '+String(e&&e.stack||e).slice(0,260)}
+function evtZone(x,y){try{return currentChunkId(x,y)}catch(e){return null}}
+function evtZoneName(z){try{return(TC_NAMES.zones||{})[z]||''}catch(e){return ''}}
+/* the open area: a zone of the city that the story has opened, not the airport, the port or the island */
+function evtOpen(x,y){const z=evtZone(x,y);if(!z||!EVT.cfg.zones.test(z))return false;try{if(inPortZone(x,y))return false}catch(e){}
+ try{const A=window.__TC_STORY;if(A&&typeof A.locked==='function'&&A.locked('zone',z))return false}catch(e){}return true}
+function evtRef(){try{if(State.mapQa)return{x:Camera.x,y:Camera.y}}catch(e){}try{return PlayerProfile.mode==='vehicle'?{x:PlayerCar.x,y:PlayerCar.y}:{x:PlayerPed.x,y:PlayerPed.y}}catch(e){return{x:2400,y:3000}}}
+function evtFarFromOthers(x,y,skip){for(const e of EVT.act)if(e!==skip&&Math.hypot(e.x-x,e.y-y)<EVT.cfg.spaceR)return false;return true}
+/* the kerb point of the road next to (x, y): the direction whose lane is nearest to the place — the car stops on the near side */
+function evtKerb(x,y){let pos=null;try{pos=nearestRoadPosition(x,y,typeof fuelPub2==='function'?fuelPub2:undefined)}catch(e){pos=null}if(!pos)try{pos=nearestRoadPosition(x,y)}catch(e){pos=null}
+ if(!pos||!pos.edge)return null;const e=pos.edge;let best=null;
+ for(const dir of [1,-1]){const t=clamp(dir>0?pos.u:1-pos.u,.06,.94);let p=null;try{p=trafficEdgePoint(e.id,dir,t,0)}catch(err){p=null}if(!p||!isFinite(p.x))continue;
+  const d=Math.hypot(p.x-x,p.y-y);if(!best||d<best.d)best={edge:e.id,dir,t,x:p.x,y:p.y,d,heading:p.heading}}
+ return best}
+/* the way to (x, y): as taxiApproach (the public two-way roads, the shorter of the two entries of the edge), and the side of the road nearest to the place
+   is worth 30 px of way for each pixel nearer — the car stops on the near kerb (and drives round the block for it), so the crew never crosses the road */
+function evtApproach(car,x,y){const pub=e=>!pgRestrictedEdge(e)&&!e.future&&!e.freightOnly&&!e.oneway&&(typeof clPub!=='function'||clPub(e));let pos=null;try{pos=nearestRoadPosition(x,y,pub)}catch(err){pos=null}if(!pos||!pos.edge)return null;
+ const e=byEdge[car.edgeId];if(!e)return null;const forward=car.dirSign>0?e.b:e.a,te=pos.edge,C=[];
+ const side=dir=>{let m=1e4;for(let ln=0;ln<4;ln++){try{const p=trafficEdgePoint(te.id,dir,clamp(dir>0?pos.u:1-pos.u,.06,.94),ln);if(p&&isFinite(p.x))m=Math.min(m,Math.hypot(p.x-x,p.y-y))}catch(err){}}return m};   /* the outer lane of each direction */
+ for(const dir of [1,-1]){const tt=dir>0?pos.u:1-pos.u;if(car.edgeId===te.id&&car.dirSign===dir&&tt>(car.t||0)+.05){C.push({nodes:[forward],entry:forward,dir,fa:true,cost:side(dir)*30});continue}
+  const entry=dir>0?te.a:te.b;let nodes=[];try{nodes=shortestNodePath(forward,entry,pub)}catch(err){nodes=[]}if(!nodes.length)continue;let L=0;try{L=taxiPathPx(nodes)}catch(err){}C.push({nodes,entry,dir,fa:false,cost:L+side(dir)*30})}
+ if(!C.length)return null;C.sort((a,b)=>a.cost-b.cost);const c=C[0];
+ return{nodes:c.nodes,pos:0,entryNode:c.entry,finalEdgeId:te.id,finalDirSign:c.dir,finalT:taxiFinalClamp(te.id,c.dir,c.dir>0?pos.u:1-pos.u),finalActive:c.fa,targetX:x,targetY:y}}
+function evtRoute(v,x,y,ph){let r=null;try{r=evtApproach(v,x,y)}catch(e){r=null}
+ if(r){v.taxiRoute={...r,phase:'evt-'+ph,hold:false,arrived:false};v.plan=null;v.runKey=null;v.wait=false;v.targetSpeed=96;if(v.evt){v.evt.ph=ph;v.evt.tx=x;v.evt.ty=y}return true}
+ let ok=false;try{ok=routeTaxiCar(v,x,y,'evt-'+ph)}catch(e){ok=false}if(ok){v.targetSpeed=96;if(v.evt){v.evt.ph=ph;v.evt.tx=x;v.evt.ty=y}}return ok}
+function evtFreeCar(v,kind){if(!v||v.kind!==kind||v.evt||v.csvc||v.taxiRoute||v.fuelGo||v.c5||v.cl||v.clTaxi||v.c4f||v.clOff||!byEdge[v.edgeId])return false;
+ try{if(CITYSVC.disp&&CITYSVC.disp.car===v)return false}catch(e){}return true}
+function evtTake(e,kind,x,y,ph){const L=TRAFFIC_CARS.filter(v=>evtFreeCar(v,kind)).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y));
+ for(const v of L){const ts=v.targetSpeed;v.evt={id:e.id,ts,ph,tx:x,ty:y,lights:true};if(evtRoute(v,x,y,ph)){e.car=v;e.carId=v.id;v.evt.lx=v.x;v.evt.ly=v.y;v.evt.still=0;evtLog(e.id+' '+v.id+' יוצא ('+Math.round(Math.hypot(v.x-x,v.y-y)/10)+' מ׳)');return v}v.evt=null}
+ return null}
+function evtHold(v){v.speed=0;v.wait=true;v.stuck=0;if(v.taxiRoute){v.taxiRoute.hold=true;v.taxiRoute.arrived=true}
+ else v.taxiRoute={nodes:[],pos:0,entryNode:null,finalEdgeId:v.edgeId,finalDirSign:v.dirSign,finalT:v.t,finalActive:true,targetX:v.x,targetY:v.y,phase:'evt-hold',hold:true,arrived:true}}
+function evtRelease(v){if(!v)return;const ts=v.evt&&v.evt.ts;v.evt=null;v.taxiRoute=null;v.plan=null;v.runKey=null;v.wait=false;v.hop=(v.hop||0)+3;if(ts!=null)v.targetSpeed=ts}
+function evtArrived(car){const e=EVT.act.find(q=>car.evt&&q.id===car.evt.id);evtHold(car);if(!e){evtRelease(car);return}e.arr=car.evt.ph;evtLog(e.id+' '+car.id+' הגיע ('+car.evt.ph+')')}
+{const pT=taxiServiceArrived;taxiServiceArrived=function(car){if(car&&car.evt){try{evtArrived(car)}catch(e){evtErr('arr',e)}return}return pT.apply(this,arguments)}}
+{const pF=csvcFree;csvcFree=function(v){return !(v&&v.evt)&&pF.apply(this,arguments)}}   /* a patrol car on an event is not free for CITYSVC */
+/* the car on its way: a car that has not moved 4 px for 12 s gets a new way to the same point (and again every 15 s); 60 s — counted (the QA: no emergency car stands) */
+function evtCarWatch(e,dt){const v=e.car;if(!v||!v.evt)return;if(v.taxiRoute&&v.taxiRoute.hold){v.evt.still=0;v.stuck=0;return}
+ if(Math.hypot(v.x-v.evt.lx,v.y-v.evt.ly)>4){v.evt.lx=v.x;v.evt.ly=v.y;v.evt.still=0;v.evt.rrAt=12;return}v.evt.still+=dt;EVT.st.stillMax=Math.max(EVT.st.stillMax,+v.evt.still.toFixed(1));
+ if(v.evt.still>=(v.evt.rrAt||12)){v.evt.rrAt=v.evt.still+15;EVT.st.reroutes++;const T=v.taxiRoute;v.taxiRoute=null;if(!evtRoute(v,v.evt.tx,v.evt.ty,v.evt.ph))v.taxiRoute=T}
+ if(v.evt.still>EVT.cfg.stillMax&&!v.evt.stillSeen){v.evt.stillSeen=1;EVT.st.still++;EVT.st.stuck=EVT.st.stuck.concat([{e:e.id,car:v.id,x:Math.round(v.x),y:Math.round(v.y),edge:v.edgeId,ph:v.evt.ph}]).slice(-8);evtLog(e.id+' '+v.id+' לא זז 60 שנ׳')}}
+/* the people: the pedestrians of the city (the 8 walkers NPC-PED-n) — one of them falls or runs; the crews come out of their vehicles */
+function evtNpcFree(n){if(!n||!/^NPC-PED-\d+$/.test(n.id)||n.evt||n.inCrosswalk||n.wait)return false;if(n.targetId){const ed=pedEdgeBetween(n.nodeId,n.targetId);if(ed&&(ed.type==='crosswalk'||ed.type==='zebra'))return false}return true}
+function evtPickNpc(near,any){let L=NPC_PEDESTRIANS.filter(n=>evtNpcFree(n)&&evtOpen(n.x,n.y)&&evtFarFromOthers(n.x,n.y));if(!L.length&&any)L=NPC_PEDESTRIANS.filter(n=>evtNpcFree(n)&&!inPortZone(n.x,n.y));if(!L.length)return null;
+ if(near)return L.sort((a,b)=>Math.hypot(a.x-near.x,a.y-near.y)-Math.hypot(b.x-near.x,b.y-near.y))[0];return L[(Math.imul(++EVT.serial,2654435761)>>>0)%L.length]}
+function evtPedNode(x,y){let best=null,bd=1e9;for(const n of PED_START_NODES){const d=Math.hypot(n.x-x,n.y-y);if(d<bd){bd=d;best=n}}return best}
+function evtTakeNpc(n){const i=NPC_PEDESTRIANS.indexOf(n);if(i>=0)NPC_PEDESTRIANS.splice(i,1)}
+function evtPutBack(n,x,y){const nd=evtPedNode(x,y);n.x=x;n.y=y;if(nd){n.nodeId=nd.id;n.targetId=nd.id}n.lastNode=null;n.inCrosswalk=null;n.wait=false;n.pose='idle';n.ghost=1.5;n.blockT=0;if(n.evtSpeed){n.speed=n.evtSpeed;n.evtSpeed=0}n.evt=null;if(!NPC_PEDESTRIANS.includes(n))NPC_PEDESTRIANS.push(n)}
+function evtMan(asset,x,y){return{asset,x,y,dir:2,pose:'idle',vis:true}}
+/* a walk of a crew member: straight when the line stays off the road; otherwise through one point on the kerb (the middle of the line, pushed off the road) */
+function evtPath(A,B){if(typeof evtSegOk!=='function'||evtSegOk(A,B))return[B];const mx=(A.x+B.x)/2,my=(A.y+B.y)/2,dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy)||1,nx=-dy/d,ny=dx/d;let best=null;
+ for(const [ux,uy] of [[nx,ny],[-nx,-ny]]){const W=evtOff(mx,my,ux,uy);if(evtSegOk(A,W)&&evtSegOk(W,B)){const L=Math.hypot(W.x-A.x,W.y-A.y)+Math.hypot(B.x-W.x,B.y-W.y);if(!best||L<best.L)best={W,L}}}
+ if(best)return[best.W,B];EVT.st.pathMiss=(EVT.st.pathMiss||0)+1;return[B]}
+function evtWalk(p,tx,ty,v,dt,run){if(p.gx!==tx||p.gy!==ty){p.gx=tx;p.gy=ty;try{p.wp=evtPath({x:p.x,y:p.y},{x:tx,y:ty})}catch(e){p.wp=[{x:tx,y:ty}]}}
+ const q=p.wp&&p.wp.length?p.wp[0]:{x:tx,y:ty},dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy);
+ if(d<1.5){p.x=q.x;p.y=q.y;if(p.wp&&p.wp.length>1){p.wp.shift();return false}p.pose='idle';return true}const m=Math.min(d,v*dt);p.x+=dx/d*m;p.y+=dy/d*m;p.dir=npcDir(dx,dy,p.dir);p.pose=run?'running':'walking';return false}
+function evtCarLen(v){try{const sc=roadVehicleScaleFor(v.asset,v.ref),I=TurboCity.info(v.asset,{scale:sc});return I.w||50}catch(e){return 50}}
+/* the road, as the test "אנשים בכביש" sees it (R-76): inside the width of an edge and not in a crossing — no person of an event ever stands there */
+let EVT_RD=null;
+function evtRoads(){if(EVT_RD)return EVT_RD;const RD=[],X=[];try{for(const e of EDGES){if(e.future)continue;const a=_NODE_BY_ID[e.a],b=_NODE_BY_ID[e.b];if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy);if(L<1)continue;const h=(TYPES[e.cls]||TYPES.local).width/2;
+  RD.push({id:e.id,ax:a.x,ay:a.y,ux:dx/L,uy:dy/L,L,h,x0:Math.min(a.x,b.x)-h,x1:Math.max(a.x,b.x)+h,y0:Math.min(a.y,b.y)-h,y1:Math.max(a.y,b.y)+h})}}catch(err){evtErr('roads',err)}
+ try{for(const c of [...CROSSWALKS,...(typeof ZEBRA_XW!=='undefined'?ZEBRA_XW:[])]){const r=RD.find(q=>q.id===c.roadId);if(r)X.push({x:c.x,y:c.y,ux:r.ux,uy:r.uy,h:r.h})}}catch(err){}
+ return EVT_RD={RD,X}}
+function evtOnRoad(x,y){const {RD,X}=evtRoads();for(const r of RD){if(x<r.x0||x>r.x1||y<r.y0||y>r.y1)continue;const px=x-r.ax,py=y-r.ay,t=px*r.ux+py*r.uy,o=Math.abs(-px*r.uy+py*r.ux);
+  if(t>=0&&t<=r.L&&o<r.h+1){for(const c of X){const qx=x-c.x,qy=y-c.y;if(Math.abs(qx*c.ux+qy*c.uy)<=20&&Math.abs(-qx*c.uy+qy*c.ux)<=c.h+2)return false}return true}}return false}
+/* from (x, y) toward (ux, uy) — the first point off the road (+3 px onto the kerb) */
+function evtOff(x,y,ux,uy){if(!evtOnRoad(x,y))return{x,y};for(let s=2;s<=120;s+=2){const qx=x+ux*s,qy=y+uy*s;if(!evtOnRoad(qx,qy))return{x:qx+ux*3,y:qy+uy*3}}return{x,y}}
+function evtSegOk(a,b){const d=Math.hypot(b.x-a.x,b.y-a.y),n=Math.max(1,Math.ceil(d/4));for(let i=1;i<n;i++){if(evtOnRoad(a.x+(b.x-a.x)*i/n,a.y+(b.y-a.y)*i/n))return false}return true}
+/* the doors of a stopped vehicle: along its axis (along: −.4 the rear, 0 the side, .3 the front), on the kerb toward a point — the crew steps out there */
+function evtRear(v,k){const L=evtCarLen(v)*(k==null?.55:k),h=v.heading||0;return{x:v.x-Math.cos(h)*L,y:v.y-Math.sin(h)*L}}   /* the body itself (the hose) */
+function evtDoor(v,tx,ty,along){const h=v.heading||0,fx=Math.cos(h),fy=Math.sin(h),px=-fy,py=fx,s=((tx-v.x)*px+(ty-v.y)*py)>=0?1:-1,L=evtCarLen(v)*(along||0);return evtOff(v.x+fx*L+px*s*6,v.y+fy*L+py*s*6,px*s,py*s)}
+/* ---------------------------------------------------------------- the start of an event ---------------------------------------------------------------- */
+function evtNew(type,x,y,label,o){const e=Object.assign({id:'EV-'+type.toUpperCase()+'-'+(++EVT.serial),type,ph:'start',t0:EVT.t,tp:EVT.t,x,y,label,zone:evtZone(x,y),car:null,carId:null,retry:0,arr:null,crew:[],ok:false},o||{});
+ EVT.act.push(e);EVT.st[type].n++;try{SaveManager.log('events','start',{id:e.id,type,zone:e.zone,x:Math.round(x),y:Math.round(y)})}catch(err){}evtLog(e.id+' מתחיל — '+label);return e}
+function evtSay(m){try{toast(m)}catch(e){}}
+function evtPh(e,ph){e.ph=ph;e.tp=EVT.t;evtLog(e.id+' → '+ph)}
+/* (1) the fire: a building (the entrance of a place) or a parked car, near a road the fire engine can reach */
+const EVT_KERB=new Map();
+function evtFireSites(){let P={};try{P=navPoiRegistry()}catch(e){}const S=[];for(const p of Object.values(P)){if(!p||!isFinite(p.x)||!isFinite(p.y))continue;if(!evtOpen(p.x,p.y))continue;if(Math.hypot(p.x-C4F.bayX,p.y-3125)<380)continue;
+  const key=p.id+'@'+Math.round(p.x)+','+Math.round(p.y);let k=EVT_KERB.get(key);if(k===undefined){k=evtKerb(p.x,p.y);EVT_KERB.set(key,k)}if(!k||k.d>150||k.d<18)continue;S.push({x:p.x,y:p.y,label:p.label||p.id,poi:p.id,kerb:k})}return S}
+function evtFireSite(near){const S=evtFireSites().filter(s=>evtFarFromOthers(s.x,s.y));if(!S.length)return null;
+ const s=near?S.sort((a,b)=>Math.hypot(a.x-near.x,a.y-near.y)-Math.hypot(b.x-near.x,b.y-near.y))[Math.min(S.length-1,(EVT.serial%3))]:S[(Math.imul(++EVT.serial,2246822519)>>>0)%S.length];
+ /* a parked car next to the place (4 of 10) — it burns instead of the building */
+ if((Math.imul(EVT.serial+7,374761393)>>>0)%10<4){let best=null,bd=1e9;try{for(const c of PARKED_CARS){if(Math.abs(c.x-s.x)>240||Math.abs(c.y-s.y)>240)continue;const d=Math.hypot(c.x-s.x,c.y-s.y);if(d<bd&&evtOpen(c.x,c.y)){const k=evtKerb(c.x,c.y);if(k&&k.d<110&&k.d>14){bd=d;best={c,k}}}}}catch(e){}
+  if(best)return{x:best.c.x,y:best.c.y,label:'רכב חונה ליד '+s.label,car:best.c.id,carAsset:best.c.asset,carH:best.c.heading||0,kerb:best.k,poi:s.poi}}
+ return s}
+function evtStartFire(near){const s=evtFireSite(near);if(!s)return null;const e=evtNew('fire',s.x,s.y,s.label,{kind:s.car?'car':'building',parkedId:s.car||null,kerb:s.kerb,I:0,cool:0,unit:null,poi:s.poi});
+ evtPh(e,'burn');evtSay('אש '+(s.car?'ברכב':'במבנה')+' — '+s.label+' · כבאית מתחנת כיבוי 2 בדרך');return e}
+/* (2) a man falls */
+function evtStartFall(near){const n=evtPickNpc(near,!!near);if(!n)return null;evtTakeNpc(n);n.evt='fall';const e=evtNew('fall',n.x,n.y,'הולך רגל נפל'+(evtZoneName(evtZone(n.x,n.y))?' · '+evtZoneName(evtZone(n.x,n.y)):''),{npc:n,ft:0,px:n.x,py:n.y,man:evtMan(n.asset,n.x,n.y)});e.man.dir=n.dir;evtPh(e,'down');
+ evtSay('אדם נפל ברחוב — אמבולנס בדרך');return e}
+/* (3) a man runs away */
+function evtStartFlee(near){const n=evtPickNpc(near,!!near);if(!n)return null;n.evt='flee';n.evtSpeed=n.speed;n.speed=EVT.cfg.flee.run;const e=evtNew('flee',n.x,n.y,'אדם בורח'+(evtZoneName(evtZone(n.x,n.y))?' · '+evtZoneName(evtZone(n.x,n.y)):''),{npc:n,trail:[[n.x,n.y]],off:null,sus:null,ti:0,ft:0,tx:n.x,ty:n.y,rt:0});
+ evtPh(e,'run');evtSay('אדם בורח — ניידת בדרך');return e}
+function evtStart(type,o){o=o||{};const near=o.near?evtRef():null;let e=null;
+ try{if(type==='fire')e=evtStartFire(near);else if(type==='fall')e=evtStartFall(near);else if(type==='flee')e=evtStartFlee(near)}catch(err){evtErr('start-'+type,err);e=null}
+ if(e&&o.f9){e.f9=1;EVT.f9++}return e}
+function evtClose(e,why){if(e.npc&&NPC_PEDESTRIANS.includes(e.npc)){if(e.npc.evtSpeed){e.npc.speed=e.npc.evtSpeed;e.npc.evtSpeed=0}e.npc.evt=null}e.why=why;e.ok=why==='done';e.t1=EVT.t;const i=EVT.act.indexOf(e);if(i>=0)EVT.act.splice(i,1);if(e.car&&e.car.evt&&e.car.evt.id===e.id)evtRelease(e.car);
+ EVT.done.push({id:e.id,type:e.type,why,len:+(EVT.t-e.t0).toFixed(1),car:e.carId,zone:e.zone,label:e.label,f9:!!e.f9});if(EVT.done.length>40)EVT.done.shift();
+ if(why==='done')EVT.st[e.type].done++;else if(EVT.st[e.type][why]!=null)EVT.st[e.type][why]++;
+ try{SaveManager.log('events','close',{id:e.id,why,seconds:Math.round(EVT.t-e.t0)})}catch(err){}evtLog(e.id+' נסגר — '+why)}
+/* ---------------------------------------------------------------- the steps ---------------------------------------------------------------- */
+function evtFireStep(e,dt){const F=EVT.cfg.fire;
+ if(e.ph==='burn'||e.ph==='coming'||e.ph==='fight')e.I=Math.min(1,e.I+(e.ph==='fight'&&e.spray?0:dt/F.grow));
+ if(e.ph==='burn'){let U=[];try{U=c4fUnits()}catch(err){}
+  /* C4F: one truck out at a time (the door and its red are one, and its audit counts it) — a parked truck goes when all three are in; a truck that is out
+     on a routine call (no fire — the old empty call) is sent on to the fire, from the road or from its call; one on its way back is left alone */
+  const door=U.some(u=>u.ph==='out'||u.ph==='merge'||u.ph==='enter'||u.ph==='arrived'||u.ph==='in'),call=k=>({id:e.id,label:'אש — '+e.label,x:k?k.x:e.x,y:k?k.y:e.y,evt:e.id});
+  if(C4F.on&&EVT.t>=e.retry){const k=e.kerb||evtKerb(e.x,e.y),u=U.filter(q=>q.ph==='park').sort((a,b)=>a.trips-b.trips||a.bay-b.bay)[0];
+   if(u&&!door&&!U.some(q=>q.ph!=='park')){c4fDepart(u,call(k));u.evtId=e.id;e.unit=u;e.carId=u.id;C4F.next=Math.max(C4F.next,C4F.t+C4F.every);evtPh(e,'coming');return}
+   const r=U.find(q=>(q.ph==='go'||q.ph==='scene')&&q.v&&!(q.call&&q.call.evt&&EVT.act.some(x=>x.id===q.call.evt))&&!(q.v.c2&&(q.v.c2.granted||q.v.c2.mv)));
+   if(r){const v=r.v;r.call=call(k);r.ph='go';r.t0=C4F.t;r.evtId=e.id;v.taxiRoute=null;v.wait=false;v.plan=null;v.runKey=null;e.unit=r;e.carId=r.id;EVT.st.fire.redirect=(EVT.st.fire.redirect||0)+1;c4fLog(r.id+' מהקריאה הרגילה — לאש: '+e.label);evtPh(e,'coming');return}}
+  e.waited=(e.waited||0)+dt;e.retry=EVT.t+2;if(EVT.t-e.t0>F.wait){EVT.st.fire.wait++;evtPh(e,'self')}return}
+ const u=e.unit;
+ if(e.ph==='coming'){if(!u){evtPh(e,'self');return}if(u.ph==='scene'&&u.call&&u.call.evt===e.id){const v=u.v;u.sceneT=0;const S=evtDoor(v,e.x,e.y,0),R=evtDoor(v,e.x,e.y,-.35);e.dS=S;e.dR=R;e.crew=[evtMan('PE-25',S.x,S.y),evtMan('PE-24',R.x,R.y)];
+   const dx=e.x-S.x,dy=e.y-S.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d,reach=Math.max(0,d-Math.min(F.hose,d*.55));e.spot=[evtOff(S.x+ux*reach,S.y+uy*reach,ux,uy),evtOff(S.x+ux*reach-uy*14,S.y+uy*reach+ux*14,ux,uy)];e.hoseAt=evtRear(v,.35);evtPh(e,'fight');return}
+  if(u.ph==='back'||u.ph==='park'||u.ph==='arrived'||u.ph==='in'){evtPh(e,'self')}return}
+ if(e.ph==='fight'){if(u&&u.ph==='scene')u.sceneT=Math.min(u.sceneT||0,1);const a=evtWalk(e.crew[0],e.spot[0].x,e.spot[0].y,F.crewV,dt),b=evtWalk(e.crew[1],e.spot[1].x,e.spot[1].y,F.crewV,dt);
+  e.spray=a&&b;if(e.spray){for(const c of e.crew){c.dir=npcDir(e.x-c.x,e.y-c.y,c.dir);c.pose='idle'}e.I=Math.max(0,e.I-dt/F.spray);if(e.I<=0){e.cool=1;evtPh(e,'cool')}}return}
+ if(e.ph==='cool'){if(u&&u.ph==='scene')u.sceneT=Math.min(u.sceneT||0,1);e.cool=Math.max(0,e.cool-dt/F.smoke);e.spray=e.cool>.6;let back=true;
+  if(!e.spray){const R=e.dR,S=e.dS;back=evtWalk(e.crew[0],S.x,S.y,F.crewV,dt)&back;back=evtWalk(e.crew[1],R.x,R.y,F.crewV,dt)&back}else back=false;
+  if(back&&e.cool<=0){if(u&&u.ph==='scene')u.sceneT=20;EVT.scars.push({x:e.x,y:e.y,t:EVT.t,car:e.kind==='car',h:e.carH||0});if(EVT.scars.length>12)EVT.scars.shift();evtSay('האש '+(e.kind==='car'?'ברכב':'במבנה')+' כובתה — '+e.label);evtClose(e,'done')}return}
+ if(e.ph==='self'){e.I=Math.max(0,e.I-dt/F.self);if(e.I<=0){EVT.scars.push({x:e.x,y:e.y,t:EVT.t,car:e.kind==='car',h:e.carH||0});evtClose(e,'self')}}}
+function evtFallStep(e,dt){const F=EVT.cfg.fall,v=e.car;e.ft=Math.min(1,e.ft+dt/1.2);
+ if(v&&TRAFFIC_CARS.indexOf(v)<0){e.car=null;evtLog(e.id+' האמבולנס יצא מהתנועה')}
+ if(e.ph==='down'){if(!e.car&&EVT.t>=e.retry){if(!evtTake(e,'ambulance',e.px,e.py,'go'))e.retry=EVT.t+3;else evtPh(e,'coming')}
+  if(!e.car&&EVT.t-e.t0>F.wait){evtPutBack(e.npc,e.px,e.py);evtSay('האיש קם והמשיך ללכת');evtClose(e,'up')}return}
+ if(!e.car){if(e.ph==='coming'){evtPh(e,'down');return}if(e.ph==='load'||e.ph==='drive'||e.ph==='unload'){evtPutBack(e.npc,e.ph==='load'?e.px:e.x,e.ph==='load'?e.py:e.y);evtClose(e,'lost');return}}
+ evtCarWatch(e,dt);
+ if(e.ph==='coming'){if(e.arr==='go'){e.arr=null;const R=e.dR=evtDoor(v,e.px,e.py,-.4);e.crew=[evtMan('PE-27',R.x,R.y),evtMan('PE-27',R.x,R.y)];e.k='out';e.kt=0;evtPh(e,'load')}return}
+ if(e.ph==='load'){const R=e.dR,c=e.crew;e.kt+=dt;
+  if(e.k==='out'){if(!e.dP){const dx=e.px-R.x,dy=e.py-R.y,d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d;e.dP=[evtOff(e.px+ux*14,e.py+uy*14,ux,uy),evtOff(e.px-ux*16,e.py-uy*16,ux,uy)]}const a=evtWalk(c[0],e.dP[0].x,e.dP[0].y,F.crewV,dt),b=evtWalk(c[1],e.dP[1].x,e.dP[1].y,F.crewV,dt);if(a&&b){e.k='kneel';e.kt=0}return}
+  if(e.k==='kneel'){for(const q of c){q.dir=npcDir(e.px-q.x,e.py-q.y,q.dir);q.pose='idle'}if(e.kt>2.6){e.k='carry';e.kt=0;e.onStr=true;e.sx=e.px;e.sy=e.py}return}
+  if(e.k==='carry'){const dx=R.x-e.px,dy=R.y-e.py,d=Math.hypot(dx,dy)||1;const a=evtWalk(c[0],R.x-dx/d*2,R.y-dy/d*2,F.crewV*.8,dt),b=evtWalk(c[1],R.x-dx/d*30,R.y-dy/d*30,F.crewV*.8,dt);e.sx=(c[0].x+c[1].x)/2;e.sy=(c[0].y+c[1].y)/2;if(a&&b){e.k='in';e.kt=0}return}
+  if(e.k==='in'){if(e.kt>1.4){e.crew=[];e.onStr=false;e.inCar=true;v.taxiRoute=null;v.wait=false;if(!evtRoute(v,F.er.x,F.er.y,'er')){evtLog(e.id+' אין דרך למיון — שוב');e.retry=EVT.t+2}evtPh(e,'drive');evtSay('האמבולנס בדרך למיון בבית החולים A2')}return}
+  return}
+ if(e.ph==='drive'){e.x=v.x;e.y=v.y;if(!v.taxiRoute&&EVT.t>=e.retry){if(!evtRoute(v,F.er.x,F.er.y,'er'))e.retry=EVT.t+2}
+  if(e.arr==='er'){e.arr=null;const R=e.dR=evtDoor(v,F.door.x,F.door.y,-.4);e.crew=[evtMan('PE-27',R.x,R.y),evtMan('PE-27',R.x,R.y)];e.inCar=false;e.onStr=true;e.k='carry';e.kt=0;e.sx=R.x;e.sy=R.y;evtPh(e,'unload')}return}
+ if(e.ph==='unload'){const c=e.crew,D=F.door;e.kt+=dt;if(e.onStr&&e.sx!=null){e.x=e.sx;e.y=e.sy}
+  if(e.k==='carry'){const R=e.dR,dx=D.x-R.x,dy=D.y-R.y,d=Math.hypot(dx,dy)||1;const a=evtWalk(c[0],D.x,D.y,F.crewV*.8,dt),b=evtWalk(c[1],D.x-dx/d*28,D.y-dy/d*28,F.crewV*.8,dt);e.sx=(c[0].x+c[1].x)/2;e.sy=(c[0].y+c[1].y)/2;if(a&&b){e.k='inside';e.kt=0}return}
+  if(e.k==='inside'){if(e.kt>1.2){e.onStr=false;e.inHosp=true;e.x=D.x;e.y=D.y;c[0].x=D.x;c[0].y=D.y;e.k='back';e.kt=0}return}
+  if(e.k==='back'){const R=e.dR;const a=evtWalk(c[0],R.x,R.y,F.crewV,dt),b=evtWalk(c[1],R.x,R.y,F.crewV,dt);if(a&&b){e.crew=[];evtRelease(v);e.car=null;evtSay('המטופל הגיע למיון בבית החולים A2');evtPh(e,'hospital')}return}
+  return}
+ if(e.ph==='hospital'){if(EVT.t-e.tp>F.home){evtPutBack(e.npc,F.main.x,F.main.y);evtClose(e,'done')}}}
+function evtBoard(e,v){e.dS=evtDoor(v,e.sus.x,e.sus.y,0);e.dS2=evtDoor(v,e.sus.x,e.sus.y,.3);evtPh(e,'board')}
+function evtFleeStep(e,dt){const F=EVT.cfg.flee,n=e.npc,v=e.car;
+ if(v&&TRAFFIC_CARS.indexOf(v)<0){e.car=null;evtLog(e.id+' הניידת יצאה מהתנועה')}
+ if(e.ph==='run'||e.ph==='foot'){/* the runner — on the walkers' graph; he tires */const tired=(e.footT!=null&&EVT.t-e.footT>F.tire)||EVT.t-e.t0>90;n.speed=tired?F.tireV:F.run;
+  const L=e.trail[e.trail.length-1];if(Math.hypot(n.x-L[0],n.y-L[1])>5){e.trail.push([n.x,n.y]);if(e.trail.length>600){e.trail.shift();e.ti=Math.max(0,e.ti-1)}}e.x=n.x;e.y=n.y}
+ if(e.ph==='run'){
+  if(!e.car){if(EVT.t>=e.retry){if(!evtTake(e,'police',n.x,n.y,'go'))e.retry=EVT.t+3;else{e.tx=n.x;e.ty=n.y;e.rt=0}}
+   if(!e.car&&EVT.t-e.t0>F.wait){evtClose(e,'none')}return}
+  /* the player's own offence comes first (CITYSVC, D‑691): while the patrol car is still on its way to the runner, it goes there and the runner waits for the next one */
+  {let need=false;try{need=!!(CITYSVC.disp&&CITYSVC.disp.ph==='find')}catch(err){}if(need){evtRelease(v);e.car=null;e.carId=null;e.retry=EVT.t+15;EVT.st.flee.yield=(EVT.st.flee.yield||0)+1;evtLog(e.id+' הניידת עוברת לעבירה של השחקן');return}}
+  evtCarWatch(e,dt);e.rt+=dt;const d=Math.hypot(v.x-n.x,v.y-n.y);
+  if(d<F.near&&(e.arr==='go'||Math.abs(v.speed||0)<8||d<90)){e.arr=null;evtHold(v);const S=evtDoor(v,n.x,n.y,0);e.off=evtMan('PE-21',S.x,S.y);
+   /* the nearest point of the runner's way that the officer reaches without stepping on the road */
+   const C=e.trail.map((q,i)=>[Math.hypot(q[0]-S.x,q[1]-S.y),i]).sort((a,b)=>a[0]-b[0]);let bi=C.length?C[0][1]:0;for(const [dd,i] of C.slice(0,40)){if(evtSegOk(S,{x:e.trail[i][0],y:e.trail[i][1]})){bi=i;break}}e.ti=bi;e.footT=EVT.t;evtPh(e,'foot');evtSay('השוטר יוצא מהניידת ורודף ברגל');return}
+  const busy=!!(v.c2&&(v.c2.granted||v.c2.mv));
+  if(e.arr==='go'||(!v.taxiRoute)||(e.rt>=F.reroute&&Math.hypot(n.x-e.tx,n.y-e.ty)>150&&!busy)){e.arr=null;e.rt=0;if(v.taxiRoute&&v.taxiRoute.hold){v.taxiRoute=null;v.wait=false}if(evtRoute(v,n.x,n.y,'go')){e.tx=n.x;e.ty=n.y}}return}
+ if(e.ph==='foot'){const o=e.off;let left=F.off*dt,guard=0;while(left>0&&guard++<40){const q=e.ti<e.trail.length?e.trail[e.ti]:[n.x,n.y],dx=q[0]-o.x,dy=q[1]-o.y,d=Math.hypot(dx,dy);
+   if(d<=left){o.x=q[0];o.y=q[1];left-=d;if(e.ti<e.trail.length)e.ti++;else break}else{o.x+=dx/d*left;o.y+=dy/d*left;o.dir=npcDir(dx,dy,o.dir);left=0}}o.pose='running';
+  if(v)evtHold(v);
+  if(Math.hypot(o.x-n.x,o.y-n.y)<F.catchR){evtTakeNpc(n);e.sus=evtMan(n.asset,n.x,n.y);e.sus.dir=n.dir;o.pose='idle';o.dir=npcDir(n.x-o.x,n.y-o.y,o.dir);e.x=n.x;e.y=n.y;e.ct=0;evtPh(e,'cuff');evtSay('השוטר תפס את הבורח — אזיקים');}
+  return}
+ if(!e.car&&(e.ph==='cuff'||e.ph==='pick'||e.ph==='board'||e.ph==='ride')){if(EVT.t>=e.retry){if(!evtTake(e,'police',e.sus.x,e.sus.y,'pick'))e.retry=EVT.t+4;else evtPh(e,'pick')}return}
+ if(v)evtCarWatch(e,dt);
+ if(e.ph==='cuff'){e.ct+=dt;if(e.ct>4){const d=Math.hypot(v.x-e.sus.x,v.y-e.sus.y);if(d<F.near){evtBoard(e,v)}else{v.taxiRoute=null;v.wait=false;if(evtRoute(v,e.sus.x,e.sus.y,'pick'))evtPh(e,'pick');else e.ct=3}}return}
+ if(e.ph==='pick'){if(e.arr==='pick'){e.arr=null;evtBoard(e,v)}else if(!v.taxiRoute&&EVT.t>=e.retry){if(!evtRoute(v,e.sus.x,e.sus.y,'pick'))e.retry=EVT.t+3}return}
+ if(e.ph==='board'){const S=e.dS,S2=e.dS2,a=evtWalk(e.sus,S.x,S.y,30,dt),b=evtWalk(e.off,S2.x,S2.y,30,dt);e.x=e.sus.x;e.y=e.sus.y;
+  if(a&&b){e.inCar=true;v.taxiRoute=null;v.wait=false;if(!evtRoute(v,F.kerb.x,F.kerb.y,'a5'))e.retry=EVT.t+2;evtPh(e,'ride');evtSay('הניידת בדרך לתחנת המשטרה A5')}return}
+ if(e.ph==='ride'){e.x=v.x;e.y=v.y;if(!v.taxiRoute&&EVT.t>=e.retry){if(!evtRoute(v,F.kerb.x,F.kerb.y,'a5'))e.retry=EVT.t+2}
+  if(e.arr==='a5'){e.arr=null;const S=e.dS=evtDoor(v,F.door.x,F.door.y,0),S2=e.dS2=evtDoor(v,F.door.x,F.door.y,.3);e.sus.x=S.x;e.sus.y=S.y;e.off.x=S2.x;e.off.y=S2.y;e.inCar=false;e.k='in';evtPh(e,'jail')}return}
+ if(e.ph==='jail'){const D=F.door;if(e.k==='in'){const a=evtWalk(e.sus,D.x,D.y,30,dt),b=evtWalk(e.off,D.x+8,D.y+6,30,dt);e.x=e.sus.x;e.y=e.sus.y;if(a&&b){e.k='inside';e.kt=0;e.inJail=true}return}
+  if(e.k==='inside'){e.kt+=dt;if(e.kt>2){e.k='back'}return}
+  if(e.k==='back'){const S=e.dS2;if(evtWalk(e.off,S.x,S.y,36,dt)){e.off=null;evtRelease(v);e.car=null;evtSay('העצור נכנס לתחנת המשטרה A5');evtPh(e,'custody')}return}
+  return}
+ if(e.ph==='custody'){if(EVT.t-e.tp>F.custody){evtPutBack(n,F.door.x,F.door.y);evtClose(e,'done')}}}
+/* the random part: per type a random gap; one of each type at most and two together; nothing new near one that runs */
+function evtGap(type){const g=EVT.cfg.gap[type];return g[0]+((Math.imul(++EVT.serial,2654435761)>>>0)%1000)/1000*(g[1]-g[0])}
+function evtFollow(dt){const F=EVT.follow;if(!F)return;const e=EVT.act.find(q=>q.id===F.id);let mq=false;try{mq=!!State.mapQa}catch(err){}
+ if(!e||!mq||(F.cx!=null&&Math.hypot(Camera.x-F.cx,Camera.y-F.cy)>3)){EVT.follow=null;return}const k=Math.min(1,dt*2.5);Camera.x+=(e.x-Camera.x)*k;Camera.y+=(e.y-Camera.y)*k;F.cx=Camera.x;F.cy=Camera.y}
+function evtStep(dt){if(!(dt>0))return;try{evtFollow(dt)}catch(err){EVT.follow=null}if(!EVT.on)return;EVT.t+=dt;
+ for(const e of EVT.act.slice()){try{if(e.type==='fire')evtFireStep(e,dt);else if(e.type==='fall')evtFallStep(e,dt);else evtFleeStep(e,dt)}catch(err){evtErr('step-'+e.type,err);try{if(e.npc&&!NPC_PEDESTRIANS.includes(e.npc)&&!e.inCar&&!e.inHosp&&!e.inJail)evtPutBack(e.npc,e.npc.x,e.npc.y)}catch(e2){}evtClose(e,'error')}}
+ for(const type of ['fire','fall','flee']){if(EVT.t<EVT.next[type])continue;EVT.next[type]=EVT.t+evtGap(type);if(EVT.act.length>=EVT.cfg.maxAll||EVT.act.some(e=>e.type===type))continue;evtStart(type)}}
+{const pS=simStep;simStep=function(dt){const r=pS.apply(this,arguments);try{evtStep(dt)}catch(e){evtErr('sim',e)}return r}}
+/* the runner: his pose — running (the walkers' engine draws 'walking' at his own speed) */
+{const pU=updateNPCPedestrians;updateNPCPedestrians=function(dt){const r=pU.apply(this,arguments);for(const e of EVT.act)if(e.type==='flee'&&(e.ph==='run'||e.ph==='foot')&&e.npc&&e.npc.pose==='walking')e.npc.pose='running';return r}}
+/* ---------------------------------------------------------------- the drawing ---------------------------------------------------------------- */
+/* the marker stays while something happens in the street; inside the hospital / the station — the event is over for the street (it still shows in F9) */
+function evtMarked(e){return !(e.ph==='hospital'||e.ph==='custody')}
+function evtInView(x,y,m){try{return Targets.capture||e3InView(x-m,y-m,2*m,2*m,40)}catch(e){return true}}
+function evtDrawMan(p,now,lie){if(!p||p.vis===false)return;try{const I=TurboCity.info(p.asset,{targetHeight:34,direction:p.dir,pose:p.pose}),feet=I.an.find(a=>a[0]==='Feet')||['Feet',I.w/2,I.h];
+ if(lie){ctx.save();ctx.translate(p.x,p.y);ctx.fillStyle='rgba(0,0,0,.22)';ctx.beginPath();ctx.ellipse(15*lie,1,6+10*lie,4.5,0,0,6.2832);ctx.fill();ctx.rotate(Math.PI/2*lie);TurboCity.draw(ctx,p.asset,-feet[1],-feet[2],{mode:'runtime',targetHeight:34,direction:p.dir,pose:'idle',time:now/1000});ctx.restore();return}
+ TurboCity.draw(ctx,p.asset,p.x-feet[1],p.y-feet[2],{mode:'runtime',targetHeight:34,direction:p.dir,pose:p.pose,time:now/1000})}catch(e){}}
+function evtStretcher(x,y,a,who,now){ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.fillStyle='rgba(0,0,0,.2)';ctx.fillRect(-15,-3,30,9);ctx.fillStyle='#9aa3ab';ctx.fillRect(-15,-6,30,2);ctx.fillRect(-15,2,30,2);ctx.fillStyle='#f4f6f8';ctx.strokeStyle='#5d6873';ctx.lineWidth=.8;ctx.beginPath();ctx.rect(-14,-5,28,8);ctx.fill();ctx.stroke();
+ ctx.fillStyle='#e25555';ctx.fillRect(-2,-3.5,4,1.2);ctx.fillRect(-.6,-4.9,1.2,4);ctx.restore();
+ if(who){ctx.save();ctx.translate(x,y);ctx.rotate(a);try{const I=TurboCity.info(who.asset,{targetHeight:30,direction:2,pose:'idle'}),feet=I.an.find(q=>q[0]==='Feet')||['Feet',I.w/2,I.h];ctx.translate(-12,-1);ctx.rotate(Math.PI/2);TurboCity.draw(ctx,who.asset,-feet[1],-feet[2]+2,{mode:'runtime',targetHeight:30,direction:2,pose:'idle',time:now/1000})}catch(e){}ctx.restore()}}
+function evtCuffs(p){ctx.save();ctx.strokeStyle='#c9d1d9';ctx.lineWidth=1.1;ctx.beginPath();ctx.arc(p.x-2,p.y-15,1.6,0,6.2832);ctx.stroke();ctx.beginPath();ctx.arc(p.x+2,p.y-15,1.6,0,6.2832);ctx.stroke();ctx.restore()}
+function evtDrawPeople(now){for(const e of EVT.act){if(!evtInView(e.x,e.y,400))continue;
+ if(e.type==='fire'&&(e.ph==='fight'||e.ph==='cool')&&e.crew.length){const v=e.unit&&e.unit.v,R=v?evtRear(v,.35):e.hoseAt;ctx.save();ctx.strokeStyle='#d8b04a';ctx.lineWidth=1.6;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(R.x,R.y);ctx.quadraticCurveTo((R.x+e.crew[1].x)/2+6,(R.y+e.crew[1].y)/2+8,e.crew[1].x,e.crew[1].y-6);ctx.lineTo(e.crew[0].x,e.crew[0].y-7);ctx.stroke();ctx.restore();for(const c of e.crew)evtDrawMan(c,now)}
+ if(e.type==='fall'){if(e.ph==='down'||e.ph==='coming'||(e.ph==='load'&&!e.onStr&&!e.inCar))evtDrawMan(e.man,now,Math.min(1,e.ft));
+  if(e.crew.length){for(const c of e.crew)evtDrawMan(c,now);if(e.onStr){const a=Math.atan2(e.crew[0].y-e.crew[1].y,e.crew[0].x-e.crew[1].x);evtStretcher(e.k==='kneel'?e.px+5:e.sx,e.k==='kneel'?e.py+2:e.sy,e.k==='kneel'?0:a,e.man,now)}
+   else if(e.ph==='load'&&e.k!=='kneel'&&e.k!=='carry'){}}
+  if(e.ph==='load'&&e.k==='kneel'){/* the stretcher on the ground next to him */}}
+ if(e.type==='flee'){if(e.off)evtDrawMan(e.off,now);if(e.sus&&!e.inCar&&!e.inJail){evtDrawMan(e.sus,now);evtCuffs(e.sus)}}}}
+{const pD=drawNPCPedestrians;drawNPCPedestrians=function(now){const r=pD.apply(this,arguments);try{evtDrawPeople(now)}catch(e){evtErr('draw-people',e)}return r}}
+/* the fire, the smoke and the water — above the roofs and the trees */
+function evtFlames(x,y,I,s,t){if(I<=0)return;ctx.save();const R=(38*I+8)*s,g=ctx.createRadialGradient(x,y-10*s,2,x,y-10*s,R);g.addColorStop(0,'rgba(255,200,90,'+(.55*I).toFixed(3)+')');g.addColorStop(.5,'rgba(255,120,40,'+(.22*I).toFixed(3)+')');g.addColorStop(1,'rgba(255,90,30,0)');
+ ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y-10*s,R,0,6.2832);ctx.fill();
+ /* three layers of tongues — dark red, orange, yellow — each flickers on its own */
+ for(const [col,sh,n] of [['#c22a12',1,7],['#ff7a1a',.78,6],['#ffd84a',.5,5]]){ctx.fillStyle=col;for(let i=0;i<n;i++){const k=i-(n-1)/2,ox=k*5.2*s*sh,hh=(18+10*Math.sin(t*7.3+i*1.9+sh*3)+6*Math.sin(t*11.7+i*2.3))*s*I*sh*(1-Math.abs(k)/(n+1)*.9),w=(6.5-Math.abs(k)*.8)*s*sh;
+  ctx.beginPath();ctx.moveTo(x+ox-w,y);ctx.quadraticCurveTo(x+ox-w*.7,y-hh*.55,x+ox+Math.sin(t*5.3+i)*2.4*s,y-hh);ctx.quadraticCurveTo(x+ox+w*.7,y-hh*.55,x+ox+w,y);ctx.closePath();ctx.fill()}}
+ /* sparks */
+ ctx.fillStyle='#ffb347';for(let i=0;i<8;i++){const L=1.6,ph=((t/L)+i/8)%1,px=x+Math.sin(i*2.7+t*1.3)*14*s,py=y-14*s-ph*52*s*I;ctx.globalAlpha=(1-ph)*I;ctx.beginPath();ctx.arc(px,py,1.3*s,0,6.2832);ctx.fill()}ctx.globalAlpha=1;ctx.restore()}
+function evtSmoke(x,y,I,s,t,white){if(I<=0)return;ctx.save();for(let i=0;i<12;i++){const L=4.2,ph=((t/L)+i/12)%1,px=x+Math.sin(i*2.1+t*.6)*7*s+ph*30*s,py=y-24*s-ph*112*s,r=(6+ph*22)*s;
+  ctx.fillStyle=white?'rgba(226,231,236,'+((1-ph)*.6*I).toFixed(3)+')':'rgba(46,46,50,'+((1-ph*.85)*.62*Math.min(1,I*1.4)).toFixed(3)+')';ctx.beginPath();ctx.arc(px,py,r,0,6.2832);ctx.fill()}ctx.restore()}
+function evtWater(a,b,t){ctx.save();ctx.strokeStyle='rgba(150,205,255,.55)';ctx.lineWidth=2;ctx.beginPath();const mx=(a.x+b.x)/2,my=Math.min(a.y,b.y)-26;ctx.moveTo(a.x,a.y-8);ctx.quadraticCurveTo(mx,my,b.x,b.y-8);ctx.stroke();ctx.fillStyle='rgba(205,232,255,.9)';
+ for(let i=0;i<12;i++){const u=((t*1.6)+i/12)%1,x=(1-u)*(1-u)*a.x+2*(1-u)*u*mx+u*u*b.x,y=(1-u)*(1-u)*(a.y-8)+2*(1-u)*u*my+u*u*(b.y-8);ctx.beginPath();ctx.arc(x+Math.sin(i*3+t*9)*1.2,y,1.4,0,6.2832);ctx.fill()}ctx.restore()}
+function evtRing(e,t){const z=Math.max(.35,Camera.zoom||1),r=(22+5*Math.sin(t*4))/Math.sqrt(z),col=EVT_COL[e.type];ctx.save();ctx.strokeStyle=col;ctx.globalAlpha=.85;ctx.lineWidth=2.4/Math.sqrt(z);ctx.beginPath();ctx.arc(e.x,e.y,r,0,6.2832);ctx.stroke();ctx.globalAlpha=.25;ctx.beginPath();ctx.arc(e.x,e.y,r*1.45,0,6.2832);ctx.stroke();
+ ctx.globalAlpha=1;const iy=e.y-r-46/Math.sqrt(z)-(e.type==='fire'?30:0),k=1/Math.sqrt(z);ctx.translate(e.x,iy);ctx.scale(k,k);ctx.fillStyle='rgba(10,16,22,.78)';ctx.beginPath();ctx.arc(0,0,11,0,6.2832);ctx.fill();ctx.fillStyle=col;
+ if(e.type==='fire'){ctx.beginPath();ctx.moveTo(0,-8);ctx.quadraticCurveTo(7,-1,4,6);ctx.quadraticCurveTo(0,8,-4,6);ctx.quadraticCurveTo(-7,-1,0,-8);ctx.fill()}
+ else if(e.type==='fall'){ctx.fillRect(-2.2,-7,4.4,14);ctx.fillRect(-7,-2.2,14,4.4)}
+ else{ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(7,-4);ctx.lineTo(6,4);ctx.lineTo(0,8);ctx.lineTo(-6,4);ctx.lineTo(-7,-4);ctx.closePath();ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(-1.2,-4,2.4,6)}ctx.restore()}
+function evtDrawTop(now){const t=now/1000;
+ for(const s of EVT.scars){const age=EVT.t-s.t;if(age>120)continue;if(!evtInView(s.x,s.y,60))continue;ctx.save();ctx.fillStyle='rgba(30,26,22,'+(.42*(1-age/120)).toFixed(3)+')';ctx.translate(s.x,s.y);if(s.car)ctx.rotate(s.h);ctx.beginPath();ctx.ellipse(0,s.car?0:-4,s.car?24:20,s.car?10:9,0,0,6.2832);ctx.fill();ctx.restore()}
+ for(const e of EVT.act){if(!evtInView(e.x,e.y,300))continue;
+  if(e.type==='fire'){const s=e.kind==='car'?1.15:1.45,y=e.kind==='car'?e.y-2:e.y-8,ch=Math.min(1,(EVT.t-e.t0)/30);if(e.kind==='car'){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.carH||0);ctx.fillStyle='rgba(22,18,16,'+(.5*ch).toFixed(3)+')';ctx.beginPath();ctx.ellipse(0,0,22,9,0,0,6.2832);ctx.fill();ctx.restore()}evtSmoke(e.x,y,e.ph==='cool'?e.cool:Math.max(e.I,.15),s,t,e.ph==='cool');evtFlames(e.x,y,e.I,s,t);if(e.spray&&e.crew.length)for(const c of e.crew)evtWater(c,{x:e.x,y:y+6},t+c.x*.01)}
+  if(evtMarked(e))evtRing(e,t);try{Targets.add({id:e.id,label:'אירוע · '+EVT_LBL[e.type]+' · '+evtPhLabel(e),category:'event',x:e.x,y:e.y,shape:'circle',r:24/Camera.zoom})}catch(err){}}}
+{const pR=drawRoadTargets;drawRoadTargets=function(){const r=pR.apply(this,arguments);try{evtDrawTop(typeof tcF9Now==='function'?tcF9Now():performance.now())}catch(e){evtErr('draw-top',e)}return r}}
+/* the blue lights of the ambulance and the patrol car on an event (the city's painters draw the body; this is the beacon — as C4F) */
+{const pD=drawTrafficCars;drawTrafficCars=function(now){pD.apply(this,arguments);for(const v of TRAFFIC_CARS){if(!v.evt||!v.evt.lights)continue;if(!evtInView(v.x,v.y,80))continue;
+ const t=(now||0)/1000,on=Math.floor(t*5)%2===0,fx=Math.cos(v.heading||0),fy=Math.sin(v.heading||0),px=-fy,py=fx,L=evtCarLen(v)*.3;for(const [s,col] of [[-1,on?'#2f6bff':'#18306a'],[1,on?'#ff3b30':'#6a1a18']]){const lx=v.x+fx*L+px*s*5,ly=v.y+fy*L+py*s*5-10;ctx.fillStyle=col;ctx.beginPath();ctx.arc(lx,ly,2,0,6.2832);ctx.fill()}}}}
+/* the markers on the small map and on the big map (M): a blinking dot in the colour of the event */
+{const pM=drawPlayerMap;drawPlayerMap=function(c,T,size){try{const t=performance.now()/1000;for(const e of EVT.act){if(!evtMarked(e))continue;const x=T.x(e.x),y=T.y(e.y),r=(size||5)*(1.05+.25*Math.sin(t*5));c.save();c.fillStyle=EVT_COL[e.type];c.strokeStyle='#fff';c.lineWidth=1.2;c.beginPath();c.arc(x,y,r,0,6.2832);c.fill();c.stroke();c.restore()}}catch(e){}return pM.apply(this,arguments)}}
+/* ---------------------------------------------------------------- F9 ← אירועים ---------------------------------------------------------------- */
+function evtPhLabel(e){const P={fire:{burn:'בוער — מחכה לכבאית',coming:'הכבאית בדרך',fight:'הכבאים מכבים',cool:'כבוי — עשן לבן',self:'בוער ונכבה לבד'},
+  fall:{down:'שוכב — מחכה לאמבולנס',coming:'האמבולנס בדרך',load:'החובשים מעלים אותו',drive:'בדרך למיון',unload:'נכנס למיון',hospital:'בבית החולים'},
+  flee:{run:'בורח — הניידת בדרך',foot:'השוטר רודף ברגל',cuff:'נתפס — אזיקים',pick:'הניידת באה לאסוף',board:'עולים לניידת',ride:'בדרך לתחנת המשטרה',jail:'נכנסים לתחנה',custody:'במעצר'}};
+ return(P[e.type]||{})[e.ph]||e.ph}
+function evtF9Html(){const row=(k,l,w)=>'<div class="tcF9Row"><button class="sm" data-evtgo="'+k+'">'+l+'</button><span>'+w+'</span></div>';
+ let h='<div class="tcF9Card" id="evtF9"><h4>אירועים אקראיים בעולם</h4>'+row('fire','אש עכשיו','אש במבנה או ברכב חונה ליד השחקן — כבאית מתחנת כיבוי 2 (C4) מגיעה, שני כבאים מכבים')+row('fall','אדם נופל עכשיו','הולך רגל קרוב נופל — אמבולנס מהתנועה, אלונקה, ומיון בבית החולים A2')+row('flee','אדם בורח עכשיו','הולך רגל קרוב בורח — ניידת, שוטר רודף ברגל, אזיקים, ותחנת המשטרה A5')+
+  '<div class="tcF9Mut">"עכשיו" — ליד השחקן (או מרכז המצלמה החופשית); המצלמה עוברת לאירוע ועוקבת אחריו עד שהוא נגמר או שמזיזים אותה (F4 — חזרה לשחקן).</div><div class="tcF9Row"><button class="sm" data-evtgo="pause">'+(EVT.on?'עצירת האירועים':'הפעלת האירועים')+'</button><span class="tcF9Mut">לכל היותר אחד מכל סוג ושניים יחד · בשטח הפתוח · ההבא: אש '+Math.max(0,Math.round(EVT.next.fire-EVT.t))+' שנ׳, נפילה '+Math.max(0,Math.round(EVT.next.fall-EVT.t))+' שנ׳, בורח '+Math.max(0,Math.round(EVT.next.flee-EVT.t))+' שנ׳</span></div><div id="evtF9St">'+evtF9St()+'</div></div>';return h}
+function evtF9St(){const E=s=>typeof tcF9E==='function'?tcF9E(s):String(s);let h='';
+ for(const e of EVT.act)h+='<div class="tcF9Row"><button class="sm" data-evtcam="'+E(e.id)+'">למצלמה</button><span>'+E(EVT_LBL[e.type]+' · '+evtPhLabel(e))+'</span><span class="tcF9Mut">· '+E((e.zone||'')+' · '+e.label+(e.carId?' · '+e.carId:'')+' · '+Math.round(EVT.t-e.t0)+' שנ׳')+'</span></div>';
+ if(!EVT.act.length)h+='<div class="tcF9Mut">אין עכשיו אירוע פעיל.</div>';const W={done:'הסתיים',self:'נכבה לבד',up:'קם לבד',none:'לא הייתה ניידת',lost:'הרכב יצא',error:'שגיאה',wait:'לא הייתה כבאית'};
+ const D=EVT.done.slice(-5).reverse();if(D.length)h+='<div class="tcF9Mut">האחרונים: '+D.map(d=>E(EVT_LBL[d.type]+' ('+(W[d.why]||d.why)+', '+Math.round(d.len)+' שנ׳)')).join(' · ')+'</div>';if(EVT.err)h+='<div class="tcF9Bad">'+E(EVT.err)+'</div>';return h}
+function evtF9Card(){let p=null;try{p=tcF9P('events')}catch(e){p=null}if(!p)return;let c=p.querySelector('#evtF9');if(c){c.outerHTML=evtF9Html()}else p.insertAdjacentHTML('afterbegin',evtF9Html());c=p.querySelector('#evtF9');if(!c||c.dataset.on)return;c.dataset.on=1;
+ c.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;ev.stopPropagation();const D=b.dataset;
+  if(D.evtgo==='pause'){EVT.on=!EVT.on;evtF9Card();return}
+  if(D.evtgo){const e=evtF9Go(D.evtgo);if(!e){toast('לא נמצא מקום פתוח לאירוע הזה עכשיו');evtF9Card();return}return}
+  if(D.evtcam){const e=EVT.act.find(q=>q.id===D.evtcam);if(e)evtF9Watch(e)}})}
+function evtF9Go(type){const e=evtStart(type,{near:true,f9:true});if(e)evtF9Watch(e);return e}
+function evtF9Watch(e){try{tcF9Cam(e.x,e.y,1.6)}catch(err){}EVT.follow={id:e.id,cx:null,cy:null}}
+if(typeof tcF9Events==='function'){const pE=tcF9Events;tcF9Events=function(){try{return pE.apply(this,arguments)}finally{try{evtF9Card()}catch(e){evtErr('f9',e)}}}}
+setInterval(()=>{try{if(typeof PERF!=='undefined'&&PERF.hud&&TCF9.tab==='events'&&TCF9.el){const s=TCF9.el.querySelector('#evtF9St');if(s)s.innerHTML=evtF9St()}}catch(e){}},1000);
+/* ---------------------------------------------------------------- the checks ---------------------------------------------------------------- */
+function evtQa(){const I=[];let fire=0,npc=0;try{fire=evtFireSites().length}catch(e){I.push('fire-sites '+e.message)}if(!fire)I.push('no fire site');
+ try{npc=NPC_PEDESTRIANS.filter(n=>/^NPC-PED-\d+$/.test(n.id)).length+EVT.act.filter(e=>e.npc&&!NPC_PEDESTRIANS.includes(e.npc)).length}catch(e){}if(npc<4)I.push('walkers '+npc);
+ const kinds=new Set(TRAFFIC_ASSETS.map(a=>a.kind));for(const k of ['ambulance','police'])if(!kinds.has(k))I.push('no '+k+' in the traffic');
+ let U=[];try{U=c4fUnits()}catch(e){}if(U.length!==3)I.push('c4f units '+U.length);if(!evtKerb(EVT.cfg.fall.er.x,EVT.cfg.fall.er.y))I.push('no road at the ER');if(!evtKerb(EVT.cfg.flee.door.x,EVT.cfg.flee.door.y))I.push('no road at A5');
+ if(EVT.err)I.push('err '+EVT.err);if(EVT.st.still)I.push('still '+EVT.st.still);
+ for(const e of EVT.act){if(e.npc&&e.npc.evt&&NPC_PEDESTRIANS.includes(e.npc)&&e.type==='fall')I.push(e.id+' lying walker in the list')}
+ return{ok:!I.length,issues:I,fireSites:fire,walkers:npc,act:EVT.act.length,st:EVT.st}}
+{const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);try{const q=evtQa(),L=r.checks||r.results;if(Array.isArray(L))L.push({name:'evt_events',id:'evt_events',ok:q.ok,pass:q.ok,detail:q.ok?'אירועים אקראיים: '+q.fireSites+' מקומות לאש · '+q.walkers+' הולכי רגל · אמבולנס וניידת בתנועה · 3 כבאיות ב-C4':'נכשל: '+q.issues.join(' | ')});if(!q.ok){r.ok=false;(r.issues||[]).push('evt_events')}}catch(e){evtErr('audit',e)}return r}}
+try{P691.still['EVT-EVENTS']='אירועים אקראיים: אש (כבאית C4), אדם נופל (אמבולנס → A2), אדם בורח (ניידת → A5) — F9 ← אירועים'}catch(e){}
+window.__TC_EVT={state:()=>({t:+EVT.t.toFixed(1),on:EVT.on,err:EVT.err,next:{fire:+(EVT.next.fire-EVT.t).toFixed(0),fall:+(EVT.next.fall-EVT.t).toFixed(0),flee:+(EVT.next.flee-EVT.t).toFixed(0)},
+  act:EVT.act.map(e=>({id:e.id,type:e.type,ph:e.ph,k:e.k||null,x:Math.round(e.x),y:Math.round(e.y),zone:e.zone,label:e.label,car:e.carId,carXY:e.car?[Math.round(e.car.x),Math.round(e.car.y)]:e.unit&&e.unit.v?[Math.round(e.unit.v.x),Math.round(e.unit.v.y)]:null,unitPh:e.unit?e.unit.ph:null,I:e.I!=null?+e.I.toFixed(2):null,len:+(EVT.t-e.t0).toFixed(1)})),
+  done:EVT.done.slice(),st:EVT.st,log:EVT.log.slice(-20)}),start:(type,near)=>{const e=evtStart(type,{near:near!==false});return e?e.id:null},f9:type=>{const e=evtF9Go(type);return e?e.id:null},qa:evtQa,cfg:EVT.cfg,
+ fast:(k)=>{const g=EVT.cfg.gap;for(const t of ['fire','fall','flee']){g[t]=[20*(k||1),45*(k||1)];EVT.next[t]=Math.min(EVT.next[t],EVT.t+5+Math.random()*20)}return g}};

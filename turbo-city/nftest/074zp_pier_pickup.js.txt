@@ -1,0 +1,124 @@
+/* ==== pier · 17.11 — המזח, M-F2-PICKUP, ‏F מתוך רכב (הביקורת של הבעלים 12.11, סעיפים 3 / 22–25; ‏HANDOFF_NEXT §3) ====
+   (א) מזח הגוררות: הליכה מהרציף אל המזח נעצרה ברצועה של 6 פיקס׳ (y 5193–5199) — המלבן הגס של מי הנמל (PORT_WATER ב-021, ‏y ≥ 5198, ‏r 5)
+       חוסם לפני שהמזח מתחיל (5200). התיקון של S14 (019k ‏wire — onRoot) חל רק על 'WORLD' / ‏SEA, והתיקון של 074w — רק בתוך המלבן של המזח (±1).
+       כאן: לכל משטח מעל המים (WATERWALK.decks) — רצועת השורש בצד שבו יש יבשה (בעומק r+2) פתוחה מול PORT-WATER, רק כשהנקודה אינה מים אמיתיים.
+       הבדיקה: הליכה רציפה מהיבשה עד הנקודה של כל מקום על מזח (PIERX.walk) — ולא רק נקודות על המזח. ==== */
+var PIERX=(function(){const ERR={e:null},er=(w,e)=>{if(!ERR.e)ERR.e=w+': '+String(e&&e.message||e).slice(0,200)};
+ /* הצדדים של המשטח שנוגעים ביבשה: נקודה 12 פיקס׳ מחוץ לאמצע הצד — לא מים */
+ const ROOT=new Map();
+ function roots(q){const k=q.join(',');let v=ROOT.get(k);if(v)return v;v=[];try{const W=(x,y)=>WATERWALK.isWater(x,y),mx=(q[0]+q[2])/2,my=(q[1]+q[3])/2;
+   if(!W(mx,q[1]-12))v.push('N');if(!W(mx,q[3]+12))v.push('S');if(!W(q[0]-12,my))v.push('W');if(!W(q[2]+12,my))v.push('E')}catch(e){er('roots',e)}ROOT.set(k,v);return v}
+ /* rootAt: [x,y] של הנקודה הקרובה על שפת המשטח (לנקודה ברצועת השורש), או הנקודה עצמה (על המשטח); null — מחוץ לרצועה */
+ function rootAt(x,y,r){let L=[];try{L=WATERWALK.decks()}catch(e){return null}const m=(r||5)+2;
+  for(const d of L){const q=d.r;if(!q||q.length!==4)continue;if(x<q[0]-m||x>q[2]+m||y<q[1]-m||y>q[3]+m)continue;
+   if(x>=q[0]&&x<=q[2]&&y>=q[1]&&y<=q[3])return[x,y];
+   for(const s of roots(q)){if(s==='N'&&y<q[1]&&y>=q[1]-m&&x>=q[0]&&x<=q[2])return[x,q[1]];if(s==='S'&&y>q[3]&&y<=q[3]+m&&x>=q[0]&&x<=q[2])return[x,q[3]];
+    if(s==='W'&&x<q[0]&&x>=q[0]-m&&y>=q[1]&&y<=q[3])return[q[0],y];if(s==='E'&&x>q[2]&&x<=q[2]+m&&y>=q[1]&&y<=q[3])return[q[2],y]}}
+  return null}
+ const inRoot=(x,y,r)=>!!rootAt(x,y,r);
+ /* 'WATER' (074d — הנקודה עצמה בים, w3IsSea) ברצועת השורש: פס ים של 1–4 פיקס׳ בין קו החוף למשטח (מזח 2 של B7: ‏y 4996–4999 מול 5000).
+    התשובה של 074d נשמרת למשבצת של 4 פיקס׳ לפי הנקודה הראשונה שנשאלה בה — ולכן משתנה בין ריצות (try6322 עבר, try6324 / try6325 נחסם).
+    כאן: ברצועת השורש בודקים את אותה חסימה (ברדיוס) בנקודה שעל שפת המשטח — מה שעומד שם (דברים על המזח / ביבשה) עדיין חוסם. */
+ try{const pP=personBlockedAt;personBlockedAt=function(x,y,r){const v=pP.apply(this,arguments);const R=r==null?PLAYER_PERSON_RADIUS:r;
+   if(v==='PORT-WATER'){try{if(inRoot(x,y,R)&&!WATERWALK.water(x,y,true))return null}catch(e){er('pba',e)}}
+   else if(v==='WATER'){try{const e=rootAt(x,y,R);if(e&&(e[0]!==x||e[1]!==y)){const v2=pP.call(this,e[0],e[1],r);return v2==='PORT-WATER'?null:v2}}catch(e){er('pbw',e)}}
+   return v}}catch(e){er('wrap',e)}
+ /* הבדיקה: מכל מקום עם F שעל מזח — הצפה ברדיוס האמיתי של השחקן (PLAYER_PERSON_RADIUS), צעד 3, עד יבשה אמיתית: לא מים, ו-40 פיקס׳ מחוץ לכל משטח */
+ function walk(){const out={ok:true,points:[],bad:[]};let L=[];try{L=WATERWALK.decks()}catch(e){out.ok=false;out.bad.push('decks '+e);return out}
+  const R=PLAYER_PERSON_RADIUS,onAny=(x,y,m)=>L.some(d=>{const q=d.r;return x>=q[0]-m&&x<=q[2]+m&&y>=q[1]-m&&y<=q[3]+m});
+  const land=(x,y)=>!WATERWALK.isWater(x,y)&&!onAny(x,y,40);
+  const P=[];try{for(const p of S14D.places)P.push([p.id,p.x,p.y])}catch(e){}
+  for(const [id,x0,y0] of P){const S=3,seen=new Set(),Q=[[x0,y0]];let ok=false,n=0,blocked0=personBlockedAt(x0,y0,R);
+   if(blocked0){out.bad.push(id+': הנקודה עצמה חסומה ('+blocked0+')');out.ok=false;continue}
+   while(Q.length&&n<60000){const [x,y]=Q.shift();n++;if(land(x,y)){ok=true;break}
+    for(const [dx,dy] of[[S,0],[-S,0],[0,S],[0,-S]]){const nx=x+dx,ny=y+dy,k=Math.round(nx/S)+','+Math.round(ny/S);if(seen.has(k))continue;seen.add(k);if(Math.abs(nx-x0)>700||Math.abs(ny-y0)>700)continue;if(!personBlockedAt(nx,ny,R))Q.push([nx,ny])}}
+   out.points.push([id,ok,n]);if(!ok){out.ok=false;out.bad.push(id+': אין הליכה רציפה ליבשה')}}
+  return out}
+ return{inRoot,rootAt,roots,walk,err:()=>ERR.e}})();
+
+/* ==== (ב) M-F2-PICKUP — איסוף נוסע מטיסה נוחתת (סעיף 23 בביקורת; משימת הסיפור 3‑2 תלויה בה) ====
+   מצאתי: 049 (f2StartPickup / f2UpdatePickup / f2SpaceOf / f2SpawnPickupWalker) נשען על (1) ששת מקומות "הורד ואסוף" K1–K6 ב-y 1002 — S16 (074s, שורה 30)
+   מוציא אותם מ-F2_KISS_SPACES (0 נשארו), ו-(2) הטיסות הנוחתות של המנוע הישן (AO.flights, עמדות P1–P6) — היום ב-AO רק GA / H / O (8 טיסות, 0 נוחתות לשרוול),
+   ולכן f2NextArrival מחזיר תמיד null; (3) הנוסע יוצא מדלתות הטרמינל הישן (F2_DOORS, ‏y 947) והולך דרכו; ו-(4) f2DrawPeople חתוך ב-S16 (צד היבשה) — הנוסע לא נראה.
+   כאן — משדרגים את אותו מנגנון (כלל 19א), לא משימה חדשה:
+   · המקום: המפרץ "הורדה ואיסוף" של המפה (city_plan air.front_bays — ‏6390–6490 × 1210–1254, נתיב המפרצים של AIR-FRONT, מול הדלת D2) — מקום K1 אחד, מסומן בכביש.
+   · הטיסה: כשאין טיסה נוחתת במנוע הישן — טיסה נוחתת של השדה החדש (S15SIM, דרך התוכנית של הטרמינל s15jPlan): נוסע אמיתי (סוכן 'pax' שיוצא מהשרוול)
+     שמגיע לדלת הנחיתות D5 (D5o) — וממנה ממשיך אצלנו על המדרכה המקורה עד הרכב שבמפרץ. הזמן — שעון השדה (s15Clock), מחושב בכל צעד.
+   · הנוסע מצויר בשכבת S9 (לא נחתך בצד היבשה). ==== */
+var PF2=(function(){const ERR={e:null},er=(w,e)=>{if(!ERR.e)ERR.e=w+': '+String(e&&e.message||e).slice(0,200)};
+ const BAY=[6390,1210,6490,1254],SPACE={id:'K1',x:6394,y:1212,w:92,h:40,s16:true,map:'air.front_bays · הורדה ואיסוף'},WALK_Y=1196,D5O=[7100,1177];
+ const st={picks:0,s15:0,spawns:0,boards:0};
+ try{if(!F2_KISS_SPACES.some(s=>s.id===SPACE.id&&s.s16)){for(let i=F2_KISS_SPACES.length-1;i>=0;i--)F2_KISS_SPACES.splice(i,1);F2_KISS_SPACES.push(SPACE)}}catch(e){er('space',e)}
+ const T=()=>{try{return S15SIM.T}catch(e){return 720}},md=x=>{const t=T();return((x%t)+t)%t};
+ function tcNow(){try{const O=typeof S15X!=='undefined'&&S15X.ovr;return O?O.tc:s15Tc(s15Clock().abs)}catch(e){return null}}
+ /* הנוסעים הנוחתים של השדה החדש: מהשרוול עד הדלת D5 — הזמן שבו הם יוצאים מהדלת */
+ function arrivals(){let P=null;try{P=s15jPlan()}catch(e){er('plan',e)}if(!P)return[];return P.agents.filter(a=>a.kind==='pax'&&a.start==='bridge').map(a=>({id:a.id,flight:a.flight,stand:a.stand,te:md(a.t0+a.dur)}))}
+ function nextS15(exclude,lead){const tc=tcNow();if(tc==null)return null;let best=null;for(const a of arrivals()){if(exclude&&a.flight===exclude)continue;const rem=md(a.te-tc);if(rem<(lead==null?20:lead))continue;if(!best||rem<best.rem)best={...a,rem}}return best}
+ /* 17.11 (אחרי S7F299): במנוע הישן יש שוב טיסות נוחתות לעמדות P (למשל TC286) — והנוסע שלהן יוצא מהדלתות הישנות (F2_DOORS, ‏y 947 — בתוך הבניין של היום)
+    ונחתך בצד היבשה. לכן הטיסה של השדה החדש קודמת; המנוע הישן — רק כשבשדה החדש אין נוסעים נוחתים. */
+ try{const base=f2NextArrival;f2NextArrival=function(now,exclude){const q=nextS15(exclude);if(!q)return base.apply(this,arguments);const n=Number.isFinite(now)?now:APT_OPS.clk;st.first=(st.first||0)+1;
+  return{code:q.flight,stand:q.stand,ac:null,t:n+q.rem-26,s15:{id:q.id,te:q.te}}}}catch(e){er('next',e)}
+ try{f2PickFlight=function(m,exclude){const a=m.f2,q=f2NextArrival(APT_OPS.clk,exclude);if(!q){a.flight=null;a.stand=null;a.tReady=null;a.s15=null;return false}
+  a.flight=q.code;a.stand=q.stand;a.tReady=q.t+26;a.s15=q.s15?{id:q.s15.id,te:q.s15.te,out:false,prev:null}:null;st.picks++;if(a.s15)st.s15++;return true}}catch(e){er('pick',e)}
+ /* הזמן של הנוסע: לפי שעון השדה בכל צעד (גם אחרי שינוי שעה); "יצא" — כשהזמן שנשאר עבר את האפס */
+ function sync(a,now){const s=a.s15;if(!s||s.out)return;const tc=tcNow();if(tc==null)return;const rem=md(s.te-tc);if(rem<.3||(s.prev!=null&&s.prev<60&&rem>s.prev+1)){s.out=true;a.tReady=now-.01;return}s.prev=rem;a.tReady=now+rem}
+ function spawn(m){const a=m.f2,sp=F2_KISS_SPACES.find(s=>s.id===a.space)||F2_KISS_SPACES[0];if(!sp)return;const cx=sp.x+sp.w/2;
+  const pts=[[D5O[0],D5O[1]],[D5O[0],WALK_Y],[cx,WALK_Y],[cx,sp.y-2]],segs=[];for(let k=1;k<pts.length;k++){const A=pts[k-1],B=pts[k];segs.push({a:A,b:B,l:Math.max(.01,Math.hypot(B[0]-A[0],B[1]-A[1]))})}
+  F2_PICKUP.walker={id:'F2-PICKUP-PAX',asset:a.stand==='P2'?'PE-43':'PE-44',segs,seg:0,s:0,dir:1,state:'walk',wait:0,dwell:0,hidden:false,x:pts[0][0],y:pts[0][1],face:4,speed:30,crossing:false,arrived:false,flight:a.flight,space:sp.id,s15:true,agent:a.s15&&a.s15.id};st.spawns++}
+ try{const pS=f2SpawnPickupWalker;f2SpawnPickupWalker=function(m){if(m&&m.f2&&m.f2.s15)return spawn(m);return pS.apply(this,arguments)}}catch(e){er('spawn',e)}
+ /* f2UpdatePickup — אותו תהליך של 049, עם הטיסה של השדה החדש: הבדיקה "הטיסה קיימת" לא מחפשת אותה ב-AO, והזמן מסונכרן לשעון השדה */
+ try{const pU=f2UpdatePickup;f2UpdatePickup=function(dt,m,d){const a=m.f2||(m.f2={});if(m.stage==='drive'||(!a.s15&&a.flight))return pU.apply(this,arguments);
+  const now=APT_OPS.clk;a.elapsed=(a.elapsed||0)+dt;
+  const atCurb=PlayerProfile.mode==='vehicle'&&carKmh()<1.2?f2SpaceOf(PlayerCar):null;
+  if(!a.flight){if(atCurb){if(m.stage==='to-curb'){m.stage='wait';a.early=true}a.space=atCurb.id}if(f2PickFlight(m))toast('שובצה טיסה '+a.flight+' לעמדה '+a.stand);m.timeRemaining=Math.max(m.timeRemaining-dt*.25,0);if(m.timeRemaining<=0)return missionFail('timeout');return}
+  sync(a,now);const ready=now>=(a.tReady||Infinity),sp=atCurb;
+  if(sp){if(m.stage==='to-curb'){m.stage='wait';if(!ready)a.early=true;toast('עצרת במפרץ "הורדה ואיסוף" · ממתינים לנוסע מטיסה '+a.flight)}a.space=sp.id;if(F2_PICKUP.walker)f2RetargetWalker(sp.id)}
+  else if(m.stage==='wait'&&!F2_PICKUP.walker?.arrived)m.stage='to-curb';
+  if(ready&&!F2_PICKUP.walker){f2SpawnPickupWalker(m);toast('הנוסע מטיסה '+a.flight+' יצא בדלת הנחיתות · הולך על המדרכה אל המפרץ')}
+  if(ready){a.patience=Math.max(0,(a.patience??d.patience)-dt);m.timeRemaining=a.patience;if(a.patience<=0)return missionFail('timeout')}
+  else m.timeRemaining=Math.max(0,(a.tReady-now));
+  const w=F2_PICKUP.walker;
+  if(w&&w.arrived&&sp&&w.space===sp.id){m.stage='drive';m.payload=true;a.boardedAt=iso();a.waitAtCurb=Math.round((d.patience-(a.patience??d.patience)));F2_PICKUP.walker=null;st.boards++;
+   setNavigationTarget(a.dest,{mission:true,silent:true});SaveManager.log('mission','mission_state',{id:m.id,state:'progress',stage:'drive',flight:a.flight,dest:a.dest});SaveManager.save('mission-pickup',{backup:false,silent:true});
+   toast('הנוסע עלה · סע אל '+a.destLabel)}}}catch(e){er('update',e)}
+ try{const pL=f2StageLabel;f2StageLabel=function(m){const a=m.f2||{};if(m.stage!=='drive'&&a.s15&&a.flight&&!F2_PICKUP.walker){const d=Math.round((a.tReady||0)-APT_OPS.clk);
+   return 'טיסה '+a.flight+' ('+(a.stand||'')+') · הנוסעים יוצאים בדלת הנחיתות '+(d>2?'בעוד '+d+' שנ׳':'עכשיו')+' · עצור במפרץ "הורדה ואיסוף"'}return pL.apply(this,arguments)}}catch(e){er('label',e)}
+ /* הציור: הסימון של המפרץ בכביש (שכבת הקרקע של S9), והנוסע (שכבת הפריטים של S9 — f2DrawPeople חתוך בצד היבשה של S16) */
+ function bay(c,now,N){if(!e3InView(BAY[0],BAY[1],BAY[2]-BAY[0],BAY[3]-BAY[1],30))return;c.save();try{const [x0,y0,x1,y1]=BAY;
+  c.fillStyle=N?'rgba(240,190,60,.10)':'rgba(240,190,60,.16)';c.fillRect(x0+2,y0+2,x1-x0-4,y1-y0-4);c.strokeStyle=N?'#c9a23a':'#f2c230';c.lineWidth=2;c.setLineDash([7,5]);c.strokeRect(x0+2,y0+2,x1-x0-4,y1-y0-4);c.setLineDash([]);
+  c.fillStyle=N?'#d9c58a':'#fff6d8';c.font='bold 9px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText('הורדה ואיסוף',(x0+x1)/2,(y0+y1)/2-6);c.font='8px sans-serif';c.fillText('עצירה קצרה · K1',(x0+x1)/2,(y0+y1)/2+7)}catch(e){er('bay',e)}finally{c.restore()}}
+ try{S9_HOOKS.ground.push((c,now,N)=>bay(c,now,N));S9_HOOKS.props.push((c,now,N)=>{const w=F2_PICKUP.walker;if(w&&w.s15&&!w.hidden)try{f2DrawPerson(w,now)}catch(e){er('draw',e)}})}catch(e){er('hooks',e)}
+ /* כרטיס המקום APT-KISS (050:f2PhoneCard) — הטקסט על "ששת המקומות" והרמזור כבר לא נכון; אותו כרטיס, המשפט לפי מה שקורה עכשיו */
+ try{const pC=f2PhoneCard;f2PhoneCard=function(id){const h=pC.apply(this,arguments);if(id!=='APT-KISS'||typeof h!=='string')return h;
+  return h.replace('עוצרים באחד מששת מקומות "הורד ואסוף"; הנוסע יוצא מהטרמינל רק אחרי שהטיסה האמיתית שלו חונה בשער, וחוצה ברמזור. זמן ההמתנה תלוי בתנועה בשדה.','עוצרים במפרץ "הורדה ואיסוף" שבחזית הטרמינל (נתיב המפרצים, מול הדלת D2). הנוסע — מטיסה נוחתת אמיתית של השדה: יוצא בדלת הנחיתות D5 כשהנוסעים של הטיסה שלו יוצאים, והולך על המדרכה המקורה עד הרכב. זמן ההמתנה — לפי הטיסה.')}}catch(e){er('card',e)}
+ function qa(){const o={space:F2_KISS_SPACES.map(s=>s.id+'@'+[s.x,s.y,s.w,s.h].join(',')),inBay:F2_KISS_SPACES.some(s=>s.x>=BAY[0]&&s.x+s.w<=BAY[2]&&s.y>=BAY[1]&&s.y+s.h<=BAY[3]),arrivals:arrivals().length,next:nextS15(null,0),tc:tcNow(),st,err:ERR.e};
+  try{const L=lane2('AIR-FRONT',1,0);o.laneY=L.ay;o.laneInSpace=L.ay>SPACE.y+4&&L.ay<SPACE.y+SPACE.h-4}catch(e){o.laneErr=String(e)}o.ok=o.inBay&&o.arrivals>0&&!!o.next&&!!o.laneInSpace&&!o.err;return o}
+ return{BAY,SPACE,arrivals,nextS15,tcNow,qa,st,err:()=>ERR.e}})();
+
+/* ==== (ג) "מה חסר" בכרטיס העבודה (סעיף 25): הכרטיס הראה "✓ הכול מוכן" לשחקן ברגל, והלחיצה נדחתה ב-startMission ("התחל את המשימה מתוך רכב").
+   מצאתי: ui7Need (074zd_ui7a) בודק רישיון, עבודה פעילה, נקודת פתיחה ברגל ומלגזה — אבל לא את התנאי של startMission (040): עבודה שאינה ברגל
+   (ולא C4_JOBS / אימון / תצפית / מגדל / משמרת / מלגזה) מתחילה רק מתוך רכב, עומד (עד 2 קמ"ש). כאן — אותו תנאי בדיוק נוסף לרשימה. ==== */
+var PFV=(function(){const ERR={e:null},SPEC=['ground-training','runway-observation','tower-view','shift','forklift'];
+ function needsVehicle(d){return!!d&&!d.walk&&!(typeof C4_JOBS!=='undefined'&&C4_JOBS.includes(d.id))&&!SPEC.includes(d.type)}
+ try{const N0=ui7Need;ui7Need=function(d){const need=N0.apply(this,arguments);try{if(needsVehicle(d)&&!PlayerProfile.activeMission){if(PlayerProfile.mode!=='vehicle')need.push('מתחילים מתוך רכב — לעלות לרכב (E), לעצור כאן וללחוץ F');else if(carKmh()>2)need.push('לעצור את הרכב (עד 2 קמ״ש)')}}catch(e){ERR.e=ERR.e||String(e)}return need}}catch(e){ERR.e='wrap '+e}
+ /* ==== (ד) F מתוך רכב (סעיף 24): נמדד ב-try6321 (tools/q_fveh.js) — בכל 18 המקומות שבהם עבודה מתחילה מתוך רכב (E3-TAXI, ‏E3-PARCELS, ‏C5-CARGO, ‏C5-DISPATCH,
+    D4-DC / WH / RAIL, ‏D5, ‏E5, ‏A6, ‏C4, ‏C6, ‏F2 ועוד) — F ברגל פותח את המסך הגדול של המקום, ו-F מתוך רכב עומד בכביש הקרוב — לא פותח כלום.
+    המקור: interactNearbyPoi (039) — המטפלים של האזורים (nearbyE3Poi / nearbyC5Poi / nearbyA4Poi / nearbyB5Poi / nearbyD4Poi …) עובדים רק ברגל (PlayerProfile.mode==='walk'),
+    ו-startMission דורש רכב — אז השחקן מגיע ברכב, יוצא כדי לפתוח, ונדחה כשהוא לוחץ "התחל".
+    כאן — אחרי כל המטפלים הקיימים (רק כשאף אחד מהם לא טיפל): ברכב עומד, ליד נקודת הפתיחה של עבודה שמתחילה מתוך רכב — נפתח אותו מסך של אותו מקום כמו ברגל
+    (המקום עם F הקרוב לנקודה — כמו ש-F ברגל בוחר אותו; נקודה "לטלפון בלבד" → המקום שלידה). ברכב שנוסע — הודעה "עצור את הרכב". ==== */
+ const APP={C5:'c5Services',A4:'a4Services',B5:'b5Services'};
+ const isPlace=q=>!!q&&!!(q.app||q.kind||APP[q.chunk||currentChunkId(q.x,q.y)]);   /* מקום עם מסך (לא נקודת ניווט בלבד — למשל BUS1-E3) */
+ function placeFor(p,reg){if(!p)return null;if(!p.phoneOnly)return isPlace(p)?p:null;let best=null,bd=70;for(const q of Object.values(reg)){if(!q||q.phoneOnly||q===p||!isPlace(q))continue;const ch=q.chunk||currentChunkId(q.x,q.y);if(ch!==(p.chunk||currentChunkId(p.x,p.y)))continue;const d=Math.hypot(q.x-p.x,q.y-p.y);if(d<bd){bd=d;best=q}}return best}
+ function vehiclePlace(R){const reg=navPoiRegistry(),c=PlayerCar,out=[];R=R||210;
+  for(const [id,d] of Object.entries(MISSION_DEFS)){if(!needsVehicle(d)||d.retired)continue;try{if(typeof d5MissionHidden==='function'&&d5MissionHidden(id))continue}catch(e){}
+   const sid=d.start||d.pickup,p=reg[sid];if(!p)continue;const dist=Math.hypot(c.x-p.x,c.y-p.y);if(dist>R)continue;const q=placeFor(p,reg);if(!q)continue;out.push({id:q.id,app:APP[q.chunk||currentChunkId(q.x,q.y)]||(q.app&&q.app!=='phone'?q.app:'business'),job:id,dist})}
+  out.sort((a,b)=>a.dist-b.dist);return out[0]||null}
+ const st={opened:0,moving:0,last:null};
+ try{const prevI=interactNearbyPoi;interactNearbyPoi=function(){const r=prevI.apply(this,arguments);if(r)return r;try{if(PlayerProfile.mode!=='vehicle'||State.taxiRide||State.phoneOpen||PlayerProfile.activeMission)return r;
+   const q=vehiclePlace();if(!q)return r;if(carKmh()>2){st.moving++;toast('עצור את הרכב — ואז F פותח את '+((navPoiRegistry()[q.id]||{}).label||q.id));return true}
+   State.serviceId=null;State.shopId=null;openPoiPhone(q.app,q.id);st.opened++;st.last=q;return true}catch(e){ERR.e=ERR.e||'veh '+e}return r}}catch(e){ERR.e='wrapI '+e}
+ /* הרמז בשורת היעד (כמו ברגל — "F · המקום"): ברכב עומד, בלי עבודה פעילה, ליד נקודת פתיחה של עבודת רכב; פעם בחצי שנייה */
+ let HC={t:0,v:null};
+ try{const prevH=hudGoalText;hudGoalText=function(){try{if(PlayerProfile.mode==='vehicle'&&!PlayerProfile.activeMission&&!State.taxiRide&&carKmh()<=2){const t=performance.now();if(t-HC.t>500){HC.t=t;const q=vehiclePlace(),nv=State.navigation&&State.navigation.targetId,dj=q&&MISSION_DEFS[q.job];HC.v=q&&(!nv||nv===q.id||nv===(dj&&(dj.start||dj.pickup)))?((navPoiRegistry()[q.id]||{}).label||q.id):null}if(HC.v)return 'F · '+HC.v}}catch(e){ERR.e=ERR.e||'hud '+e}return prevH.apply(this,arguments)}}catch(e){ERR.e='wrapH '+e}
+ return{needsVehicle,vehiclePlace,placeFor,st,SPEC,err:()=>ERR.e}})();

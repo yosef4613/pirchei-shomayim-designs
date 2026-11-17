@@ -1,0 +1,104 @@
+/* ==== fieldcalc 17.11 · 5 עמדות כבודה עצמאיות (BH-1 … BH-5) — הרחבה של אולם הכבודה של שדה 5 (074p: S15I_HALL) לרשימה (כלל 19א) ====
+   הציור והחישוב: deliver/2026-11-17/fieldcalc/Fieldcalc_plan.html (סעיפים 5–6): עמדה אחת — 150% בעומס היעד; 5 — בלי המתנה.
+   BH-3 = BAG5 של היום (לא זז). ‏BH-1 / BH-2 / BH-4 / BH-5 — באותה צורה בדיוק: דלת כניסה ודלת יציאה בקיר y 886, נתיב, מסוע המיון לאורכו, עצירה,
+   ובקצה הדרומי של העמדה (y 961) המסועים יורדים מתחת לרצפה אל הקרוסלה ומהצ׳ק-אין. קומת השערים עוצבה מחדש בשביל זה (074x: S15J_L — s15j_layout_fc.py):
+   הטרקלינים ברצועה הדרומית, המדרגות של P1 בקיר המערבי.
+   איך: אותן פונקציות של 074p (s15iHallLegs / s15iHallPlan / s15iHallFloor / s15iHallLive / s15iHits1) — בתוך "הקשר" של עמדה: הגאומטריה של S15I_HALL
+   מוחלפת זמנית בזו של העמדה (withHall) ומוחזרת. לכל רגל של אולם — המזהה של העמדה (g.hallId); ‏g.hall נשאר "אמת" לכל הקוד הקיים, וכשמציירים
+   עמדה אחת (FCH.cur) — רק הרגליים שלה. כל רכבת — לעמדה הקרובה לעמדת המטוס שלה (P1 / P2 → BH-1, ‏P3 → BH-2, ‏P4 → BH-3, ‏P5 → BH-4, ‏P6 / R → BH-5). */
+var FCH={on:true,err:'',nErr:0,cur:null,n:{planned:0,moved:0,floors:0},trains:[],halls:[]};
+(function(){
+ const er=(w,e)=>{FCH.nErr++;if(!FCH.err)FCH.err=w+' '+String(e&&e.stack||e).slice(0,220)};
+ try{
+  if(typeof S15I_HALL==='undefined'||!S15I_HALL||typeof s15iHallLegs!=='function'){FCH.on=false;return}
+  const H0=S15I_HALL,KEYS=['r','doorIn','doorOut','lane','stopX','belt','toCar','fromCI'],cp=o=>JSON.parse(JSON.stringify(o));
+  const base={};for(const k of KEYS)base[k]=cp(H0[k]);
+  const mk=(id,r,din,dout,lane,belt,serves)=>{const xo=(dout[0]+dout[1])/2,xi=(din[0]+din[1])/2,yb=r[3];
+   return{id,r,doorIn:din,doorOut:dout,lane,stopX:xo-9,belt,serves,
+    toCar:[[belt[1],belt[2]],[xo+6,belt[2]],[xo+6,yb]],              // אל הקרוסלה — יורד מתחת לרצפה בקצה הדרומי של העמדה
+    fromCI:[[xi-6,yb],[xi-6,belt[2]],[belt[0],belt[2]]]}};           // מהצ׳ק-אין — עולה מתחת לרצפה
+  const HL=[mk('BH-1',[6812,905,7016,945],[6817,6853],[6975,7011],932,[6860,6966,905],['P1','P2']),
+            mk('BH-2',[7165,905,7400,961],[7175,7215],[7350,7390],945,[7220,7345,923],['P3']),
+            Object.assign({id:'BH-3',serves:['P4'],today:true},cp(base)),
+            mk('BH-4',[8002,905,8235,961],[8008,8044],[8180,8216],945,[8050,8170,923],['P5']),
+            mk('BH-5',[8314,905,8505,961],[8318,8352],[8468,8502],948,[8360,8462,921],['P6','R1','R2','R3'])];
+  FCH.halls=HL;
+  const byId=Object.fromEntries(HL.map(h=>[h.id,h]));
+  function withHall(h,fn){const save={};for(const k of KEYS)save[k]=H0[k];try{for(const k of KEYS)H0[k]=h[k];return fn()}finally{for(const k of KEYS)H0[k]=save[k]}}
+  FCH.withHall=withHall;
+  function hallOfStand(sid){for(const h of HL)if(h.serves.includes(sid))return h;return byId['BH-3']}
+  function trainHall(v){let sid=null;try{sid=s15iStand(v)}catch(e){}if(!sid){const m=/^BT-(P\d|R)/.exec(String(v.id));sid=m?(m[1]==='R'?'R2':m[1]):null}return hallOfStand(sid)}
+  FCH.trainHall=trainHall;
+  // הרגל של האולם: hall — "אמת" לכל הקוד הקיים; בזמן ציור של עמדה אחת (FCH.cur) — רק של העמדה הזו
+  function tag(g,hid){g.hallId=hid;Object.defineProperty(g,'hall',{configurable:true,enumerable:true,get(){return(FCH.cur==null||FCH.cur===this.hallId)?1:0},set(v){}})}
+  // התכנון מחדש: לכל רכבת שיש לה ביקור באולם — המסלול אל העמדה שלה (אותו s15iHallLegs, בתוך ההקשר שלה), בלי נגיעה (s15iHits1) ובלי שתי רכבות באותה עמדה
+  // הבדיקה של s15k_fleet (074r: s15kSample / s15kHits — אותן מעטפות, כל 0.25 ש׳) לרכבת אחת מול כל השאר, כדי שהמסלול החדש לא ייגע באף רכב
+  let SKN=0,SKS=null,SKM=null;
+  function skInit(){try{if(typeof s15kSample!=='function'||typeof s15kHits!=='function')return;SKN=Math.round(S15SIM.T/.25);SKS=s15kStatic();SKM=new Map(S15SIM.veh.map(w=>[w.id,s15kSample(w,w.legs,SKN)]))}catch(e){er('s15k init',e);SKM=null}}
+  // בדיוק כמו s15kAudit: כל זוג נבדק מהצד של המזהה הקטן (ומול החונים — מהצד של כל רכב)
+  function skHits(v,L){if(!SKM)return 0;try{const S=s15kSample(v,L,SKN);let n=s15kHits(v.id,S,0,SKN-1,[...SKM].filter(q=>q[0]>v.id),SKS,null,0,null);
+    for(const [id,Sw] of SKM){if(id>=v.id)continue;n+=s15kHits(id,Sw,0,SKN-1,[[v.id,S]],[],null,0,null)}return n}catch(e){er('s15k hits',e);return 0}}
+  function skSet(v){if(SKM)try{SKM.set(v.id,s15kSample(v,v.legs,SKN))}catch(e){}}
+  // ההפעלה — אחרי s15kRun (074r: setTimeout אחרי כל החלקים): s15k מאיץ את הנסיעות ומזיז זמנים (S15K_PRE) של כל הרכבים — לכן התכנון של העמדות
+  // נעשה על הרגליים הסופיות; ממה שלפני העבודה בעמדת המטוס (כולל) לא נוגעים — רק מהעמדה אל העמדה של הכבודה ומשם הביתה (s15iHallLegs בהקשר של העמדה)
+  function replan(){const T=S15SIM.T,occ={},md=x=>((x%T)+T)%T;FCH.trains=[];FCH.assign={};FCH.n.planned=0;FCH.n.moved=0;skInit();
+   const free=(hid,t0,t1)=>!(occ[hid]||[]).some(q=>q[0]<t1+6&&t0<q[1]+6||q[0]<t1+6+T&&t0+T<q[1]+6||q[0]+T<t1+6&&t0<q[1]+6+T);
+   const list=S15SIM.veh.filter(v=>/^BT/.test(v.id)&&v.legs.some(g=>g.hall));
+   // קודם — מי שהעמדה שלו BH-3 (BAG5 של היום): נשאר כמו שהוא, והתפוסה שלו נרשמת
+   const stay=list.filter(v=>trainHall(v).id==='BH-3'),go=list.filter(v=>trainHall(v).id!=='BH-3');
+   for(const v of stay){const hg=v.legs.find(g=>g.hall&&g.f===8);if(!hg)continue;for(const g of v.legs)if(g.hall&&g.f===8)tag(g,'BH-3');(occ['BH-3']||(occ['BH-3']=[])).push([hg.t0,hg.t1]);FCH.n.planned++;FCH.assign[v.id]='BH-3';
+    FCH.trains.push(v.id+' → BH-3 (כמו היום, '+md(hg.t0).toFixed(0)+'–'+md(hg.t1).toFixed(0)+')')}
+   // השאר: העמדה של הרכבת, ואם אין אליה נתיב בלי נגיעה — העמדה הקרובה הבאה (לפי המרחק מעמדת המטוס); BH-3 — עם הנתיב של היום
+   for(const v of go){const keep=v.legs,jf=keep.findIndex(g=>g.h!=null&&g.f===8&&!g.hall),hi=keep.findIndex(g=>g.hall&&g.f===8);
+    let k=-1;for(let i=hi+1;i<keep.length;i++)if(keep[i].h!=null&&keep[i].f===0){k=i;break}
+    if(jf<0||hi<jf||k<0){for(const g of keep)if(g.hall&&g.f===8)tag(g,'BH-3');FCH.assign[v.id]='BH-3';FCH.trains.push(v.id+' — המבנה של הרגליים לא כמו בשדה 5 (נשאר ב-BH-3)');continue}
+    const S=keep[jf],Hm=keep[k],tail=keep.slice(k+1).map(g=>Object.assign({},g)),h0=trainHall(v),sx=S.p[0][0];
+    const cand=[h0].concat(HL.filter(h=>h!==h0).sort((a,b)=>Math.abs((a.r[0]+a.r[2])/2-sx)-Math.abs((b.r[0]+b.r[2])/2-sx)));
+    const L0=keep.slice(0,jf+1).concat([{p:[S.p[0].slice(),Hm.p[0].slice()],t0:S.t1,t1:Hm.t0,f:1},Hm]);
+    let ok=null;const base=skHits(v,keep),dbg=[];   // מול המסלול של היום (0 — s15k_fleet עובר)
+    for(const h of cand){
+     if(h.id==='BH-3'){const hg=keep[hi];if(free('BH-3',hg.t0,hg.t1)){for(const g of keep)if(g.hall&&g.f===8)tag(g,'BH-3');ok={dl:0,hg,h,today:1};break}dbg.push('BH-3 תפוסה');continue}
+     for(const dl of [0,2,4,6,8,10,12,16,20,26,32,40,50,60,75,90]){
+      v.legs=L0;let L=null;try{L=withHall(h,()=>s15iHallLegs(v,jf,dl))}catch(e){er('legs '+v.id,e)}v.legs=keep;if(!L)continue;L=L.concat(tail);
+      const hg=L.find(g=>g.f===8&&g.h!=null&&g.p&&g.p[0]&&Math.abs(g.p[0][1]-h.lane)<1&&Math.abs(g.p[0][0]-h.stopX)<1);if(!hg)continue;
+      if(!free(h.id,hg.t0,hg.t1))continue;
+      v.legs=L;try{S15GR.path&&S15GR.path.delete(v.id)}catch(e){}
+      let hits=0;try{hits=s15iHits1(v)}catch(e){er('hits '+v.id,e)}
+      let hk=0;if(!hits){hk=skHits(v,L);if(hk>base)hits=hk}
+      if(hits){if(dbg.length<8&&dl<=6)dbg.push(h.id+'/'+dl+':x'+hits+(hk?'/k'+hk:''));v.legs=keep;try{S15GR.path&&S15GR.path.delete(v.id)}catch(e){}continue}
+      skSet(v);for(const g of L)if(g.hall&&g.f===8)tag(g,h.id);ok={dl,hg,h};break}
+     if(ok)break}
+    if(ok){const h=ok.h;(occ[h.id]||(occ[h.id]=[])).push([ok.hg.t0,ok.hg.t1]);FCH.n.planned++;if(!ok.today)FCH.n.moved++;FCH.assign[v.id]=h.id;
+     FCH.trains.push(v.id+' → '+h.id+(h!==h0?' (במקום '+h0.id+' — '+dbg.join(' ')+')':'')+' (עיכוב '+ok.dl+' ש׳, '+md(ok.hg.t0).toFixed(0)+'–'+md(ok.hg.t1).toFixed(0)+'; בסיס '+base+')')}
+    else{for(const g of keep)if(g.hall&&g.f===8&&g.hallId==null)tag(g,'BH-3');FCH.assign[v.id]='BH-3';FCH.trains.push(v.id+' → BH-3 (נשאר — לא נמצא נתיב בלי נגיעה; בסיס '+base+'; '+dbg.join(' ')+')')}}
+   try{S15GR.path.clear()}catch(e){}   // (בלי S15_STAT=null — הרשימה של החונים מתוקנת ב-074q / 074zo, ואיפוס מחזיר את HAP2 — fieldfix_r3)
+   // המסלולים שנשארו ב-BAG5 — מסומנים BH-3
+   for(const v of S15SIM.veh)for(const g of v.legs)if(g.f===8&&g.hallId==null&&Object.getOwnPropertyDescriptor(g,'hall')&&g.hall)tag(g,'BH-3');
+   FCH.done=true}
+  FCH.replan=replan;setTimeout(()=>{try{replan()}catch(e){er('replan',e)}},0);
+  // הציור: הרצפה, הדלתות והמסועים של כל עמדה (BAG5 — כמו היום, אצל 074p), והרכבות / המזוודות / העובדים — כל עמדה עם הרגליים שלה בלבד
+  // s15iHallLive (074p) — רק הרכבות של העמדה שמציירים (BAG5 כשהיא נקראת מתוך 074p, בלי הקשר)
+  const hlv=s15iHallLive;s15iHallLive=function(){const prev=FCH.cur;if(prev==null)FCH.cur='BH-3';try{return hlv.apply(this,arguments)}finally{FCH.cur=prev}};
+  const sl=s15Live;s15Live=function(now,layer){if(layer!=='ground'||!FCH.on||!S15I.on||!S15I_HALL.on||!S15X.on)return sl.apply(this,arguments);
+   const r=sl.apply(this,arguments);
+   let tc=null;try{const O=S15X.ovr;tc=O?O.tc:s15Tc(s15Clock().abs)}catch(e){}
+   for(const h of HL){if(h.id==='BH-3')continue;const R=h.r;if(!e3InView(R[0]-30,886-40,R[2]-R[0]+60,R[3]-886+80,10))continue;
+    FCH.cur=h.id;try{withHall(h,()=>{ctx.save();ctx.beginPath();ctx.rect(R[0]-40,850,R[2]-R[0]+80,R[3]-850);ctx.clip();   // הכיתוב "אולם הכבודה" של 074p (מתחת לנתיב) — נחתך: מדרום לעמדה יש טרקלין
+      try{s15iHallFloor(ctx,s9Night())}finally{ctx.restore()}FCH.n.floors++;if(tc!=null)s15iHallLive(ctx,tc,now)})}catch(e){er('draw '+h.id,e)}finally{FCH.cur=null}}
+   return r};
+  // הסנכרון לקרוסלה (074x: s15jHall) — כל רכבת לפי הגאומטריה של העמדה שלה
+  if(typeof s15jHall==='function'){const sj=s15jHall;s15jHall=function(){let any=false;const out={};
+    for(const h of HL){FCH.cur=h.id;let r=null;try{r=withHall(h,()=>sj())}catch(e){er('s15jHall '+h.id,e)}finally{FCH.cur=null}
+     if(r)for(const k in r){const v=S15SIM.veh.find(w=>w.id==='BT-'+k),hg=v&&v.legs.find(g=>g.hallId!=null),hid=hg?hg.hallId:'BH-3';if(hid===h.id){out[k]=r[k];any=true}}}
+    return any?out:sj()}}
+  // הבדיקה (roadAudit): כל עמדה — דלת כניסה, נתיב, עצירה ויציאה בלי נגיעה; אין שתי רכבות באותה עמדה; כל רכבת בעמדה שלה
+  const base_ra=roadAudit;roadAudit=function(){const res=base_ra.apply(this,arguments);try{const T=S15SIM.T,bad=[],rows=[],occ={};
+    for(const v of S15SIM.veh){if(!/^BT/.test(v.id))continue;for(const g of v.legs){if(g.f!==8||g.hallId==null)continue;(occ[g.hallId]||(occ[g.hallId]=[])).push([v.id,g.t0,g.t1]);
+      const want=(FCH.assign&&FCH.assign[v.id])||trainHall(v).id;if(g.hallId!==want)bad.push(v.id+' בעמדה '+g.hallId+' במקום '+want);rows.push(v.id+' → '+g.hallId)}}
+    for(const id in occ){const L=occ[id];for(let i=0;i<L.length;i++)for(let k=i+1;k<L.length;k++){const a=L[i],b=L[k];for(const s of [-T,0,T])if(a[1]<b[2]+s&&b[1]+s<a[2])bad.push('שתי רכבות ב-'+id+': '+a[0]+' / '+b[0])}}
+    if(FCH.err)bad.push('שגיאה: '+FCH.err);if(!FCH.done)bad.push('התכנון של העמדות לא רץ');
+    const ok=!bad.length&&HL.length===5&&rows.length>=1,L=res.checks||res.results;
+    if(Array.isArray(L))L.push({name:'fc_bag_halls',id:'fc_bag_halls',ok,pass:ok,detail:'5 עמדות כבודה (BH-1…BH-5): '+(rows.join(' · ')||'—')+' · '+FCH.trains.join(' · ')+(bad.length?' · ✗ '+bad.slice(0,4).join(' · '):'')});
+    if(!ok){res.ok=false;(res.issues||[]).push('fc_bag_halls')}}catch(e){er('audit',e)}return res};
+ }catch(e){er('init',e)}})();
+try{window.__TC_FCH=FCH}catch(e){}

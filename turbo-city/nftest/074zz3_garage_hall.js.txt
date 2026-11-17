@@ -1,0 +1,100 @@
+/* ===== GARAGE HALL · המוסך בעיר מחדש (D‑380, מאושר ב-D‑695) — לפי הציור deliver/2026-11-11/r17/draw/Garage_rebuild_plan.html (garage, 17.11.2026) =====
+   מה שכבר היה ונשאר בלי שינוי (כלל 16 / D‑605): הבניין WORKSHOP2 (030, ‏15 × 10 מ׳, שלוש דלתות גלילה, השלט "המוסך" והמותג של brands6 עליו) — הוא
+   ה"מאחור" של הציור; שלושת התאים לפני הדלתות (032 D3ND.garage.bays), המתקן בתא 1 עם הרכב והמכונאי (032 D3LOOK.live), רחוב המוסכים, שתי הנמכות השפה,
+   הדרך הפנימית, החניות (D3N_STALLS) ונקודת השירות (D3N_SVC_PTS — תא 2).
+   מה שנוסף כאן (חלק חדש, בלי לגעת ב-030 / 032 — עטיפה של D3LOOK והציור של הבניין):
+   (א) שלושת החדרים מאחור — שלט מעל כל דלת: מחסן חלקים · תא צבע · חישוקים וצמיגים; ארובות הפליטה של תא הצבע על הגג.
+   (ב) האולם: רצפת בטון מוחלקת מתחת לסככה, המספרים והשמות של התאים על הרצפה (1 — תיקון ושדרוגים, 2 — שירות, 3 — קבלת רכב גרור), מתקן הרמה בכל תא
+       (בתא 1 — המתקן של היום; בתאים 2–3 — מתקן שקוע ברצפה, כי הרכב של השחקן נעצר עליו), שני עמודים בפינות הקדמיות (מחוץ לתאים).
+   (ג) הגג השקוף מעל שלושת התאים (כלל 15, ‏D‑622) — אחרי הרכבים (D3LOOK.flushRoofs), כמו הגגון של תחנת הדלק; ובחזית שלו — "המוסך העירוני".
+   (ד) הקבלה והקופה — ביתן קטן ממערב לתאים, במקום של מסתור הפחים; הפחים — באותה פינה, לאורך הקיר המערבי של הביתן (לא בפינה הצפונית של הציור,
+       שם החניה P1 — סתירה, ראה ההחזרה); קיר מוצק לשחקן.
+   (ה) הגרירה (074v_econ2_tow) — הרכב יורד לתא 3 (קבלת רכב גרור) במקום תא 2; התיקון — כמו היום (repairAtGarage, נקודת השירות בטווח). */
+var GHALL={on:true,v:1,err:null,n:{front:0,ground:0,items:0,roof:0},tow:null};
+(function(){
+ const K6=6,HALL=[4307,2412,4457,2478],ROOF_H=4.4,POSTS=[[4310,2474],[4454,2474]],RECEP=[4268,2430,4306,2478],RECEP_H=3.2,BINS=[4252,2432,4266,2476];
+ const ROOMS=[['מחסן חלקים',4337,'#c9a24a'],['תא צבע',4382,'#3f8f5a'],['חישוקים וצמיגים',4427,'#9aa4ad']];
+ const BAYN=[['1','תיקון ושדרוגים'],['2','שירות'],['3','קבלת רכב גרור']];
+ const BR=()=>{try{const b=TC_BRANDS&&TC_BRANDS.garage;if(b)return{name:b.name||'המוסך העירוני',deep:b.deep||'#151516',acc:b.accent||'#ae3521',light:b.light||'#e9cba6'}}catch(e){}return{name:'המוסך העירוני',deep:'#151516',acc:'#ae3521',light:'#e9cba6'}};
+ const er=e=>{GHALL.err=String(e&&e.message||e).slice(0,200)};
+ const night=()=>Math.max(0,Math.min(1,+window.__TC_NIGHT||0))>.5;
+ const view=(x0,y0,x1,y1)=>{try{return e3InView(x0,y0-60,x1-x0,y1-y0+60,40)}catch(e){return true}};
+ function txt(c,s,x,y,px,col,w){c.fillStyle=col;c.font='700 '+px+'px Segoe UI,Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(s,x,y,w);c.textBaseline='alphabetic'}
+ /* (א) the three rooms behind: a plaque over each roller door (the wall faces south: a point z m up is z·6 px up), the exhaust stacks of the paint booth */
+ function front(c){const B=BR(),y=2412;GHALL.n.front++;
+  for(const [nm,x,col] of ROOMS){const w=30,y0=y-3.45*K6,h=.62*K6;c.fillStyle='rgba(0,0,0,.25)';c.fillRect(x-w/2+.4,y0+.4,w,h);c.fillStyle=B.deep;c.fillRect(x-w/2,y0,w,h);c.fillStyle=col;c.fillRect(x-w/2,y0,1.6,h);c.fillRect(x+w/2-1.6,y0,1.6,h);
+   txt(c,nm,x,y0+h/2,2.3,'#ffffff',w-4)}
+  // the paint booth: two exhaust stacks on the roof (5.4 m) over the middle room, 1.6 m higher; the filter grille on its door
+  for(const dx of [-12,12]){const x=4382+dx,yr=2350-5.4*K6,hs=1.6*K6;c.fillStyle='rgba(0,0,0,.2)';c.fillRect(x-1.5,yr-1,6,3);c.fillStyle='#9aa1a6';c.fillRect(x-2.2,yr-hs,4.4,hs);c.fillStyle='#c9ced2';c.beginPath();c.ellipse(x,yr-hs,2.2,1.3,0,0,6.2832);c.fill();c.fillStyle='#3a3f44';c.beginPath();c.ellipse(x,yr-hs,1.3,.7,0,0,6.2832);c.fill()}
+  c.fillStyle='rgba(40,60,45,.35)';for(let k=0;k<4;k++)c.fillRect(4372,y-1.9*K6+k*1.6,20,.6)}
+ /* (ב) the hall floor, the bay numbers, the lifts in the floor of bays 2–3 */
+ function ground(c,D,N){GHALL.n.ground++;const [x0,y0,x1,y1]=HALL;
+  c.fillStyle=N?'#3b4146':'#8f979c';c.fillRect(x0,y0,x1-x0,y1-y0);c.fillStyle=N?'rgba(255,255,255,.03)':'rgba(255,255,255,.08)';for(let x=x0+15;x<x1;x+=15)c.fillRect(x,y0,.5,y1-y0);   // the slabs of the polished concrete
+  c.fillStyle='rgba(30,30,30,.18)';c.beginPath();c.ellipse(4341,2452,6,3,.3,0,6.2832);c.fill();c.beginPath();c.ellipse(4424,2440,4,2.4,-.2,0,6.2832);c.fill();   // oil stains
+  const G=D.garage;if(G){c.strokeStyle='#f2c230';c.lineWidth=1.6;G.bays.forEach((b,i)=>{c.strokeRect(b[0]+.8,b[1]+.8,b[2]-b[0]-1.6,b[3]-b[1]-1.6);const cx=(b[0]+b[2])/2;
+    txt(c,BAYN[i][0],cx,b[3]-8,6,'rgba(242,194,48,.95)');txt(c,BAYN[i][1],cx,b[3]-3,2.6,'rgba(242,194,48,.9)',b[2]-b[0]-4);
+    if(i>0){for(const s of [-1,1]){const px=cx+s*10;c.fillStyle=N?'#5a5530':'#d9b52c';c.fillRect(px-3,b[1]+10,6,40);c.fillStyle='rgba(0,0,0,.35)';for(let k=0;k<8;k++)c.fillRect(px-3,b[1]+12+k*5,6,1.2)}
+     c.fillStyle='#3a3f44';c.fillRect(cx-1,b[1]+20,2,20)}})}
+  // the drain along the front of the hall
+  c.fillStyle='#4a4f55';c.fillRect(x0+4,y1-1.5,x1-x0-8,1.5)}
+ /* (ב) the two posts of the roof (outside the bays) · (ד) the reception and the till */
+ function box(c,x,y,w,d,h,top,side){const H=h*K6;c.fillStyle='rgba(0,0,0,.2)';c.fillRect(x+2,y+2,w+3,d+2);c.fillStyle=side;c.fillRect(x,y+d-H,w,H);c.fillStyle=top;c.fillRect(x,y-H,w,d)}
+ function items(c,D,N){GHALL.n.items++;
+  for(const p of POSTS)box(c,p[0]-1.5,p[1]-1.5,3,3,ROOF_H,'#cfd6da','#9aa4ab');
+  {const [a,b,e,f]=BINS,w=e-a,d=f-b;box(c,a,b,w,d,1.4,N?'#55524c':'#a29a8c',N?'#46433e':'#8a8274');   // the bins: the same enclosure, turned along the reception's west wall
+   for(let k=0;k<3;k++)box(c,a+2.5,b+3+k*(d-6)/3,w-5,(d-6)/3-2,1.2,['#2e7d32','#1f4f7a','#5d6166'][k],['#245f27','#173c5d','#46494d'][k])}
+  const [x0,y0,x1,y1]=RECEP,w=x1-x0,d=y1-y0,H=RECEP_H*K6,B=BR();box(c,x0,y0,w,d,RECEP_H,N?'#7b7f82':'#d9d4c8',N?'#9a917f':'#efe6d0');
+  c.fillStyle=N?'#ffe7a8':'#5d7486';c.fillRect(x0+3,y1-H+5,w-17,H-9);c.fillStyle='rgba(255,255,255,.35)';c.fillRect(x0+5,y1-H+6,3,H-11);   // the glass front, the counter behind it
+  c.fillStyle='#2f363c';c.fillRect(x1-12,y1-2.2*K6,9,2.2*K6);c.fillStyle=N?'#ffe7a8':'#8fb3c6';c.fillRect(x1-11,y1-2.1*K6+1,7,2.1*K6-2);   // the door
+  c.fillStyle=B.deep;c.fillRect(x0,y1-H,w,4.2);c.fillStyle=B.acc;c.fillRect(x0,y1-H+3.4,w,.8);txt(c,'קבלה וקופה',(x0+x1)/2,y1-H+2.1,2.6,B.light,w-4);
+  c.fillStyle='#b9bfc4';c.fillRect(x0+6,y0-H+6,10,7);c.fillStyle='#8e959b';c.fillRect(x0+6,y0-H+13,10,1.5)}   // the air conditioner on the roof
+ /* the crew in fixed places (the drawing, part 4): the painter at the door of the paint booth, the tyre fitter at the door of the rims room — by the wall, clear of the bays' cars */
+ const CREW=[[4382,2417,{h:1.78,skin:'#c99a74',hair:{t:'short',c:'#2a1d12'},top:{t:'shirt',c:'#e9edf0'},legs:{t:'trousers',c:'#e9edf0'},shoes:{t:'boot',c:'#3a2c22'}},.0],
+  [4436,2417,{h:1.76,skin:'#a87552',hair:{t:'crop',c:'#15100b'},top:{t:'shirt',c:'#3b3f45'},legs:{t:'trousers',c:'#2b2f35'},shoes:{t:'boot',c:'#2a211b'}},1.7]];
+ function crew(c,now){if(!window.P34||!view(HALL[0],HALL[1],HALL[2],HALL[3]))return;const t=(now||0)/1000,RES=window.D3RES||2;GHALL.n.crew=(GHALL.n.crew||0)+1;
+  for(const [x,y,look,ph] of CREW){const a=Math.PI/2+Math.sin(t*.35+ph)*.9;P34.draw(c,x,y,look,'stand',a,0,RES)}}
+ /* (ג) the see-through roof over the three bays — after the cars (a car under it is seen, rule 15) */
+ /* the work you bought in the garage screen, seen in the hall: the mist of the paint, the sparks of the workshop — around your car, while it stands in the hall (6 s) */
+ function work(c){const F=GHALL.fx;if(!F)return;const t=(performance.now()-F.t0)/1000;if(t>6){GHALL.fx=null;return}const x=PlayerCar.x,y=PlayerCar.y;if(!(x>=HALL[0]-10&&x<=HALL[2]+10&&y>=HALL[1]-10&&y<=HALL[3]+10))return;
+  c.save();for(let i=0;i<26;i++){const a=i*2.399+t*(F.kind==='paint'?1.4:3),r=10+((i*37)%24),px=x+Math.cos(a)*r,py=y-6+Math.sin(a)*r*.6,al=Math.max(0,Math.min(1,(6-t)/1.5))*(F.kind==='paint'?.28:.8);
+   c.globalAlpha=al;c.fillStyle=F.kind==='paint'?(F.col||'#ffffff'):(i%2?'#ffd27a':'#fff3c4');c.beginPath();c.arc(px,py,F.kind==='paint'?2.4:.8,0,6.2832);c.fill()}c.restore();GHALL.n.work=(GHALL.n.work||0)+1}
+ function roof(){if(!GHALL.on)return;const [x0,y0,x1,y1]=HALL;if(!view(x0,y0-30,x1,y1))return;const c=ctx,u=ROOF_H*K6,N=night(),B=BR();GHALL.n.roof++;try{work(c)}catch(e){er(e)}
+  c.save();c.globalAlpha=1;c.fillStyle=N?'rgba(200,225,240,.16)':'rgba(190,227,242,.26)';c.fillRect(x0,y0-u,x1-x0,y1-y0);
+  c.strokeStyle=N?'rgba(160,180,195,.6)':'rgba(120,140,155,.75)';c.lineWidth=.8;for(let x=x0+15;x<x1;x+=15){c.beginPath();c.moveTo(x,y0-u);c.lineTo(x,y1-u);c.stroke()}
+  c.lineWidth=1.6;for(const x of [4359.5,4404.5]){c.beginPath();c.moveTo(x,y0-u);c.lineTo(x,y1-u);c.stroke()}c.strokeRect(x0+.5,y0-u+.5,x1-x0-1,y1-y0-1);
+  c.fillStyle='rgba(255,255,255,.22)';c.beginPath();c.moveTo(x0+20,y0-u);c.lineTo(x0+44,y0-u);c.lineTo(x0+30,y1-u);c.lineTo(x0+6,y1-u);c.closePath();c.fill();   // a glint on the glass
+  c.fillStyle=B.deep;c.fillRect(x0,y1-u-1,x1-x0,6);c.fillStyle=B.acc;c.fillRect(x0,y1-u+4.2,x1-x0,1);txt(c,B.name,(x0+x1)/2,y1-u+2,4,B.light,80);   // the fascia: the name of the garage
+  if(N){c.fillStyle='rgba(255,248,214,.12)';c.fillRect(x0,y0,x1-x0,y1-y0)}c.restore()}
+ /* the hooks: the building's own picture + (א); D3LOOK of D3ND + (ב), (ד); the roofs + (ג) */
+ try{const o=(typeof C4_BUILDINGS!=='undefined'?C4_BUILDINGS:[]).find(b=>b.id==='D3-GARAGE-WS');
+  if(o&&!o.drawFn){o.drawFn=function(q){b4Bld40Draw(q);try{if(GHALL.on)front(ctx)}catch(e){er(e)}};GHALL.ws=true}}catch(e){er(e)}
+ try{if(window.D3LOOK){const L=window.D3LOOK,g0=L.ground,i0=L.items,r0=L.flushRoofs;
+   L.ground=function(c,D,N){g0.apply(this,arguments);try{if(GHALL.on&&typeof D3ND!=='undefined'&&D===D3ND)ground(c,D,N)}catch(e){er(e)}};
+   L.items=function(c,D,N){i0.apply(this,arguments);try{if(GHALL.on&&typeof D3ND!=='undefined'&&D===D3ND)items(c,D,N)}catch(e){er(e)}};
+   L.flushRoofs=function(){r0.apply(this,arguments);try{roof()}catch(e){er(e)}};
+   const l0=L.live;L.live=function(c,D,now,N){l0.apply(this,arguments);try{if(GHALL.on&&typeof D3ND!=='undefined'&&D===D3ND)crew(c,now)}catch(e){er(e)}};GHALL.hooks=true}}catch(e){er(e)}
+ try{const bi=(D3ND.bins||[]).findIndex(r=>r[0]===4252&&r[1]===2432);if(bi>=0){GHALL.binsOld=D3ND.bins[bi].slice();D3ND.bins.splice(bi,1)}
+  d3SolidRect('D3-GARAGE-RECEPTION',BINS[0],RECEP[1],RECEP[2]-BINS[0],RECEP[3]-RECEP[1]);for(const p of POSTS)d3SolidDisc('D3-GARAGE-POST',p[0],p[1],2)}catch(e){er(e)}
+ /* (ה) the tow: to bay 3 — the reception of a towed car (the drawing: "הגרירה יורדת לתא 3") */
+ try{if(typeof ET_GARAGE!=='undefined'){const b=D3ND.garage.bays[2];ET_GARAGE.car.x=(b[0]+b[2])/2;ET_GARAGE.car.y=2450;GHALL.tow={x:ET_GARAGE.car.x,y:ET_GARAGE.car.y};
+   const a0=window.__TC_TOW&&window.__TC_TOW.audit;if(window.__TC_TOW)window.__TC_TOW.audit=function(){const issues=[],G=ET_GARAGE;try{const svc=D3N_SVC_PTS['D3-GARAGE'],B=D3ND.garage.bays[2];
+     if(!(G.car.x>=B[0]+12&&G.car.x<=B[2]-12&&G.car.y>=B[1]+20&&G.car.y<=B[3]-20))issues.push('not-bay-3');if(!svc||Math.hypot(svc[0][0]-G.car.x,svc[0][1]-G.car.y)>60)issues.push('far-from-service');
+     const hit=playerStaticBodyBlockedAt(G.car.x,G.car.y,G.car.h);if(hit)issues.push('car-blocked:'+hit);if(staticPersonBlockedAt(G.ped.x,G.ped.y,PLAYER_PERSON_RADIUS))issues.push('ped-blocked')}catch(e){issues.push('error:'+String(e&&e.message||e).slice(0,100))}
+     if(ECON_TOW.err)issues.push('err:'+ECON_TOW.err);return{ok:!issues.length,issues,n:ECON_TOW.n,bay:3,old:a0?'bay2':null}}}}catch(e){er(e)}
+ /* the check: the hooks, the reception and the posts — clear of the stalls, the roads, the bays; the tow in bay 3 */
+ function audit(){const issues=[],over=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y,R={x:BINS[0],y:RECEP[1],w:RECP()[2],h:RECEP[3]-RECEP[1]};
+  try{if(!GHALL.ws)issues.push('no-front');if(!GHALL.hooks)issues.push('no-hooks');
+   for(const st of D3N_STALLS)if(over(R,st))issues.push('reception-stall:'+st.id);
+   for(const e of EDGES.filter(e=>/^TC-D3-/.test(e.globalRoadId))){const A=byNode[e.a],B=byNode[e.b],h=roadType(e).width/2+roadType(e).sidewalk,r={x:Math.min(A.x,B.x)-h,y:Math.min(A.y,B.y)-h,w:Math.abs(A.x-B.x)+2*h,h:Math.abs(A.y-B.y)+2*h};if(over(R,r))issues.push('reception-road:'+e.id)}
+   for(const b of D3ND.garage.bays){const q={x:b[0],y:b[1],w:b[2]-b[0],h:b[3]-b[1]};if(over(R,q))issues.push('reception-bay');for(const p of POSTS)if(over({x:p[0]-2,y:p[1]-2,w:4,h:4},q))issues.push('post-in-bay')}
+   for(const c of (D3ND.cuts||[])){const q={x:c[0],y:c[1],w:c[2]-c[0],h:c[3]-c[1]};if(over(R,q))issues.push('reception-cut')}
+   const t=window.__TC_TOW&&window.__TC_TOW.audit();if(!t||!t.ok)issues.push('tow:'+JSON.stringify(t&&t.issues));
+   if((D3ND.bins||[]).some(r=>r[0]===4252&&r[1]===2432))issues.push('old-bins-still-drawn')}catch(e){issues.push('error:'+String(e&&e.message||e).slice(0,120))}
+  if(GHALL.err)issues.push('err:'+GHALL.err);return{ok:!issues.length,issues,n:GHALL.n,tow:GHALL.tow,reception:[R.x,R.y,R.x+R.w,R.y+R.h]}}
+ const RECP=()=>[BINS[0],RECEP[1],RECEP[2]-BINS[0],RECEP[3]-RECEP[1]];
+ window.__TC_GHALL={GHALL,HALL,RECEP,POSTS,roof,audit}})();
+/* F9 ← אירועים: המוסך (לבדיקה של הבעלים) — מסך F במוסך / בסוכנות / בבית, והמצלמה על האולם */
+{const e0=tcF9Events;tcF9Events=function(){e0();try{const p=tcF9P('events');if(!p||p.querySelector('[data-gst-f9]'))return;
+  p.insertAdjacentHTML('afterbegin','<div class="tcF9Card"><h4>המוסך (D‑380 · ‏D‑695)</h4><div class="tcF9Row"><button data-gst-f9="garage">מסך המוסך (F)</button><button data-gst-f9="dealer">הסוכנות (F)</button><button data-gst-f9="home">המוסך בבית</button><button data-gst-f9="hall">המצלמה על האולם</button></div><div class="tcF9Row"><span class="tcF9Mut">הרכב באמצע מסתובב; גוררים כדי לסובב; לחיצה על צבע / חישוק / שדרוג — תצוגה מקדימה; "קנה" מחיל ומחייב, "ביטול" מחזיר. במשחק — F ליד המוסך ב-D3.</span></div></div>');
+  p.addEventListener('click',ev=>{const b=ev.target.closest('[data-gst-f9]');if(!b)return;const k=b.dataset.gstF9;try{if(typeof PERF!=='undefined'&&PERF.hud)perfHudToggle()}catch(e){}
+   try{if(k==='hall'){PlayerProfile.mode='walk';PlayerPed.x=4330;PlayerPed.y=2492;PlayerPed.heading=-Math.PI/2;Camera.x=4370;Camera.y=2440;Camera.zoom=2.4;return}window.__TC_GST.open(k)}catch(e){toast('שגיאה: '+e.message)}})}catch(e){}}}

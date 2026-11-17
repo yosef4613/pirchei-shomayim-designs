@@ -1,0 +1,207 @@
+/* ===== GARAGE STUDIO · מסך המוסך (F) — הרכב גדול באמצע ומסתובב; כל שינוי — לראות לפני; "קנה" מחיל ומחייב, "ביטול" מחזיר (garage, 17.11.2026) =====
+   הבקשה של הבעלים (13.11, HANDOFF_NEXT): "כשלוחצים F במוסך — הרכב של השחקן גדול באמצע המסך ומסתובב (כמו במת הסיבוב באולם D3, דרך C34), ואפשר לעצור את
+   הסיבוב ולסובב ביד. כל שינוי — לראות לפני הקנייה: צבע, חישוקים, גג, שדרוגים — תצוגה מקדימה על הרכב המסתובב, ורק 'קנה' מחיל ומחייב. 'ביטול' מחזיר את
+   המראה הקודם. אותו דבר במוסך שבבית ובסוכנות." הציור: deliver/2026-11-17/garage/draw/Garage_F_screen_plan.html.
+   המלאי (כלל 16 / 19א) — מה שכבר היה, ונשאר כמו שהוא: מסך המקום (029 openPoiPhone / placeApply, כלל 30) ו-F במוסך (039 interactNearbyPoi → 'garage'),
+   הכרטיסים של המוסך (056 phoneGarage, ‏074v_econ2_tow — הגרירה), הצבע / החישוקים / השדרוגים / הקנייה בסוכנות (027 paintOwnedVehicle, setOwnedVehicleRim,
+   buyVehicleUpgrade, buyDealerVehicle), הגגון (056 setOwnedVehicleRoof), התיקון (029 repairAtGarage), התמונה של הרכב ב-3/4 (C34.render / C34.sprite,
+   063–064; ‏c34Id / c34Col / c34Opt — 065), הדוגמיות של החישוקים (056 g88DrawRims + W17), והבמה המסתובבת של חדר ההלבשה (074h WDRUI — סיבוב רציף,
+   גרירה, 45° בכל לחיצה, עצירה) — הדפוס שלה כאן, לרכב.
+   מה שנוסף כאן — רק מה שחסר: במה גדולה בראש מסך המקום (המוסך העירוני D3-GARAGE, הסוכנות D3-DEALER, והמוסך שבבית — "פתח מוסך / רכבים" ב-PLAYER-HOME),
+   תצוגה מקדימה (צבע / חישוקים / גגון / שדרוגים / תיקון; בסוכנות — דגם, צבע וחישוקים), סל עם מחיר, "קנה" שקורא לפונקציות הקיימות, ו"ביטול".
+   הכרטיסים הישנים שמחילים ומחייבים מיד (עיצוב הרכב, שדרוגי ביצועים, כרטיס הסוכנות) — יוצאים מהמסך הגדול בלבד; בטלפון הקטן — כמו היום. */
+var GST={on:true,v:1,err:null,n:{mount:0,frames:0,made:0,hit:0,buy:0,cancel:0,pick:0,fx:0,legacyOut:0,err:0},last:null};
+var GSTUI=(function(){
+ const PI=Math.PI,TAU=PI*2,NDIR=72,BUDGET=40*1048576;
+ const U={mode:null,tab:null,ang:PI*.82,auto:true,drag:null,raf:0,last:0,drawT:0,dirty:1,sel:null,model:null,pre:{},cache:new Map(),bytes:0,bg:new Map(),fx:null,applying:false,lastKey:''};
+ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const err=e=>{GST.n.err++;GST.err=String(e&&e.message||e).slice(0,220)};
+ const fee=k=>(typeof GARAGE_STYLE_FEES!=='undefined'&&GARAGE_STYLE_FEES[k])||0;
+ const UPK=[['engine','מנוע','תאוצה ומהירות'],['grip','אחיזה / צמיגים','פנייה ותגובה'],['brakes','בלמים','עצירה']];
+ const colName=i=>(VEHICLE_COLORS.find(x=>x[1]===i)||['לבן'])[0],rimName=i=>(VEHICLE_RIMS.find(x=>x[1]===i)||['קלאסי'])[0];
+ const palHex=i=>{try{return TurboCity.vehPal[i][1]}catch(e){return '#888'}};
+ /* ---------- where am I: the city garage, the dealer, the home garage ---------- */
+ function modeNow(){if(!GST.on||!State.phoneOpen||!PLACE.on||State.phoneApp!=='garage')return null;const id=State.interactionId||PLACE.on.id;
+  if(id==='D3-GARAGE')return 'garage';if(id==='D3-DEALER')return 'dealer';if(id==='PLAYER-HOME')return 'home';return null}
+ const borrowed=()=>!!State.vehicleEcoOverride;
+ function owned(){try{return ensureGarageSchema().vehicles}catch(e){return []}}
+ function curCar(){   // the car on the stage: {asset, ref, st:{c,r,v}, up, own (the owned record or null), name}
+  if(U.mode==='dealer'){const ids=Object.keys(VEHICLE_CATALOG);if(!U.model||!VEHICLE_CATALOG[U.model])U.model=ids[0];const c=VEHICLE_CATALOG[U.model];if(!c)return null;
+   return{asset:U.model,ref:c.ref||'Sedan',st:{c:0,r:g88RimSet(U.model)[0]||0,v:0},up:{},own:null,name:c.name,cat:c}}
+  if(borrowed()||!owned().length){const s=PlayerCar.state||{};return{asset:PlayerCar.asset,ref:PlayerCar.ref||'Sedan',st:{c:s.c??0,r:s.r??0,v:s.v===1?1:0},up:{},own:null,name:g88VehName(PlayerCar.asset,PlayerCar.ref),loan:true}}
+  let v=null;if(U.mode==='home'&&U.sel)v=owned().find(q=>q.ownedId===U.sel)||null;if(!v)v=activeOwnedVehicle();if(!v)return null;
+  return{asset:v.vehicleId,ref:v.ref||VEHICLE_CATALOG[v.vehicleId]?.ref||'Sedan',st:{c:v.colorIndex||0,r:v.rimIndex||0,v:v.roofIndex===1?1:0},up:v.upgrades||{},own:v,name:VEHICLE_CATALOG[v.vehicleId]?.name||g88VehName(v.vehicleId,v.ref),fuel:v.fuel,damage:v.damage}}
+ function look(car){const p=U.pre,s=car.st;return{c:p.c!=null?p.c:s.c,r:p.r!=null?p.r:s.r,v:p.v!=null?p.v:s.v}}
+ /* ---------- the basket ---------- */
+ function basket(car){const L=[];if(!car)return{L,total:0};const p=U.pre,s=car.st;
+  if(U.mode==='dealer'){L.push(['model',car.name,car.cat.price]);if(p.c!=null&&p.c!==s.c)L.push(['c','צבע '+colName(p.c)+' — מהמפעל',0]);if(p.r!=null&&p.r!==s.r)L.push(['r','חישוקי '+rimName(p.r)+' — מהמפעל',0]);}
+  else{if(p.c!=null&&p.c!==s.c)L.push(['c','צבע '+colName(p.c),fee('paint')]);if(p.r!=null&&p.r!==s.r)L.push(['r','חישוקי '+rimName(p.r),fee('rims')]);
+   if(p.v!=null&&p.v!==s.v)L.push(['v',p.v?'גגון':'הסרת הגגון',p.v?fee('roof'):0]);
+   for(const [k,nm] of UPK){const a=car.up[k]||0,b=p.up&&p.up[k]!=null?p.up[k]:a;if(b>a){let m=0;for(let i=a;i<b;i++)m+=UPGRADE_PRICES[k][i]||0;L.push(['u:'+k,nm+' '+a+' → '+b,m])}}
+   if(p.fix&&car.own){const d=Math.max(0,car.own.damage??0);if(d>=.5)L.push(['fix','תיקון '+Math.round(d)+'%',Math.ceil(d*6)])}}
+  return{L,total:L.reduce((a,q)=>a+q[2],0)}}
+ const dirty=()=>{const p=U.pre;return p.c!=null||p.r!=null||p.v!=null||!!p.fix||!!(p.up&&Object.keys(p.up).length)};
+ /* ---------- the picture: the game's own 3/4 painter (C34), the paint / rims / roof rack of the preview ---------- */
+ function fit(cv,maxD){const d=Math.min(maxD||2,Math.max(1,window.devicePixelRatio||1)),W=Math.max(2,Math.round(cv.clientWidth*d)),H=Math.max(2,Math.round(cv.clientHeight*d));if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;U.dirty=1}return d}
+ function pic(car,st,ang,res){if(!car||!window.TurboCity||typeof C34==='undefined'||!C34)return null;
+  const sc=roadVehicleScaleFor(car.asset,car.ref),[Lw,Ww]=c34Dims(car.asset,sc),id=c34Id(car.asset,Lw,Ww);if(!id)return null;
+  const col=c34Col(st),opt=c34Opt(car.asset,st,'player'),k=((Math.round(ang/TAU*NDIR)%NDIR)+NDIR)%NDIR,key=id+'|'+col+'|'+(opt?opt.rim+'.'+opt.v:'-')+'|'+k+'|'+res;
+  let e=U.cache.get(key);if(e){U.cache.delete(key);U.cache.set(key,e);GST.n.hit++;return e}
+  try{e=id.charCodeAt(0)===75?C34.sprite(id,col,k/NDIR*TAU,res,NDIR,opt):C34.render(id,col,k,NDIR,res,opt)}catch(x){err(x);return null}
+  if(!e||!e.cv)return null;const r=c34Ratio(id,car.asset,Lw);e={cv:e.cv,ox:e.ox,oy:e.oy,q:r};U.cache.set(key,e);U.bytes+=e.cv.width*e.cv.height*4;GST.n.made++;
+  while(U.bytes>BUDGET&&U.cache.size>1){const k0=U.cache.keys().next().value,e0=U.cache.get(k0);U.bytes-=e0.cv.width*e0.cv.height*4;U.cache.delete(k0)}return e}
+ function carLen(car){try{const sc=roadVehicleScaleFor(car.asset,car.ref);return Math.max(20,c34Dims(car.asset,sc)[0])}catch(e){return 50}}
+ /* ---------- the room behind the stage: the garage hall (the bays, the tool wall), the showroom of the dealer, the garage at home ---------- */
+ function bgOf(Wd,Hd,kind){const k=kind+'|'+Wd+'x'+Hd;let b=U.bg.get(k);if(b)return b;b=document.createElement('canvas');b.width=Wd;b.height=Hd;const c=b.getContext('2d'),fy=Math.round(Hd*.42);
+  const pal={garage:['#33434e','#25313a','#6d7780','#8c959c','#f2c230'],dealer:['#e9edf0','#c9d1d7','#d6dbdf','#eef1f3','#1f5fd1'],home:['#4a3f36','#352d27','#7c6f62','#8e8173','#f2d38a']}[kind]||['#33434e','#25313a','#6d7780','#8c959c','#f2c230'];
+  let g=c.createLinearGradient(0,0,0,fy);g.addColorStop(0,pal[0]);g.addColorStop(1,pal[1]);c.fillStyle=g;c.fillRect(0,0,Wd,fy);
+  if(kind==='garage'){   // three roller doors (the parts store, the paint booth, the rims and tyres) and the tool board between them
+   const dw=Wd*.2,gap=(Wd-3*dw)/4,dy=fy*.34,dh=fy*.66,lbl=['מחסן חלקים','תא צבע','חישוקים וצמיגים'];
+   for(let i=0;i<3;i++){const x=gap+i*(dw+gap);c.fillStyle='#1d252c';c.fillRect(x-3,dy-3,dw+6,dh+3);c.fillStyle=i===1?'#5d6b62':'#5f6a73';c.fillRect(x,dy,dw,dh);
+    c.fillStyle='rgba(0,0,0,.18)';for(let s=1;s<10;s++)c.fillRect(x,dy+s*dh/10,dw,Math.max(1,Hd*.003));c.fillStyle='#f2c230';c.fillRect(x,dy-Hd*.03,dw,Hd*.022);
+    c.fillStyle='#13202b';c.font='700 '+Math.round(Hd*.03)+'px Segoe UI,Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(lbl[i],x+dw/2,dy-Hd*.019)}
+   c.strokeStyle='rgba(242,194,48,.55)';c.lineWidth=Math.max(1,Wd*.0025);for(let i=0;i<2;i++){const x0=gap+(i+1)*(dw+gap)-gap*.86,w=gap*.72,y0=fy*.3;c.strokeRect(x0,y0,w,fy*.44);
+    for(let t=0;t<5;t++){c.beginPath();c.moveTo(x0+w*(.15+t*.17),y0+fy*.06);c.lineTo(x0+w*(.15+t*.17),y0+fy*(.18+(t%2)*.08));c.stroke()}}}
+  else if(kind==='dealer'){c.fillStyle='rgba(31,95,209,.12)';for(let i=0;i<6;i++)c.fillRect(Wd*(.04+i*.16),fy*.12,Wd*.12,fy*.8);c.fillStyle='#1f5fd1';c.fillRect(0,fy*.06,Wd,Math.max(3,Hd*.012))}
+  else{c.fillStyle='#6b5a49';c.fillRect(Wd*.25,fy*.16,Wd*.5,fy*.84);c.fillStyle='rgba(0,0,0,.2)';for(let s=1;s<9;s++)c.fillRect(Wd*.25,fy*.16+s*fy*.84/9,Wd*.5,Math.max(1,Hd*.003))}
+  // the floor: concrete (polished in the showroom), the yellow lines of the bay
+  g=c.createLinearGradient(0,fy,0,Hd);g.addColorStop(0,pal[2]);g.addColorStop(1,pal[3]);c.fillStyle=g;c.fillRect(0,fy,Wd,Hd-fy);c.fillStyle='rgba(0,0,0,.25)';c.fillRect(0,fy,Wd,Math.max(2,Hd*.012));
+  if(kind==='garage'){c.fillStyle='rgba(242,194,48,.75)';c.fillRect(Wd*.08,fy+Hd*.05,Math.max(2,Wd*.006),Hd);c.fillRect(Wd*.92,fy+Hd*.05,Math.max(2,Wd*.006),Hd)}
+  const sp=c.createRadialGradient(Wd/2,Hd*.66,0,Wd/2,Hd*.66,Wd*.55);sp.addColorStop(0,'rgba(255,244,214,.22)');sp.addColorStop(1,'rgba(255,244,214,0)');c.fillStyle=sp;c.fillRect(0,0,Wd,Hd);
+  U.bg.set(k,b);if(U.bg.size>6)U.bg.delete(U.bg.keys().next().value);return b}
+ /* ---------- the stage ---------- */
+ function stage(cv){const car=curCar();if(!cv)return false;fit(cv,2);const c=cv.getContext('2d'),Wd=cv.width,Hd=cv.height,gx=Wd/2,gy=Math.round(Hd*.61),t0=performance.now();
+  c.setTransform(1,0,0,1,0,0);c.drawImage(bgOf(Wd,Hd,U.mode||'garage'),0,0);if(!car)return false;
+  const L=carLen(car),res=Math.max(1,Math.min(14,Math.round(Math.min(Wd*.6,Hd*.58)/L*2)/2)),R=Math.min(L*res*.62,Hd*.36),rim=U.mode==='dealer'?'#1f5fd1':U.mode==='home'?'#f2d38a':'#f2c230';
+  // the turntable on the floor (in the 3/4 of the game the ground is not foreshortened: a disc is a circle)
+  c.fillStyle='rgba(0,0,0,.35)';c.beginPath();c.arc(gx+R*.04,gy+R*.05,R*1.04,0,TAU);c.fill();c.fillStyle=rim;c.beginPath();c.arc(gx,gy,R,0,TAU);c.fill();
+  let g=c.createRadialGradient(gx,gy,0,gx,gy,R);g.addColorStop(0,'#55606a');g.addColorStop(1,'#2a323a');c.fillStyle=g;c.beginPath();c.arc(gx,gy,R*.95,0,TAU);c.fill();
+  for(let i=0;i<24;i++){const th=U.ang+i*PI/12,x=gx+Math.cos(th)*R*.87,y=gy+Math.sin(th)*R*.87;c.fillStyle=i===0?'rgba(255,255,255,.9)':i%6===0?'rgba(255,255,255,.5)':'rgba(255,255,255,.2)';c.beginPath();c.arc(x,y,Math.max(1.5,R*(i===0?.022:.012)),0,TAU);c.fill()}
+  const st=look(car),e=pic(car,st,U.ang,res);
+  if(e){const q=e.q||1;c.drawImage(e.cv,gx-e.ox*q,gy-e.oy*q,e.cv.width*q,e.cv.height*q)}
+  else{try{const sc=roadVehicleScaleFor(car.asset,car.ref)*res,I=TurboCity.info(car.asset,{scale:sc});c.save();c.translate(gx,gy);c.rotate(U.ang);TurboCity.draw(c,car.asset,-I.w/2,-I.h/2,{mode:'runtime',scale:sc,state:{c:st.c,r:st.r,v:st.v,L:{lights:false}},time:0});c.restore()}catch(x){err(x)}}
+  if(U.fx){const u=(performance.now()-U.fx.t0)/U.fx.ms;if(u>=1)U.fx=null;else{   // the work after "buy": the mist of the paint booth / the sparks of the workshop, a moment, around the car
+    c.save();const n=40;for(let i=0;i<n;i++){const a=i*2.399+u*3,r=R*(.35+((i*37)%60)/100)*(.6+u*.6),x=gx+Math.cos(a)*r,y=gy-R*.25+Math.sin(a)*r*.6;c.globalAlpha=(1-u)*.5;c.fillStyle=U.fx.col||'#ffffff';c.beginPath();c.arc(x,y,Math.max(2,R*.035*(1+((i*13)%5)/3)),0,TAU);c.fill()}
+    c.globalAlpha=Math.min(1,(1-u)*3);c.fillStyle='rgba(8,16,24,.82)';const tw=Wd*.4;c.fillRect(gx-tw/2,Hd*.015,tw,Hd*.07);c.fillStyle='#fff';c.font='800 '+Math.round(Hd*.036)+'px Segoe UI,Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(U.fx.text,gx,Hd*.05,tw-8);c.restore()}}
+  GST.n.frames++;GST.last={ms:+(performance.now()-t0).toFixed(1),res,k:((Math.round(U.ang/TAU*NDIR)%NDIR)+NDIR)%NDIR,pic:!!e,cache:U.cache.size,MB:+(U.bytes/1048576).toFixed(1)};return !!e}
+ /* ---------- the panel ---------- */
+ function tabsOf(car){if(U.mode==='dealer')return[['models','דגמים'],['c','צבע'],['r','חישוקים']];const T=[['c','צבע'],['r','חישוקים']];
+  if(car&&g88RoofOk(car.asset))T.push(['v','גגון']);T.push(['up','שדרוגים']);if(U.mode==='garage')T.push(['fix','תיקון']);if(U.mode==='home'||owned().length>1)T.push(['cars','הרכבים שלי']);return T}
+ function bodyHtml(car){if(!car)return '<p class="gstP">אין רכב להציג.</p>';const p=U.pre,s=car.st,lk=look(car),ro=car.loan;
+  if(ro&&U.mode!=='dealer')return `<p class="gstP">הרכב הזה ${esc(car.name)} — זמני או שאול: אין בו צביעה, חישוקים ושדרוגים. את הרכב שלך מעצבים כאן כשאתה בו.</p>`;
+  const now=b=>b?'<i class="gstNow">עכשיו</i>':'';
+  switch(U.tab){
+   case 'models':return `<div class="gstList">${Object.entries(VEHICLE_CATALOG).map(([id,c])=>{const lic=!c.license||licenseOwned(c.license);return `<button class="gstRow gstRowT${U.model===id?' on':''}" data-gst-model="${id}">${vehicleThumbHtml({vehicleId:id,ref:c.ref,colorIndex:0,rimIndex:g88RimSet(id)[0]},'vehicleThumb gstTh')}<span><b>${esc(c.name)}</b><small>${esc(c.ref||'')} · ${money(c.price)}${lic?'':' · 🔒 '+esc(c.license)}</small></span></button>`}).join('')}</div>`;
+   case 'c':if(!g88Paintable(car.asset))return `<p class="gstP">לרכב הזה צבע קבוע — אין צביעה.</p>`;
+    return `<div class="gstSw">${VEHICLE_COLORS.map(([nm,i])=>`<button class="gstDot${lk.c===i?' on':''}" data-gst-c="${i}" style="--c:${palHex(i)}" title="${esc(nm)}"><i></i><span>${esc(nm)}</span>${now(s.c===i)}</button>`).join('')}</div><p class="gstP">לחיצה על צבע — הרכב באמצע מתחלף מיד; החיוב רק ב"קנה". ${U.mode==='dealer'?'בסוכנות — הצבע מהמפעל, בלי תוספת.':'צביעה: '+money(fee('paint'))+'.'}</p>`;
+   case 'r':{const set=g88RimSet(car.asset);return `<div class="gstSw">${VEHICLE_RIMS.filter(x=>set.includes(x[1])).map(([nm,i])=>`<button class="gstRim${lk.r===i?' on':''}" data-gst-r="${i}"><canvas data-rim-sw="${i}"></canvas><span>${esc(nm)}</span>${now(s.r===i)}</button>`).join('')}</div><p class="gstP">${U.mode==='dealer'?'בסוכנות — החישוקים מהמפעל, בלי תוספת.':'החלפת חישוקים: '+money(fee('rims'))+'.'} את החישוקים רואים מקרוב כאן; בעיר — מהזום הקרוב.</p>`}
+   case 'v':return `<div class="gstSw">${[[0,'בלי גגון'],[1,'גגון']].map(([on,nm])=>`<button class="gstRow${lk.v===on?' on':''}" data-gst-v="${on}"><b>${nm}</b>${now(s.v===on)}</button>`).join('')}</div><p class="gstP">גגון: ${money(fee('roof'))} · הסרה — בלי תשלום. את הגגון רואים גם בעולם.</p>`;
+   case 'up':return UPK.map(([k,nm,what])=>{const a=car.up[k]||0,b=p.up&&p.up[k]!=null?p.up[k]:a,next=b<5?UPGRADE_PRICES[k][b]:0;
+     return `<div class="gstUp"><div class="gstUpH"><b>${nm}</b><small>${what} · רמה ${a}/5${b>a?' → '+b:''}</small></div><div class="gstBar"><i class="have" style="width:${a*20}%"></i><i class="add" style="inset-inline-start:${a*20}%;width:${(b-a)*20}%"></i></div>
+      <div class="gstUpB"><button data-gst-up="${k}:-1" ${b<=a?'disabled':''}>−</button><button data-gst-up="${k}:1" ${b>=5?'disabled':''}>${b>=5?'מקסימום':'+ '+money(next)}</button></div></div>`}).join('')+`<p class="gstP">ירוק — מה שיש; כתום — מה שבסל.</p>`;
+   case 'fix':{const d=Math.round(Math.max(0,car.own?.damage??0)),f=Math.round(car.own?.fuel??100);return `<div class="gstUp"><div class="gstUpH"><b>נזק ${d}%</b><small>דלק ${f}% · תיקון — 6 לכל אחוז</small></div><div class="gstBar bad"><i class="have" style="width:${d}%"></i></div>
+     <div class="gstUpB"><button data-gst-fix="1" class="${p.fix?'on':''}" ${d<1?'disabled':''}>${d<1?'הרכב תקין':p.fix?'✓ התיקון בסל':'הוסף תיקון לסל · '+money(Math.ceil(d*6))}</button></div></div><p class="gstP">התיקון — בתא 1 (תיקון ושדרוגים). צריך לעצור את הרכב במוסך.</p>`}
+   case 'cars':return `<div class="gstList">${owned().map(v=>{const on=car.own&&car.own.ownedId===v.ownedId,act=ensureGarageSchema().activeVehicleId===v.ownedId;return `<button class="gstRow gstRowT${on?' on':''}" data-gst-car="${v.ownedId}">${vehicleThumbHtml(v,'vehicleThumb gstTh')}<span><b>${esc(VEHICLE_CATALOG[v.vehicleId]?.name||v.vehicleId)}</b><small>${esc(v.color||colName(v.colorIndex||0))} · ${esc(rimName(v.rimIndex||0))}${act?' · הרכב הפעיל':''}</small></span></button>`}).join('')}</div><p class="gstP">${U.mode==='home'?'בבית רואים את כל הרכבים שלך. החלפת הרכב הפעיל, הצבע, החישוקים והשדרוגים — במוסך העירוני D3.':'החלפת הרכב הפעיל — בכרטיס "רכבים בבעלות" למטה.'}</p>`}
+  return ''}
+ function basketHtml(car){const B=basket(car),m=PlayerProfile.money,nav=(()=>{try{return !!navPoiRegistry()['D3-GARAGE']}catch(e){return false}})();
+  if(!B.L.length)return `<div class="gstBk empty"><span>${U.mode==='dealer'?'בוחרים דגם, צבע וחישוקים — ואז "קנה".':'בוחרים שינוי — רואים אותו על הרכב — ואז "קנה".'}</span></div>`;
+  const lines=B.L.map(q=>`<span>${esc(q[1])}${q[2]?' · '+money(q[2]):''}</span>`).join('');
+  if(U.mode==='home')return `<div class="gstBk"><div class="gstBkL"><b>תצוגה בלבד</b>${lines}<small>במוסך העירוני: ${money(B.total)} · הקנייה — במוסך D3.</small></div><div class="gstBkB">${nav?'<button class="gstBuy" data-nav-target="D3-GARAGE">נווט למוסך</button>':''}<button class="gstCancel" data-gst-cancel="1">ביטול</button></div></div>`;
+  const can=m>=B.total;return `<div class="gstBk"><div class="gstBkL"><b>בסל</b>${lines}<small>סה״כ ${money(B.total)} · ביתרה ${money(m)}${can?'':' · חסרים '+money(B.total-m)}</small></div><div class="gstBkB"><button class="gstBuy" data-gst-buy="1" ${can?'':'disabled'}>קנה</button><button class="gstCancel" data-gst-cancel="1">ביטול</button></div></div>`}
+ function shell(){return `<div class="gstStage"><div class="gstCv"><canvas id="gstMain"></canvas><span class="gstHint">גוררים כדי לסובב</span><span class="gstPre" id="gstPre">תצוגה מקדימה</span><span class="gstName" id="gstName"></span></div>
+  <div class="gstCtl"><button data-gst-rot="-1" title="45° שמאלה" aria-label="45 מעלות שמאלה">⟲ 45°</button><button data-gst-auto="1" id="gstAuto"></button><button data-gst-rot="1" title="45° ימינה" aria-label="45 מעלות ימינה">45° ⟳</button></div><div id="gstBasket"></div></div>
+  <div class="gstPanel"><div class="gstTabs" id="gstTabs"></div><div id="gstBody"></div></div>`}
+ function refresh(){const root=$('gstRoot');if(!root)return;const car=curCar(),T=tabsOf(car);if(!T.some(t=>t[0]===U.tab))U.tab=T[0][0];
+  const set=(id,h)=>{const e=$(id);if(e&&e.__h!==h){e.__h=h;e.innerHTML=h;return true}return false};
+  set('gstTabs',T.map(t=>`<button class="gstTab${U.tab===t[0]?' on':''}" data-gst-tab="${t[0]}">${t[1]}</button>`).join(''));
+  if(set('gstBody',bodyHtml(car))){try{g88DrawRims(root)}catch(e){err(e)}if(root.querySelector('canvas[data-vehicle-thumb]'))try{renderPhoneVehicleThumbs()}catch(e){err(e)}}
+  set('gstBasket',basketHtml(car));
+  const a=$('gstAuto');if(a){a.textContent=U.auto?'⏸ עצירה':'▶ סיבוב';a.classList.toggle('on',U.auto)}
+  const pr=$('gstPre');if(pr)pr.style.display=dirty()?'':'none';
+  const nm=$('gstName');if(nm&&car){const l=look(car);nm.textContent=car.name+' · '+colName(l.c)+' · '+rimName(l.r)+(l.v?' · גגון':'')}
+  U.dirty=1;kick()}
+ /* ---------- the loop: the stage is drawn only while it turns or changed ---------- */
+ function kick(){if(!U.raf)U.raf=requestAnimationFrame(loop)}
+ function loop(now){U.raf=0;if(!State.phoneOpen)return;const cv=$('gstMain');if(!cv)return;const dt=Math.min(.1,(now-(U.last||now))/1000);U.last=now;
+  try{if(U.auto&&!U.drag){U.ang+=dt*.42;U.dirty=1}if(U.fx)U.dirty=1;if(U.dirty&&now-U.drawT>=30){U.drawT=now;U.dirty=0;stage(cv)}}catch(e){err(e)}
+  if(U.auto||U.drag||U.dirty||U.fx)U.raf=requestAnimationFrame(loop)}
+ function bindDrag(cv){if(!cv||cv.__dr)return;cv.__dr=1;cv.style.touchAction='none';
+  cv.addEventListener('pointerdown',e=>{U.drag={x:e.clientX,a:U.ang,id:e.pointerId};try{cv.setPointerCapture(e.pointerId)}catch(_){}kick()});
+  cv.addEventListener('pointermove',e=>{if(!U.drag||U.drag.id!==e.pointerId)return;U.ang=U.drag.a-(e.clientX-U.drag.x)*.012;U.dirty=1;kick()});
+  const up=e=>{if(U.drag&&U.drag.id===e.pointerId){U.drag=null;kick()}};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up)}
+ function turn(sgn){const a0=U.ang,a1=(Math.round(a0/(PI/4))+sgn)*(PI/4),t0=performance.now();U.auto=false;
+  const f=now=>{const u=Math.min(1,(now-t0)/260),e=u*u*(3-2*u);U.ang=a0+(a1-a0)*e;U.dirty=1;kick();if(u<1&&State.phoneOpen)requestAnimationFrame(f)};requestAnimationFrame(f);refresh()}
+ /* ---------- the screen: in the place screen of the garage, the dealer and the home garage ---------- */
+ function legacyOut(body){let n=0;const kill=sel=>body.querySelectorAll(sel).forEach(b=>{const s=b.closest('section.pc');if(s&&!s.closest('#gstRoot')){s.remove();n++}});
+  if(U.mode==='garage')kill('[data-garage-color],[data-garage-rim],[data-garage-roof],[data-upgrade-buy]');if(U.mode==='dealer')kill('[data-dealer-buy]');GST.n.legacyOut+=n}
+ function after(){const m=modeNow(),body=$('phoneBody');if(!m||!body){if(U.mode&&!m)reset();return false}
+  if(m!==U.mode){U.pre={};U.tab=null;U.auto=true;U.sel=null;U.mode=m}
+  if(U.applying)return true;
+  legacyOut(body);let root=$('gstRoot');if(!root||root.parentNode!==body){root=document.createElement('section');root.id='gstRoot';root.className='gst';root.innerHTML=shell();body.prepend(root);bindDrag($('gstMain'));GST.n.mount++}
+  refresh();return true}
+ function reset(){U.pre={};U.mode=null;U.sel=null;U.tab=null;U.auto=true;U.drag=null;U.fx=null;U.cache.clear();U.bytes=0;U.bg.clear()}   // the screen closed — the preview is dropped, the pictures freed
+ /* ---------- "buy": the existing functions, one by one, in the order of the basket; one message at the end ---------- */
+ function buy(){const car=curCar();if(!car)return;const B=basket(car),newCol=palHex(look(car).c);if(!B.L.length)return;if(PlayerProfile.money<B.total)return toast('אין מספיק כסף · חסרים '+money(B.total-PlayerProfile.money));
+  if(U.mode==='home')return toast('הקנייה — במוסך העירוני D3');
+  const msgs=[],T0=toast;let ok=0;U.applying=true;toast=function(m){msgs.push(String(m))};
+  try{if(U.mode==='dealer'){const n0=owned().length;buyDealerVehicle(car.asset);const g=ensureGarageSchema();if(g.vehicles.length>n0){ok++;const v=g.vehicles[g.vehicles.length-1],p=U.pre;
+     if(p.c!=null&&g88Paintable(v.vehicleId)){v.colorIndex=p.c;v.color=colName(p.c)}if(p.r!=null&&g88RimSet(v.vehicleId).includes(p.r))v.rimIndex=p.r;try{SaveManager.save('vehicle-buy-look',{backup:false,silent:true})}catch(e){}}}
+   else{const svc=nearbyD3Service(185);if(!svc||svc.id!=='D3-GARAGE')msgs.push('צריך להיות ליד המוסך D3');else if(!car.own||borrowed())msgs.push('אי אפשר לעצב רכב זמני/שאול');
+    else{const id=car.own.ownedId,p=U.pre;for(const q of B.L){const k=q[0],m0=PlayerProfile.money;
+      if(k==='c')paintOwnedVehicle(id,p.c);else if(k==='r')setOwnedVehicleRim(id,p.r);else if(k==='v')setOwnedVehicleRoof(id,p.v);
+      else if(k==='fix')repairAtGarage();
+      else if(k.startsWith('u:')){const kk=k.slice(2),to=p.up[kk];for(let i=0;i<8&&(activeOwnedVehicle().upgrades[kk]||0)<to;i++){const l0=activeOwnedVehicle().upgrades[kk]||0;buyVehicleUpgrade(kk);if((activeOwnedVehicle().upgrades[kk]||0)===l0)break}}
+      if(PlayerProfile.money<m0||k==='v')ok++}}}}
+  catch(e){err(e)}finally{toast=T0;U.applying=false}
+  GST.n.buy++;const okAll=ok>=B.L.length||(U.mode==='dealer'&&ok>0);
+  if(ok){U.pre={};U.fx={t0:performance.now(),ms:1700,text:U.mode==='dealer'?'הרכב שלך מוכן · '+car.name:B.L.some(q=>q[0]==='c')?'תא הצבע · הרכב נצבע':B.L.some(q=>q[0]==='fix')?'תא 1 · הרכב תוקן':'תא 1 · העבודה נגמרה',col:U.mode==='dealer'?'#ffffff':newCol};GST.n.fx++;try{if(typeof GHALL!=='undefined'&&U.mode==='garage')GHALL.fx={t0:performance.now(),kind:B.L.some(q=>q[0]==='c')?'paint':'work',col:newCol}}catch(e){}}
+  toast((okAll?'✓ ':'')+(msgs.length?msgs.slice(-3).join(' · '):'נקנה')+(ok?' · סה״כ '+money(B.total):''));renderPhone()}
+ /* ---------- the clicks ---------- */
+ function click(e){const T=e.target;if(!T||!T.closest||!T.closest('#gstRoot'))return false;const car=curCar(),b=T.closest('button');if(!b||b.disabled)return true;const d=b.dataset;
+  if(d.gstTab){U.tab=d.gstTab;refresh();return true}
+  if(d.gstRot){turn(Number(d.gstRot)||1);return true}
+  if(d.gstAuto){U.auto=!U.auto;refresh();return true}
+  if(d.gstC!=null){const i=Number(d.gstC);U.pre.c=car&&car.st.c===i?null:i;if(U.pre.c==null)delete U.pre.c;GST.n.pick++;refresh();return true}
+  if(d.gstR!=null){const i=Number(d.gstR);if(car&&car.st.r===i)delete U.pre.r;else U.pre.r=i;GST.n.pick++;refresh();return true}
+  if(d.gstV!=null){const i=Number(d.gstV);if(car&&car.st.v===i)delete U.pre.v;else U.pre.v=i;GST.n.pick++;refresh();return true}
+  if(d.gstUp){const [k,s]=d.gstUp.split(':'),a=car.up[k]||0,up=U.pre.up||(U.pre.up={}),b0=up[k]!=null?up[k]:a,b1=Math.max(a,Math.min(5,b0+Number(s)));if(b1===a)delete up[k];else up[k]=b1;if(!Object.keys(up).length)delete U.pre.up;refresh();return true}
+  if(d.gstFix){if(U.pre.fix)delete U.pre.fix;else U.pre.fix=true;refresh();return true}
+  if(d.gstCar){U.sel=d.gstCar;U.pre={};refresh();return true}
+  if(d.gstModel){U.model=d.gstModel;U.pre={};refresh();return true}
+  if(d.gstCancel){U.pre={};GST.n.cancel++;refresh();return true}
+  if(d.gstBuy){buy();return true}
+  return false}
+ /* ---------- the style of the screen (in code; no pictures — rule 17) ---------- */
+ const CSS=`#phoneOverlay.place .gst{grid-column:1/-1;display:grid;grid-template-columns:minmax(360px,1.3fr) minmax(300px,.9fr);gap:18px;align-items:stretch;height:max(470px,calc(100vh - 250px))}
+.gstStage{display:flex;flex-direction:column;gap:9px;min-width:0;min-height:0}.gstCv{position:relative;flex:1 1 auto;min-height:240px;border-radius:22px;overflow:hidden;line-height:0;box-shadow:0 14px 34px #000a,0 0 0 2px color-mix(in srgb,var(--pc2,#f2c230) 55%,transparent)}
+#gstMain{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}#gstMain:active{cursor:grabbing}
+.gstHint,.gstPre,.gstName{position:absolute;font:700 12px/1.3 "Segoe UI",Arial,sans-serif;padding:4px 10px;border-radius:999px;pointer-events:none}
+.gstHint{bottom:9px;inset-inline-start:12px;color:#fff;background:#000a}.gstPre{top:10px;inset-inline-end:12px;background:#ffb020;color:#13202b}.gstName{top:10px;inset-inline-start:12px;color:#fff;background:#000a}
+.gstCtl{display:flex;gap:6px;justify-content:center}.gstCtl button,.gstTab,.gstUpB button{font:700 14px "Segoe UI",Arial;border:0;border-radius:11px;padding:8px 14px;background:#1f3b56;color:#fff;cursor:pointer}
+.gstCtl button.on{background:#ffb020;color:#13202b}.gstPanel{display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0;overflow:auto;background:#0f2236;border:1px solid #25405c;border-radius:18px;padding:12px}
+.gstTabs{display:flex;flex-wrap:wrap;gap:6px}.gstTab{border-radius:999px;padding:7px 14px}.gstTab.on{background:#ffb020;color:#13202b}
+.gstSw{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}.gstDot,.gstRim,.gstRow{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 6px;border-radius:12px;border:2px solid transparent;background:#13283c;color:#e8eef4;font:600 12.5px "Segoe UI",Arial;cursor:pointer}
+.gstDot>i:not(.gstNow){width:34px;height:34px;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 2px #0006}.gstRim canvas{width:38px;height:38px}.gstDot.on,.gstRim.on,.gstRow.on{border-color:#ffb020;background:#1c3550}
+.gstNow{font:700 10px Arial;font-style:normal;background:#3ddc84;color:#0b1a2b;border-radius:6px;padding:1px 5px}
+.gstList{display:flex;flex-direction:column;gap:6px}.gstRow{align-items:flex-start;text-align:start}.gstRow small{color:#aebccb;font-weight:500}.gstRowT{flex-direction:row;align-items:center;gap:10px}.gstRowT>span{display:flex;flex-direction:column;gap:2px}.gstTh{width:96px;height:56px;border-radius:8px;flex:0 0 auto}
+.gstP{margin:2px 0;color:#c7d2de;font-size:13px;line-height:1.5}.gstUp{background:#13283c;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:7px}.gstUpH{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.gstUpH small{color:#aebccb}
+.gstBar{position:relative;height:12px;border-radius:6px;background:#25405c;overflow:hidden}.gstBar i{position:absolute;top:0;bottom:0;inset-inline-start:0}.gstBar .have{background:#3ddc84}.gstBar.bad .have{background:#ff7a59}.gstBar .add{background:#ffb020}
+.gstUpB{display:flex;gap:6px}.gstUpB button[disabled],.gstBkB button[disabled]{opacity:.45;cursor:default}.gstUpB button.on{background:#3ddc84;color:#0b1a2b}
+.gstBk{display:flex;gap:10px;align-items:center;justify-content:space-between;background:#0f2236;border:1px solid #3ddc84;border-radius:14px;padding:10px 12px;color:#fff;font:600 13px "Segoe UI",Arial}.gstBk.empty{border-color:#25405c;color:#c7d2de}
+.gstBkL{display:flex;flex-direction:column;gap:2px}.gstBkL small{color:#c7d2de}.gstBkB{display:flex;gap:6px}.gstBuy,.gstCancel{font:800 15px "Segoe UI",Arial;border:0;border-radius:11px;padding:10px 18px;cursor:pointer}.gstBuy{background:#3ddc84;color:#0b1a2b}.gstCancel{background:#5a6b78;color:#fff}
+@media (max-width:900px),(max-height:640px){#phoneOverlay.place .gst{grid-template-columns:1fr;height:auto}.gstCv{min-height:300px}}`;
+ function css(){if($('gstCss'))return;const s=document.createElement('style');s.id='gstCss';s.textContent=CSS;document.head.appendChild(s)}
+ /* ---------- the dev API and the check ---------- */
+ function open(where){where=where||'garage';const P={garage:['garage','D3-GARAGE',4395,2450],dealer:['garage','D3-DEALER',4304,2229],home:['house','PLAYER-HOME',null,null]}[where];if(!P)return false;
+  if(where==='home'){openPoiPhone('house','PLAYER-HOME');State.phoneApp='garage';renderPhone();return modeNow()==='home'}
+  PlayerProfile.mode='vehicle';PlayerCar.x=P[2];PlayerCar.y=P[3];PlayerCar.heading=-PI/2;PlayerCar.speed=0;Camera.x=P[2];Camera.y=P[3];openPoiPhone(P[0],P[1]);return modeNow()===where}
+ function audit(){const o={ok:false,issues:[]};try{const m=modeNow();if(!m){o.issues.push('not-open');return o}const car=curCar(),cv=$('gstMain');if(!car)o.issues.push('no-car');if(!cv)o.issues.push('no-stage');
+   const e=car&&pic(car,look(car),U.ang,4);if(!e)o.issues.push('no-c34-picture');else{const g=e.cv.getContext('2d',{willReadFrequently:true}),im=g.getImageData(0,0,e.cv.width,e.cv.height).data;let px=0;for(let i=3;i<im.length;i+=16)if(im[i]>200)px++;o.px=px;if(px<50)o.issues.push('empty-picture')}
+   o.mode=m;o.car=car&&car.asset;o.tabs=tabsOf(car).map(t=>t[0]);o.legacy=document.querySelectorAll('#phoneBody [data-garage-color],#phoneBody [data-garage-rim],#phoneBody [data-upgrade-buy]'+(m==='dealer'?',#phoneBody [data-dealer-buy]':'')).length;if(o.legacy)o.issues.push('legacy-buttons:'+o.legacy);
+   o.ok=!o.issues.length}catch(e){o.issues.push('error:'+String(e&&e.message||e).slice(0,120))}return o}
+ css();
+ return{after,click,reset,open,audit,buy,refresh,U,curCar:()=>curCar(),basket:()=>basket(curCar()),look:()=>{const c=curCar();return c?look(c):null},modeNow,kick}})();
+{const r0=renderPhone;renderPhone=function(){const r=r0.apply(this,arguments);try{GSTUI.after()}catch(e){GST.err=String(e&&e.message||e).slice(0,220)}return r}}
+{const s0=setPhoneOpen;setPhoneOpen=function(on){const r=s0.apply(this,arguments);try{if(!State.phoneOpen)GSTUI.reset()}catch(e){}return r}}
+document.addEventListener('click',e=>{try{if(GSTUI.click(e)){e.preventDefault();e.stopPropagation()}}catch(x){GST.err=String(x&&x.message||x).slice(0,220)}},true);
+window.__TC_GST={GST,UI:GSTUI,open:w=>GSTUI.open(w),audit:()=>GSTUI.audit()};

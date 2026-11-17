@@ -1,0 +1,781 @@
+/* p522r_fix (3.11): מדריך הסגנון ב-C5 / D5 / C4 / D4 — אחרי ההסדר של K‑187 ושל R‑76, כך שהפנסים נשארים במקום */
+(function p522rFix(){const F=window.P522FIX={moved:[],added:[],trees:[],racks:0,miss:[]};
+ const mv=(id,x,y)=>{const l=STREET_LIGHTS.find(q=>q.id===id);if(!l){F.miss.push(id);return}F.moved.push([id,Math.round(l.x),Math.round(l.y),x,y]);l.x=x;l.y=y;l.p522fix=1;try{POLE_FIT_CACHE.delete(l)}catch(e){}};
+ const add=(id,road,x,y,like)=>{const r=STREET_LIGHTS.find(q=>q.id===like);if(!r)F.miss.push(like);STREET_LIGHTS.push({id,roadId:road,asset:r?r.asset:'SL-AV2',x,y,rot:r?r.rot:0,scale:1,p522fix:1});F.added.push(id)};
+ /* 1 · the lamps */
+ mv('L-AR-S1W-2-L',2912,4142);mv('L-AR-S2-0-L',3209,4142);
+ add('L-AR-S3-P522F-L','AR-S3',3960,4142,'L-AR-S3-1-L');
+ add('L-AR-E3N-P522F-R','AR-E3N',4474,3534,'L-AR-E3N-1-R');mv('L-AR-E3N-1-R',4474,3628);
+ /* 2 · the trees */
+ const TL=[C4ND.trees,C5ND.trees,D5ND.trees,C5V6.trees];
+ const mt=(x0,y0,x1,y1)=>{let n=0;for(const A of TL)for(const t of A||[])if(Array.isArray(t)&&Math.abs(t[1]-x0)<1.5&&Math.abs(t[2]-y0)<1.5){t[1]=x1;t[2]=y1;n++}F.trees.push(['mv',x0,y0,x1,y1,n]);if(!n)F.miss.push('tree '+x0+','+y0)};
+ const at=(Z,x,y,a)=>{const q=[a,x,y,26];if(Z)Z.trees.push(q);C4ND.trees.push(q);F.trees.push(['add',x,y])};
+ [[3595.8,3593.7],[3649.6,3645.4],[3703.4,3697.1],[3757.2,3748.8],[3811,3804],[3864.8,3859.2],[3918.6,3914.4],[3972.4,3969.6],[4026.2,4024.8]].forEach(([a,b])=>mt(2623,a,2623,b));
+ mt(3418,4137,3398,4137);mt(3478,4137,3448,4137);mt(3538,4137,3498,4137);at(C5ND,3548,4137,'TP-UR-02');
+ at(D5ND,3648,4137,'TP-UR-02');at(D5ND,3698,4137,'TP-UR-03');at(D5ND,3748,4137,'TP-UR-01');
+ at(null,2705,3328,'TP-UR-01');at(null,2760,3328,'TP-UR-02');at(null,2990,3328,'TP-UR-03');
+ /* 3 · the bike rack of D5-01 */
+ C4ND.props.push(['PR-29',3745,3505,0.8]);F.racks++;
+})();
+/* p523s (3.11): כלל צומת ה-T ב-C4S — עץ במקום הפה של המעבר הצפוני שיצא */
+try{C4ND.trees.push(['TP-UR-01',2384,3296,30])}catch(e){}
+
+   /* p374: the time of the settle */
+// QA: every lamp and signal pole at its drawn base (poleFit) — none in an access band; the streets K-187 touched — no stretch > 200 px
+function g7LampAccessQa(){k187Acc();const names=['STREET_LIGHTS','PARKING_LIGHTS','B3_PARKING_LIGHTS','C2_LIGHTS','E3_LIGHTS','E4_LIGHTS','E5_LIGHTS','PORT_LIGHTS','D4_LIGHTS','B2_LIGHTS','D2_LIGHTS','SIGNAL_POLES'],bad=[],pts=[],RNG={arterial:150,avenue:100,local:70};
+ for(const n of names){const v=k187Src(n);if(!Array.isArray(v))continue;for(const o of v){let q=o;try{q=poleFit(o)}catch(e){}if(n!=='SIGNAL_POLES')pts.push(q);const a=k187At(q.x,q.y);if(a&&!K187_WAIVE.has(o.id))bad.push({list:n,id:o.id,x:Math.round(q.x),y:Math.round(q.y),access:a})}}
+ const touched=new Set([...Object.keys(K187.gap0),...STREET_LIGHTS.filter(o=>o.k187).map(o=>o.roadId)]),dark=[];
+ for(const id of touched){const e=k187E(id);if(!e)continue;const a=_NODE_BY_ID[e.a],b=_NODE_BY_ID[e.b],L=Math.hypot(b.x-a.x,b.y-a.y),ux=(b.x-a.x)/L,uy=(b.y-a.y)/L,R=Math.max(RNG[e.cls]||70,(()=>{try{const T=roadType(e);return T.width/2+(T.sidewalk||0)+12}catch(x){return 0}})()),ts=[];   /* p653: to the end of the sidewalk */
+  for(const q of pts){const vx=q.x-a.x,vy=q.y-a.y,t=vx*ux+vy*uy;if(t>0&&t<L&&Math.abs(vx*uy-vy*ux)<=R)ts.push(t)}ts.sort((p,q)=>p-q);let w=0,last=0;for(const t of ts){w=Math.max(w,t-last);last=t}w=Math.max(w,L-last);
+  const g0=K187.gap0[id]??200;if(w>Math.max(200,g0)+.5)dark.push({edge:id,gap:Math.round(w),before:Math.round(g0)})}
+ const LL=[['STREET_LIGHTS',STREET_LIGHTS],['PARKING_LIGHTS',PARKING_LIGHTS],['B3_PARKING_LIGHTS',B3_PARKING_LIGHTS],['C2_LIGHTS',C2_LIGHTS],['E3_LIGHTS',E3_LIGHTS],['E4_LIGHTS',E4_LIGHTS],['E5_LIGHTS',E5_LIGHTS],['PORT_LIGHTS',PORT_LIGHTS],['D4_LIGHTS',D4_LIGHTS],['B2_LIGHTS',B2_LIGHTS],['D2_LIGHTS',D2_LIGHTS]],ALL=[];for(const [,v] of LL)for(const o of v)if(o.asset!=='SL-PKL')ALL.push(o);
+ const close=[];for(const [n,v] of LL)for(const o of v){if(!o.k187||o.asset==='SL-PKL'||o.k187Close)continue;const e=k187E(o.roadId),H=k367Half(e,n),q=ALL.find(r=>r!==o&&Math.hypot(r.x-o.x,r.y-o.y)<H&&k367Same(e,r,o.x,o.y));if(q)close.push({list:n,id:o.id,near:q.id,d:Math.round(Math.hypot(q.x-o.x,q.y-o.y)),half:Math.round(H)})}   /* p367 */
+ const onSign=[],nearSignal=[];const SP=SIGNAL_POLES.map(o=>{let q=o;try{q=poleFit(o)}catch(e){}return{id:o.id,x:q.x,y:q.y}});   /* p372 */
+ for(const o of LANDSCAPE)if(/^SL-/.test(o.asset)){let q=o;try{q=poleFit(o)}catch(e){}const s=k372Sign(q.x,q.y);if(s)onSign.push({list:'LANDSCAPE',id:o.id,x:Math.round(q.x),y:Math.round(q.y),sign:s,pkl:o.asset==='SL-PKL'?1:0})}   /* p373 */
+ for(const [n,v] of LL)for(const o of v){if(K187_WAIVE.has(o.id))continue;let q=o;try{q=poleFit(o)}catch(e){}const s=k372Sign(q.x,q.y);if(s)onSign.push({list:n,id:o.id,x:Math.round(q.x),y:Math.round(q.y),sign:s,pkl:o.asset==='SL-PKL'?1:0});if(o.asset==='SL-PKL')continue;   /* p373: the parking-lot lamps too */
+  const p=SP.find(r=>Math.abs(r.x-q.x)<K372.pole&&Math.abs(r.y-q.y)<K372.pole&&Math.hypot(r.x-q.x,r.y-q.y)<K372.pole);if(p)nearSignal.push({list:n,id:o.id,pole:p.id,d:+Math.hypot(p.x-q.x,p.y-q.y).toFixed(1),kept:o.k372Kept?1:0})}
+ return{ok:bad.length===0&&dark.length===0&&close.length===0&&onSign.length===0&&!nearSignal.some(r=>!r.kept),accesses:K187.list.length,inOpening:bad,dark,close,onSign,nearSignal,nearKept:nearSignal.filter(r=>r.kept).length,pklMoved:K373.moved,kept:K187.close||[],moved:K187.moved,removed:K187.removed,poles:K187.poles,stuck:K187.stuck}}
+
+// ---- drawing ------------------------------------------------------------------------------------------------------------------------
+function g74DrawServiceLane(now){const L=E2_SVC_LANE,top=L.y-L.half-L.sw,h=2*(L.half+L.sw),len=L.x1-L.x0;if(!e3InView(L.x0,top-40,len+240,h+80,40))return;
+ ctx.save();
+ // where the old road crossed the rail corridor (x 5750–5950): the reserve for the GATE-76 tracks
+ 
+ // the lane itself: shadow, sidewalks, asphalt — the same palette as the graph roads
+ ctx.fillStyle='rgba(0,0,0,.32)';ctx.fillRect(L.x0,top-4,len+4,h+8);ctx.fillStyle=P.walk;ctx.fillRect(L.x0,top,len,h);ctx.fillStyle=P.asph;ctx.fillRect(L.x0,L.y-L.half,len-10,2*L.half);
+ // markings: thin dashed centre line, SERVICE stencils, give-way bar at the D2 entrance, hatched end box + kerb
+ ctx.strokeStyle='rgba(240,240,232,.55)';ctx.lineWidth=2;ctx.setLineDash([14,18]);ctx.beginPath();ctx.moveTo(L.x0+36,L.y);ctx.lineTo(L.x1-70,L.y);ctx.stroke();ctx.setLineDash([]);
+ for(const x of[4990,5560])aptTxt(ctx,'SERVICE · שירות',x,L.y+24,9,'rgba(240,236,214,.5)',800);
+ ctx.fillStyle='rgba(240,240,232,.75)';ctx.fillRect(L.x0+16,L.y-L.half+4,3,2*L.half-8);
+ ctx.fillStyle='rgba(246,244,236,.85)';for(let y=L.y-L.half+6;y<L.y+L.half-4;y+=10)ctx.fillRect(5092,y,26,5);   // zebra on the P-WEST centre path
+ ctx.save();ctx.beginPath();ctx.rect(L.x1-60,L.y-L.half,50,2*L.half);ctx.clip();ctx.strokeStyle='rgba(236,200,90,.7)';ctx.lineWidth=4;for(let k=-110;k<110;k+=14){ctx.beginPath();ctx.moveTo(L.x1-60+k,L.y-L.half);ctx.lineTo(L.x1-60+k+96,L.y+L.half);ctx.stroke()}ctx.restore();
+ ctx.fillStyle='#a3a39a';ctx.fillRect(L.x1-10,top,10,h);ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(L.x1-10,top,2,h);
+ ctx.restore();
+ e4Plate('נתיב שירות פרטי · אין מעבר',4930,L.y+L.half+10,126);e4Plate('סוף הנתיב',5700,L.y+L.half+10,56)}
+function g74DeckTrains(now,B){if(typeof rlSnap!=='function')return 0;const L=[],o34=r53Open();   // GATE-77 S6r · K-91: the cars on the RB-74 deck, drawn again over the deck (clipped to it)
+ try{const pad=o34?28:4;   // p468 (R-53): in 3/4 the queue's window is open again (c34Flush closed it before this overhead pass); a car just off the deck lifts its 3/4 roof over it
+ for(const q of rlSnap(now))for(const c of q.cars){const hl=((c.car&&c.car.len)||24)/2+pad;if(c.x<B.x0-hl||c.x>B.x1+hl||c.y<B.y0-hl||c.y>B.y1+hl)continue;L.push([q,c])}
+ if(!L.length)return 0;L.sort((a,b)=>a[1].y-b[1].y);ctx.save();ctx.beginPath();ctx.rect(B.x0-6,B.y0-2,B.x1-B.x0+12,B.y1-B.y0+4);ctx.clip();
+ try{for(const [q,c] of L){const k=r53Car(c,1);portDrawStock(ctx,{now34:1,id:c.id,asset:c.car.asset,variant:c.car.variant||0,load:flWagonLoad(q.S,c.car,now),post34:k&&k.paint},{x:c.x,y:c.y,heading:c.heading},now/1000);if(k)k.after()}}
+ finally{ctx.restore()}return L.length}finally{r53Close(o34)}}
+
+/* p683 (S9a): UX-1 — the short rail bridge over the island road (two tracks; room for the map's third) */
+const UX1={id:'UX-1',x0:5752,x1:6046,y0:2530,y1:2710,clearH:4.6,tracks:[5800,5900,5978]};   /* S7F266: the bypass on the deck at x 5978 — the same line as in E3 (D‑503) */   /* p684: שלוש מסילות כמו במפה (MAIN-A, ‏MAIN-B ומסילת העקיפה) */
+function p683DrawUx(now){const B=UX1,w=B.x1-B.x0,h=B.y1-B.y0;if(typeof e3InView==='function'&&!e3InView(B.x0-30,B.y0-40,w+60,h+80,40))return;
+ ctx.save();
+ ctx.fillStyle='rgba(6,12,18,.30)';ctx.fillRect(B.x0+12,B.y0+10,w,h-4);
+ ctx.fillStyle='#777b7d';ctx.fillRect(B.x0-6,B.y0-2,w+12,10);ctx.fillRect(B.x0-6,B.y1-8,w+12,10);
+ ctx.fillStyle='#9b9fa1';ctx.fillRect(B.x0,B.y0,w,h);
+ ctx.fillStyle='#5f6467';ctx.fillRect(B.x0,B.y0,6,h);ctx.fillRect(B.x1-6,B.y0,6,h);
+ ctx.fillStyle='#d0d3d4';for(let y=B.y0+6;y<B.y1-4;y+=14){ctx.fillRect(B.x0+1,y,4,3);ctx.fillRect(B.x1-5,y,4,3)}
+ ctx.fillStyle='rgba(40,42,44,.55)';ctx.fillRect(B.x0,B.y0+9,w,1.4);ctx.fillRect(B.x0,B.y1-10,w,1.4);
+ for(const wx of[5838,5938]){ctx.fillStyle='#b5b8b9';ctx.fillRect(wx,B.y0+10,24,h-20);ctx.strokeStyle='rgba(60,62,64,.5)';ctx.lineWidth=1;ctx.strokeRect(wx+.5,B.y0+10.5,23,h-21)}
+ /* S9 · S7F268: the bypass's buffers on the south approach are out — it runs on to main B at y 2900 (drawE4Rail) */
+ for(const tx of B.tracks){ctx.fillStyle='#666b6d';ctx.fillRect(tx-24,B.y0+2,48,h-4);ctx.fillStyle='#413d37';for(let y=B.y0+6;y<B.y1-4;y+=16)ctx.fillRect(tx-20,y,40,5);ctx.strokeStyle='#c6cbd0';ctx.lineWidth=3;for(const dx of[-13,13]){ctx.beginPath();ctx.moveTo(tx+dx,B.y0+2);ctx.lineTo(tx+dx,B.y1-2);ctx.stroke()}}
+ try{g74DeckTrains(now,B)}catch(e){}
+ ctx.restore();
+ e4Plate('גשר רכבת · 3 מסילות · '+B.clearH+' מ׳',5900,B.y1+12,150);
+ Targets.add({id:'UX-1',label:'גשר רכבת מעל דרך האי · 3 מסילות (פס א׳, פס ב׳, מסילת העקיפה) · גובה חופשי '+B.clearH+' מ׳',category:'rail',x:(B.x0+B.x1)/2,y:(B.y0+B.y1)/2,w,h})}
+function g74DrawBridge(now){const B=G74_BRIDGE,w=B.x1-B.x0,h=B.y1-B.y0;if(!e3InView(B.x0-30,B.y0-40,w+60,h+80,40))return;
+ ctx.save();
+ ctx.fillStyle='rgba(6,12,18,.30)';ctx.fillRect(B.x0+12,B.y0+10,w,h-4);                       // the deck stands ~6 m above the road: cast shadow
+ ctx.fillStyle='#777b7d';ctx.fillRect(B.x0-6,B.y0-2,w+12,10);ctx.fillRect(B.x0-6,B.y1-8,w+12,10); // abutment caps over the two support walls
+ ctx.fillStyle='#9b9fa1';ctx.fillRect(B.x0,B.y0,w,h);                                            // deck slab
+ ctx.fillStyle='#5f6467';ctx.fillRect(B.x0,B.y0,6,h);ctx.fillRect(B.x1-6,B.y0,6,h);              // edge girders
+ ctx.fillStyle='#d0d3d4';for(let y=B.y0+6;y<B.y1-4;y+=14){ctx.fillRect(B.x0+1,y,4,3);ctx.fillRect(B.x1-5,y,4,3)}   // parapet posts
+ ctx.fillStyle='rgba(40,42,44,.55)';ctx.fillRect(B.x0,B.y0+9,w,1.4);ctx.fillRect(B.x0,B.y1-10,w,1.4);              // expansion joints
+ ctx.fillStyle='#b5b8b9';ctx.fillRect(5838,B.y0+10,24,h-20);ctx.strokeStyle='rgba(60,62,64,.5)';ctx.lineWidth=1;ctx.strokeRect(5838.5,B.y0+10.5,23,h-21);   // walkway / cable trough
+ for(const g of G74_DECK_SEGS){ctx.save();rlTrack(g);ctx.restore()}                              // the two stubs on the deck, aligned with T1/T2
+ g74DeckTrains(now,B);                                                                          // GATE-77 S6r · K-91: the train on the deck, over it
+ ctx.restore();
+ e4Plate('גשר רכבת · '+B.clearH+' מ׳',5850,B.y1+12,100);
+ Targets.add({id:'RB-74',label:'גשר רכבת מעל כביש השדה · גובה חופשי '+B.clearH+' מ׳ · T1/T2 → GATE‑76',category:'airport',x:(B.x0+B.x1)/2,y:(B.y0+B.y1)/2,w,h})}
+// ---- QA -----------------------------------------------------------------------------------------------------------------------------
+function g74Crossings(){   // every road (roadway + sidewalks) × every rail centreline: where do they meet, and is it grade-separated?
+ const out=[];for(const e of EDGES){const a=byNode[e.a],b=byNode[e.b],h=_ROAD_HALF(e)+20,R={x:Math.min(a.x,b.x)-h,y:Math.min(a.y,b.y)-h,w:Math.abs(a.x-b.x)+2*h,h:Math.abs(a.y-b.y)+2*h};
+  for(const g of RAIL_SEGS){for(let k=1;k<g.pts.length;k++){const p=g.pts[k-1],q=g.pts[k],n=Math.max(1,Math.ceil(Math.hypot(q[0]-p[0],q[1]-p[1])/6));let hit=null;for(let i=0;i<=n;i++){const x=p[0]+(q[0]-p[0])*i/n,y=p[1]+(q[1]-p[1])*i/n;if(x>R.x&&x<R.x+R.w&&y>R.y&&y<R.y+R.h){hit=[x,y];break}}
+    if(hit){const B=G74_BRIDGE,onDeck=hit[0]>=B.x0&&hit[0]<=B.x1&&R.y>=B.y0&&R.y+R.h<=B.y1,overWater=g.kind==='bridge';out.push({road:e.id,rail:g.id,x:Math.round(hit[0]),y:Math.round(hit[1]),grade:onDeck?'bridge RB-74':e.id==='CL-I4'?'bridge UX-1':e.id==='CL-I7'?'level '+(g.id==='B-LINK'?'LX-1':'LX-2'):overWater?'rail viaduct':'LEVEL'});break}}}}
+ return out}
+function g74ClearanceQa(){const B=G74_BRIDGE,e=byEdge['AIR-PAX'],issues=[];let samples=0,maxH=0;
+ for(const [asset,ref,hgt] of G74_VEH){maxH=Math.max(maxH,hgt);if(hgt>B.clearH-.5)issues.push('height:'+asset);
+  for(const dir of[1,-1])for(let t=0;t<=1;t+=.004){const p=trafficEdgePoint('AIR-PAX',dir,t);if(p.x<B.x0-80||p.x>B.x1+80)continue;samples++;const g=vehicleCollisionShape(asset,ref,p.x,p.y,p.heading);
+   for(const S of B.supports){const cx=clamp(g.x,S.x,S.x+S.w),cy=clamp(g.y,S.y,S.y+S.h);if(pointSegmentDistanceSq(cx,cy,g.ax,g.ay,g.bx,g.by)<g.radius*g.radius){issues.push('support:'+asset+'@'+Math.round(p.x));break}}
+   if(g.y-g.radius<B.road.y0+20||g.y+g.radius>B.road.y1-20)issues.push('off-roadway:'+asset);
+   {const hit=playerStaticBodyBlockedAtFor({asset,ref},{x:p.x,y:p.y,heading:p.heading});if(hit)issues.push('static:'+asset+':'+hit)}}}   // the player's own collision test (a bus/truck driven by the player)
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,10),samples,maxVehicleH:maxH,clearH:B.clearH,span:[B.road.y0,B.road.y1],supports:B.supports.map(q=>[q.y,q.y+q.h])}}
+function g74Audit(){const issues=[],B=G74_BRIDGE,over=aptOver;
+ // 1 · the new road is THE public route to the terminal; the old y 1250 road in E2 is out of the graph
+ const path=shortestNodePath('D3A2','AIR-K1');for(const id of['AIR-W0','D2E-AIR','AIR-GATE','AIR-K'])if(!path.includes(id))issues.push('route-missing:'+id);   /* S16: אל חזית הטרמינל של המפה */
+ const oldEdges=EDGES.filter(e=>{const a=byNode[e.a],b=byNode[e.b];return Math.abs(a.y-1250)<.5&&Math.abs(b.y-1250)<.5&&Math.max(a.x,b.x)>4800&&Math.min(a.x,b.x)<6020});if(oldEdges.length)issues.push('old-road-in-graph:'+oldEdges.map(e=>e.id).join('/'));
+ const used=new Set(Object.values(BUS_ROUTES).flat().map(q=>q.edgeId));for(const id of used)if(!byEdge[id])issues.push('bus-route-dead-edge:'+id);
+ if(BUS_LINE_4_ROUTE.some(q=>{const e=byEdge[q.edgeId],a=byNode[e.a],b=byNode[e.b];return fleetFieldAt((a.x+b.x)/2,(a.y+b.y)/2)}))issues.push('line4-in-field');   // p454: line 4 ends at the field's gate (was: under the bridge)
+ if(TRAFFIC_SEED_EDGES.some(id=>!byEdge[id]))issues.push('traffic-seed-dead-edge');
+ {const n=NODES.find(q=>q.id==='D2E');if(!n||incident('D2E').length!==1||n.type!=='boundary')issues.push('d2e-lane-end')}
+ // 2 · 0 level crossings on the airport landside: every road × rail meeting is on the RB-74 deck (or a rail viaduct over water)
+ const X=g74Crossings(),level=X.filter(q=>q.grade==='LEVEL'),air=X.filter(q=>/^(T1|T2|A-E3|B-E3)$/.test(q.rail)&&q.road!=='CL-I4');if(level.some(q=>/^(T1|T2|A-E3|B-E3)$/.test(q.rail)||/^(D2-AIR-L|E2-|F2-)/.test(q.road)))issues.push('level-crossing:'+level.map(q=>q.road+'×'+q.rail).join('/'));
+ if(air.length!==2||!air.every(q=>q.road==='AIR-PAX'&&q.grade==='bridge RB-74'))issues.push('bridge-crossings:'+JSON.stringify(air));
+ // 3 · bridge structure: the road corridor (roadway + sidewalks) fits the span, supports outside it, deck over both tracks, stubs aligned for GATE-76
+ const e=byEdge['AIR-PAX'],ry=byNode[e.a].y,half=_ROAD_HALF(e)+20;if(ry-half!==B.road.y0||ry+half!==B.road.y1)issues.push('corridor-not-span');
+ for(const S of B.supports){if(S.y+S.h>B.road.y0&&S.y<B.road.y1)issues.push('support-in-corridor:'+S.id);if(S.x>B.x0||S.x+S.w<B.x1)issues.push('support-short:'+S.id)}
+ if(B.supports[0].y+B.supports[0].h!==B.road.y0||B.supports[1].y!==B.road.y1)issues.push('support-not-at-sidewalk-edge');
+ for(const t of RA_TRACKS){const g=RAIL_SEG_BY_ID[t.seg];if(!g){issues.push('no-stub:'+t.id);continue}const ys=g.pts.map(p=>p[1]);if(Math.min(...ys)>B.y0-20)issues.push('stub-not-past-deck:'+t.id);if(!G74_DECK_SEGS.some(d=>d.pts[0][0]===t.x))issues.push('deck-track-misaligned:'+t.id);if(t.x-22<B.x0+6||t.x+22>B.x1-6)issues.push('track-off-deck:'+t.id);if(!E3_TRACKS.some(q=>q.x===t.x))issues.push('stub-not-on-E3-track:'+t.id)}
+ if(RA_TRACK_END!==G74.railEnd76)issues.push('gate76-target');{const tail=G74.railEnd76+907;if(tail>=B.y0)issues.push('gate76-train-on-deck:'+tail)}
+ for(const l of STREET_LIGHTS)if(l.x>B.x0-10&&l.x<B.x1+10&&l.y>B.y0&&l.y<B.y1)issues.push('lamp-under-deck:'+l.id);
+ for(const o of ALL_BUS_STOPS)if(o.x>B.x0-50&&o.x<B.x1+50&&o.y>B.y0-10&&o.y<B.y1+10)issues.push('stop-under-deck:'+o.id);
+ for(const c of CROSSWALKS)if(c.x>B.x0-30&&c.x<B.x1+30&&c.y>B.y0&&c.y<B.y1)issues.push('crossing-under-deck:'+c.id);
+ for(const r of [RA_BOND,...APT_BUILDINGS.map(aptFp)])if(over(r,{x:B.x0,y:B.road.y0,w:B.x1-B.x0,h:B.road.y1-B.road.y0}))issues.push('object-in-underpass:'+(r.id||'?'));
+ const C=g74ClearanceQa();if(!C.ok)issues.push(...C.issues.map(q=>'clearance:'+q));
+ // 4 · parking ≥ 160, every lot reached from a road or the lane
+ const total=ew2ParkingTotal();if(total<160)issues.push('parking<160:'+total);
+ const lots={'P-WEST':EW2_STALLS.length,'P-WEST-N':PWN_STALLS.length+APT_STALLS.filter(s=>!s.returnBay).length,'RA staff':RA_STAFF_STALLS.length,'P-TERM':F2_STALLS.filter(q=>!q.plaza).length,'P-PLAZA':F2_STALLS.filter(q=>q.plaza).length,'G2 P-LONG':G2_STALLS.length};
+ // 5 · the private lane: not a road edge, reaches D2E, ends west of the rail corridor, joined to the new road by the P-WEST drives / RA staff lane
+ const L=E2_SVC_LANE;if(L.x1>5750)issues.push('lane-into-rail-corridor');if(!EW2_DRIVES.every(d=>d.y<=L.y+L.half&&d.y+d.h>=B.road.y0+20))issues.push('lane-not-joined-to-road');if(RA_STAFF_LANE.y+RA_STAFF_LANE.h!==B.road.y0)issues.push('staff-lane-not-joined');
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,24),gate:'GATE-74',graph:[NODES.length,EDGES.length],route:path,crossings:X.length,levelCrossings:level.length,airportCrossings:air,clearance:C,parking:{total,lots},lights:G74_LIGHT_FIX,bridge:{x:[B.x0,B.x1],y:[B.y0,B.y1],clearH:B.clearH,stubs:RA_TRACKS.map(t=>[t.id,t.x,RA_TRACK_END])},lane:[L.x0,L.x1,L.y]}}
+window.__TC_G74_QA=()=>({audit:g74Audit(),build:BUILD,gate:ACTIVE_GATE});
+
+// =====================================================================================================================================
+// GATE-72 · WORLD 59 CHUNKS (plan v4.13 · AIR-01). The planned airport north row E0/F0/G0 (x 4800–8400, y −850…0) joins the runtime
+// chunk registry without renumbering the 56 existing chunks. World bounds become x 0…8400 / y −850…6900; the camera, the minimap, the
+// full map, the phone map, currentChunkId, save validation and the debug report all use them. The row stays PLANNED: no content, not
+// walkable, no airport actor moves — GATE-73 brings the runway, taxiway and safety areas north into it.
+// =====================================================================================================================================
+const G72_SCOPE={id:'WORLD-59',gate:'GATE-72',north:{x:4800,y:MAP_NORTH_Y,w:3600,h:-MAP_NORTH_Y},next:'GATE-73'};
+const G72_PLAN={E0:[4800,-850,1200,850],F0:[6000,-850,1200,850],G0:[7200,-850,1200,850]};   // canonical table (plan v4.13 §coordinates)
+let G72_NORTH_CACHE=null;
+function g72NorthRow(){return G72_NORTH_CACHE||(G72_NORTH_CACHE=MAP_CHUNKS.filter(q=>q.row===-1&&G72_PLAN[q.id]))}   /* p333: the airport row E0 / F0 / G0 (A0–D0 and H0 are in row 0 too) */
+function g72InNorthRow(x,y){return g72NorthRow().some(q=>x>=q.x&&x<q.x+q.w&&y>=q.y&&y<q.y+q.h)}
+function worldClampX(x){return clamp(x,WORLD.x,WORLD.x+WORLD.w)}
+function worldClampY(y){return clamp(y,WORLD.y,WORLD.y+WORLD.h)}
+function worldContains(x,y){return Number.isFinite(x)&&Number.isFinite(y)&&x>=WORLD.x&&x<=WORLD.x+WORLD.w&&y>=WORLD.y&&y<=WORLD.y+WORLD.h}
+// ---- world view: the row sits on the same dark backdrop as every other planned chunk, with its planned purpose written on it ----------
+function g72Backdrop(){const n=G72_SCOPE.north;ctx.fillRect(n.x,n.y,n.w,n.h)}          // called inside the shadowed backdrop pass of render()
+function g72DrawNorthRow(now){
+ const v=portView(80);if(v.y0>2)return;const rows=g72NorthRow();
+ ctx.save();
+ for(const q of rows){
+  if(!portVis(v,q.x,q.y,q.w,q.h))continue;
+  // planned-purpose tint and a light hatch, clipped to the chunk
+  ctx.save();ctx.beginPath();ctx.rect(q.x,q.y,q.w,q.h);ctx.clip();
+  ctx.fillStyle='rgba(81,72,95,.30)';ctx.fillRect(q.x,q.y,q.w,q.h);
+  ctx.strokeStyle='rgba(176,160,214,.10)';ctx.lineWidth=3;ctx.beginPath();for(let k=-q.h;k<q.w;k+=64){ctx.moveTo(q.x+k,q.y+q.h);ctx.lineTo(q.x+k+q.h,q.y)}ctx.stroke();
+  ctx.restore();
+  // chunk border (dashed) and the label block in the middle of the chunk
+  ctx.strokeStyle='rgba(206,196,236,.42)';ctx.lineWidth=3;ctx.setLineDash([26,18]);ctx.strokeRect(q.x+1.5,q.y+1.5,q.w-3,q.h-3);ctx.setLineDash([]);
+  const cx=q.x+q.w/2,cy=q.y+q.h/2;
+  aptTxt(ctx,q.id,cx,cy-84,110,'rgba(230,224,248,.55)',800);
+  aptTxt(ctx,q.name,cx,cy+18,44,'rgba(230,224,248,.66)',700);
+  aptTxt(ctx,'אזור מתוכנן · '+G72_SCOPE.next+' · המסלול והאזור הבטיחותי עוברים לכאן',cx,cy+78,28,'rgba(214,206,236,.58)',600);
+ }
+ // the shared edge with E1–G1: the airport grows north from here
+ if(v.y0<6&&v.y1>-6){ctx.strokeStyle='rgba(255,224,138,.35)';ctx.lineWidth=2;ctx.setLineDash([14,10]);ctx.beginPath();ctx.moveTo(Math.max(4800,v.x0),0);ctx.lineTo(Math.min(8400,v.x1),0);ctx.stroke();ctx.setLineDash([])}
+ ctx.restore()}
+// ---- save: positions are checked against the new bounds; a save that would leave the player in a chunk that cannot be entered yet
+// (E0/F0/G0 or any other planned chunk) is moved back to the default spawn instead of stranding the player
+function g72AfterLoad(){
+ const out=[];const P=PlayerProfile.progression;
+ if(P&&Array.isArray(P.discoveredChunks)){const ids=new Set(MAP_CHUNKS.map(q=>q.id)),n=P.discoveredChunks.length;P.discoveredChunks=[...new Set(P.discoveredChunks.filter(id=>ids.has(id)))];if(P.discoveredChunks.length!==n)out.push('discovered:'+(n-P.discoveredChunks.length))}
+ if(!worldContains(PlayerCar.x,PlayerCar.y)||['WORLD','APT-AIRFIELD'].includes(blockedAt(PlayerCar.x,PlayerCar.y,1))){out.push('vehicle@'+Math.round(PlayerCar.x)+','+Math.round(PlayerCar.y));PlayerCar.x=2958;PlayerCar.y=2484;PlayerCar.heading=-Math.PI/2;PlayerCar.speed=0;PlayerCar.steer=0}
+ if(PlayerProfile.mode==='walk'&&(!worldContains(PlayerPed.x,PlayerPed.y)||['WORLD','APT-AIRFIELD'].includes(personBlockedAt(PlayerPed.x,PlayerPed.y,1)))){out.push('walker@'+Math.round(PlayerPed.x)+','+Math.round(PlayerPed.y));PlayerProfile.mode='vehicle';PlayerPed.x=PlayerCar.x;PlayerPed.y=PlayerCar.y}
+ if(out.length)try{SaveManager.log('load_relocated',{gate:'GATE-72',fixes:out})}catch{}
+ return out}
+// ---- maps: the transform used by the minimap and the full map covers the whole world, north row included
+function g72MapBoundsOk(){
+ for(const [w,h] of[[220,180],[900,700],[340,310]]){const T=mapTf(w,h,WORLD,5);const x0=T.x(WORLD.x),x1=T.x(WORLD.x+WORLD.w),y0=T.y(WORLD.y),y1=T.y(WORLD.y+WORLD.h);if(x0<-.5||y0<-.5||x1>w+.5||y1>h+.5)return false;if(T.y(-850)<-.5||T.y(0)<=T.y(-850))return false}
+ return true}
+// ---- QA ------------------------------------------------------------------------------------------------------------------------------
+function g72WorldAudit(){
+ const issues=[],ids=MAP_CHUNKS.map(q=>q.id),north=g72NorthRow();
+ if(MAP_CHUNKS.length!==80||new Set(ids).size!==80)issues.push('registry:'+MAP_CHUNKS.length);   /* p333 · QA‑01 (D‑164): 80 zones */
+ if(MAP_CHUNKS.slice(0,56).some(q=>q.row<0)||ids.slice(56,59).join()!=='E0,F0,G0')issues.push('registry-order');
+ {const want=[];for(const c of 'ABCDEFGH')for(let r=0;r<10;r++)want.push(c+r);const have=new Set(ids);for(const z of want)if(!have.has(z))issues.push('missing:'+z)}
+ for(const [id,[x,y,w,h]] of Object.entries(G72_PLAN)){const q=MAP_CHUNKS.find(c=>c.id===id);if(!q||q.x!==x||q.y!==y||q.w!==w||q.h!==h||q.cat!=='airport'||q.runtime!=='live')issues.push(id+':geometry')}
+ if(WORLD.x!==0||WORLD.y!==-850||WORLD.w!==9600||WORLD.y+WORLD.h!==7750||WORLD.minY!==WORLD.y||WORLD.maxY!==7750)issues.push('world-bounds');   /* p335 · QA‑01 */
+ // registry tiles the world: no overlaps, inside the bounds, area = the 8400×6900 city + the 3600×850 north row
+ let area=0;for(let i=0;i<MAP_CHUNKS.length;i++){const a=MAP_CHUNKS[i],B=WORLD80;area+=a.w*a.h;if(a.x<B.x||a.y<B.y||a.x+a.w>B.x+B.w||a.y+a.h>B.y+B.h)issues.push(a.id+':outside');for(let j=i+1;j<MAP_CHUNKS.length;j++){const b=MAP_CHUNKS[j];if(a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h)issues.push('overlap:'+a.id+'/'+b.id)}}
+ if(area!==9600*8600)issues.push('area:'+area);   /* p333 · QA‑01: 82,560,000, no holes (the area with no overlaps) */
+ // chunk lookup at the new row, across its south edge and outside the registry
+ for(const [x,y,want] of[[5400,-425,'E0'],[6600,-425,'F0'],[7800,-425,'G0'],[4800,-850,'E0'],[8399,-1,'G0'],[5400,1,'E1'],[6600,0,'F1'],[2000,-400,'B0'],[9000,4000,'H5'],[3000,7300,'C9'],[9599,7749,'H9'],[5400,-851,null],[9600,100,null]])if(currentChunkId(x,y)!==want)issues.push('chunkId@'+x+','+y+'='+currentChunkId(x,y));
+ // still planned: no live content, not walkable or driveable, not in the baked map picture
+ // GATE-73: live airside (part of the airfield solid: closed to the player like E1–G1)
+ for(const q of north){if(!MAP_ACTIVE_IDS.has(q.id))issues.push(q.id+':not-live');if(!inActiveRegion(q.x+q.w/2,q.y+q.h/2))issues.push(q.id+':no-region');if(blockedAt(q.x+q.w/2,q.y+q.h/2)!=='APT-AIRFIELD')issues.push(q.id+':airside-open')}
+ if(MAP_ACTIVE_IDS.size!==51+(typeof TC_LIVE_ADD!=='undefined'?TC_LIVE_ADD.zones.length:0))   /* fieldfix 17.11: + tcLiveAdd (028z) */   /* int290: + S13 (6) */issues.push('live:'+MAP_ACTIVE_IDS.size)   /* S12: + 7 */   /* S9 · S7F269: + F3, F4 · S7F270: + F5, F6 */;   /* p476: A3 */
+ // camera / phone-map clamps reach the north row but not beyond the world
+ if(worldClampY(-800)!==-800||worldClampY(-2000)!==-850||worldClampY(9000)!==7750||worldClampX(20000)!==9600||worldClampX(-5)!==0)issues.push('camera-clamp');
+ {const P=PHONEMAP,cx=P.cx,cy=P.cy;P.cx=6600;P.cy=-700;pmClamp();const okp=P.cy===-700;P.cy=-3000;pmClamp();const okq=P.cy===-850;P.cx=cx;P.cy=cy;if(!okp||!okq)issues.push('phone-map-clamp')}
+ if(!g72MapBoundsOk())issues.push('map-transform');
+ // save validation: a position in F0 is inside the world, one above it is not
+ try{const d=collectSaveState(null);d.currentVehicle.position={x:6600,y:-425};if(validateSave(d).errors.includes('vehicle.position.bounds'))issues.push('save-accepts-north-row');d.currentVehicle.position={x:6600,y:-900};if(!validateSave(d).errors.includes('vehicle.position.bounds'))issues.push('save-rejects-outside');d.currentVehicle.position={x:6600,y:-425};d.player.position={x:6600,y:-2000};if(!validateSave(d).errors.includes('player.position.bounds'))issues.push('save-player-bounds')}catch(e){issues.push('save-check:'+e.message)}
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,16),chunks:MAP_CHUNKS.length,live:MAP_ACTIVE_IDS.size,northRow:north.map(q=>q.id),world:{x:WORLD.x,y:WORLD.y,w:WORLD.w,h:WORLD.h}}}
+window.__TC_G72_QA=()=>({...g72WorldAudit(),build:BUILD,gate:ACTIVE_GATE});
+
+
+// =====================================================================================================================================
+// GATE-73 · AIRPORT SHIFT NORTH (plan v4.13 · AIR-02/03/04 …). Stage 1: the runway system moves north.
+//  · runway 09/27 centre y 290 → −270 (E0/F0/G0), graded strip −450…−90, fence + patrol road at y −600/−585…−555;
+//  · taxiway A centre y 548 → 92, 104 → 120 wide: a code-E aircraft (AC-CG-01, span 356) taxiing on A stays out of the runway strip;
+//  · links A1/A2/A3 80 → 110 wide, 182 px long, hold-short at the strip edge;
+//  · taxilane L (y 428…508) in front of the stands: pushbacks end on L, not on taxiway A; connectors B1 · A2S · GL · A3S join A and L;
+//  · the band between A and the old apron edge is paved where aircraft move (west/cargo band, connectors, L + apron edges), grass elsewhere.
+// Every finish pass (E1/F1/G1) is written against APT_Y, so lights, signs, PAPI, LOC, ARFF access and monitors moved with the runway.
+// Stage 2 (AIR-04 · AIR-08): four jet-bridge stands P1 · P2 · P3 · P4 (gate 4), 302 px apart, each bridge from a measured gate of the
+// terminal sprite to the aircraft door (angled where the door is not in front of a gate); baggage pockets A/B/C between the stands;
+// O2 moves to the new NE small-aircraft apron (taxiway A east stub, service road y 590, service column, tug lane);
+// S2 FINAL (plan v4.18 / AIR-22): Door L/R — P1 · P2 dock at door L, P3 · P4 at door R (ground service mirrored east); P2 + P3 belong to
+// Terminal 2; every bridge leaves the terminal straight, its rotunda in line with the door, the cab beside the door;
+// full stand × aircraft clearance audit (largest aircraft, full wing span) with arrival and pushback sweeps.
+// S2 GROUND OPS (plan v4.21): AIR-25 support-vehicle chores stop only in the marked bays of the Ramp Services Park East (RSP_E, x 7194);
+// AIR-26 baggage trains from belt C unload / load the remote stands P6 · P5 (F2_REMOTE_BAG); AIR-27 the apron buses unload and load
+// visible passengers at the T3 bus gate (G2_GATE) — a hold leg at the home bay at the end of every arrival bus task and the start of every
+// departure bus task.
+// =====================================================================================================================================
+const G73_SCOPE={id:'AIRPORT-SHIFT-NORTH',gate:'GATE-73',stage:4,sub:'4',westRow:'s3b',locked:true,shift:{runway:-720,taxiway:-616,taxilane:-194,row:-206}};   // S3a: AIR-19 applied (from v1.93: runway 290→−430, A 548→−68; from S2: L 468→274, stands/terminals −206)
+const G73_CONNECTORS=[{id:'B1',x:5990,w:80},{id:'A2S',x:6600,w:110},{id:'B2',x:7276,w:80},{id:'A3S',x:7950,w:110}];   // S5b · D-68: GLN → B2
+const G73_L={id:'L',x0:5950,x1:8345};   // S3b: extended east to the NE apron
+const G73_WEST_EXT={id:'E1-WEST-EXT',x:4805,y:APT_Y.TS,w:1185,h:604-APT_Y.TS};          // west GA apron + cargo band (paved), x 4805–5990
+const G73_PAX_EXT={id:'F1-APRON-EXT',x:5990,y:APT_Y.LN,w:1310,h:394-APT_Y.LN};          // taxilane L + the apron edge in front of the stands (S3a: apron head 394)
+const G77_STRIP={id:'G77-GA-STRIP',x:7505,y:APT_Y.TS,w:195,h:APT_Y.LN-APT_Y.TS};   // GATE-77 S5b · D-71: the light-aircraft pad between B2 and A3S
+const G77_LG_EXT={id:'G77-LARGE-EXT',x:6890,y:184,w:170,h:APT_Y.LN-184};   /* p401: the 747's tail at its real length (y 187) */   // GATE-77 S5c: under the huge jet's tail at x 6972   // GATE-77 S5b · D-65: the large stand widens north — its jet's tail
+const G73_EAST_EXT={id:'G1-EAST-EXT',x:7300,y:APT_Y.LN,w:1045,h:600-APT_Y.LN};          // taxilane L east part + the east block edge — S3b: to x 8345 (L6 + NE apron)
+// ---- stage 2: NE small-aircraft apron (G1, east of A3S) ----------------------------------------------------------------------------------
+// row A (live, nose south): in from the taxiway A east stub, pushed back onto it, out along A to A2.  Vehicles: service road y 590 from
+// the GLINK, service column x 8012 north to the tug lane in front of the noses.  Slot 2 (GA3) and the south row (GA4 / O1) follow in stage 2b.
+const G73_AEXT={id:'A-EXT',x0:8030,x1:8340};
+const G73_NE={...APL_ZONES.ne,rowTail:345,col:8012,road:484,slots:[8130,8270],tug:484};   // GATE-77 S5b · D-68: the straight service road IS the tug lane   // S3b: live tails 345 · tug lane 484 · static noses 507
+const G73_SPACE_USES=(()=>{const Y=APT_Y,o=[];for(const [c,x] of [['E0',4800],['F0',6000],['G0',7200]]){
+ o.push({id:c+'-BUFFER',x,y:-850,w:1200,h:Y.FN+850,use:'שטח חיץ מחוץ לגדר — פתוח, ללא מכשולים'},{id:c+'-PERIMETER',x,y:Y.FN,w:1200,h:Y.SN-Y.FN,use:'גדר, דרך סיור, כיסוח וניקוז'},
+  {id:c+'-STRIP',x,y:Y.SN,w:1200,h:Y.SS-Y.SN,use:'מסלול 09/27 ורצועת הבטיחות'},{id:c+'-LINKS',x,y:Y.SS,w:1200,h:-Y.SS,use:'חיבורים רחבים, קווי המתנה ושלטים'})}return o})();
+
+// ---- taxi tokens of the new pieces (a plane holds every token its fuselage touches) -------------------------------------------------------
+function g73Tokens(mk,out){
+ const Y=APT_Y;
+ for(const [k,x0,x1] of [['L1',5950,6420],['L2',6420,6780],['L3',6780,7215],['LG',7215,7305],['L4',7305,7700],['L5',7700,8045],['L6',8045,8345]])out.push(mk(k,x0,x1,Y.LN,Y.LS));   // S3b: L6 to the NE apron
+ for(const c of G73_CONNECTORS)out.push(mk(c.id,c.x-c.w/2,c.x+c.w/2,Y.TS,Y.LN));
+}
+// ---- routes on the new network ------------------------------------------------------------------------------------------------------------------
+// arrivals vacate at A2 (passenger / west / cargo / hardstand) or A3 (east block), cross taxiway A and come down a connector onto L
+const G77_B2=7276;   // GATE-77 S5b · D-68: the link between A2S and A3S, now the taxiway B2 (lit, named)
+function g73ArrLeg(sd,ac){
+ const X=APTT_X,A2=X.A2,A3=X.A3,cx=sd.cx,ng=sd.ngy,tpl=sd.tpl,LY=X.LY;let pts,rad;
+ if(tpl==='bridge'&&(ac==='AC-LG-01'||ac==='AC-MW-01')){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[G77_B2,X.TY],[G77_B2,LY],[cx,LY],[cx,ng]];rad=[110,90,90,90,90,90]}   // S5b · D-71: by A2
+ else if(tpl==='bridge'){
+  if(Math.abs(cx-A2)<40){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,ng-260],[cx,ng-130],[cx,ng]];rad=[110,400,400]}
+  else{pts=[[X.APP0,X.RY],[A2,X.RY],[A2,LY],[cx,LY],[cx,ng]];rad=[110,90,90]}
+ }else if(tpl==='cargo'){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[5800,X.TY],[5800,sd.ngy],[sd.ngx,sd.ngy]];rad=[110,110,100,100]}   // S2: down the cargo band (x 5800), clear of P1's wing (B1 is 18 px too close since P1 moved west)
+ else if(tpl==='hard'){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[X.GLX,X.TY],[X.GLX,1116],[sd.ngx+50,1116],[sd.ngx+50,sd.ngy],[sd.ngx,sd.ngy]];rad=[60,60,60,40,16,16]}
+ else if(tpl==='cargoS'){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[cx,X.TY],[cx,ng]];rad=[110,90,90]}
+ else if(tpl==='strip'){pts=[[X.APP0,X.RY],[A3,X.RY],[A3,X.TY],[cx,X.TY],[cx,ng]];rad=[110,60,40]}   // GATE-77 S5b · D-71: west on A, left turn in   // S3b: west cargo row, west on A, straight in
+ else if(tpl==='apronSW'&&sd.zone==='ne'){pts=[[X.APP0,X.RY],[A3,X.RY],[A3,LY],[cx,LY],[cx,ng]];rad=[110,90,60]}   // S3b: NE apron, east on L, tight turn-in
+ else if(tpl==='apronSW'){
+  if(sd.id==='P6'){pts=[[X.APP0,X.RY],[A3,X.RY],[A3,X.TY+40],[cx,X.TY+200],[cx,ng]];rad=[110,150,150]}   // GATE-77 S5b: the S-bend on A3S, straight on L — its wing passes O2's row in line
+  else if(Math.abs(cx-A3)<40){pts=[[X.APP0,X.RY],[A3,X.RY],[A3,ng-260],[cx,ng-130],[cx,ng]];rad=[110,400,400]}
+  else{pts=[[X.APP0,X.RY],[A3,X.RY],[A3,LY],[cx,LY],[cx,ng]];rad=[110,90,90]}
+ }else{pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[cx,X.TY],[cx,ng]];rad=[110,90,90]}   // apronSE: west apron, exit at A2, taxi west on A, straight in
+ const leg=apttArrive(ac,pts,rad,sd.th);leg.park=leg.endPose();leg.park[2]=sd.th;leg.park[3]=0;leg.park[4]=1;return leg;
+}
+// departures: bridge stands push onto L facing west, taxi to B1, north to A, full length from A1; the east block and O2 push onto L, taxi west to A2S
+// and line up at A2 (intersection departure, as before); west stands push east into their band and line up at A2 from taxiway A
+function g73DepLegs(sd,ac){
+ const X=APTT_X,K=APTT_CLS[ac],D={},tpl=sd.tpl,cx=sd.cx,ng=sd.ngy,LY=X.LY;
+ if(tpl==='bridge'&&cx-80>X.A2+40&&g77L1Closed()){   // GATE-77 S5 · AIR-20: L1 closed → north on A2
+  const yh=APT_Y.RS+48;D.push=apttPush(ac,cx,ng,{dir:-1,yE:LY});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[cx-80,LY],[X.A2,LY],[X.A2,yh]],[90],Math.PI);D.hold=D.taxi.endPose();D.viaA2=true;
+  D.takeoff=apttTakeoff(ac,[[X.A2,yh],[X.A2,X.RY],[X.END,X.RY]],[80],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }else if(tpl==='bridge'&&(ac==='AC-LG-01'||ac==='AC-MW-01')){   // GATE-77 S5b · D-68 · S5c: the wide-body too: pushed facing east, east on L, north on B2, west on A to A1
+  const hx=X.A1+170;D.push=apttPush(ac,cx,ng,{dir:1,yE:LY,dx:90});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[D.pe[0],LY],[G77_B2,LY],[G77_B2,X.TY],[hx,X.TY]],[90,90],0);D.viaB2=true;D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A1,X.TY],[X.A1,X.RY],[X.END,X.RY]],[85,90],D.hold[2]);
+ }else if(tpl==='bridge'){
+  const hx=X.A1+170;
+  D.push=apttPush(ac,cx,ng,Object.assign({dir:-1,yE:LY},sd.pushOpt||{}));D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[cx-80,LY],[X.B1,LY],[X.B1,X.TY],[hx,X.TY]],[90,90],Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A1,X.TY],[X.A1,X.RY],[X.END,X.RY]],[85,90],D.hold[2]);
+ }else if(tpl==='strip'){             // GATE-77 S5b · D-71: forward onto L, west to B2, north, west on A, the A2 hold
+  const yh=APT_Y.RS+48;D.taxi=apttTaxi(ac,[[cx,ng],[cx,LY],[G77_B2,LY],[G77_B2,X.TY],[X.A2,X.TY],[X.A2,yh]],[40,50,50,60,60],Math.PI/2);D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[X.A2,yh],[X.A2,X.RY],[X.END,X.RY]],[80],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }else if(tpl==='cargoS'){            // S3b: pushed back onto taxiway A facing A1 (C1 east, C2 west), short roll to the hold, line up at A1
+  const pu=sd.push||{dir:1,dx:80};
+  D.push=apttPush(ac,cx,ng,{dir:pu.dir,yE:X.TY,dx:pu.dx});D.pe=D.push.endPose();
+  const hx=D.pe[0]+pu.dir*16;
+  D.taxi=apttTaxi(ac,[[D.pe[0],X.TY],[hx,X.TY]],[],pu.dir>0?0:Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A1,X.TY],[X.A1,X.RY],[X.END,X.RY]],[56,90],D.hold[2]);
+ }else if(tpl==='cargo'){
+  D.taxi=apttTaxi(ac,[[sd.ngx,sd.ngy],[5460,sd.ngy],[5460,X.TY],[5385,X.TY]],[60,70],Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[5385,X.TY],[X.A1,X.TY],[X.A1,X.RY],[X.END,X.RY]],[70,90],D.hold[2],7250);
+ }else if(tpl==='hard'){
+  const hx=X.A2+160;
+  D.taxi=apttTaxi(ac,[[sd.ngx,sd.ngy],[X.GLX,sd.ngy],[X.GLX,X.TY],[hx,X.TY]],[50,60],Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A2,X.TY],[X.A2,X.RY],[X.END,X.RY]],[70,80],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }else if(tpl==='apronSW'&&(g77LEastClosed()||sd.id==='P6')){   // GATE-77 S5b · owner 05:19: L closed at the large stand → out by A3; P6 (just west of A3S) always: pushed facing east, its tail swings away from O2
+  const yh=APT_Y.RS+48,yP=LY,near=cx>X.A3-100&&cx<X.A3,e=cx<X.A3-100||near?1:-1;D.push=apttPush(ac,cx,ng,near?{dir:1,yE:yP,dx:-(cx-(X.A3-95))}:{dir:e,yE:yP});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[D.pe[0],yP],[X.A3,yP],[X.A3,X.TY],[X.A2,X.TY],[X.A2,yh]],[90,90,90,90],e>0?0:Math.PI);D.viaA3=true;D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[X.A2,yh],[X.A2,X.RY],[X.END,X.RY]],[80],D.hold[2],Math.max(APTT_CLS[ac].xLo,X.A2+AO_ROLL[ac]));
+ }else if(tpl==='apronSW'){
+  const yh=APT_Y.RS+48,yP=LY;   // holding on A2 just south of the hold-short line, nose north; S3b: the NE apron pushes onto L as well (A east stub removed)
+  D.push=apttPush(ac,cx,ng,{dir:-1,yE:yP});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[cx-80,yP],[X.A2,yP],[X.A2,yh]],[90],Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[X.A2,yh],[X.A2,X.RY],[X.END,X.RY]],[80],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }else{                                // apronSE: west apron, push / power-back east, taxi north in the west band, east on A, line up from A2
+  const hx=X.A2-160,yE=540;
+  D.push=apttPush(ac,cx,ng,{dir:1,yE});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[cx+80,yE],[cx+140,yE],[cx+140,X.TY],[hx,X.TY]],[50,90],0);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A2,X.TY],[X.A2,X.RY],[X.END,X.RY]],[85,90],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }
+ return D;
+}
+
+// S2 · NE apron services (called from afDest): vehicles leave the G2 yard up the GLINK (x GLN), run east on the service road y 590,
+// north on the service column and along the tug lane in front of the noses.  The tug pushes the aircraft back onto the A east stub and
+// returns straight south to the service road; the fuel truck stops beside the wing (cx + 60) and turns on the spot.
+function g73NeDest(role,sd,ac,TL,fy){
+ const N=G73_NE,GLN=AF.GLN,GLS=AF.GLS,cx=sd.cx,c=N.col,R=N.road;
+ if(R<N.y+N.h-60){   // GATE-77 S5b · D-68: the straight road y 484 in front of the noses
+  const SO=APL.lanes.spineOut,SI=APL.lanes.spineIn;   // GATE-77 S6b-c · p156 · K-95: from / to the east spine (the yard rows X / Y)
+  if(role==='tug')return{node:afNodeGL(),inn:[[GLN,R,26],[cx,TL,0]],crab:true,mode:'tug',backFrom:t=>t[0]<c+30?[[t[0],t[1],0],[t[0],R,30],[GLS,R,26]]:[[t[0],t[1],0],[c,t[1],24],[c,R,26],[GLS,R,26]],
+   east:{node:afNodeEast(),inn:[[SO,R,24],[cx,TL,0]],backFrom:t=>[[t[0],t[1],0],[t[0],R,30],[SI,R,24]]}};
+  if(role==='fuel'){const colF=cx+60;return{node:afNodeGL(),inn:[[GLN,R,26],[colF,R,22],[colF,fy,0]],mode:'pivot',back:[[colF,fy,0],[colF,R,22],[GLS,R,26]],
+   east:{node:afNodeEast(),inn:[[SO,R,24],[colF,R,22],[colF,fy,0]],back:[[colF,fy,0],[colF,R,22],[SI,R,24]]}}}
+  return null}
+ if(role==='tug')return{node:afNodeGL(),inn:[[GLN,R,26],[c,R,22],[c,TL,22],[cx,TL,0]],crab:true,mode:'tug',backFrom:t=>t[0]<c+30?[[t[0],t[1],0],[t[0],R,30],[GLS,R,26]]:[[t[0],t[1],0],[c,t[1],24],[c,R,26],[GLS,R,26]]};   // S3b: back along L to the column x 8012, never across the parked rows
+ if(role==='fuel'&&sd.id==='GA3'){const colF=cx+60;return{node:afNodeGL(),inn:[[GLN,R,26],[colF,R,22],[colF,fy,0]],mode:'pivot',back:[[colF,fy,0],[colF,R,22],[GLS,R,26]]}}
+ if(role==='fuel'){const colF=cx+60;return{node:afNodeGL(),inn:[[GLN,R,26],[c,R,22],[c,TL,22],[colF,TL,22],[colF,fy,0]],mode:'pivot',back:[[colF,fy,0],[colF,TL,22],[c,TL,22],[c,R,22],[GLS,R,26]]}}
+ return null;
+}
+
+// S2 FINAL · AIR-22: a passenger door on each side.  Door L is the asset's 'Door' anchor; Door R mirrors it across the centre line
+// (compatibility fallback until the aircraft redesign of GATE-77 brings real Door R anchors).  Each bridge stand names its door (APT_STANDS)
+// and its rotunda stands in line with that door, so the bridge leaves the terminal straight.  A stand without a door falls back to the
+// door away from its ground-service side.
+function g73DoorDy(s,ac,th,ngy,dx,dyL){
+ if(s.door==='L'||s.door==='R')return s.door==='R'?-dyL:dyL;
+ const c=Math.cos(th),sn=Math.sin(th),sv=s.svcSide||-1;
+ for(const dy of [dyL,-dyL]){const x=s.cx+dx*c-dy*sn;if((Math.sign(x-s.cx)||1)!==sv)return dy}
+ return dyL;
+}
+
+// ---- painting --------------------------------------------------------------------------------------------------------------------------------
+// north of the runway strip: mown buffer outside the fence, fence, patrol road inside it (field tiles of E1/F1/G1 cover y −850…)
+function g73PaintPerimeter(g,x0,x1){
+ const Y=APT_Y;g.save();
+ for(let y=-850,i=0;y<Y.FN;y+=62,i++){g.fillStyle=i%2?'rgba(172,185,114,.07)':'rgba(58,85,45,.07)';g.fillRect(x0,y,x1-x0,Math.min(62,Y.FN-y))}
+ g.strokeStyle='rgba(58,77,58,.35)';g.lineWidth=2;g.beginPath();g.moveTo(x0,-760);g.lineTo(x1,-760);g.stroke();             // drainage swale outside the fence
+ g.fillStyle=portPattern('gravel');g.fillRect(x0,Y.PR0,x1-x0,Y.PR1-Y.PR0);g.fillStyle='rgba(0,0,0,.10)';g.fillRect(x0,Y.PR0,x1-x0,2);g.fillRect(x0,Y.PR1-2,x1-x0,2);
+ g.strokeStyle='#52665c';g.lineWidth=1.4;g.beginPath();g.moveTo(x0,Y.FN);g.lineTo(x1,Y.FN);g.stroke();g.fillStyle='#46574f';for(let x=x0;x<x1;x+=30)g.fillRect(x-1.4,Y.FN-1.4,2.8,2.8);
+ if(x0===6000)aptTxt(g,'AIRSIDE · PERIMETER ROAD',6600,(Y.PR0+Y.PR1)/2,9,'rgba(236,232,214,.55)',600);
+ g.restore();
+}
+// approach lighting corridor west of the threshold (outside the chunk grid, as before)
+function g73DrawNorthField(v){
+ const R=APT_APPROACH_REGION;if(!portVis(v,R.x,R.y,R.w,R.h))return;
+ ctx.save();ctx.fillStyle='rgba(172,185,114,.10)';ctx.fillRect(R.x,APT_RWY.cy-60,R.w,120);ctx.strokeStyle='rgba(58,77,58,.35)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(R.x,APT_RWY.cy+150);ctx.lineTo(R.x+R.w,APT_RWY.cy+150);ctx.stroke();ctx.restore();
+}
+function g73PaintConnector(g,c){
+ const Y=APT_Y,x0=c.x-c.w/2;
+ g.fillStyle=portPattern('asphalt');g.fillRect(x0,Y.TS-4,c.w,Y.LN-Y.TS+8);
+ g.fillStyle='rgba(0,0,0,.12)';g.fillRect(x0,Y.TS,3,Y.LN-Y.TS);g.fillRect(x0+c.w-3,Y.TS,3,Y.LN-Y.TS);
+ g.strokeStyle='#e0b93a';g.lineWidth=2.2;g.beginPath();g.moveTo(c.x,Y.TY);g.lineTo(c.x,Y.LY);g.stroke();
+ // fillets: taxiway A centre line ⇄ connector, connector ⇄ taxilane L centre line
+ g.lineWidth=1.8;for(const d of [-1,1]){g.beginPath();g.moveTo(c.x,Y.TY+70);g.quadraticCurveTo(c.x,Y.TY,c.x+d*70,Y.TY);g.stroke();g.beginPath();g.moveTo(c.x,Y.LY-70);g.quadraticCurveTo(c.x,Y.LY,c.x+d*70,Y.LY);g.stroke()}
+ // taxiway edge lights along the connector (blue)
+ g.fillStyle='#58a8e8';for(let y=Y.TS+30;y<Y.LN-10;y+=60)for(const sx of [x0+5,x0+c.w-5]){g.beginPath();g.arc(sx,y,2.2,0,Math.PI*2);g.fill()}
+ aptTxt(g,c.id,c.x+c.w/2+16,(Y.TS+Y.LN)/2,11,'rgba(244,242,232,.75)',700);
+}
+function g77Show(id){return id}   // GATE-77 S5c · owner 11:38: the code ids are the shown names now (was P4 ↔ P6, D-65 (3))   // GATE-77 S5b · D-65: the shown stand names
+function g73PaintTaxiExtra(g){for(const c of G73_CONNECTORS)g73PaintConnector(g,c);g77PaintStrip(g)}
+function g77PaintStrip(g){const S=G77_STRIP;g73PaveRect(g,G77_LG_EXT);g73PaveRect(g,S);g.fillStyle='rgba(0,0,0,.10)';g.fillRect(S.x,S.y,3,S.h);g.fillRect(S.x+S.w-3,S.y,3,S.h);   // GATE-77 S5b · D-71
+ for(const s of aptReady().stands)if(s.tpl==='strip'){aptPaintStand(g,s);g.strokeStyle='#e0b93a';g.lineWidth=1.6;g.beginPath();g.moveTo(s.ngx,APT_Y.TY+40);g.lineTo(s.ngx,s.ngy-70);g.moveTo(s.ngx,s.ngy+14);g.lineTo(s.ngx,APT_Y.LY-30);g.stroke()}
+ aptTxt(g,'LIGHT AIRCRAFT · IN FROM A · OUT TO L',S.x+S.w/2,S.y+S.h-14,7.5,'rgba(244,242,232,.65)',700)}
+function g73DrawTaxiTiles(v){
+ const Y=APT_Y,y0=Y.RS-12,h=1012-y0;
+ for(const [k,x0,x1] of [['e',4860,6000],['f',6000,7200],['g',7200,8080]])if(portVis(v,x0,y0,x1-x0,h))portCached('apt-taxi-'+k,x0,y0,x1-x0,h,g=>{aptPaintTaxi(g);g73PaintTaxiExtra(g)},1.25);
+}
+function g73PaveRect(g,r){g.fillStyle=portPattern('apron');g.fillRect(r.x,r.y,r.w,r.h);g.fillStyle='rgba(0,0,0,.09)';g.fillRect(r.x,r.y,r.w,3)}
+function g73PaintWestExt(g){
+ const r=G73_WEST_EXT;g73PaveRect(g,r);
+ // lead-in lines from taxiway A straight into the west stands; the cargo band east of x 5446 is kept clear (large cargo stand, stage 3)
+ g.strokeStyle='rgba(224,185,58,.75)';g.lineWidth=1.6;
+ for(const s of aptReady().stands)if(s.tpl==='cargoS'){g.beginPath();g.moveTo(s.ngx,APT_Y.TS);g.lineTo(s.ngx,s.ngy);g.stroke();g.lineWidth=3;g.beginPath();g.moveTo(s.ngx-14,s.ngy+4);g.lineTo(s.ngx+14,s.ngy+4);g.stroke();g.lineWidth=1.6}   // S3b: lead-in from A + stop bar
+ aptTxt(g,'WEST CARGO ROW · PUSHBACK ONTO A',5250,APT_Y.TS+40,10,'rgba(244,242,232,.55)',600);g77TwlCurves(g);   /* K-156: the same curves over the apron edge */
+}
+function g73PaintApronExt(g){g73PaveRect(g,G73_PAX_EXT)}
+function g73PaintEastExt(g){
+ g73PaveRect(g,G73_EAST_EXT);
+ // S2: service road from the GLINK to the NE apron (south of the L wing sweep, north of the east-row tails)
+ const N=G73_NE;g.save();g.strokeStyle='rgba(246,244,236,.7)';g.lineWidth=1.3;g.setLineDash([10,8]);
+ for(const y of [N.road-12,N.road+12]){g.beginPath();g.moveTo(7302,y);g.lineTo(N.x+N.w,y);g.stroke()}   // GATE-77 S5b · D-68: straight to the east edge
+ g.setLineDash([]);for(let x=7420;x<7960;x+=180)aptTxt(g,'SERVICE',x,N.road,7,'rgba(246,244,236,.6)',600);g.restore();
+}
+// S3b (AIR-24): NE small-aircraft apron south of taxilane L — live row (nose south, lead-in from L), static row facing it, the tug lane
+// between them, the service column x 8012 from the band road y 590.  The taxiway A east stub of S2 is gone (grass again).
+function g73PaintNE(g){
+ const Y=APT_Y,N=G73_NE,c=N.col,tl=N.tug,e=N.x+N.w-6,y1=N.road-12;
+ g.fillStyle=portPattern('apron');g.fillRect(N.x,N.y,N.w,N.h);g.fillStyle='rgba(0,0,0,.07)';g.fillRect(N.x,N.y+N.h-3,N.w,3);
+ for(const s of aptReady().stands)if(s.zone==='ne'){g.strokeStyle='#e0b93a';g.lineWidth=1.8;g.beginPath();g.moveTo(s.ngx-60,Y.LY);g.quadraticCurveTo(s.ngx,Y.LY,s.ngx,Y.LY+60);g.lineTo(s.ngx,s.ngy);g.stroke();aptPaintStand(g,s)}
+ for(const s of aptReady().stands)if(s.zone==='neS')aptPaintStand(g,s);
+ {const R=N.road,hx=8200,hy0=R+12,hy1=640;   // GATE-77 S5b · D-68: the road is the tug lane (no column, no turn down); the heli path between GA4 and O1
+  g.fillStyle='rgba(60,64,70,.18)';g.fillRect(N.x,R-12,N.w,24);g.fillStyle='rgba(246,244,236,.75)';for(let x=N.x+40;x<e-130;x+=70){g.beginPath();g.moveTo(x,R-5);g.lineTo(x,R+5);g.lineTo(x+7,R);g.closePath();g.fill()}
+  aptTxt(g,'SERVICE · TUG',e-58,R,7,'rgba(246,244,236,.8)',700);
+  g.fillStyle='rgba(60,64,70,.16)';g.fillRect(hx-12,hy0,24,hy1-hy0);g.save();g.strokeStyle='rgba(246,244,236,.75)';g.lineWidth=1.2;g.setLineDash([6,5]);g.beginPath();g.moveTo(hx-12,hy0);g.lineTo(hx-12,hy1);g.moveTo(hx+12,hy0);g.lineTo(hx+12,hy1);g.stroke();g.restore();
+  g.fillStyle='rgba(246,244,236,.8)';for(let y=hy0+22;y<hy1-12;y+=38){g.beginPath();g.moveTo(hx-5,y);g.lineTo(hx+5,y);g.lineTo(hx,y+7);g.closePath();g.fill()}aptTxt(g,'HELI',hx,hy1-8,6.5,'rgba(246,244,236,.85)',700)}
+ g77PaintO1(g);/* GATE-77 S7-b · p198 */aptTxt(g,'NE GA APRON',N.x+N.w/2,N.y+N.h-12,10,'rgba(244,242,232,.6)',700);
+}
+function g73DrawNE(v){const N=G73_NE,h=Math.max(N.road,N.y+N.h)+30-Y0NE;if(portVis(v,7990,Y0NE,410,h)){aptReady();portCached('g73-ne',7990,Y0NE,410,h,g73PaintNE,1.5)}}   // S5b: the whole NE apron (the road moved north)
+const Y0NE=APT_Y.LS-6;   // S3b: the NE apron starts south of L
+function g73PaintTaxilane(g){
+ const Y=APT_Y;g.save();
+ g.strokeStyle='rgba(224,185,58,.85)';g.lineWidth=1.4;for(const y of [Y.LN+3,Y.LS-3]){g.setLineDash([]);g.beginPath();g.moveTo(G73_L.x0,y);g.lineTo(G73_L.x1,y);g.stroke()}
+ g.strokeStyle='#e0b93a';g.lineWidth=2.4;g.beginPath();g.moveTo(G73_L.x0,Y.LY);g.lineTo(G73_L.x1,Y.LY);g.stroke();
+ // lead-in lines from L into the stands south of it
+ g.lineWidth=1.8;for(const s of aptReady().stands)if((s.tpl==='bridge'||s.tpl==='apronSW')&&s.zone!=='ne'){g.beginPath();g.moveTo(s.ngx,Y.LY);g.lineTo(s.ngx,Math.max(Y.LS+20,s.ngy-150));g.stroke()}
+ for(let x=6200;x<G73_L.x1-100;x+=600)aptTxt(g,'L',x,Y.LY-12,12,'rgba(244,242,232,.8)',800);
+ g.restore();
+}
+
+// ---- S2 · stand × aircraft clearance audit (AIR-04 / AIR-08) -------------------------------------------------------------------------------
+// Every outdoor stand × every accepted aircraft, full wing span (aplEnv: fuselage, wing / APTT_WT, tail):
+//  · parked against every other stand (any accepted aircraft): no overlap; jet-bridge neighbours keep ≥ 30 px wingtip to wingtip;
+//  · parked against buildings, hangar doors, service alleys, perimeter road (aplAudit) and against aircraft taxiing on A (CG, west of A2) / L;
+//  · the arrival and the pushback of every live stand × aircraft swept every 0.25 s against all parked neighbours (≥ 6 px = reservation margin);
+//  · jet bridges: at an angle to the front door (GATE-77 S5c · D-78: every accepted type 6°–40°), reach ≤ 165 px (or the stand's own), cab beside the door, never over a pocket / bus bay;  baggage pockets clear of every bridge-stand shape (OBB).
+const G73_REQ={bridgeWing:30,margin:6,bridgeLen:165,bridgeDeg:3};
+// stage 2b (approved layout): C1 turns nose-south at the west end, C2 next to it, GA3/GA4/O1 move to the NE apron.  Findings that involve
+// those stands are reported as 'pending2b' in stage 2 (the v1.94 west-apron geometry), they fail the audit from stage 2b on.
+const G73_PENDING_2B=new Set(G73_SCOPE.westRow==='v194'?['C1','C2','GA3','GA4','O1']:[]);   // S3a kept the v1.94 west row; S3b rebuilt it: the set is empty, every finding counts
+const g73Span=ac=>{const g=apttAcGeom(ac);return(g.W[3]-g.W[2])/2/APTT_WT};
+function g73Gap(a,b){if(apttObbHit(a,b,0))return 0;let lo=0,hi=400;if(apttObbHit(a,b,hi))for(let i=0;i<14;i++){const m=(lo+hi)/2;if(apttObbHit(a,b,m))hi=m;else lo=m}else return hi;return hi}
+function g73EnvGap(A,B){let m=1e9;for(const a of A)for(const b of B){if(a.x0>b.x1+60||b.x0>a.x1+60||a.y0>b.y1+60||b.y0>a.y1+60)continue;m=Math.min(m,g73Gap(a,b))}return m}
+function g73StandAudit(){
+ aptReady();const issues=[],pending=[],R=G73_REQ,S=APL.stands.filter(s=>!s.indoor),env=(s,ac)=>{const v=g77StandView(s,ac);return aplEnv(ac,v.ngx,v.ngy,v.th)};
+ const add=(msg,...ids)=>(ids.some(id=>G73_PENDING_2B.has(String(id).split('/')[0]))?pending:issues).push(msg);
+ const pairs={},standGap={};
+ for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){const a=S[i],b=S[j];if(Math.abs(a.ngx-b.ngx)>700||Math.abs(a.ngy-b.ngy)>700)continue;
+  let m=1e9;for(const p of a.accepts)for(const q of b.accepts){if(g77Mars(a,p,b)||g77Mars(b,q,a))continue;m=Math.min(m,g73EnvGap(env(a,p),env(b,q)))}if(m>=400)continue;
+  const k=a.id+'/'+b.id;pairs[k]=Math.round(m);standGap[a.id]=Math.min(standGap[a.id]??1e9,Math.round(m));standGap[b.id]=Math.min(standGap[b.id]??1e9,Math.round(m));
+  const need=a.tpl==='bridge'&&b.tpl==='bridge'?R.bridgeWing:R.margin;if(m<need)add('stand-gap '+k+' '+m.toFixed(0)+'<'+need,a.id,b.id)}
+ // parked against aircraft taxiing on A: the CG (span 356) uses A west of A2 (A1 · B1 · A2); NE apron: only small aircraft on the A east stub
+ const Y=APT_Y,cg=g73Span('AC-CG-01'),vsA={};
+ for(const s of S)for(const ac of s.accepts){const y0=Math.min(...env(s,ac).map(b=>b.y0)),x0=Math.min(...env(s,ac).map(b=>b.x0));if(y0>Y.LN)continue;
+  const big=x0<APTT_X.A2+200?cg:g73Span('AC-BJ-01'),gap=y0-(Y.TY+big);vsA[s.id]=Math.min(vsA[s.id]??1e9,Math.round(gap));if(gap<R.margin)add(s.id+'/'+ac+':into-taxiway-A-sweep '+gap.toFixed(0),s.id)}
+ // arrival + pushback sweeps of every live stand against the parked neighbours (every accepted aircraft of the neighbour)
+ const sweep={};let samples=0;
+ for(const s of S){if(!s.live)continue;const nb=S.filter(o=>o!==s&&Math.hypot(o.ngx-s.ngx,o.ngy-s.ngy)<900);
+  for(const ac of s.accepts){let arr,D;try{arr=aoArrLeg(s,ac);D=aoDepLegs(s,ac)}catch(e){issues.push(s.id+'/'+ac+':route-error '+e.message);continue}
+   for(const [kind,leg,t0] of [['arr',arr,Math.max(0,arr.dur-45)],['push',D.push,0],['taxi',D.taxi,0]]){if(!leg)continue;
+    let m=1e9,who='';for(let t=t0;t<=leg.dur;t+=.25){const p=leg.pose(t);if(!p||p[3]>2)continue;samples++;const me=aplEnv(ac,p[0],p[1],p[2]);
+     for(const o of nb){if(Math.abs(o.ngx-p[0])>600||Math.abs(o.ngy-p[1])>600)continue;for(const q of o.accepts){if(g77Mars(s,ac,o)||g77Mars(o,q,s)||(o.large&&g77MarsLane(o.id,q)&&s.tpl==='apronSW'&&kind==='taxi'))continue;const g=g73EnvGap(me,env(o,q));if(g<m){m=g;who=o.id+'/'+q.slice(3,5)}}}}
+    const k=s.id+'/'+ac.slice(3,5)+':'+kind;if(m<1e9)sweep[k]=Math.round(m)+(m<60?' ('+who+')':'');if(m<R.margin)add('sweep '+k+' ✕ '+who+' '+m.toFixed(0),s.id,who)}}}
+ // jet bridges (S2 FINAL bridge fix): straight out of the terminal face with the cab beside the door — the rotunda on the terminal,
+ // the design aircraft at 0° (< 0.5°), every accepted aircraft ≤ 3°, reach ≤ 165, cab centre level with the door, tunnel and cab clear of
+ // the fuselage (touching allowed: ≥ −1.5 px), never over the stand's own ground-service side.  Baggage pockets vs the bridge stands' shapes.
+ const bridges={};
+ const g77Bays=APL.bays.filter(b=>b.zone==='F2'&&(b.kind==='BT'||b.kind==='AB')),g77BrBay={};   // GATE-77 S5c · D-78
+ for(const st of APT_STANDS){if(st.cargo)continue;const sd=S.find(q=>q.id===st.id);let L=0,D=0,Dm=1e9,D0=0,sides=new Set(),svcHit=1e9,body=1e9,lev=0;
+  const sv=sd.svcSide||-1,cols=[36,58,100,135].map(o=>st.cx+o*sv),tb=aptFp(aptB(st.term)),nat=APTT_SPEC.jb.an.find(q=>q[0]==='Terminal End')[2]-APTT_SPEC.jb.an.find(q=>q[0]==='Door End')[2];
+  if(st.gateX-15<tb.x||st.gateX+15>tb.x+tb.w)issues.push(st.id+':bridge-off-terminal');
+  for(const ac of sd.accepts){const vw=g77StandView(sd,ac),vcx=vw.viewFor?vw.cx:st.cx,vcols=vw.viewFor?[36,58,100,135].map(o=>vcx+o*(vw.svcSide||-1)):cols,B=f2BridgeGeometry(st,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},1),Pk=g77BridgePose(st,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},1),vx=B.dock[0]-B.terminal[0],vy=B.dock[1]-B.terminal[1],len=Pk.dk?Pk.dk.D+G77_K72.cabD:Math.hypot(vx,vy),deg=Pk.dk?Math.abs(Pk.dk.al)*180/Math.PI:Math.abs(Math.atan2(vx,-vy))*180/Math.PI,a=Math.atan2(vy,vx);   // K-72
+   L=Math.max(L,len);D=Math.max(D,deg);Dm=Math.min(Dm,deg);if(ac===(sd.first||st.aircraft))D0=deg;{const P=g77BridgePose(st,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},1),P0=g77BridgePose(st,null,0);for(const [Q,k] of [[P,'docked'],[P0,'rest']]){const br=apttObb(Q.R[0],Q.R[1],Q.th,[-10,Q.L,-8,8],'Q','br'),bc=apttObb(Q.cab[0],Q.cab[1],Q.ca,[-9,9,-10,10],'Q','cab');for(const b of g77Bays){const o=apttObb(b.x,(b.y0+b.y1)/2,0,[-b.w/2,b.w/2,-(b.y1-b.y0)/2,(b.y1-b.y0)/2],'V',b.id),g=Math.min(g73Gap(br,o),g73Gap(bc,o)),kk=st.id+'/'+b.id;g77BrBay[kk]=Math.min(g77BrBay[kk]??1e9,Math.round(g));if(g<2)issues.push(st.id+':bridge-over-bay '+b.id+' ('+k+(k==='docked'?' '+ac.slice(3,5):'')+') '+g.toFixed(0))}}}const side=B.door[0]<vcx?-1:1;sides.add((side<0?'R':'L')===(vw.door||sd.door||'L')?(sd.door||'L'):'?'+ac);
+   const k=B.reach/nat,ce=B.reach+APT_JB_CABC*k;lev=Math.max(lev,Pk.dk?Math.hypot(Pk.front[0]-Pk.dk.door[0],Pk.front[1]-Pk.dk.door[1]):Math.abs(B.terminal[1]+Math.sin(a)*ce-B.door[1]));   // cab centre level with the door
+   // clearance to the fuselage box (nose-south stands): tunnel half width 10 up to the cab, cab half width 11 to its bumper
+   const g=apttAcGeom(ac);{const Pq=g77BridgePose(st,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},1),fu=apttObb(vcx,vw.ngy??sd.ngy,sd.th,g.F,'F',ac),tun=apttObb(Pq.R[0],Pq.R[1],Pq.th,[0,Pq.L,-7,7],'Q','tun'),cab=apttObb(Pq.cab[0],Pq.cab[1],Pq.ca,[-9,9,-10,10],'Q','cab');
+    body=Math.min(body,g73Gap(tun,fu));if(apttObbHit(cab,fu,-1.5))body=Math.min(body,-2)}   // GATE-77 S5c · D-78: the angled tunnel and the cab as boxes
+   // service-side rule: the bridge (half width 12, rotunda to bumper) never lies over the stand's own ground-service columns (vehicle half width 11)
+   const br=apttObb(Pk.R[0],Pk.R[1],0,[-G77_K72.rr,G77_K72.rr,-G77_K72.rr,G77_K72.rr],'Q','br'),bw=apttObb(Pk.W[0],Pk.W[1],Pk.th,[-3,3,-9,9],'Q','bw');   // K-72: the rotunda's column and the wheels
+   const {fy}=afPos(vw,ac);for(const x of vcols){const col=apttObb(x,(fy-60+AF.L)/2,0,[-11,11,-(AF.L-fy+60)/2,(AF.L-fy+60)/2],'Q','col');svcHit=Math.min(svcHit,g73Gap(br,col),g73Gap(bw,col))}}
+  bridges[st.id]={terminal:st.term.slice(-1),door:[...sides].join('/'),baseX:Math.round(st.gateX*10)/10,service:sv<0?'W':'E',len:Math.round(L),deg:+D0.toFixed(2),degMin:+Dm.toFixed(1),degMax:+D.toFixed(1),cabLevel:+lev.toFixed(1),bodyGap:+body.toFixed(1),serviceGap:Math.round(svcHit)};
+  if(L>(G77_BR_LEN[st.id]||R.bridgeLen))issues.push(st.id+':bridge-reach '+L.toFixed(0));
+  if(Dm<(G77_BR_MIN_AT[st.id]??G77_BR_MIN)||D>G77_BR_MAX)issues.push(st.id+':bridge-angle '+Dm.toFixed(1)+'…'+D.toFixed(1)+'° (range '+G77_BR_MIN+'–'+G77_BR_MAX+')');   // GATE-77 S5c · D-78: at an angle, not along the fuselage
+  if(lev>1)issues.push(st.id+':cab-not-at-door '+lev.toFixed(1));
+  if(body<1)issues.push(st.id+':bridge-over-fuselage '+body.toFixed(1));
+  if(sides.size!==1||[...sides][0]!==(sd.door||'L'))issues.push(st.id+':door-side '+[...sides].join('/'));
+  if(svcHit<1)issues.push(st.id+':bridge-over-service-side')}
+ const pocket={};
+ for(const b of APL.bays.filter(b=>b.zone==='F2'&&b.kind==='BT')){const o=apttObb(b.x,(b.y0+b.y1)/2,0,[-b.w/2,b.w/2,-(b.y1-b.y0)/2,(b.y1-b.y0)/2],'V',b.id);
+  let m=1e9;for(const s of S.filter(s=>s.tpl==='bridge'))for(const ac of s.accepts)m=Math.min(m,g73EnvGap([o],env(s,ac)));pocket[b.id]=Math.round(m);if(m<R.margin)issues.push(b.id+':pocket-in-stand '+m.toFixed(0))}
+ const la=aplAudit();for(const q of la.issues)issues.push('layout '+q);
+ return{ok:!issues.length,issues,pending2b:pending,bridgeStands:APT_STANDS.filter(s=>!s.cargo).map(s=>s.id+'@'+Math.round(s.cx)),standGaps:pairs,vsTaxiwayA:vsA,sweeps:sweep,samples,bridges,pockets:pocket,bridgeBays:g77BrBay}
+}
+// ---- QA ----------------------------------------------------------------------------------------------------------------------------------------
+function g73Paved(){
+ const Y=APT_Y,R=APT_RWY,T=APT_TWY,r=(x0,y0,x1,y1,id)=>({id,x0,y0,x1,y1});
+ const out=[r(R.x0-90,R.cy-R.w/2,R.x1+90,R.cy+R.w/2,'RWY'),r(T.x0-40,T.cy-T.w/2,T.x1+40,T.cy+T.w/2,'TWY'),
+  r(G73_WEST_EXT.x,G73_WEST_EXT.y,G73_WEST_EXT.x+G73_WEST_EXT.w,G73_WEST_EXT.y+G73_WEST_EXT.h,'WEST-EXT'),r(G73_PAX_EXT.x,G73_PAX_EXT.y,G73_PAX_EXT.x+G73_PAX_EXT.w,G73_PAX_EXT.y+G73_PAX_EXT.h,'PAX-EXT'),
+  r(G73_EAST_EXT.x,G73_EAST_EXT.y,G73_EAST_EXT.x+G73_EAST_EXT.w,G73_EAST_EXT.y+G73_EAST_EXT.h,'EAST-EXT'),
+  r(5400,394,6020,845,'CARGO'),r(G77_LG_EXT.x,G77_LG_EXT.y,G77_LG_EXT.x+G77_LG_EXT.w,G77_LG_EXT.y+G77_LG_EXT.h,'LARGE'),r(G77_STRIP.x,G77_STRIP.y,G77_STRIP.x+G77_STRIP.w,G77_STRIP.y+G77_STRIP.h,'STRIP'),r(G73_NE.x,G73_NE.y,G73_NE.x+G73_NE.w,G73_NE.y+G73_NE.h,'NE'),r(6020,394,7236,772,'APRON'),r(APT_GLINK.x-APT_GLINK.w/2,APT_GLINK.y0,APT_GLINK.x+APT_GLINK.w/2,APT_GLINK.y1,'GLINK'),r(G77_YARD.x0,G77_YARD.y0,G77_YARD.x1,G77_YARD.y1,'YARD')];
+ for(const l of APT_LINKS)out.push(r(l.x-l.w/2,l.y0,l.x+l.w/2,l.y1,l.id));
+ for(const c of G73_CONNECTORS)out.push(r(c.x-c.w/2,Y.TS,c.x+c.w/2,Y.LN,c.id));
+ const Z=APL.zones;for(const z of [Z.wApron,Z.eBlock,Z.hard])out.push(r(z.x,z.y,z.x+z.w,z.y+z.h,'Z'));
+ return out}
+// S4 · AIR-10 belt-loader homes + the G2 tug pitch
+function g73YardAudit(){const A=aptReady(),issues=[],bl=A.bays.filter(b=>b.kind==='BL'),pt=A.bays.filter(b=>b.kind==='PT').sort((a,b)=>a.x-b.x),L=A.lanes,ry=A.yardRows.Y;
+ if(bl.length!==4)issues.push('belt-loader-bays:'+bl.length);const BLx=63,BLy=19;   // a belt loader ≈ 8.5 m × 2.5 m → 63 × 19 px
+ for(const b of bl){if(b.row==='HS'){const D=s6aDimOf('BL')||[56,15];if(b.x1-b.x0<D[1]+8||b.y1-b.y0<D[0]+10)issues.push('belt-loader-bay-small:'+b.id);if(b.y1>AF.HW-10)issues.push('belt-loader-in-lane:'+b.id);continue}if(b.x1-b.x0<BLy+6||b.y1-b.y0<BLx+10)issues.push('belt-loader-bay-small:'+b.id);if(b.y0<L.I+10||b.y1>L.O2-10)issues.push('belt-loader-in-lane:'+b.id)}
+ let pitch=1e9;for(let i=1;i<pt.length;i++)pitch=Math.min(pitch,pt[i].x-pt[i-1].x);if(pitch<34)issues.push('pt-pitch:'+pitch);
+ const rowY=A.bays.filter(b=>b.row==='Y').sort((a,b)=>a.x0-b.x0);for(let i=1;i<rowY.length;i++)if(rowY[i].x0<rowY[i-1].x1-.01)issues.push('row-Y-overlap:'+rowY[i].id);if(rowY.at(-1).x1>8340)issues.push('row-Y-into-spine');
+ return{ok:!issues.length,issues,beltLoaderBays:bl.map(b=>b.id+'@'+b.x),ptPitch:pitch,rowY:rowY.map(b=>b.id).join(' ')}}
+// S4 · AIR-20 lock check: AC-MW-01 (54 × 48 m ≈ 403 × 359 px; the aircraft itself is built in GATE-77) at P1, scaled from the NB about the nose gear
+const G73_MW={len:403,span:359,stopNg:640};
+function g73P1LargeAudit(){aptReady();const issues=[],g=apttAcGeom('AC-NB-01'),nbHalf=(g.W[3]-g.W[2])/2/APTT_WT,kL=G73_MW.len/(g.nose-g.F[0]),half=G73_MW.span/2,P1=APL.stands.find(s=>s.id==='P1'),P2=APL.stands.find(s=>s.id==='P2'),C3=APL.stands.find(s=>s.id==='C3');
+ const acHalf=id=>{const q=apttAcGeom(id);return(q.W[3]-q.W[2])/2/APTT_WT};
+ const at=ng=>{const nose=ng+g.nose*kL,tail=ng+g.F[0]*kL,wy0=ng+g.W[0]*kL,wy1=ng+g.W[1]*kL;
+  const gapP2=Object.fromEntries(P2.accepts.map(a=>[a.slice(3,5),Math.round((P2.cx-acHalf(a))-(P1.cx+half))]));
+  const c3=C3?aplEnv('AC-CG-01',C3.ngx,C3.ngy,C3.th).map(aplBox):[],c3x1=Math.max(...c3.map(b=>b.x1)),c3y0=Math.min(...c3.map(b=>b.y0)),c3y1=Math.max(...c3.map(b=>b.y1));
+  const pa=F2_POCKETS.A.bays.map(x=>x-10);
+  return{ng,noseY:Math.round(nose),noseToServiceRoad:Math.round(AF.L-12-nose),noseToBridgeLine:Math.round(APT_BRIDGE_Y-nose),tailY:Math.round(tail),tailIntoLSweep:Math.round(APT_Y.LY+nbHalf-tail),
+   wing:[Math.round(P1.cx-half),Math.round(P1.cx+half),Math.round(wy0),Math.round(wy1)],gapP2,fuselageToPocketA:Math.round(Math.min(...pa)-(P1.cx+21)),
+   gapC3:C3?(wy1<c3y0||wy0>c3y1?'different rows':Math.round((P1.cx-half)-c3x1)):null}};
+ const std=at(P1.ngy),stop=at(G73_MW.stopNg),L1=[5950,6420],tailX=[P1.cx-54,P1.cx+54];
+ const l1Covers=tailX[0]>=L1[0]&&tailX[1]<=L1[1];if(!l1Covers)issues.push('L1-does-not-cover-tail');if(stop.noseToServiceRoad<10)issues.push('mw-nose-at-service-road');
+ for(const k of ['RJ','TP'])if((stop.gapP2[k]??99)<15)issues.push('p2-'+k+'-gap');
+ return{ok:!issues.length,issues,mw:G73_MW,standardStop:std,largeStop:stop,l1:{range:L1,coversTail:l1Covers},
+  verdict:'P1 Large: stop the nose gear at y '+G73_MW.stopNg+' (nose '+stop.noseToServiceRoad+' px off the service road), close L1 (tail '+stop.tailIntoLSweep+' px inside the L wing sweep), P2 SAFETY BLOCK for NB (wing overlap '+(-stop.gapP2.NB)+' px); P2 may stay open for RJ/TP ('+stop.gapP2.RJ+'/'+stop.gapP2.TP+' px)'}}
+// S4 · GATE-73 geometry lock: the live geometry must equal the locked snapshot below; any later move has to change the lock (and the plan) on purpose
+function g73LockSnapshot(){const A=aptReady(),r=v=>Math.round(v*100)/100,R=o=>o&&{x:r(o.x),y:r(o.y),w:r(o.w),h:r(o.h)};
+ return{runway:[APT_RWY.cy,APT_RWY.w,APT_RWY.x0,APT_RWY.x1],taxiwayA:[APT_TWY.cy,APT_TWY.w,APT_TWY.x0,APT_TWY.x1],y:{...APT_Y},L:[G73_L.x0,G73_L.x1],
+  connectors:G73_CONNECTORS.map(c=>[c.id,c.x,c.w]),lines:{fence:APT_FENCE_Y,stand:APT_STAND_Y,bridge:APT_BRIDGE_Y,e2WestFence:EW2_FENCE_Y,serviceL:AF.L,frontage:F2_RD.y,cargoLane:CARGO_W.lane},
+  stands:A.stands.map(s=>[s.id,r(s.ngx),r(s.ngy),r(s.th),s.tpl,s.zone,s.accepts.join('/'),s.live!==false]),
+  zones:Object.fromEntries(['wApron','eBlock','hard','ne','yard','heli','perim'].map(k=>[k,R(A.zones[k])])),
+  areas:{emergency:[G73_EM.x,G73_EM.y,G73_EM.w,G73_EM.h],truckYard:R(E2_TRUCK_YARD),trainingPad:R(EW2_TRAIN_YARD),towGate:[EW2_TOW.gate.x0,EW2_TOW.gate.x1],pWestN:R(EW2_PWN),cargoGate:[5684,5744]},
+  pockets:Object.fromEntries(Object.entries(F2_POCKETS).map(([k,P])=>[k,[...P.bays,P.exitX]])),
+  bays:A.bays.filter(b=>b.zone!=='F2'&&b.zone!=='W').map(b=>[b.id,r(b.x),r(b.w),r(b.y0),r(b.y1)]),
+  roads:[NODES.length,EDGES.length]}}
+// int289: "roads" 92/103 → 99/110 after the merge of S12 (+7 nodes / +7 edges of the north); computed, to be measured in the game
+// S16: "roads" re-baselined 97/107 → 97/109 (the landside of the field by the map: 9 old nodes / 9 old edges out, 9 nodes / 11 edges in); no airport key changed
+// int287: "roads" re-baselined 97/107 → 92/101 after the merge of S10 ב (E6 of the map; measured in the game); no airport key changed
+// s16b: "roads" 92/101 (int287) → 92/103 (S16: +2 קטעים של צד היבשה של המפה; הצמתים 9 יצאו ו-9 נכנסו)
+// int286: "roads" re-baselined after the merge of S11 + S10 א → 97/107 (measured in the game); no airport key changed
+// S11: "roads" re-baselined 117/134 → 104/117 (A6 / B6: 16 צמתים ו-21 קטעים ישנים יצאו, 3 צמתים ו-4 קטעים של המפה נכנסו)
+// S10 א (המשך): "roads" re-baselined 115/130 → 112/124 (PT-M and the two temporary links to B6 out — the owner, 10.11); no airport key changed
+// S10 א: "roads" re-baselined 117/134 → 115/130 (C6 / D6: the old port roads out, the map's port roads in); no airport key changed
+// S9 · S7F268: "roads" re-baselined 130/151 → 117/134 (E4 / E5: the old roads, their nodes and TMP-S6-4 out — the map); no airport key changed
+// GATE-75: "roads" re-baselined 144/181 → 146/183 (+2 port nodes / +2 port edges: the C6 west quay link); no airport key changed
+const G73_LOCK={"runway":[-430,240,4950,8250],"taxiwayA":[-68,120,4900,8030],"y":{"RY":-430,"RN":-550,"RS":-310,"SN":-610,"SS":-250,"TY":-68,"TN":-128,"TS":-8,"FN":-760,"PR0":-745,"PR1":-715,"LY":274,"LN":234,"LS":314},"L":[5950,8345],"connectors":[["B1",5990,80],["A2S",6600,110],["B2",7276,80],["A3S",7950,110]],"lines":{"fence":944,"stand":660,"bridge":768,"e2WestFence":725,"serviceL":734,"frontage":1090,"cargoLane":700},"stands":[["P1",6096,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01",true],["P2",6430,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01/AC-QJ-01",true],["P3",6732,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01/AC-QJ-01",true],["P4",7055,660,1.57,"bridge","apron","AC-MW-01/AC-LG-01",true],["C1",5080,480,1.57,"cargoS","cargoW","AC-CG-01",true],["C2",5390,515,1.57,"cargoS","cargoW","AC-TP-01/AC-TB-01",true],["C3",5700,480,1.57,"cargoS","cargoW","AC-CG-01",true],["O2",8130,434.34,1.57,"apronSW","ne","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA3",8270,434.34,1.57,"apronSW","ne","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA4",8130,530,-1.57,"apronSW","neS","AC-PR-01",false],["GA1",7389,729.34,1.57,"apronSW","east","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA2",7514,729.34,1.57,"apronSW","east","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["P5",7680,744,1.57,"apronSW","east","AC-RJ-01/AC-TP-01",true],["P6",7926,745,1.57,"apronSW","east","AC-NB-01/AC-RJ-01/AC-QJ-01",true],["GA7",7552,150,1.57,"strip","strip","AC-PR-01/AC-LT-01",true],["GA8",7645,150,1.57,"strip","strip","AC-PR-01/AC-LT-01",true],["M1",7505.66,974.83,-1.57,"indoor","hangar","AC-BJ-01",false],["M2",7678.43,975.66,-1.57,"indoor","hangar","AC-PR-01",false],["M3",7869.37,975.66,-1.57,"indoor","hangar","AC-PR-01",false]],"zones":{"wApron":{"x":4805,"y":604,"w":595,"h":120},"eBlock":{"x":7316,"y":496,"w":1019,"h":504},"hard":{"x":7236,"y":1000,"w":1099,"h":135},"ne":{"x":8045,"y":314,"w":300,"h":300},"yard":{"x":7869,"y":1158,"w":531,"h":342},"heli":{"x":7885,"y":1520,"w":510,"h":170},"perim":{"x":8352,"y":-280,"w":46,"h":1440}},"areas":{"emergency":[8072,-108,272,314],"truckYard":{"x":5436,"y":944,"w":310,"h":206},"trainingPad":{"x":4832,"y":730,"w":542,"h":130},"towGate":[4870,4970],"pWestN":{"x":4832,"y":874,"w":484,"h":186},"cargoGate":[5684,5744]},"pockets":{"A":[6201,6221,6259],"B":[6531,6551,6628],"D":[7182,7202,7301],"C":[6573,6595,6628]},"bays":[["Y-FT1",7942,36,1190,1280],["Y-FT2",7978,36,1190,1280],["Y-FT3",8014,36,1190,1280],["Y-FT4",8050,36,1190,1280],["Y-FT5",8086,36,1190,1280],["Y-SH1",8122,36,1190,1280],["Y-SH2",8158,36,1190,1280],["Y-SV1",8192,32,1190,1280],["Y-SV2",8224,32,1190,1280],["Y-RX1",8274,52,1190,1280],["Y-RX2",8326,52,1190,1280],["Y-BL1",7938,28,1320,1410],["Y-BL2",7966,28,1320,1410],["Y-BT1",7992,24,1320,1410],["Y-BT2",8016,24,1320,1410],["Y-BT3",8040,24,1320,1410],["Y-PT1",8073,34,1320,1410],["Y-PT2",8107,34,1320,1410],["Y-PT3",8141,34,1320,1410],["Y-PT4",8175,34,1320,1410],["Y-PT5",8209,34,1320,1410],["Y-PT6",8243,34,1320,1410],["Y-MX1",8283,34,1320,1410],["Y-MX2",8317,34,1320,1410],["G2-MS1",8230,70,813,835],["G2-MS2",8230,70,841,863],["G2-MS3",8230,70,869,891],["G2-MS4",8230,70,897,919],["H-BL3",7336,26,1018,1086],["H-BL4",7392,26,1018,1086],["EM-AR1",8099,46,-20,76],["EM-AR2",8145,46,-20,76],["EM-AR3",8191,46,-20,76],["EM-RES",8237,46,-20,76],["EM-EMS1",8093,34,130,202],["EM-EMS2",8127,34,130,202],["EM-POL1",8158,28,130,202],["EM-POL2",8186,28,130,202],["N-PT1",7346,34,830,900],["N-PT2",7382,34,830,900],["N-PT3",7418,34,830,900]],"roads":[127,139]};   /* p572 (S7): +J06_42 +J12_42 +J18_42 −9 of the old B5; +7 (CL-W/4, LC-A5/2, LC-SQ/1 ×2, CL-SW/1 ×2, CL-SW/2) −12 of the old B5 −TMP-S6-3 */   /* p560: −E3-NW −E3-NE +E3-GJ +E3-GATE; −E3-WEST −E3-NORTH −E3-EAST +E3-SOUTH-E +LC-E3N (E3 — המסוף) */   /* p522r: −J371_34 −CL-T2E +PG-N1 +CL-PGN (רחוב שער הנמל חזר, חד-סטרי) */   /* p501: S6 — −12 צמתים +J25_42 +J31_42 +J385_42; −22 רחובות +10 קטעים של המפה +TMP-S6-3 +TMP-S6-4 */   /* p477: 135/163 → 132/158 — S5: −C4I −C4J −C4E −D4C −D4D −C4M −C4K +J31_34 +J385_34 +E31_28 +E385_28; −8 דרכים פנימיות −C4-RC-C −C4-RC-S +CL-T1/2/3 +LC-C4 +LC-D4 */   /* p472: 141/171 → 140/169 — D3 של המפה (S4): −E0 −D3A1 −D3A3 +D3L +E39_19; −D3-RM-W −D3-RM-C −D3-AUTO-N −D3-AUTO-W +LC-D3 +LC-D3V */   /* p471: 139/171 → 141/171 — C3 of the map (S4): −E1 −E3 +J31_16 +N31 +E31_23 +ARN-E; −RM-LOOP −RM-E −V-N −V-E +C2-ARN-W +C2-ARN-E +C2-LC-N +LC-C3 */   /* p467: 140/172 → 139/171 — the stub of R-MID at B3 (W0, RM-W) out; no airport key changed */   /* p461: 143/176 → 140/172 — B3 S2 */   /* p429: re-baselined 146/183 → 143/176 — B4 S1 (−6 / +3 nodes, −13 / +6 edges); no airport key changed */   // locked 14.10.2026 · GATE-73 S4
+function g73LockAudit(){if(!G73_LOCK)return{ok:false,issues:['no-lock'],items:0};const now=g73LockSnapshot(),issues=[];let items=0;
+ for(const k of Object.keys(G73_LOCK)){items++;if(JSON.stringify(now[k])!==JSON.stringify(G73_LOCK[k]))issues.push(k)}
+ for(const k of Object.keys(now))if(!(k in G73_LOCK))issues.push('unlocked:'+k);
+ return{ok:!issues.length,issues,items,stands:G73_LOCK.stands.length,bays:G73_LOCK.bays.length,locked:'GATE-73 S4'}}
+function g73Audit(){
+ aptReady();
+ const issues=[],Y=APT_Y,R=APT_RWY,T=APT_TWY,half=id=>{const g=apttAcGeom(id);return g.W?(g.W[3]-g.W[2])/2/APTT_WT:0};
+ // runway system in the north row, taxiway A + links widened
+ if(R.cy!==-430||R.w!==240||R.x0!==4950||R.x1!==8250)issues.push('runway-lock');if(T.cy!==-68||T.w!==120)issues.push('taxiway-lock');
+ if(Y.SN<Y.FN+100||Y.SS>0)issues.push('strip-outside-north-row');if(APT_LINKS.some(l=>l.w!==110||l.y0!==Y.RS||l.y1!==Y.TN))issues.push('links');
+ const cg=half('AC-CG-01'),nb=half('AC-NB-01'),rj=half('AC-RJ-01');
+ if(Y.TY-cg<Y.SS)issues.push('cg-on-A-in-runway-strip:'+(Y.TY-cg).toFixed(0));
+ if((Y.LY-nb)-(Y.TY+cg)<30)issues.push('A-L-wingtip:'+((Y.LY-nb)-(Y.TY+cg)).toFixed(0));
+ // stands south of L: the largest aircraft on L never reaches a parked aircraft (tail tip / wing)
+ const st={};for(const s of APL.stands){if(s.indoor||!['bridge','apronSW'].includes(s.tpl)||s.zone==='ne')continue;for(const ac of s.accepts){if(s.large&&(ac==='AC-LG-01'||ac==='AC-MW-01'))continue;const env=aplEnv(ac,s.ngx,s.ngy,s.th).map(aplBox),y0=Math.min(...env.map(b=>b.y0)),x0=Math.min(...env.map(b=>b.x0)),x1=Math.max(...env.map(b=>b.x1));
+  const onL=x1>6020&&x0<7300?nb:rj;if(y0<Y.LY+onL+10)issues.push(s.id+'/'+ac+':tail-into-L '+y0.toFixed(0));st[s.id]=Math.min(st[s.id]??1e9,Math.round(y0-(Y.LY+onL)))}}
+ // every route sample (nose gear) of every live stand × accepted aircraft lies on paving or in the air
+ const paved=g73Paved(),onPave=(x,y)=>paved.some(p=>x>=p.x0-2&&x<=p.x1+2&&y>=p.y0-2&&y<=p.y1+2);let samples=0;const off=new Set();
+ for(const sd of APL.stands){if(!sd.live||sd.indoor)continue;for(const ac of sd.accepts){
+  const legs=[];try{legs.push(['arr',aoArrLeg(sd,ac)]);const D=aoDepLegs(sd,ac);if(D.push)legs.push(['push',D.push]);legs.push(['taxi',D.taxi],['takeoff',D.takeoff])}catch(e){issues.push(sd.id+'/'+ac+':route-error '+e.message);continue}
+  for(const [n,leg] of legs)for(let t=0;t<=leg.dur;t+=.5){const p=leg.pose(t);if(!p||p[3]>2)continue;samples++;if(!onPave(p[0],p[1]))off.add(sd.id+'/'+ac.slice(3,5)+':'+n+'@'+Math.round(p[0])+','+Math.round(p[1]))}}}
+ for(const o of [...off].slice(0,8))issues.push('off-paving '+o);
+ // fixtures of the finish passes are inside E0–G1 and in the right row
+ for(const p of [...E1_FIXTURES,...F1_FIXTURES,...G1_FIXTURES,...G1_LEADOFF])if(p.x<4800||p.x>8400||p.y<-850||p.y>APT_Y.TS+10)issues.push(p.id+':outside');
+ for(const s of [...E1_SIGNS,...F1_SIGNS,...G1_SIGNS])if(s.y<=Y.SS||s.y>=Y.TN)issues.push(s.id+':sign-band');
+ if(!MAP_ACTIVE_IDS.has('E0')||!MAP_ACTIVE_IDS.has('F0')||!MAP_ACTIVE_IDS.has('G0'))issues.push('north-row-not-live');
+ const cov=G73_SPACE_USES.reduce((a,b)=>a+b.w*b.h,0);if(cov!==3600*850)issues.push('space-use-coverage:'+cov);
+ const SA=g73StandAudit();issues.push(...SA.issues);issues.push(...g77LargeAudit());   // GATE-77 S5b: the east apron's A3 routes vs the large jet
+ const RS=goRspAudit();issues.push(...RS.issues);   // S2 GROUND OPS: chore bays off every lane, every chore stop inside a bay
+ const IA=goIdleAudit();issues.push(...IA.issues);   // S3b AIR-28: home footprints inside their bay, off every lane and tug-return column
+ const EM=g73EmAudit();issues.push(...EM.issues.map(i=>'emrg:'+i));const YD=g73YardAudit();issues.push(...YD.issues.map(i=>'yard:'+i));const P1L=g73P1LargeAudit();issues.push(...P1L.issues.map(i=>'p1-large:'+i));
+ const LK=g73LockAudit();issues.push(...LK.issues.map(i=>'lock:'+i));   // S4: geometry lock
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,24),gate:'GATE-73',stage:G73_SCOPE.stage,runway:{cy:R.cy,strip:[Y.SN,Y.SS]},taxiwayA:{cy:T.cy,w:T.w},taxilane:{cy:Y.LY,w:Y.LS-Y.LN},rspE:RS,idle:IA,emrg:EM,yard:YD,p1Large:P1L,lock:LK,
+  clearances:{cgOnA_vs_strip:Math.round(Y.TY-cg-Y.SS),A_vs_L_wingtips:Math.round((Y.LY-nb)-(Y.TY+cg)),standTailsVsL:st},routeSamples:samples,stands:SA}}
+window.__TC_G73_QA=()=>({...g73Audit(),build:BUILD});
+
+// ===== GATE-75P S1 · PERF-04 · K-04 · K-27 · AUTO-03 / QA-72 · QA-52: in-game performance meter + built-in benchmark =====
+// (plan v4.52 additions: real-frame FPS now / avg / 1% low / p99 / stalls (K-27), cold + warm entry, moving between chunks, density ×2
+// inside the view, a future stress mode, the stall budget of QA-72 · 9)
+// F9 opens the meter: FPS, frame time avg / p95 / p99 / max, JS time per frame, SIM steps, memory (JS heap + cached canvases), a GC
+// estimate, the graphics-acceleration check and — on demand — the time per system and the canvas draw operations per frame.
+// "Benchmark" reloads the game in benchmark mode (#bench): the save is neither loaded nor written, Math.random is seeded, and a fixed
+// camera route runs by itself — E3 terminal under load, the airport at peak, Tower View (the whole airfield), the port with its trains,
+// the game's widest zoom over the city, an extreme-load view, the growth test (QA-72 · 4) and a short long-run. At the end: a report
+// (per scenario + the per-system budget of AUTO-03) to copy, compared with the last benchmark of an earlier build on this computer.
+// Measuring only: the system functions are wrapped only while a profiled window runs; nothing in the game changes.
+const PERF_CAT_LABEL={roadCore:'Road Core — סימולציה + ציור הרכבים',signal:'Signal Core + רמזורים ומעברי חצייה',airport:'שדה התעופה',rail:'רכבות ומסילות',port:'נמל (משאיות, מנופים, שערים, ציור)',peds:'הולכי רגל ונוסעים',world:'רקע העולם (קרקע, כבישים, מבנים, עצים, תוויות)',ui:'UI (מינימפה, HUD, מפה)',player:'שחקן / משימה / ניווט / מצלמה',loop:'לולאת frame עצמה'};
+const PERF_CATS=Object.keys(PERF_CAT_LABEL);
+// AUTO-03 budget per frame (ms, 60 FPS = 16.7 ms): drawing ≤ 8 · simulation ≤ 4 · UI ≤ 1 · misc ≤ 1 · margin ≥ 2.7
+const PERF_KINDS=['render','sim','ui','misc'],PERF_BUDGET={render:8,sim:4,ui:1,misc:1,margin:2.7,frame:16.7};
+const PERF_KIND_LABEL={render:'ציור',sim:'סימולציה',ui:'ממשק',misc:'שונות'};
+const PERF_FN_TABLE=[
+['updateTrafficCars','roadCore',()=>updateTrafficCars,f=>{updateTrafficCars=f},'sim'],
+['updateD4YardTraffic','roadCore',()=>updateD4YardTraffic,f=>{updateD4YardTraffic=f},'sim'],
+['updateTaxiPassenger','roadCore',()=>updateTaxiPassenger,f=>{updateTaxiPassenger=f},'sim'],
+['drawTrafficCars','roadCore',()=>drawTrafficCars,f=>{drawTrafficCars=f},'render'],
+['drawD4MovingSemis','roadCore',()=>drawD4MovingSemis,f=>{drawD4MovingSemis=f},'render'],
+['drawBusLineVehicles','roadCore',()=>drawBusLineVehicles,f=>{drawBusLineVehicles=f},'render'],
+['drawParkedCars','roadCore',()=>drawParkedCars,f=>{drawParkedCars=f},'render'],
+['updateA4Fleet','roadCore',()=>updateA4Fleet,f=>{updateA4Fleet=f},'sim'],
+['drawA4Fleet','roadCore',()=>drawA4Fleet,f=>{drawA4Fleet=f},'render'],
+['drawC5FleetCargo','roadCore',()=>drawC5FleetCargo,f=>{drawC5FleetCargo=f},'render'],
+['updateBorrowedVehicleReturns','roadCore',()=>updateBorrowedVehicleReturns,f=>{updateBorrowedVehicleReturns=f},'sim'],
+['drawSignals','signal',()=>drawSignals,f=>{drawSignals=f},'render'],
+['drawCrosswalks','signal',()=>drawCrosswalks,f=>{drawCrosswalks=f},'render'],
+['drawAptGround','airport',()=>drawAptGround,f=>{drawAptGround=f},'render'],
+['aptOpsTick','airport',()=>aptOpsTick,f=>{aptOpsTick=f},'sim'],
+['drawAptProps','airport',()=>drawAptProps,f=>{drawAptProps=f},'render'],
+['drawAptOverhead','airport',()=>drawAptOverhead,f=>{drawAptOverhead=f},'render'],
+['f2UpdatePeople','airport',()=>f2UpdatePeople,f=>{f2UpdatePeople=f},'sim'],
+['f2DrawPeople','airport',()=>f2DrawPeople,f=>{f2DrawPeople=f},'render'],
+['e2DrawVisitors','airport',()=>e2DrawVisitors,f=>{e2DrawVisitors=f},'render'],
+['f2DrawAccess','airport',()=>f2DrawAccess,f=>{f2DrawAccess=f},'render'],
+['g2DrawAccess','airport',()=>g2DrawAccess,f=>{g2DrawAccess=f},'render'],
+['ew2DrawAccess','airport',()=>ew2DrawAccess,f=>{ew2DrawAccess=f},'render'],
+['raDrawAccess','airport',()=>raDrawAccess,f=>{raDrawAccess=f},'render'],
+['e2DrawGround','airport',()=>e2DrawGround,f=>{e2DrawGround=f},'render'],
+['f2DrawGround','airport',()=>f2DrawGround,f=>{f2DrawGround=f},'render'],
+['g2DrawGround','airport',()=>g2DrawGround,f=>{g2DrawGround=f},'render'],
+['ew2DrawGround','airport',()=>ew2DrawGround,f=>{ew2DrawGround=f},'render'],
+['raDrawGround','airport',()=>raDrawGround,f=>{raDrawGround=f},'render'],
+['drawE3Rail','rail',()=>drawE3Rail,f=>{drawE3Rail=f},'render'],
+['drawE4Rail','rail',()=>drawE4Rail,f=>{drawE4Rail=f},'render'],
+['drawE5Rail','rail',()=>drawE5Rail,f=>{drawE5Rail=f},'render'],
+['drawPortRail','rail',()=>drawPortRail,f=>{drawPortRail=f},'render'],
+['drawLineRail','rail',()=>drawLineRail,f=>{drawLineRail=f},'render'],
+['drawFreightTrains','rail',()=>drawFreightTrains,f=>{drawFreightTrains=f},'render'],
+['rlPushPlayer','rail',()=>rlPushPlayer,f=>{rlPushPlayer=f},'sim'],
+['flFrame','port',()=>flFrame,f=>{flFrame=f},'sim'],
+['pgTick','port',()=>pgTick,f=>{pgTick=f},'sim'],
+['drawPortGround','port',()=>drawPortGround,f=>{drawPortGround=f},'render'],
+['drawPortProps','port',()=>drawPortProps,f=>{drawPortProps=f},'render'],
+['drawPortOverhead','port',()=>drawPortOverhead,f=>{drawPortOverhead=f},'render'],
+['pgDraw','port',()=>pgDraw,f=>{pgDraw=f},'render'],
+['drawFlowTrucks','port',()=>drawFlowTrucks,f=>{drawFlowTrucks=f},'render'],
+['drawLineSea','port',()=>drawLineSea,f=>{drawLineSea=f},'render'],
+['drawPortShips','port',()=>drawPortShips,f=>{drawPortShips=f},'render'],
+['drawPortTrucks','port',()=>drawPortTrucks,f=>{drawPortTrucks=f},'render'],
+['flDrawCargo','port',()=>flDrawCargo,f=>{flDrawCargo=f},'render'],
+['portSprite','port',()=>portSprite,f=>{portSprite=f},'render'],
+['portOps','port',()=>portOps,f=>{portOps=f},'sim'],
+['portSeaUnder','port',()=>portSeaUnder,f=>{portSeaUnder=f},'render'],
+['drawPortSea','port',()=>drawPortSea,f=>{drawPortSea=f},'render'],
+['flDrawYardTiers','port',()=>flDrawYardTiers,f=>{flDrawYardTiers=f},'render'],
+['updateNPCPedestrians','peds',()=>updateNPCPedestrians,f=>{updateNPCPedestrians=f},'sim'],
+['updateBusAlighters','peds',()=>updateBusAlighters,f=>{updateBusAlighters=f},'sim'],
+['updateBusPassengerDemand','peds',()=>updateBusPassengerDemand,f=>{updateBusPassengerDemand=f},'sim'],
+['drawBusAlighters','peds',()=>drawBusAlighters,f=>{drawBusAlighters=f},'render'],
+['drawNPCPedestrians','peds',()=>drawNPCPedestrians,f=>{drawNPCPedestrians=f},'render'],
+['drawBusStopPassengers','peds',()=>drawBusStopPassengers,f=>{drawBusStopPassengers=f},'render'],
+['drawB6Visitors','peds',()=>drawB6Visitors,f=>{drawB6Visitors=f},'render'],
+['drawB5Visitors','peds',()=>drawB5Visitors,f=>{drawB5Visitors=f},'render'],
+['drawC5Visitors','peds',()=>drawC5Visitors,f=>{drawC5Visitors=f},'render'],
+['drawA4Visitors','peds',()=>drawA4Visitors,f=>{drawA4Visitors=f},'render'],
+['render','world',()=>render,f=>{render=f},'render'],
+['wtcGround','world',()=>wtcGround,f=>{wtcGround=f},'render'],
+['wtcTrees','world',()=>wtcTrees,f=>{wtcTrees=f},'render'],
+['wtcPass','world',()=>wtcPass,f=>{wtcPass=f},'render'],
+['wtcIdle','world',()=>wtcIdle,f=>{wtcIdle=f},'render'],
+['aptFixturesStatic','world',()=>aptFixturesStatic,f=>{aptFixturesStatic=f},'sim'],
+['wtcBuild','world',()=>wtcBuild,f=>{wtcBuild=f},'render'],
+['wtcExtract','world',()=>wtcExtract,f=>{wtcExtract=f},'render'],
+['wtcReplaySprites','world',()=>wtcReplaySprites,f=>{wtcReplaySprites=f},'render'],
+['wtcLiveUnder','world',()=>wtcLiveUnder,f=>{wtcLiveUnder=f},'render'],
+['wtcLiveOver','world',()=>wtcLiveOver,f=>{wtcLiveOver=f},'render'],
+['wtcSchedule','world',()=>wtcSchedule,f=>{wtcSchedule=f},'render'],
+['g72Backdrop','world',()=>g72Backdrop,f=>{g72Backdrop=f},'render'],
+['a6DrawSea','world',()=>a6DrawSea,f=>{a6DrawSea=f},'render'],
+['drawB2Assets','world',()=>drawB2Assets,f=>{drawB2Assets=f},'render'],
+['drawC2Assets','world',()=>drawC2Assets,f=>{drawC2Assets=f},'render'],
+['drawLots','world',()=>drawLots,f=>{drawLots=f},'render'],
+['drawHouseFit','world',()=>drawHouseFit,f=>{drawHouseFit=f},'render'],
+['drawLandscape','world',()=>drawLandscape,f=>{drawLandscape=f},'render'],
+['drawB3Parking','world',()=>drawB3Parking,f=>{drawB3Parking=f},'render'],
+['drawB3Assets','world',()=>drawB3Assets,f=>{drawB3Assets=f},'render'],
+['drawD3Ground','world',()=>drawD3Ground,f=>{drawD3Ground=f},'render'],
+['drawD3Parking','world',()=>drawD3Parking,f=>{drawD3Parking=f},'render'],
+['drawD3Assets','world',()=>drawD3Assets,f=>{drawD3Assets=f},'render'],
+['drawE3Ground','world',()=>drawE3Ground,f=>{drawE3Ground=f},'render'],
+['drawE4Ground','world',()=>drawE4Ground,f=>{drawE4Ground=f},'render'],
+['drawE5Ground','world',()=>drawE5Ground,f=>{drawE5Ground=f},'render'],
+['drawB6Ground','world',()=>drawB6Ground,f=>{drawB6Ground=f},'render'],
+['drawA6Ground','world',()=>drawA6Ground,f=>{drawA6Ground=f},'render'],
+['drawB5Ground','world',()=>drawB5Ground,f=>{drawB5Ground=f},'render'],
+['drawC5Ground','world',()=>drawC5Ground,f=>{drawC5Ground=f},'render'],
+['drawA4Ground','world',()=>drawA4Ground,f=>{drawA4Ground=f},'render'],
+['drawC4Assets','world',()=>drawC4Assets,f=>{drawC4Assets=f},'render'],
+['drawRoadBase','world',()=>drawRoadBase,f=>{drawRoadBase=f},'render'],
+['drawB2Access','world',()=>drawB2Access,f=>{drawB2Access=f},'render'],
+['drawB6Access','world',()=>drawB6Access,f=>{drawB6Access=f},'render'],
+['drawA6Access','world',()=>drawA6Access,f=>{drawA6Access=f},'render'],
+['drawB5Access','world',()=>drawB5Access,f=>{drawB5Access=f},'render'],
+['drawC5Access','world',()=>drawC5Access,f=>{drawC5Access=f},'render'],
+['drawA4Access','world',()=>drawA4Access,f=>{drawA4Access=f},'render'],
+['drawC4Access','world',()=>drawC4Access,f=>{drawC4Access=f},'render'],
+['drawE3Access','world',()=>drawE3Access,f=>{drawE3Access=f},'render'],
+['drawB3CurbCuts','world',()=>drawB3CurbCuts,f=>{drawB3CurbCuts=f},'render'],
+['drawD3CurbCuts','world',()=>drawD3CurbCuts,f=>{drawD3CurbCuts=f},'render'],
+['drawMarkings','world',()=>drawMarkings,f=>{drawMarkings=f},'render'],
+['drawStreetLights','world',()=>drawStreetLights,f=>{drawStreetLights=f},'render'],
+['drawCityBusStops','world',()=>drawCityBusStops,f=>{drawCityBusStops=f},'render'],
+['drawRoadNames','world',()=>drawRoadNames,f=>{drawRoadNames=f},'render'],
+['drawE3Props','world',()=>drawE3Props,f=>{drawE3Props=f},'render'],
+['drawE4Props','world',()=>drawE4Props,f=>{drawE4Props=f},'render'],
+['drawD3Props','world',()=>drawD3Props,f=>{drawD3Props=f},'render'],
+['drawE5Props','world',()=>drawE5Props,f=>{drawE5Props=f},'render'],
+['drawB6Props','world',()=>drawB6Props,f=>{drawB6Props=f},'render'],
+['drawA6Props','world',()=>drawA6Props,f=>{drawA6Props=f},'render'],
+['drawB5Props','world',()=>drawB5Props,f=>{drawB5Props=f},'render'],
+['drawC5Props','world',()=>drawC5Props,f=>{drawC5Props=f},'render'],
+['drawA4Props','world',()=>drawA4Props,f=>{drawA4Props=f},'render'],
+['drawE3Canopy','world',()=>drawE3Canopy,f=>{drawE3Canopy=f},'render'],
+['drawE4Overhead','world',()=>drawE4Overhead,f=>{drawE4Overhead=f},'render'],
+['drawE5Overhead','world',()=>drawE5Overhead,f=>{drawE5Overhead=f},'render'],
+['drawChunkTrees','world',()=>drawChunkTrees,f=>{drawChunkTrees=f},'render'],
+['drawB6Trees','world',()=>drawB6Trees,f=>{drawB6Trees=f},'render'],
+['drawA6Trees','world',()=>drawA6Trees,f=>{drawA6Trees=f},'render'],
+['drawB5Trees','world',()=>drawB5Trees,f=>{drawB5Trees=f},'render'],
+['drawC5Trees','world',()=>drawC5Trees,f=>{drawC5Trees=f},'render'],
+['drawA4Trees','world',()=>drawA4Trees,f=>{drawA4Trees=f},'render'],
+['drawRoadTargets','world',()=>drawRoadTargets,f=>{drawRoadTargets=f},'render'],
+['drawConnectors','world',()=>drawConnectors,f=>{drawConnectors=f},'render'],
+['drawLanes','world',()=>drawLanes,f=>{drawLanes=f},'render'],
+['drawGraph','world',()=>drawGraph,f=>{drawGraph=f},'render'],
+['drawPedGraph','world',()=>drawPedGraph,f=>{drawPedGraph=f},'render'],
+['wtcBuild','world',()=>wtcBuild,f=>{wtcBuild=f},'render'],
+['drawMiniMap','ui',()=>drawMiniMap,f=>{drawMiniMap=f},'ui'],
+['drawFullMap','ui',()=>drawFullMap,f=>{drawFullMap=f},'ui'],
+['drawVehicleQa','ui',()=>drawVehicleQa,f=>{drawVehicleQa=f},'ui'],
+['renderPhone','ui',()=>renderPhone,f=>{renderPhone=f},'ui'],
+['updatePlayerHud','ui',()=>updatePlayerHud,f=>{updatePlayerHud=f},'ui'],
+['mapBaseStep','ui',()=>mapBaseStep,f=>{mapBaseStep=f},'ui'],
+['updateFishingActionButton','ui',()=>updateFishingActionButton,f=>{updateFishingActionButton=f},'ui'],
+['updateCar','player',()=>updateCar,f=>{updateCar=f},'sim'],
+['updatePed','player',()=>updatePed,f=>{updatePed=f},'sim'],
+['updateMission','player',()=>updateMission,f=>{updateMission=f},'sim'],
+['updateNavigation','player',()=>updateNavigation,f=>{updateNavigation=f},'sim'],
+['updateLicenseTrial','player',()=>updateLicenseTrial,f=>{updateLicenseTrial=f},'sim'],
+['drawPlayerCar','player',()=>drawPlayerCar,f=>{drawPlayerCar=f},'render'],
+['drawPlayerPed','player',()=>drawPlayerPed,f=>{drawPlayerPed=f},'render'],
+['drawNavigationWorld','player',()=>drawNavigationWorld,f=>{drawNavigationWorld=f},'render'],
+['drawActivityWorld','player',()=>drawActivityWorld,f=>{drawActivityWorld=f},'render'],
+['a6Update','player',()=>a6Update,f=>{a6Update=f},'sim'],
+['updateFishing','player',()=>updateFishing,f=>{updateFishing=f},'sim'],
+['updateB5Show','player',()=>updateB5Show,f=>{updateB5Show=f},'sim'],
+['updateA4Practice','player',()=>updateA4Practice,f=>{updateA4Practice=f},'sim'],
+['nearestDriveableVehicle','player',()=>nearestDriveableVehicle,f=>{nearestDriveableVehicle=f},'misc'],
+['nearbyD2Poi','player',()=>nearbyD2Poi,f=>{nearbyD2Poi=f},'misc'],
+['nearbyE4Poi','player',()=>nearbyE4Poi,f=>{nearbyE4Poi=f},'misc'],
+['nearbyE5Poi','player',()=>nearbyE5Poi,f=>{nearbyE5Poi=f},'misc'],
+['nearbyD5Poi','player',()=>nearbyD5Poi,f=>{nearbyD5Poi=f},'misc'],
+['nearbyPlayerHome','player',()=>nearbyPlayerHome,f=>{nearbyPlayerHome=f},'misc'],
+['nearbyRetailPoi','player',()=>nearbyRetailPoi,f=>{nearbyRetailPoi=f},'misc'],
+['nearbyD3Service','player',()=>nearbyD3Service,f=>{nearbyD3Service=f},'misc'],
+['nearbyB2FishingSpot','player',()=>nearbyB2FishingSpot,f=>{nearbyB2FishingSpot=f},'misc'],
+['nearbyC4Poi','player',()=>nearbyC4Poi,f=>{nearbyC4Poi=f},'misc'],
+['nearbyD4Poi','player',()=>nearbyD4Poi,f=>{nearbyD4Poi=f},'misc'],
+['nearbyAptPoi','player',()=>nearbyAptPoi,f=>{nearbyAptPoi=f},'misc'],
+['nearbyA4Poi','player',()=>nearbyA4Poi,f=>{nearbyA4Poi=f},'misc'],
+['nearbyB5Poi','player',()=>nearbyB5Poi,f=>{nearbyB5Poi=f},'misc'],
+['pgNearIntercom','player',()=>pgNearIntercom,f=>{pgNearIntercom=f},'misc'],
+['d5ForkliftMission','player',()=>d5ForkliftMission,f=>{d5ForkliftMission=f},'sim'],
+['currentChunkId','player',()=>currentChunkId,f=>{currentChunkId=f},'misc']
+];
+const PERF_METHOD_TABLE=[['Camera.update','player',()=>[Camera,'update'],'misc'],['Camera.freeUpdate','player',()=>[Camera,'freeUpdate'],'misc'],['Targets.ui','ui',()=>[Targets,'ui'],'ui'],['Targets.draw','ui',()=>[Targets,'draw'],'ui']];

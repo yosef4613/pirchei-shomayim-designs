@@ -1,0 +1,45 @@
+/* carrier (17.11) — הפריקה של מוביל הרכב בסוכנות D3 לפי הציור של הבעלים (inbox_owner/owner_2026-11-12_carrier_unload_D3.webp, ‏12.11 בלילה; D‑605 — הציור = האישור).
+   מצאתי: 074p_linesE.js:leD3Init → S10CI.d3E (11.11) — המכונית יורדת מהסיפון ברוורס מערבה רק עד (BX‑80, ‏BY), פונה קדימה דרומה ונוסעת ישר דרומה ב-x ‏4301 — דרך החניות של הסוכנות
+   ודרך רחבת המוסך — עד רחוב המוסכים (באדום בציור). צריך (בירוק, וההבהרה של הבעלים): ברוורס מערבה לאורך המעבר עד הנתיב השמאלי (הדו־כיווני, x ‏4226), להמשיך ברוורס ולהסתובב
+   עם הזנב צפונה כדי להתיישר, ואז קדימה דרומה ביציאה. השדרוג (כלל 19א): רק הדרך שבתוך S10CI.d3E מוחלפת; הירידה מהסיפון (הגובה, ההתעלמות מהמוביל), הפער ברחוב המוסכים, ‏toRoad
+   וההמשך לעיר — אותו קוד (021w / ‏074p). העטיפה של leD3Init — כי d3E נבנה רק בצעד הראשון של הקווים (כשהנתיבים של מנוע הכבישים כבר בנויים). */
+var CRD3={on:true,done:false,err:null,st:{n:0,laneWait:0,gapWait:0},geo:null};
+function crD3Patch(){const S3=LOGI.sites&&LOGI.sites.D3D;if(CRD3.done||!S3||!S3.bay||!S10CI.d3E)return;CRD3.done=true;
+  const PI=Math.PI,BX=S3.bay.x,BY=S3.bay.y,XI=4226,RJ=30,YT=BY-6,YM=2478;   /* XI — מרכז הנתיב השמאלי (D3ND.lane ‏4205–4247); ‏YT — המקום שבו המכונית מיושרת (הזנב לא מגיע לשורת התצוגה, y ‏2218); ‏YM — לפני הפה של הנתיב (2482) */
+  const LE2=leLaneAt('LC-D3',-1,0,XI+RJ,2572);if(!LE2){CRD3.err='אין נתיב מזרחה ב-LC-D3';return}const lc=LE2.P.y,tJ=leLaneAt('LC-D3',-1,0,XI+RJ,lc);
+  const bez=(P,a,b,c,d,n)=>{for(let i=1;i<=n;i++){const t=i/n,u=1-t;P.push([u*u*u*a[0]+3*u*u*t*b[0]+3*u*t*t*c[0]+t*t*t*d[0],u*u*u*a[1]+3*u*u*t*b[1]+3*u*t*t*c[1]+t*t*t*d[1]])}};
+  const X0=BX-80,B=[[X0,BY]];bez(B,[X0,BY],[XI+20,BY],[XI,BY+24],[XI,YT],18);   /* ממשיכה ברוורס מערבה, והזנב מסתובב צפונה: בסוף — מיושרת בנתיב, החזית דרומה */
+  const C1=[[XI,YT],[XI,YM]];
+  const C2=[[XI,YM],[XI,lc-RJ]];for(let i=1;i<=8;i++){const a=PI-PI/2*i/8;C2.push([XI+RJ+RJ*Math.cos(a),lc-RJ+RJ*Math.sin(a)])}
+  const own=o=>o&&o.s10c&&/^(hold|deck|pool|parked)$/.test(o.s10c.m);
+  const laneBy=x=>{try{for(const o of lgOthers(x)){if(o===x||o===S10CI.carrier||!(o.x>-9000)||own(o))continue;if(o.x>XI-28&&o.x<XI+28&&o.y>BY+30&&o.y<YM+30)return o.id||'?'}}catch(e){}return null};   /* הנתיב השמאלי דו־כיווני: לא נכנסים כשמישהו בתוכו (חזית מול חזית) */
+  const gapBy=x=>{try{for(const o of lgOthers(x)){if(o===x||!(o.x>-9000)||own(o))continue;if(o.x>XI-170&&o.x<XI+300&&Math.abs(o.y-lc)<40)return o.id||'?'}}catch(e){}return null};   /* פער ברחוב המוסכים (שני הנתיבים — הפנייה שמאלה חוצה את הנתיב מערבה) */
+  CRD3.geo={BX,BY,XI,YT,YM,lc:Math.round(lc),B:B.length,C2:C2.length};
+  /* (ב) "או צפונה לשורת התצוגה" (הציור — הקו הירוק עולה בנתיב השמאלי אל המקום הראשון בשורה, D3ND.showStalls[0] / ‏display_cars[2]): פעם בביקור של המוביל, הרכב הראשון שיורד
+     הולך לשורה — ברוורס מערבה, הזנב מסתובב דרומה (אל ראש הנתיב), וקדימה צפונה וימינה אל המקום. קודם מכונית התצוגה שעומדת שם "נמכרת": יוצאת קדימה, דרומה בנתיב השמאלי ולרחוב
+     המוסכים — רכב של הסימולציה (מהמאגר של היבוא, שמחכה מחוץ לעיר, באותו דגם וצבע — אף רכב לא נוצר ולא נעלם: הציור הקבוע נעלם באותו רגע שהרכב מתחיל לזוז, באותה נקודה).
+     כשהחדשה מגיעה למקום — היא הציור של השורה (הדגם והצבע שלה, 032:showRow), והגוף שלה חוזר למאגר. ‏SP-05 (display_cars[4]) — לא נוגעים. */
+  const DQ=D3ND&&D3ND.display_cars&&D3ND.display_cars[2],DEF={asset:'VH-SD-04',ref:'Sedan',color:2};
+  const SX=DQ?DQ[0]:4233.5,SY=DQ?DQ[1]:2206,RS=16,RN=20.5;
+  const OUT=[[SX,SY]];for(let i=1;i<=8;i++){const a=-PI/2+PI/2*i/8;OUT.push([SX+RS*Math.cos(a),SY+RS+RS*Math.sin(a)])}bez(OUT,[SX+RS,SY+RS],[SX+RS,BY+10],[XI,BY+14],[XI,BY+54],14);   /* המכונית שנמכרת: קדימה, ימינה דרומה, ואל הנתיב השמאלי */
+  const BN=[[X0,BY]];bez(BN,[X0,BY],[XI+20,BY],[XI,BY+4],[XI,BY+30],16);   /* החדשה: ברוורס מערבה, הזנב דרומה — מיושרת בראש הנתיב, החזית צפונה */
+  const FN=[[XI,BY+30]];bez(FN,[XI,BY+30],[XI,BY+10],[SX-RN,SY+RN+24],[SX-RN,SY+RN+6],10);FN.push([SX-RN,SY+RN]);for(let i=1;i<=8;i++){const a=PI+PI/2*i/8;FN.push([SX+RN*Math.cos(a),SY+RN+RN*Math.sin(a)])}
+  const crDirty=()=>{try{if(typeof wtcDirty==='function')wtcDirty(SX-40,SY-40,80,80)}catch(e){}};   /* בזום רחוק השורה נאפית לאריחים (kit34) — האריח של המקום נבנה מחדש כשהמקום מתחלף */
+  const stallBy=x=>{try{for(const o of lgOthers(x)){if(o===x||!(o.x>-9000)||own(o))continue;if(o.x>SX-34&&o.x<SX+34&&o.y>SY-16&&o.y<BY+20)return o.id||'?'}}catch(e){}return null};
+  const southLegs=(H,from)=>[H.leg(C1.map((q,i)=>i?q:from),{v:14,ign:H.ig,gate:x=>{const b=laneBy(x);if(b)CRD3.st.laneWait++;return b}}),
+    H.leg(C2,{v:12,gate:x=>{const b=gapBy(x);if(b)CRD3.st.gapWait++;return b},end:x=>{if(S10CI.unl===x.id)S10CI.unl=null;H.toRoad(x,'LC-D3',-1,tJ.t,0)}})];
+  CRD3.sw={last:-1e9,busy:null,n:0,sold:0};
+  function sellDisplay(H){if(!DQ||!S10CI.pool.length)return null;const o=S10CI.pool.shift(),g=o.s10c;
+   o.asset=DQ.asset||DEF.asset;o.ref=DQ.ref||DEF.ref;o.colorIndex=DQ.color!=null?DQ.color:DEF.color;o.x=SX;o.y=SY;o.heading=DQ[2]||0;o.speed=0;g.m='offdeck';g.z=0;g.st='d3sold';g.still=0;g.px=null;
+   o.c5=Object.assign(o.c5||{},{mode:'s10c'});DQ.hide=true;crDirty();if(TRAFFIC_CARS.indexOf(o)<0)TRAFFIC_CARS.push(o);
+   g.legs=[H.leg(OUT,{v:9,ign:H.ig})].concat(southLegs(H,[XI,BY+54]));g.li=0;g.s=0;g.started=false;g.wait=0;CRD3.sw.sold++;return o}
+  S10CI.d3E=function(v,p,zs,H){const A=[[p.x,p.y],[X0,BY]];CRD3.st.n++;const SW=CRD3.sw;
+   if(DQ&&!SW.busy&&!DQ.hide&&S10CI.T-SW.last>240&&S10CI.pool.length&&!stallBy(v)){const o=sellDisplay(H);if(o){SW.busy=v.id;v.s10c.st='d3north';SW.last=S10CI.T;SW.old=o.id;CRD3.st.north=(CRD3.st.north||0)+1;
+     const away=()=>{const q=S10CI.cars.find(c=>c.id===SW.old);return!q||q.s10c.m!=='offdeck'||q.y>BY+60?null:'מכונית התצוגה עוד יוצאת: '+SW.old};
+     return[H.leg(A,{v:6,rev:true,ign:H.ig,gate:away,z:u=>zs*Math.max(0,1-u*1.5)}),H.leg(BN,{v:7,rev:true,ign:H.ig}),
+      H.leg(FN,{v:8,ign:H.ig,gate:x=>stallBy(x),end:x=>{DQ.asset=x.asset;DQ.ref=x.ref;DQ.color=x.colorIndex;DQ.hide=false;crDirty();
+       const i=TRAFFIC_CARS.indexOf(x);if(i>=0)TRAFFIC_CARS.splice(i,1);x.s10c.m='pool';x.s10c.st='';x.x=-9999;x.y=-9999;x.speed=0;S10CI.pool.push(x);SW.busy=null;SW.n++;if(S10CI.unl===x.id)S10CI.unl=null}})]}}
+   CRD3.st.south=(CRD3.st.south||0)+1;
+   return[H.leg(A,{v:6,rev:true,ign:H.ig,z:u=>zs*Math.max(0,1-u*1.5)}),H.leg(B,{v:7,rev:true,ign:H.ig})].concat(southLegs(H,[XI,YT]))};
+  window.__CRD3={sw:()=>CRD3.sw,dq:()=>D3ND.display_cars[2],st:()=>CRD3.st,geo:()=>CRD3.geo,err:()=>CRD3.err}}
+try{const __crInit=leD3Init;leD3Init=function(){const r=__crInit.apply(this,arguments);try{if(CRD3.on)crD3Patch()}catch(e){CRD3.err=String(e&&e.message||e);CRD3.done=true}return r}}catch(e){CRD3.err='wrap '+e}

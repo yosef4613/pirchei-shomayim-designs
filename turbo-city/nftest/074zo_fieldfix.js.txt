@@ -1,0 +1,91 @@
+/* ==== fieldfix 17.11 · (2) R3 — בלי מטוס קבוע; בלילה הרצת מנועים ממטוסי ההאנגרים במחזור (HANDOFF_NEXT ‏§6, מהביקורת של הבעלים 12.11) ====
+   מצאתי: ‏019m:s15HgrPose — המטוס של האנגר א׳ (S15_HGR, ‏AC-TP-01): ביום ברחבה (9200, 1466), ‏19:10 נגרר אל R3 (HGR-OUT), בלילה מריץ מנועים, ‏05:00 חוזר (HGR-BACK);
+   ‏074q (11.11) העמיד אותו ב-R3 כל הזמן, כי ביום הוא חסם את הרחבה של האנגר א׳ ואת רחוב הבסיס — ומכאן "מטוס קבוע ב-R3". בהאנגר א׳ עצמו אין לו מקום (ה-RJ של S15 ב
+   ממלא אותו). השדרוג (כלל 19א — אותו s15HgrPose, אותו ציור בשכבה החיה, אותן גרירות ואותה הרצה): ביום R3 ריק, והמטוסים בתוך ההאנגרים (074k:s15bAc);
+   בכל לילה מטוס אחר מההאנגרים, במחזור — א׳ (AC-RJ-01), ב׳ (AC-BJ-01), ג׳ (AC-LT-01): ‏18:10 נגרר מהדלת של ההאנגר שלו אל R3, ‏20:30–04:25 הרצת מנועים, ‏04:45 חוזר.
+   הדרך: מהאנגר א׳ — הדרך של HGR-OUT / HGR-BACK (מסלול ההסעה B), ומהדלת עד הרחבה; מהאנגרים ב׳ / ג׳ (דלת דרומית) — דרך רחבת ההאנגר אל מסלול ההסעה C, מזרחה
+   עד B ודחיפה לאחור אל R3 (חוזר באותה דרך). הזמנים — בחלונות שבהם C ו-B פנויים (הבדיקה fieldfix_r3 בתוך roadAudit). המטוס של היום (AC-TP-01) לא במחזור (אין לו מקום ביום).
+   FFR3.on = false — כמו קודם. ==== */
+var FFR3={on:true,err:'',tOut:18*60+10,tOutA:18*60,tBack:4*60+45,run0:20*60+30,run1:4*60+25,sp:20,n:{pose:0,hide:0}};
+(function(){try{
+ // HAP3 (ברשימת החונים) — לא מצויר כשהוא בחוץ
+ const l0=s15StaticList;FFR3.l0=l0;s15StaticList=function(){const L=l0.apply(this,arguments);if(!FFR3.on||!FFR3.cur||!L)return L;const c=FFR3.cur;return L.some(o=>o.key===c)?L.filter(o=>o.key!==c):L};
+ const HG=S15B_L.hangars,R3=S15_HGR.r3.slice(0,2),Y=1850,BX=9400;
+ const arc=(cx,cy,r,a0,a1,n)=>{const o=[];for(let i=0;i<=n;i++){const a=a0+(a1-a0)*i/n;o.push([Math.round((cx+r*Math.cos(a))*10)/10,Math.round((cy+r*Math.sin(a))*10)/10])}return o};
+ const plen=P=>{let s=0;for(let i=1;i<P.length;i++)s+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);return s};
+ const dedup=P=>P.filter((q,i)=>!i||Math.hypot(q[0]-P[i-1][0],q[1]-P[i-1][1])>.5);
+ // רגליים ברצף, במהירות קבועה; r — דחיפה לאחור (הכיוון הפוך לנסיעה, כמו HGR-OUT)
+ const mkLegs=segs=>{const L=[];let t=0;for(const [P0,r] of segs){const P=dedup(P0),d=plen(P)/FFR3.sp;L.push({p:P,t0:t,t1:t+d,v0:FFR3.sp,v1:FFR3.sp,r:r?1:0,z0:0,z1:0,f:2});t+=d}return{legs:L,dur:t}};
+ const M=[];FFR3.build=()=>{if(FFR3.M)return FFR3.M;
+ for(const h of HG){const [x,y]=h.ng,Lpx=(S15_LPX[h.ac]||300);let out,back;
+  if(h.door==='E'){   // האנגר א׳: האף מערבה, הדלת במזרח — דחיפה לאחור מזרחה אל הדרך של HGR-OUT
+   const way=[[9310,1466],[9359,1480],[9392,1519],[BX,2040]];
+   out=mkLegs([[[[x,y],[9200,y]].concat(way).concat([R3]),1]]);
+   back=mkLegs([[[R3].concat(way.slice().reverse()).concat([[9200,y],[x,y]]),0]]);
+  }else if(h.id==='AIR-BASE-3'){   // ג׳: המטוס שעל הרחבה של ג׳ (HAP3, ‏AC-LT-01, האף צפונה — s15StaticList) — הוא של הלילה (המסלול מההאנגר עובר דרכו);
+   // דחיפה לאחור דרומה ומערבה אל C, קדימה מזרחה עד B, דחיפה לאחור אל R3; חוזר קדימה וחונה שוב ברחבה, האף צפונה
+   let hx=8243,hy=1700;try{const q=FFR3.l0().find(o=>o.key==='HAP3');if(q){hx=q.x;hy=q.y}}catch(e){}   // המקום של HAP3 אחרי 074q (y 1695.6)
+   out=mkLegs([[[[hx,hy],[hx,Y-50]].concat(arc(hx-50,Y-50,50,0,Math.PI/2,6)),1],
+               [[[hx-50,Y],[BX+40,Y]],0],
+               [[[BX+40,Y]].concat(arc(BX+40,Y+40,40,-Math.PI/2,-Math.PI,6)).concat([[BX,2040],R3]),1]]);
+   back=mkLegs([[[R3,[BX,2040],[BX,Y+40]].concat(arc(BX-40,Y+40,40,0,-Math.PI/2,6)).concat([[hx+50,Y]]).concat(arc(hx+50,Y-50,50,Math.PI/2,Math.PI,6)).concat([[hx,hy]]),0]]);
+   M.push({h,id:h.id,ac:'AC-LT-01',al:'GA',key:'HAP3',Lpx:S15_LPX['AC-LT-01'],out,back,start:[hx,hy],stat:'HAP3'});continue
+  }else{               // ב׳: האף דרומה, הדלת בדרום — יוצא קדימה אל C, מזרחה עד B, ודחיפה לאחור אל R3
+   out=mkLegs([[[[x,y],[x,Y-50]].concat(arc(x+50,Y-50,50,Math.PI,Math.PI/2,6)).concat([[BX+40,Y]]),0],
+               [[[BX+40,Y]].concat(arc(BX+40,Y+40,40,-Math.PI/2,-Math.PI,6)).concat([[BX,2040],R3]),1]]);
+   back=mkLegs([[[R3,[BX,2040],[BX,Y+40]].concat(arc(BX-40,Y+40,40,0,-Math.PI/2,6)).concat([[x-60,Y]]),0],
+                [[[x-60,Y]].concat(arc(x-50,Y-50,50,Math.PI/2,0,6)).concat([[x,y]]),1]]);
+  }
+  M.push({h,id:h.id,ac:h.ac,al:h.air,key:'MX-'+h.id,Lpx,out,back,start:[x,y],tOut:h.door==='E'?FFR3.tOutA:undefined})}
+ return FFR3.M=M};
+ const day=clk=>Math.floor(clk.abs/2/1440);
+ FFR3.member=clk=>{const M=FFR3.build(),m=clk.min,d=day(clk)-(m<12*60?1:0);return M[((d%M.length)+M.length)%M.length]};
+ // המצב ברגע clk: {p, tow, runup, mem, out:true כשהמטוס לא בהאנגר}
+ FFR3.state=clk=>{const m=clk.min,A=FFR3.member(clk),win=(m0,dur)=>{const d=((m-m0)%1440+1440)%1440;return d*2<=dur?d*2:null};
+  const at=(L,t)=>{for(const g of L.legs)if(t>=g.t0-1e-6&&t<=g.t1+1e-6)return s15PoseLeg(g,t);return null};
+  let t=win(A.tOut??FFR3.tOut,A.out.dur);if(t!=null)return{p:at(A.out,t),tow:true,mem:A,out:true};
+  t=win(A.tBack??FFR3.tBack,A.back.dur);if(t!=null)return{p:at(A.back,t),tow:true,mem:A,out:true};
+  const night=m>(A.tOut??FFR3.tOut)+A.out.dur/2||m<(A.tBack??FFR3.tBack);if(!night)return{p:null,mem:A,out:false};
+  return{p:[...S15_HGR.r3,0,0],runup:m>=FFR3.run0||m<FFR3.run1,mem:A,out:true}};
+ const h0=s15HgrPose;
+ s15HgrPose=function(clk){if(!FFR3.on)return h0.apply(this,arguments);try{const S=FFR3.state(clk),A=S.mem;FFR3.n.pose++;
+   S15_HGR.ac=A.ac;S15_HGR.key=A.key;S15_HGR.al=A.al;S15_HGR.Lpx=A.Lpx;S15_HGR.kR=A.Lpx/272;FFR3.cur=S.out?A.key:null;return S.p?{p:S.p,tow:!!S.tow,runup:!!S.runup}:{p:null}}
+  catch(e){FFR3.err='pose '+e;return h0.apply(this,arguments)}};
+ // בהאנגר: המטוס שבחוץ לא מצויר בתוך ההאנגר שלו
+ const b0=s15bAc;s15bAc=function(c,id,x,y,th,key){if(FFR3.on&&FFR3.cur&&key===FFR3.cur){FFR3.n.hide++;return}return b0.apply(this,arguments)};
+}catch(e){FFR3.err='init '+e}})();
+/* הבדיקה: כל אחד מהשלושה — הגרירה החוצה וחזרה, כל 0.5 ש׳: רציף (בלי קפיצה), מתחיל ונגמר במקום שלו, ולא נוגע (הקופסאות של S15 — s15_sim.py:boxes / obb_hit)
+   במטוס, ברכב או במסוק של הסימולציה ובמטוס חונה */
+const FF_W={'AC-RJ-01':260,'AC-BJ-01':158,'AC-LT-01':112,'AC-PR-01':110,'AC-NB-01':358,'AC-LG-01':648,'AC-CG-01':476,'AC-TB-01':200,'AC-TP-01':270,'AC-CN-01':140};
+function ffBoxes(kind,model,L,W,P){const [x,y,h,z]=P,c=Math.cos(h),s=Math.sin(h);if(kind==='ac'){if(z>30)return[];const ng=((S15SIM.ngf||{})[model]||.12)*L;
+ return[[x-c*(L/2-ng),y-s*(L/2-ng),h,L/2,L*.055+4],[x-c*(L*.45-ng),y-s*(L*.45-ng),h,L*.09,W/2]]}return[[x,y,h,L/2,W/2]]}
+function ffObb(A,B){const [ax,ay,ah,al,aw]=A,[bx,by,bh,bl,bw]=B;if(Math.hypot(ax-bx,ay-by)>Math.hypot(al,aw)+Math.hypot(bl,bw))return false;
+ for(const h of [ah,ah+Math.PI/2,bh,bh+Math.PI/2]){const c=Math.cos(h),s=Math.sin(h),pr=(x,y,hh,l,w)=>{const p=x*c+y*s,r=Math.abs(l*(Math.cos(hh)*c+Math.sin(hh)*s))+Math.abs(w*(-Math.sin(hh)*c+Math.cos(hh)*s));return[p-r,p+r]};
+  const [a0,a1]=pr(ax,ay,ah,al,aw),[b0,b1]=pr(bx,by,bh,bl,bw);if(a1<b0||b1<a0)return false}return true}
+function ffR3Audit(){const r={ok:true,members:[],issues:[]};try{const T=S15SIM.T,mov=[...S15SIM.flights,...S15SIM.veh,...(S15SIM.heli||[])];
+ const st=[];for(const o of l0FF()){if(o.heli)continue;st.push(o)}
+ for(const A of FFR3.build()){const row={id:A.id,ac:A.ac,out:+A.out.dur.toFixed(1),back:+A.back.dur.toFixed(1),hits:0,jump:0,start:0,with:''},W=FF_W[A.ac]||150;
+  for(const [L,m0,isOut] of [[A.out,A.tOut??FFR3.tOut,1],[A.back,A.tBack??FFR3.tBack,0]]){let prev=null;const tc0=((m0*2)%T+T)%T;
+   for(let t=0;t<=L.dur+1e-6;t+=.5){let P=null;for(const g of L.legs)if(t>=g.t0-1e-6&&t<=g.t1+1e-6){P=s15PoseLeg(g,t);break}if(!P)continue;
+    if(prev){row.jump=Math.max(row.jump,Math.hypot(P[0]-prev[0],P[1]-prev[1]));let dh=Math.abs(((P[2]-prev[2])%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI);row.turn=Math.max(row.turn||0,dh)}prev=P;
+    const tc=(tc0+t)%T,MB=ffBoxes('ac',A.ac,A.Lpx,W,P);
+    for(const o of mov){const Q=s15PoseAt(o,tc);if(!Q||Q[4]===16)continue;const OB=ffBoxes(o.kind,o.model,o.L,o.W||22,Q);if(MB.some(p=>OB.some(q=>ffObb(p,q)))){row.hits++;if(!row.with)row.with=o.id+' @'+tc.toFixed(1)}}
+    for(const o of st){if(o.key===A.stat)continue;const OB=ffBoxes('ac',o.id,o.r,FF_W[o.id]||150,[o.x,o.y,o.th,0]);if(MB.some(p=>OB.some(q=>ffObb(p,q)))){row.hits++;if(!row.with)row.with=o.key+' (חונה)'}}}
+   if(isOut){const P=[...S15_HGR.r3,0,0],MB=ffBoxes('ac',A.ac,A.Lpx,W,P);for(let tc=0;tc<T;tc+=1)for(const o of mov){const Q=s15PoseAt(o,tc);if(!Q||Q[4]===16)continue;const OB=ffBoxes(o.kind,o.model,o.L,o.W||22,Q);if(MB.some(p=>OB.some(q=>ffObb(p,q)))){row.hits++;if(!row.with)row.with=o.id+' ב-R3 @'+tc}}}   // כל הלילה ב-R3 (יותר ממחזור אחד)
+   const L0=L.legs[0].p[0],L1=L.legs.at(-1).p.at(-1),e=isOut?L0:L1;row.start=Math.max(row.start,Math.hypot(e[0]-A.start[0],e[1]-A.start[1]))}
+  row.jump=+row.jump.toFixed(1);row.turn=+((row.turn||0)*180/Math.PI).toFixed(1);r.members.push(row);
+  if(row.hits)r.issues.push(A.id+': נוגע ב-'+row.with+' ('+row.hits+' דגימות)');if(row.jump>FFR3.sp*.5*1.5)r.issues.push(A.id+': קפיצה '+row.jump);if(row.turn>60)r.issues.push(A.id+': סיבוב חד '+row.turn+'°');if(row.start>1)r.issues.push(A.id+': לא מתחיל / נגמר במקום שלו')}
+ const d12={abs:2*(1440*5+720),min:720},d22={abs:2*(1440*5+22*60),min:22*60};const s1=FFR3.state(d12),s2=FFR3.state(d22);r.day=s1.p?'R3 תפוס ביום':'R3 ריק ביום';r.night=s2.p&&s2.runup?'הרצה בלילה ('+s2.mem.ac+')':'אין הרצה';
+ const seen=new Set();for(let d=0;d<6;d++)seen.add(FFR3.member({abs:2*(1440*d+22*60),min:22*60}).id);r.rot=[...seen].join(' → ');
+ if(s1.p)r.issues.push('R3 תפוס ביום');if(!(s2.p&&s2.runup))r.issues.push('אין הרצה בלילה');if(seen.size<FFR3.build().length)r.issues.push('המחזור לא עובר על כולם');if(FFR3.err)r.issues.push(FFR3.err);
+}catch(e){r.issues.push(String(e))}r.ok=!r.issues.length;return r}
+(function(){const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);if(!FFR3.on)return r;try{const A=ffR3Audit(),L=r.checks||r.results;
+ const det=A.members.map(m=>m.id+' '+m.ac+': החוצה '+m.out+' ש׳, חזרה '+m.back+' ש׳, נגיעות '+m.hits+(m.with?' ('+m.with+')':'')+', הקפיצה '+m.jump+', הסיבוב '+m.turn+'°').join(' | ')+' · '+A.day+' · '+A.night+' · המחזור '+A.rot+(A.issues.length?' · '+A.issues.join(' | '):'');
+ if(Array.isArray(L))L.push({name:'fieldfix_r3',id:'fieldfix_r3',ok:A.ok,pass:A.ok,detail:det});if(!A.ok){r.ok=false;(r.issues||[]).push('fieldfix_r3')}}catch(e){}return r}})();
+/* live_add (המנגנון tcLiveAdd — 028z) ו-fieldfix_east (G3, ‏H0–H3) */
+(function(){const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);try{const L=r.checks||r.results;if(typeof tcLiveAddAudit!=='function'||!Array.isArray(L))return r;
+ const G=tcLiveAddAudit();L.push({name:'live_add',id:'live_add',ok:G.ok,pass:G.ok,detail:(G.ok?'':'נכשל: '+G.issues.join(' | ')+' · ')+'tcLiveAdd: zone '+(G.zones.join(', ')||'—')+' · walk '+(G.walk.join(', ')||'—')+' · ACTIVE_REGIONS '+G.regions+' · MAP_ACTIVE_IDS '+G.ids+' · '+G.pts+' נקודות'});if(!G.ok){r.ok=false;(r.issues||[]).push('live_add')}
+ if(typeof ffEastAudit==='function'&&FFEAST.on&&TC_LIVE_ADD.on){const A=ffEastAudit();
+  L.push({name:'fieldfix_east',id:'fieldfix_east',ok:A.ok,pass:A.ok,detail:(A.ok?'G3, H0–H3 חיים':'נכשל: '+A.issues.join(' | '))+' · '+A.pts+' נקודות — החסימה בכולן הגדר של השדה (APT-AIRFIELD) · סוף העולם '+A.world+' · פתוח '+A.open});if(!A.ok){r.ok=false;(r.issues||[]).push('fieldfix_east')}}}catch(e){}return r}})();
+function l0FF(){return FFR3.l0?FFR3.l0():s15StaticList()}
+window.__TC_FIELDFIX=Object.assign(window.__TC_FIELDFIX||{},{r3:ffR3Audit,r3on:v=>{if(v!=null)FFR3.on=!!v;return FFR3.on}});

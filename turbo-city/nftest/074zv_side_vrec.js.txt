@@ -1,0 +1,70 @@
+/* ===== 17.11 · voiceint — קול 3 במשחק: החברים, אנשי הקשר ונותני משימות הצד מדברים בקול שלהם (TCVREC_SIDE, ‏074zv_side_vrec_data.js). עד היום — רק טקסט.
+   משדרג את הקיים (כלל 19א), בלי מנגנון קול חדש: ההקלטות נכנסות ל-TCVREC.D.lines (029k) באותו מבנה, כמו הסיפור (074zg), ומתנגנות באותו נגן
+   (TCVOICE.speak ← 029k: פענוח רק בהשמעה, הערוץ "קולות ודיבור" של TCAUDIO, "כבוי" ב-F9 ← בדיקת הקולות, ו-TCSET: "בלי קול").
+   - קול לכל איש קשר (במקום MODES.phone): cast של TCVREC_SIDE (איש הקשר → הקול) נכנס לכל בחירה (modes.cast), בלי לדרוס דמות שכבר יש לה קול;
+     הודעה קולית בטלפון מאיש קשר שיש לה הקלטה בקול שלו — מתנגנת בקול שלו (msg.vv). הודעה בלי הקלטה — בדיוק כמו קודם.
+   - שיחה נכנסת (055: g77SpAnswer): כשעונים — פתיחה אחת של איש הקשר (call, לפי הסדר), ובכל שיחה שנייה גם שורה משלו (trait); הכתובית — מעל הטקסט של השיחה.
+     סוגרים את השיחה — הקול נעצר.
+   - משימה (040: startMission / missionComplete — עטיפה, בלי לשנות את המנוע): בהתחלה — הודעה קולית מהנותן (mission, לפי המזהה של המשימה), ובהצלחה — התודה שלו (thanks).
+     ההודעה נשמרת בטלפון (אפשר לשמוע שוב). בזמן הצגה / סרט — לא מנגנים; ההודעה מחכה בטלפון.
+   - בלי שם השחקן בהקלטות (הכלי בודק). שורה בלי הקלטה — לא מושמעת (כמו היום).
+   - הבדיקה: roadAudit ← side_vrec; ‏TCVSIDE.audit() / TCVSIDE.st. ===== */
+var TCVSIDE=(function(){
+ const S=(typeof TCVREC_SIDE!=='undefined'&&TCVREC_SIDE)||{lines:{},cast:{},names:{},by:{},mis:{},ids:{}},R=(typeof TCVREC!=='undefined'&&TCVREC)||null;
+ const st={recs:0,merged:0,cast:0,castKept:[],calls:0,traits:0,missions:0,thanks:0,phone:0,skipped:0,stopped:0,last:null,err:null};
+ const err=(w,e)=>{st.err=w+': '+String(e&&e.message||e).slice(0,120)};
+ /* the recordings into the data of TCVREC, and the voice of every contact in every choice of voices */
+ try{if(R){const D=R.D;D.lines=D.lines||{};
+   for(const t in S.lines){const L=D.lines[t]||(D.lines[t]={});for(const v in S.lines[t]){st.recs++;if(!L[v]){L[v]=S.lines[t][v];R.st.n++;st.merged++}}}
+   R.st.bytes=(R.st.bytes||0)+(S.bytes||0);
+   if(D.modes){D.names=D.names||{};for(const [id,v] of Object.entries(S.cast||{})){for(const k in D.modes){const M=D.modes[k];M.cast=M.cast||{};if(!M.cast[id]){M.cast[id]=v;st.cast++}else if(M.cast[id]!==v&&!st.castKept.includes(id))st.castKept.push(id)}if(!D.names[id])D.names[id]=(S.names||{})[id]||id}}}
+  else st.err='אין TCVREC'}catch(e){err('merge',e)}
+ const T=id=>(S.ids||{})[id]||'';
+ const voiceOf=(who,text)=>{try{return R&&R.voiceFor(who,text)||''}catch(e){return ''}};
+ const hasRec=(who,id)=>{const t=T(id),v=voiceOf(who,t);return !!(t&&v&&R.rec(t,v))};
+ const off=()=>{try{if(!R||R.mode==='off')return true;if(typeof TCSET!=='undefined'&&TCSET.voiceOff())return true;return !(PlayerProfile.settings.audio)}catch(e){return true}};
+ const busy=()=>{try{if(typeof TCSHOW!=='undefined'&&TCSHOW.on)return true;if(typeof TCCUT!=='undefined'&&TCCUT.playing&&TCCUT.playing())return true}catch(e){}return false};
+ const mem=()=>{const s=g77St();return s.vsd||(s.vsd={n:{},t:{}})};
+ const pick=(who,kind)=>{const L=((S.by||{})[who]||{})[kind]||[],ok=L.filter(id=>hasRec(who,id));if(!ok.length)return '';const M=mem(),k=kind+':'+who,i=(M.n[k]||0)%ok.length;M.n[k]=(M.n[k]||0)+1;return ok[i]};
+ /* the caption: inside the call (above its text), else a small line at the bottom of the screen */
+ let cap=null,mine=0;
+ function capEl(){if(cap)return cap;cap=document.createElement('div');cap.id='tcVsdCap';cap.style.cssText='position:fixed;left:50%;bottom:118px;transform:translateX(-50%);z-index:57;max-width:min(620px,90vw);direction:rtl;font:15px/1.45 "Segoe UI",Arial,sans-serif;color:#f3f7fa;background:rgba(12,22,32,.9);border:1px solid #3a6a8a;border-radius:12px;padding:7px 14px;display:none;pointer-events:none';document.body.appendChild(cap);return cap}
+ function caption(who,text,inCall){try{const nm=(g77S().chars[who]||{}).name||(S.names||{})[who]||'';
+   if(inCall){const d=g77S().el;if(d){let c=d.querySelector('[data-vsd]');if(!c){c=document.createElement('div');c.setAttribute('data-vsd','1');c.style.cssText='margin:2px 0 6px;color:#cfe6f5;font-style:italic';const tx=d.querySelector('.tx');d.insertBefore(c,tx)}c.textContent='"'+text+'"';return}}
+   const e=capEl();e.textContent=(nm?nm+': ':'')+text;e.style.display='block'}catch(e){err('cap',e)}}
+ function uncap(){try{if(cap)cap.style.display='none';const d=g77S().el,c=d&&d.querySelector('[data-vsd]');if(c)c.remove()}catch(e){}}
+ /* one line: through TCVOICE.speak (029k — the recording of that contact's voice); the caption while it plays */
+ function say(who,id,kind,o){o=o||{};const t=T(id);if(!t||!hasRec(who,id)){st.skipped++;return false}if(off()||busy()){st.skipped++;return false}
+  const my=++mine;let ok=false;
+  try{ok=TCVOICE.speak(t,who,'side',1,{onstart(){if(my===mine||o.chain)caption(who,t,o.inCall)},onend(){if(my===mine){uncap();if(o.after)o.after()}}})}catch(e){err('say',e);ok=false}
+  if(ok){st[kind]++;st.last={who,id,kind}}return ok}
+ /* a voice message in the phone (the history), in the contact's own voice; heard now → read */
+ function note(who,id,heard){try{const m=g77MsgIn(who,T(id),{voice:true,silent:true});if(m&&heard)m.read=true;try{g77SpBadge()}catch(e){}return m}catch(e){err('note',e);return null}}
+ /* (1) the phone: a voice message from a contact that has a recording of this text in his voice — his voice (msg.vv), and the length of the recording */
+ const _in=g77MsgIn;
+ g77MsgIn=function(who,text,o){let v='';try{if(o&&o.voice&&R&&R.mode!=='off'&&(S.cast||{})[who]){const t=g77MsgClean(text);v=voiceOf(who,t);const r=v&&R.rec(t,v);if(r)o=Object.assign({},o,{dur:Math.max(1,Math.round(r[0]))});else v=''}}catch(e){v=''}
+  const m=_in.apply(this,[who,text,o]);try{if(m&&v&&m.vv!==v){m.vv=v;st.phone++}}catch(e){}return m};
+ /* (2) an incoming call, answered: the opening of the contact (in turn), and every second call — a line of his own */
+ const _ans=g77SpAnswer;
+ g77SpAnswer=function(){let rec=null;try{const P=g77Sp();rec=P.ring&&P.ring.rec}catch(e){}const r=_ans.apply(this,arguments);
+  try{if(r&&rec&&rec.who&&(S.by||{})[rec.who]){const who=rec.who,id=pick(who,'call');if(id){const M=mem(),k='c:'+who;M.t[k]=(M.t[k]||0)+1;const tr=M.t[k]%2===0?pick(who,'trait'):'';
+     say(who,id,'calls',{inCall:true,after:tr?()=>{if(g77S().open)say(who,tr,'traits',{inCall:true})}:null})}}}catch(e){err('call',e)}return r};
+ const _close=g77DlgClose;
+ g77DlgClose=function(silent){const O=g77S().open;const r=_close.apply(this,arguments);try{if(O&&O.mode==='call'){uncap();const L=st.last;if(L&&(L.kind==='calls'||L.kind==='traits')){const c=R.state().cur;if(c&&(S.ids||{})[L.id]&&String(T(L.id)).slice(0,30)===c.text){mine++;TCVOICE.stop();st.stopped++}}}}catch(e){err('close',e)}return r};
+ /* (3) the missions: the giver's voice message at the start, his thanks at the end */
+ const _start=startMission;
+ startMission=function(id){const had=PlayerProfile.activeMission;const r=_start.apply(this,arguments);
+  try{const A=PlayerProfile.activeMission,G=(S.mis||{})[id];if(A&&A!==had&&A.id===id&&G){const who=G[0],lid=G[1];if(hasRec(who,lid)){const heard=say(who,lid,'missions');note(who,lid,heard)}}}catch(e){err('start',e)}return r};
+ const _done=missionComplete;
+ missionComplete=function(){const A=PlayerProfile.activeMission,id=A&&A.id;const r=_done.apply(this,arguments);
+  try{const G=id&&(S.mis||{})[id];if(G&&!PlayerProfile.activeMission){const who=G[0],tid=pick(who,'thanks');if(tid)setTimeout(()=>{try{const heard=say(who,tid,'thanks');note(who,tid,heard)}catch(e){err('thanks',e)}},1400)}}catch(e){err('done',e)}return r};
+ /* the check: every recorded line — in the voice its contact speaks in the game; the missions and the contacts exist */
+ function audit(){const o={recs:st.recs,lines:0,withRec:0,wrongVoice:[],noMission:[],noContact:[],castKept:st.castKept.slice(),err:st.err};
+  try{for(const [who,K] of Object.entries(S.by||{})){if(!(g77S().chars[who]))o.noContact.push(who);for(const k in K)for(const id of K[k]){o.lines++;if(hasRec(who,id))o.withRec++;else o.wrongVoice.push(id+':'+voiceOf(who,T(id))+'≠'+Object.keys((S.lines||{})[T(id)]||{}).join('/'))}}
+   for(const m in S.mis||{})if(!(typeof MISSION_DEFS!=='undefined'&&MISSION_DEFS[m]))o.noMission.push(m);
+   o.name=Object.values(S.ids||{}).filter(t=>/\{name\}|\{/.test(t)).length}catch(e){o.err=String(e&&e.message||e).slice(0,120)}
+  o.ok=!o.err&&o.recs>0&&o.lines===o.recs&&o.withRec===o.lines&&!o.noMission.length&&!o.name;return o}
+ if(typeof roadAudit==='function'){const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);try{const q=audit(),L=r.checks||r.results;
+   if(Array.isArray(L))L.push({name:'side_vrec',id:'side_vrec',ok:q.ok,pass:q.ok,detail:q.ok?'קול 3: '+q.withRec+'/'+q.lines+' שורות של אנשי קשר ונותני משימות — הקלטה בקול של איש הקשר':'נכשל: קול אחר '+q.wrongVoice.slice(0,8).join(',')+' · משימות חסרות '+q.noMission.join(',')+(q.err?' · '+q.err:'')});
+   if(!q.ok){r.ok=false;(r.issues||[]).push('side_vrec')}}catch(e){err('audit',e)}return r}}
+ return{st,S,audit,say,pick,hasRec,voiceOf}})();
