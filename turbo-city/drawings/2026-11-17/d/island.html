@@ -1,0 +1,546 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>האי מאפס — תוכנית</title>
+<style>
+:root{--bg:#f6f4ee;--fg:#1d2228;--mut:#5b6470;--card:#fff;--line:#d9d4c7;--acc:#1f5fd1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16191d;--fg:#e8e6e1;--mut:#a6adb6;--card:#1f2328;--line:#353a41;--acc:#7aa7ff}}
+:root[data-theme="dark"]{--bg:#16191d;--fg:#e8e6e1;--mut:#a6adb6;--card:#1f2328;--line:#353a41;--acc:#7aa7ff}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 "Segoe UI",Arial,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:16px}
+h1{font-size:24px;margin:8px 0 4px} h2{font-size:19px;margin:26px 0 8px;border-bottom:2px solid var(--line);padding-bottom:4px}
+.sub{color:var(--mut)} .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0}
+.plan{width:100%;height:auto;background:#9fd0ee;border-radius:8px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:14px} th,td{border:1px solid var(--line);padding:5px 7px;text-align:right;vertical-align:top} th{background:rgba(127,127,127,.12)}
+.wrap{overflow-x:auto} .k{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-left:5px}
+.big{font-size:22px;font-weight:700;color:var(--acc)} .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.ok{color:#178a54;font-weight:700} ul{margin:6px 0;padding-right:20px}
+svg .rd{fill:none;stroke:#585858;stroke-width:88;stroke-linejoin:round;stroke-linecap:round} svg .rd.lp{stroke:#7a5a3a} svg .rd.lo{stroke-width:60;stroke:#6e6e6e}
+svg .rdc{fill:none;stroke:#f2f2f2;stroke-width:4;stroke-dasharray:30 30} svg .trk{fill:none;stroke:#a07a4a;stroke-width:22;stroke-dasharray:24 12}
+svg .pl{fill:rgba(106,44,145,.06);stroke:#6a2c91;stroke-width:6;stroke-dasharray:24 12} svg .pn,svg .sn{fill:#fff;font:700 38px Arial;text-anchor:middle}
+svg .rig{fill:#d64a3c;stroke:#6b120a;stroke-width:8} svg .pier{fill:#9a9a94;stroke:#555;stroke-width:4} svg .pont{fill:#f4f1e6;stroke:#6b6b60;stroke-width:4}
+svg .plat{fill:#d8d3c6;stroke:#6b4a2a;stroke-width:4} svg .yard{fill:rgba(160,120,60,.15);stroke:#6b4a2a;stroke-width:5;stroke-dasharray:18 10}
+svg .grid{stroke:#203040;stroke-width:4;stroke-dasharray:30 30;opacity:.45} svg .zid{font:700 60px Arial;fill:#203040;opacity:.55} svg .zid.zon{fill:#b3360f;opacity:.95}
+svg .dt{font:600 26px Arial;fill:#1d2228} .det{width:100%;height:auto;margin:8px 0;border:1px solid var(--line);border-radius:8px} svg .lbl{font:600 44px Arial;fill:#1d2228} svg .lane{font:600 46px Arial;fill:#1d3f8f} svg .zh{font:700 46px Arial;fill:#b3360f}
+</style></head><body><a href="../" style="position:fixed;top:10px;right:10px;z-index:2147483647;background:#1d5f8c;color:#fff;padding:7px 14px;border-radius:8px;font:600 15px Arial,sans-serif;text-decoration:none;box-shadow:0 2px 8px #0004" dir="rtl">→ חזרה לרשימת הציורים</a><main>
+<h1>האי מאפס — התוכנית והחישוב (D‑694)</h1>
+<div class="sub">טורבו סיטי · סבב 17.11.2026 · הסוכן island · ציור בלבד (SVG בקוד) — הבנייה מתחילה במקביל לבקר התוכניות (כלל 20) · גרסה 3 (07:50, לפי TZ=Asia/Jerusalem): לפי הערות הבקר (סעיף 11) ושלושת הקטנים של הבדיקה החוזרת</div>
+
+<div class="card"><b>בקצרה:</b> האי גדל ל-<b>5.5 אזורים</b> — E9, ‏F9, ‏G9, ‏H9, ‏H8, ומרינה על <b>החצי המזרחי של D9</b> (<b>בפועל — 4.2 אזורים של יבשה ומים מוגנים</b>: ‏H8 רק בדרום, כי האסדה נשארת; לאישורך). הגשר המתרומם, ההר, היער והכפר נשארים; כל התחבורה באי מתוכננת מחדש:
+שדרה אחת לכל אורך האי (1+1) עם <b>7 זוגות של תחנות</b> (מפרץ בכל צד) ו-<b>2 תחנות סופיות</b> בלולאות חד-סטריות — <b>9 תחנות, 16 מפרצים</b> (המינימום של הבעלים: 4).
+רכבת נוסעים של 4 קרונות (נבנתה), רכבת משא עם רציף פריקה וחצר משאיות בפס ב׳ של תחנת האי, ורכבל סובב של 10 תאים בשלוש תחנות (183 מ׳ — פי 2.3 מהיום; נבנה).</div>
+
+<h2>1. הציור — מבט על</h2>
+<div class="wrap"><svg class="plan" viewBox="3500 5650 6300 2140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="תוכנית האי החדש — מבט על">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d3f8f"/></marker><pattern id="wv" width="120" height="60" patternUnits="userSpaceOnUse"><path d="M0,30 q30,-14 60,0 t60,0" fill="none" stroke="#bfe2f6" stroke-width="5"/></pattern></defs>
+<rect x="3500" y="5650" width="6300" height="2140" fill="#9fd0ee"/><rect x="3500" y="5650" width="6300" height="2140" fill="url(#wv)" opacity=".6"/>
+<polygon points="3500,5650 6230,5650 6230,5200 3500,5200" fill="#d9d2bd" stroke="#8d8466" stroke-width="6"/>
+<text class="lbl" x="4400" y="5440">העיר — החוף הדרומי (D7 / E7)</text>
+<polygon points="6150,7750 6158,7700 6180,7610 6176,7520 6170,7420 6182,7320 6176,7210 6185,7130 6195,7095 6235,7030 6305,6993 6430,6975 6610,6985 6800,6970 7000,6990 7200,6975 7420,6990 7650,6966 7880,6975 8090,6958 8300,6930 8420,6905 8560,6925 8760,6942 8960,6950 9150,6946 9290,6918 9400,6912 9500,6940 9600,6955 9600,7750" fill="none" stroke="#b0412e" stroke-width="10" stroke-dasharray="40 30" opacity=".75"/>
+<polygon points="4200,7750 4200,7700 4800,7700 4800,7005 4900,6992 5200,6978 5500,6992 5800,6982 6000,6990 6150,6985 6430,6975 6610,6985 6800,6970 7000,6990 7200,6975 7420,6990 7650,6966 7880,6975 8090,6958 8300,6930 8420,6905 8500,6840 8560,6760 8700,6660 8900,6625 9100,6612 9300,6602 9450,6590 9600,6575 12600,6575 12600,10750 4200,10750" fill="#cfe6a8" stroke="#6f8f45" stroke-width="10"/>
+<polyline points="4800,7005 4900,6992 5200,6978 5500,6992 5800,6982 5950,6988" fill="none" stroke="#efd99a" stroke-width="80" stroke-linecap="round" opacity=".95"/>
+<polygon points="8968,7433 8946,7515 8911,7595 8864,7673 8802,7749 8718,7750 8606,7750 8471,7750 8322,7750 8172,7750 8032,7750 7901,7750 7772,7750 7634,7750 7481,7750 7314,7750 7147,7750 6995,7750 6874,7750 6786,7750 6729,7750 6690,7671 6662,7591 6642,7512 6633,7433 6646,7354 6686,7278 6753,7209 6839,7147 6932,7090 7024,7036 7115,6978 7211,6917 7323,6857 7457,6807 7610,6778 7772,6776 7929,6800 8069,6844 8191,6895 8301,6946 8411,6991 8527,7032 8650,7075 8768,7127 8868,7192 8936,7267 8968,7349" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<polygon points="8820,7442 8801,7515 8769,7586 8728,7656 8673,7723 8598,7750 8499,7750 8378,7750 8246,7750 8114,7750 7989,7750 7872,7750 7758,7750 7636,7750 7499,7750 7352,7750 7203,7750 7068,7750 6960,7750 6882,7750 6831,7726 6798,7654 6773,7582 6754,7512 6747,7442 6758,7372 6794,7305 6853,7243 6929,7188 7012,7138 7094,7089 7174,7038 7260,6983 7359,6930 7478,6886 7614,6861 7758,6859 7897,6880 8022,6919 8130,6964 8228,7009 8325,7049 8429,7086 8537,7124 8643,7170 8731,7228 8792,7295 8820,7368" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<polygon points="8672,7451 8655,7515 8628,7577 8592,7638 8544,7696 8478,7750 8392,7750 8286,7750 8171,7750 8055,7750 7946,7750 7844,7750 7744,7750 7637,7750 7518,7750 7389,7750 7259,7750 7141,7750 7047,7750 6979,7750 6934,7700 6904,7636 6883,7574 6867,7512 6860,7451 6870,7390 6901,7331 6953,7277 7020,7229 7092,7185 7163,7142 7234,7098 7309,7050 7395,7004 7499,6965 7618,6943 7744,6941 7866,6960 7975,6994 8069,7034 8155,7073 8240,7108 8330,7139 8425,7173 8517,7214 8594,7264 8647,7322 8672,7386" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<polygon points="8524,7460 8510,7515 8486,7568 8456,7620 8414,7670 8358,7716 8284,7750 8194,7750 8095,7750 7996,7750 7903,7750 7816,7750 7730,7750 7638,7750 7536,7750 7426,7750 7315,7750 7214,7750 7133,7750 7075,7727 7037,7673 7012,7618 6993,7565 6979,7512 6974,7460 6982,7408 7009,7357 7053,7311 7110,7270 7172,7232 7233,7196 7293,7158 7357,7117 7432,7077 7520,7044 7622,7025 7730,7024 7834,7040 7927,7068 8008,7103 8082,7136 8154,7166 8232,7193 8313,7222 8392,7257 8458,7300 8503,7350 8524,7404" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<polygon points="8377,7469 8364,7514 8345,7559 8319,7602 8285,7644 8238,7682 8177,7714 8102,7736 8020,7749 7937,7750 7860,7750 7787,7750 7716,7750 7640,7750 7555,7750 7463,7750 7371,7750 7287,7750 7220,7733 7171,7691 7140,7646 7118,7601 7103,7556 7092,7513 7087,7469 7094,7426 7116,7384 7153,7345 7200,7311 7252,7280 7303,7249 7353,7217 7406,7184 7468,7151 7542,7123 7626,7107 7716,7106 7803,7119 7880,7143 7948,7172 8008,7200 8069,7224 8133,7247 8201,7271 8266,7300 8321,7336 8359,7377 8376,7423" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<polygon points="8229,7478 8219,7514 8204,7550 8183,7584 8156,7617 8119,7648 8070,7673 8010,7691 7944,7701 7878,7704 7816,7705 7759,7708 7702,7714 7641,7723 7574,7733 7500,7737 7427,7732 7360,7715 7306,7688 7268,7655 7242,7619 7226,7583 7213,7548 7204,7513 7200,7478 7206,7443 7224,7410 7253,7379 7291,7352 7332,7327 7372,7303 7412,7277 7455,7250 7504,7224 7563,7202 7631,7190 7702,7188 7771,7199 7833,7218 7887,7241 7935,7263 7983,7283 8035,7301 8089,7320 8141,7343 8185,7372 8215,7405 8229,7441" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<polygon points="8081,7487 8074,7514 8062,7540 8047,7566 8027,7591 7999,7614 7962,7633 7918,7646 7869,7653 7820,7656 7773,7656 7730,7658 7688,7663 7643,7670 7592,7677 7538,7680 7483,7676 7433,7664 7393,7644 7364,7619 7345,7592 7332,7565 7323,7539 7316,7513 7314,7487 7318,7461 7331,7436 7353,7413 7381,7393 7412,7374 7442,7356 7472,7337 7504,7317 7540,7298 7584,7281 7635,7272 7688,7271 7740,7279 7786,7293 7826,7310 7862,7327 7898,7342 7936,7355 7976,7369 8015,7386 8048,7408 8070,7432 8081,7460" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<polygon points="7933,7496 7928,7514 7921,7531 7911,7548 7897,7565 7879,7580 7855,7592 7825,7601 7793,7606 7761,7608 7730,7608 7702,7609 7674,7612 7644,7617 7611,7621 7575,7624 7538,7621 7506,7613 7479,7600 7460,7583 7448,7566 7440,7548 7434,7530 7429,7513 7427,7496 7430,7479 7439,7462 7453,7447 7472,7434 7492,7422 7512,7410 7532,7397 7552,7384 7577,7371 7606,7360 7639,7354 7674,7353 7708,7359 7738,7368 7765,7379 7789,7390 7812,7400 7838,7409 7864,7418 7890,7430 7912,7444 7926,7460 7933,7478" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<polygon points="7785,7505 7783,7514 7779,7522 7775,7530 7768,7538 7759,7546 7748,7552 7733,7556 7718,7558 7702,7559 7687,7559 7674,7560 7660,7561 7646,7564 7629,7566 7612,7567 7594,7566 7578,7562 7566,7555 7557,7547 7551,7539 7546,7530 7544,7522 7541,7513 7541,7505 7542,7497 7546,7489 7553,7481 7562,7475 7572,7469 7582,7463 7591,7457 7601,7451 7613,7444 7627,7439 7643,7436 7660,7436 7676,7438 7691,7443 7704,7448 7716,7454 7727,7458 7739,7463 7752,7467 7764,7473 7775,7480 7782,7488 7785,7496" fill="none" stroke="#a89466" stroke-width="5" opacity=".55"/>
+<ellipse cx="7700" cy="7520" rx="520" ry="200" fill="#4f8a3a" opacity=".35"/>
+<circle cx="7577" cy="7573" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7974" cy="7466" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7491" cy="7359" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7888" cy="7592" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7405" cy="7485" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7802" cy="7378" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7319" cy="7611" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7630" cy="7630" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="8027" cy="7523" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7544" cy="7416" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7941" cy="7649" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7458" cy="7542" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7855" cy="7435" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7372" cy="7668" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7769" cy="7561" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7286" cy="7454" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7683" cy="7347" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7597" cy="7473" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7994" cy="7366" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7511" cy="7599" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7908" cy="7492" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7425" cy="7385" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7822" cy="7618" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7339" cy="7511" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7650" cy="7530" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="8047" cy="7423" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7564" cy="7656" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7961" cy="7549" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7478" cy="7442" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7875" cy="7675" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7392" cy="7568" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7703" cy="7587" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7220" cy="7480" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7617" cy="7373" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="8014" cy="7606" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7531" cy="7499" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7928" cy="7392" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7445" cy="7625" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7842" cy="7518" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7359" cy="7411" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7756" cy="7644" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7273" cy="7537" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7584" cy="7556" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7981" cy="7449" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7498" cy="7342" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7895" cy="7575" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7412" cy="7468" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7809" cy="7361" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7326" cy="7594" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7637" cy="7613" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="8034" cy="7506" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7551" cy="7399" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7948" cy="7632" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7465" cy="7525" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7862" cy="7418" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7379" cy="7651" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7776" cy="7544" r="22" fill="#3f7a2f" opacity=".7"/>
+<circle cx="7293" cy="7437" r="22" fill="#3f7a2f" opacity=".7"/>
+<polygon points="4230,7310 4790,7310 4790,7690 4230,7690" fill="#8fc9ec" stroke="#5a7a8a" stroke-width="6"/>
+<polyline points="4200,7280 4200,7700" fill="none" stroke="#7c7c78" stroke-width="34" stroke-linecap="square"/>
+<polyline points="4200,7280 4680,7280" fill="none" stroke="#7c7c78" stroke-width="34" stroke-linecap="square"/>
+<rect class="pont" x="4330" y="7340" width="20" height="320" />
+<ellipse cx="4292" cy="7370" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4388" cy="7370" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4292" cy="7412" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4388" cy="7412" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4292" cy="7454" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4388" cy="7454" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4292" cy="7496" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4388" cy="7496" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4292" cy="7538" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4388" cy="7538" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4292" cy="7580" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4388" cy="7580" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4292" cy="7622" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4388" cy="7622" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<rect class="pont" x="4480" y="7340" width="20" height="320" />
+<ellipse cx="4442" cy="7370" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4538" cy="7370" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4442" cy="7412" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4538" cy="7412" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4442" cy="7454" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4538" cy="7454" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4442" cy="7496" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4538" cy="7496" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4442" cy="7538" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4538" cy="7538" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4442" cy="7580" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4538" cy="7580" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4442" cy="7622" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4538" cy="7622" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<rect class="pont" x="4630" y="7340" width="20" height="320" />
+<ellipse cx="4592" cy="7370" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4688" cy="7370" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4592" cy="7412" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4688" cy="7412" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4592" cy="7454" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4688" cy="7454" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4592" cy="7496" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4688" cy="7496" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4592" cy="7538" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4688" cy="7538" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4592" cy="7580" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4688" cy="7580" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4592" cy="7622" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<ellipse cx="4688" cy="7622" rx="34" ry="11" fill="#fbfbf7" stroke="#55606a" stroke-width="3"/>
+<polyline points="12600,5800 8738,5800 8340,5924 7399,6576 7000,6700 6760,6700 6460,6462 5700,6450 3300,6450 2900,6700 2400,7750" fill="none" stroke="#1d3f8f" stroke-width="12" stroke-dasharray="70 40" marker-end="url(#ar)" marker-start="url(#ar)"/>
+<polyline points="1040,5154 1320,5340 2600,5720 5000,5900 6200,6300 6500,6800 6550,6930" fill="none" stroke="#a3227a" stroke-width="12" stroke-dasharray="70 40" marker-end="url(#ar)" marker-start="url(#ar)"/>
+<polyline points="4735,7300 4735,6990 4700,6700" fill="none" stroke="#2a7a8a" stroke-width="12" stroke-dasharray="70 40" marker-end="url(#ar)" marker-start="url(#ar)"/>
+<polyline points="9515,6440 9300,6300 9100,6250" fill="none" stroke="#8a4a10" stroke-width="12" stroke-dasharray="70 40" marker-end="url(#ar)" marker-start="url(#ar)"/>
+<text class="lane" x="5000" y="6420">נתיב השיט הראשי: מזרח ↔ מערב</text><text class="lane" x="4300" y="6540">↙ אחרי D — לדרום־מערב (בין B ל-C)</text>
+<text class="lane" x="9750" y="5770">מהמזרח (H7) אל המפתח</text>
+<polygon points="7238,6467 7759,6836 7857,6479 7336,6110" fill="#f0c24a" stroke="#9c7400" stroke-width="6" opacity=".9"/>
+<polyline points="6060,5200 6060,5260 6090,5350 6224,5460 6420,5714 6624,5924 8268,7088 8330,7320" fill="none" stroke="#3b3b3b" stroke-width="130" stroke-linejoin="round"/>
+<polyline points="6060,5200 6060,5260 6090,5350 6224,5460 6420,5714 6624,5924 8268,7088 8330,7320" fill="none" stroke="#f3f3f3" stroke-width="4" stroke-dasharray="30 30"/>
+<text class="lbl" x="6700" y="5900" transform="rotate(35 6700 5900)">גשר האי — קיים, לא משתנה (D‑634)</text><text class="lbl" x="7380" y="6330" transform="rotate(35 7380 6330)">המפתח המתרומם</text>
+<rect class="rig" x="8860" y="6160" width="230" height="180" />
+<text class="lbl" x="8870" y="6130">אסדת הגז (נשארת במקום — D‑618)</text>
+<polyline points="9065,6315 9300,6480 9470,6650" fill="none" stroke="#7a4a1a" stroke-width="8" stroke-dasharray="20 14"/>
+<rect class="pier" x="9500" y="6440" width="30" height="150" />
+<polyline points="8433,6923 9249,7501" fill="none" stroke="#6b4a2a" stroke-width="16"/><polyline points="8433,6923 9249,7501" fill="none" stroke="#e9e2d0" stroke-width="5" stroke-dasharray="6 10"/>
+<polyline points="8363,7021 9179,7599" fill="none" stroke="#6b4a2a" stroke-width="16"/><polyline points="8363,7021 9179,7599" fill="none" stroke="#e9e2d0" stroke-width="5" stroke-dasharray="6 10"/>
+<polyline points="" fill="none" stroke="#6b4a2a" stroke-width="16"/><polyline points="" fill="none" stroke="#e9e2d0" stroke-width="5" stroke-dasharray="6 10"/>
+<polyline points="" fill="none" stroke="#6b4a2a" stroke-width="16"/><polyline points="" fill="none" stroke="#e9e2d0" stroke-width="5" stroke-dasharray="6 10"/>
+<polygon points="8433,6923 9249,7501 9179,7599 8363,7021" fill="#bdb6a6" opacity=".55"/>
+<polygon class="yard" points="8791,7403 9061,7594 9010,7656 8886,7656 8740,7550"/><polygon class="plat" points="8809,7378 9078,7569 9061,7594 8791,7403"/>
+<rect x="-66" y="-14" width="132" height="28" rx="4" fill="#4a4f55" stroke="#222" stroke-width="3" transform="translate(8869,7379) rotate(35)"/>
+<rect x="-66" y="-14" width="132" height="28" rx="4" fill="#4a4f55" stroke="#222" stroke-width="3" transform="translate(8943,7431) rotate(35)"/>
+<rect x="-66" y="-14" width="132" height="28" rx="4" fill="#4a4f55" stroke="#222" stroke-width="3" transform="translate(9016,7484) rotate(35)"/>
+<rect x="-50" y="-15" width="100" height="30" rx="6" fill="#e2a33a" stroke="#6b4a10" stroke-width="3" transform="translate(8817,7487) rotate(125)"/>
+<rect x="-50" y="-15" width="100" height="30" rx="6" fill="#e2a33a" stroke="#6b4a10" stroke-width="3" transform="translate(8899,7545) rotate(125)"/>
+<rect x="-50" y="-15" width="100" height="30" rx="6" fill="#e2a33a" stroke="#6b4a10" stroke-width="3" transform="translate(8981,7603) rotate(125)"/>
+<rect x="4880" y="7430" width="240" height="90" fill="#cfd3d6" stroke="#5c6670" stroke-width="4"/><text x="5000" y="7489" font="700 40px Arial" style="font:700 40px Arial" fill="#2b4a8a" text-anchor="middle">P</text>
+<rect x="5630" y="7290" width="140" height="240" fill="#cfd3d6" stroke="#5c6670" stroke-width="4"/><text x="5700" y="7424" font="700 40px Arial" style="font:700 40px Arial" fill="#2b4a8a" text-anchor="middle">P</text>
+<rect x="6290" y="7090" width="270" height="110" fill="#cfd3d6" stroke="#5c6670" stroke-width="4"/><text x="6425" y="7159" font="700 40px Arial" style="font:700 40px Arial" fill="#2b4a8a" text-anchor="middle">P</text>
+<rect x="6180" y="7560" width="490" height="30" fill="#cfd3d6" stroke="#5c6670" stroke-width="4"/><text x="6425" y="7589" font="700 40px Arial" style="font:700 40px Arial" fill="#2b4a8a" text-anchor="middle">P</text>
+<rect x="8445" y="7600" width="195" height="125" fill="#cfd3d6" stroke="#5c6670" stroke-width="4"/><text x="8542" y="7676" font="700 40px Arial" style="font:700 40px Arial" fill="#2b4a8a" text-anchor="middle">P</text>
+<rect x="9040" y="7015" width="100" height="45" fill="#cfd3d6" stroke="#5c6670" stroke-width="4"/><text x="9090" y="7052" font="700 40px Arial" style="font:700 40px Arial" fill="#2b4a8a" text-anchor="middle">P</text>
+<rect x="9140" y="6812" width="130" height="86" fill="#cfd3d6" stroke="#5c6670" stroke-width="4"/><text x="9205" y="6869" font="700 40px Arial" style="font:700 40px Arial" fill="#2b4a8a" text-anchor="middle">P</text>
+<polyline points="8330,7320 8108,7230 7960,7190 7700,7148 7420,7135 7180,7150 6950,7215 6600,7235 6200,7240 5800,7240 5400,7240 4950,7240" class="rd"/><polyline points="8330,7320 8108,7230 7960,7190 7700,7148 7420,7135 7180,7150 6950,7215 6600,7235 6200,7240 5800,7240 5400,7240 4950,7240" class="rdc"/>
+<polyline points="4950,7240 4950,7400" class="rd"/><polyline points="4950,7240 4950,7400" class="rdc"/>
+<polyline points="4950,7400 4850,7400 4850,7700 5150,7700 5150,7400 4950,7400" class="rd lp"/><polyline points="4950,7400 4850,7400 4850,7700 5150,7700 5150,7400 4950,7400" class="rdc"/>
+<polyline points="6600,7235 6600,7060 6250,7060 6250,7240" class="rd lp"/><polyline points="6600,7235 6600,7060 6250,7060 6250,7240" class="rdc"/>
+<polyline points="6700,7600 6745,7640" class="trk"/>
+<polyline points="5600,7240 5600,7560 5800,7560 5800,7240" class="rd lo"/>
+<polyline points="6150,7240 6150,7600 6700,7600 6700,7240" class="rd lo"/>
+<polyline points="7330,7141 7330,7230" class="trk"/>
+<polyline points="8330,7320 8526,7459 8701,7583 8860,7690 9380,7690 9380,7300" class="rd"/><polyline points="8330,7320 8526,7459 8701,7583 8860,7690 9380,7690 9380,7300" class="rdc"/>
+<polyline points="9380,7300 9130,7300 9000,7170 9000,6960 9380,6960 9380,7300" class="rd lp"/><polyline points="9380,7300 9130,7300 9000,7170 9000,6960 9380,6960 9380,7300" class="rdc"/>
+<polyline points="9300,6960 9300,6850 9460,6850" class="rd lo"/>
+<polyline points="8950,7690 8950,7640" class="rd lo"/>
+<polyline points="7960,7190 7960,7440 7809,7470" class="trk"/>
+<circle cx="8330" cy="7320" r="150" fill="#5c5c5c"/><circle cx="8330" cy="7320" r="72" fill="#a9cf86" stroke="#fff" stroke-width="5"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(4850,7550) rotate(90)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(5000,7700) rotate(0)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(5150,7550) rotate(-90)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(5050,7400) rotate(180)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(6600,7148) rotate(-90)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(6425,7060) rotate(180)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(6250,7150) rotate(90)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(9255,7300) rotate(180)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(9065,7235) rotate(-135)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(9000,7065) rotate(-90)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(9190,6960) rotate(0)"/>
+<path d="M-26,-16 L26,0 L-26,16 z" fill="#fff" stroke="#333" stroke-width="3" transform="translate(9380,7130) rotate(90)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(7834,7147) rotate(-171)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(7826,7191) rotate(9)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(7561,7120) rotate(-177)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(7559,7163) rotate(3)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6774,7203) rotate(177)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6776,7247) rotate(357)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6400,7216) rotate(179)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6400,7259) rotate(359)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6000,7218) rotate(180)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6000,7262) rotate(360)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(5600,7218) rotate(180)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(5600,7262) rotate(360)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(5175,7218) rotate(180)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(5175,7262) rotate(360)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(5578,7400) rotate(90)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(5622,7400) rotate(270)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(5822,7400) rotate(-90)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(5778,7400) rotate(90)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6128,7420) rotate(90)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6172,7420) rotate(270)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6425,7622) rotate(0)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6425,7578) rotate(180)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6722,7420) rotate(-90)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(6678,7420) rotate(90)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(9120,7712) rotate(0)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(9120,7668) rotate(180)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(9402,7495) rotate(-90)"/>
+<path d="M-16,-9 L16,0 L-16,9 z" fill="#fff" transform="translate(9358,7495) rotate(90)"/>
+<rect class="pl" x="4230" y="7310" width="560" height="380" />
+<circle cx="4820" cy="7550" r="34" fill="#6a2c91"/><text class="pn" x="4820" y="7562">1</text>
+<rect class="pl" x="4880" y="7530" width="240" height="60" />
+<circle cx="5000" cy="7560" r="34" fill="#6a2c91"/><text class="pn" x="5000" y="7572">2</text>
+<rect class="pl" x="4880" y="7600" width="240" height="80" />
+<circle cx="4990" cy="7640" r="34" fill="#6a2c91"/><text class="pn" x="4990" y="7652">3</text>
+<rect class="pl" x="5250" y="7300" width="310" height="220" />
+<circle cx="5450" cy="7400" r="34" fill="#6a2c91"/><text class="pn" x="5450" y="7412">4</text>
+<rect class="pl" x="4900" y="6995" width="1050" height="85" />
+<circle cx="5400" cy="7030" r="34" fill="#6a2c91"/><text class="pn" x="5400" y="7042">5</text>
+<rect class="pl" x="6250" y="7000" width="500" height="180" />
+<circle cx="6450" cy="7100" r="34" fill="#6a2c91"/><text class="pn" x="6450" y="7112">6</text>
+<rect class="pl" x="6800" y="7010" width="250" height="140" />
+<circle cx="6900" cy="7080" r="34" fill="#6a2c91"/><text class="pn" x="6900" y="7092">7</text>
+<rect class="pl" x="6705" y="7620" width="110" height="80" />
+<circle cx="6760" cy="7615" r="34" fill="#6a2c91"/><text class="pn" x="6760" y="7627">8</text>
+<rect class="pl" x="6050" y="7300" width="600" height="350" />
+<circle cx="6300" cy="7450" r="34" fill="#6a2c91"/><text class="pn" x="6300" y="7462">9</text>
+<rect class="pl" x="7144" y="7186" width="350" height="267" />
+<circle cx="7330" cy="7300" r="34" fill="#6a2c91"/><text class="pn" x="7330" y="7312">10</text>
+<rect class="pl" x="7680" y="7192" width="220" height="190" />
+<circle cx="7790" cy="7290" r="34" fill="#6a2c91"/><text class="pn" x="7790" y="7302">11</text>
+<rect class="pl" x="7675" y="7418" width="134" height="104" />
+<circle cx="7742" cy="7470" r="34" fill="#6a2c91"/><text class="pn" x="7742" y="7482">12</text>
+<rect class="pl" x="8530" y="7250" width="230" height="215" />
+<circle cx="8460" cy="7330" r="34" fill="#6a2c91"/><text class="pn" x="8460" y="7342">13</text>
+<rect class="pl" x="9090" y="7060" width="200" height="200" />
+<circle cx="9190" cy="7160" r="34" fill="#6a2c91"/><text class="pn" x="9190" y="7172">14</text>
+<rect class="pl" x="8780" y="7380" width="260" height="260" />
+<circle cx="8900" cy="7530" r="34" fill="#6a2c91"/><text class="pn" x="8900" y="7542">15</text>
+<rect class="pl" x="9420" y="6620" width="180" height="280" />
+<circle cx="9480" cy="6905" r="34" fill="#6a2c91"/><text class="pn" x="9480" y="6917">16</text>
+<rect class="pl" x="8700" y="6680" width="90" height="80" />
+<circle cx="8745" cy="6720" r="34" fill="#6a2c91"/><text class="pn" x="8745" y="6732">17</text>
+<rect class="pl" x="8820" y="6700" width="560" height="170" />
+<circle cx="9100" cy="6800" r="34" fill="#6a2c91"/><text class="pn" x="9100" y="6812">18</text>
+<polyline points="8545,7265 7742,7470 6760,7660" fill="none" stroke="#c0281e" stroke-width="7"/>
+<rect x="8527" y="7238" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="8173" y="7329" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="7818" y="7419" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="7461" y="7494" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="7102" y="7564" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="6743" y="7633" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="7108" y="7595" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="7467" y="7526" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="7826" y="7450" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="8181" y="7360" width="28" height="22" rx="5" fill="#e0402f" stroke="#5a0f0a" stroke-width="3"/>
+<rect x="8490" y="7225" width="110" height="80" rx="8" fill="#f6e3d6" stroke="#c0281e" stroke-width="7"/>
+<rect x="7687" y="7430" width="110" height="80" rx="8" fill="#f6e3d6" stroke="#c0281e" stroke-width="7"/>
+<rect x="6705" y="7620" width="110" height="80" rx="8" fill="#f6e3d6" stroke="#c0281e" stroke-width="7"/>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(8076,7153) rotate(-165)"/>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(8042,7281) rotate(-165)"/>
+<circle cx="8059" cy="7217" r="38" fill="#1f5fd1" stroke="#fff" stroke-width="6"/><text class="sn" x="8059" y="7230">1</text>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(7176,7084) rotate(176)"/>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(7184,7216) rotate(176)"/>
+<circle cx="7180" cy="7150" r="38" fill="#1f5fd1" stroke="#fff" stroke-width="6"/><text class="sn" x="7180" y="7163">2</text>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(6449,7171) rotate(179)"/>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(6451,7303) rotate(179)"/>
+<circle cx="6450" cy="7237" r="38" fill="#1f5fd1" stroke="#fff" stroke-width="6"/><text class="sn" x="6450" y="7250">3</text>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(5950,7174) rotate(180)"/>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(5950,7306) rotate(180)"/>
+<circle cx="5950" cy="7240" r="38" fill="#1f5fd1" stroke="#fff" stroke-width="6"/><text class="sn" x="5950" y="7253">4</text>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(5450,7174) rotate(180)"/>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(5450,7306) rotate(180)"/>
+<circle cx="5450" cy="7240" r="38" fill="#1f5fd1" stroke="#fff" stroke-width="6"/><text class="sn" x="5450" y="7253">5</text>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#1f5fd1" stroke-width="6" transform="translate(4784,7600) rotate(90)"/>
+<circle cx="4850" cy="7600" r="38" fill="#1f5fd1" stroke="#fff" stroke-width="6"/><text class="sn" x="4850" y="7613">6</text>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#178a54" stroke-width="6" transform="translate(8593,7587) rotate(35)"/>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#178a54" stroke-width="6" transform="translate(8669,7479) rotate(35)"/>
+<circle cx="8631" cy="7533" r="38" fill="#178a54" stroke="#fff" stroke-width="6"/><text class="sn" x="8631" y="7546">7</text>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#178a54" stroke-width="6" transform="translate(9446,7514) rotate(-90)"/>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#178a54" stroke-width="6" transform="translate(9314,7514) rotate(-90)"/>
+<circle cx="9380" cy="7514" r="38" fill="#178a54" stroke="#fff" stroke-width="6"/><text class="sn" x="9380" y="7527">8</text>
+<rect x="-115" y="-16" width="230" height="32" rx="10" fill="#ffffff" stroke="#178a54" stroke-width="6" transform="translate(9190,7026) rotate(0)"/>
+<circle cx="9190" cy="6960" r="38" fill="#178a54" stroke="#fff" stroke-width="6"/><text class="sn" x="9190" y="6973">9</text>
+<line x1="3600" y1="5650" x2="3600" y2="7790" class="grid"/>
+<line x1="4800" y1="5650" x2="4800" y2="7790" class="grid"/>
+<line x1="6000" y1="5650" x2="6000" y2="7790" class="grid"/>
+<line x1="7200" y1="5650" x2="7200" y2="7790" class="grid"/>
+<line x1="8400" y1="5650" x2="8400" y2="7790" class="grid"/>
+<line x1="9600" y1="5650" x2="9600" y2="7790" class="grid"/>
+<line x1="3500" y1="5200" x2="9800" y2="5200" class="grid"/>
+<line x1="3500" y1="6050" x2="9800" y2="6050" class="grid"/>
+<line x1="3500" y1="6900" x2="9800" y2="6900" class="grid"/>
+<line x1="3500" y1="7750" x2="9800" y2="7750" class="grid"/>
+<text class="zid" x="3630" y="5270">D7</text>
+<text class="zid" x="3630" y="6120">D8</text>
+<text class="zid zon" x="3630" y="6970">D9</text>
+<text class="zid" x="4830" y="5270">E7</text>
+<text class="zid" x="4830" y="6120">E8</text>
+<text class="zid zon" x="4830" y="6970">E9</text>
+<text class="zid" x="6030" y="5270">F7</text>
+<text class="zid" x="6030" y="6120">F8</text>
+<text class="zid zon" x="6030" y="6970">F9</text>
+<text class="zid" x="7230" y="5270">G7</text>
+<text class="zid" x="7230" y="6120">G8</text>
+<text class="zid zon" x="7230" y="6970">G9</text>
+<text class="zid" x="8430" y="5270">H7</text>
+<text class="zid zon" x="8430" y="6120">H8</text>
+<text class="zid zon" x="8430" y="6970">H9</text>
+<rect x="4200" y="6900" width="600" height="850" fill="none" stroke="#e8590c" stroke-width="12" stroke-dasharray="50 30"/><text class="zh" x="4230" y="6890">½ D9 — המרינה</text>
+<text class="lbl" x="5000" y="7150">E9 — חדש</text><text class="lbl" x="9000" y="6560">H8 — חדש</text>
+</svg></div>
+<div class="card grid2">
+<div><span class="k" style="background:#cfe6a8;border:2px solid #6f8f45"></span>היבשה החדשה · <span class="k" style="border:2px dashed #b0412e"></span>קו החוף של האי הישן</div>
+<div><span class="k" style="background:#585858"></span>שדרת האי 1+1 · <span class="k" style="background:#7a5a3a"></span>לולאה סופית חד-סטרית</div>
+<div><span class="k" style="background:#1f5fd1"></span>תחנה של קו 5 · <span class="k" style="background:#178a54"></span>תחנה של קו 5א · מלבן לבן = מפרץ</div>
+<div><span class="k" style="background:#c0281e"></span>הרכבל — 3 תחנות, 10 תאים · <span class="k" style="background:#6b4a2a"></span>מסילה</div>
+<div><span class="k" style="background:#1d3f8f"></span>נתיבי שיט · <span class="k" style="background:#f0c24a"></span>המפתח המתרומם</div>
+<div><span class="k" style="background:#6a2c91"></span>מקום עם F (מספר ← הטבלה בסעיף 5)</div>
+</div>
+
+<h2>2. מה מצאתי (כלל 16 / 19) — מה נשאר, מה משודרג, מה יוצא</h2>
+<div class="wrap"><table><tr><th>מה</th><th>איפה בקוד</th><th>בתוכנית החדשה</th></tr><tr><td>היבשה והים</td><td>019h_S13_data.js: S13D.coast / islandPoly / water · 061a_S13_land.js (חור בטבעת הים, isWater)</td><td>מורחבת: E9, ‏H8, ‏½ D9; האגנים הישנים של F9 נסגרים; הנמל עובר לחוף הצפוני</td></tr><tr><td>ההר, היער, הפסגה, הכפר והאכסניה</td><td>S13D.contours / nature / lots (IS-VILLAGE, ‏IS-HOSTEL, ‏IS-SUMMIT) · 019i_S13_draw.js</td><td>נשארים (הבעלים לא העיר עליהם) — הכפר מקבל רחוב וחנות</td></tr><tr><td>גשר האי והמפתח המתרומם</td><td>019h2_S13_bridge2.js (D‑634) · 038f_S13_live.js (מחזור הפתיחה, האונייה) · 016: BR-I1…BR-I14</td><td>נשאר בדיוק כמו שהוא (כלל 5); הנחיתה BR-L ‏→ כיכר האי IL</td></tr><tr><td>כיכר האי IL</td><td>016: RB2.IL ‏(8330, 7320), ‏xw לשלוש הזרועות</td><td>נשארת — הזרוע המערבית = שדרת האי; הזרוע המזרחית = דרך התחנה</td></tr><tr><td>דרכי האי</td><td>016: IS-W1…W7, ‏IS-E1/E1B/E2, ‏IS-L1…L5 (הלולאה של ST-21), ‏E69_73 / E880_760 (ראשי סיבוב) · 074w (s16c) · 074l7 (ISE-0)</td><td>מוחלפות: שדרה אחת 1+1 עם מפרצים, שתי לולאות סופיות חד-סטריות; בלי ראשי סיבוב ובלי ISE-0</td></tr><tr><td>קו 5 (הקואץ׳)</td><td>074l_line5_coach.js (הצייר — Setra 12.2 מ׳) · 074l5_line5_run.js (LINE5B, ‏ST-21/ST-22) · 038j (סככות)</td><td>הצייר והמנוע נשארים (כלל 19א); המסלול והתחנות באי — חדשים; קו 5א חדש</td></tr><tr><td>תחנת האי והרכבת</td><td>S13D.sa / sb, ‏S13_PLAT (רציף 100 מ׳) · 040b_S16c_island_train.js (RL-PS-02 — קרון אחד)</td><td>הרציף נשאר (מתאים גם ל-5); הרכבת — 4 קרונות בפס א׳ (נבנה); מסוף המשא — בפס ב׳ של התחנה</td></tr><tr><td>הרכבל</td><td>038i_S13_life.js: CB / cabPose / cabDraw (jig-back, שני תאים, 79 מ׳)</td><td>משודרג: לולאה סובבת, 10 תאים, 3 תחנות, 183 מ׳ — שלב 1</td></tr><tr><td>המעבורת</td><td>074zf_ferry.js (D‑678, 450 × 130) · 049 A6_FERRY · S14D.ferry_new</td><td>נמל האי עובר לחוף הצפוני של F9 (תלות: sealife — ferry2)</td></tr><tr><td>אסדת הגז וספינת האספקה</td><td>021u_H8_s10b_rig.js (RIG, ‏SV-RIG מ-E6, ‏PIPE)</td><td>האסדה נשארת; מזח אספקה ותחנת קבלת גז ב-H8 (לאישורך: הבית של SV-RIG עובר ל-H8)</td></tr><tr><td>המגדלור והמנחת</td><td>S13_LIGHT ‏(9355, 6975) · IS-HELI · 038i (LH, ‏heliPose)</td><td>המגדלור עובר לכף של H8 מול המפתח; המנחת — בתוך לולאת המזרח</td></tr><tr><td>נתיבי השיט</td><td>S13D.lane5 · S14D.lanes L1–L4 · S14D.ship (מגיעה מדרום ב-x 3560)</td><td>מזרח ↔ מערב; אחרי D — דרום־מערב בין B ל-C (תלות: sealife)</td></tr><tr><td>המקומות (F)</td><td>038j_S13_places.js (IS-STATION, ‏IS-SHOP, ‏IS-CABLE-LOW/TOP, ‏IS-HELI, ‏IS-ST21/22 …)</td><td>16 מקומות עם תוכן אמיתי (טבלה למטה)</td></tr></table></div>
+<div class="card"><b>מה שבור היום (לא מתקנים — יוצא עם התכנון, D‑694):</b> קו 5 כבוי כברירת מחדל — נעילה ב-ISE-0 / בלולאה של ST-21; ‏ST-22 בלי דרך מהעיר (IS-W6/W7 בכיוון ‎-1); ראשי סיבוב שצוירו כעיגולים קבועים; הרכבל — 2 תאים בלבד (cabPose נותן 2 מיקומים); הרכבת — קרון אחד; אין רכבת משא לאי (D‑23).</div>
+
+<h2>3. החישוב — כמה תחנות צריך</h2>
+<div class="grid2">
+<div class="card"><div class="big">43,381 מ"ר</div>יבשה ומים מוגנים באי החדש (אזור מלא = 10,200 מ"ר) · השדרה: 366 מ׳ · דרך המזרח: 156 מ׳</div>
+<div class="card"><div class="big">9 תחנות · 16 מפרצים</div>7 זוגות (מפרץ בכל צד) + 2 סופיות · כיסוי ההליכה: <span class="ok">98.0%</span> מהשטח הבנוי · כל המוקדים מכוסים · קו 5: תחנות 1–6, קו 5א: תחנות 7–9</div>
+<div class="card"><div class="big">65–70 מ׳</div>המרחק בין זוגות תחנות בעיר (חציון 65, ממוצע 70 — 19 זוגות ב-city_plan.bus). זה תקן ההליכה של המשחק, ולפיו האי.</div>
+</div>
+<div class="card"><b>השיטה (אפשר לבדוק — tools/plan_calc.py):</b>
+<ul><li><b>רדיוס הליכה 60 מ׳</b> — כל נקודה בשטח הבנוי (רשת של 5 מ׳ על כל המגרשים) צריכה תחנה במרחק הזה; כמו בעיר (מחצית המרווח הממוצע + הדרך הצידה).</li>
+<li><b>מוקד — עד 40 מ׳</b> מהכניסה שלו: המרינה, המלון והחוף, המעבורת, שכונת הנמל, הכפר, האכסניה, תחנת האי, הרכבל (שתי התחנות התחתונות), המנחת, מסוף המשא, בסיס האסדה.</li>
+<li><b>תחנת המעבר</b> — כל קו עוצר ליד תחנת הרכבת והרכבל (עד 45 מ׳, כולל המעבר בכיכר).</li>
+<li><b>בין תחנות:</b> לפחות 45 מ׳ (שני מפרצים של 23 מ׳), ולא יותר מ-90 מ׳ <b>לאורך הדרך</b> (1.3 × הממוצע בעיר); לפחות 15 מ׳ מצומת עם מעבר חצייה, 8 מ׳ מכניסה של דרך שירות (דרך העפר לפסגה — בלי מעבר חצייה), ו-26 מ׳ ממרכז הכיכר.
+ <b>3 חריגים מוצדקים</b> (אין שם מקום חוקי לזוג, וכל המגרשים בקטע — עד 60 מ׳ מתחנה): תחנה 5 ← המרינה (6): ‏195 מ׳ לאורך הדרך, מהם 122 מ׳ בלולאה החד-סטרית — בקו ישר 90 מ׳; תחנה 7 ← 8 ‏(97 מ׳) ו-8 ← 9 ‏(105 מ׳) — לאורך סוף המסילה וחצר המשאיות, בלי מגרשים שצריכים תחנה.</li>
+<li><b>זוגות:</b> על דרך דו-סטרית — מפרץ בכל צד (40 + 150 + 40 פיקס׳, עומק 30 — כמו בעיר); בלולאה הסופית — רציף אחד שבו יורדים ועולים.</li>
+<li>רק לפי האורך (בלי מוקדים) היו יוצאים 9 זוגות; לפי מוקדים וכיסוי — 7 זוגות + 2 סופיות.</li></ul></div>
+<div class="wrap"><table><tr><th>#</th><th>קו</th><th>התחנה</th><th>x, y</th><th>מ׳ מתחילת הקו באי</th><th>סוג</th></tr><tr><td>1</td><td>5</td><td>כיכר האי · הרכבת והרכבל · האכסניה</td><td>8059, 7217</td><td>29</td><td>זוג — מפרץ בכל צד</td></tr><tr><td>2</td><td>5</td><td>כפר ההר · השוק</td><td>7180, 7150</td><td>118</td><td>זוג — מפרץ בכל צד</td></tr><tr><td>3</td><td>5</td><td>מסוף המעבורת · הרכבל (תחנת הנמל)</td><td>6450, 7237</td><td>192</td><td>זוג — מפרץ בכל צד</td></tr><tr><td>4</td><td>5</td><td>שכונת הנמל</td><td>5950, 7240</td><td>242</td><td>זוג — מפרץ בכל צד</td></tr><tr><td>5</td><td>5</td><td>מלון החוף · חוף המערב</td><td>5450, 7240</td><td>292</td><td>זוג — מפרץ בכל צד</td></tr><tr><td>6</td><td>5</td><td>המרינה (סופית)</td><td>4850, 7600</td><td>396</td><td>סופית — רציף אחד בלולאה</td></tr><tr><td>7</td><td>5א</td><td>תחנת האי — היציאה הדרומית · החניון</td><td>8631, 7533</td><td>37</td><td>זוג — מפרץ בכל צד</td></tr><tr><td>8</td><td>5א</td><td>מסוף המשא · חצר המשאיות</td><td>9380, 7514</td><td>134</td><td>זוג — מפרץ בכל צד</td></tr><tr><td>9</td><td>5א</td><td>מנחת האי · פארק החוף · בסיס האסדה (סופית)</td><td>9190, 6960</td><td>239</td><td>סופית — רציף אחד בלולאה</td></tr></table></div>
+<div class="wrap"><table><tr><th>אזור</th><th>מ"ר</th><th>מהאזור</th></tr><tr><td>D9</td><td>2,428</td><td>24%</td></tr><tr><td>E9</td><td>9,158</td><td>90%</td></tr><tr><td>F9</td><td>9,228</td><td>90%</td></tr><tr><td>G9</td><td>9,425</td><td>92%</td></tr><tr><td>H9</td><td>10,198</td><td>100%</td></tr><tr><td>H8</td><td>2,944</td><td>29%</td></tr></table></div>
+<div class="card"><b>H8 — רק הדרום (29%):</b> אסדת הגז נשארת במקום (D‑595 / D‑618) במלבן [8860, 6160, 9090, 6340], והלפיד מגיע עד (9210, 6468) בגובה 50 מ׳. החוף של H8 נמתח 27 מ׳ דרומה מהאסדה ו-14 מ׳ מקצה הלפיד; נתיב השיט מהמזרח (y 5800) נשאר 30 מ׳ ויותר מהיבשה. <b>לאישורך:</b> אם הבעלים רוצה את כל H8 יבשה — האסדה זזה צפונה ל-H7.</div>
+
+<h2>4. הקווים</h2>
+<div class="card"><b>קו 5</b> (הקואץ׳ מהעיר, 12.2 מ׳): ‏E3 ← הגשר ← כיכר האי ← שדרת האי מערבה: תחנות 1–5 ← לולאת המרינה (תחנה 6, סופית) ← בחזרה באותה דרך. <br>
+<b>קו 5א</b> (אותו קואץ׳, מהעיר): ‏E3 ← הגשר ← כיכר האי ← דרך התחנה: תחנה 7 ← מסביב לסוף המסילה: תחנה 8 ← לולאת המזרח סביב המנחת, עם כיוון השעון (תחנה 9, סופית — הרציף מימין, בצד המנחת) ← בחזרה. <br>
+<b>כשהמפתח מורם:</b> הקואץ׳ והמכוניות עוצרים בקו העצירה, 9 מ׳ לפני המגדל של המפתח, בשני הצדדים (המחסומים ואזורי "שמור פנוי" של 038f): אזהרה 30 שנ׳ ← הרמה 40 ← האונייה עוברת ← הורדה 40 — כ-3 דקות, לכל היותר פעם ב-6 דקות. התור עומד על הגשר הקבוע (כ-90 מ׳ בכל צד לפני המפתח), לא על המפתח ולא בכיכר. <br>
+אין ראש סיבוב ואין רוורס: כל קו מסתובב בלולאה חד-סטרית — לולאת המזרח עם כיוון השעון, לולאת המרינה נגד כיוון השעון — כך שהרציף (מימין לקואץ׳) תמיד בצד של המקום: המנחת, המרינה. התורים לא עומדים על הגשר — המפרץ הראשון 26 מ׳ ויותר מהכיכר, והלולאות רחוקות מהגשר. ההמתנה בסוף הקו — במפרץ של הלולאה (30 שנ׳, כמו בעיר).</div>
+
+<h2>4א. פרטים — זוג תחנות טיפוסי ולולאה סופית</h2>
+<div class="wrap"><svg class="det" viewBox="-40 -150 1100 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="זוג תחנות טיפוסי">
+<rect x="-40" y="-150" width="1100" height="300" fill="#cfe6a8"/>
+<rect x="-40" y="-74" width="1100" height="148" fill="#d6d2c6"/>
+<rect x="-40" y="-44" width="1100" height="88" fill="#585858"/><line x1="-40" y1="0" x2="1060" y2="0" stroke="#f2f2f2" stroke-width="2" stroke-dasharray="20 20"/>
+<rect x="-40" y="-44" width="120" height="88" fill="#4a4a4a"/>
+<rect x="-40" y="-150" width="120" height="76" fill="#585858"/>
+<rect x="90" y="-40" width="40" height="8" fill="#fff"/>
+<rect x="90" y="-26" width="40" height="8" fill="#fff"/>
+<rect x="90" y="-12" width="40" height="8" fill="#fff"/>
+<rect x="90" y="2" width="40" height="8" fill="#fff"/>
+<rect x="90" y="16" width="40" height="8" fill="#fff"/>
+<rect x="90" y="30" width="40" height="8" fill="#fff"/>
+<rect x="-30" y="-70" width="8" height="24" fill="#fff"/>
+<rect x="-14" y="-70" width="8" height="24" fill="#fff"/>
+<rect x="2" y="-70" width="8" height="24" fill="#fff"/>
+<rect x="18" y="-70" width="8" height="24" fill="#fff"/>
+<rect x="34" y="-70" width="8" height="24" fill="#fff"/>
+<rect x="50" y="-70" width="8" height="24" fill="#fff"/>
+<polygon points="240,44 280,74 430,74 470,44" fill="#5f5f5f" stroke="#fff" stroke-width="2"/>
+<rect x="290" y="48" width="122" height="25" rx="5" fill="#1f5fd1" stroke="#0c2a66" stroke-width="2"/>
+<rect x="300" y="80" width="60" height="20" fill="rgba(180,220,245,.6)" stroke="#2b6a90" stroke-width="2"/>
+<circle cx="390" cy="90" r="5" fill="#d0342c"/>
+<polygon points="560,-44 600,-74 750,-74 790,-44" fill="#5f5f5f" stroke="#fff" stroke-width="2"/>
+<rect x="610" y="-73" width="122" height="25" rx="5" fill="#1f5fd1" stroke="#0c2a66" stroke-width="2"/>
+<rect x="620" y="-100" width="60" height="20" fill="rgba(180,220,245,.6)" stroke="#2b6a90" stroke-width="2"/>
+<circle cx="710" cy="-90" r="5" fill="#d0342c"/>
+<text x="350" y="125" class="dt">מפרץ: 4 + 15 + 4 מ׳, עומק 3 מ׳ (כמו בעיר) · הקואץ׳ 12.2 מ׳ · סככה עם גג שקוף על המדרכה</text>
+<text x="1000" y="-110" class="dt">צומת עם מעברי חצייה — כאן חוצים (כלל 21); המפרץ הראשון 15 מ׳ ויותר מהצומת</text>
+<text x="980" y="-55" class="dt" fill="#fff">מערבה ←</text><text x="980" y="30" class="dt" fill="#fff">→ מזרחה</text>
+</svg></div>
+<div class="wrap"><svg class="det" viewBox="4180 7240 1020 510" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="המרינה ולולאת המרינה — סוף קו 5">
+<rect x="4180" y="7240" width="1020" height="510" fill="#9fd0ee"/>
+<polygon points="4800,7240 5200,7240 5200,7750 4200,7750 4200,7700 4800,7700" fill="#cfe6a8"/>
+<polygon points="4230,7310 4790,7310 4790,7690 4230,7690" fill="#8fc9ec" stroke="#5a7a8a" stroke-width="5"/>
+<polyline points="4200,7280 4200,7700" fill="none" stroke="#7c7c78" stroke-width="30" stroke-linecap="square"/>
+<polyline points="4200,7280 4680,7280" fill="none" stroke="#7c7c78" stroke-width="30" stroke-linecap="square"/>
+<rect x="4330" y="7340" width="20" height="320" fill="#f4f1e6" stroke="#6b6b60" stroke-width="3"/>
+<ellipse cx="4294" cy="7365" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4386" cy="7365" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4294" cy="7409" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4386" cy="7409" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4294" cy="7453" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4386" cy="7453" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4294" cy="7497" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4386" cy="7497" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4294" cy="7541" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4386" cy="7541" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4294" cy="7585" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4386" cy="7585" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4294" cy="7629" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4386" cy="7629" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<rect x="4480" y="7340" width="20" height="320" fill="#f4f1e6" stroke="#6b6b60" stroke-width="3"/>
+<ellipse cx="4444" cy="7365" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4536" cy="7365" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4444" cy="7409" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4536" cy="7409" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4444" cy="7453" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4536" cy="7453" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4444" cy="7497" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4536" cy="7497" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4444" cy="7541" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4536" cy="7541" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4444" cy="7585" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4536" cy="7585" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4444" cy="7629" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4536" cy="7629" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<rect x="4630" y="7340" width="20" height="320" fill="#f4f1e6" stroke="#6b6b60" stroke-width="3"/>
+<ellipse cx="4594" cy="7365" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4686" cy="7365" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4594" cy="7409" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4686" cy="7409" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4594" cy="7453" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4686" cy="7453" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4594" cy="7497" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4686" cy="7497" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4594" cy="7541" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4686" cy="7541" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4594" cy="7585" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4686" cy="7585" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4594" cy="7629" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<ellipse cx="4686" cy="7629" rx="32" ry="10" fill="#fbfbf7" stroke="#55606a" stroke-width="2.5"/>
+<polyline points="4950,7400 4850,7400 4850,7700 5150,7700 5150,7400 4950,7400" fill="none" stroke="#585858" stroke-width="50" stroke-linejoin="round"/>
+<polyline points="4950,7240 4950,7400" fill="none" stroke="#585858" stroke-width="88"/>
+<rect x="4880" y="7430" width="240" height="90" fill="#cfd3d6" stroke="#5c6670" stroke-width="3"/><text x="5000" y="7485" class="dt" text-anchor="middle">P · 16</text>
+<rect x="4880" y="7530" width="240" height="60" fill="#e9e3d2" stroke="#8a7a5a" stroke-width="3"/><text x="5000" y="7568" class="dt" text-anchor="middle">משרד, השכרה, קופה</text>
+<rect x="4880" y="7600" width="240" height="80" fill="#efe2c4" stroke="#8a6a3a" stroke-width="3"/><text x="5000" y="7648" class="dt" text-anchor="middle">המספנה — מנוף הרמה</text>
+<polygon points="4805,7510 4805,7546 4805,7656 4805,7690" fill="none"/>
+<polygon points="4825,7485 4795,7515 4795,7665 4825,7695" fill="#5f5f5f" stroke="#fff" stroke-width="2"/><rect x="4800" y="7530" width="22" height="122" rx="5" fill="#1f5fd1"/>
+<path d="M-16,-10 L16,0 L-16,10 z" fill="#fff" transform="translate(4900,7400) rotate(180)"/>
+<path d="M-16,-10 L16,0 L-16,10 z" fill="#fff" transform="translate(4850,7550) rotate(90)"/>
+<path d="M-16,-10 L16,0 L-16,10 z" fill="#fff" transform="translate(5000,7700) rotate(0)"/>
+<path d="M-16,-10 L16,0 L-16,10 z" fill="#fff" transform="translate(5150,7550) rotate(270)"/>
+<circle cx="4250" cy="6905" r="394" fill="none" stroke="#b0412e" stroke-width="6" stroke-dasharray="30 20"/><text x="4210" y="7275" class="dt" fill="#b0412e">קצה עיגול הסיבוב של "צוק הים" (y 7299)</text>
+<text x="4840" y="7735" class="dt">הקואץ׳ נוסע דרומה בצלע המערבית — הרציף מימין, מול המרינה (הלולאה נגד כיוון השעון)</text>
+</svg></div>
+<div class="card">כל זוג תחנות — עד 40 מ׳ מצומת עם מעברי חצייה (כלל 21: חוצים רק בצומת), ו-15 מ׳ לפחות ממנו. בלולאה הסופית — רציף אחד בצד של הבלוק (מימין לקואץ׳), ומקום המתנה לפני הרציף; התור לא מגיע לשדרה.</div>
+
+<h2>5. המקומות (F — תוכן אמיתי בכל אחד)</h2>
+<div class="wrap"><table><tr><th>#</th><th>המקום</th><th>אזור</th><th>מוקד</th></tr><tr><td>1</td><td>המרינה — 42 מקומות עגינה, משרד, השכרה וקנייה של סירות, חניית הסירה של השחקן</td><td>D9</td><td>כן</td></tr><tr><td>2</td><td>משרד המרינה — השכרה וקנייה של סירות, הקופה</td><td>E9</td><td>—</td></tr><tr><td>3</td><td>מספנת המרינה — מנוף הרמה, מדרון השקה (בצד המזרחי של האגן)</td><td>E9</td><td>—</td></tr><tr><td>4</td><td>מלון החוף המערבי — 4 קומות, בריכה</td><td>E9</td><td>כן</td></tr><tr><td>5</td><td>חוף המערב — מצילים, מקלחות, קיוסק</td><td>E9</td><td>כן</td></tr><tr><td>6</td><td>מסוף המעבורת — קופה, נתיבי המתנה, הרמפה</td><td>F9</td><td>כן</td></tr><tr><td>7</td><td>רציף הדייגים ומסעדת הדגים</td><td>F9</td><td>—</td></tr><tr><td>8</td><td>הרכבל — תחנת הנמל (חדשה)</td><td>F9</td><td>—</td></tr><tr><td>9</td><td>שכונת הנמל — 8 בתים</td><td>F9</td><td>כן</td></tr><tr><td>10</td><td>כפר ההר — השוק והבתים (קיים)</td><td>G9</td><td>כן</td></tr><tr><td>11</td><td>אכסניית ההר (קיימת)</td><td>G9</td><td>כן</td></tr><tr><td>12</td><td>הפסגה — התחנה העליונה של הרכבל וקפה התצפית (קיימים)</td><td>G9</td><td>—</td></tr><tr><td>13</td><td>תחנת האי — רכבת, הרכבל (תחנת העמק), חנות</td><td>H9</td><td>כן</td></tr><tr><td>14</td><td>מנחת האי — טיסות נוף (באמצע לולאת המזרח)</td><td>H9</td><td>כן</td></tr><tr><td>15</td><td>מסוף המשא — פס ב׳ של תחנת האי: רציף פריקה, חצר משאיות, משאיות הפיזור</td><td>H9</td><td>כן</td></tr><tr><td>16</td><td>בסיס האסדה — מזח האספקה, תחנת קבלת הגז</td><td>H8</td><td>כן</td></tr><tr><td>17</td><td>המגדלור ובית השומר — על הכף של H8 (כולו על היבשה)</td><td>H8</td><td>—</td></tr><tr><td>18</td><td>פארק החוף של H8 — שביל תצפית אל האסדה, ספסלים, חניון קטן</td><td>H8</td><td>—</td></tr></table></div>
+
+<h2>6. הרכבת</h2>
+<div class="grid2">
+<div class="card"><div class="big">4 קרונות · 65.8 מ׳</div><b>תחנת האי:</b> הרציף האמצעי (קיים, בין פס א׳ לפס ב׳) — 100 מ׳ של משטח; כל הרכבת ברציף, בפס א׳ (הבעלים: "צריך" 4, "מתאים אפילו אולי ל-5" — נכנסים גם 5). <b>נבנה</b> (RL-PS-02, ‏040b).</div>
+<div class="card"><div class="big">רציף הנמל בעיר · 22 + 38 מ׳</div>נמדד — הרציף האמצעי הוא כל המשטח המצויר (021: ‏PORT_PLATFORM = 4.8 × 22 מ׳). ההארכה צפונה — אי אפשר בלי לשנות מסילה (סתירה, כלל 5): צפונה מ-y 4470 עובר המעבר XOVER בין הפסים (020: ‏SW-X-A (5800, 4462) ← SW-X-B (5900, 4290)). <b>ברירת המחדל (נבנית):</b> הרציף ממשיך דרומה מהקצה שלו לאורך הצד החיצוני של הקשת B-LINK — 38 מ׳ נוספים, באותו רוחב ובאותו מרחק מהפס, עד 8 מ׳ מהמסילה של EAST-A; כך 3 מתוך 4 הקרונות מול רציף, והדלתות שלהם נפתחות. <b>לאישורך.</b></div>
+<div class="card"><div class="big">מסוף המשא — פס ב׳ של תחנת האי</div>הבקר מצא שהסוט ב-H8 עובר במים ועל המגדלור, וגם הקשת לא נכנסת ברדיוס של המשחק (40 מ׳) בין התחנה לחוף — לכן המסוף עובר לפס ב׳ של התחנה (הנוסעים בפס א׳): <b>רציף פריקה של 33 מ׳</b> בצד הדרומי-מערבי של הקצה המזרחי (ממזרח לאולם), עם גגון שקוף (D‑622 — המשאיות מתחתיו), וחצר משאיות בין הרציף לדרך המזרח, השער ב-(8950, 7700). <br>
+<b>נבנה (072y):</b> רכבת משא של קרון סגור וקטר (37 מ׳) — הקרון מקדימה והקטר מאחור (דוחף לתוך התחנה, מושך בחזרה). <b>המקור בעיר:</b> מסילת הבסיס של רציף E6 (Q-BASE, בין המסוטים Q-E ו-QB-SW — 39.5 מ׳; המסילות האחרות של הנמל תפוסות ברכבות השדה, רכבת הים ורכבת העבודה) ← Q-BASE-E ← EAST-A ← B-J ← הגשר ← פס ב׳; בעיר 25 שנ׳ (טעינה), ובאי — עד הסבב הבא. מלגזה מעבירה משטחים מהקרון אל מחסן מסוף המשא. <b>לאישורך:</b> רכבת של 3 קרונות (65 מ׳) — צריכה מסילה ארוכה יותר בנמל (מסילה חדשה מול רציף E6). לוח זמנים בחלון שבו אין רכבת אחרת בצומת ועל המפתח (כמו RL-PS-02). <b>המפתח והרכבות:</b> המפתח עולה רק כשאין רכבת על המפתח בלוח הזמנים בכל החלון של הפתיחה (038f: ‏s13TrainBusy — אזהרה, מחסומים, הרמה, 140 שנ׳ מעבר והורדה), והאות לרכבת אדום כל זמן שהמפתח לא למטה — כך שרכבת לא מגיעה למפתח מורם; אם בכל זאת — היא עוצרת באות, והקרון הראשון (זה שנדחף מקדימה) עומד לפני המגדל, לא על המפתח. <b>בזמן הפריקה בפס ב׳</b> — אף רכבת נוסעים לא מתוכננת לפס ב׳ (RL-PS-02 נכנסת רק לפס א׳; הבדיקה של החלק תבדוק את זה).</div>
+<div class="card"><b>משאיות הפיזור (כלל 25 — מקור ויעד):</b> מהחצר אל: <b>המרינה</b> — מפרץ פריקה ליד המשרד (לולאת המרינה); <b>המלון</b> — מפרץ פריקה בגב המלון (רחוב U); <b>כפר ההר</b> — מפרץ פריקה בשדרה ליד שביל הכפר (השוק); <b>חנות האי</b> — מפרץ פריקה בגב החנות, ליד הכיכר; <b>מסוף המעבורת</b> — מחסן הנמל — רחבת הנמל; ובחזרה לחצר. כל משאית — רכב של הסימולציה עם מקור (חצר המשאיות) ויעד (מפרץ הפריקה).</div>
+</div>
+<div class="card"><b>סתירה (כלל 5):</b> D‑23 ו-GATE‑76 — "אין רכבת משא בענף האי". הבעלים ביקש במפורש (12.11): "רכבת משא — אזור פריקה וטעינה ומשאיות פיזור באי". ברירת המחדל: הבקשה המפורשת של הבעלים; GATE‑76 מתעדכן — <b>לאישורך</b>.</div>
+
+<h2>7. הרכבל</h2>
+<div class="grid2">
+<div class="card"><div class="big">10 תאים</div>(לפחות 8) — לולאה סובבת אחת, תא כל 36.6 מ׳, ‏2.0 מ׳/שנ׳ על הקו, תא כל 18.3 שנ׳ בכל תחנה, 8 נוסעים בתא ← כ-1,575 נוסעים בשעה.</div>
+<div class="card"><div class="big">183 מ׳</div>(היום: 79 מ׳, 2 תאים) — שלוש תחנות: <b>תחנת העמק</b> ליד כיכר האי ← <b>הפסגה</b> (התחנה העליונה והקפה, קיימת) ← <b>תחנת הנמל</b> בשכונת הנמל (חדשה). נסיעה של 1.5 דק׳ לכל קטע.</div>
+<div class="card">בתחנות התאים מאטים, הדלתות נפתחות, נוסעים יורדים ועולים (נראים), והתא ממשיך. לילה (00:00–06:00): התאים חונים בתחנות לפי הסדר. לשחקן: F בכל תחנה — כרטיס, תור, עלייה, נסיעה נראית וירידה בתחנה אחרת. <b>גג שקוף</b> בשלוש התחנות (D‑622 — התאים עוברים מתחת לגג).</div>
+</div>
+
+<h2>8. המרינה, הנמל ונתיבי השיט</h2>
+<div class="card"><ul>
+<li><b>המרינה (½ D9):</b> אגן מוגן של 56 × 38 מ׳ בדרום של ½ D9 (y 7310–7690), שובר גלים במערב ובצפון, הכניסה בצפון-מזרח לאורך החוף המערבי של E9. <b>גרסה 4 (נמצא בתכנון של שלב 2ג):</b> מעל האגן נשאר מרחב התמרון של אוניית התפזורת "צוק הים" במעגן D8 — עיגול הסיבוב של אונייה של 79 מ׳ (39 מ׳ סביב (4250, 6905)); המשרד, החניון והמספנה — בתוך לולאת המרינה ב-E9; 3 מזחים צפים — 42 מקומות (14 בכל מזח, 7 בכל צד); מספנה עם מנוף הרמה ומדרון השקה; המשרד, השכרה וקנייה של סירות, ומקום חניה לסירה של השחקן (לעלות בכל מקום ולעגון כאן / בנמל האי / ב-B7 — הבעלים, סעיף 16).</li>
+<li><b>נמל האי (F9):</b> על החוף הצפוני — הרמפה של המעבורת, נתיבי ההמתנה והקופה, ורציף הדייגים. האגנים הישנים שבתוך F9 נסגרים (E9 יבשה). <b>הזרימה:</b> דרך הנמל חד-סטרית — נכנסים מהשדרה ב-x 6600 צפונה אל 3 נתיבי ההמתנה (6 רכבים בכל אחד, הקופה בכניסה, סככה עם גג שקוף — D‑622), עולים לרמפה; היורדים מהמעבורת יוצאים מהרמפה מערבה בנתיב נפרד, ודרומה ב-x 6250 אל השדרה. בלי מבוי סתום ובלי רוורס.</li>
+<li><b>זכות קדימה:</b> נתיב המעבורת חוצה את הנתיב הראשי ליד (6290, 6450) — המעבורת מחכה לאונייה שבנתיב הראשי (בתיאום עם sealife).</li>
+<li><b>נתיבי השיט:</b> הנתיב הראשי בא מהמזרח ב-H7, עובר מתחת למפתח המתרומם ב-G8, ממשיך מערבה לאורך שורה 8 (E8, ‏D8), ואחרי D פונה לדרום־מערב ויוצא בין B ל-C. אף נתיב לא עובר דרך יבשה; האונייה לא נעלמת (s13DrawLiftLow — תלות ב-sealife).</li>
+<li><b>האסדה:</b> מזח אספקה ב-H8 (ספינת האספקה גרה כאן במקום ב-E6 — <b>לאישורך</b>), הצינור מהאסדה לתחנת קבלת הגז.</li></ul></div>
+
+<h2>9. שלבי הבנייה</h2>
+<div class="card"><ol>
+<li><b>הרכבל — 10 תאים, 3 תחנות</b> (שדרוג של CB / cabPose ב-038i — כל הקו והתחנות על היבשה של היום, כך שהשלב הזה לא תלוי בשלב 2). <b>נבנה</b> — הענף t17_island, ‏019h4_ISL17_gondola.js.</li>
+<li><b>רכבת האי — 4 קרונות.</b> <b>נבנה</b> (040b).</li>
+<li><b>2ב + 3א — המזרח:</b> דרך המזרח ולולאת המזרח (עם כיוון השעון, סביב המנחת), המגדלור לכף של H8, ותחנות 7–9 של קו 5א (מפרצים של המפה); הקואץ׳ של קו 5 נוסע במסלול של 5א עד שהשדרה המערבית תיבנה. <b>בבנייה</b> (074w4, ‏074l8 — בבדיקה).</li>
+<li><b>2א — H8 מצטרף לאי:</b> החוף הדרומי של H8, תחנת קבלת הגז, מזח האספקה, הצינור מהאסדה עד החוף, F בבסיס. <b>נבנה</b> (אותו חלק — ISL17H8).</li>
+<li><b>היבשה החדשה</b> (E9, ‏½ D9 — המרינה, סגירת האגנים הישנים של F9; נמל האי עובר לחוף הצפוני; היציאה של אוניית הנמל D7 עוברת לנתיב מערבה ← דרום־מערב בין B ל-C) ו<b>הכבישים</b>: השדרה, שתי הלולאות, רחבת הנמל, דרך המלון, דרך המזרח — והוצאת IS-W / IS-E / IS-L ‏/ E69_73 / E880_760.</li>
+<li><b>התחנות וקווים 5 ו-5א</b> — מפרצים לפי הטבלה; בדיקה: נסיעה מלאה בשני הכיוונים, מפגש של שני אוטובוסים, פתיחת הגשר באמצע.</li>
+<li><b>מסוף המשא</b> בפס ב׳ של תחנת האי ורכבת המשא — <b>נבנה</b> (072y, בבדיקה); משאיות הפיזור (073a LOGI) ופארק החוף — בהמשך. המגדלור על הכף של H8 — <b>נבנה</b>.</li>
+<li><b>המרינה, נמל האי והמעבורת</b> (בתיאום עם sealife), ו<b>המקומות עם F</b> (בתיאום עם signs).</li></ol></div>
+
+<h2>10. לאישורך / סתירות / תלות</h2>
+<div class="card"><ul>
+<li><b>לאישורך:</b> קו 5א (במקום קו אחד שחוזר על עצמו) · H8 רק בדרום (האסדה נשארת) — בפועל 4.2 אזורים · המגדלור עובר לכף של H8 · ספינת האספקה גרה ב-H8 · מסוף המשא בפס ב׳ של תחנת האי (לא ב-H8) · תחנת נמל לרכבל · האגנים הישנים של F9 נסגרים · התחנות הסופיות — רציף אחד בלולאה החד-סטרית (לא זוג) · ברציף הנמל בעיר — קרון אחד מול הרציף.</li>
+<li><b>סתירה:</b> D‑23 / GATE‑76 (אין משא לאי) מול הבקשה של הבעלים — הולכים לפי הבעלים.</li>
+<li><b>נמצא במלאי — חוסם את E9 ואת המרינה:</b> אוניית התפזורת "צוק הים" והגוררת "עוז" (019k: SHIP_ESC_OUT / SHIP_OUT / h2) יוצאות היום מהמעגן ב-D8 בקשת דרומה דרך E9 (5300, 7450) אל (5300, 9300); המעבורת (074zf) נכנסת לאגן הישן של F9 דרך (5900–5950, 7150–7366). לפני שהיבשה של E9 ושל ½ D9 נבנית — היציאה עוברת לנתיב מערבה ← דרום־מערב בין B ל-C (סיבוב במקום עם הגוררת), והמעבורת — לנמל החדש בחוף הצפוני.</li>
+<li><b>תלות:</b> sealife — נתיבי השיט, ferry2 והאוניות; seatrees — העצים בים (B8–D8); buses — מנוע הקווים (בלי לשנות אותו); signs — השלטים והמותגים של המקומות; locks — הנעילה של האי בפרקים; mapfix — עדכון המפה (city_plan.island).</li></ul></div>
+<h2>11. הערות הבקר (planrev, ‏07:25) — מה תוקן</h2>
+<div class="card"><ol>
+<li>מסילת המשא במים — יצאה; המסוף בפס ב׳ של התחנה, על היבשה (סעיף 6).</li>
+<li>המגדלור — עבר לכף של H8, כולו על היבשה ([8700, 6680, 8790, 6760]); אין מסילה לידו.</li>
+<li>הדרך לחצר המשאיות — השער ב-(8950, 7700) מדרך המזרח; הכניסה לבסיס הגז ולחניון הפארק — מהצלע הצפונית של הלולאה (ימינה פנימה וימינה החוצה).</li>
+<li>לולאת המזרח — עם כיוון השעון (חצים בציור); התחנה הסופית בצלע הצפונית, הרציף מימין — בצד המנחת.</li>
+<li>מספר התחנות — 9 תחנות, 7 זוגות + 2 סופיות = 16 מפרצים; המרווח נמדד עכשיו לאורך הדרך, ונוסף זוג ליד מסוף המשא (תחנה 8). הרכבל — 183 מ׳.</li>
+<li>הרכבת — 4 קרונות, שני הקצוות כתובים (סעיף 6); רציף הנמל נמדד — 22 מ׳ הם כל המשטח.</li>
+<li>המרינה — 42 מקומות בכל מקום.</li>
+<li>מרווחים מעל 90 מ׳ — 3 חריגים מוצדקים, כתובים בסעיף 3.</li>
+<li>תחנה 1 — דרך העפר לפסגה היא דרך שירות בלי מעבר חצייה (8 מ׳); חוצים בצמתים של השדרה.</li>
+<li>בלי מבוי סתום: דרך המלון, רחוב השכונה ודרך הנמל — רחובות U ששני הקצוות שלהם בשדרה; שביל הכפר — להולכי רגל.</li>
+<li>המעבורת — שני הכיוונים (סעיף 8).</li>
+<li>מקור ויעד — רכבת המשא מרציף E6; המשאיות אל 5 מפרצי פריקה (סעיף 6).</li>
+<li>חניות — 7 חניונים (P בציור).</li>
+<li>חצים — על כל הלולאות, ובכל דרך דו-סטרית חץ לכל כיוון.</li>
+<li>הגשר מורם — סעיף 4.</li>
+<li>גג שקוף — ברציף הפריקה, בסככת ההמתנה של המעבורת ובתחנות הרכבל.</li>
+<li>17–19 — בלאישורך (סעיף 10) ובסעיף 8 (זכות קדימה).</li></ol></div>
+<div class="sub">הנתונים: deliver/2026-11-17/island/tools/plan_data.py · החישוב: plan_calc.py ‏→ plan_calc.json · הדף: gen_page.py</div>
+</main></body></html>

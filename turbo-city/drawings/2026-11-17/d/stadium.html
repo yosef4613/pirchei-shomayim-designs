@@ -1,0 +1,74 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>האצטדיון לפי שעון המשחק</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1f2326;--mut:#5f666d;--card:#ffffff;--line:#d9d4ca;--gold:#f2c230;--blue:#1f5fd1;--red:#c0392b;--green:#2e8b57}
+@media (prefers-color-scheme:dark){:root{--bg:#15181b;--ink:#eceae6;--mut:#a3a9ae;--card:#1e2226;--line:#33393f}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 Arial,sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:26px 0 8px}
+p{margin:6px 0;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
+svg{width:100%;height:auto;display:block}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:640px){.two{grid-template-columns:1fr}}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:10px;background:#c0392b22;color:var(--red);font-weight:700}
+.tag.ok{background:#2e8b5722;color:var(--green)}
+</style></head><body><a href="../" style="position:fixed;top:10px;right:10px;z-index:2147483647;background:#1d5f8c;color:#fff;padding:7px 14px;border-radius:8px;font:600 15px Arial,sans-serif;text-decoration:none;box-shadow:0 2px 8px #0004" dir="rtl">→ חזרה לרשימת הציורים</a><main>
+<h1>האצטדיון לפי שעון המשחק</h1>
+<p>הציור של התיקון (סוכן stadium, 17.11). הליגה עצמה כבר רצה לפי שעון המשחק; מה שהטעה הוא <b>התאריך האמיתי</b> שהשלט, הטלפון ו-F9 הציגו ("יום שישי 13.11"): יום המשחק ה-11 הוצג כתאריך בלוח השנה, אז כשיום שישי האמיתי עבר, השלט עדיין חיכה לו.</p>
+
+<h2>השלט ביציע הדרומי — לפני ואחרי</h2>
+<div class="two">
+ <div class="card"><span class="tag">לפני</span>
+ <svg viewBox="0 0 340 170" role="img" aria-label="השלט לפני: תאריך אמיתי">
+  <rect x="40" y="110" width="10" height="55" fill="#3a3f44"/><rect x="290" y="110" width="10" height="55" fill="#3a3f44"/>
+  <rect x="10" y="10" width="320" height="104" rx="4" fill="#1b1f23" stroke="#5c646b" stroke-width="3"/>
+  <text x="170" y="52" text-anchor="middle" fill="#f2c230" font-weight="700" font-size="24" direction="rtl">הבא: החוף — טורבו</text>
+  <text x="170" y="92" text-anchor="middle" fill="#e9eef3" font-size="22" direction="rtl">יום שישי 13.11 · 19:30</text>
+  <path d="M60 98h220" stroke="#c0392b" stroke-width="3" stroke-dasharray="6 5"/>
+ </svg><p>תאריך של לוח השנה — נראה כמו תאריך אמיתי, ולא זז עם השעון של המשחק.</p></div>
+ <div class="card"><span class="tag ok">אחרי</span>
+ <svg viewBox="0 0 340 170" role="img" aria-label="השלט אחרי: יום המשחק">
+  <rect x="40" y="110" width="10" height="55" fill="#3a3f44"/><rect x="290" y="110" width="10" height="55" fill="#3a3f44"/>
+  <rect x="10" y="10" width="320" height="104" rx="4" fill="#1b1f23" stroke="#5c646b" stroke-width="3"/>
+  <text x="170" y="52" text-anchor="middle" fill="#f2c230" font-weight="700" font-size="24" direction="rtl">הבא: החוף — טורבו</text>
+  <text x="170" y="92" text-anchor="middle" fill="#ffffff" font-size="22" direction="rtl">מחר · 19:30</text>
+ </svg><p>"היום" / "מחר" / "יום 11" — אותו מספר יום כמו בשעון שבפינת המסך ("יום 10 · קיץ").</p></div>
+</div>
+
+<h2>לוח המשחקים — לפי ימי המשחק</h2>
+<div class="card">
+<svg viewBox="0 0 900 150" role="img" aria-label="ציר ימי המשחק: משחק כל 3 ימים מיום 2">
+ <g font-size="13" text-anchor="middle" fill="currentColor">
+  <line x1="860" y1="60" x2="40" y2="60" stroke="#8a9096" stroke-width="2"/>
+  <g id="days"></g>
+ </g>
+</svg>
+<p>כל 3 ימי משחק (יום 2, 5, 8, 11…) ב-19:30 — מחזור. יום משחק = 48 דקות אמיתיות. התוצאה נרשמת בסוף המשחק (כ-23:00 במשחק) אם צופים בו, ואם לא — אחרי 23:35 (או אחרי שינה / קפיצה בשעון) בתוצאה מוגרלת.</p>
+</div>
+
+<h2>איפה זה מופיע</h2>
+<div class="card">
+<svg viewBox="0 0 900 230" role="img" aria-label="המקומות שמציגים את המשחק הבא">
+ <g font-size="14" direction="rtl" text-anchor="middle">
+  <g transform="translate(760,20)"><rect width="130" height="190" rx="18" fill="#22262a"/><rect x="10" y="22" width="110" height="150" rx="6" fill="#2d3236"/>
+   <text x="65" y="44" fill="#fff" font-weight="700" font-size="12">חדשות העיר</text><text x="65" y="62" fill="#a3a9ae" font-size="10">יום 10 · 18:40</text>
+   <rect x="18" y="74" width="94" height="40" rx="5" fill="#1f5fd133"/><text x="65" y="90" fill="#fff" font-size="10">המשחק הבא</text><text x="65" y="106" fill="#ffd54a" font-size="10">יום 11 (מחר) · 19:30</text>
+   <rect x="18" y="120" width="94" height="44" rx="5" fill="#ffffff14"/><text x="65" y="136" fill="#fff" font-size="10">מחזור 3 · יום 8 · 23:06</text><text x="65" y="152" fill="#fff" font-size="10">הגבעה 3:2 הנמל</text>
+   <text x="65" y="186" fill="#eceae6" font-size="12">הטלפון</text></g>
+  <g transform="translate(520,40)"><rect width="200" height="150" rx="10" fill="#1e2226" stroke="#33393f"/><text x="100" y="28" fill="#fff" font-weight="700">הדף של האצטדיון</text>
+   <text x="100" y="58" fill="#cfd4d8" font-size="12">מתי: יום 11 (מחר) · 19:30</text><text x="100" y="80" fill="#cfd4d8" font-size="12">מי: גלי החוף נגד טורבו סיטי</text>
+   <text x="100" y="110" fill="#cfd4d8" font-size="12">הטבלה: 6 קבוצות · נקודות</text><text x="100" y="140" fill="#a3a9ae" font-size="11">כמו השלט — מאותו לוח (A34PLAY)</text></g>
+  <g transform="translate(270,40)"><rect width="220" height="150" rx="8" fill="#0f2233" stroke="#2f6bb0"/><text x="110" y="28" fill="#fff" font-weight="700">לוח הטיסות</text>
+   <text x="110" y="62" fill="#e9eef3" font-size="13">שעון: 18:40 (שעון המשחק)</text><text x="110" y="92" fill="#e9eef3" font-size="12">AC-412 · מתוכנן 19:05</text>
+   <text x="110" y="140" fill="#a3a9ae" font-size="11">לפני: השעה האמיתית של המחשב</text></g>
+  <g transform="translate(20,40)"><rect width="220" height="150" rx="8" fill="#2a1b12" stroke="#e67e22"/><text x="110" y="28" fill="#fff" font-weight="700">התיאטרון — ההצגה של הערב</text>
+   <text x="110" y="70" fill="#ffd54a" font-size="13">הצגה לכל יום משחק</text><text x="110" y="100" fill="#e9eef3" font-size="12">(יום − 1) מודולו מספר ההצגות</text>
+   <text x="110" y="140" fill="#a3a9ae" font-size="11">לפני: לפי התאריך האמיתי</text></g>
+ </g>
+</svg>
+</div>
+<script>
+(()=>{const g=document.getElementById('days'),ns='http://www.w3.org/2000/svg';const mk=(t,a,txt)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);if(txt)e.textContent=txt;g.appendChild(e);return e};
+for(let d=1;d<=12;d++){const x=860-(d-1)*74,m=d>=2&&(d-2)%3===0;mk('circle',{cx:x,cy:60,r:m?13:6,fill:m?'#f2c230':'#8a9096'});mk('text',{x,y:100},'יום '+d);if(m){mk('text',{x,y:34,'font-weight':700},'מחזור '+((d-2)/3+1));mk('text',{x,y:124,fill:'#5f666d','font-size':11},'19:30')}}})();
+</script>
+</main></body></html>

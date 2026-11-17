@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>אירועים אקראיים בעולם</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2329;--mut:#5d6873;--card:#fff;--line:#d9d4c9;--fire:#d9482b;--ems:#1f8f5a;--pol:#2a5cc8;--road:#9aa3ab;--grass:#cfe3b8;--bld:#e6dccb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161a;--ink:#e8edf1;--mut:#9aa7b2;--card:#1b2127;--line:#2e3740;--road:#56606a;--grass:#2c3d27;--bld:#3a352d}}
+:root[data-theme="dark"]{--bg:#12161a;--ink:#e8edf1;--mut:#9aa7b2;--card:#1b2127;--line:#2e3740;--road:#56606a;--grass:#2c3d27;--bld:#3a352d}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Segoe UI",Arial,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:26px 0 8px}
+.mut{color:var(--mut)}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:5px 6px;text-align:right;vertical-align:top}
+svg{width:100%;height:auto;display:block}.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;color:#fff}
+.f{background:var(--fire)}.e{background:var(--ems)}.p{background:var(--pol)}
+</style></head><body><a href="../" style="position:fixed;top:10px;right:10px;z-index:2147483647;background:#1d5f8c;color:#fff;padding:7px 14px;border-radius:8px;font:600 15px Arial,sans-serif;text-decoration:none;box-shadow:0 2px 8px #0004" dir="rtl">→ חזרה לרשימת הציורים</a><main>
+<h1>אירועים אקראיים בעולם — אש, נפילה, מרדף</h1>
+<div class="mut">סבב 17.11 · הסוכן events · ציור לפני בנייה (כלל 13). הבנייה מתחילה במקביל; הערות — נכנסות בצעד הבא.</div>
+
+<h2>המלאי — מה כבר קיים ומה משדרגים (כלל 16 / 19א)</h2>
+<div class="card"><table>
+<tr><th>קיים</th><th>איפה</th><th>מה חסר היום</th><th>מה נעשה</th></tr>
+<tr><td>תחנת כיבוי 2 — 3 כבאיות בתאים, יוצאות לקריאה במנוע הכבישים</td><td>074x2_c4fire.js · C4F, c4fDepart</td><td>הקריאה היא נקודה בכביש — אין אש, אין צוות ואין מים; 20 שנ׳ ובחזרה</td><td>האירוע נותן לכבאית קריאה אמיתית: האש בוערת עד שהצוות מכבה</td></tr>
+<tr><td>צי החירום של A4 (כבאיות ואמבולנסים בתאים)</td><td>025 · A4_FLEET_CFG / updateA4Fleet</td><td>מסלול קבוע לנקודה אחת ברחוב הדאונטאון</td><td>לא נוגעים (הבדיקות של A4 עליו); נשאר כמו שהוא</td></tr>
+<tr><td>אמבולנסים וניידות בתנועה של העיר</td><td>025 · TRAFFIC_SERVICE_ASSETS</td><td>נוסעים בעיר בלי משימה</td><td>הקרוב והפנוי נשלח לאירוע (routeTaxiCar), וחוזר לתנועה אחרי</td></tr>
+<tr><td>המשטרה — עבירה של השחקן, ניידת, מרדף</td><td>074x_citysvc.js · csvcFind / csvcRoute</td><td>אין מרדף אחרי אדם בעיר</td><td>אותו מנגנון: ניידת פנויה נשלחת, השוטר יורד ורודף ברגל</td></tr>
+<tr><td>בית החולים A2 ולולאת המיון</td><td>022 / 025 · A2-ER-LANE</td><td>—</td><td>היעד של האמבולנס: עוצר ליד הכניסה למיון, האלונקה נכנסת לדלת</td></tr>
+<tr><td>תחנת המשטרה A5</td><td>074x_citysvc.js · CSVC_POIS['A5-POLICE']</td><td>—</td><td>היעד של הניידת: השוטר והעצור נכנסים לדלת (מעצר)</td></tr>
+<tr><td>מסוק הכיבוי (D‑149 / D‑286)</td><td>074x_citysvc.js · csvcFireMission / csvcHeliStart</td><td>טס רק בקריאה שנייה של צי A4, לנקודה קבועה ב-A4 (העשן מצויר שם)</td><td>גם לאש במבנה: ממריא מהגג, מטיל, ממלא באגם B2, מטיל שוב וחוזר; אש שנגמרה לפני — חוזר ישר (נוסף 17.11, אחרי S7F299)</td></tr>
+<tr><td>מסוק המשטרה (D‑149, ‏POLICE‑01)</td><td>074x_citysvc.js · csvcPolMission</td><td>טס רק במרדף של השחקן ברמת חיפוש 2</td><td>גם לבורח: ממריא מ-A5 אחרי 10 שנ׳ של ריצה, מקיף אותו מלמעלה עד האזיקים וחוזר לגג; מרדף של השחקן קודם</td></tr>
+<tr><td>הולכי הרגל של העיר</td><td>025 · NPC_PEDESTRIANS</td><td>—</td><td>האדם שנופל / שבורח — אחד מהם (לא דמות חדשה); חוזר לעיר בסוף</td></tr>
+</table></div>
+
+<h2>שלושת האירועים — השלבים</h2>
+<svg viewBox="0 0 1060 520" role="img" aria-label="שלבי שלושת האירועים">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<g font-size="13" fill="currentColor" style="color:var(--ink)">
+ <!-- fire -->
+ <rect x="10" y="10" width="1040" height="150" rx="12" fill="none" stroke="var(--fire)" stroke-width="2"/>
+ <text x="1035" y="34" text-anchor="end" font-weight="700" fill="var(--fire)">1 · אש — כבאית מתחנת כיבוי 2 (C4)</text>
+ <g transform="translate(900,50)"><rect width="120" height="70" rx="8" fill="var(--bld)"/><path d="M40 60 q10 -40 20 -20 q8 -30 18 0 q6 -18 12 6 z" fill="var(--fire)"/><path d="M50 30 q-10 -25 15 -30 q20 -5 25 -20" fill="none" stroke="var(--mut)" stroke-width="6" stroke-linecap="round" opacity=".6"/><text x="60" y="88" text-anchor="middle">אש במבנה או ברכב</text></g>
+ <g transform="translate(700,60)"><rect width="150" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="75" y="22" text-anchor="middle">הודעה קצרה + סמן</text><text x="75" y="42" text-anchor="middle" class="mut" fill="var(--mut)">במפה ובעולם</text></g>
+ <g transform="translate(490,60)"><rect width="170" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="85" y="22" text-anchor="middle">כבאית יוצאת מהתא</text><text x="85" y="42" text-anchor="middle" fill="var(--mut)">במנוע הכבישים, באורות</text></g>
+ <g transform="translate(270,60)"><rect width="180" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="90" y="22" text-anchor="middle">2 כבאים, זרנוק, מים</text><text x="90" y="42" text-anchor="middle" fill="var(--mut)">הלהבות קטנות → עשן לבן</text></g>
+ <g transform="translate(40,60)"><rect width="190" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="95" y="22" text-anchor="middle">כבוי — הצוות עולה</text><text x="95" y="42" text-anchor="middle" fill="var(--mut)">חזרה לאותו תא (C4F)</text></g>
+ <g stroke="var(--fire)" stroke-width="2" style="color:var(--fire)"><path d="M895 86 H855" marker-end="url(#ar)"/><path d="M695 86 H665" marker-end="url(#ar)"/><path d="M485 86 H455" marker-end="url(#ar)"/><path d="M265 86 H235" marker-end="url(#ar)"/></g>
+ <text x="1035" y="148" text-anchor="end" fill="var(--mut)">אם כל הכבאיות בחוץ — האש מחכה לכבאית הראשונה שחוזרת (אין רכב מזויף); הקריאה הרגילה של התחנה נדחית בינתיים.</text>
+ <!-- ems -->
+ <rect x="10" y="180" width="1040" height="150" rx="12" fill="none" stroke="var(--ems)" stroke-width="2"/>
+ <text x="1035" y="204" text-anchor="end" font-weight="700" fill="var(--ems)">2 · אדם נופל — אמבולנס → בית החולים A2</text>
+ <g transform="translate(900,222)"><rect width="120" height="66" rx="8" fill="var(--grass)"/><g transform="translate(60,40) rotate(-90)"><circle cx="0" cy="-22" r="5" fill="var(--ink)"/><rect x="-5" y="-17" width="10" height="17" rx="3" fill="var(--pol)"/><rect x="-4" y="0" width="8" height="12" fill="var(--ink)"/></g><text x="60" y="84" text-anchor="middle" dy="10">הולך רגל נופל ושוכב</text></g>
+ <g transform="translate(700,230)"><rect width="150" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="75" y="22" text-anchor="middle">הודעה + סמן</text><text x="75" y="42" text-anchor="middle" fill="var(--mut)">אמבולנס קרוב ופנוי</text></g>
+ <g transform="translate(490,230)"><rect width="170" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="85" y="22" text-anchor="middle">2 חובשים ואלונקה</text><text x="85" y="42" text-anchor="middle" fill="var(--mut)">מעלים לאמבולנס</text></g>
+ <g transform="translate(270,230)"><rect width="180" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="90" y="22" text-anchor="middle">נסיעה ל-A2 באורות</text><text x="90" y="42" text-anchor="middle" fill="var(--mut)">ליד כניסת המיון</text></g>
+ <g transform="translate(40,230)"><rect width="190" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="95" y="22" text-anchor="middle">האלונקה נכנסת למיון</text><text x="95" y="42" text-anchor="middle" fill="var(--mut)">יוצא מהבית חולים אחרי זמן</text></g>
+ <g stroke="var(--ems)" stroke-width="2" style="color:var(--ems)"><path d="M895 256 H855" marker-end="url(#ar)"/><path d="M695 256 H665" marker-end="url(#ar)"/><path d="M485 256 H455" marker-end="url(#ar)"/><path d="M265 256 H235" marker-end="url(#ar)"/></g>
+ <text x="1035" y="318" text-anchor="end" fill="var(--mut)">האמבולנס — רכב של התנועה (VS-AM); אחרי המיון חוזר לתנועה. האדם — הולך רגל של העיר; לא נעלם: נכנס לרכב, לבניין, ויוצא.</text>
+ <!-- police -->
+ <rect x="10" y="350" width="1040" height="160" rx="12" fill="none" stroke="var(--pol)" stroke-width="2"/>
+ <text x="1035" y="374" text-anchor="end" font-weight="700" fill="var(--pol)">3 · אדם בורח — ניידת, מרדף, מעצר → תחנת המשטרה A5</text>
+ <g transform="translate(870,392)"><rect width="150" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="75" y="22" text-anchor="middle">אדם מתחיל לרוץ</text><text x="75" y="42" text-anchor="middle" fill="var(--mut)">הודעה + סמן שזז</text></g>
+ <g transform="translate(680,392)"><rect width="160" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="80" y="22" text-anchor="middle">ניידת פנויה נשלחת</text><text x="80" y="42" text-anchor="middle" fill="var(--mut)">מתעדכנת כל 4 שנ׳</text></g>
+ <g transform="translate(480,392)"><rect width="170" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="85" y="22" text-anchor="middle">השוטר יורד ורודף</text><text x="85" y="42" text-anchor="middle" fill="var(--mut)">תופס, עוצר, אזיקים</text></g>
+ <g transform="translate(270,392)"><rect width="180" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="90" y="22" text-anchor="middle">שניהם נכנסים לניידת</text><text x="90" y="42" text-anchor="middle" fill="var(--mut)">נסיעה ל-A5</text></g>
+ <g transform="translate(40,392)"><rect width="190" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="95" y="22" text-anchor="middle">נכנסים לתחנה — מעצר</text><text x="95" y="42" text-anchor="middle" fill="var(--mut)">משתחרר אחרי זמן</text></g>
+ <g stroke="var(--pol)" stroke-width="2" style="color:var(--pol)"><path d="M865 418 H845" marker-end="url(#ar)"/><path d="M675 418 H655" marker-end="url(#ar)"/><path d="M475 418 H455" marker-end="url(#ar)"/><path d="M265 418 H235" marker-end="url(#ar)"/></g>
+ <text x="1035" y="478" text-anchor="end" fill="var(--mut)">הניידת — רכב משטרה של התנועה (VS-PL), לא זו שעסוקה בשחקן (CITYSVC קודם). הבורח לא חוצה כביש מחוץ למעבר חצייה (גרף ההולכים).</text>
+ <text x="1035" y="498" text-anchor="end" fill="var(--mut)">השוטר מהיר מהבורח, והבורח מתעייף אחרי 25–40 שנ׳ — המרדף נגמר תמיד במעצר; ניידת שלא מגיעה תוך 3 דק׳ — נשלחת אחרת.</text>
+</g></svg>
+
+<h2>המסוקים — שדרוג של CITYSVC (נוסף 17.11 בבוקר)</h2>
+<svg viewBox="0 0 1060 250" role="img" aria-label="מסוק הכיבוי ומסוק המשטרה באירועים">
+<g font-size="13" fill="currentColor" style="color:var(--ink)">
+ <rect x="10" y="10" width="1040" height="110" rx="12" fill="none" stroke="var(--fire)" stroke-width="2"/>
+ <text x="1035" y="32" text-anchor="end" font-weight="700" fill="var(--fire)">1א · מסוק הכיבוי — רק לאש במבנה, כשהוא עומד על הגג של A4</text>
+ <g transform="translate(860,48)"><rect width="160" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="80" y="22" text-anchor="middle">ממריא מהגג (A4)</text><text x="80" y="42" text-anchor="middle" fill="var(--mut)">יחד עם הכבאית</text></g>
+ <g transform="translate(660,48)"><rect width="160" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="80" y="22" text-anchor="middle">הטלה ראשונה</text><text x="80" y="42" text-anchor="middle" fill="var(--mut)">האש קטנה (לא נכבית)</text></g>
+ <g transform="translate(460,48)"><rect width="160" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="80" y="22" text-anchor="middle">מילוי באגם B2</text><text x="80" y="42" text-anchor="middle" fill="var(--mut)">הדלי בחבל</text></g>
+ <g transform="translate(260,48)"><rect width="160" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="80" y="22" text-anchor="middle">הטלה שנייה</text><text x="80" y="42" text-anchor="middle" fill="var(--mut)">הכבאים מסיימים</text></g>
+ <g transform="translate(40,48)"><rect width="180" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="90" y="22" text-anchor="middle">חוזר ונוחת על הגג</text><text x="90" y="42" text-anchor="middle" fill="var(--mut)">האש כבתה קודם — ישר</text></g>
+ <g stroke="var(--fire)" stroke-width="2" style="color:var(--fire)"><path d="M855 75 H825" marker-end="url(#ar)"/><path d="M655 75 H625" marker-end="url(#ar)"/><path d="M455 75 H425" marker-end="url(#ar)"/><path d="M255 75 H225" marker-end="url(#ar)"/></g>
+ <rect x="10" y="135" width="1040" height="110" rx="12" fill="none" stroke="var(--pol)" stroke-width="2"/>
+ <text x="1035" y="157" text-anchor="end" font-weight="700" fill="var(--pol)">3א · מסוק המשטרה — לבורח, כשהוא עומד על הגג של A5 (מרדף של השחקן — קודם)</text>
+ <g transform="translate(820,173)"><rect width="200" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="100" y="22" text-anchor="middle">10 שנ׳ של ריצה — ממריא</text><text x="100" y="42" text-anchor="middle" fill="var(--mut)">מהגג של A5</text></g>
+ <g transform="translate(540,173)"><rect width="240" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="120" y="22" text-anchor="middle">מקיף את הבורח מלמעלה</text><text x="120" y="42" text-anchor="middle" fill="var(--mut)">גם כשהשוטר רודף ברגל</text></g>
+ <g transform="translate(300,173)"><rect width="200" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="100" y="22" text-anchor="middle">אזיקים — חוזר</text><text x="100" y="42" text-anchor="middle" fill="var(--mut)">נוחת על הגג של A5</text></g>
+ <g transform="translate(40,173)"><rect width="220" height="54" rx="8" fill="var(--card)" stroke="var(--line)"/><text x="110" y="22" text-anchor="middle">השחקן במרדף ברמה 2</text><text x="110" y="42" text-anchor="middle" fill="var(--mut)">המסוק עובר אליו (D‑691)</text></g>
+ <g stroke="var(--pol)" stroke-width="2" style="color:var(--pol)"><path d="M815 200 H785" marker-end="url(#ar)"/><path d="M535 200 H505" marker-end="url(#ar)"/></g>
+</g></svg>
+
+<h2>הכללים של האירועים</h2>
+<div class="grid">
+<div class="card"><b>אקראי ולא צפוף (תקרה)</b><br>לכל היותר אירוע אחד מכל סוג ושניים יחד בעולם. המרווח לכל סוג — אקראי, 4–10 דקות (זמן אמיתי; שעת משחק = 2 דקות), כך שרוב הזמן יש אירוע אחד לכל היותר. F9 מתחיל אירוע מיד, ליד השחקן.</div>
+<div class="card"><b>בשטח הפתוח</b><br>רק באזור שפתוח לשחקן (locked('zone') של מנוע הסיפור), לא בשדה התעופה, לא בנמל, ולא על כביש — על המדרכה או ליד מבנה.</div>
+<div class="card"><b>הודעה קצרה + סמן</b><br>הודעה אחת בתחילת האירוע ואחת בסוף. סמן מהבהב במפה הקטנה ובמפה הגדולה, וטבעת בעולם — עד שהאירוע נסגר.</div>
+<div class="card"><b>אפשר לצפות</b><br>ב-F9 ← אירועים: שלושה כפתורים (אש / נפילה / בורח) והמצב של כל אירוע — השלב, הרכב, הזמן. המצלמה עוברת לאירוע ועוקבת אחריו (גם כשהמטופל או העצור נוסעים) עד שהוא נגמר או שמזיזים אותה; "למצלמה" — שוב.</div>
+<div class="card"><b>העבירה של השחקן קודמת</b><br>ניידת שעוד בדרך לבורח ונדרשת לעבירה של השחקן (CITYSVC, ‏D‑691) — עוברת לשם, והבורח מחכה לניידת הבאה.</div>
+<div class="card"><b>כללים 25 / 32</b><br>כל רכב — של הסימולציה: כבאית של C4F, אמבולנס וניידת של התנועה. שום רכב לא מופיע ולא נעלם; שום אדם לא מופיע ולא נעלם.</div>
+<div class="card"><b>רואים את מי שנפל</b><br>הולך רגל שעומד מתחת לצמרת של עץ לא נבחר ליפול (אחר קרוב — כן): לפי הגזעים שמצוירים בפריים (השומר של seatrees, ‏SEAT.onDraw).</div>
+<div class="card"><b>אנשים בכביש (R-76)</b><br>החובשים, הכבאים והשוטר יוצאים מהרכב בצד המדרכה — הנקודה הראשונה שמחוץ לרוחב הכביש — ולא עומדים על נתיב.</div>
+<div class="card"><b>סדר השכבות — TCBUSY (נוסף 17.11 09:20)</b><br>אירוע הוא השכבה 'event': מתחת לטעינה / סרטון / סצנה / הדרכה, מעל הכרטיס של הלוח. כשיש שכבה גבוהה על המסך — אירוע אקראי לא מתחיל (נדחה), וההודעה של אירוע שכבר רץ נשמרת ועולה כשמתפנה. בזמן שההודעה על המסך — 'event' דולק, והכרטיס מחכה.</div>
+<div class="card"><b>הבדיקה</b><br>כל אחד מ-F9 עד הסוף (אש כבויה והכבאית בתא; המטופל במיון; העצור בתחנה) + שעת משחק (120 שנ׳) עם אירועים אקראיים: 0 שגיאות, אין רכב חירום שעומד 40 שנ׳.</div>
+</div>
+</main></body></html>

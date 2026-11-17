@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>סצנות הסיפור</title>
+<style>
+:root{--bg:#0d1620;--card:#152331;--ink:#e9f1f7;--mute:#9db3c4;--gold:#ffd36a;--line:#2b4256;--ok:#5fd08a;--warn:#ffb057}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f6f8;--card:#ffffff;--ink:#14202b;--mute:#56697a;--gold:#a5600b;--line:#d3dde6;--ok:#227a45;--warn:#b0600b}}
+:root[data-theme="dark"]{--bg:#0d1620;--card:#152331;--ink:#e9f1f7;--mute:#9db3c4;--gold:#ffd36a;--line:#2b4256;--ok:#5fd08a;--warn:#ffb057}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:26px;margin:.2em 0}h2{font-size:19px;margin:1.6em 0 .5em;color:var(--gold)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.mute{color:var(--mute)}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:right;vertical-align:top}th{color:var(--mute);font-weight:600}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:0 7px;font-size:12px;margin-inline-start:4px}
+.ok{color:var(--ok)}.warn{color:var(--warn)}
+svg{width:100%;height:auto;display:block}
+.wrap{overflow-x:auto}
+code{font-family:Consolas,monospace;font-size:13px}
+</style>
+</head>
+<body><a href="../" style="position:fixed;top:10px;right:10px;z-index:2147483647;background:#1d5f8c;color:#fff;padding:7px 14px;border-radius:8px;font:600 15px Arial,sans-serif;text-decoration:none;box-shadow:0 2px 8px #0004" dir="rtl">→ חזרה לרשימת הציורים</a><main>
+<h1>סצנות הסיפור — ציור לפני הבנייה</h1>
+<p class="mute">סבב 17.11 · הסוכן cutscenes · ענף t17_cutscenes מעל S7F298 · מנגנון אחד לכל הפרקים, בתוך העולם החי של המשחק (לא סרט נפרד).</p>
+
+<h2>1. המלאי — מה כבר קיים (כלל 16 / 19)</h2>
+<div class="card"><table>
+<tr><th>מה</th><th>איפה</th><th>מה יש / מה חסר</th></tr>
+<tr><td>מנוע הסיפור</td><td><code>074ze_story_engine.js:TCSTORY</code></td><td>פרקים, משימות, שלבים, שמירה, יומן, נעילות. <b>אין סצנות</b>: בתחילת משימה — הודעה וטוסט; בסוף — הודעה, חדשות, כסף. שום דבר לא נראה בעולם.</td></tr>
+<tr><td>נתוני הסיפור</td><td><code>074zd_story_data.js:TC_STORY</code></td><td>7 פרקים (O, 1–4 בנויים, 5–6 "בקרוב"), 30 משימות, 20 דמויות, שורות קול מוקלטות.</td></tr>
+<tr><td>הסרטים וההצגות</td><td><code>029c:TCSHOW</code>, ‏<code>029h:TCCITY</code></td><td>סרט על מסך מלא בתוך אולם; צילום של העיר לתוך מאגר. לא במשחק עצמו (העולם מתחת לא מצויר).</td></tr>
+<tr><td>האנשים ב-3/4</td><td><code>066:P34 / P34G</code></td><td>המחולל של כל האנשים במשחק (הליכה, עמידה, נשיאה); התור של 3/4 לפי העומק (<code>C34G.q</code>). אין דמויות סיפור בעולם.</td></tr>
+<tr><td>הבועות</td><td><code>055:g77Bubble</code></td><td>בועת דיבור שעוגנת לנקודה בעולם — משמשת היום רק לשחקן.</td></tr>
+<tr><td>המצלמה</td><td><code>058:Camera.update</code></td><td>עוקבת אחרי השחקן; אין מצלמה מונפשת במשחק עצמו (רק בסיור של מסך הפתיחה).</td></tr>
+<tr><td>אירועים אמיתיים בעולם</td><td><code>019m:s15PoseAt</code> · ‏<code>019k:S14.poseOf</code> · ‏<code>LN.bus</code></td><td>הנחיתות של השדה (5 בכל מחזור), הגוררת עם הכבל (S14), אוטובוסי הקווים — כולם של הסימולציה. הסצנה רק <b>מסתכלת</b> עליהם.</td></tr>
+<tr><td>הקולות</td><td><code>029k:TCVREC</code> · ‏<code>074zg:TCVREC_ST</code></td><td>הקלטות לפי הטקסט והקול של הדמות. הסצנה משמיעה רק שורה שיש לה הקלטה; תמיד כתובית.</td></tr>
+</table>
+<p>ולכן: <b>משדרגים</b> את מנוע הסיפור — מנגנון סצנות אחד (<code>TCCUT</code>, קובץ חלק חדש <code>074zu_cutscenes.js</code>) שמקשיב למנוע (התחלה / סוף של משימה, כניסה לשלב, סוף פרק) ומשתמש בצייר האנשים, בבועות, בהקלטות ובסימולציה שכבר קיימים. במנוע עצמו — שורה אחת: הסיפור "עסוק" בזמן סצנה.</p></div>
+
+<h2>2. איך נראית סצנה — הפריים</h2>
+<div class="card wrap">
+<svg viewBox="0 0 960 540" role="img" aria-label="פריים של סצנה">
+<defs>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5d8fb4"/><stop offset="1" stop-color="#9cc3d8"/></linearGradient>
+</defs>
+<rect width="960" height="540" fill="url(#sky)"/>
+<!-- the world: a street in 3/4 -->
+<polygon points="0,300 960,250 960,540 0,540" fill="#7f9a6a"/>
+<polygon points="0,380 960,330 960,410 0,460" fill="#4d5258"/>
+<line x1="0" y1="420" x2="960" y2="370" stroke="#e9e3c8" stroke-width="3" stroke-dasharray="26 22"/>
+<polygon points="0,372 960,322 960,330 0,380" fill="#c9c3b3"/>
+<!-- the house -->
+<polygon points="560,190 720,170 720,300 560,318" fill="#d9c7a3"/><polygon points="720,170 800,190 800,312 720,300" fill="#b9a27c"/>
+<polygon points="548,196 640,120 812,196 720,176" fill="#a2553f"/>
+<rect x="612" y="250" width="34" height="62" fill="#6a4a2e"/>
+<rect x="676" y="226" width="30" height="28" fill="#cfe6f2"/>
+<!-- the van -->
+<g transform="translate(250,350)"><polygon points="0,0 150,-20 158,26 8,46" fill="#2f5fa0"/><polygon points="8,46 158,26 158,40 8,60" fill="#203f6b"/><polygon points="96,-14 150,-20 154,4 100,10" fill="#bfe0f2"/><circle cx="36" cy="58" r="11" fill="#222"/><circle cx="132" cy="44" r="11" fill="#222"/></g>
+<!-- exhaust puffs -->
+<g fill="#e8eef2" opacity=".85"><circle cx="238" cy="398" r="12"/><circle cx="218" cy="390" r="17" opacity=".7"/><circle cx="192" cy="378" r="22" opacity=".5"/></g>
+<!-- Shimon -->
+<g transform="translate(470,340)"><ellipse cx="0" cy="4" rx="14" ry="5" fill="#0004"/><rect x="-8" y="-38" width="16" height="30" rx="5" fill="#2e7d4f"/><rect x="-7" y="-10" width="6" height="14" fill="#33465e"/><rect x="1" y="-10" width="6" height="14" fill="#33465e"/><circle cx="0" cy="-46" r="8" fill="#d9a57f"/><path d="M-9,-50 h18 v-4 a9,6 0 0 0 -18,0z" fill="#1f5fb0"/><path d="M8,-34 l14,-16" stroke="#d9a57f" stroke-width="5" stroke-linecap="round"/></g>
+<!-- the bubble -->
+<g transform="translate(430,250)"><rect x="-10" y="-34" width="230" height="44" rx="12" fill="#fff"/><polygon points="34,10 50,10 40,24" fill="#fff"/><text x="210" y="-6" font-size="15" text-anchor="end" fill="#13202b" font-family="Segoe UI,Arial">שמעון: שומע? הוא חי!</text></g>
+<!-- letterbox -->
+<rect width="960" height="62" fill="#000" opacity=".92"/><rect y="478" width="960" height="62" fill="#000" opacity=".92"/>
+<!-- title (top bar) -->
+<text x="930" y="40" font-size="22" text-anchor="end" fill="#ffd36a" font-weight="700" font-family="Segoe UI,Arial">פרק 1 · העיר</text>
+<text x="760" y="40" font-size="15" text-anchor="end" fill="#cfe0ec" font-family="Segoe UI,Arial">הטנדר של סבא</text>
+<!-- skip -->
+<g transform="translate(30,20)"><rect width="128" height="28" rx="9" fill="#ffffff22" stroke="#ffffff55"/><text x="64" y="19" font-size="14" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial">דלג (Esc) ‹</text></g>
+<!-- subtitle (bottom bar) -->
+<text x="480" y="507" font-size="18" text-anchor="middle" fill="#fff" font-family="Segoe UI,Arial"><tspan fill="#5fc2d0" font-weight="700">שמעון: </tspan>שמעתי את המנוע מהצד השני של הרחוב! סבא היה גאה.</text>
+<!-- progress -->
+<rect x="0" y="536" width="960" height="4" fill="#ffffff22"/><rect x="0" y="536" width="560" height="4" fill="#ffd36a"/>
+<!-- labels -->
+<g font-size="12" fill="#13202b" font-family="Segoe UI,Arial"><text x="600" y="345">הבית של סבא (C3)</text><text x="280" y="430">הטנדר — הרכב של השחקן</text></g>
+</svg>
+<p class="mute">פסים שחורים למעלה ולמטה (הכותרת למעלה, הכתובית עם שם הדמות בצבע שלה למטה), פס התקדמות דק, "דלג" בפינה. באמצע — העולם החי עצמו: התנועה ממשיכה, המצלמה זזה לאט (ריכוך), הדמות מצוירת בצייר האנשים של המשחק (3/4) ומדברת בבועה. כל ה-HUD מוסתר בזמן הסצנה.</p>
+</div>
+
+<h2>3. מתי סצנה מתנגנת</h2>
+<div class="card"><table>
+<tr><th>כלל</th><th>ברירת המחדל (לאישורך)</th></tr>
+<tr><td>הטריגר</td><td>המנוע של הסיפור: התחלה של משימה, סוף של משימה, כניסה לשלב, סוף של פרק. בלי מפתח חדש בשמירה — "ראית" נשמר בדגלים של הסיפור (<code>cut:&lt;id&gt;</code>).</td></tr>
+<tr><td>רק כשבטוח</td><td>הסצנה ממתינה עד שהשחקן עומד או מאט מתחת ל-4 קמ"ש, ואין חלון פתוח (טלפון, מפה, שיחה, הצגה, מבחן רישיון, תפריט). בזמן הסצנה הסיפור לא מתקדם ואין שיחות שלו.</td></tr>
+<tr><td>סדר השכבות <span class="tag">17.11 · 08:00</span></td><td>מנגנון "עסוק" אחד של missions (<code>TCBUSY</code>): טעינה 60 &gt; סרטון הפתיחה 50 &gt; <b>סצנה 40</b> &gt; הדרכה 30 &gt; אירוע 20 &gt; כרטיס משימה 10. הסצנה מסמנת את עצמה (<code>set / clear "cutscene"</code>) ומחכה כשטעינה או סרטון הפתיחה על המסך; האירוע, הכרטיס וחלון ההדרכה מחכים לה (ומה שכבר על המסך — מוסתר בזמן הסצנה, והכרטיס מקבל את כל הזמן שלו אחריה).</td></tr>
+<tr><td>דלג</td><td>Esc, רווח, Enter או הכפתור — הסצנה נגמרת מיד והמצלמה חוזרת לשחקן. מקסימום 45 שנ׳ לסצנה; כל שגיאה — סוגרת את הסצנה ומחזירה הכול.</td></tr>
+<tr><td>אירוע בעולם</td><td>מטוס / גוררת / אוטובוס — רק של הסימולציה. סצנה שמחכה לרגע (נחיתה, המראה, גרירה) "דרוכה" עד שהוא מגיע (נחיתה או המראה כל 1–5 דק׳), ובינתיים המשחק רגיל. <b>הכי הרבה 8 דק׳</b> — ואז הגרסה בלי הרגע (בלי השוטים של המטוס; הגוררת — המזח), ותמיד רק כשבטוח שוב (לא באמצע נסיעה). השוטים של המטוס נמדדים בשעון של S15 (שניות העולם), לא בשעון הקיר — במחשב איטי המצלמה לא עוזבת את המטוס לפני שהוא באוויר / על הקרקע <span class="tag">17.11 · 09:20</span>. אין רכב מזויף (כללים 25 ו-32).</td></tr>
+<tr><td>הדמויות</td><td>יוצאות מהדלת של המקום והולכות כמה מטרים על המדרכה (לא על הכביש — נבדק). המראה — של הדיוקן בטלפון (<code>TCPOR.look</code>: הפנים, השיער, הזקן, הכובע / הכיפה, צבע החולצה). הדמות של שלב — של actions: כשהיא כבר עומדת במקום, הסצנה משתמשת בה (המצלמה והבועה עליה) ולא מציירת שנייה.</td></tr>
+<tr><td>בלילה</td><td>סצנה בלילה — "אור של הסצנה": אור רך על כל דמות ועל המקום שהמצלמה מסתכלת עליו (במפת האור של הלילה, כמו הפנסים של הרכבים). רק בזמן הסצנה.</td></tr>
+<tr><td>צפייה חוזרת</td><td>ביומן (T ← יומן): כרטיס "הסצנות של הסיפור" — כל סצנה שראית, עם כפתור ▶. ב-F9 ובדף החי — כל הסצנות.</td></tr>
+<tr><td>בדיקות ופיתוח</td><td>אף פעם לא לבד ב-‎#dev / ‏#qa / ‏#bench ובבדיקת הסיפור. בדיקה חדשה ב-roadAudit: <code>story_cutscenes</code>.</td></tr>
+</table></div>
+
+<h2>4. לוח הסצנות — לפחות אחת לכל פרק</h2>
+<div class="card wrap"><table>
+<tr><th>#</th><th>הפרק</th><th>הסצנה</th><th>מתי</th><th>מה רואים (השוטים)</th><th>האירוע בעולם</th></tr>
+<tr><td>1</td><td>פתיחה</td><td>שמעון מחכה ליד הבית</td><td>התחלת O-1</td><td>כותרת "פתיחה · הבית של סבא" · המצלמה מתרחקת מעל העיר ויורדת לבית ב-C3 · שמעון יוצא מהבית ומנופף · חזרה לשחקן</td><td>התנועה של C3</td></tr>
+<tr><td>2</td><td>1</td><td>העיר</td><td>התחלת 1-1</td><td>כותרת "פרק 1 · העיר" · נסיעה איטית מעל השדרה (C2–D2) · שורה 1 של הרשימה של סבא</td><td>המכוניות והאנשים בשדרה</td></tr>
+<tr><td>3</td><td>1</td><td>הטנדר מתניע</td><td>סוף 1-2</td><td>המצלמה קרוב על הטנדר · שמעון לידו · המנוע משתעל: עשן, רעד, הפנסים מהבהבים, צליל התנעה · הבועה של שמעון</td><td>הטנדר — הרכב של השחקן</td></tr>
+<tr><td>4</td><td>1</td><td>קו 3 יוצא לנמל</td><td>כניסה לשלב "עקוב אחרי קו 3" (1-4)</td><td>המצלמה עוקבת 10 שנ׳ אחרי אוטובוס אמיתי של קו 3 · שמוליק בכתובית</td><td>אוטובוס של קו 3 (LN.bus)</td></tr>
+<tr><td>5</td><td>2</td><td>מאחורי הקלעים</td><td>התחלת 2-1</td><td>כותרת "פרק 2" · מרכז הבקרה E4 · יוסף דהן יוצא מהדלת</td><td>תחנת הכוח וחצר הרכבות</td></tr>
+<tr><td>6</td><td>2</td><td>אוניית הרכבים עגנה</td><td>התחלת 2-6</td><td>המצלמה על הרציף של מסוף היבוא D6 וגולשת אל המשרד · הכתובית של הסוכנות</td><td>הרציף והמנופים של D6</td></tr>
+<tr><td>7</td><td>3</td><td>מטוס נוחת</td><td>התחלת 3-1 — דרוכה עד הנחיתה הבאה</td><td>כותרת "פרק 3 · השמיים" · המצלמה בסף המסלול, עוקבת אחרי המטוס בגישה, בנגיעה ובהאטה · חיתוך למגדל הפיקוח — אליהו יוצא עם קשר</td><td>טיסה אמיתית של S15 (נחיתה)</td></tr>
+<tr><td>7א</td><td>3</td><td>הטיסה של חמש ממריאה <span class="tag">17.11 · 07:30</span></td><td>סוף 3-6 — דרוכה עד ההמראה הבאה</td><td>כותרת "פרק 3 · הטיסה של חמש" מעל תחילת המסלול (עד שהגלגול מתחיל) · המצלמה עוקבת אחרי המטוס על המסלול, בניתוק ובטיפוס · חיתוך למגדל הפיקוח — אליהו יוצא: "הדלק שהבאת — באוויר"</td><td>טיסה אמיתית של S15 (המראה: הגלגול והטיפוס של אותה טיסה)</td></tr>
+<tr><td>7ב</td><td>3</td><td>האורות בשדות</td><td>סוף 3-7</td><td>החקלאי יוצא בשער השדה המערבי (D0) · המצלמה גולשת לאורך אורות הגישה שממערב למסלול · אליהו בקשר: "אורות הגישה תקינים"</td><td>אורות הגישה של S15 (ההבזק הרץ אל הסף)</td></tr>
+<tr><td>8</td><td>4</td><td>הים</td><td>התחלת 4-1</td><td>כותרת "פרק 4 · הים" · מרינת העיר (F3) · אברהם לוי יוצא למרפסת של מועדון השייט</td><td>הסירות של המרינה</td></tr>
+<tr><td>9</td><td>4</td><td>הגוררת מושכת</td><td>סוף 4-7</td><td>דרוכה לגרירה: אם הגוררת מתחברת לאונייה בתוך 10 דק׳ — הסצנה מחכה לה, ואז המצלמה עוקבת אחרי הגוררת עם הכבל; אם הגרירה רחוקה יותר — על מזח הגוררות D7 · נפתלי בכתובית</td><td>הגוררת של S14 <span class="tag">תלות: sealife</span></td></tr>
+<tr><td>10</td><td>5</td><td>העיר צריכה אותך</td><td>סוף פרק 4</td><td>כותרת "פרק 5 — בקרוב" · תחנת הכיבוי והכבאית · "גדליה מהכיבוי יקרא לך"</td><td>הכבאית החונה</td></tr>
+<tr><td>11</td><td>6</td><td>העיר שלי</td><td>סוף פרק 5 (כשייבנה)</td><td>כותרת "פרק 6 — בקרוב" · תחנת הרכבת לאי · "בסוף הרשימה — הרכבת הראשונה לאי"</td><td>הרכבת לאי</td></tr>
+<tr><td>+</td><td>כל פרק</td><td>הפרק הושלם</td><td>סוף כל פרק</td><td>מבט רחב על העיר · "פרק N הושלם" · השורה ברשימה של סבא מקבלת ✓</td><td>—</td></tr>
+</table></div>
+
+<h2>5. ציר הזמן של סצנה (דוגמה — מטוס נוחת)</h2>
+<div class="card wrap">
+<svg viewBox="0 0 960 190" role="img" aria-label="ציר זמן">
+<g font-family="Segoe UI,Arial" font-size="13">
+<line x1="40" y1="150" x2="920" y2="150" stroke="#7d93a6"/>
+<g fill="#7d93a6"><text x="920" y="170" text-anchor="middle">0</text><text x="720" y="170" text-anchor="middle">8</text><text x="520" y="170" text-anchor="middle">16</text><text x="320" y="170" text-anchor="middle">24</text><text x="120" y="170" text-anchor="middle">32 שנ׳</text></g>
+<rect x="820" y="20" width="100" height="26" rx="6" fill="#a5600b"/><text x="870" y="38" text-anchor="middle" fill="#fff">כותרת</text>
+<rect x="420" y="56" width="500" height="26" rx="6" fill="#2f5fa0"/><text x="670" y="74" text-anchor="middle" fill="#fff">המצלמה עוקבת אחרי המטוס (גישה → נגיעה → האטה)</text>
+<rect x="160" y="56" width="250" height="26" rx="6" fill="#1f7a8a"/><text x="285" y="74" text-anchor="middle" fill="#fff">חניון הטרמינל — אליהו יוצא</text>
+<rect x="40" y="56" width="110" height="26" rx="6" fill="#55606b"/><text x="95" y="74" text-anchor="middle" fill="#fff">חזרה לשחקן</text>
+<rect x="160" y="92" width="250" height="26" rx="6" fill="#127a8a" opacity=".75"/><text x="285" y="110" text-anchor="middle" fill="#fff">בועה: "מגדל, כאן אליהו"</text>
+<rect x="420" y="92" width="300" height="26" rx="6" fill="#444" opacity=".75"/><text x="570" y="110" text-anchor="middle" fill="#fff">כתובית: "שלום וברוך הבא לשדה"</text>
+</g></svg>
+</div>
+
+<h2>6. מה לא משתנה</h2>
+<div class="card"><ul>
+<li>אין שינוי בכבישים, בכיוונים, בכניסות או במבנים (D‑605). הסצנה רק מזיזה את המצלמה ומציירת את הדמויות.</li>
+<li>הסימולציה ממשיכה לרוץ בזמן הסצנה (לא עוצרים את העולם); השחקן לא נוסע.</li>
+<li>הפעולות של השלבים (להרים / לשאת / למסור) — של הסוכן actions; הסצנה לא מקדמת שום שלב.</li>
+<li>סרטון הפתיחה של המשחק — של הסוכן opening.</li>
+</ul></div>
+</main></body></html>

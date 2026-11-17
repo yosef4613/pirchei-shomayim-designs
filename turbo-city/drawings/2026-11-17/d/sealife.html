@@ -1,0 +1,64 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>הים והנמל חיים</title>
+<style>:root{--bg:#f4f1ea;--ink:#1d2328;--sea:#cfe3ee;--land:#e4dccb;--q:#b9bcb8;--t2:#d0402a;--t3:#2f6fb0;--ship:#6b7a86;--oil:#3b2f22;--ok:#2e8b57}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15191c;--ink:#e6e8ea;--sea:#173246;--land:#3a352c;--q:#5b5f62;--ship:#9aa7b2;--oil:#d9b27a}}
+:root[data-theme="dark"]{--bg:#15191c;--ink:#e6e8ea;--sea:#173246;--land:#3a352c;--q:#5b5f62;--ship:#9aa7b2;--oil:#d9b27a}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,sans-serif}main{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:.2em 0}h2{font-size:17px;margin:1.2em 0 .3em}svg{width:100%;height:auto;background:var(--sea);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid color-mix(in srgb,var(--ink) 20%,transparent);padding:4px 6px;text-align:right;vertical-align:top}
+.k{font-size:13px;opacity:.8}</style></head><body><a href="../" style="position:fixed;top:10px;right:10px;z-index:2147483647;background:#1d5f8c;color:#fff;padding:7px 14px;border-radius:8px;font:600 15px Arial,sans-serif;text-decoration:none;box-shadow:0 2px 8px #0004" dir="rtl">→ חזרה לרשימת הציורים</a><main>
+<h1>sealife · 17.11 — הים והנמל חיים (הציור לפני הבנייה)</h1>
+<p class="k">כלל 13 / 16. הבסיס S7F299. קודם המלאי — מה שכבר קיים (כלל 19), ואחריו מה שנבנה מעליו. בלי תמונות: הכול SVG בקוד. הקואורדינטות — פיקסלים של העולם.</p>
+<h2>המלאי — מה שכבר יש</h2>
+<table><tr><th>מה</th><th>איפה</th><th>מה שבור / חסר</th></tr>
+<tr><td>אוניות המטען SH-L5, SH-L5B בנתיב L5 → L3 (מזרח ↔ מערב, x 12,600 ↔ ‎−3,000)</td><td>038f_S13_live.js: s13Step / s13DrawShip / s13Live</td><td>כשהמפתח למעלה הציור עובר ל-s13DrawLiftLow, שיוצא מיד אם הגשר לא בתמונה — האונייה שרחוקה מהגשר לא מצוירת (הביקורת: 260 דגימות חסרות)</td></tr>
+<tr><td>הגוררת "עוז" TUG-1 — גרירה של "צוק הים" פעמיים ביום</td><td>019k_S14_draw.js: tugScript / poseOf</td><td>עובדת — לא נוגעים</td></tr>
+<tr><td>"איתן" TUG-2, "גבור" TUG-3 — קשורות במזח הגוררות (x 3784 / 3884, y 5352)</td><td>019k: tugPose — מחזירה תמיד את מקום המזח</td><td>0 דקות תנועה ביום</td></tr>
+<tr><td>אוניית הרכבים "גלי הכרמל" BRT-D6 — עוגנת (4487, 5271), "נגררת" 170 פיקס׳ דרומה, מסתובבת ויוצאת דרומה; חוזרת ב-05:30</td><td>021w_s10c_import.js: shipTick (out1 / out2 / out3 / in1 / in2 / in3)</td><td>"נגררת" — בלי שום גוררת</td></tr>
+<tr><td>המכלית "אורה" BRT-OIL, מזח הנפט, זרועות הפריקה, PIPE-REF (x 2728, ‏5420 → 4118), הענף אל מסוף הנפט (y 4430), מכלי החיץ, המשאבות, תחנת המדידה, חוות המכלים בבית הזיקוק (T-101, T-102)</td><td>021e: pier / pipeOver · 021d: s10OilGround · 034: tank</td><td>הכול מצויר וקבוע — אין כמות, אין ספיקה, אין מפלס</td></tr>
+</table>
+<h2>1. האוניות לא נעלמות</h2>
+<p>s13Live: כשהמפתח למעלה והגשר <b>לא</b> בתמונה — האוניות מצוירות שם (כל אחת לפי הנראות שלה). כשהגשר בתמונה — כמו היום (s13DrawLiftLow, המים מתחת למפתח ואז האונייה, לפני המפתח בגובה). בלי שינוי בנתיבים.</p>
+<h2>2. הגוררות "איתן" ו"גבור" עובדות עם "גלי הכרמל"</h2>
+<svg viewBox="3550 5150 1250 900" role="img" aria-label="מזח הגוררות ורציף אוניית הרכבים">
+<rect x="3550" y="5150" width="1250" height="48" fill="var(--land)"/><rect x="3550" y="5188" width="1250" height="10" fill="var(--q)"/>
+<rect x="3700" y="5200" width="32" height="300" fill="var(--q)"/><text x="3716" y="5180" font-size="22" text-anchor="middle" fill="var(--ink)">מזח הגוררות</text>
+<g fill="none" stroke-width="5"><rect x="3600" y="5211" width="96" height="281" rx="30" stroke="#888"/><rect x="3736" y="5211" width="96" height="281" rx="30" stroke="var(--t2)"/><rect x="3835" y="5211" width="96" height="281" rx="30" stroke="var(--t3)"/></g>
+<text x="3648" y="5530" font-size="20" text-anchor="middle" fill="var(--ink)">עוז</text><text x="3784" y="5530" font-size="20" text-anchor="middle" fill="var(--t2)">איתן</text><text x="3883" y="5530" font-size="20" text-anchor="middle" fill="var(--t3)">גבור</text>
+<rect x="4262" y="5216" width="450" height="110" fill="var(--ship)" opacity=".85"/><text x="4487" y="5280" font-size="24" text-anchor="middle" fill="#fff">גלי הכרמל — ברציף</text>
+<rect x="4262" y="5386" width="450" height="110" fill="none" stroke="var(--ship)" stroke-dasharray="10 8" stroke-width="3"/><text x="4487" y="5450" font-size="20" text-anchor="middle" fill="var(--ink)">OFF (‎+170) — הסיבוב</text>
+<circle cx="4487" cy="5441" r="232" fill="none" stroke="var(--ship)" stroke-dasharray="4 6"/>
+<path d="M4487 5560 V6040" stroke="var(--ship)" stroke-width="4" marker-end="url(#a)"/><text x="4500" y="6030" font-size="18" fill="var(--ink)">דרומה אל מעבר לקצה</text>
+<defs><marker id="a" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<g stroke-width="4" fill="none"><path d="M3784 5352 V5615 H4337 V5497" stroke="var(--t2)"/><path d="M3883 5352 V5660 H4637 V5497" stroke="var(--t3)" stroke-dasharray="14 6"/>
+<path d="M4337 5667 V5850 M4637 5667 V5850" stroke="#555" stroke-dasharray="3 5"/><path d="M4337 5850 H3784 V5352" stroke="var(--t2)" opacity=".5"/></g>
+<g fill="none" stroke-width="3"><rect x="4289" y="5356" width="96" height="281" rx="30" stroke="var(--t2)"/><rect x="4589" y="5356" width="96" height="281" rx="30" stroke="var(--t3)"/></g>
+<path d="M4337 5356 V5326 M4637 5356 V5326" stroke="#eee" stroke-width="3"/>
+<text x="4337" y="5700" font-size="18" text-anchor="middle" fill="var(--ink)">חבל</text>
+<line x1="3600" y1="5850" x2="4790" y2="5850" stroke="#555" stroke-dasharray="2 8"/><text x="4790" y="5875" font-size="18" text-anchor="end" fill="var(--ink)">קו ההמתנה y 6100 — מחוץ לסיבוב</text>
+</svg>
+<table><tr><th>שלב של האונייה (021w)</th><th>מה הגוררות עושות</th></tr>
+<tr><td>הבטן התרוקנה (unload → rup)</td><td>"גבור" (החיצונית) יוצאת ראשונה: לאחור דרומה עד y 5615, פנייה מזרחה, עד x 4637, פנייה דרומה, לאחור אל האונייה. "איתן" אחריה — אל x 4337. החבל מהירכתיים של הגוררת אל הדופן של האונייה.</td></tr>
+<tr><td>out1 — המשיכה מהרציף (30 שנ׳)</td><td>האונייה <b>מחכה</b> עד ששתי הגוררות רתומות (לכל היותר 120 שנ׳; אחרי זה יוצאת כמו היום, ונרשם). הגוררות מושכות דרומה, צמודות לאונייה.</td></tr>
+<tr><td>out2 — הסיבוב ב-OFF</td><td>האונייה מחכה שהגוררות שחררו את החבל והתרחקו אל קו ההמתנה (y 6100, מחוץ לעיגול של הסיבוב). אחרי זה היא מסתובבת ויוצאת דרומה בין שתיהן.</td></tr>
+<tr><td>אחרי שהאונייה עברה</td><td>חוזרות מערבה בקו ההמתנה; "איתן" נכנסת למזח (צפונה), "גבור" מחכה לה ונכנסת אחריה, רתומה לצידה — כמו היום.</td></tr>
+<tr><td>05:20 — האונייה עוד בים</td><td>שתיהן יוצאות אל קו ההמתנה, כל אחת בצד שלה של הנתיב, החרטום צפונה. האונייה לא יוצאת מהים לפני שהן שם.</td></tr>
+<tr><td>in2 — הסיבוב ב-OFF / in3 — הדחיפה לרציף</td><td>אחרי הסיבוב — עולות צפונה עד הדופן ודוחפות את האונייה 170 פיקס׳ אל הרציף (האונייה מחכה להן). ברציף — לאחור אל קו ההמתנה, וחזרה למזח.</td></tr>
+</table>
+<p class="k">בכל חצייה ליד הנתיב של "עוז" ושל המעבורת — המתנה אמיתית עד שהדרך פנויה (אותו מבחן של S14: ferryNear, ועוז במרחק 450). "עוז" — בלי שינוי. לסצנה "הגוררת מושכת" (cutscenes): חלון הגרירה הבא — window.__TC_TUGX.towWindow().</p>
+<h2>3. הנפט — מהמכלית בצינור אל בית הזיקוק, עם כמות</h2>
+<svg viewBox="0 0 1100 300" role="img" aria-label="שרשרת הנפט">
+<g font-size="15" fill="var(--ink)" text-anchor="middle">
+<rect x="20" y="110" width="170" height="80" rx="10" fill="var(--ship)"/><text x="105" y="145" fill="#fff">המכלית "אורה"</text><text x="105" y="168" fill="#fff">מטען: מ״ק</text>
+<rect x="225" y="120" width="120" height="60" rx="6" fill="var(--q)"/><text x="285" y="145">זרועות + מגוף</text><text x="285" y="165">משאבות האונייה</text>
+<path d="M190 150H225M345 150H420" stroke="var(--oil)" stroke-width="8"/>
+<rect x="420" y="105" width="190" height="90" rx="6" fill="none" stroke="var(--oil)" stroke-width="3"/><text x="515" y="135">PIPE-REF צפונה</text><text x="515" y="158">ספיקה מ״ק/ש · לחץ בר</text><text x="515" y="180">החצים זזים לפי הספיקה</text>
+<path d="M610 150H700" stroke="var(--oil)" stroke-width="8"/><path d="M655 150V235H700" stroke="var(--oil)" stroke-width="5"/>
+<rect x="700" y="100" width="170" height="90" rx="8" fill="var(--land)"/><text x="785" y="130">בית הזיקוק C5</text><text x="785" y="152">T-101 · T-102 (גולמי)</text><text x="785" y="174">מפלס בכל מכל</text>
+<rect x="700" y="205" width="170" height="70" rx="8" fill="var(--land)"/><text x="785" y="232">מסוף הנפט C6</text><text x="785" y="254">מכלי החיץ 1 · 2, המדידה</text>
+<path d="M870 150H930" stroke="var(--oil)" stroke-width="5"/><rect x="930" y="110" width="150" height="80" rx="8" fill="none" stroke="var(--ok)" stroke-width="3"/><text x="1005" y="140">המתקן</text><text x="1005" y="162">גולמי → דלק T-103</text>
+<text x="550" y="40">כל ליטר נספר: מה שיוצא מהמכלית = מה שנכנס לצינור = מה שנכנס למכלים. המשאבה עוצרת → הכמות עוצרת.</text>
+<text x="550" y="70">השלבים: חיבור הזרועות → פתיחת המגופים → המשאבות → הזרמה → עצירה → ניתוק</text></g></svg>
+<p>מה שרואים בעולם: חיצים שזזים בצינור (המהירות לפי הספיקה, עוצרים כשהמשאבה עוצרת), שעון ספיקה בראש המזח ובתחנת המדידה, פס מפלס על כל מכל (חיץ ובית הזיקוק), אור ירוק / אדום על המשאבות. ב-F של מסוף הנפט — הלחץ, הספיקה, המפלסים והכמות שעברה היום.</p>
+<h2>לאישורך</h2>
+<ul><li>"גלי הכרמל" מחכה לגוררות (עד 120 שנ׳ — ואז יוצאת בלעדיהן, כמו היום).</li><li>המכלית "אורה" נשארת קשורה (בלי הפלגה עדיין); כשהיא ריקה — המשאבות נעצרות והזרועות מתנתקות; ההפלגה שלה עם "איתן" ו"גבור" — שלב הבא.</li><li>ferry2 — לא נכנס: כולו תיקון של הנעילה באי הנוכחי (G8, FY-G8-PAD) — D‑694.</li></ul>
+</main></body></html>

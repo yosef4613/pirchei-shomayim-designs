@@ -1,0 +1,173 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>מכונית־העל שביט</title><style>
+:root{--bg:#eef1f4;--sheet:#fbfcfd;--ink:#14202b;--muted:#566472;--rule:#d3dae1;--acc:#1d5fbf;--paper:#f3f6f9;--floor:#dde3e8;--ok:#1f7a45;--warn:#a4570d;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10161c;--sheet:#172029;--ink:#e3e9ef;--muted:#97a6b4;--rule:#2b3742;--acc:#6aa5ff;--paper:#1a2530;--floor:#26313b;--ok:#5fcf8d;--warn:#f0a454;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10161c;--sheet:#172029;--ink:#e3e9ef;--muted:#97a6b4;--rule:#2b3742;--acc:#6aa5ff;--paper:#1a2530;--floor:#26313b;--ok:#5fcf8d;--warn:#f0a454;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 'Segoe UI',Arial,sans-serif}
+.wrap{max-width:1280px;margin:0 auto;padding:18px 16px 60px;display:grid;gap:16px}
+header{border-bottom:2px solid var(--ink);padding-bottom:10px}h1{margin:0 0 4px;font-size:clamp(22px,4vw,30px)}h2{margin:0 0 8px;font-size:19px}
+.lede{margin:0;color:var(--muted);max-width:105ch}
+section{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:14px 16px;overflow:hidden}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+figure{margin:0;background:var(--paper);border-radius:6px;padding:8px;display:grid;gap:4px}
+figcaption{font-size:13px;color:var(--muted);text-align:center}svg{width:100%;height:auto;display:block}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{border-bottom:1px solid var(--rule);padding:5px 6px;text-align:right;vertical-align:top}th{color:var(--muted);font-weight:600}
+.tw{overflow-x:auto}.seg{display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden;margin-inline-end:8px}
+.seg button{font:inherit;border:0;background:var(--sheet);color:var(--ink);padding:5px 12px;cursor:pointer}.seg button[aria-pressed="true"]{background:var(--acc);color:#fff}
+.ok{color:var(--ok);font-weight:600}.wn{color:var(--warn);font-weight:600}ul{margin:4px 0;padding-inline-start:20px}code{font-size:13px}
+</style></head><body><a href="../" style="position:fixed;top:10px;right:10px;z-index:2147483647;background:#1d5f8c;color:#fff;padding:7px 14px;border-radius:8px;font:600 15px Arial,sans-serif;text-decoration:none;box-shadow:0 2px 8px #0004" dir="rtl">→ חזרה לרשימת הציורים</a><div class="wrap">
+<header><h1>מכונית־העל השנייה — VH-SP-06 "שביט" · ציור לפני בנייה</h1>
+<p class="lede">הבעלים (11.11 ו-12.11): "אהבתי את רכב העל הכי חדש — צריך עוד בסגנון כזה אבל מאוד שונה מהכול, משהו מאוד בולט ומדויק". טריז (SP-05) — חד, ישר, משושה. שביט הוא ההפך שלו בכל קו: גוף טיפה ארוך ועגול בלי שום פינה, בועת זכוכית קטנה וקדמית כמו תא של מטוס, סנפיר באמצע הזנב, הגלגלים האחוריים מכוסים, וחוט אור אחד לרוחב כל החזית. דגם מקורי — בלי לוגו ובלי שם של מותג. הכול כאן מצויר בקוד (SVG), כולל המבט ב-3/4 שנבנה מאותן מידות.</p></header>
+
+<section><h2>צבע</h2><div id="paints"></div></section>
+
+<section><h2>המבט במשחק — 3/4 (נבנה מהמידות שלמטה)</h2>
+<div><span class="seg" id="yaw"></span><span class="seg" id="mode"></span></div>
+<div class="grid" style="margin-top:8px"><figure><svg id="v34" viewBox="0 0 620 380" role="img" aria-label="שביט במבט 3/4"></svg><figcaption>שביט — 3/4, הדלתות לפי הבחירה · הכיסוי של הגלגל האחורי — לא בשלב הזה</figcaption></figure>
+<figure><svg id="v34b" viewBox="0 0 620 380" role="img" aria-label="טריז ושביט זה לצד זה"></svg><figcaption>ליד טריז (SP-05), באותה הטלה ובאותו קנה מידה — שתי צלליות שונות לגמרי</figcaption></figure></div></section>
+
+<section><h2>ארבעה מבטים במידות (1 מ׳ = 100 יחידות)</h2><div class="grid">
+<figure><svg id="side" viewBox="0 0 540 240"></svg><figcaption>מהצד — הקו האפור המקווקו: הצללית של טריז · הכיסוי של הגלגל האחורי — <b>לא בשלב הזה</b> (במשחק: דיסק סגור בכל ארבעת הגלגלים)</figcaption></figure>
+<figure><svg id="top" viewBox="0 0 540 260"></svg><figcaption>מלמעלה — טיפה: האף עגול, הרוחב הגדול מעל הגלגלים האחוריים</figcaption></figure>
+<figure><svg id="front" viewBox="0 0 260 170"></svg><figcaption>מלפנים — חוט האור לכל הרוחב, הבועה צרה במרכז</figcaption></figure>
+<figure><svg id="rear" viewBox="0 0 260 170"></svg><figcaption>מאחור — הסנפיר, טבעות האור, פליטה אחת סגלגלה במרכז</figcaption></figure>
+</div></section>
+
+<section><h2>שביט מול טריז — מה שונה</h2><div class="tw"><table><tr><th></th><th>טריז VH-SP-05 (קיים)</th><th>שביט VH-SP-06 (חדש)</th></tr>
+<tr><td>הצורה</td><td>טריז נמוך, קווים ישרים, משטחים משושים</td><td>טיפה ארוכה, רק קימורים, בלי קפל אחד</td></tr>
+<tr><td>הזכוכית</td><td>גג שטוח עם צלעות Y</td><td>בועת זכוכית קטנה וכהה, קדימה (תא טייס), כמעט בלי גג צבוע</td></tr>
+<tr><td>הזנב</td><td>כנף על שני עמודים, 4 פליטות</td><td>סנפיר גבי במרכז מהבועה עד הקצה, פליטה אחת סגלגלה</td></tr>
+<tr><td>האורות</td><td>פנסי Y דקים בפינות</td><td>חוט אור לבן אחד לכל רוחב החזית; מאחור — חוט אדום ושתי טבעות</td></tr>
+<tr><td>הגלגלים</td><td>חישוק גדול עם 5 חישורי Y</td><td>דיסק סגור (טורבינה) עם מרכז בצבע הגוף; וכיסוי על הגלגל האחורי (כמו בציור — נבנה ב-try7005)</td></tr>
+<tr><td>הדלתות</td><td>מספריים — למעלה במישור הצד</td><td>פרפר — למעלה ו<b>החוצה</b> (נוטות 24° מהצד), עם חלק מהבועה</td></tr>
+<tr><td>הצבעים</td><td>ליים / כתום / צהוב — צבע אחד</td><td>שני גוונים: הגוף באחד משלושה צבעים עמוקים, החלק התחתון פחם, פס כסף דק ביניהם</td></tr>
+<tr><td>המידות</td><td>4.78 × 2.00 × 1.13 מ׳, בסיס 2.70</td><td>4.80 × 1.98 × 1.06 מ׳, בסיס 2.82 (נכנס במעטפת של רכב שטח — אותו כלל של SP-05 ו-cars14)</td></tr>
+</table></div></section>
+
+<section><h2>איפה הוא במשחק (ברירת מחדל — לאישורך)</h2><ul>
+<li><b>אולם התצוגה D3:</b> השורה של האולם שייכת לפריקת המוביל (סוכן carrier, החלטת המתאם 17.11) — שביט לא תופס בה מקום בשלב הזה; מקום לו שם — תיאום עם carrier. בלי חניה חדשה ובלי מבנה חדש (D‑605).</li>
+<li><b>בעיר:</b> נדיר כמו טריז — מכונית פרטית אמיתית אחת בתנועה (רכב שטח / מיניוואן / טנדר, לפי ה-hash), ואחת חונה ליד מלון הים F3 (טריז — ליד המלון הגדול D2). E של השחקן — דלתות הפרפר נפתחות.</li>
+<li><b>בסוכנות:</b> שביט וטריז נמכרים (ראו הטבלה למטה), נשמרים במוסך הביתי, ונבחרים במוסך D3 כמו כל רכב.</li></ul></section>
+
+<section><h2>הסוכנות — הקטלוג אחרי השינוי (ברירת מחדל — לאישורך)</h2><div class="tw"><table id="cat"><tr><th>קטגוריה</th><th>דגם</th><th>מחיר</th><th>רישיון</th><th>מצב</th></tr></table></div>
+<p class="lede">היום: 6 דגמים בלבד (027_D3.js:VEHICLE_CATALOG). מה שמוצג באולם ולא נמכר — נכנס; כלי W17 נכנסים רק אחרי שהשחקן יכול לרכוב עליהם (הביקורת, חלק 2 §1). אופנוע המשטרה וקטנוע השליח — לא למכירה: E ליד אחד מהם נותן את הסיבה.</p></section>
+
+<section><h2>לעלות על כל כלי — 15 הכלים של W17 (מלאי, כלל 16 / 19)</h2><div class="tw"><table id="board"><tr><th>כלי</th><th>מה יש היום</th><th>אחרי</th></tr></table></div>
+<p class="lede">מצאתי: 074ze_w17_live.js — העטיפה של nearestDriveableVehicle מסננת כל נכס W17- (חונה או עומד) "עד השלב הבא"; הג׳יפים והטרקטורונים (W17.off) נוסעים בתוכנית קבועה ואינם ברשימה של E בכלל. ההמשך: משדרגים את העטיפה (לא מנגנון חדש) — הדו־גלגליים והג׳יפים נלקחים כמו כל רכב חונה (השאלה וחזרה למקום אחרי 90 שנ׳), הכלי שבשטח מחכה בתחנה שלו כשהשחקן לקח אותו, והציור של השחקן — אותה תמונה של W17 ב-3/4 עם השחקן כרוכב.</p></section>
+</div>
+<script>
+(()=>{const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+const el=(p,t,a,txt)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;p.appendChild(e);return e};
+const PAINTS=[{n:'כחול קרח',c:'#4fb8e6',d:'#1d6f99'},{n:'אדום סוכריה',c:'#c8102e',d:'#6d0717'},{n:'סגול מלכותי',c:'#6a34c4',d:'#331666'}];let P=0,YAW=0,MODE=0;
+/* the body as a loft: x from the nose (m), the half width, the top and the bottom of the body (m) */
+const L=4.80,WB=2.82,FO=1.00,WR=.34,H=1.06;
+const sm=(a,b,t)=>{t=Math.max(0,Math.min(1,(t-a)/(b-a)));return t*t*(3-2*t)};
+const hw=x=>{const u=x/L;return .99*Math.pow(Math.sin(Math.PI*Math.min(1,u*1.55+.02)/2),.55)*(1-.10*sm(.80,1,u))-.03*sm(.0,.35,1-u)*0};
+const zTop=x=>{const u=x/L;return .30+.46*sm(0,.30,u)-.10*sm(.80,1,u)+.04*Math.sin(Math.PI*u)};
+const zBot=x=>.11+.06*sm(.9,1,x/L)+.05*(1-sm(0,.08,x/L));
+const cab=[1.30,2.55],cabTop=1.06;
+const zCab=x=>{if(x<cab[0]||x>cab[1])return null;const u=(x-cab[0])/(cab[1]-cab[0]);return zTop(x)+(cabTop-zTop(x))*Math.pow(Math.sin(Math.PI*Math.pow(u,.8)),.7)};
+const cabHW=x=>{const u=(x-cab[0])/(cab[1]-cab[0]);return .52*Math.pow(Math.max(0,Math.sin(Math.PI*u)),.5)};
+const fin=[[2.45,1.0],[3.6,.98],[4.55,.96],[4.70,.70],[3.4,.78]];
+/* the SP-05 side silhouette for the comparison (from its table: 4.78 long, 1.13 high, the nose 0.40, the tail 0.96) */
+const SP5=[[0,.40],[1.12,.78],[2.12,1.13],[2.74,1.13],[4.04,.98],[4.78,.96],[4.78,.11],[0,.17]];
+/* ---------------- the 3/4 ---------------- */
+function proj(x,y,z,yaw){const a=yaw,cx=x-L/2,X=cx*Math.cos(a)-y*Math.sin(a),Y=cx*Math.sin(a)+y*Math.cos(a);return[X*96,(Y*.6-z*.8)*96,Y]}
+function shade(hex,k){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;const f=v=>Math.max(0,Math.min(255,Math.round(k>=0?v+(255-v)*k:v*(1+k))));return`rgb(${f(r)},${f(g)},${f(b)})`}
+function car34(svg,ox,oy,yaw,paint,doors,ghost){const g=el(svg,'g',{transform:`translate(${ox},${oy})`});const Q=[];const N=36,M=14;
+ const lx=Math.cos(.9),ly=-Math.sin(.9)*.4,lz=.75;
+ const ring=x=>{const R=[],w=hw(x),zt=zTop(x),zb=zBot(x),zm=zb+(zt-zb)*.42;for(let j=0;j<=M;j++){const t=j/M*Math.PI;const c=Math.cos(t),s=Math.sin(t);const y=w*Math.sign(c)*Math.pow(Math.abs(c),.45);const z=zm+(s>0?(zt-zm)*Math.pow(s,.6):0);R.push([y,z,c,s])}
+  const D=[];for(let j=M;j>=0;j--){const r=R[j];D.push([-r[0]*-1,r[1],r[2],r[3]])}return R.concat([[-w,zm,-1,0],[-w*.92,zb,-1,-1],[w*.92,zb,1,-1]])};
+ const xs=[];for(let i=0;i<=N;i++){const u=i/N;xs.push(L*(u<.5?2*u*u:1-2*(1-u)*(1-u)))}
+ const rings=xs.map(x=>({x,r:ring(Math.max(.01,Math.min(L-.01,x)))}));
+ for(let i=0;i<N;i++){const A=rings[i],B=rings[i+1];for(let j=0;j<A.r.length-1;j++){const p=[A.r[j],A.r[j+1],B.r[j+1],B.r[j]],xx=[A.x,A.x,B.x,B.x];
+   const pts=p.map((q,k)=>proj(xx[k],q[0],q[1],yaw));const dep=(pts[0][2]+pts[1][2]+pts[2][2]+pts[3][2])/4;
+   const ny=(A.r[j][2]+A.r[j+1][2])/2,nz=(A.r[j][3]+A.r[j+1][3])/2,nxF=i<3?-1:i>N-3?1:0;
+   const rN=[nxF,ny,nz],ry=rN[0]*Math.sin(yaw)+rN[1]*Math.cos(yaw);if(ry<-.15&&nz<.3)continue;
+   const lit=Math.max(-.5,Math.min(.6,(rN[2]*.55-rN[1]*.2+rN[0]*.1)));const z=(A.r[j][1]+B.r[j][1])/2;const low=z<zBot(A.x)+(zTop(A.x)-zBot(A.x))*.36;
+   Q.push({d:dep,f:low?shade('#23272c',lit*.5):shade(paint.c,lit*.55-(.08)),pts})}}
+ Q.sort((a,b)=>a.d-b.d);const body=el(g,'g',{opacity:ghost?.35:1});
+ for(const q of Q)el(body,'polygon',{points:q.pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:ghost?'#8a949e':q.f,stroke:ghost?'#8a949e':q.f,'stroke-width':.6,'stroke-linejoin':'round'});
+ if(ghost)return;
+ /* the silver belt line on the near side */
+ const s=Math.sin(yaw)>0?-1:1,belt=[];for(let i=2;i<=N-2;i++){const x=xs[i],w=hw(x),zm=zBot(x)+(zTop(x)-zBot(x))*.42;belt.push(proj(x,s*w*1.002,zm,yaw))}
+ el(g,'polyline',{points:belt.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:'none',stroke:'#dfe6ec','stroke-width':1.6});
+ /* the wheels: the front an aero disc, the rear behind the spat (only its lower third shows) */
+ for(const [xa,cover] of [[FO,0],[FO+WB,1]])for(const sg of [-1,1]){const y=sg*(hw(xa)-.10),c=proj(xa,y,WR,yaw);if((sg*Math.cos(yaw))<0===false&&sg!==s)continue;
+   const rx=WR*96*Math.abs(Math.cos(yaw))*.98+3,ry=WR*96*.8;if(sg!==s)continue;
+   if(cover){el(g,'ellipse',{cx:c[0],cy:c[1]+ry*.55,rx:rx*.92,ry:ry*.42,fill:'#121418'});continue}
+   el(g,'ellipse',{cx:c[0],cy:c[1],rx,ry,fill:'#121418'});el(g,'ellipse',{cx:c[0],cy:c[1],rx:rx*.72,ry:ry*.72,fill:'#c9d1d8'});
+   for(let k=0;k<12;k++){const a=k/12*Math.PI*2;el(g,'line',{x1:c[0]+Math.cos(a)*rx*.2,y1:c[1]+Math.sin(a)*ry*.2,x2:c[0]+Math.cos(a+.5)*rx*.68,y2:c[1]+Math.sin(a+.5)*ry*.68,stroke:'#8d979f','stroke-width':1})}
+   el(g,'ellipse',{cx:c[0],cy:c[1],rx:rx*.16,ry:ry*.16,fill:paint.c})}
+ /* the bubble: a dark glass loft over the cabin */
+ const G=[],K=16;for(let i=0;i<=K;i++){const x=cab[0]+(cab[1]-cab[0])*i/K,w=cabHW(x),zt=zCab(x),z0=zTop(x)-.02,R=[];for(let j=0;j<=10;j++){const t=j/10*Math.PI;R.push([w*Math.cos(t),z0+(zt-z0)*Math.sin(t)])}G.push({x,R})}
+ const GQ=[];for(let i=0;i<K;i++)for(let j=0;j<10;j++){const a=G[i],b=G[i+1],pts=[[a.x,a.R[j]],[a.x,a.R[j+1]],[b.x,b.R[j+1]],[b.x,b.R[j]]].map(q=>proj(q[0],q[1][0],q[1][1],yaw));GQ.push({d:pts.reduce((m,p)=>m+p[2],0)/4,pts,hl:j>=4&&j<=6})}
+ GQ.sort((a,b)=>a.d-b.d);for(const q of GQ)el(g,'polygon',{points:q.pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),fill:q.hl?'#3c5566':'#18232c',stroke:q.hl?'#3c5566':'#18232c','stroke-width':.5,opacity:.96});
+ /* the reflection on the bubble */
+ const rf=[1.55,1.85,2.15].map(x=>proj(x,s*cabHW(x)*.35,zCab(x)-.01,yaw));el(g,'polyline',{points:rf.map(p=>p.join(',')).join(' '),fill:'none',stroke:'rgba(255,255,255,.55)','stroke-width':2.2,'stroke-linecap':'round'});
+ /* the butterfly door: hinged at the A pillar, up and out */
+ if(doors){const ang=1.25,tilt=.42,dx0=1.42,dx1=2.55,pt=(x,z)=>{const hx=dx0,hz=.98,lx=x-hx,lz=z-hz;const x2=hx+lx*Math.cos(ang)-lz*Math.sin(ang)*.0,z2=hz+lx*Math.sin(ang)*.85+lz;const y=s*(hw(x)+(z2-hz+.2)*Math.sin(tilt)*.6);return proj(x2-lx*.55*Math.sin(ang),y,z2,yaw)};
+   const D=[pt(1.42,.30),pt(2.55,.34),pt(2.55,.92),pt(2.20,1.04),pt(1.50,1.0)];el(g,'polygon',{points:D.map(p=>p[0]+','+p[1]).join(' '),fill:shade(paint.c,-.12),stroke:paint.d,'stroke-width':1});
+   const Wn=[pt(1.60,.80),pt(2.45,.84),pt(2.20,1.00),pt(1.62,.98)];el(g,'polygon',{points:Wn.map(p=>p[0]+','+p[1]).join(' '),fill:'#22323d'});}
+ /* the fin */
+ const F=fin.map(q=>proj(q[0],0,q[1]+.02,yaw));el(g,'polygon',{points:F.map(p=>p[0]+','+p[1]).join(' '),fill:shade(paint.c,-.25),stroke:paint.d,'stroke-width':.8});
+ /* the light thread across the nose, the red thread at the tail */
+ const th=[];for(let j=-10;j<=10;j++){const y=j/10*.86,x=.05+.20*Math.pow(Math.abs(j/10),2.2);th.push(proj(x,y,.40+.03*Math.pow(Math.abs(j/10),2),yaw))}
+ el(g,'polyline',{points:th.map(p=>p.join(',')).join(' '),fill:'none',stroke:'#f4fbff','stroke-width':2.2,'stroke-linecap':'round'});
+ const tr=[];for(let j=-10;j<=10;j++){const y=j/10*.84;tr.push(proj(L-.03-.10*Math.pow(Math.abs(j/10),2),y,.70,yaw))}el(g,'polyline',{points:tr.map(p=>p.join(',')).join(' '),fill:'none',stroke:'#e3182d','stroke-width':1.8});
+}
+function sp05_34(svg,ox,oy,yaw){const g=el(svg,'g',{transform:`translate(${ox},${oy})`});const w=1.0,pts=[];const S=SP5;
+ for(const s of [-1,1]){}const top=S.slice(0,6).map(q=>proj(q[0]*L/4.78,0,q[1],yaw)),near=S.map(q=>proj(q[0]*L/4.78,(Math.sin(yaw)>0?-1:1)*w,q[1]*.62+.06,yaw)),far=S.map(q=>proj(q[0]*L/4.78,(Math.sin(yaw)>0?1:-1)*w,q[1]*.62+.06,yaw));
+ el(g,'polygon',{points:far.map(p=>p[0]+','+p[1]).join(' '),fill:'#6f7a43'});
+ const roof=[proj(2.12,-.55,1.13,yaw),proj(2.74,-.55,1.13,yaw),proj(4.04,-.7,.98,yaw),proj(4.04,.7,.98,yaw),proj(2.74,.55,1.13,yaw),proj(2.12,.55,1.13,yaw),proj(1.12,.85,.78,yaw),proj(0,.9,.40,yaw),proj(0,-.9,.40,yaw),proj(1.12,-.85,.78,yaw)];
+ el(g,'polygon',{points:roof.map(p=>p[0]+','+p[1]).join(' '),fill:'#9ed43a',stroke:'#58761e','stroke-width':1});
+ el(g,'polygon',{points:near.map(p=>p[0]+','+p[1]).join(' '),fill:'#7fb12a',stroke:'#4b6618','stroke-width':1});
+ el(g,'polygon',{points:[proj(2.12,-.55,1.13,yaw),proj(2.74,-.55,1.13,yaw),proj(2.74,.55,1.13,yaw),proj(2.12,.55,1.13,yaw)].map(p=>p.join(',')).join(' '),fill:'#1a2026'});
+ el(g,'text',{x:0,y:-120,'text-anchor':'middle','font-size':14,fill:'currentColor'},'טריז SP-05 (קיים)')}
+function draw34(){const v=$('v34');v.innerHTML='';const yaw=[.62,2.5,-.62][YAW];el(v,'ellipse',{cx:310,cy:236,rx:250,ry:70,fill:'var(--floor)'});car34(v,310,240,yaw,PAINTS[P],MODE===1,false);
+ const b=$('v34b');b.innerHTML='';el(b,'ellipse',{cx:160,cy:236,rx:150,ry:60,fill:'var(--floor)'});el(b,'ellipse',{cx:460,cy:236,rx:150,ry:60,fill:'var(--floor)'});
+ const g1=el(b,'g',{transform:'translate(-150,0) scale(.62) translate(170,150)'});sp05_34(g1,310,240,.62);const g2=el(b,'g',{transform:'translate(150,0) scale(.62) translate(170,150)'});car34(g2,310,240,.62,PAINTS[P],false,false);
+ el(b,'text',{x:460,y:120,'text-anchor':'middle','font-size':14,fill:'currentColor'},'שביט SP-06 (חדש)');el(b,'text',{x:160,y:120,'text-anchor':'middle','font-size':14,fill:'currentColor'},'טריז SP-05 (קיים)')}
+/* ---------------- the four views ---------------- */
+function views(){const pc=PAINTS[P];
+ const sd=$('side');sd.innerHTML='';const X=x=>20+x*100,Z=z=>210-z*100;el(sd,'line',{x1:0,y1:210,x2:540,y2:210,stroke:'var(--rule)'});
+ const up=[],dn=[];for(let i=0;i<=60;i++){const x=L*i/60;up.push([X(x),Z(zTop(x))]);dn.push([X(x),Z(zBot(x))])}
+ el(sd,'polygon',{points:up.concat(dn.reverse()).map(p=>p.join(',')).join(' '),fill:pc.c,stroke:pc.d,'stroke-width':1.2});
+ const lo=[];for(let i=0;i<=60;i++){const x=L*i/60;lo.push([X(x),Z(zBot(x)+(zTop(x)-zBot(x))*.36)])}for(let i=60;i>=0;i--){const x=L*i/60;lo.push([X(x),Z(zBot(x))])}el(sd,'polygon',{points:lo.map(p=>p.join(',')).join(' '),fill:'#24282d'});
+ el(sd,'polyline',{points:lo.slice(0,61).map(p=>p.join(',')).join(' '),fill:'none',stroke:'#dfe6ec','stroke-width':1.4});
+ const cb=[];for(let i=0;i<=30;i++){const x=cab[0]+(cab[1]-cab[0])*i/30;cb.push([X(x),Z(zCab(x))])}el(sd,'polygon',{points:cb.map(p=>p.join(',')).join(' '),fill:'#1c2a34'});
+ el(sd,'polygon',{points:fin.map(q=>[X(q[0]),Z(q[1])].join(',')).join(' '),fill:pc.d});
+ el(sd,'path',{d:`M${X(1.42)} ${Z(.30)} L${X(1.42)} ${Z(.98)} Q${X(1.9)} ${Z(1.07)} ${X(2.5)} ${Z(.98)} L${X(2.55)} ${Z(.34)}`,fill:'none',stroke:pc.d,'stroke-width':1,'stroke-dasharray':'3 2'});
+ for(const [xa,cv] of [[FO,0],[FO+WB,1]]){if(cv){el(sd,'path',{d:`M${X(xa-WR)} ${Z(.12)} A${WR*100} ${WR*100} 0 0 0 ${X(xa+WR)} ${Z(.12)}`,fill:'#121418'});el(sd,'path',{d:`M${X(xa-WR-.06)} ${Z(.20)} Q${X(xa)} ${Z(.24)} ${X(xa+WR+.06)} ${Z(.20)}`,stroke:'#dfe6ec',fill:'none','stroke-width':1});continue}
+  el(sd,'circle',{cx:X(xa),cy:Z(WR),r:WR*100,fill:'#121418'});el(sd,'circle',{cx:X(xa),cy:Z(WR),r:WR*72,fill:'#c9d1d8'});el(sd,'circle',{cx:X(xa),cy:Z(WR),r:WR*16,fill:pc.c})}
+ el(sd,'polygon',{points:SP5.map(q=>[X(q[0]),Z(q[1])].join(',')).join(' '),fill:'none',stroke:'#8a949e','stroke-width':1.2,'stroke-dasharray':'5 4'});
+ el(sd,'line',{x1:X(0),y1:228,x2:X(L),y2:228,stroke:'currentColor'});el(sd,'text',{x:X(L/2),y:224,'text-anchor':'middle','font-size':11,fill:'currentColor'},'4.80 מ׳ · בסיס הגלגלים 2.82 · גובה 1.06');
+ el(sd,'text',{x:X(0)+4,y:Z(.47),'font-size':10,fill:'currentColor'},'חוט אור');
+ const tp=$('top');tp.innerHTML='';const Y=y=>130-y*100;const pl=[],pr=[];for(let i=0;i<=60;i++){const x=L*i/60;pl.push([X(x),Y(hw(x))]);pr.push([X(x),Y(-hw(x))])}
+ el(tp,'polygon',{points:pl.concat(pr.reverse()).map(p=>p.join(',')).join(' '),fill:pc.c,stroke:pc.d,'stroke-width':1.2});
+ const cl=[],cr=[];for(let i=0;i<=30;i++){const x=cab[0]+(cab[1]-cab[0])*i/30;cl.push([X(x),Y(cabHW(x))]);cr.push([X(x),Y(-cabHW(x))])}el(tp,'polygon',{points:cl.concat(cr.reverse()).map(p=>p.join(',')).join(' '),fill:'#1c2a34'});
+ el(tp,'rect',{x:X(2.45),y:Y(.04),width:(4.70-2.45)*100,height:8,rx:4,fill:pc.d});
+ for(const xa of [FO,FO+WB])for(const sg of [-1,1])el(tp,'rect',{x:X(xa-WR),y:Y(sg*(hw(xa)-.04))-(sg>0?0:14),width:WR*200,height:14,rx:3,fill:xa===FO?'#121418':pc.d,opacity:xa===FO?1:.55});
+ el(tp,'path',{d:`M${X(.24)} ${Y(.86)} Q${X(.02)} ${Y(0)} ${X(.24)} ${Y(-.86)}`,fill:'none',stroke:'#f4fbff','stroke-width':3});
+ el(tp,'line',{x1:X(L-.04),y1:Y(.8),x2:X(L-.04),y2:Y(-.8),stroke:'#e3182d','stroke-width':3});
+ el(tp,'line',{x1:X(0),y1:248,x2:X(L),y2:248,stroke:'currentColor'});el(tp,'text',{x:X(L/2),y:244,'text-anchor':'middle','font-size':11,fill:'currentColor'},'רוחב 1.98 מ׳ (מעל הגלגלים האחוריים)');
+ for(const [id,rear] of [['front',0],['rear',1]]){const s=$(id);s.innerHTML='';const cx=130,B=150,U=y=>cx+y*100,V=z=>B-z*100;
+  el(s,'path',{d:`M${U(-.99)} ${V(.14)} Q${U(-1.01)} ${V(.55)} ${U(-.78)} ${V(.66)} Q${U(0)} ${V(.78)} ${U(.78)} ${V(.66)} Q${U(1.01)} ${V(.55)} ${U(.99)} ${V(.14)} Z`,fill:pc.c,stroke:pc.d,'stroke-width':1.2});
+  el(s,'path',{d:`M${U(-.99)} ${V(.14)} L${U(-.99)} ${V(.36)} Q${U(0)} ${V(.40)} ${U(.99)} ${V(.36)} L${U(.99)} ${V(.14)} Z`,fill:'#24282d'});
+  el(s,'path',{d:`M${U(-.50)} ${V(.74)} Q${U(-.48)} ${V(1.06)} ${U(0)} ${V(1.06)} Q${U(.48)} ${V(1.06)} ${U(.50)} ${V(.74)} Z`,fill:'#1c2a34'});
+  for(const sg of [-1,1])el(s,'rect',{x:U(sg*.86)-(sg>0?0:12)-(sg>0?-2:-10),y:V(.36),width:12,height:22,rx:3,fill:'#121418'});
+  if(!rear){el(s,'path',{d:`M${U(-.88)} ${V(.46)} Q${U(0)} ${V(.52)} ${U(.88)} ${V(.46)}`,fill:'none',stroke:'#f4fbff','stroke-width':3,'stroke-linecap':'round'});el(s,'path',{d:`M${U(-.4)} ${V(.24)} Q${U(0)} ${V(.21)} ${U(.4)} ${V(.24)}`,fill:'none',stroke:'#0c0e10','stroke-width':6})}
+  else{el(s,'rect',{x:U(-.03),y:V(1.0),width:6,height:30,fill:pc.d});el(s,'path',{d:`M${U(-.86)} ${V(.62)} Q${U(0)} ${V(.68)} ${U(.86)} ${V(.62)}`,fill:'none',stroke:'#e3182d','stroke-width':2.4});
+   for(const sg of [-1,1])el(s,'circle',{cx:U(sg*.62),cy:V(.52),r:8,fill:'none',stroke:'#e3182d','stroke-width':3});el(s,'ellipse',{cx:U(0),cy:V(.26),rx:16,ry:7,fill:'#0c0e10',stroke:'#9aa3ab','stroke-width':1.5})}
+  el(s,'text',{x:cx,y:166,'text-anchor':'middle','font-size':11,fill:'currentColor'},rear?'מאחור':'מלפנים')}}
+/* the tables */
+const CAT=[['פרטי','האצ׳בק עירוני VH-HB-02','5,000','LIC-01','קיים'],['פרטי','סדאן משפחתית VH-SD-02','7,000','LIC-01','קיים'],['פרטי','סדאן מנהלים VH-SD-04 (באולם)','12,500','LIC-01','חדש בקטלוג'],['פרטי','SUV VH-SU-03','11,500','LIC-01','קיים'],['פרטי','מיניוואן VH-MV-02','10,000','LIC-01','קיים'],['עבודה','טנדר VH-PK-02','12,000','LIC-01','חדש בקטלוג'],['עבודה','מונית VS-TX-01','9,000','LIC-02','קיים'],['עבודה','משאית קלה VH-TR-01','13,500','LIC-03','קיים'],
+ ['ספורט','מכונית ספורט VH-SP-02 (באולם)','38,000','LIC-01','חדש בקטלוג'],['ספורט','מכונית הבמה VH-SP-01','52,000','LIC-01','חדש בקטלוג'],['מכוניות־על','טריז VH-SP-05','85,000','LIC-01','חדש בקטלוג'],['מכוניות־על','שביט VH-SP-06','95,000','LIC-01','חדש — הדגם הזה'],
+ ['דו־גלגלי','אופניים W17-BK','600','—','אחרי הרכיבה'],['דו־גלגלי','קטנוע עירוני W17-SC','3,200','LIC-01','אחרי הרכיבה'],['דו־גלגלי','אופנוע W17-MC','6,800','LIC-01','אחרי הרכיבה'],['שטח','טרקטורון W17-AT','7,500','LIC-01','אחרי הרכיבה'],['שטח','ג׳יפ פתוח W17-JP','14,500','LIC-01','אחרי הרכיבה']];
+const BRD=[['W17-PM-1 / 2 · אופנוע משטרה','רשום — E מסנן אותו','לא נלקח: "כלי של המשטרה" (סיבה ברורה)'],['W17-CR-1…3 · קטנוע שליח','רשום — E מסנן','לא נלקח: "כלי עבודה של שליח טורבו"'],['W17-SC-1 / 2 · קטנוע','רשום — E מסנן (בוחר מכונית אחרת)','נלקח כשהוא חונה או עומד — השאלה וחזרה למקום'],['W17-MC-1 / 2 · אופנוע','רשום — E מסנן','נלקח כמו הקטנוע'],['W17-BK-1 / 2 · אופניים','רשום — E מסנן','נלקח כמו הקטנוע'],['W17-JP-1 / 2 · ג׳יפ','לא רשום — תוכנית קבועה בשטח','נלקח כשהוא עומד בתחנה שלו; התוכנית מחכה עד שהוא חוזר'],['W17-AT-1 / 2 · טרקטורון','לא רשום — תוכנית קבועה בשטח','נלקח כמו הג׳יפ']];
+for(const r of CAT){const tr=el($('cat'),'tr',{});r.forEach((c,i)=>el(tr,'td',{class:i===4?(c==='קיים'?'':'ok'):''},c))}
+for(const r of BRD){const tr=el($('board'),'tr',{});r.forEach((c,i)=>el(tr,'td',{class:i===2?'ok':''},c))}
+const seg=(id,opts,get,set)=>{const s=$(id);s.innerHTML='';opts.forEach((o,i)=>{const b=el(s,'button',{type:'button','aria-pressed':String(get()===i)},o);b.onclick=()=>{set(i);render()}})};
+function render(){const pa=$('paints');pa.innerHTML='';const sg=el(pa,'span',{class:'seg'});PAINTS.forEach((p,i)=>{const b=el(sg,'button',{type:'button','aria-pressed':String(P===i)});const d=el(b,'span',{style:`display:inline-block;width:12px;height:12px;border-radius:50%;margin-inline-end:6px;background:${p.c};vertical-align:-1px`});b.appendChild(document.createTextNode(p.n));b.onclick=()=>{P=i;render()}});
+ seg('yaw',['מלפנים־ימין','מאחור','מלפנים־שמאל'],()=>YAW,v=>YAW=v);seg('mode',['דלתות סגורות','דלת פרפר פתוחה'],()=>MODE,v=>MODE=v);draw34();views()}
+render()})();
+</script></body></html>

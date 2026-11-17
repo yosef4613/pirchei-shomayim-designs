@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>לוח המשימות D‑693</title>
+<style>
+:root{--bg:#0d1620;--card:#152331;--ink:#e8f0f6;--mut:#9fb3c3;--gold:#ffd36a;--side:#4fdc78;--story:#ffd23f;--zone:#ff8a4c;--warn:#ff7a7a;--line:#2b4053}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f7fa;--card:#fff;--ink:#14212d;--mut:#4c6273;--line:#c9d6e1;--gold:#9a6a00;--warn:#b3261e}}
+:root[data-theme="light"]{--bg:#f4f7fa;--card:#fff;--ink:#14212d;--mut:#4c6273;--line:#c9d6e1;--gold:#9a6a00;--warn:#b3261e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif}
+main{max-width:1060px;margin:0 auto;padding:20px 16px 60px}h1{font-size:24px;margin:6px 0}h2{font-size:18px;margin:26px 0 8px;color:var(--gold)}
+.c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{border-bottom:1px solid var(--line);padding:6px 6px;text-align:right;vertical-align:top}th{color:var(--mut);font-weight:600}
+.k{display:inline-block;padding:1px 8px;border-radius:9px;font-size:12px;font-weight:700;color:#0b141c}.bad{color:var(--warn)}.mut{color:var(--mut)}
+svg{width:100%;height:auto;display:block}code{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+</style></head><body><a href="../" style="position:fixed;top:10px;right:10px;z-index:2147483647;background:#1d5f8c;color:#fff;padding:7px 14px;border-radius:8px;font:600 15px Arial,sans-serif;text-decoration:none;box-shadow:0 2px 8px #0004" dir="rtl">→ חזרה לרשימת הציורים</a><main>
+<h1>לוח המשימות — הסדר במשימות (D‑693) · הודעה ← כרטיס ← סמן ← ניווט</h1>
+<div class="mut">סבב 17.11 · הסוכן missions · מעל S7F298 (master 7c2d0be) · הציור לפני הבנייה (כלל 13) — הבנייה ממשיכה במקביל</div>
+
+<h2>1. המלאי — מה כבר קיים (כלל 16 / 19)</h2>
+<div class="c"><table>
+<tr><th>מה</th><th>איפה (קובץ:פונקציה)</th><th>מה עובד</th><th>מה שבור / חסר מול D‑693</th></tr>
+<tr><td>מנוע הסיפור</td><td><code>074ze_story_engine.js: TCSTORY · step / nextMission / startOk / beginMission</code></td><td>פרקים O, 1–4 מקצה לקצה, שמירה, יומן, HUD, בדיקה story_main_chapter1</td><td class="bad">משימה אחת בכל פעם (m.mi), כל משימה אחרי הקודמת (after של מזהה אחד) — אין 2–3 משימות משנה בכל סדר; בין משימות (delay) — 0 פעילות</td></tr>
+<tr><td>סיפורי האזורים (~60)</td><td><code>038a: S9STORY.start / setInterval</code> · <code>074zt: ZSFIX_HOURS</code> · <code>074zs: ZSTORY</code></td><td>כל סיפור מתחילתו ועד סופו, כרטיס במסך המקום, יומן</td><td class="bad">מתחילים לבד לפי השעה — סיפור כל 5 דקות משחק, בלי תקרה: הודעה + יומן + ניווט + הודעה קופצת בלי "קבל"</td></tr>
+<tr><td>הנקודות במפות</td><td><code>074zn: MMIS.collect</code></td><td>מיני־מפה, M, טלפון; צבע לסוג</td><td class="bad">כל משימה זמינה מצוירת — כל סיפור אזור שלא התחיל (מעוין) וכל עבודה (עיגול) — עשרות נקודות, בלי קשר להודעות</td></tr>
+<tr><td>ההודעות</td><td><code>055: g77MsgIn / g77MsgThread</code></td><td>שרשור לכל איש קשר, קוליות</td><td class="bad">אין כפתור קבל / נווט בהודעה; לא ברור מאיפה מתחילים</td></tr>
+<tr><td>היומן</td><td><code>055: g77JrApp</code> · <code>074ze: jrCards</code></td><td>"הסיפור — עכשיו" עם ניווט</td><td class="bad">אין רשימה אחת של המשימות הפעילות; אין ספירה</td></tr>
+<tr><td>העבודות</td><td><code>039: MISSION_DEFS</code> · <code>040: startMission</code> · <code>056: phoneMissions</code></td><td>63 עבודות, רשימה בטלפון</td><td>נשארת הקטלוג (השחקן בוחר); עבודה שהתחילה — נספרת כמשימת צד</td></tr>
+<tr><td>הנעילה</td><td><code>074ze: TCSTORY.locked('area'|'job', id)</code></td><td>שער אחד לפי הפרק</td><td>הלוח משתמש בו כמו שהוא (השטח הפתוח) — הנעילה הפיזית: הסוכן locks</td></tr>
+</table></div>
+
+<h2>2. ספירה אחת לכולם</h2>
+<div class="c">
+<svg viewBox="0 0 1000 300" role="img" aria-label="שתי הספירות והגבולות">
+ <rect x="0" y="0" width="1000" height="300" fill="none"/>
+ <g font-family="Segoe UI,Arial" font-size="15" fill="currentColor" style="color:var(--ink)">
+  <text x="980" y="30" text-anchor="end" font-weight="700" fill="#ffd23f">משימות סיפור פעילות: לפחות 1 (עד סוף מה שנבנה), לכל היותר 3</text>
+  <g transform="translate(560,48)">
+   <rect x="0" y="0" width="420" height="34" rx="8" fill="#1d2f40" stroke="#ffd23f"/>
+   <rect x="280" y="4" width="136" height="26" rx="6" fill="#ffd23f"/><rect x="142" y="4" width="134" height="26" rx="6" fill="#ffd23f" opacity=".55"/><rect x="4" y="4" width="134" height="26" rx="6" fill="#ffd23f" opacity=".3"/>
+   <text x="348" y="23" text-anchor="middle" fill="#0b141c" font-weight="700">1 — תמיד</text><text x="209" y="23" text-anchor="middle" fill="#0b141c">2</text><text x="71" y="23" text-anchor="middle" fill="#0b141c">3 — תקרה</text>
+  </g>
+  <text x="980" y="122" text-anchor="end" font-weight="700" fill="#4fdc78">משימות צד פעילות על המפה: לפחות 4, לכל היותר 6 (סיפורי האזורים + העבודות)</text>
+  <g transform="translate(380,140)">
+   <rect x="0" y="0" width="600" height="34" rx="8" fill="#1d2f40" stroke="#4fdc78"/>
+   <g fill="#4fdc78"><rect x="502" y="4" width="94" height="26" rx="6"/><rect x="404" y="4" width="94" height="26" rx="6"/><rect x="306" y="4" width="94" height="26" rx="6"/><rect x="208" y="4" width="94" height="26" rx="6"/></g>
+   <g fill="#4fdc78" opacity=".4"><rect x="110" y="4" width="94" height="26" rx="6"/><rect x="12" y="4" width="94" height="26" rx="6"/></g>
+   <text x="402" y="23" text-anchor="middle" fill="#0b141c" font-weight="700">1–4: תמיד על המפה</text><text x="110" y="23" text-anchor="middle" fill="#0b141c">5–6: רק אחרי "קבל"</text>
+  </g>
+  <text x="980" y="214" text-anchor="end">יורד מתחת ל-4 (משימה נגמרה) ← מיד אחת חדשה, רק בשטח הפתוח (locked = null), קרוב לשחקן, מאזור / איש קשר אחר.</text>
+  <text x="980" y="240" text-anchor="end">בין 4 ל-6 ← לכל היותר הצעה אחת ממתינה (תקרה להצעות); הצעה שלא התקבלה — לא פעילה: בלי סמן, בלי ניווט, לא נספרת.</text>
+  <text x="980" y="266" text-anchor="end">מה שהשחקן מתחיל בעצמו (F במקום / רשימת העבודות) — נכנס ללוח; כשיש כבר 6 — יוצאת אחת שעוד לא התחילה (לא נחסם).</text>
+ </g>
+</svg></div>
+
+<h2>3. מצב אחד לכל משימה — ממנו ההודעה, הכרטיס, הסמן והניווט</h2>
+<div class="c">
+<svg viewBox="0 0 1000 250" role="img" aria-label="מצבי משימת צד">
+ <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9fb3c3"/></marker></defs>
+ <g font-family="Segoe UI,Arial" font-size="14" text-anchor="middle">
+  <rect x="830" y="70" width="150" height="70" rx="12" fill="#22313d" stroke="#9fb3c3"/><text x="905" y="98" fill="#e8f0f6" font-weight="700">במאגר</text><text x="905" y="120" fill="#9fb3c3" font-size="12">לא נראה בשום מקום</text>
+  <rect x="620" y="70" width="170" height="70" rx="12" fill="#1f3b2a" stroke="#4fdc78"/><text x="705" y="98" fill="#e8f0f6" font-weight="700">על הלוח</text><text x="705" y="120" fill="#9fc7b6" font-size="12">הודעה + כרטיס + סמן</text>
+  <rect x="410" y="70" width="170" height="70" rx="12" fill="#1f3b2a" stroke="#4fdc78" stroke-width="3"/><text x="495" y="98" fill="#e8f0f6" font-weight="700">התקבלה</text><text x="495" y="120" fill="#9fc7b6" font-size="12">+ ניווט, טבעת פועמת</text>
+  <rect x="200" y="70" width="170" height="70" rx="12" fill="#3b2f12" stroke="#ffd36a"/><text x="285" y="98" fill="#e8f0f6" font-weight="700">בביצוע</text><text x="285" y="120" fill="#e9d9a8" font-size="12">שלב נוכחי — יעד הניווט</text>
+  <rect x="20" y="70" width="140" height="70" rx="12" fill="#22313d" stroke="#9fb3c3"/><text x="90" y="98" fill="#e8f0f6" font-weight="700">הושלמה</text><text x="90" y="120" fill="#9fb3c3" font-size="12">יוצאת ← מילוי ל-4</text>
+  <g stroke="#9fb3c3" stroke-width="2" fill="none" marker-end="url(#ar)"><path d="M828 105H794"/><path d="M618 105H584"/><path d="M408 105H374"/><path d="M198 105H162"/><path d="M90 145C90 220 905 220 905 145"/></g>
+  <text x="811" y="96" fill="#9fb3c3" font-size="12">מקום</text><text x="601" y="96" fill="#9fb3c3" font-size="12">קבל</text><text x="391" y="96" fill="#9fb3c3" font-size="12">מגיעים</text>
+  <text x="500" y="236" fill="#9fb3c3" font-size="12">"אחר כך" — הכרטיס נסגר, המשימה נשארת על הלוח; הצעה (5–6) — חוזרת למאגר</text>
+ </g>
+</svg></div>
+
+<div class="grid">
+<div class="c"><b>הכרטיס (קופץ פעם אחת, וגם ביומן ובשרשור ההודעות)</b>
+<svg viewBox="0 0 360 200" role="img" aria-label="כרטיס משימה">
+ <rect x="4" y="4" width="352" height="192" rx="14" fill="#0f2a1e" stroke="#4fdc78" stroke-width="2"/>
+ <circle cx="324" cy="38" r="20" fill="#3f6f96"/><text x="324" y="45" text-anchor="middle" fill="#fff" font-weight="800" font-size="18" font-family="Segoe UI,Arial">ש</text>
+ <g font-family="Segoe UI,Arial" text-anchor="end" fill="#e8f0f6"><text x="294" y="32" font-weight="800" font-size="15">שי מזרחי · משימת צד 3/6</text><text x="294" y="54" font-size="13" fill="#9fc7b6">"לילה בלי חשמל" · E4 · מרכז הבקרה · 900</text>
+ <text x="340" y="88" font-size="13">תקלה בשנאי 2 — הרחובות של E3 ו-E4 בחושך.</text><text x="340" y="108" font-size="12" fill="#9fb3c3">ברכב · 2.4 ק"מ ממך · עד 23:00</text></g>
+ <g font-family="Segoe UI,Arial" font-size="14" font-weight="700" text-anchor="middle">
+  <rect x="268" y="138" width="78" height="40" rx="9" fill="#2f8f6b"/><text x="307" y="163" fill="#fff">קבל</text>
+  <rect x="182" y="138" width="78" height="40" rx="9" fill="#2f6f9f"/><text x="221" y="163" fill="#fff">נווט</text>
+  <rect x="96" y="138" width="78" height="40" rx="9" fill="#5a4a9f"/><text x="135" y="163" fill="#fff">התקשר</text>
+  <rect x="12" y="138" width="78" height="40" rx="9" fill="#3a4a58"/><text x="51" y="163" fill="#fff">אחר כך</text></g>
+</svg>
+<div class="mut">קבל — מתחיל (סיפור אזור: ההודעה הראשונה והיומן; עבודה: ניווט למקום ההתחלה, ושם "להתחיל"). נווט — ניווט בלבד (גם מקבל). התקשר — שיחה קצרה של איש הקשר: מה, איפה ולמה. אחר כך — נסגר.</div></div>
+<div class="c"><b>משימת סיפור = 2–3 משימות משנה בכל סדר</b>
+<table><tr><th>אחרי</th><th>פתוחות יחד (השחקן בוחר)</th><th>ואז</th></tr>
+<tr><td>1-2 הטנדר</td><td>1-3 רישיון · 1-4 הקווים · 1-5 המקרר</td><td>1-6</td></tr>
+<tr><td>2-1 הבקרה</td><td>2-2 המחסן (04:30) · 2-3 המכלית</td><td>2-4</td></tr>
+<tr><td>2-4 מטרו־לוג</td><td>2-5 הקרון · 2-6 המכונית מהאונייה</td><td>2-7</td></tr>
+<tr><td>3-1 המגדל</td><td>3-2 המזוודות · 3-3 המטען · 3-4 הנוסע</td><td>3-5</td></tr>
+<tr><td>4-1 המועדון</td><td>4-2 האגם · 4-3 מבחן שיט</td><td>4-4</td></tr>
+<tr><td>4-4 מזח הדיג</td><td>4-5 המצופים · 4-6 השונית</td><td>4-7</td></tr></table>
+<div class="mut">הסיפור ממשיך רק כשכולן נגמרו. בין משימות (המתנה) — המשימה הבאה נשארת בכרטיס "מתחילה בעוד…", כך שתמיד יש לפחות 1. הנתונים של הפרקים לא משתנים — רק "after" (טבלה בחלק החדש).</div></div>
+</div>
+
+<h2>4. איך בודקים</h2>
+<div class="c"><ul>
+<li><b>יום משחק (הכלי mb_day.js):</b> 288 צעדים של 5 דקות משחק; בכל צעד — הספירות (סיפור 1–3, צד 4–6, הצעות ≤1), ולכל משימה פעילה: כרטיס ביומן + סמן במפה + יעד ניווט שקיים, באותה רשימה. גם בבסיס (S7F298) — כדי להראות את ההבדל במספרים.</li>
+<li><b>roadAudit → mission_board:</b> סימולציה בלי עקבות (מילוי, השלמה, הצעה, אחר כך, טעינה) + story_main_chapter1 עם הקבוצות (כל המשימות, בכל סדר).</li>
+<li>החוסמות: q_ingame, ‏rules_gate, ‏stuckmax 150, ‏people_on_road, ‏0 שגיאות, ‏0 תמונות מוטמעות.</li></ul></div>
+<h2>5. סדר השכבות — "עסוק" אחד (TCBUSY, 17.11)</h2>
+<div class="c"><svg viewBox="0 0 1000 284" role="img" aria-label="סדר השכבות מלמעלה למטה"><rect x="30" y="14" width="940" height="36" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><text x="956" y="37" direction="rtl" text-anchor="start" fill="var(--ink)" font-size="15" font-weight="700">60 · מסך הטעינה / מסך הפתיחה</text><text x="44" y="37" direction="ltr" text-anchor="start" fill="var(--mut)" font-size="13">loading · TCLD · TCO · z 9650</text><rect x="65" y="58" width="870" height="36" rx="9" fill="var(--card)" stroke="var(--story)" stroke-width="2"/><text x="921" y="81" direction="rtl" text-anchor="start" fill="var(--ink)" font-size="15" font-weight="700">50 · סרטון הפתיחה / סרט במסך מלא</text><text x="79" y="81" direction="ltr" text-anchor="start" fill="var(--mut)" font-size="13">opening · TCSHOW · z 9600</text><rect x="100" y="102" width="800" height="36" rx="9" fill="var(--card)" stroke="var(--story)" stroke-width="2"/><text x="886" y="125" direction="rtl" text-anchor="start" fill="var(--ink)" font-size="15" font-weight="700">40 · סצנה של הסיפור</text><text x="114" y="125" direction="ltr" text-anchor="start" fill="var(--mut)" font-size="13">cutscene · TCCUT · z 9500</text><rect x="135" y="146" width="730" height="36" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><text x="851" y="169" direction="rtl" text-anchor="start" fill="var(--ink)" font-size="15" font-weight="700">30 · ההדרכה (הכרטיס שלה על המסך)</text><text x="149" y="169" direction="ltr" text-anchor="start" fill="var(--mut)" font-size="13">tutorial · TCTUT · z 60</text><rect x="170" y="190" width="660" height="36" rx="9" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><text x="816" y="213" direction="rtl" text-anchor="start" fill="var(--ink)" font-size="15" font-weight="700">20 · אירוע אקראי</text><text x="184" y="213" direction="ltr" text-anchor="start" fill="var(--mut)" font-size="13">event · events — set / clear · z 58</text><rect x="205" y="234" width="590" height="36" rx="9" fill="var(--card)" stroke="var(--side)" stroke-width="2"/><text x="781" y="257" direction="rtl" text-anchor="start" fill="var(--ink)" font-size="15" font-weight="700">10 · כרטיס משימה / הצעה (הלוח)</text><text x="219" y="257" direction="ltr" text-anchor="start" fill="var(--mut)" font-size="13">card · MBOARD · z 55</text></svg><div class="mut">שכבה עולה רק כשאין שכבה גבוהה ממנה על המסך (TCBUSY.blocks). מה שנחסם — מחכה ובא אחר כך, לא נזרק. הכרטיס של הלוח הוא השכבה הנמוכה: בזמן טעינה, סרטון, סצנה, הדרכה או אירוע — כרטיס והצעה חדשה מחכים; כרטיס פתוח מתחבא (הזמן שלו לא רץ) וחוזר אחריהם. משימה שנכנסת למילוי ל-4 — נכנסת (הספירה לא נשברת), ההודעה שלה שקטה והכרטיס בתור.</div><div class="mut" style="margin-top:6px">ובסוף מה שנבנה מהסיפור (פרק "בקרוב"): משימת ההמשך — סיפור אזור (או עבודה) נספרת כמשימת הסיפור, כך שתמיד 1 לפחות.</div></div>
+</main></body></html>
