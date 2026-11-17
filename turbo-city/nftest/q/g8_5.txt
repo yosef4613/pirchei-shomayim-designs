@@ -1,0 +1,1110 @@
+back:[[colF,fy,0],[colF,R,22],[GLS,R,26]],
+   east:{node:afNodeEast(),inn:[[SO,R,24],[colF,R,22],[colF,fy,0]],back:[[colF,fy,0],[colF,R,22],[SI,R,24]]}}}
+  return null}
+ if(role==='tug')return{node:afNodeGL(),inn:[[GLN,R,26],[c,R,22],[c,TL,22],[cx,TL,0]],crab:true,mode:'tug',backFrom:t=>t[0]<c+30?[[t[0],t[1],0],[t[0],R,30],[GLS,R,26]]:[[t[0],t[1],0],[c,t[1],24],[c,R,26],[GLS,R,26]]};   // S3b: back along L to the column x 8012, never across the parked rows
+ if(role==='fuel'&&sd.id==='GA3'){const colF=cx+60;return{node:afNodeGL(),inn:[[GLN,R,26],[colF,R,22],[colF,fy,0]],mode:'pivot',back:[[colF,fy,0],[colF,R,22],[GLS,R,26]]}}
+ if(role==='fuel'){const colF=cx+60;return{node:afNodeGL(),inn:[[GLN,R,26],[c,R,22],[c,TL,22],[colF,TL,22],[colF,fy,0]],mode:'pivot',back:[[colF,fy,0],[colF,TL,22],[c,TL,22],[c,R,22],[GLS,R,26]]}}
+ return null;
+}
+
+// S2 FINAL · AIR-22: a passenger door on each side.  Door L is the asset's 'Door' anchor; Door R mirrors it across the centre line
+// (compatibility fallback until the aircraft redesign of GATE-77 brings real Door R anchors).  Each bridge stand names its door (APT_STANDS)
+// and its rotunda stands in line with that door, so the bridge leaves the terminal straight.  A stand without a door falls back to the
+// door away from its ground-service side.
+function g73DoorDy(s,ac,th,ngy,dx,dyL){
+ if(s.door==='L'||s.door==='R')return s.door==='R'?-dyL:dyL;
+ const c=Math.cos(th),sn=Math.sin(th),sv=s.svcSide||-1;
+ for(const dy of [dyL,-dyL]){const x=s.cx+dx*c-dy*sn;if((Math.sign(x-s.cx)||1)!==sv)return dy}
+ return dyL;
+}
+
+// ---- painting --------------------------------------------------------------------------------------------------------------------------------
+// north of the runway strip: mown buffer outside the fence, fence, patrol road inside it (field tiles of E1/F1/G1 cover y −850…)
+function g73PaintPerimeter(g,x0,x1){
+ const Y=APT_Y;g.save();
+ for(let y=-850,i=0;y<Y.FN;y+=62,i++){g.fillStyle=i%2?'rgba(172,185,114,.07)':'rgba(58,85,45,.07)';g.fillRect(x0,y,x1-x0,Math.min(62,Y.FN-y))}
+ g.strokeStyle='rgba(58,77,58,.35)';g.lineWidth=2;g.beginPath();g.moveTo(x0,-760);g.lineTo(x1,-760);g.stroke();             // drainage swale outside the fence
+ g.fillStyle=portPattern('gravel');g.fillRect(x0,Y.PR0,x1-x0,Y.PR1-Y.PR0);g.fillStyle='rgba(0,0,0,.10)';g.fillRect(x0,Y.PR0,x1-x0,2);g.fillRect(x0,Y.PR1-2,x1-x0,2);
+ g.strokeStyle='#52665c';g.lineWidth=1.4;g.beginPath();g.moveTo(x0,Y.FN);g.lineTo(x1,Y.FN);g.stroke();g.fillStyle='#46574f';for(let x=x0;x<x1;x+=30)g.fillRect(x-1.4,Y.FN-1.4,2.8,2.8);
+ if(x0===6000)aptTxt(g,'AIRSIDE · PERIMETER ROAD',6600,(Y.PR0+Y.PR1)/2,9,'rgba(236,232,214,.55)',600);
+ g.restore();
+}
+// approach lighting corridor west of the threshold (outside the chunk grid, as before)
+function g73DrawNorthField(v){
+ const R=APT_APPROACH_REGION;if(!portVis(v,R.x,R.y,R.w,R.h))return;
+ ctx.save();ctx.fillStyle='rgba(172,185,114,.10)';ctx.fillRect(R.x,APT_RWY.cy-60,R.w,120);ctx.strokeStyle='rgba(58,77,58,.35)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(R.x,APT_RWY.cy+150);ctx.lineTo(R.x+R.w,APT_RWY.cy+150);ctx.stroke();ctx.restore();
+}
+function g73PaintConnector(g,c){
+ const Y=APT_Y,x0=c.x-c.w/2;
+ g.fillStyle=portPattern('asphalt');g.fillRect(x0,Y.TS-4,c.w,Y.LN-Y.TS+8);
+ g.fillStyle='rgba(0,0,0,.12)';g.fillRect(x0,Y.TS,3,Y.LN-Y.TS);g.fillRect(x0+c.w-3,Y.TS,3,Y.LN-Y.TS);
+ g.strokeStyle='#e0b93a';g.lineWidth=2.2;g.beginPath();g.moveTo(c.x,Y.TY);g.lineTo(c.x,Y.LY);g.stroke();
+ // fillets: taxiway A centre line ⇄ connector, connector ⇄ taxilane L centre line
+ g.lineWidth=1.8;for(const d of [-1,1]){g.beginPath();g.moveTo(c.x,Y.TY+70);g.quadraticCurveTo(c.x,Y.TY,c.x+d*70,Y.TY);g.stroke();g.beginPath();g.moveTo(c.x,Y.LY-70);g.quadraticCurveTo(c.x,Y.LY,c.x+d*70,Y.LY);g.stroke()}
+ // taxiway edge lights along the connector (blue)
+ g.fillStyle='#58a8e8';for(let y=Y.TS+30;y<Y.LN-10;y+=60)for(const sx of [x0+5,x0+c.w-5]){g.beginPath();g.arc(sx,y,2.2,0,Math.PI*2);g.fill()}
+ aptTxt(g,c.id,c.x+c.w/2+16,(Y.TS+Y.LN)/2,11,'rgba(244,242,232,.75)',700);
+}
+function g77Show(id){return id}   // GATE-77 S5c · owner 11:38: the code ids are the shown names now (was P4 ↔ P6, D-65 (3))   // GATE-77 S5b · D-65: the shown stand names
+function g73PaintTaxiExtra(g){for(const c of G73_CONNECTORS)g73PaintConnector(g,c);g77PaintStrip(g)}
+function g77PaintStrip(g){const S=G77_STRIP;g73PaveRect(g,G77_LG_EXT);g73PaveRect(g,S);g.fillStyle='rgba(0,0,0,.10)';g.fillRect(S.x,S.y,3,S.h);g.fillRect(S.x+S.w-3,S.y,3,S.h);   // GATE-77 S5b · D-71
+ for(const s of aptReady().stands)if(s.tpl==='strip'){aptPaintStand(g,s);g.strokeStyle='#e0b93a';g.lineWidth=1.6;g.beginPath();g.moveTo(s.ngx,APT_Y.TY+40);g.lineTo(s.ngx,s.ngy-70);g.moveTo(s.ngx,s.ngy+14);g.lineTo(s.ngx,APT_Y.LY-30);g.stroke()}
+ aptTxt(g,'LIGHT AIRCRAFT · IN FROM A · OUT TO L',S.x+S.w/2,S.y+S.h-14,7.5,'rgba(244,242,232,.65)',700)}
+function g73DrawTaxiTiles(v){
+ const Y=APT_Y,y0=Y.RS-12,h=1012-y0;
+ for(const [k,x0,x1] of [['e',4860,6000],['f',6000,7200],['g',7200,8080]])if(portVis(v,x0,y0,x1-x0,h))portCached('apt-taxi-'+k,x0,y0,x1-x0,h,g=>{aptPaintTaxi(g);g73PaintTaxiExtra(g)},1.25);
+}
+function g73PaveRect(g,r){g.fillStyle=portPattern('apron');g.fillRect(r.x,r.y,r.w,r.h);g.fillStyle='rgba(0,0,0,.09)';g.fillRect(r.x,r.y,r.w,3)}
+function g73PaintWestExt(g){
+ const r=G73_WEST_EXT;g73PaveRect(g,r);
+ // lead-in lines from taxiway A straight into the west stands; the cargo band east of x 5446 is kept clear (large cargo stand, stage 3)
+ g.strokeStyle='rgba(224,185,58,.75)';g.lineWidth=1.6;
+ for(const s of aptReady().stands)if(s.tpl==='cargoS'){g.beginPath();g.moveTo(s.ngx,APT_Y.TS);g.lineTo(s.ngx,s.ngy);g.stroke();g.lineWidth=3;g.beginPath();g.moveTo(s.ngx-14,s.ngy+4);g.lineTo(s.ngx+14,s.ngy+4);g.stroke();g.lineWidth=1.6}   // S3b: lead-in from A + stop bar
+ aptTxt(g,'WEST CARGO ROW · PUSHBACK ONTO A',5250,APT_Y.TS+40,10,'rgba(244,242,232,.55)',600);g77TwlCurves(g);   /* K-156: the same curves over the apron edge */
+}
+function g73PaintApronExt(g){g73PaveRect(g,G73_PAX_EXT)}
+function g73PaintEastExt(g){
+ g73PaveRect(g,G73_EAST_EXT);
+ // S2: service road from the GLINK to the NE apron (south of the L wing sweep, north of the east-row tails)
+ const N=G73_NE;g.save();g.strokeStyle='rgba(246,244,236,.7)';g.lineWidth=1.3;g.setLineDash([10,8]);
+ for(const y of [N.road-12,N.road+12]){g.beginPath();g.moveTo(7302,y);g.lineTo(N.x+N.w,y);g.stroke()}   // GATE-77 S5b · D-68: straight to the east edge
+ g.setLineDash([]);for(let x=7420;x<7960;x+=180)aptTxt(g,'SERVICE',x,N.road,7,'rgba(246,244,236,.6)',600);g.restore();
+}
+// S3b (AIR-24): NE small-aircraft apron south of taxilane L — live row (nose south, lead-in from L), static row facing it, the tug lane
+// between them, the service column x 8012 from the band road y 590.  The taxiway A east stub of S2 is gone (grass again).
+function g73PaintNE(g){
+ const Y=APT_Y,N=G73_NE,c=N.col,tl=N.tug,e=N.x+N.w-6,y1=N.road-12;
+ g.fillStyle=portPattern('apron');g.fillRect(N.x,N.y,N.w,N.h);g.fillStyle='rgba(0,0,0,.07)';g.fillRect(N.x,N.y+N.h-3,N.w,3);
+ for(const s of aptReady().stands)if(s.zone==='ne'){g.strokeStyle='#e0b93a';g.lineWidth=1.8;g.beginPath();g.moveTo(s.ngx-60,Y.LY);g.quadraticCurveTo(s.ngx,Y.LY,s.ngx,Y.LY+60);g.lineTo(s.ngx,s.ngy);g.stroke();aptPaintStand(g,s)}
+ for(const s of aptReady().stands)if(s.zone==='neS')aptPaintStand(g,s);
+ {const R=N.road,hx=8200,hy0=R+12,hy1=640;   // GATE-77 S5b · D-68: the road is the tug lane (no column, no turn down); the heli path between GA4 and O1
+  g.fillStyle='rgba(60,64,70,.18)';g.fillRect(N.x,R-12,N.w,24);g.fillStyle='rgba(246,244,236,.75)';for(let x=N.x+40;x<e-130;x+=70){g.beginPath();g.moveTo(x,R-5);g.lineTo(x,R+5);g.lineTo(x+7,R);g.closePath();g.fill()}
+  aptTxt(g,'SERVICE · TUG',e-58,R,7,'rgba(246,244,236,.8)',700);
+  g.fillStyle='rgba(60,64,70,.16)';g.fillRect(hx-12,hy0,24,hy1-hy0);g.save();g.strokeStyle='rgba(246,244,236,.75)';g.lineWidth=1.2;g.setLineDash([6,5]);g.beginPath();g.moveTo(hx-12,hy0);g.lineTo(hx-12,hy1);g.moveTo(hx+12,hy0);g.lineTo(hx+12,hy1);g.stroke();g.restore();
+  g.fillStyle='rgba(246,244,236,.8)';for(let y=hy0+22;y<hy1-12;y+=38){g.beginPath();g.moveTo(hx-5,y);g.lineTo(hx+5,y);g.lineTo(hx,y+7);g.closePath();g.fill()}aptTxt(g,'HELI',hx,hy1-8,6.5,'rgba(246,244,236,.85)',700)}
+ g77PaintO1(g);/* GATE-77 S7-b · p198 */aptTxt(g,'NE GA APRON',N.x+N.w/2,N.y+N.h-12,10,'rgba(244,242,232,.6)',700);
+}
+function g73DrawNE(v){const N=G73_NE,h=Math.max(N.road,N.y+N.h)+30-Y0NE;if(portVis(v,7990,Y0NE,410,h)){aptReady();portCached('g73-ne',7990,Y0NE,410,h,g73PaintNE,1.5)}}   // S5b: the whole NE apron (the road moved north)
+const Y0NE=APT_Y.LS-6;   // S3b: the NE apron starts south of L
+function g73PaintTaxilane(g){
+ const Y=APT_Y;g.save();
+ g.strokeStyle='rgba(224,185,58,.85)';g.lineWidth=1.4;for(const y of [Y.LN+3,Y.LS-3]){g.setLineDash([]);g.beginPath();g.moveTo(G73_L.x0,y);g.lineTo(G73_L.x1,y);g.stroke()}
+ g.strokeStyle='#e0b93a';g.lineWidth=2.4;g.beginPath();g.moveTo(G73_L.x0,Y.LY);g.lineTo(G73_L.x1,Y.LY);g.stroke();
+ // lead-in lines from L into the stands south of it
+ g.lineWidth=1.8;for(const s of aptReady().stands)if((s.tpl==='bridge'||s.tpl==='apronSW')&&s.zone!=='ne'){g.beginPath();g.moveTo(s.ngx,Y.LY);g.lineTo(s.ngx,Math.max(Y.LS+20,s.ngy-150));g.stroke()}
+ for(let x=6200;x<G73_L.x1-100;x+=600)aptTxt(g,'L',x,Y.LY-12,12,'rgba(244,242,232,.8)',800);
+ g.restore();
+}
+
+// ---- S2 · stand × aircraft clearance audit (AIR-04 / AIR-08) -------------------------------------------------------------------------------
+// Every outdoor stand × every accepted aircraft, full wing span (aplEnv: fuselage, wing / APTT_WT, tail):
+//  · parked against every other stand (any accepted aircraft): no overlap; jet-bridge neighbours keep ≥ 30 px wingtip to wingtip;
+//  · parked against buildings, hangar doors, service alleys, perimeter road (aplAudit) and against aircraft taxiing on A (CG, west of A2) / L;
+//  · the arrival and the pushback of every live stand × aircraft swept every 0.25 s against all parked neighbours (≥ 6 px = reservation margin);
+//  · jet bridges: at an angle to the front door (GATE-77 S5c · D-78: every accepted type 6°–40°), reach ≤ 165 px (or the stand's own), cab beside the door, never over a pocket / bus bay;  baggage pockets clear of every bridge-stand shape (OBB).
+const G73_REQ={bridgeWing:30,margin:6,bridgeLen:165,bridgeDeg:3};
+// stage 2b (approved layout): C1 turns nose-south at the west end, C2 next to it, GA3/GA4/O1 move to the NE apron.  Findings that involve
+// those stands are reported as 'pending2b' in stage 2 (the v1.94 west-apron geometry), they fail the audit from stage 2b on.
+const G73_PENDING_2B=new Set(G73_SCOPE.westRow==='v194'?['C1','C2','GA3','GA4','O1']:[]);   // S3a kept the v1.94 west row; S3b rebuilt it: the set is empty, every finding counts
+const g73Span=ac=>{const g=apttAcGeom(ac);return(g.W[3]-g.W[2])/2/APTT_WT};
+function g73Gap(a,b){if(apttObbHit(a,b,0))return 0;let lo=0,hi=400;if(apttObbHit(a,b,hi))for(let i=0;i<14;i++){const m=(lo+hi)/2;if(apttObbHit(a,b,m))hi=m;else lo=m}else return hi;return hi}
+function g73EnvGap(A,B){let m=1e9;for(const a of A)for(const b of B){if(a.x0>b.x1+60||b.x0>a.x1+60||a.y0>b.y1+60||b.y0>a.y1+60)continue;m=Math.min(m,g73Gap(a,b))}return m}
+function g73StandAudit(){
+ aptReady();const issues=[],pending=[],R=G73_REQ,S=APL.stands.filter(s=>!s.indoor),env=(s,ac)=>{const v=g77StandView(s,ac);return aplEnv(ac,v.ngx,v.ngy,v.th)};
+ const add=(msg,...ids)=>(ids.some(id=>G73_PENDING_2B.has(String(id).split('/')[0]))?pending:issues).push(msg);
+ const pairs={},standGap={};
+ for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){const a=S[i],b=S[j];if(Math.abs(a.ngx-b.ngx)>700||Math.abs(a.ngy-b.ngy)>700)continue;
+  let m=1e9;for(const p of a.accepts)for(const q of b.accepts){if(g77Mars(a,p,b)||g77Mars(b,q,a))continue;m=Math.min(m,g73EnvGap(env(a,p),env(b,q)))}if(m>=400)continue;
+  const k=a.id+'/'+b.id;pairs[k]=Math.round(m);standGap[a.id]=Math.min(standGap[a.id]??1e9,Math.round(m));standGap[b.id]=Math.min(standGap[b.id]??1e9,Math.round(m));
+  const need=a.tpl==='bridge'&&b.tpl==='bridge'?R.bridgeWing:R.margin;if(m<need)add('stand-gap '+k+' '+m.toFixed(0)+'<'+need,a.id,b.id)}
+ // parked against aircraft taxiing on A: the CG (span 356) uses A west of A2 (A1 · B1 · A2); NE apron: only small aircraft on the A east stub
+ const Y=APT_Y,cg=g73Span('AC-CG-01'),vsA={};
+ for(const s of S)for(const ac of s.accepts){const y0=Math.min(...env(s,ac).map(b=>b.y0)),x0=Math.min(...env(s,ac).map(b=>b.x0));if(y0>Y.LN)continue;
+  const big=x0<APTT_X.A2+200?cg:g73Span('AC-BJ-01'),gap=y0-(Y.TY+big);vsA[s.id]=Math.min(vsA[s.id]??1e9,Math.round(gap));if(gap<R.margin)add(s.id+'/'+ac+':into-taxiway-A-sweep '+gap.toFixed(0),s.id)}
+ // arrival + pushback sweeps of every live stand against the parked neighbours (every accepted aircraft of the neighbour)
+ const sweep={};let samples=0;
+ for(const s of S){if(!s.live)continue;const nb=S.filter(o=>o!==s&&Math.hypot(o.ngx-s.ngx,o.ngy-s.ngy)<900);
+  for(const ac of s.accepts){let arr,D;try{arr=aoArrLeg(s,ac);D=aoDepLegs(s,ac)}catch(e){issues.push(s.id+'/'+ac+':route-error '+e.message);continue}
+   for(const [kind,leg,t0] of [['arr',arr,Math.max(0,arr.dur-45)],['push',D.push,0],['taxi',D.taxi,0]]){if(!leg)continue;
+    let m=1e9,who='';for(let t=t0;t<=leg.dur;t+=.25){const p=leg.pose(t);if(!p||p[3]>2)continue;samples++;const me=aplEnv(ac,p[0],p[1],p[2]);
+     for(const o of nb){if(Math.abs(o.ngx-p[0])>600||Math.abs(o.ngy-p[1])>600)continue;for(const q of o.accepts){if(g77Mars(s,ac,o)||g77Mars(o,q,s)||(o.large&&g77MarsLane(o.id,q)&&s.tpl==='apronSW'&&kind==='taxi'))continue;const g=g73EnvGap(me,env(o,q));if(g<m){m=g;who=o.id+'/'+q.slice(3,5)}}}}
+    const k=s.id+'/'+ac.slice(3,5)+':'+kind;if(m<1e9)sweep[k]=Math.round(m)+(m<60?' ('+who+')':'');if(m<R.margin)add('sweep '+k+' ✕ '+who+' '+m.toFixed(0),s.id,who)}}}
+ // jet bridges (S2 FINAL bridge fix): straight out of the terminal face with the cab beside the door — the rotunda on the terminal,
+ // the design aircraft at 0° (< 0.5°), every accepted aircraft ≤ 3°, reach ≤ 165, cab centre level with the door, tunnel and cab clear of
+ // the fuselage (touching allowed: ≥ −1.5 px), never over the stand's own ground-service side.  Baggage pockets vs the bridge stands' shapes.
+ const bridges={};
+ const g77Bays=APL.bays.filter(b=>b.zone==='F2'&&(b.kind==='BT'||b.kind==='AB')),g77BrBay={};   // GATE-77 S5c · D-78
+ for(const st of APT_STANDS){if(st.cargo)continue;const sd=S.find(q=>q.id===st.id);let L=0,D=0,Dm=1e9,D0=0,sides=new Set(),svcHit=1e9,body=1e9,lev=0;
+  const sv=sd.svcSide||-1,cols=[36,58,100,135].map(o=>st.cx+o*sv),tb=aptFp(aptB(st.term)),nat=APTT_SPEC.jb.an.find(q=>q[0]==='Terminal End')[2]-APTT_SPEC.jb.an.find(q=>q[0]==='Door End')[2];
+  if(st.gateX-15<tb.x||st.gateX+15>tb.x+tb.w)issues.push(st.id+':bridge-off-terminal');
+  for(const ac of sd.accepts){const vw=g77StandView(sd,ac),vcx=vw.viewFor?vw.cx:st.cx,vcols=vw.viewFor?[36,58,100,135].map(o=>vcx+o*(vw.svcSide||-1)):cols,B=f2BridgeGeometry(st,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},1),Pk=g77BridgePose(st,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},1),vx=B.dock[0]-B.terminal[0],vy=B.dock[1]-B.terminal[1],len=Pk.dk?Pk.dk.D+G77_K72.cabD:Math.hypot(vx,vy),deg=Pk.dk?Math.abs(Pk.dk.al)*180/Math.PI:Math.abs(Math.atan2(vx,-vy))*180/Math.PI,a=Math.atan2(vy,vx);   // K-72
+   L=Math.max(L,len);D=Math.max(D,deg);Dm=Math.min(Dm,deg);if(ac===(sd.first||st.aircraft))D0=deg;{const P=g77BridgePose(st,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},1),P0=g77BridgePose(st,null,0);for(const [Q,k] of [[P,'docked'],[P0,'rest']]){const br=apttObb(Q.R[0],Q.R[1],Q.th,[-10,Q.L,-8,8],'Q','br'),bc=apttObb(Q.cab[0],Q.cab[1],Q.ca,[-9,9,-10,10],'Q','cab');for(const b of g77Bays){const o=apttObb(b.x,(b.y0+b.y1)/2,0,[-b.w/2,b.w/2,-(b.y1-b.y0)/2,(b.y1-b.y0)/2],'V',b.id),g=Math.min(g73Gap(br,o),g73Gap(bc,o)),kk=st.id+'/'+b.id;g77BrBay[kk]=Math.min(g77BrBay[kk]??1e9,Math.round(g));if(g<2)issues.push(st.id+':bridge-over-bay '+b.id+' ('+k+(k==='docked'?' '+ac.slice(3,5):'')+') '+g.toFixed(0))}}}const side=B.door[0]<vcx?-1:1;sides.add((side<0?'R':'L')===(vw.door||sd.door||'L')?(sd.door||'L'):'?'+ac);
+   const k=B.reach/nat,ce=B.reach+APT_JB_CABC*k;lev=Math.max(lev,Pk.dk?Math.hypot(Pk.front[0]-Pk.dk.door[0],Pk.front[1]-Pk.dk.door[1]):Math.abs(B.terminal[1]+Math.sin(a)*ce-B.door[1]));   // cab centre level with the door
+   // clearance to the fuselage box (nose-south stands): tunnel half width 10 up to the cab, cab half width 11 to its bumper
+   const g=apttAcGeom(ac);{const Pq=g77BridgePose(st,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},1),fu=apttObb(vcx,vw.ngy??sd.ngy,sd.th,g.F,'F',ac),tun=apttObb(Pq.R[0],Pq.R[1],Pq.th,[0,Pq.L,-7,7],'Q','tun'),cab=apttObb(Pq.cab[0],Pq.cab[1],Pq.ca,[-9,9,-10,10],'Q','cab');
+    body=Math.min(body,g73Gap(tun,fu));if(apttObbHit(cab,fu,-1.5))body=Math.min(body,-2)}   // GATE-77 S5c · D-78: the angled tunnel and the cab as boxes
+   // service-side rule: the bridge (half width 12, rotunda to bumper) never lies over the stand's own ground-service columns (vehicle half width 11)
+   const br=apttObb(Pk.R[0],Pk.R[1],0,[-G77_K72.rr,G77_K72.rr,-G77_K72.rr,G77_K72.rr],'Q','br'),bw=apttObb(Pk.W[0],Pk.W[1],Pk.th,[-3,3,-9,9],'Q','bw');   // K-72: the rotunda's column and the wheels
+   const {fy}=afPos(vw,ac);for(const x of vcols){const col=apttObb(x,(fy-60+AF.L)/2,0,[-11,11,-(AF.L-fy+60)/2,(AF.L-fy+60)/2],'Q','col');svcHit=Math.min(svcHit,g73Gap(br,col),g73Gap(bw,col))}}
+  bridges[st.id]={terminal:st.term.slice(-1),door:[...sides].join('/'),baseX:Math.round(st.gateX*10)/10,service:sv<0?'W':'E',len:Math.round(L),deg:+D0.toFixed(2),degMin:+Dm.toFixed(1),degMax:+D.toFixed(1),cabLevel:+lev.toFixed(1),bodyGap:+body.toFixed(1),serviceGap:Math.round(svcHit)};
+  if(L>(G77_BR_LEN[st.id]||R.bridgeLen))issues.push(st.id+':bridge-reach '+L.toFixed(0));
+  if(Dm<(G77_BR_MIN_AT[st.id]??G77_BR_MIN)||D>G77_BR_MAX)issues.push(st.id+':bridge-angle '+Dm.toFixed(1)+'…'+D.toFixed(1)+'° (range '+G77_BR_MIN+'–'+G77_BR_MAX+')');   // GATE-77 S5c · D-78: at an angle, not along the fuselage
+  if(lev>1)issues.push(st.id+':cab-not-at-door '+lev.toFixed(1));
+  if(body<1)issues.push(st.id+':bridge-over-fuselage '+body.toFixed(1));
+  if(sides.size!==1||[...sides][0]!==(sd.door||'L'))issues.push(st.id+':door-side '+[...sides].join('/'));
+  if(svcHit<1)issues.push(st.id+':bridge-over-service-side')}
+ const pocket={};
+ for(const b of APL.bays.filter(b=>b.zone==='F2'&&b.kind==='BT')){const o=apttObb(b.x,(b.y0+b.y1)/2,0,[-b.w/2,b.w/2,-(b.y1-b.y0)/2,(b.y1-b.y0)/2],'V',b.id);
+  let m=1e9;for(const s of S.filter(s=>s.tpl==='bridge'))for(const ac of s.accepts)m=Math.min(m,g73EnvGap([o],env(s,ac)));pocket[b.id]=Math.round(m);if(m<R.margin)issues.push(b.id+':pocket-in-stand '+m.toFixed(0))}
+ const la=aplAudit();for(const q of la.issues)issues.push('layout '+q);
+ return{ok:!issues.length,issues,pending2b:pending,bridgeStands:APT_STANDS.filter(s=>!s.cargo).map(s=>s.id+'@'+Math.round(s.cx)),standGaps:pairs,vsTaxiwayA:vsA,sweeps:sweep,samples,bridges,pockets:pocket,bridgeBays:g77BrBay}
+}
+// ---- QA ----------------------------------------------------------------------------------------------------------------------------------------
+function g73Paved(){
+ const Y=APT_Y,R=APT_RWY,T=APT_TWY,r=(x0,y0,x1,y1,id)=>({id,x0,y0,x1,y1});
+ const out=[r(R.x0-90,R.cy-R.w/2,R.x1+90,R.cy+R.w/2,'RWY'),r(T.x0-40,T.cy-T.w/2,T.x1+40,T.cy+T.w/2,'TWY'),
+  r(G73_WEST_EXT.x,G73_WEST_EXT.y,G73_WEST_EXT.x+G73_WEST_EXT.w,G73_WEST_EXT.y+G73_WEST_EXT.h,'WEST-EXT'),r(G73_PAX_EXT.x,G73_PAX_EXT.y,G73_PAX_EXT.x+G73_PAX_EXT.w,G73_PAX_EXT.y+G73_PAX_EXT.h,'PAX-EXT'),
+  r(G73_EAST_EXT.x,G73_EAST_EXT.y,G73_EAST_EXT.x+G73_EAST_EXT.w,G73_EAST_EXT.y+G73_EAST_EXT.h,'EAST-EXT'),
+  r(5400,394,6020,845,'CARGO'),r(G77_LG_EXT.x,G77_LG_EXT.y,G77_LG_EXT.x+G77_LG_EXT.w,G77_LG_EXT.y+G77_LG_EXT.h,'LARGE'),r(G77_STRIP.x,G77_STRIP.y,G77_STRIP.x+G77_STRIP.w,G77_STRIP.y+G77_STRIP.h,'STRIP'),r(G73_NE.x,G73_NE.y,G73_NE.x+G73_NE.w,G73_NE.y+G73_NE.h,'NE'),r(6020,394,7236,772,'APRON'),r(APT_GLINK.x-APT_GLINK.w/2,APT_GLINK.y0,APT_GLINK.x+APT_GLINK.w/2,APT_GLINK.y1,'GLINK'),r(G77_YARD.x0,G77_YARD.y0,G77_YARD.x1,G77_YARD.y1,'YARD')];
+ for(const l of APT_LINKS)out.push(r(l.x-l.w/2,l.y0,l.x+l.w/2,l.y1,l.id));
+ for(const c of G73_CONNECTORS)out.push(r(c.x-c.w/2,Y.TS,c.x+c.w/2,Y.LN,c.id));
+ const Z=APL.zones;for(const z of [Z.wApron,Z.eBlock,Z.hard])out.push(r(z.x,z.y,z.x+z.w,z.y+z.h,'Z'));
+ return out}
+// S4 · AIR-10 belt-loader homes + the G2 tug pitch
+function g73YardAudit(){const A=aptReady(),issues=[],bl=A.bays.filter(b=>b.kind==='BL'),pt=A.bays.filter(b=>b.kind==='PT').sort((a,b)=>a.x-b.x),L=A.lanes,ry=A.yardRows.Y;
+ if(bl.length!==4)issues.push('belt-loader-bays:'+bl.length);const BLx=63,BLy=19;   // a belt loader ≈ 8.5 m × 2.5 m → 63 × 19 px
+ for(const b of bl){if(b.row==='HS'){const D=s6aDimOf('BL')||[56,15];if(b.x1-b.x0<D[1]+8||b.y1-b.y0<D[0]+10)issues.push('belt-loader-bay-small:'+b.id);if(b.y1>AF.HW-10)issues.push('belt-loader-in-lane:'+b.id);continue}if(b.x1-b.x0<BLy+6||b.y1-b.y0<BLx+10)issues.push('belt-loader-bay-small:'+b.id);if(b.y0<L.I+10||b.y1>L.O2-10)issues.push('belt-loader-in-lane:'+b.id)}
+ let pitch=1e9;for(let i=1;i<pt.length;i++)pitch=Math.min(pitch,pt[i].x-pt[i-1].x);if(pitch<34)issues.push('pt-pitch:'+pitch);
+ const rowY=A.bays.filter(b=>b.row==='Y').sort((a,b)=>a.x0-b.x0);for(let i=1;i<rowY.length;i++)if(rowY[i].x0<rowY[i-1].x1-.01)issues.push('row-Y-overlap:'+rowY[i].id);if(rowY.at(-1).x1>8340)issues.push('row-Y-into-spine');
+ return{ok:!issues.length,issues,beltLoaderBays:bl.map(b=>b.id+'@'+b.x),ptPitch:pitch,rowY:rowY.map(b=>b.id).join(' ')}}
+// S4 · AIR-20 lock check: AC-MW-01 (54 × 48 m ≈ 403 × 359 px; the aircraft itself is built in GATE-77) at P1, scaled from the NB about the nose gear
+const G73_MW={len:403,span:359,stopNg:640};
+function g73P1LargeAudit(){aptReady();const issues=[],g=apttAcGeom('AC-NB-01'),nbHalf=(g.W[3]-g.W[2])/2/APTT_WT,kL=G73_MW.len/(g.nose-g.F[0]),half=G73_MW.span/2,P1=APL.stands.find(s=>s.id==='P1'),P2=APL.stands.find(s=>s.id==='P2'),C3=APL.stands.find(s=>s.id==='C3');
+ const acHalf=id=>{const q=apttAcGeom(id);return(q.W[3]-q.W[2])/2/APTT_WT};
+ const at=ng=>{const nose=ng+g.nose*kL,tail=ng+g.F[0]*kL,wy0=ng+g.W[0]*kL,wy1=ng+g.W[1]*kL;
+  const gapP2=Object.fromEntries(P2.accepts.map(a=>[a.slice(3,5),Math.round((P2.cx-acHalf(a))-(P1.cx+half))]));
+  const c3=C3?aplEnv('AC-CG-01',C3.ngx,C3.ngy,C3.th).map(aplBox):[],c3x1=Math.max(...c3.map(b=>b.x1)),c3y0=Math.min(...c3.map(b=>b.y0)),c3y1=Math.max(...c3.map(b=>b.y1));
+  const pa=F2_POCKETS.A.bays.map(x=>x-10);
+  return{ng,noseY:Math.round(nose),noseToServiceRoad:Math.round(AF.L-12-nose),noseToBridgeLine:Math.round(APT_BRIDGE_Y-nose),tailY:Math.round(tail),tailIntoLSweep:Math.round(APT_Y.LY+nbHalf-tail),
+   wing:[Math.round(P1.cx-half),Math.round(P1.cx+half),Math.round(wy0),Math.round(wy1)],gapP2,fuselageToPocketA:Math.round(Math.min(...pa)-(P1.cx+21)),
+   gapC3:C3?(wy1<c3y0||wy0>c3y1?'different rows':Math.round((P1.cx-half)-c3x1)):null}};
+ const std=at(P1.ngy),stop=at(G73_MW.stopNg),L1=[5950,6420],tailX=[P1.cx-54,P1.cx+54];
+ const l1Covers=tailX[0]>=L1[0]&&tailX[1]<=L1[1];if(!l1Covers)issues.push('L1-does-not-cover-tail');if(stop.noseToServiceRoad<10)issues.push('mw-nose-at-service-road');
+ for(const k of ['RJ','TP'])if((stop.gapP2[k]??99)<15)issues.push('p2-'+k+'-gap');
+ return{ok:!issues.length,issues,mw:G73_MW,standardStop:std,largeStop:stop,l1:{range:L1,coversTail:l1Covers},
+  verdict:'P1 Large: stop the nose gear at y '+G73_MW.stopNg+' (nose '+stop.noseToServiceRoad+' px off the service road), close L1 (tail '+stop.tailIntoLSweep+' px inside the L wing sweep), P2 SAFETY BLOCK for NB (wing overlap '+(-stop.gapP2.NB)+' px); P2 may stay open for RJ/TP ('+stop.gapP2.RJ+'/'+stop.gapP2.TP+' px)'}}
+// S4 · GATE-73 geometry lock: the live geometry must equal the locked snapshot below; any later move has to change the lock (and the plan) on purpose
+function g73LockSnapshot(){const A=aptReady(),r=v=>Math.round(v*100)/100,R=o=>o&&{x:r(o.x),y:r(o.y),w:r(o.w),h:r(o.h)};
+ return{runway:[APT_RWY.cy,APT_RWY.w,APT_RWY.x0,APT_RWY.x1],taxiwayA:[APT_TWY.cy,APT_TWY.w,APT_TWY.x0,APT_TWY.x1],y:{...APT_Y},L:[G73_L.x0,G73_L.x1],
+  connectors:G73_CONNECTORS.map(c=>[c.id,c.x,c.w]),lines:{fence:APT_FENCE_Y,stand:APT_STAND_Y,bridge:APT_BRIDGE_Y,e2WestFence:EW2_FENCE_Y,serviceL:AF.L,frontage:F2_RD.y,cargoLane:CARGO_W.lane},
+  stands:A.stands.map(s=>[s.id,r(s.ngx),r(s.ngy),r(s.th),s.tpl,s.zone,s.accepts.join('/'),s.live!==false]),
+  zones:Object.fromEntries(['wApron','eBlock','hard','ne','yard','heli','perim'].map(k=>[k,R(A.zones[k])])),
+  areas:{emergency:[G73_EM.x,G73_EM.y,G73_EM.w,G73_EM.h],truckYard:R(E2_TRUCK_YARD),trainingPad:R(EW2_TRAIN_YARD),towGate:[EW2_TOW.gate.x0,EW2_TOW.gate.x1],pWestN:R(EW2_PWN),cargoGate:[5684,5744]},
+  pockets:Object.fromEntries(Object.entries(F2_POCKETS).map(([k,P])=>[k,[...P.bays,P.exitX]])),
+  bays:A.bays.filter(b=>b.zone!=='F2'&&b.zone!=='W').map(b=>[b.id,r(b.x),r(b.w),r(b.y0),r(b.y1)]),
+  roads:[NODES.length,EDGES.length]}}
+// int289: "roads" 92/103 → 99/110 after the merge of S12 (+7 nodes / +7 edges of the north); computed, to be measured in the game
+// S16: "roads" re-baselined 97/107 → 97/109 (the landside of the field by the map: 9 old nodes / 9 old edges out, 9 nodes / 11 edges in); no airport key changed
+// int287: "roads" re-baselined 97/107 → 92/101 after the merge of S10 ב (E6 of the map; measured in the game); no airport key changed
+// s16b: "roads" 92/101 (int287) → 92/103 (S16: +2 קטעים של צד היבשה של המפה; הצמתים 9 יצאו ו-9 נכנסו)
+// int286: "roads" re-baselined after the merge of S11 + S10 א → 97/107 (measured in the game); no airport key changed
+// S11: "roads" re-baselined 117/134 → 104/117 (A6 / B6: 16 צמתים ו-21 קטעים ישנים יצאו, 3 צמתים ו-4 קטעים של המפה נכנסו)
+// S10 א (המשך): "roads" re-baselined 115/130 → 112/124 (PT-M and the two temporary links to B6 out — the owner, 10.11); no airport key changed
+// S10 א: "roads" re-baselined 117/134 → 115/130 (C6 / D6: the old port roads out, the map's port roads in); no airport key changed
+// S9 · S7F268: "roads" re-baselined 130/151 → 117/134 (E4 / E5: the old roads, their nodes and TMP-S6-4 out — the map); no airport key changed
+// GATE-75: "roads" re-baselined 144/181 → 146/183 (+2 port nodes / +2 port edges: the C6 west quay link); no airport key changed
+const G73_LOCK={"runway":[-430,240,4950,8250],"taxiwayA":[-68,120,4900,8030],"y":{"RY":-430,"RN":-550,"RS":-310,"SN":-610,"SS":-250,"TY":-68,"TN":-128,"TS":-8,"FN":-760,"PR0":-745,"PR1":-715,"LY":274,"LN":234,"LS":314},"L":[5950,8345],"connectors":[["B1",5990,80],["A2S",6600,110],["B2",7276,80],["A3S",7950,110]],"lines":{"fence":944,"stand":660,"bridge":768,"e2WestFence":725,"serviceL":734,"frontage":1090,"cargoLane":700},"stands":[["P1",6096,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01",true],["P2",6430,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01/AC-QJ-01",true],["P3",6732,660,1.57,"bridge","apron","AC-NB-01/AC-RJ-01/AC-TP-01/AC-QJ-01",true],["P4",7055,660,1.57,"bridge","apron","AC-MW-01/AC-LG-01",true],["C1",5080,480,1.57,"cargoS","cargoW","AC-CG-01",true],["C2",5390,515,1.57,"cargoS","cargoW","AC-TP-01/AC-TB-01",true],["C3",5700,480,1.57,"cargoS","cargoW","AC-CG-01",true],["O2",8130,434.34,1.57,"apronSW","ne","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA3",8270,434.34,1.57,"apronSW","ne","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA4",8130,530,-1.57,"apronSW","neS","AC-PR-01",false],["GA1",7389,729.34,1.57,"apronSW","east","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["GA2",7514,729.34,1.57,"apronSW","east","AC-BJ-01/AC-PR-01/AC-LT-01/AC-CN-01/AC-AM-01",true],["P5",7680,744,1.57,"apronSW","east","AC-RJ-01/AC-TP-01",true],["P6",7926,745,1.57,"apronSW","east","AC-NB-01/AC-RJ-01/AC-QJ-01",true],["GA7",7552,150,1.57,"strip","strip","AC-PR-01/AC-LT-01",true],["GA8",7645,150,1.57,"strip","strip","AC-PR-01/AC-LT-01",true],["M1",7505.66,974.83,-1.57,"indoor","hangar","AC-BJ-01",false],["M2",7678.43,975.66,-1.57,"indoor","hangar","AC-PR-01",false],["M3",7869.37,975.66,-1.57,"indoor","hangar","AC-PR-01",false]],"zones":{"wApron":{"x":4805,"y":604,"w":595,"h":120},"eBlock":{"x":7316,"y":496,"w":1019,"h":504},"hard":{"x":7236,"y":1000,"w":1099,"h":135},"ne":{"x":8045,"y":314,"w":300,"h":300},"yard":{"x":7869,"y":1158,"w":531,"h":342},"heli":{"x":7885,"y":1520,"w":510,"h":170},"perim":{"x":8352,"y":-280,"w":46,"h":1440}},"areas":{"emergency":[8072,-108,272,314],"truckYard":{"x":5436,"y":944,"w":310,"h":206},"trainingPad":{"x":4832,"y":730,"w":542,"h":130},"towGate":[4870,4970],"pWestN":{"x":4832,"y":874,"w":484,"h":186},"cargoGate":[5684,5744]},"pockets":{"A":[6201,6221,6259],"B":[6531,6551,6628],"D":[7182,7202,7301],"C":[6573,6595,6628]},"bays":[["Y-FT1",7942,36,1190,1280],["Y-FT2",7978,36,1190,1280],["Y-FT3",8014,36,1190,1280],["Y-FT4",8050,36,1190,1280],["Y-FT5",8086,36,1190,1280],["Y-SH1",8122,36,1190,1280],["Y-SH2",8158,36,1190,1280],["Y-SV1",8192,32,1190,1280],["Y-SV2",8224,32,1190,1280],["Y-RX1",8274,52,1190,1280],["Y-RX2",8326,52,1190,1280],["Y-BL1",7938,28,1320,1410],["Y-BL2",7966,28,1320,1410],["Y-BT1",7992,24,1320,1410],["Y-BT2",8016,24,1320,1410],["Y-BT3",8040,24,1320,1410],["Y-PT1",8073,34,1320,1410],["Y-PT2",8107,34,1320,1410],["Y-PT3",8141,34,1320,1410],["Y-PT4",8175,34,1320,1410],["Y-PT5",8209,34,1320,1410],["Y-PT6",8243,34,1320,1410],["Y-MX1",8283,34,1320,1410],["Y-MX2",8317,34,1320,1410],["G2-MS1",8230,70,813,835],["G2-MS2",8230,70,841,863],["G2-MS3",8230,70,869,891],["G2-MS4",8230,70,897,919],["H-BL3",7336,26,1018,1086],["H-BL4",7392,26,1018,1086],["EM-AR1",8099,46,-20,76],["EM-AR2",8145,46,-20,76],["EM-AR3",8191,46,-20,76],["EM-RES",8237,46,-20,76],["EM-EMS1",8093,34,130,202],["EM-EMS2",8127,34,130,202],["EM-POL1",8158,28,130,202],["EM-POL2",8186,28,130,202],["N-PT1",7346,34,830,900],["N-PT2",7382,34,830,900],["N-PT3",7418,34,830,900]],"roads":[127,139]};   /* p572 (S7): +J06_42 +J12_42 +J18_42 −9 of the old B5; +7 (CL-W/4, LC-A5/2, LC-SQ/1 ×2, CL-SW/1 ×2, CL-SW/2) −12 of the old B5 −TMP-S6-3 */   /* p560: −E3-NW −E3-NE +E3-GJ +E3-GATE; −E3-WEST −E3-NORTH −E3-EAST +E3-SOUTH-E +LC-E3N (E3 — המסוף) */   /* p522r: −J371_34 −CL-T2E +PG-N1 +CL-PGN (רחוב שער הנמל חזר, חד-סטרי) */   /* p501: S6 — −12 צמתים +J25_42 +J31_42 +J385_42; −22 רחובות +10 קטעים של המפה +TMP-S6-3 +TMP-S6-4 */   /* p477: 135/163 → 132/158 — S5: −C4I −C4J −C4E −D4C −D4D −C4M −C4K +J31_34 +J385_34 +E31_28 +E385_28; −8 דרכים פנימיות −C4-RC-C −C4-RC-S +CL-T1/2/3 +LC-C4 +LC-D4 */   /* p472: 141/171 → 140/169 — D3 של המפה (S4): −E0 −D3A1 −D3A3 +D3L +E39_19; −D3-RM-W −D3-RM-C −D3-AUTO-N −D3-AUTO-W +LC-D3 +LC-D3V */   /* p471: 139/171 → 141/171 — C3 of the map (S4): −E1 −E3 +J31_16 +N31 +E31_23 +ARN-E; −RM-LOOP −RM-E −V-N −V-E +C2-ARN-W +C2-ARN-E +C2-LC-N +LC-C3 */   /* p467: 140/172 → 139/171 — the stub of R-MID at B3 (W0, RM-W) out; no airport key changed */   /* p461: 143/176 → 140/172 — B3 S2 */   /* p429: re-baselined 146/183 → 143/176 — B4 S1 (−6 / +3 nodes, −13 / +6 edges); no airport key changed */   // locked 14.10.2026 · GATE-73 S4
+function g73LockAudit(){if(!G73_LOCK)return{ok:false,issues:['no-lock'],items:0};const now=g73LockSnapshot(),issues=[];let items=0;
+ for(const k of Object.keys(G73_LOCK)){items++;if(JSON.stringify(now[k])!==JSON.stringify(G73_LOCK[k]))issues.push(k)}
+ for(const k of Object.keys(now))if(!(k in G73_LOCK))issues.push('unlocked:'+k);
+ return{ok:!issues.length,issues,items,stands:G73_LOCK.stands.length,bays:G73_LOCK.bays.length,locked:'GATE-73 S4'}}
+function g73Audit(){
+ aptReady();
+ const issues=[],Y=APT_Y,R=APT_RWY,T=APT_TWY,half=id=>{const g=apttAcGeom(id);return g.W?(g.W[3]-g.W[2])/2/APTT_WT:0};
+ // runway system in the north row, taxiway A + links widened
+ if(R.cy!==-430||R.w!==240||R.x0!==4950||R.x1!==8250)issues.push('runway-lock');if(T.cy!==-68||T.w!==120)issues.push('taxiway-lock');
+ if(Y.SN<Y.FN+100||Y.SS>0)issues.push('strip-outside-north-row');if(APT_LINKS.some(l=>l.w!==110||l.y0!==Y.RS||l.y1!==Y.TN))issues.push('links');
+ const cg=half('AC-CG-01'),nb=half('AC-NB-01'),rj=half('AC-RJ-01');
+ if(Y.TY-cg<Y.SS)issues.push('cg-on-A-in-runway-strip:'+(Y.TY-cg).toFixed(0));
+ if((Y.LY-nb)-(Y.TY+cg)<30)issues.push('A-L-wingtip:'+((Y.LY-nb)-(Y.TY+cg)).toFixed(0));
+ // stands south of L: the largest aircraft on L never reaches a parked aircraft (tail tip / wing)
+ const st={};for(const s of APL.stands){if(s.indoor||!['bridge','apronSW'].includes(s.tpl)||s.zone==='ne')continue;for(const ac of s.accepts){if(s.large&&(ac==='AC-LG-01'||ac==='AC-MW-01'))continue;const env=aplEnv(ac,s.ngx,s.ngy,s.th).map(aplBox),y0=Math.min(...env.map(b=>b.y0)),x0=Math.min(...env.map(b=>b.x0)),x1=Math.max(...env.map(b=>b.x1));
+  const onL=x1>6020&&x0<7300?nb:rj;if(y0<Y.LY+onL+10)issues.push(s.id+'/'+ac+':tail-into-L '+y0.toFixed(0));st[s.id]=Math.min(st[s.id]??1e9,Math.round(y0-(Y.LY+onL)))}}
+ // every route sample (nose gear) of every live stand × accepted aircraft lies on paving or in the air
+ const paved=g73Paved(),onPave=(x,y)=>paved.some(p=>x>=p.x0-2&&x<=p.x1+2&&y>=p.y0-2&&y<=p.y1+2);let samples=0;const off=new Set();
+ for(const sd of APL.stands){if(!sd.live||sd.indoor)continue;for(const ac of sd.accepts){
+  const legs=[];try{legs.push(['arr',aoArrLeg(sd,ac)]);const D=aoDepLegs(sd,ac);if(D.push)legs.push(['push',D.push]);legs.push(['taxi',D.taxi],['takeoff',D.takeoff])}catch(e){issues.push(sd.id+'/'+ac+':route-error '+e.message);continue}
+  for(const [n,leg] of legs)for(let t=0;t<=leg.dur;t+=.5){const p=leg.pose(t);if(!p||p[3]>2)continue;samples++;if(!onPave(p[0],p[1]))off.add(sd.id+'/'+ac.slice(3,5)+':'+n+'@'+Math.round(p[0])+','+Math.round(p[1]))}}}
+ for(const o of [...off].slice(0,8))issues.push('off-paving '+o);
+ // fixtures of the finish passes are inside E0–G1 and in the right row
+ for(const p of [...E1_FIXTURES,...F1_FIXTURES,...G1_FIXTURES,...G1_LEADOFF])if(p.x<4800||p.x>8400||p.y<-850||p.y>APT_Y.TS+10)issues.push(p.id+':outside');
+ for(const s of [...E1_SIGNS,...F1_SIGNS,...G1_SIGNS])if(s.y<=Y.SS||s.y>=Y.TN)issues.push(s.id+':sign-band');
+ if(!MAP_ACTIVE_IDS.has('E0')||!MAP_ACTIVE_IDS.has('F0')||!MAP_ACTIVE_IDS.has('G0'))issues.push('north-row-not-live');
+ const cov=G73_SPACE_USES.reduce((a,b)=>a+b.w*b.h,0);if(cov!==3600*850)issues.push('space-use-coverage:'+cov);
+ const SA=g73StandAudit();issues.push(...SA.issues);issues.push(...g77LargeAudit());   // GATE-77 S5b: the east apron's A3 routes vs the large jet
+ const RS=goRspAudit();issues.push(...RS.issues);   // S2 GROUND OPS: chore bays off every lane, every chore stop inside a bay
+ const IA=goIdleAudit();issues.push(...IA.issues);   // S3b AIR-28: home footprints inside their bay, off every lane and tug-return column
+ const EM=g73EmAudit();issues.push(...EM.issues.map(i=>'emrg:'+i));const YD=g73YardAudit();issues.push(...YD.issues.map(i=>'yard:'+i));const P1L=g73P1LargeAudit();issues.push(...P1L.issues.map(i=>'p1-large:'+i));
+ const LK=g73LockAudit();issues.push(...LK.issues.map(i=>'lock:'+i));   // S4: geometry lock
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,24),gate:'GATE-73',stage:G73_SCOPE.stage,runway:{cy:R.cy,strip:[Y.SN,Y.SS]},taxiwayA:{cy:T.cy,w:T.w},taxilane:{cy:Y.LY,w:Y.LS-Y.LN},rspE:RS,idle:IA,emrg:EM,yard:YD,p1Large:P1L,lock:LK,
+  clearances:{cgOnA_vs_strip:Math.round(Y.TY-cg-Y.SS),A_vs_L_wingtips:Math.round((Y.LY-nb)-(Y.TY+cg)),standTailsVsL:st},routeSamples:samples,stands:SA}}
+window.__TC_G73_QA=()=>({...g73Audit(),build:BUILD});
+
+// ===== GATE-75P S1 · PERF-04 · K-04 · K-27 · AUTO-03 / QA-72 · QA-52: in-game performance meter + built-in benchmark =====
+// (plan v4.52 additions: real-frame FPS now / avg / 1% low / p99 / stalls (K-27), cold + warm entry, moving between chunks, density ×2
+// inside the view, a future stress mode, the stall budget of QA-72 · 9)
+// F9 opens the meter: FPS, frame time avg / p95 / p99 / max, JS time per frame, SIM steps, memory (JS heap + cached canvases), a GC
+// estimate, the graphics-acceleration check and — on demand — the time per system and the canvas draw operations per frame.
+// "Benchmark" reloads the game in benchmark mode (#bench): the save is neither loaded nor written, Math.random is seeded, and a fixed
+// camera route runs by itself — E3 terminal under load, the airport at peak, Tower View (the whole airfield), the port with its trains,
+// the game's widest zoom over the city, an extreme-load view, the growth test (QA-72 · 4) and a short long-run. At the end: a report
+// (per scenario + the per-system budget of AUTO-03) to copy, compared with the last benchmark of an earlier build on this computer.
+// Measuring only: the system functions are wrapped only while a profiled window runs; nothing in the game changes.
+const PERF_CAT_LABEL={roadCore:'Road Core — סימולציה + ציור הרכבים',signal:'Signal Core + רמזורים ומעברי חצייה',airport:'שדה התעופה',rail:'רכבות ומסילות',port:'נמל (משאיות, מנופים, שערים, ציור)',peds:'הולכי רגל ונוסעים',world:'רקע העולם (קרקע, כבישים, מבנים, עצים, תוויות)',ui:'UI (מינימפה, HUD, מפה)',player:'שחקן / משימה / ניווט / מצלמה',loop:'לולאת frame עצמה'};
+const PERF_CATS=Object.keys(PERF_CAT_LABEL);
+// AUTO-03 budget per frame (ms, 60 FPS = 16.7 ms): drawing ≤ 8 · simulation ≤ 4 · UI ≤ 1 · misc ≤ 1 · margin ≥ 2.7
+const PERF_KINDS=['render','sim','ui','misc'],PERF_BUDGET={render:8,sim:4,ui:1,misc:1,margin:2.7,frame:16.7};
+const PERF_KIND_LABEL={render:'ציור',sim:'סימולציה',ui:'ממשק',misc:'שונות'};
+const PERF_FN_TABLE=[
+['updateTrafficCars','roadCore',()=>updateTrafficCars,f=>{updateTrafficCars=f},'sim'],
+['updateD4YardTraffic','roadCore',()=>updateD4YardTraffic,f=>{updateD4YardTraffic=f},'sim'],
+['updateTaxiPassenger','roadCore',()=>updateTaxiPassenger,f=>{updateTaxiPassenger=f},'sim'],
+['drawTrafficCars','roadCore',()=>drawTrafficCars,f=>{drawTrafficCars=f},'render'],
+['drawD4MovingSemis','roadCore',()=>drawD4MovingSemis,f=>{drawD4MovingSemis=f},'render'],
+['drawBusLineVehicles','roadCore',()=>drawBusLineVehicles,f=>{drawBusLineVehicles=f},'render'],
+['drawParkedCars','roadCore',()=>drawParkedCars,f=>{drawParkedCars=f},'render'],
+['updateA4Fleet','roadCore',()=>updateA4Fleet,f=>{updateA4Fleet=f},'sim'],
+['drawA4Fleet','roadCore',()=>drawA4Fleet,f=>{drawA4Fleet=f},'render'],
+['drawC5FleetCargo','roadCore',()=>drawC5FleetCargo,f=>{drawC5FleetCargo=f},'render'],
+['updateBorrowedVehicleReturns','roadCore',()=>updateBorrowedVehicleReturns,f=>{updateBorrowedVehicleReturns=f},'sim'],
+['drawSignals','signal',()=>drawSignals,f=>{drawSignals=f},'render'],
+['drawCrosswalks','signal',()=>drawCrosswalks,f=>{drawCrosswalks=f},'render'],
+['drawAptGround','airport',()=>drawAptGround,f=>{drawAptGround=f},'render'],
+['aptOpsTick','airport',()=>aptOpsTick,f=>{aptOpsTick=f},'sim'],
+['drawAptProps','airport',()=>drawAptProps,f=>{drawAptProps=f},'render'],
+['drawAptOverhead','airport',()=>drawAptOverhead,f=>{drawAptOverhead=f},'render'],
+['f2UpdatePeople','airport',()=>f2UpdatePeople,f=>{f2UpdatePeople=f},'sim'],
+['f2DrawPeople','airport',()=>f2DrawPeople,f=>{f2DrawPeople=f},'render'],
+['e2DrawVisitors','airport',()=>e2DrawVisitors,f=>{e2DrawVisitors=f},'render'],
+['f2DrawAccess','airport',()=>f2DrawAccess,f=>{f2DrawAccess=f},'render'],
+['g2DrawAccess','airport',()=>g2DrawAccess,f=>{g2DrawAccess=f},'render'],
+['ew2DrawAccess','airport',()=>ew2DrawAccess,f=>{ew2DrawAccess=f},'render'],
+['raDrawAccess','airport',()=>raDrawAccess,f=>{raDrawAccess=f},'render'],
+['e2DrawGround','airport',()=>e2DrawGround,f=>{e2DrawGround=f},'render'],
+['f2DrawGround','airport',()=>f2DrawGround,f=>{f2DrawGround=f},'render'],
+['g2DrawGround','airport',()=>g2DrawGround,f=>{g2DrawGround=f},'render'],
+['ew2DrawGround','airport',()=>ew2DrawGround,f=>{ew2DrawGround=f},'render'],
+['raDrawGround','airport',()=>raDrawGround,f=>{raDrawGround=f},'render'],
+['drawE3Rail','rail',()=>drawE3Rail,f=>{drawE3Rail=f},'render'],
+['drawE4Rail','rail',()=>drawE4Rail,f=>{drawE4Rail=f},'render'],
+['drawE5Rail','rail',()=>drawE5Rail,f=>{drawE5Rail=f},'render'],
+['drawPortRail','rail',()=>drawPortRail,f=>{drawPortRail=f},'render'],
+['drawLineRail','rail',()=>drawLineRail,f=>{drawLineRail=f},'render'],
+['drawFreightTrains','rail',()=>drawFreightTrains,f=>{drawFreightTrains=f},'render'],
+['rlPushPlayer','rail',()=>rlPushPlayer,f=>{rlPushPlayer=f},'sim'],
+['flFrame','port',()=>flFrame,f=>{flFrame=f},'sim'],
+['pgTick','port',()=>pgTick,f=>{pgTick=f},'sim'],
+['drawPortGround','port',()=>drawPortGround,f=>{drawPortGround=f},'render'],
+['drawPortProps','port',()=>drawPortProps,f=>{drawPortProps=f},'render'],
+['drawPortOverhead','port',()=>drawPortOverhead,f=>{drawPortOverhead=f},'render'],
+['pgDraw','port',()=>pgDraw,f=>{pgDraw=f},'render'],
+['drawFlowTrucks','port',()=>drawFlowTrucks,f=>{drawFlowTrucks=f},'render'],
+['drawLineSea','port',()=>drawLineSea,f=>{drawLineSea=f},'render'],
+['drawPortShips','port',()=>drawPortShips,f=>{drawPortShips=f},'render'],
+['drawPortTrucks','port',()=>drawPortTrucks,f=>{drawPortTrucks=f},'render'],
+['flDrawCargo','port',()=>flDrawCargo,f=>{flDrawCargo=f},'render'],
+['portSprite','port',()=>portSprite,f=>{portSprite=f},'render'],
+['portOps','port',()=>portOps,f=>{portOps=f},'sim'],
+['portSeaUnder','port',()=>portSeaUnder,f=>{portSeaUnder=f},'render'],
+['drawPortSea','port',()=>drawPortSea,f=>{drawPortSea=f},'render'],
+['flDrawYardTiers','port',()=>flDrawYardTiers,f=>{flDrawYardTiers=f},'render'],
+['updateNPCPedestrians','peds',()=>updateNPCPedestrians,f=>{updateNPCPedestrians=f},'sim'],
+['updateBusAlighters','peds',()=>updateBusAlighters,f=>{updateBusAlighters=f},'sim'],
+['updateBusPassengerDemand','peds',()=>updateBusPassengerDemand,f=>{updateBusPassengerDemand=f},'sim'],
+['drawBusAlighters','peds',()=>drawBusAlighters,f=>{drawBusAlighters=f},'render'],
+['drawNPCPedestrians','peds',()=>drawNPCPedestrians,f=>{drawNPCPedestrians=f},'render'],
+['drawBusStopPassengers','peds',()=>drawBusStopPassengers,f=>{drawBusStopPassengers=f},'render'],
+['drawB6Visitors','peds',()=>drawB6Visitors,f=>{drawB6Visitors=f},'render'],
+['drawB5Visitors','peds',()=>drawB5Visitors,f=>{drawB5Visitors=f},'render'],
+['drawC5Visitors','peds',()=>drawC5Visitors,f=>{drawC5Visitors=f},'render'],
+['drawA4Visitors','peds',()=>drawA4Visitors,f=>{drawA4Visitors=f},'render'],
+['render','world',()=>render,f=>{render=f},'render'],
+['wtcGround','world',()=>wtcGround,f=>{wtcGround=f},'render'],
+['wtcTrees','world',()=>wtcTrees,f=>{wtcTrees=f},'render'],
+['wtcPass','world',()=>wtcPass,f=>{wtcPass=f},'render'],
+['wtcIdle','world',()=>wtcIdle,f=>{wtcIdle=f},'render'],
+['aptFixturesStatic','world',()=>aptFixturesStatic,f=>{aptFixturesStatic=f},'sim'],
+['wtcBuild','world',()=>wtcBuild,f=>{wtcBuild=f},'render'],
+['wtcExtract','world',()=>wtcExtract,f=>{wtcExtract=f},'render'],
+['wtcReplaySprites','world',()=>wtcReplaySprites,f=>{wtcReplaySprites=f},'render'],
+['wtcLiveUnder','world',()=>wtcLiveUnder,f=>{wtcLiveUnder=f},'render'],
+['wtcLiveOver','world',()=>wtcLiveOver,f=>{wtcLiveOver=f},'render'],
+['wtcSchedule','world',()=>wtcSchedule,f=>{wtcSchedule=f},'render'],
+['g72Backdrop','world',()=>g72Backdrop,f=>{g72Backdrop=f},'render'],
+['a6DrawSea','world',()=>a6DrawSea,f=>{a6DrawSea=f},'render'],
+['drawB2Assets','world',()=>drawB2Assets,f=>{drawB2Assets=f},'render'],
+['drawC2Assets','world',()=>drawC2Assets,f=>{drawC2Assets=f},'render'],
+['drawLots','world',()=>drawLots,f=>{drawLots=f},'render'],
+['drawHouseFit','world',()=>drawHouseFit,f=>{drawHouseFit=f},'render'],
+['drawLandscape','world',()=>drawLandscape,f=>{drawLandscape=f},'render'],
+['drawB3Parking','world',()=>drawB3Parking,f=>{drawB3Parking=f},'render'],
+['drawB3Assets','world',()=>drawB3Assets,f=>{drawB3Assets=f},'render'],
+['drawD3Ground','world',()=>drawD3Ground,f=>{drawD3Ground=f},'render'],
+['drawD3Parking','world',()=>drawD3Parking,f=>{drawD3Parking=f},'render'],
+['drawD3Assets','world',()=>drawD3Assets,f=>{drawD3Assets=f},'render'],
+['drawE3Ground','world',()=>drawE3Ground,f=>{drawE3Ground=f},'render'],
+['drawE4Ground','world',()=>drawE4Ground,f=>{drawE4Ground=f},'render'],
+['drawE5Ground','world',()=>drawE5Ground,f=>{drawE5Ground=f},'render'],
+['drawB6Ground','world',()=>drawB6Ground,f=>{drawB6Ground=f},'render'],
+['drawA6Ground','world',()=>drawA6Ground,f=>{drawA6Ground=f},'render'],
+['drawB5Ground','world',()=>drawB5Ground,f=>{drawB5Ground=f},'render'],
+['drawC5Ground','world',()=>drawC5Ground,f=>{drawC5Ground=f},'render'],
+['drawA4Ground','world',()=>drawA4Ground,f=>{drawA4Ground=f},'render'],
+['drawC4Assets','world',()=>drawC4Assets,f=>{drawC4Assets=f},'render'],
+['drawRoadBase','world',()=>drawRoadBase,f=>{drawRoadBase=f},'render'],
+['drawB2Access','world',()=>drawB2Access,f=>{drawB2Access=f},'render'],
+['drawB6Access','world',()=>drawB6Access,f=>{drawB6Access=f},'render'],
+['drawA6Access','world',()=>drawA6Access,f=>{drawA6Access=f},'render'],
+['drawB5Access','world',()=>drawB5Access,f=>{drawB5Access=f},'render'],
+['drawC5Access','world',()=>drawC5Access,f=>{drawC5Access=f},'render'],
+['drawA4Access','world',()=>drawA4Access,f=>{drawA4Access=f},'render'],
+['drawC4Access','world',()=>drawC4Access,f=>{drawC4Access=f},'render'],
+['drawE3Access','world',()=>drawE3Access,f=>{drawE3Access=f},'render'],
+['drawB3CurbCuts','world',()=>drawB3CurbCuts,f=>{drawB3CurbCuts=f},'render'],
+['drawD3CurbCuts','world',()=>drawD3CurbCuts,f=>{drawD3CurbCuts=f},'render'],
+['drawMarkings','world',()=>drawMarkings,f=>{drawMarkings=f},'render'],
+['drawStreetLights','world',()=>drawStreetLights,f=>{drawStreetLights=f},'render'],
+['drawCityBusStops','world',()=>drawCityBusStops,f=>{drawCityBusStops=f},'render'],
+['drawRoadNames','world',()=>drawRoadNames,f=>{drawRoadNames=f},'render'],
+['drawE3Props','world',()=>drawE3Props,f=>{drawE3Props=f},'render'],
+['drawE4Props','world',()=>drawE4Props,f=>{drawE4Props=f},'render'],
+['drawD3Props','world',()=>drawD3Props,f=>{drawD3Props=f},'render'],
+['drawE5Props','world',()=>drawE5Props,f=>{drawE5Props=f},'render'],
+['drawB6Props','world',()=>drawB6Props,f=>{drawB6Props=f},'render'],
+['drawA6Props','world',()=>drawA6Props,f=>{drawA6Props=f},'render'],
+['drawB5Props','world',()=>drawB5Props,f=>{drawB5Props=f},'render'],
+['drawC5Props','world',()=>drawC5Props,f=>{drawC5Props=f},'render'],
+['drawA4Props','world',()=>drawA4Props,f=>{drawA4Props=f},'render'],
+['drawE3Canopy','world',()=>drawE3Canopy,f=>{drawE3Canopy=f},'render'],
+['drawE4Overhead','world',()=>drawE4Overhead,f=>{drawE4Overhead=f},'render'],
+['drawE5Overhead','world',()=>drawE5Overhead,f=>{drawE5Overhead=f},'render'],
+['drawChunkTrees','world',()=>drawChunkTrees,f=>{drawChunkTrees=f},'render'],
+['drawB6Trees','world',()=>drawB6Trees,f=>{drawB6Trees=f},'render'],
+['drawA6Trees','world',()=>drawA6Trees,f=>{drawA6Trees=f},'render'],
+['drawB5Trees','world',()=>drawB5Trees,f=>{drawB5Trees=f},'render'],
+['drawC5Trees','world',()=>drawC5Trees,f=>{drawC5Trees=f},'render'],
+['drawA4Trees','world',()=>drawA4Trees,f=>{drawA4Trees=f},'render'],
+['drawRoadTargets','world',()=>drawRoadTargets,f=>{drawRoadTargets=f},'render'],
+['drawConnectors','world',()=>drawConnectors,f=>{drawConnectors=f},'render'],
+['drawLanes','world',()=>drawLanes,f=>{drawLanes=f},'render'],
+['drawGraph','world',()=>drawGraph,f=>{drawGraph=f},'render'],
+['drawPedGraph','world',()=>drawPedGraph,f=>{drawPedGraph=f},'render'],
+['wtcBuild','world',()=>wtcBuild,f=>{wtcBuild=f},'render'],
+['drawMiniMap','ui',()=>drawMiniMap,f=>{drawMiniMap=f},'ui'],
+['drawFullMap','ui',()=>drawFullMap,f=>{drawFullMap=f},'ui'],
+['drawVehicleQa','ui',()=>drawVehicleQa,f=>{drawVehicleQa=f},'ui'],
+['renderPhone','ui',()=>renderPhone,f=>{renderPhone=f},'ui'],
+['updatePlayerHud','ui',()=>updatePlayerHud,f=>{updatePlayerHud=f},'ui'],
+['mapBaseStep','ui',()=>mapBaseStep,f=>{mapBaseStep=f},'ui'],
+['updateFishingActionButton','ui',()=>updateFishingActionButton,f=>{updateFishingActionButton=f},'ui'],
+['updateCar','player',()=>updateCar,f=>{updateCar=f},'sim'],
+['updatePed','player',()=>updatePed,f=>{updatePed=f},'sim'],
+['updateMission','player',()=>updateMission,f=>{updateMission=f},'sim'],
+['updateNavigation','player',()=>updateNavigation,f=>{updateNavigation=f},'sim'],
+['updateLicenseTrial','player',()=>updateLicenseTrial,f=>{updateLicenseTrial=f},'sim'],
+['drawPlayerCar','player',()=>drawPlayerCar,f=>{drawPlayerCar=f},'render'],
+['drawPlayerPed','player',()=>drawPlayerPed,f=>{drawPlayerPed=f},'render'],
+['drawNavigationWorld','player',()=>drawNavigationWorld,f=>{drawNavigationWorld=f},'render'],
+['drawActivityWorld','player',()=>drawActivityWorld,f=>{drawActivityWorld=f},'render'],
+['a6Update','player',()=>a6Update,f=>{a6Update=f},'sim'],
+['updateFishing','player',()=>updateFishing,f=>{updateFishing=f},'sim'],
+['updateB5Show','player',()=>updateB5Show,f=>{updateB5Show=f},'sim'],
+['updateA4Practice','player',()=>updateA4Practice,f=>{updateA4Practice=f},'sim'],
+['nearestDriveableVehicle','player',()=>nearestDriveableVehicle,f=>{nearestDriveableVehicle=f},'misc'],
+['nearbyD2Poi','player',()=>nearbyD2Poi,f=>{nearbyD2Poi=f},'misc'],
+['nearbyE4Poi','player',()=>nearbyE4Poi,f=>{nearbyE4Poi=f},'misc'],
+['nearbyE5Poi','player',()=>nearbyE5Poi,f=>{nearbyE5Poi=f},'misc'],
+['nearbyD5Poi','player',()=>nearbyD5Poi,f=>{nearbyD5Poi=f},'misc'],
+['nearbyPlayerHome','player',()=>nearbyPlayerHome,f=>{nearbyPlayerHome=f},'misc'],
+['nearbyRetailPoi','player',()=>nearbyRetailPoi,f=>{nearbyRetailPoi=f},'misc'],
+['nearbyD3Service','player',()=>nearbyD3Service,f=>{nearbyD3Service=f},'misc'],
+['nearbyB2FishingSpot','player',()=>nearbyB2FishingSpot,f=>{nearbyB2FishingSpot=f},'misc'],
+['nearbyC4Poi','player',()=>nearbyC4Poi,f=>{nearbyC4Poi=f},'misc'],
+['nearbyD4Poi','player',()=>nearbyD4Poi,f=>{nearbyD4Poi=f},'misc'],
+['nearbyAptPoi','player',()=>nearbyAptPoi,f=>{nearbyAptPoi=f},'misc'],
+['nearbyA4Poi','player',()=>nearbyA4Poi,f=>{nearbyA4Poi=f},'misc'],
+['nearbyB5Poi','player',()=>nearbyB5Poi,f=>{nearbyB5Poi=f},'misc'],
+['pgNearIntercom','player',()=>pgNearIntercom,f=>{pgNearIntercom=f},'misc'],
+['d5ForkliftMission','player',()=>d5ForkliftMission,f=>{d5ForkliftMission=f},'sim'],
+['currentChunkId','player',()=>currentChunkId,f=>{currentChunkId=f},'misc']
+];
+const PERF_METHOD_TABLE=[['Camera.update','player',()=>[Camera,'update'],'misc'],['Camera.freeUpdate','player',()=>[Camera,'freeUpdate'],'misc'],['Targets.ui','ui',()=>[Targets,'ui'],'ui'],['Targets.draw','ui',()=>[Targets,'draw'],'ui']];
+/* ===== p700 · LOGI (D‑538, the owner 8.11 08:11 — instead of L1, D‑498): the supply lines, for real =====
+   Every line whose pick-up point and drop point already stand in the game is driven by a vehicle of the simulation (rules 25 / 32):
+   a truck in TRAFFIC_CARS, on the c5 profile of the road core — it follows its own route of edges (the shortest legal way on the
+   lanes: one-way streets, no U-turn, no future road, not the port) and stops at the end of it. There it leaves the road on the point's
+   own way (a right turn into a driveway, never a reverse on a road, never over a kerb), stands at its bay and works: the hose to the
+   tank, the loading arm, the forklift out of the warehouse door, the stacker of the supermarket. The cargo leaves the truck only when
+   a pallet / the fuel goes out of it, and appears where it went. Then out on the point's own way, a wait at the edge of the road for a
+   gap (as a car out of a driveway), back into the network, to the next point. At night (out of its hours) it stands at its home bay.
+   The lines, the points and the ones that wait — LOGI.lines / LOGI.waiting (the table: deliver/2026-11-08/logi/supply_lines.json). */
+var LOGI={on:true,err:null,veh:[],t:0,stats:{trips:0,loads:0,unloads:0,entries:0,merges:0,routes:0,noRoute:0,maxEntryWait:0,maxMergeWait:0,maxBlk:0,forcedNone:0},log:[]};
+function lgMaxW(g,k){const W=LOGI.stats.waits=LOGI.stats.waits||{},key=g.site+':'+k;if(!W[key]||W[key][0]<g.wait)W[key]=[+g.wait.toFixed(1),String(g.waitBy||'')]}
+function lgLog(v,what){LOGI.log.push({t:+LOGI.t.toFixed(1),id:v.id,what});if(LOGI.log.length>200)LOGI.log.shift()}
+function lgArc(P,cx,cy,r,a0,a1,n){for(let i=1;i<=n;i++){const t=a0+(a1-a0)*i/n;P.push([cx+r*Math.cos(t),cy+r*Math.sin(t)])}return P}
+function lgEase(P,x0,y0,x1,y1,n,ax){for(let i=1;i<=n;i++){const u=i/n,s=(1-Math.cos(Math.PI*u))/2;P.push(ax==='y'?[x0+(x1-x0)*s,y0+(y1-y0)*u]:[x0+(x1-x0)*u,y0+(y1-y0)*s])}return P}
+function lgLine(P,x,y,step){const a=P[P.length-1],L=Math.hypot(x-a[0],y-a[1]),n=Math.max(1,Math.ceil(L/(step||12)));for(let i=1;i<=n;i++)P.push([a[0]+(x-a[0])*i/n,a[1]+(y-a[1])*i/n]);return P}
+function lgPath(P){const pts=[];for(const p of P){const q=pts[pts.length-1];if(!q||Math.hypot(p[0]-q.x,p[1]-q.y)>.05)pts.push({x:p[0],y:p[1],s:0})}
+ for(let i=1;i<pts.length;i++)pts[i].s=pts[i-1].s+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y);return{pts,total:pts.length?pts[pts.length-1].s:0}}
+function lgAt(P,s){const A=P.pts;if(A.length<2)return{x:A[0].x,y:A[0].y};s=Math.max(0,Math.min(P.total,s));let i=1;while(i<A.length-1&&A[i].s<s)i++;const a=A[i-1],b=A[i],f=(s-a.s)/Math.max(1e-6,b.s-a.s);return{x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f}}
+function lgPose(P,s){const p=lgAt(P,s),a=lgAt(P,Math.max(0,s-7)),b=lgAt(P,Math.min(P.total,s+7));let h=Math.atan2(b.y-a.y,b.x-a.x);if(!(Math.hypot(b.x-a.x,b.y-a.y)>.01)){const A=P.pts,n=A.length;h=Math.atan2(A[n-1].y-A[Math.max(0,n-2)].y,A[n-1].x-A[Math.max(0,n-2)].x)}return{x:p.x,y:p.y,heading:h}}
+function lgTurn(h,to,dt){let d=to-h;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return h+d*Math.min(1,dt*7)}
+function lgMinOfDay(){try{const c=gameClock(),m=+c.min;return Number.isFinite(m)?((m%1440)+1440)%1440:720}catch(e){return 720}}
+function lgInHours(H){const m=lgMinOfDay();return m>=H[0]*60&&m<H[1]*60}
+/* ---- the route on the lanes: Dijkstra over (edge, direction) — a movement must exist (one-way streets and turns as the road core has them) ---- */
+function lgEdgeOk(e){return !!e&&!e.future&&!pgRestrictedEdge(e)&&!P560_NOCAR.has(e.id)}
+function lgRoute(fromEdge,fromDir,toEdge,toDir){const key=(e,d)=>e+'|'+d,start=key(fromEdge,fromDir),goal=key(toEdge,toDir);if(start===goal)return[{edgeId:fromEdge,dirSign:fromDir}];
+ const dist=new Map([[start,0]]),prev=new Map(),open=[[0,fromEdge,fromDir]],done=new Set();
+ while(open.length){let bi=0;for(let i=1;i<open.length;i++)if(open[i][0]<open[bi][0])bi=i;const [d,e,dir]=open.splice(bi,1)[0],k=key(e,dir);if(done.has(k))continue;done.add(k);if(k===goal)break;
+  const ln=lane2(e,dir,0);if(!ln)continue;const cnt=ln.cnt||1;
+  for(let j=0;j<cnt;j++){const L=lane2(e,dir,j);if(!L)continue;for(const m of L.moves){if(m.kind==='uturn'||m.to.edge===e)continue;if(!lgEdgeOk(m.to.e)||m.to.acc)continue;
+   const k2=key(m.to.edge,m.to.dir);if(done.has(k2))continue;const nd=d+L.len+(m.kind==='left'?60:m.kind==='right'?18:0);if(nd<(dist.has(k2)?dist.get(k2):Infinity)){dist.set(k2,nd);prev.set(k2,k);open.push([nd,m.to.edge,m.to.dir])}}}}
+ if(!prev.has(goal))return null;const out=[];let k=goal;while(k){const [e,d]=k.split('|');out.unshift({edgeId:e,dirSign:+d});if(k===start)break;k=prev.get(k)}return out[0]&&out[0].edgeId===fromEdge?out:null}
+/* ---- who is near: every vehicle that moves or stands on a lane, in a yard, in the fleet, the player ---- */
+function lgOthers(v){const L=[];try{for(const o of TRAFFIC_CARS)if(o!==v)L.push(o)}catch(e){}try{for(const o of BUS_VEHICLES)L.push(o)}catch(e){}try{for(const o of D4_YARD_SEMIS)L.push(o)}catch(e){}try{for(const o of a4FleetActors())L.push(o)}catch(e){}return L}
+function lgFleetHit(v,p){try{const me=vehicleCollisionShape(v.asset,v.ref,p.x,p.y,p.heading);for(const o of a4FleetActors()){if(Math.abs(o.x-p.x)>200||Math.abs(o.y-p.y)>200)continue;if(vehicleBodiesOverlap(me,vehicleCollisionShape(o.asset,o.ref||'Truck',o.x,o.y,o.heading),1.5))return o.id}
+ for(const o of LOGI.veh){if(o===v||Math.abs(o.x-p.x)>200||Math.abs(o.y-p.y)>200)continue;if(vehicleBodiesOverlap(me,trafficVehicleShape(o),1.5))return o.id}}catch(e){}return null}
+/* a way is clear: nobody on it (every 10 px of it, the body and a margin), nobody coming in the watched boxes (a moving vehicle heading the watched way), not the player */
+function lgAheadClear(v,J){try{const ln=lane2(J.edge,J.dir,J.k||0);if(!ln)return null;const pts=[];for(let d=0;d<=150;d+=15){const u=J.t+d/ln.len;if(u>1)break;pts.push(trafficEdgePoint(J.edge,J.dir,u,J.k||0))}
+ for(const o of lgOthers(v)){if(!(o.x>-9000)||(o.speed||0)>4)continue;for(const q of pts)if(Math.hypot(o.x-q.x,o.y-q.y)<(o.radius||14)+16)return o.id||'?'}}catch(e){}return null}
+function lgWayClear(v,P,watch){const pts=[];for(let s=0;s<=P.total;s+=10)pts.push(lgAt(P,s));pts.push(lgAt(P,P.total));
+ let fl=null;try{fl=new Set(a4FleetActors())}catch(e){}
+ let mine=null;const myBodies=()=>{if(!mine){mine=[];for(let s=0;s<=P.total;s+=10){const q=lgPose(P,s);mine.push(vehicleCollisionShape(v.asset,v.ref,q.x,q.y,q.heading))}}return mine};
+ for(const o of lgOthers(v)){if(!(o.x>-9000))continue;
+  /* a van / tanker of the fleet: when it stands (its bay, its stop) — only its body against the bodies of this truck along the way; when it moves — its own length round its point */
+  if(fl&&fl.has(o)&&!((o.speed||0)>.5)){let hit=false;try{const ob=vehicleCollisionShape(o.asset,o.ref||'Truck',o.x,o.y,o.heading);for(const b of myBodies())if(Math.abs(b.x-ob.x)<200&&Math.abs(b.y-ob.y)<200&&vehicleBodiesOverlap(b,ob,5)){hit=true;break}}catch(e){}if(hit)return o.id||'?';continue}
+  const r=fl&&fl.has(o)?80:(o.radius||16)+18;   /* a moving one: farther than the 88 px at which the van is held (it never starts inside the van's corridor) */for(const q of pts)if(Math.abs(o.x-q.x)<r+30&&Math.hypot(o.x-q.x,o.y-q.y)<r+16)return o.id||'?';
+  for(const w of watch||[]){const B=w.box;if(o.x<B[0]||o.x>B[2]||o.y<B[1]||o.y>B[3])continue;if(w.any)return o.id||'?';const hx=Math.cos(o.heading||0),hy=Math.sin(o.heading||0);if((o.speed||0)>1.5&&hx*w.dir[0]+hy*w.dir[1]>.5)return o.id||'?'}}
+ try{if(PlayerCar&&PlayerCar.x>-9000)for(const q of pts)if(Math.hypot(PlayerCar.x-q.x,PlayerCar.y-q.y)<40)return'PLAYER-CAR'}catch(e){}
+ return null}
+/* ---- the sites (the bays) — every way is the centre of the vehicle; the first point of `in` is where it stands on the lane at the end of its route ---- */
+const LG_PI=Math.PI;
+function lgSites(){const S={};
+ /* C5 · the refinery: the second filling bay of the tanker canopy (D‑480, fix 5), the one the refinery's own tanker (D5TK) does not use.
+    In: north up רחוב בית הזיקוק, left into the gate's north lane, south on the east road, west on the south road, north into bay 2 (as D5TK into bay 1).
+    Out: north out of the bay, east under the canopy, wide of the tanker of bay 1, to the gate (its front at the stop line — it waits there for the street);
+    then into the gate's south lane, across the south lane of רחוב בית הזיקוק into its north lane. */
+ {const I=[[3132,3930]];lgLine(I,3132,3894);lgArc(I,3054,3894,78,0,-LG_PI/2,10);lgLine(I,3042,3816);lgArc(I,3042,3854,38,-LG_PI/2,-LG_PI,8);lgLine(I,3004,4042);lgArc(I,2954,4042,50,0,LG_PI/2,8);lgLine(I,2839,4092);lgArc(I,2839,4042,50,LG_PI/2,LG_PI,8);lgLine(I,2789,3990);
+  const F=[[2789,3990]];lgLine(F,2789,3950);lgArc(F,2839,3950,50,LG_PI,LG_PI*1.5,8);lgLine(F,2966,3900);lgEase(F,2966,3900,3016,3836,8,'x');lgLine(F,3085,3836);lgArc(F,3085,3793,43,LG_PI/2,0,8);lgLine(F,3132,3770);
+  const k=F.findIndex(p=>p[0]>=2988&&p[1]<3895),A=F.slice(0,k+1),B=F.slice(k);   /* it waits for the street with its front at the gate's stop line */
+  S.REF={id:'REF',zone:'C5',label:'בית הזיקוק — עמדת המילוי 2',arrive:{edge:'LC-C5',dir:-1,t:(4250-3930)/850},in:I,bay:{x:2789,y:3990,h:-LG_PI/2},outA:A,outB:B,join:{edge:'LC-C5',dir:-1,t:(4250-3770)/850,k:0},
+   inWatch:[{box:[3062,3640,3112,3905],dir:[0,1]}],outWatch:[{box:[3062,3600,3112,3830],dir:[0,1]},{box:[3110,3780,3156,4060],dir:[0,-1]}]}}
+ /* D3 · the fuel station: the tanker bay along the north edge of the forecourt (the yellow frame, the three tank lids south of it).
+    In: in the outer lane of the avenue southbound, before the crosswalk; across it, right into the driveway, west into the bay.
+    Out: west, round the canopy (south, east along the south edge — the way the station's plan draws), right onto the avenue southbound. */
+ {const I=[[4504,1677]];lgLine(I,4504,1735);lgArc(I,4449,1735,55,0,LG_PI/2,10);lgEase(I,4449,1790,4380,1783,6,'x');lgLine(I,4330,1783);
+  const F=D3ND.fuel.tOut.map(p=>[p[0],p[1]-(p[1]<1900?0:p[1]<=1943?6*(p[1]-1900)/43:Math.max(0,6*(1-(p[1]-1943)/80)))]);   /* 6 px north at the south edge of the loop — clear of the station's shop */
+  const A=[[4330,1783]];lgLine(A,4300,1783);for(let i=2;i<=10;i++)A.push(F[i]);lgLine(A,4420,1937);
+  const B=[[4420,1937]];for(let i=13;i<=23;i++)B.push(F[i]);lgLine(B,4504,2050);
+  S.D3F={id:'D3F',zone:'D3',label:'תחנת הדלק ב-D3 — מפרץ המכלית',arrive:{edge:'D2-RE-S2',dir:1,t:.77},in:I,bay:{x:4330,y:1783,h:LG_PI},outA:A,outB:B,join:{edge:'D3-RE-C',dir:1,t:(2050-1860)/570,k:2},
+   inWatch:[],outWatch:[{box:[4482,1700,4600,2000],dir:[0,1]}]}}
+ /* D4 · the big warehouse: box-truck bay 1 on the strip in front of it (the strip is one-way west).
+    In: through the gate of the logistics yard, as the semis (the outer lane of the avenue southbound, right through the gate's wide cut and under
+    its barrier, west, right up the manoeuvre lane x 4355), left onto the strip, west, a little right into the bay.
+    Out (from the bay, one go — it waits in the bay for the way and for the yard's reservation): a little left into the strip, west, left into רחוב המחסנים. */
+ {const I=[[4504,2985]];lgLine(I,4504,3035);lgArc(I,4413.5,3035,90.5,0,LG_PI/2,14);lgLine(I,4395,3125.5);lgArc(I,4395,3085,40.5,LG_PI/2,LG_PI,8);lgLine(I,4354.5,2844);lgArc(I,4314.5,2844,40,0,-LG_PI/2,8);lgLine(I,4120,2804);lgEase(I,4120,2804,4030,2770,10,'x');lgLine(I,3980,2770);
+  const B=[[3980,2770]];lgLine(B,3970,2770);lgEase(B,3970,2770,3888,2804,10,'x');lgArc(B,3888,2864,60,-LG_PI/2,-LG_PI,10);lgLine(B,3828,2900);
+  S.D4W={id:'D4W',zone:'D4',label:'המחסן הגדול ב-D4 — עמדת משאית הארגז 1',arrive:{edge:'D4-RE-C',dir:1,t:(2985-2920)/340},in:I,bay:{x:3980,y:2770,h:LG_PI},outA:null,outB:B,join:{edge:'LC-D4',dir:-1,t:(2900-2800)/592.5,k:0},
+   inWatch:[],outWatch:[{box:[3990,2786,4380,2822],dir:[-1,0]},{box:[3800,2800,3900,3060],dir:[0,-1]},{box:[3790,2790,3910,2830],any:true,dir:[0,0]}]}}
+ /* C2 · the mall: the dock of "שיבולת" on the service lane behind the mall (one-way east, its two openings on דרך השדות).
+    In: on דרך השדות eastbound, right into the west opening, left along the service lane, a little right into the dock.
+    Out: a little left back into the lane, east, (wait) left out of the east opening and right onto דרך השדות eastbound. */
+ {const I=[[2790,782]];lgArc(I,2790,824,42,-LG_PI/2,0,8);lgArc(I,2874,824,42,LG_PI,LG_PI/2,8);lgLine(I,3226,866);lgEase(I,3226,866,3298,902,10,'x');lgLine(I,3310,902);
+  const A=[[3310,902]];lgEase(A,3310,902,3390,866,12,'x');lgLine(A,3440,866);
+  const B=[[3440,866]];lgArc(B,3440,826,40,LG_PI/2,0,8);lgLine(B,3480,821);lgArc(B,3520,821,40,LG_PI,LG_PI*1.5,8);lgLine(B,3560,782);
+  S.C2S={id:'C2S',zone:'C2',label:'הקניון ב-C2 — הרציף של "שיבולת"',arrive:{edge:'B1-LCN',dir:1,t:(2790-2510)/600},in:I,bay:{x:3310,y:902,h:0},outA:A,outB:B,join:{edge:'C2-LCN2',dir:1,t:(3560-3110)/600,k:0},
+   inWatch:[],outWatch:[{box:[3300,764,3560,802],dir:[1,0]}]}}
+ for(const k in S){const s=S[k];s.pIn=lgPath(s.in);s.pA=s.outA?lgPath(s.outA):null;s.pB=lgPath(s.outB)}
+ return S}
+/* ---- the lines (the vehicle, its home bay = the pick-up point, the drop points, the hours — D‑460) ---- */
+const LG_LINES=[
+ {id:'FUEL-01',kind:'fuel',label:'הדלק: בית הזיקוק ← תחנת הדלק ב-D3',veh:{id:'LOGI-TK-1',asset:'LV-TK-01',ref:'Truck',label:'מכלית הדלק (קו FUEL-01)',color:9},home:'REF',stops:['D3F'],hours:[5.5,21],
+  work:{REF:{kind:'fill',dur:52},D3F:{kind:'drain',dur:58}}},
+ {id:'GOODS-01',kind:'goods',label:'הסחורה: המחסן הגדול ב-D4 ← "שיבולת" בקניון (C2)',veh:{id:'LOGI-BX-1',asset:'VH-TR-01',ref:'Truck',label:'משאית הארגז (קו GOODS-01)',color:4},home:'D4W',stops:['C2S'],hours:[6,19],
+  work:{D4W:{kind:'load',dur:66,n:5},C2S:{kind:'unload',dur:70,n:5}}}];
+LOGI.lines=LG_LINES;
+LOGI.waiting=[
+ ['FUEL-02','תחנת הדלק ב-C4','למפרץ המכלית של התחנה (בצד המזרחי של המגרש) אין עדיין דרך כניסה ויציאה למכלית — המסלול שלו במגרש לא תוכנן (בציור יש רק קו של 100 פיקס׳); ייבנה עם הסבב של C4 בשלב הלוגיסטיקה'],
+ ['FUEL-03','מזח הדלק במרינה (F3)','אין מפרץ מכלית ודרך שירות עד המכל של המזח; הפרט החי F3-L9 יצא (D‑537) עד שהמסלול ייבנה — עם השלב של F3 (הסבב הבא)'],
+ ['GOODS-02','החנויות ברחוב המסחר ב-D2 (משאית הארגז במפרץ)','המפרץ קיים, אבל הדרך אליו עוברת בחניון ציבורי בלי נתיב שירות; הטנדרים מ-C4-DEPOT (D‑378) — שלב הלוגיסטיקה'],
+ ['GOODS-03','הסופר ב-B4','מפרץ הפריקה של הסופר — "חדש — לבנייה" במפת הדרכים (logi_points); ייבנה עם B4'],
+ ['GOODS-04','"ארגז הכלים" ב-C4','מפרץ הפריקה בחניון החנות קיים בציור, אבל הדרך עוברת בחניון הלקוחות ובין המכוניות החונות — צריך נתיב שירות; עם הסבב של C4'],
+ ['GOODS-05','מסוף הרציפים ב-C4 (C4-DEPOT, ‏C4-DOCK2-TRUCK)','הכניסה לרציף היא ברוורס בחצר — צריך תמרון חצר עם מכוון; המשאית ברציף 2 ממשיכה לחנות עד אז (K‑253)'],
+ ['CONT-01','מנוף הקונטינרים ב-D4 (D4-REACH-A)','המקור של הקונטינרים הוא הנמל (C6 / ‏D6 — S10), ואין עדיין משאית שלדה לקונטינרים בצי. המנוף עומד צמוד לקונטינר D4-CT7, ובמבט 3/4 הקונטינר נראה מעליו; ניסיתי להזיז אותו לצד הערימה — זה בנתיב הסיבוב של הסמי (roadAudit: semi_swept_path_clear נכשל), אז הוא נשאר במקומו עד הקו, ואז הוא יזוז באמת'],
+ ['PARCEL-01','מסוף החבילות ב-E3','נקודות החלוקה (הבתים והחנויות) עוד לא מוגדרות במפה כנקודות עצירה של טנדר; שלב הלוגיסטיקה'],
+ ['HOTEL-01','המלונות (D2, ‏F3)','כניסות השירות של המלונות קיימות, אבל אין עדיין מקור סחורה למלונות בתוכנית (מכבסה / מזון) — שלב הלוגיסטיקה']];
+/* ---- the vehicles: seeded at their home bays when the game loads (they never appear and never vanish) ---- */
+function lgSeed(){if(LOGI.seeded)return;LOGI.seeded=true;LOGI.sites=lgSites();
+ for(const L of LG_LINES){const s=LOGI.sites[L.home],V=L.veh;const v={id:V.id,asset:V.asset,ref:V.ref,kind:'freight',label:V.label,colorIndex:V.color,edgeId:s.join.edge,dirSign:s.join.dir,t:s.join.t,lane:0,lanePref:0,laneTarget:0,routeIndex:0,
+   x:s.bay.x,y:s.bay.y,heading:s.bay.h,speed:0,targetSpeed:78,wait:false,stuck:0,ghost:0,plan:null,turn:null,hop:0,
+   c5:{mode:'bay',route:[],finalT:0,purpose:'logi',path:null},logi:{line:L.id,L,site:L.home,next:0,phase:'work',work:null,load:0,s:0,path:null,wait:0}};
+  lgWorkStart(v,L.home);TRAFFIC_CARS.push(v);LOGI.veh.push(v)}}
+function lgWorkStart(v,siteId){const g=v.logi,W=g.L.work[siteId]||{kind:'idle',dur:5};g.site=siteId;g.phase='work';g.work={kind:W.kind,dur:W.dur,n:W.n||0,t:0,done:false,hoursHeld:false};
+ g.load0=g.load;}   /* trucks (10.11): the load at the start of every work (an unload too) */
+/* the next site after this one: home → stops… → home */
+function lgNextSite(v){const g=v.logi,seq=[g.L.home,...g.L.stops];const i=seq.indexOf(g.site);return seq[(i+1)%seq.length]}
+function lgSetPath(v,P,mode){const g=v.logi;g.path=P;g.s=0;g.wait=0;v.c5.mode=mode;v.speed=0;v.wait=false}
+function lgDrive(v,dt,parked,vmax){const g=v.logi,P=g.path,room=P.total-g.s,want=Math.min(vmax,Math.sqrt(55*Math.max(0,room))+2.5);v.speed=Math.min(want,(v.speed||0)+22*dt);
+ const ns=Math.min(P.total,g.s+v.speed*dt),p=lgPose(P,ns);let hit=null;try{hit=dynamicVehicleBodyBlocked(v,p.x,p.y,p.heading,parked)}catch(e){}if(!hit)hit=lgFleetHit(v,p);
+ if(hit&&hit!=='PLAYER-CAR'){try{if(movingAwayFrom2(v,p,hit))hit=null}catch(e){}}
+ if(hit){v.speed=0;v.wait=true;g.blk=(g.blk||0)+dt;g.blkBy=hit;v.c5.blockedBy=hit;   /* linesA (10.11): מנוע הכבישים קורא את c5.blockedBy (subsystemBlockedBy2) — מכונית שעומדת על הדרך של המשאית ומחכה לרוח שלה נסוגה 4 מ׳ (ghostYield2). בלי השדה היא לא נסוגה אף פעם: המתנה הדדית בשער בית הזיקוק */LOGI.stats.maxBlk=Math.max(LOGI.stats.maxBlk,g.blk);return false}
+ g.blk=0;g.blkBy=null;v.c5.blockedBy=null;v.wait=false;g.s=ns;v.x=p.x;v.y=p.y;v.heading=lgTurn(v.heading,p.heading,dt);return ns>=P.total-.05}
+/* back into the network at the join point of the site, with the route to the next site */
+function lgRoadCar(id){try{const o=TRAFFIC_CARS.find(q=>q.id===id)||BUS_VEHICLES.find(q=>q.id===id);return !!o&&!o.logi&&!(o.c5&&o.c5.mode!=='road')&&!o.fuelTrip}catch(e){return false}}
+function lgRejoin(v,tAt){const g=v.logi,s=LOGI.sites[g.site],J=Object.assign({},s.join,tAt!=null?{t:tAt}:{}),nx=LOGI.sites[lgNextSite(v)],A=nx.arrive;
+ let route=lgRoute(J.edge,J.dir,A.edge,A.dir);if(route&&route.length===1&&A.t<=J.t+.02)route=null;if(!route){LOGI.stats.noRoute++;lgLog(v,'no route '+J.edge+' → '+A.edge);g.wait=0;v.c5.mode='merge';return false}
+ const P=trafficEdgePoint(J.edge,J.dir,J.t,J.k||0);
+ Object.assign(v.c5,{mode:'road',route,finalT:A.t,purpose:'logi',path:null});v.routeIndex=0;v.edgeId=J.edge;v.dirSign=J.dir;v.t=J.t;v.lane=J.k||0;v.lanePref=J.k||0;v.laneTarget=J.k||0;
+ v.x=P.x;v.y=P.y;v.heading=P.heading;v.speed=10;v.wait=false;v.turn=null;v.plan=null;v.runKey=null;v.ghost=0;v.c2=null;v.stuck=0;
+ lgD4Free(v);g.site=null;g.to=nx.id;g.phase='road';LOGI.stats.merges++;LOGI.stats.routes++;lgLog(v,'on the road → '+nx.id+' ('+route.length+' edges)');return true}
+/* it cannot turn in yet (the yard is busy): it does not stand on the road — it drives round the block and comes again (as the semis of D4 do) */
+function lgGoAround(v){const g=v.logi,s=LOGI.sites[g.site],A=s.arrive;let best=null;
+ for(let j=0;j<((lane2(A.edge,A.dir,0)||{}).cnt||1);j++){const L=lane2(A.edge,A.dir,j);if(!L)continue;for(const m of L.moves){if(m.kind==='uturn'||!lgEdgeOk(m.to.e)||m.to.acc)continue;const r=lgRoute(m.to.edge,m.to.dir,A.edge,A.dir);if(!r||r.length<2)continue;
+  let d=0;for(const q of r){const e=byEdge[q.edgeId];d+=e?Math.hypot(byNode[e.a].x-byNode[e.b].x,byNode[e.a].y-byNode[e.b].y):0}if(!best||d<best.d)best={d,r:[{edgeId:A.edge,dirSign:A.dir},...r]}}}
+ if(!best)return false;Object.assign(v.c5,{mode:'road',route:best.r,finalT:A.t,purpose:'logi',path:null});v.routeIndex=0;v.edgeId=A.edge;v.dirSign=A.dir;v.c2=null;v.plan=null;v.turn=null;v.runKey=null;v.wait=false;v.speed=0;
+ g.to=g.site;g.site=null;g.phase='road';LOGI.stats.around=(LOGI.stats.around||0)+1;lgLog(v,'round the block → '+g.to+' ('+best.r.length+' edges)');return true}
+/* the road core brought it to the end of its route (c5-final): it stands at the entrance until the way in is clear */
+function lgArrived(v){const g=v.logi;v.speed=0;v.plan=null;v.ptPlan=null;v.c5.mode='entry';g.wait=0;g.site=g.to;g.phase='entry';lgLog(v,'at the entrance of '+g.site)}
+function lgStep(v,dt,parked){const g=v.logi,m=v.c5.mode;v.stuck=0;if(v===LOGI.veh[0])LOGI.t+=dt;
+ if(m==='bay'){v.speed=0;v.wait=true;const s=LOGI.sites[g.site],W=g.work;if(!W)return;
+  if(!W.done){W.t+=dt;const f=Math.min(1,W.t/W.dur);
+   if(W.kind==='fill')g.load=Math.max(g.load0,f<.08?g.load0:Math.min(1,g.load0+(1-g.load0)*(f-.08)/.84));
+   else if(W.kind==='drain')g.load=f<.12?1:Math.max(.12,1-.88*Math.min(1,(f-.12)/.78));
+   else if(W.kind==='load'||W.kind==='unload'){const k=lgPallets(W),l0=Number.isFinite(g.load0)?g.load0:(W.kind==='load'?0:W.n);g.load=W.kind==='load'?l0+k:Math.max(0,l0-k)}   /* trucks (10.11): from the load it came with — one truck, two shops in one round (GOODS-01 + GOODS-03) */
+   if(W.t>=W.dur){W.done=true;if(W.kind==='fill'||W.kind==='load')LOGI.stats.loads++;else LOGI.stats.unloads++;lgLog(v,'done: '+W.kind+' at '+g.site)}return}
+  const home=g.site===g.L.home;if(home&&!lgInHours(g.L.hours)){W.hoursHeld=true;return}   /* at night it stands at its home bay */
+  if(home&&W.hoursHeld){W.hoursHeld=false}
+  if(s.pA){if(g.site==='REF'){g.wait+=dt;const by=lgWayClear(v,s.pA,[])||(lgD5InYard()?'D5TK-TANKER':null)||(lgVanInZone()?'C5V-PICKUP':null);if(by){g.waitBy=by;lgMaxW(g,'out');return}}lgSetPath(v,s.pA,'out-a');g.phase='out';return}
+  g.wait+=dt;const by=lgWayClear(v,s.pB,s.outWatch)||lgAheadClear(v,s.join)||(g.site==='D4W'&&!lgD4Take(v)?'D4-YARD':null)||(g.site==='REF'&&lgD5InYard()?'D5TK-TANKER':null);if(by){g.waitBy=by;LOGI.stats.maxMergeWait=Math.max(LOGI.stats.maxMergeWait,g.wait);lgMaxW(g,'out');return}
+  lgSetPath(v,s.pB,'out-b');g.phase='out';return}
+ if(m==='out-a'){if(lgDrive(v,dt,parked,18)){v.c5.mode='merge';g.wait=0;v.speed=0}return}
+ if(m==='merge'){v.speed=0;v.wait=true;g.wait+=dt;const s=LOGI.sites[g.site];const by=lgWayClear(v,s.pB,s.outWatch)||lgAheadClear(v,s.join);if(by){g.waitBy=by;LOGI.stats.maxMergeWait=Math.max(LOGI.stats.maxMergeWait,g.wait);lgMaxW(g,'out');return}lgSetPath(v,s.pB,'out-b');return}
+ if(m==='out-b'){if(lgDrive(v,dt,parked,24)){lgRejoin(v);return}
+  /* nearly in its lane and a car of the road stands in front of it (a queue at the next light): the road core takes it over here — it follows the queue as any car */
+  if(g.blk>6&&g.path.total-g.s<80&&lgRoadCar(g.blkBy)){const s=LOGI.sites[g.site],J=s.join,ln=lane2(J.edge,J.dir,J.k||0);if(ln){const u=Math.max(.02,Math.min(J.t,((v.x-ln.ax)*ln.ux+(v.y-ln.ay)*ln.uy)/ln.len));LOGI.stats.earlyJoin=(LOGI.stats.earlyJoin||0)+1;lgRejoin(v,u)}}return}
+ if(m==='entry'){v.speed=0;v.wait=true;g.wait+=dt;const s=LOGI.sites[g.site];const P=lgPath([[v.x,v.y],...s.in.slice(1)]);const by=lgWayClear(v,s.pIn,s.inWatch)||(g.site==='REF'&&lgD5InYard()?'D5TK-TANKER':null)||(g.site==='REF'&&lgVanInZone()?'C5V-PICKUP':null);   /* the whole way in (a van of the yard on it, deeper in, would meet it head-on) */
+  const yb=!by&&g.site==='D4W'&&!lgD4Take(v);
+  if((by||yb)&&g.wait>14&&lgGoAround(v))return;
+  if(by||yb){g.waitBy=by||'D4-YARD';LOGI.stats.maxEntryWait=Math.max(LOGI.stats.maxEntryWait,g.wait);lgMaxW(g,'in');return}g.waitBy=null;lgSetPath(v,P,'in');g.phase='in';LOGI.stats.entries++;return}
+ if(m==='in'){if(g.site==='D4W'&&v.x<4250&&v.y<2810)lgD4Free(v);if(lgDrive(v,dt,parked,20)){const s=LOGI.sites[g.site];v.x=s.bay.x;v.y=s.bay.y;v.heading=s.bay.h;v.c5.mode='bay';v.speed=0;if(g.site===g.L.home)LOGI.stats.trips++;lgWorkStart(v,g.site);lgLog(v,'in the bay of '+g.site)}return}
+}
+/* the pallets moved so far by the forklift / the stacker (each one leaves / enters the truck at its own moment of the cycle) */
+function lgPallets(W,at){if(!W.n)return 0;const c=lgCyc(W),x=W.t-c.t0-(at==null?c.pick:at);return x<0?0:Math.min(W.n,Math.floor(x/c.T)+1)}
+function lgCyc(W){return W.kind==='load'?{t0:4,T:(W.dur-8)/W.n,pick:4.6}:{t0:3,T:(W.dur-6)/W.n,pick:3}}
+/* the road core: a truck of a line off the road is stepped here; at the end of its route it is handed here */
+var __lgYard=c5YardStep;c5YardStep=function(v,dt,parked){if(v&&v.logi){try{lgStep(v,dt,parked)}catch(e){LOGI.err=LOGI.err||String(e&&e.message||e)}return}return __lgYard(v,dt,parked)};
+var __lgArr=c5RoadArrived;c5RoadArrived=function(v){if(v&&v.logi){try{lgArrived(v)}catch(e){LOGI.err=LOGI.err||String(e&&e.message||e)}return}return __lgArr(v)};
+/* the maintenance van of the refinery (C5V, p574) waits at the hold point of its zones for a tanker in the yard — for this tanker too
+   (in the yard: leaving the bay, at the entrance on רחוב בית הזיקוק, or on the way in) */
+function lgRefYard(v){const g=v.logi,m=v.c5.mode;return g.site==='REF'&&(m==='out-a'||m==='merge'||m==='out-b'||m==='entry'||m==='in')}
+/* ready to leave its bay (done, in its hours): the van holds at the hold point of its zones (its own way of giving way to a tanker) — the van's zones cover the gate and the east road */
+function lgRefReady(v){const g=v.logi,m=v.c5.mode;return g.site==='REF'&&m==='bay'&&!!(g.work&&g.work.done)&&lgInHours(g.L.hours)}   /* not while it waits in its bay: the others go about their way, and it starts when the way is clear */
+/* … and it never drives into the way the tanker still has to drive (it may drive out of it): the van gives way to the tanker */
+function lgRefWay(v){const g=v.logi,m=v.c5.mode,S=LOGI.sites.REF;if(g.site!=='REF')return null;if(m==='out-a'||m==='out-b'||m==='in')return{P:g.path,s0:g.s};if(m==='merge')return{P:S.pB,s0:0};if(m==='entry')return{P:S.pIn,s0:0};if(m==='bay'&&g.work&&g.work.done)return{P:S.pB,s0:0};return null}
+function lgNearWay(W,x,y,r){for(let s=W.s0;s<=W.P.total;s+=8){const q=lgAt(W.P,s);if(Math.abs(q.x-x)<r&&Math.hypot(q.x-x,q.y-y)<r)return true}return false}
+var __lgVan=updateC5Van;updateC5Van=function(dt){const m=typeof C5V!=='undefined'&&C5V.m;if(!m)return __lgVan(dt);const o={d:m.d,x:m.x,y:m.y,heading:m.heading,segment:m.segment};__lgVan(dt);
+ try{for(const v of LOGI.veh){if(!lgRefYard(v))continue;const W=lgRefWay(v);if(!W)continue;if(lgNearWay(W,m.x,m.y,88)&&!lgNearWay(W,o.x,o.y,88)){Object.assign(m,o);m.speed=0;m.lgHold=(m.lgHold||0)+dt;LOGI.stats.vanHolds=(LOGI.stats.vanHolds||0)+1;break}}}catch(e){}};
+/* D4: the yard of the semis — the strip and the turn onto רחוב המחסנים are the semis' way out too: one at a time, by the same reservation */
+/* a semi that leaves the docks (B) or stands in its manoeuvre (stop) owns the strip; a semi that comes in through the south gate (A) does not cross it —
+   then the truck goes without the reservation; with the reservation free it takes it, and no semi starts out until it is through */
+function lgD4Take(v){try{const R=D4_GATE_RESERVATION;if(R.owner===v.id)return true;if(D4_YARD_SEMIS.some(o=>o.k==='B'||o.k==='stop'))return false;
+ if(R.owner){const o=D4_YARD_SEMIS.find(q=>q.id===R.owner);return !!o&&o.k==='A'}if(!(R.cooldown>0)){R.owner=v.id;R.direction='logi';R.since=SIM.ms}return true}catch(e){return true}}
+/* into the strip from the avenue: only the east end of the strip and the semis' lane north to it (x 4280–4480, y 2760–2980) matter */
+function lgD4EntryOk(v){try{const R=D4_GATE_RESERVATION,box=o=>o.x>4280&&o.x<4480&&o.y>2760&&o.y<(o.k==='B'?3220:2980);if(D4_YARD_SEMIS.some(box))return false;if(R.owner===v.id)return true;
+ if(R.owner){const o=D4_YARD_SEMIS.find(q=>q.id===R.owner);return !!o&&(o.k==='A'||o.x<4290&&o.y<2830)}if(!(R.cooldown>0)){R.owner=v.id;R.direction='logi';R.since=SIM.ms}return true}catch(e){return true}}
+function lgD4Free(v){try{const R=D4_GATE_RESERVATION;if(R.owner===v.id){R.owner=null;R.direction=null;R.since=0;R.cooldown=2}}catch(e){}}
+/* the barrier of the D4 gate lifts for the truck of the line as for a semi (D4_GATE_ARMS.in — p477) */
+var __lgD4Y=updateD4YardTraffic;updateD4YardTraffic=function(dt){__lgD4Y(dt);try{if(!TrafficCore2.inTick)return;const near=LOGI.veh.some(v=>v.logi.site==='D4W'&&(v.c5.mode==='in'||v.c5.mode==='entry')&&v.x>4380&&v.x<4530&&v.y>2960&&v.y<3200);if(near)D4_GATE_ARMS.in+=(1-D4_GATE_ARMS.in)*Math.min(1,Math.min(.1,dt)*5)}catch(e){}};
+/* the refinery's own tanker (D5TK, bay 1) and this one share the gate and the east road: one in the yard at a time —
+   D5TK stays at its bay, or waits at its gate on רחוב בית הזיקוק, while this tanker is in the yard; this one does not start while D5TK drives in it */
+/* linesA (10.11): הטנדר של בית הזיקוק בתוך חלק של הלולאה שלו שמשותף עם הדרך של המכליות (האזורים שלו — אותה בדיקה ש-D5TK עושה לפני שהיא יוצאת מהרציף, p621b).
+   נמדד (try2948, יום 1): המשאית נכנסה כשהטנדר נסע אל עמדת העצירה שלו שבנתיב השער; הם נעצרו חזית מול חזית, (3059, 3816) מול (2968, 3825), עד סוף ההרצה */
+function lgVanInZone(){try{const v=typeof C5V!=='undefined'&&C5V.m;if(!v||!v.G)return false;const Lv=v.G.L,dd=((v.d%Lv)+Lv)%Lv;return v.G.zones.some(z=>((dd-z.a)%Lv+Lv)%Lv<=z.b-z.a)}catch(e){return false}}
+function lgD5InYard(){try{const m=D5TK.m;if(!m)return false;const atBay=m.stopLeft>0&&m.route&&m.route.at==='bay';if(atBay)return false;if(m.x>2740&&m.x<3075&&m.y>3780&&m.y<4140)return true;
+  const g=m.route&&(m.route.gates||[]).find(q=>q.kind==='ref-yard');return !!(g&&g.done&&m.d>=g.d)}catch(e){return false}}   /* linesA (10.11): גם מהרגע שהמכלית עברה את שער ההמתנה שלה (ref-yard) ועד שהיא ברציף — המשאית לא מתחילה לצאת מולה */
+var __lgD5=updateD5Tanker;updateD5Tanker=function(dt){try{const m=D5TK.m;if(m&&m.stopLeft>0&&m.route&&m.route.at==='bay'&&LOGI.veh.some(lgRefYard))m.stopLeft=Math.max(m.stopLeft,1)}catch(e){}return __lgD5(dt)};
+/* linesA (10.11) — המקור של הקיפאון: המכלית חיכתה למשאית בשער ref-in עצמו, (3130, 3907), והגוף שלה שם עמד על הדרך החוצה של המשאית (lgWayClear על pB) — המתנה הדדית לתמיד.
+   עכשיו היא מחכה בשער ההמתנה ref-yard, ‏40 פיקס׳ לפני כן (נמדד: מ-20 פיקס׳ הדרך של המשאית פנויה ממנה) */
+var __lgD5G=d5tkGateClear;d5tkGateClear=function(m,g){const r=__lgD5G(m,g);if(r)return r;try{if(g&&g.kind==='ref-yard'&&LOGI.veh.some(lgRefYard))return'LOGI-TK-1'}catch(e){}return r};
+var __lgEta=c5vTankerEta;c5vTankerEta=function(G){const a=__lgEta(G);try{for(const v of LOGI.veh)if(lgRefYard(v)||lgRefReady(v))return 0}catch(e){}return a};
+/* ---- the drawing: the work at each bay, over the vehicles (the hose over the tanker, the forklift at the rear of the truck) ---- */
+const LG_LOOK={driver:{h:1.78,skin:'#c99a74',hair:{t:'short',c:'#20180f'},top:{t:'jacket',c:'#1f4f7a'},legs:{t:'trousers',c:'#23272b'},shoes:{t:'boots',c:'#2b1d12'}},
+ worker:{h:1.75,skin:'#d9a77f',hair:{t:'short',c:'#2b1d12'},top:{t:'jacket',c:'#f39c12'},legs:{t:'trousers',c:'#2b2f36'},shoes:{t:'boots',c:'#151515'}},
+ shop:{h:1.72,skin:'#b98a64',hair:{t:'short',c:'#1b140e'},top:{t:'shirt',c:'#2e7d32'},legs:{t:'trousers',c:'#3b3f43'},shoes:{t:'leather',c:'#151515'}}};
+function lgMan(g,x,y,look,act,h,ph){try{if(typeof P34==='undefined'||Camera.zoom<.55)return;P34.draw(g,x,y,look,act,h,ph||0,p599Res((Camera.zoom||1)*(window.devicePixelRatio||1)))}catch(e){}}
+function lgLerp(a,b,f){return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]}
+function lgSm(f){f=Math.max(0,Math.min(1,f));return f*f*(3-2*f)}
+/* a pallet (top view, 3/4): the wooden base and the boxes on it */
+function lgPallet(g,x,y,h){g.save();g.translate(x,y);g.rotate(h);g.fillStyle='#a0784a';g.fillRect(-4.5,-4.5,9,9);g.fillStyle='#d8c39a';g.fillRect(-4,-4,8,8);g.strokeStyle='rgba(90,64,30,.6)';g.lineWidth=.4;g.strokeRect(-4,-4,8,8);g.beginPath();g.moveTo(0,-4);g.lineTo(0,4);g.moveTo(-4,0);g.lineTo(4,0);g.stroke();g.restore()}
+/* a forklift / a stacker drawn as the machines of the live layers (never a vehicle asset — it never leaves its yard) */
+function lgFork(g,x,y,h,loaded,col,t,beacon){g.save();g.translate(x,y);g.rotate(h);g.fillStyle='#3d4248';g.fillRect(4,-3,8,1.1);g.fillRect(4,1.9,8,1.1);if(loaded){g.fillStyle='#a0784a';g.fillRect(4,-4.4,9,8.8);g.fillStyle='#d8c39a';g.fillRect(4.6,-3.8,7.8,7.6)}
+ g.fillStyle=col||'#f2c230';g.fillRect(-6,-4,10,8);g.fillStyle='#22262a';g.fillRect(-4,-2.6,4,5.2);g.fillStyle='#4a5058';g.fillRect(3,-4,1.4,8);if(beacon&&((t*2)%1)<.5){g.fillStyle='#ffb020';g.beginPath();g.arc(-2,0,1.4,0,LG_PI*2);g.fill()}g.restore()}
+/* the hose: a curve from a to b that sags a little, the flow as moving marks along it */
+function lgHose(g,a,b,t,flow,col){const mx=(a[0]+b[0])/2,my=Math.max(a[1],b[1])+5;g.strokeStyle=col||'#1f2326';g.lineWidth=1.7;g.beginPath();g.moveTo(a[0],a[1]);g.quadraticCurveTo(mx,my,b[0],b[1]);g.stroke();
+ if(flow){g.fillStyle='rgba(242,194,48,.95)';for(let i=0;i<4;i++){const u=((t*.9+i/4)%1),x=(1-u)*(1-u)*a[0]+2*u*(1-u)*mx+u*u*b[0],y=(1-u)*(1-u)*a[1]+2*u*(1-u)*my+u*u*b[1];g.beginPath();g.arc(x,y,.8,0,LG_PI*2);g.fill()}}}
+function lgGauge(g,x,y,f,label){g.save();g.fillStyle='rgba(12,18,24,.82)';g.fillRect(x-9,y-3,18,6);g.fillStyle=f>.5?'#63d99a':f>.2?'#ffd166':'#ff6d6d';g.fillRect(x-8,y-2,16*Math.max(0,Math.min(1,f)),4);g.restore()}
+function lgVehicleAt(siteId){return LOGI.veh.find(v=>v.c5.mode==='bay'&&v.logi.site===siteId)||null}
+/* the depth of the 3/4 view: what stands south of a vehicle is drawn after it (the queue of the 3/4 renderer, sorted by y) */
+function lgQ(y,f){try{if(c34Live()&&C34G&&C34G.q){C34G.q.push({y,f});return}}catch(e){}f()}
+/* a forklift as the forklifts of the D4 live layer (the 3/4 kit of LV-FK-01 at its scale; the pallet on its forks after it) */
+function lgForklift(g,x,y,h,loaded,now,key,mv,rev,nt){const post=()=>{if(loaded){const c=Math.cos(h),s=Math.sin(h);lgPallet(g,x+c*9,y+s*9-3,h)}};
+ try{if(c34Live()){const D=c34Dims('LV-FK-01',.3508),id=c34Id('LV-FK-01',D[0],D[1]);if(id&&c34Push(id,c34Col({}),x,y,h,{opt:c34Opt('LV-FK-01',{},'parked'),st:c34St(!mv,!!(rev&&mv),0,true,false),q:c34Ratio(id,'LV-FK-01',D[0]),key,r:D[0]*.6+12,post}))return}}catch(e){}
+ lgFork(g,x,y,h,loaded,'#f2c230',now/1000,mv)}
+/* the open rear doors of a box truck: two leaves swung back along its sides */
+function lgRearDoors(g,v,open){const h=v.heading,c=Math.cos(h),s=Math.sin(h),rx=v.x-c*50.6,ry=v.y-s*50.6,w=13.5;g.save();g.strokeStyle='#e8eef3';g.lineWidth=2;
+ for(const k of [-1,1]){const hx=rx-s*k*w,hy=ry+c*k*w,a=h+Math.PI+k*(Math.PI/2)*(1-open*.92),L=12;g.beginPath();g.moveTo(hx,hy);g.lineTo(hx+Math.cos(a)*L*(.4+.6*open),hy+Math.sin(a)*L*(.4+.6*open));g.stroke()}
+ g.fillStyle='rgba(20,22,26,'+(.85*open).toFixed(2)+')';g.fillRect(Math.min(rx,rx-c*2)-1,ry-w+1,3,2*w-2);g.restore()}
+function lgDrawRef(g,t,nt,now){const v=lgVehicleAt('REF'),post=[2764,3962],hatch=[2789,3974];if(!e3InView(2730,3900,120,160,30))return;
+ const W=v&&v.logi.work,on=!!(W&&W.kind==='fill'&&!W.done),f=on?W.t/W.dur:0,sw=on?lgSm(Math.min(f/.06,1,(1-f)/.06)):0;
+ g.save();g.fillStyle='#5b636b';g.fillRect(post[0]-2.4,post[1]-2.4,4.8,4.8);g.fillStyle=on?'#ffb020':'#3fbf5a';g.beginPath();g.arc(post[0],post[1]-3,1.3,0,LG_PI*2);g.fill();g.restore();
+ lgQ(4070,()=>{g.save();g.strokeStyle='#3a4048';g.lineWidth=4;const top0=[post[0],post[1]-14],end0=lgLerp([post[0]+2,post[1]-24],[hatch[0],hatch[1]-16],sw);g.beginPath();g.moveTo(post[0],post[1]);g.lineTo(top0[0],top0[1]);g.lineTo(end0[0],end0[1]);g.stroke();g.strokeStyle='#f2c230';g.lineWidth=2.2;const top=[post[0],post[1]-14],end=lgLerp([post[0]+2,post[1]-24],[hatch[0],hatch[1]-16],sw);g.beginPath();g.moveTo(post[0],post[1]);g.lineTo(top[0],top[1]);g.lineTo(end[0],end[1]);if(sw>.5){g.lineTo(end[0],end[1]+5)}g.stroke();
+  if(on&&sw>.98){g.fillStyle='rgba(242,194,48,.95)';for(let i=0;i<3;i++){const p=lgLerp(top,end,(t*1.4+i/3)%1);g.beginPath();g.arc(p[0],p[1],.9,0,LG_PI*2);g.fill()}}
+  if(v&&(on||W&&!W.done))lgGauge(g,v.x+20,v.y+44,v.logi.load);g.restore()});
+ if(v&&on)lgQ(3991,()=>lgMan(g,2752,3990,LG_LOOK.driver,'stand',0,0))}
+function lgDrawD3(g,t,nt,now){const v=lgVehicleAt('D3F');if(!e3InView(4240,1760,200,70,30))return;const lid=[4328,1806],valve=[4352,1797],door=[4285,1797];
+ const W=v&&v.logi.work,on=!!(W&&W.kind==='drain'&&!W.done),u=on?W.t:0,D=on?W.dur:1;
+ /* the driver: out of the cab (the front, west), along the south side to the valve (5 s), the hose to the tank lid (2.5 s), the drain, the hose back, to the cab */
+ let man=null,hose=0;if(on){if(u<5){const p=lgLerp(door,[valve[0]-6,valve[1]+8],lgSm(u/5));man={x:p[0],y:p[1],act:'walk',h:0,ph:(u*1.6)%1}}
+  else if(u<D-6){man={x:valve[0]-6,y:valve[1]+8,act:'stand',h:LG_PI/2};hose=Math.min(1,(u-5)/2.5)*(u>D-8?Math.max(0,(D-6-u)/2):1)}
+  else{const p=lgLerp([valve[0]-6,valve[1]+8],door,lgSm((u-(D-6))/5));man={x:p[0],y:p[1],act:'walk',h:LG_PI,ph:(u*1.6)%1}}}
+ if(hose>0)lgQ(1807,()=>{g.save();g.fillStyle='#22272c';g.beginPath();g.ellipse(lid[0],lid[1],4.2,2.4,0,0,LG_PI*2);g.fill();lgHose(g,valve,lgLerp(valve,lid,hose),t,hose>=1&&v.logi.load>.13);lgGauge(g,valve[0]+12,valve[1]+13,v.logi.load);g.restore()});
+ if(man)lgQ(man.y,()=>lgMan(g,man.x,man.y,LG_LOOK.driver,man.act,man.h,man.ph||0))}
+/* D4: door 2 of the big warehouse rolls up; the forklift brings each pallet out of the door to the rear of the truck in bay 1, then back in */
+function lgDrawD4(g,t,nt,now){if(!e3InView(3920,2700,200,110,30))return;const v=lgVehicleAt('D4W'),W=v&&v.logi.work,on=!!(W&&W.kind==='load'&&!W.done),D=[4050,4084,2726,2750];
+ const open=on?lgSm(Math.min(W.t/3,(W.dur-W.t)/3,1)):0;
+ if(open>0){g.save();g.fillStyle='rgba(20,22,26,.92)';g.fillRect(D[0]+1,D[3]-(D[3]-D[2])*open,D[1]-D[0]-2,(D[3]-D[2])*open);g.restore()}
+ if(on){const c=lgCyc(W),k=Math.floor((W.t-c.t0)/c.T),u=W.t-c.t0-k*c.T;const P0=[4067,2744],P1=[4067,2781],P2=[4048,2777];let p=P0,h=LG_PI/2,ld=false,mv=false,rev=false;
+  if(W.t>=c.t0&&k<W.n){if(u<3){p=lgLerp(P0,P1,lgSm(u/3));h=LG_PI/2;ld=true;mv=true}else if(u<4.6){p=lgLerp(P1,P2,lgSm((u-3)/1.6));h=LG_PI;ld=true;mv=true}else if(u<6){p=lgLerp(P2,P1,lgSm((u-4.6)/1.4));h=LG_PI;mv=true;rev=true}else if(u<8.6){p=lgLerp(P1,P0,lgSm((u-6)/2.6));h=LG_PI/2;mv=true;rev=true}else{p=P0;h=LG_PI/2;ld=u>c.T-1.5}}
+  if(open>.6||p[1]>2752)lgForklift(g,p[0],p[1],h,ld,now,'LOGI-FK-D4',mv,rev,nt);
+  lgQ(v.y+1,()=>lgRearDoors(g,v,open));lgQ(2771,()=>lgMan(g,4098,2770,LG_LOOK.worker,'stand',LG_PI,0))}}
+/* C2: the stacker of "שיבולת" (C2-STACKER) — from its place at the dock into the rear of the truck, a pallet out, south into the store room, back */
+function lgDrawC2(g,t,nt,now){if(!e3InView(3230,880,170,80,30))return;const v=lgVehicleAt('C2S'),W=v&&v.logi.work,on=!!(W&&W.kind==='unload'&&!W.done);
+ const REST=[3255,906],IN=[3266,903],BACK=[3250,906],MID=[3255,930],DROP=[3290,944];let p=REST,h=LG_PI/2,ld=false,act='stand',d=0;
+ if(on){const c=lgCyc(W),k=Math.floor((W.t-c.t0)/c.T),u=W.t-c.t0-k*c.T,T=c.T;if(W.t>=c.t0&&k<W.n){
+   if(u<3){p=lgLerp(REST,IN,lgSm(u/3));h=0;act='walk';d=u}else if(u<5){p=lgLerp(IN,BACK,lgSm((u-3)/2));h=0;ld=true;act='walk';d=u}
+   else if(u<7.5){p=lgLerp(BACK,MID,lgSm((u-5)/2.5));h=LG_PI/2;ld=true;act='walk';d=u}else if(u<9.5){p=lgLerp(MID,DROP,lgSm((u-7.5)/2));h=Math.atan2(DROP[1]-MID[1],DROP[0]-MID[0]);ld=true;act='walk';d=u}
+   else if(u<Math.min(T,12.5)){p=lgLerp(DROP,REST,lgSm((u-9.5)/Math.max(.5,Math.min(T,12.5)-9.5)));h=Math.atan2(REST[1]-DROP[1],REST[0]-DROP[0]);act='walk';d=u}}}
+ /* the pallets that came into the store room this visit (they stand by the door of the store room until the visit ends) */
+ if(on){const n=lgPallets(W,9.5);g.save();for(let i=0;i<n;i++)lgPallet(g,3297+(i%3)*9.5,950+Math.floor(i/3)*9.5,0);g.restore()}
+ if(v&&on){const open=lgSm(Math.min(W.t/2,(W.dur-W.t)/2,1));lgQ(v.y+1,()=>lgRearDoors(g,v,open))}
+ const c=Math.cos(h),s=Math.sin(h),P=p.slice(),H=h,LD=ld,A=act,DD=d;lgQ(P[1],()=>{g.save();lgFork(g,P[0],P[1],H,LD,'#f2c230',t,on);lgMan(g,P[0]-c*8,P[1]-s*8,LG_LOOK.shop,A,H,(DD*1.4)%1);g.restore()})}
+function lgDraw(now){if(!LOGI.on||!LOGI.seeded)return;const t=(now||0)/1000;let nt=0;try{nt=typeof g77NightT==='function'?g77NightT():0}catch(e){}
+ try{ctx.save();lgDrawRef(ctx,t,nt,now);lgDrawD3(ctx,t,nt,now);lgDrawD4(ctx,t,nt,now);lgDrawC2(ctx,t,nt,now);ctx.restore()}catch(e){LOGI.err=LOGI.err||'draw '+String(e&&e.message||e)}}
+var __lgDTC=drawTrafficCars;drawTrafficCars=function(now){__lgDTC(now);lgDraw(now)};
+/* the check of the ways off the road (every 4 px of every way of every site, the body of its truck): into a building or a solid of a zone
+   (blockedAt), and along a sidewalk (the centre within 7 px of a sidewalk of the walkers' graph, parallel to it, for more than 16 px —
+   a driveway crosses the sidewalk, it never drives along it) */
+const LG_C2OWN=[[2813,846,3510,886],[2813,806,2873,846],[3450,806,3510,846],[2955,886,3195,918],[3245,886,3385,918]];   /* C2_SERVICE_RECTS (p575/p606/p609) */
+function lgPathAudit(){const out={ok:true,ways:0,poses:0,solid:[],along:[]};const SW=(()=>{const L=[];try{for(const e of PED_GRAPH.edges){if(e.type!=='sidewalk')continue;const a=PED_NODE_BY_ID[e.a],b=PED_NODE_BY_ID[e.b];if(a&&b)L.push([a.x,a.y,b.x,b.y])}}catch(e){}return L})();
+ const veh=Object.assign({'REF':LG_LINES[0].veh,'D3F':LG_LINES[0].veh,'D4W':LG_LINES[1].veh,'C2S':LG_LINES[1].veh,'B4S':LG_LINES[1].veh},LOGI.vehOf||{});   /* S10 א: והמפרצים של קווים שנוספו אחר כך (LOGI.vehOf) */   /* trucks (10.11): + the market of B4 (GOODS-03) */
+ for(const [id,S] of Object.entries(LOGI.sites||{})){const V=veh[id];for(const [nm,P] of [['in',S.pIn],['outA',S.pA],['outB',S.pB]]){if(!P)continue;out.ways++;let run=0,runAt=null;
+  for(let d=0;d<=P.total;d+=4){const p=lgPose(P,d);out.poses++;const sh=vehicleCollisionShape(V.asset,V.ref,p.x,p.y,p.heading);
+   for(const [x,y] of [[sh.ax,sh.ay],[sh.bx,sh.by],[p.x,p.y]]){let h=null;try{h=blockedAt(x,y,Math.max(4,sh.radius-6))}catch(e){}if(h==='WORLD'||h==='C2-MALL'&&LG_C2OWN.some(R=>x>=R[0]&&x<=R[2]&&y>=R[1]&&y<=R[3]))h=null;if(h){out.solid.push([id,nm,Math.round(d),String(h),Math.round(x),Math.round(y)]);break}}
+   let par=false;for(const q of SW){const dx=q[2]-q[0],dy=q[3]-q[1],L=Math.hypot(dx,dy);if(L<1)continue;const u=Math.max(0,Math.min(1,((p.x-q[0])*dx+(p.y-q[1])*dy)/(L*L))),cx=q[0]+dx*u,cy=q[1]+dy*u;if(Math.hypot(p.x-cx,p.y-cy)<7&&Math.abs(Math.cos(p.heading)*dx/L+Math.sin(p.heading)*dy/L)>.9){par=true;break}}
+   if(par){run+=4;if(!runAt)runAt=[Math.round(p.x),Math.round(p.y)]}else{if(run>16)out.along.push([id,nm,run,runAt]);run=0;runAt=null}}
+  if(run>16)out.along.push([id,nm,run,runAt])}}
+ out.ok=!out.solid.length&&!out.along.length;return out}
+window.__LOGI=LOGI;window.__TC_LOGI={state:()=>LOGI.veh.map(v=>({id:v.id,mode:v.c5.mode,site:v.logi.site,to:v.logi.to,phase:v.logi.phase,work:v.logi.work&&{kind:v.logi.work.kind,t:+v.logi.work.t.toFixed(1),dur:v.logi.work.dur,done:v.logi.work.done},load:+(v.logi.load||0).toFixed(2),x:Math.round(v.x),y:Math.round(v.y),edge:v.edgeId,ri:v.routeIndex,route:(v.c5.route||[]).length,wait:+(v.logi.wait||0).toFixed(1),waitBy:v.logi.waitBy||null,blk:+(v.logi.blk||0).toFixed(1),blkBy:v.logi.blkBy||null})),stats:LOGI.stats,log:()=>LOGI.log.slice(-40),err:()=>LOGI.err,audit:()=>lgPathAudit()};
+try{lgSeed()}catch(e){LOGI.err='seed '+String(e&&e.message||e)}
+/* ===== trucks · D‑620 (הבעלים 10.11 10:26: "חסר מקום חניון משאיות מכל הסוגים בלילה … לכל אחד יהיה את המקום הקבוע שלו בעיר"):
+   מקום לילה קבוע לכל משאית, ליד העבודה שלה (חלופה א — ברירת המחדל, לאישורך). נמדד על S7F284 (deliver/2026-11-10/trucks/qa):
+   ארבעת הסמי של D4 נסעו כל הלילה בסיבוב בעיר, ומשאית השילוח של D5-01 נסעה הלוך ושוב בחצר; המכליות ומשאית הארגז כבר עמדו בבית.
+   עכשיו: לכל משאית מזהה מקום (v.tnSlot, נשמר בשמירה); בערב (מ-20:00 לפי השעון של המשחק) היא גומרת את הסבב, נוסעת בכבישים לחצר
+   שלה, נכנסת וחונה במקום שלה, ובבוקר (מ-05:30) יוצאת משם — הסמי אחד אחרי השני, עם המרווח של השער. בלי רכב שמופיע או נעלם,
+   בלי קפיצה, ובלי עמידה על כביש. החצרות — הקיימות (גדר, שער, תאורה); בכל מקום נוסף לוח צבוע עם המספר.
+   משאיות הנמל (FL_ACTIVE) — אצל S10; הכבאיות של התנועה הכללית — אצל העיר החיה (לא שונו כאן). ===== */
+var TN={v:1,from:1200,to:330,err:null,stats:{d4Held:0,d5tHeld:0,d4Docked:0,saves:0,restores:0},log:[]};
+const TN_HOMES=[
+ {slot:'TN-D4-1',truck:'D4-YARD-SEMI-1',kind:'d4',bay:0,label:'רציף 1 · מרכז ההפצה D4',n:'1'},
+ {slot:'TN-D4-2',truck:'D4-YARD-SEMI-2',kind:'d4',bay:1,label:'רציף 2 · מרכז ההפצה D4',n:'2'},
+ {slot:'TN-D4-3',truck:'D4-YARD-SEMI-3',kind:'d4',bay:2,label:'רציף 3 · מרכז ההפצה D4',n:'3'},
+ {slot:'TN-D4-4',truck:'D4-YARD-SEMI-4',kind:'d4',bay:3,label:'רציף 4 · מרכז ההפצה D4',n:'4'},
+ {slot:'TN-D4W-1',truck:'LOGI-BX-1',kind:'logi',site:'D4W',label:'עמדה 1 · המחסן הגדול D4',n:'5'},
+ {slot:'TN-REF-1',truck:'D5TK-TANKER',kind:'d5tk',x:2862,y:4000,label:'עמדת המילוי 1 · בית הזיקוק',n:'6'},
+ {slot:'TN-REF-2',truck:'LOGI-TK-1',kind:'logi',site:'REF',label:'עמדת המילוי 2 · בית הזיקוק',n:'7'},
+ {slot:'TN-D501-1',truck:'D5T-TRUCK',kind:'d5t',label:'הרציף של D5-01',n:'8'}];
+/* the painted plates: where the number is (world px) — at the free end of each place */
+const TN_PLATES={'TN-D4-1':[4268,2920],'TN-D4-2':[4268,2975],'TN-D4-3':[4268,3030],'TN-D4-4':[4268,3085],'TN-D4W-1':[3945,2770],'TN-REF-1':[2862,4050],'TN-REF-2':[2789,4050],'TN-D501-1':[3685,3786]};
+function tnMin(){try{const m=+gameClock().min;return Number.isFinite(m)?((m%1440)+1440)%1440:720}catch(e){return 720}}
+function tnNight(){const m=tnMin();return m>=TN.from||m<TN.to}   /* 20:00–05:30: no truck leaves its home */
+function tnTruck(H){try{if(H.kind==='d4')return D4_YARD_SEMIS.find(q=>q.id===H.truck)||null;if(H.kind==='logi')return (LOGI.veh||[]).find(q=>q.id===H.truck)||null;if(H.kind==='d5tk')return D5TK.m||null;if(H.kind==='d5t')return D5T.m||null}catch(e){}return null}
+function tnBind(){for(const H of TN_HOMES){const v=tnTruck(H);if(v&&!v.tnSlot)v.tnSlot=H.slot}}
+/* at home? — the place itself, standing, off the road */
+function tnAtHome(H,v){if(!v)return false;try{
+ if(H.kind==='d4')return v.k==='dock'&&v.bay===H.bay&&(v.speed||0)<.5;
+ if(H.kind==='logi'){const s=LOGI.sites&&LOGI.sites[H.site];return !!s&&v.c5&&v.c5.mode==='bay'&&v.logi.site===H.site&&Math.hypot(v.x-s.bay.x,v.y-s.bay.y)<4&&(v.speed||0)<.5}
+ if(H.kind==='d5tk')return Math.hypot(v.x-H.x,v.y-H.y)<6&&(v.speed||0)<.5;
+ if(H.kind==='d5t')return v.leg===1&&v.stopLeft>0&&Math.hypot(v.x-v.home.x,v.y-v.home.y)<4}catch(e){}return false}
+/* D4: a semi at its dock stays there through the night (the dwell does not run past its end, so in the morning the 75 s headway of the gate spaces the departures) */
+{const p=d4StepSemi;d4StepSemi=function(v,dt,parked){if(v.k==='dock'&&tnNight()){try{d4ArtSet(v,v.paths.dockPose)}catch(e){}v.speed=0;v.wait=false;v.state='חונה ללילה · רציף '+(v.bay+1);v.t=Math.min((v.t||0)+dt,Math.max(0,(v.dwell||0)-.01));if(!v.tnHeldNow){v.tnHeldNow=true;TN.stats.d4Held++;tnLog(v,'חונה ללילה')}return}
+ if(v.tnHeldNow&&v.k==='dock')v.tnHeldNow=false;return p(v,dt,parked)}}
+/* D5-01: the shipping truck stays at the dock through the night (it goes on to the customs only by day) */
+{const p=updateD5Truck;updateD5Truck=function(dt){try{const m=D5T.m;if(m&&tnNight()&&m.leg===1&&m.stopLeft>0){m.stopLeft=Math.max(m.stopLeft,(dt||0)+.5);if(!m.tnHeldNow){m.tnHeldNow=true;TN.stats.d5tHeld++;tnLog(m,'חונה ללילה')}}else if(m&&m.tnHeldNow&&!tnNight())m.tnHeldNow=false}catch(e){TN.err=TN.err||String(e&&e.message||e)}return p(dt)}}
+function tnLog(v,what){TN.log.push({clock:(()=>{try{return gameClock().hhmm}catch(e){return''}})(),id:v.id,what});if(TN.log.length>80)TN.log.shift()}
+/* the save: the place of every truck (worldPersistent.truckNight) — written with the save, read back with the load */
+function tnPersist(){try{tnBind();const s={};for(const H of TN_HOMES){const v=tnTruck(H);s[H.truck]=v&&v.tnSlot||H.slot}ensureEconomySchema().truckNight={v:1,slots:s};TN.stats.saves++}catch(e){TN.err=TN.err||String(e&&e.message||e)}}
+function tnRestore(){try{const s=PlayerProfile.worldPersistent&&PlayerProfile.worldPersistent.truckNight;if(!s||s.v!==1||!s.slots)return;const ok=new Set(TN_HOMES.map(H=>H.slot));
+ for(const H of TN_HOMES){const want=s.slots[H.truck];const v=tnTruck(H);if(v&&want&&ok.has(want)&&want===H.slot)v.tnSlot=want}TN.stats.restores++}catch(e){TN.err=TN.err||String(e&&e.message||e)}}
+{const p=c5PersistFleet;c5PersistFleet=function(){const r=p.apply(this,arguments);tnPersist();return r}}
+{const p=c5RestoreFleet;c5RestoreFleet=function(){const r=p.apply(this,arguments);tnRestore();return r}}
+/* the reserved places (the owner 10.11: "יש בעיר איזה 15 מקומות לפחות, ויש 6 או 7 סוגי משאיות"; "במרכז ההפצה כן נכנס החמישי"):
+   a place for every planned truck whose line still waits (D‑538) — kept free (or already held by its parked truck) and marked, numbers 9–20 */
+const TN_RESERVED=[
+ {slot:'TN-D4-5',for:'CONT-01',label:'רציף 5 · מרכז ההפצה — שלדה לקונטינר (CONT-01)',n:'9',plate:[4268,3140]},
+ {slot:'TN-D4W-2',for:'GOODS-03',label:'עמדה 2 · המחסן הגדול — משאית ארגז (GOODS-03)',n:'10',plate:[4124,2770]},
+ {slot:'TN-D4W-3',for:'GOODS-04',label:'עמדה 3 · המחסן הגדול — משאית ארגז (GOODS-04 / HOTEL-01)',n:'11',plate:[4234,2770]},
+ {slot:'TN-C5-2',for:'FUEL-02',label:'רציף 2 · חניון המשאיות C5 — מכלית (FUEL-02)',n:'12',plate:[3248,4022],narrow:true},
+ {slot:'TN-C4D-1',for:'GOODS-05',label:'מקום המשאית · מחסן ההובלה הקלה C4 (GOODS-05)',n:'13',plate:[2880,3300],narrow:true,held:'PC-XC4-TRK-DEPOT'},
+ {slot:'TN-C4K-1',for:'C4-DOCK',label:'מקום המשאית ליד הרציף · C4 (התעשייה)',n:'14',plate:[3312,2986],held:'PC-XC4-TRK-DOCK'},
+ {slot:'TN-C4V-1',for:'GOODS-02',label:'חצר הפריקה C4 — ואן 1',n:'15',plate:[2916,3281],narrow:true,stall:[2902,3224,2930,3290]},
+ {slot:'TN-C4V-2',for:'GOODS-02',label:'חצר הפריקה C4 — ואן 2',n:'16',plate:[2950,3281],narrow:true,stall:[2936,3224,2964,3290]},
+ {slot:'TN-C4V-3',for:'GOODS-02',label:'חצר הפריקה C4 — ואן 3',n:'17',plate:[2984,3281],narrow:true,stall:[2970,3224,2998,3290]},
+ {slot:'TN-D4V-1',for:'AIR-VAN',label:'מפרץ הוואן 1 · רחוב המחסנים D4 — ואן מטען אוויר',n:'18',plate:[3768,2925],narrow:true},
+ {slot:'TN-D4V-3',for:'AIR-VAN',label:'מפרץ הוואן 3 · רחוב המחסנים D4 — ואן מטען אוויר',n:'19',plate:[3768,3065],narrow:true},
+ {slot:'TN-D4V-5',for:'GOODS-02',label:'מפרץ הוואן 5 · רחוב המחסנים D4 — ואן החלוקה הרביעי',n:'20',plate:[3768,3205],narrow:true}];
+/* the plates: a painted plate on the ground at every place — "לילה" and the number (as the box-truck bays of p623); a reserved place — "שמור" */
+function tnPlate(g,x,y,word,n,narrow){const w=narrow?24:30;g.save();g.translate(x,y);g.fillStyle='rgba(28,32,36,.82)';g.fillRect(-w/2,-6.5,w,13);g.strokeStyle='#f2c230';g.lineWidth=1.1;g.strokeRect(-w/2,-6.5,w,13);
+ g.textAlign='center';g.textBaseline='middle';g.fillStyle='#f2c230';g.font='700 '+(narrow?4.6:5.6)+'px Arial, sans-serif';g.fillText(word,narrow?-4.5:-5.5,.3);g.fillStyle='#ffffff';g.font='800 '+(narrow?6.5:8)+'px Arial, sans-serif';g.fillText(n,narrow?6.5:8.5,.4);g.restore()}
+function tnPlates(g){for(const H of TN_HOMES){const P=TN_PLATES[H.slot];if(!P)continue;const [x,y]=P;if(!e3InView(x-20,y-10,40,20,10))continue;tnPlate(g,x,y,'לילה',H.n,false)}
+ for(const R of TN_RESERVED){const [x,y]=R.plate;if(!e3InView(x-40,y-70,80,90,10))continue;
+  if(R.stall){const S=R.stall;g.save();g.setLineDash([6,4]);g.strokeStyle='#f2c230';g.lineWidth=1.4;g.strokeRect(S[0]+.7,S[1]+.7,S[2]-S[0]-1.4,S[3]-S[1]-1.4);g.setLineDash([]);g.restore()}
+  tnPlate(g,x,y,'שמור',R.n,!!R.narrow)}}
+{const p=drawD4Ground;drawD4Ground=function(){const r=p.apply(this,arguments);try{tnPlates(ctx)}catch(e){TN.err=TN.err||String(e&&e.message||e)}return r}}
+/* the supply lines (073a): no trip starts from the home bay in the night window either — the tanker of FUEL-01 leaves for the last time at 20:00
+   (it was 21:00; a round trip takes 2–3 game hours, so it is back before midnight). The box truck of GOODS-01 ends at 19:00 anyway. */
+{const p=lgInHours;lgInHours=function(H){return p(H)&&!tnNight()}}
+/* the lights: a truck parked for the night at its home has its headlights off (the semis — c34D4; the others — by the key of the 3/4 queue) */
+let TN_DARK=false,TN_DARKSET=null,TN_DARKT=-1;
+function tnDarkIds(){const now=performance.now();if(TN_DARKSET&&now-TN_DARKT<250)return TN_DARKSET;TN_DARKT=now;const S=new Set();if(tnNight())for(const H of TN_HOMES){if(H.kind==='d4')continue;const v=tnTruck(H);if(v&&tnAtHome(H,v))S.add(String(v.id))}return TN_DARKSET=S}
+{const p=c34St;c34St=function(){const r=p.apply(this,arguments);if(TN_DARK&&r){r.head=0;r.beam=0}return r}}
+{const p=c34D4;c34D4=function(o,now){TN_DARK=!!(o&&o.tnHeldNow);try{return p(o,now)}finally{TN_DARK=false}}}
+{const p=c34Push;c34Push=function(id,col,x,y,h,o){try{if(o&&o.key!=null&&o.st&&tnDarkIds().has(String(o.key))){o.st.head=0;o.st.beam=0}}catch(e){}return p.apply(this,arguments)}}
+
+/* ===== stage 2 · GOODS-03 (D‑538: "כל קו שנקודות האיסוף והחלוקה שלו קיימות — מופעל באמת"): the market "שוק העיר" in B4.
+   Its point was missing on 8.11 ("מפרץ הפריקה — חדש — לבנייה"); since p625 it stands in the game: B4_DELIVERY, the bay by the south wall
+   (14 × 3.5 m), the strip of sidewalk to the door, in by the lane along the west wall (DW-B4-PK, one-way south), out east along the
+   lot's aisle (one-way east) and DW-B4-MKT-E — as the map (B4-PK-LANE, DW-B4-MKT-E) and the plan of the points (row 18) draw it.
+   The truck: the box truck of GOODS-01 (LOGI-BX-1) — one round for both shops: the big warehouse D4 (9 pallets) → "שיבולת" in the mall
+   (5) → the market of B4 (4) → home. A second box truck would need bay 2 of the warehouse, and the three bays stand end to end on one
+   line: a truck in bay 2 locks bay 1 in and out (nothing reverses) — so one truck now, the second with its own way (לאישורך).
+   Its hours: out of the warehouse 06:00–17:00 (it was 19:00 — the round is longer now, and it is home before the night). ===== */
+{const L=LG_LINES.find(q=>q.id==='GOODS-01');if(L&&!L.stops.includes('B4S')){L.stops.push('B4S');L.work.D4W={kind:'load',dur:89,n:9};L.work.B4S={kind:'unload',dur:126,n:4};L.hours=[6,17];
+ L.label='הסחורה: המחסן הגדול ב-D4 ← "שיבולת" בקניון (C2) ← "שוק העיר" (B4)';L.lines=['GOODS-01','GOODS-03']}
+ try{const i=LOGI.waiting.findIndex(q=>q[0]==='GOODS-03');if(i>=0)LOGI.waiting.splice(i,1)}catch(e){}
+ try{const v=LOGI.veh.find(q=>q.id==='LOGI-BX-1');if(v&&v.c5.mode==='bay'&&v.logi.site==='D4W'&&v.logi.work&&!v.logi.work.done){v.logi.load=0;lgWorkStart(v,'D4W')}}catch(e){}}   /* 073a seeded it with the old load (5): the first load is the new one (9) */
+function tnB4Site(){
+ /* B4 · the market: in — north in the east lane of שדרת המערב, right into DW-B4-PK, right down the lane along the west wall (x 1305),
+    left into the bay (the truck stands facing east, its rear doors by the lane); out — east, a long easy right into the aisle (y 3310),
+    east through DW-B4-MKT-E, left round the turning circle of רחוב השכונה into its north lane. (Every way: tools/b4geo.py — the body
+    against the walls, the strip, the stalls and the lamps.) */
+ const I=[[1222,3180]];lgLine(I,1222,3165);lgArc(I,1262,3165,40,LG_PI,LG_PI*1.5,10);lgLine(I,1270,3125);lgArc(I,1270,3160,35,-LG_PI/2,0,12);lgLine(I,1305,3223);lgArc(I,1350,3223,45,LG_PI,LG_PI/2,12);lgLine(I,1412,3268);
+ const B=[[1412,3268]];lgEase(B,1412,3268,1560,3310,16,'x');lgLine(B,1712,3310);lgLine(B,1760,3310);lgArc(B,1760,3248,62,LG_PI/2,0,12);lgLine(B,1822,3230);
+ const s={id:'B4S',zone:'B4',label:'"שוק העיר" ב-B4 — מפרץ הפריקה',arrive:{edge:'B4-CLW-C',dir:-1,t:(3260-3180)/340},in:I,bay:{x:1412,y:3268,h:0},outA:null,outB:B,join:{edge:'B4-LCB',dir:-1,t:(3300-3230)/750,k:0},
+  inWatch:[{box:[1282,3090,1345,3300],any:true,dir:[0,0]}],outWatch:[{box:[1760,3080,1800,3300],dir:[0,1]},{box:[1716,3215,1895,3385],any:true,dir:[0,0]}]};
+ s.pIn=lgPath(s.in);s.pA=null;s.pB=lgPath(s.outB);return s}
+{const p=lgSites;lgSites=function(){const S=p();S.B4S=tnB4Site();return S}}
+try{if(LOGI.sites&&!LOGI.sites.B4S)LOGI.sites.B4S=tnB4Site()}catch(e){LOGI.err=LOGI.err||'B4 site '+String(e&&e.message||e)}   /* 073a seeds at load, before this part */
+/* the work at the market: the driver takes each pallet out of the rear on a pallet jack, along the strip to the door; the pallets wait by the door until the truck leaves */
+function lgJack(g,x,y,h,loaded){g.save();g.translate(x,y);g.rotate(h);g.fillStyle='#c0392b';g.fillRect(-6,-3.2,9,6.4);g.fillStyle='#2b2f33';g.fillRect(-7.5,-.8,2.2,1.6);g.restore();if(loaded)lgPallet(g,x+Math.cos(h)*1.5,y+Math.sin(h)*1.5,h)}
+function lgDrawB4(g,t,nt,now){if(!e3InView(1330,3200,190,100,30))return;const v=lgVehicleAt('B4S'),W=v&&v.logi.work,on=!!(W&&W.kind==='unload'&&!W.done);if(!on)return;
+ const REAR=[1352,3268],UP=[1352,3237],DA=[1486,3237],DROP=[1492,3222],seg=[[REAR,UP],[UP,DA],[DA,DROP]],L=seg.map(q=>Math.hypot(q[1][0]-q[0][0],q[1][1]-q[0][1])),TOT=L[0]+L[1]+L[2];
+ const at=d=>{d=Math.max(0,Math.min(TOT,d));for(let i=0;i<3;i++){if(d<=L[i]){const f=d/L[i];return[lgLerp(seg[i][0],seg[i][1],f),Math.atan2(seg[i][1][1]-seg[i][0][1],seg[i][1][0]-seg[i][0][0])]}d-=L[i]}return[DROP,-LG_PI/2]};
+ const c=lgCyc(W),k=Math.floor((W.t-c.t0)/c.T),u=W.t-c.t0-k*c.T;let p=REAR,h=LG_PI,ld=false,act='stand',ph=0;
+ if(W.t>=c.t0&&k<W.n){if(u<2){p=REAR;h=0;ld=u>1.2}else if(u<12){const r=at(TOT*lgSm((u-2)/10));p=r[0];h=r[1];ld=true;act='walk';ph=u}else if(u<13.5){p=DROP;h=-LG_PI/2;ld=u<12.8}else if(u<23.5){const r=at(TOT*(1-lgSm((u-13.5)/10)));p=r[0];h=r[1]+LG_PI;act='walk';ph=u}else{p=REAR;h=0}}
+ const n=lgPallets(W,12.8);for(let i=0;i<n;i++){const x=1466+(i%2)*10,y=3212+Math.floor(i/2)*10;lgQ(y,()=>lgPallet(g,x,y,0))}
+ {const open=lgSm(Math.min(W.t/2,(W.dur-W.t)/2,1));lgQ(v.y+1,()=>lgRearDoors(g,v,open))}
+ const P=p.slice(),H=h,LD=ld,A=act,PH=ph,cx=Math.cos(H),sx=Math.sin(H);lgQ(P[1],()=>{g.save();lgJack(g,P[0]+cx*7,P[1]+sx*7,H,LD);lgMan(g,P[0]-cx*2,P[1]-sx*2,LG_LOOK.driver,A,H,(PH*1.4)%1);g.restore()})}
+{const p=lgDraw;lgDraw=function(now){p(now);if(!LOGI.on||!LOGI.seeded)return;try{const t=(now||0)/1000;let nt=0;try{nt=typeof g77NightT==='function'?g77NightT():0}catch(e){}ctx.save();lgDrawB4(ctx,t,nt,now);ctx.restore()}catch(e){LOGI.err=LOGI.err||'draw B4 '+String(e&&e.message||e)}}}
+/* the check: every truck at its place (by night), none on a road, none missing */
+function tnAudit(){tnBind();const night=tnNight(),rows=[];let home=0,missing=0;
+ for(const H of TN_HOMES){const v=tnTruck(H);if(!v){missing++;rows.push({slot:H.slot,truck:H.truck,missing:true});continue}const at=tnAtHome(H,v);if(at)home++;
+  rows.push({slot:H.slot,truck:H.truck,saved:v.tnSlot||null,at,x:Math.round(v.x),y:Math.round(v.y),sp:+(+(v.speed||0)).toFixed(1),state:v.k||v.c5&&v.c5.mode||v.leg})}
+ return{clock:(()=>{try{return gameClock().hhmm}catch(e){return''}})(),night,homes:TN_HOMES.length,home,missing,ok:missing===0&&(!night||home===TN_HOMES.length),rows,stats:TN.stats,err:TN.err}}
+window.__TC_TRUCKS={audit:()=>tnAudit(),homes:()=>TN_HOMES.map(H=>Object.assign({},H,{plate:TN_PLATES[H.slot]})),reserved:()=>TN_RESERVED.map(R=>Object.assign({},R)),log:()=>TN.log.slice(),night:()=>tnNight()};
+/* ===== logi · היציאה של המכלית מבית הזיקוק אל LC-C5 (073a, האתר REF, 'out-b') — הקיפאון של לילה 4 ב-S7F292 (מ-09:54 עד הסוף) ושל לילה 2 ב-cand291c.
+   המקור (העקיבה: qa/int292/lines_cand292a/night4.json, ‏fulls 1–3): LOGI-TK-1 עומדת ב-(3068, 3836), heading 0, ‏s 93.7 מתוך 202 של pB — החזית שלה (124 פיקס׳)
+   כבר בנתיב הצפוני של LC-C5 (x ‏3132). ‏AI-CAR-41 בנתיב הצפוני ב-(3132, 3877): ‏lead = LOGI-TK-1, ‏gap −8.4 (הגוף שלו כבר בתוך הגוף שלה); המכלית: blkBy = AI-CAR-41.
+   מאחורי AI-CAR-41 עומד AI-CAR-42 (gap −1.5), כך שהוא לא יכול לסגת (ghostYield2 / bo 86 → 126 — מנסה ולא מצליח). נעילה הדדית קבועה.
+   למה המכלית יצאה: בבדיקת היציאה ('merge') קופסת השמירה מדרום (x ‏3110–3156, ‏y ‏3780–4060) תופסת רק רכב שנוסע צפונה עכשיו; מכונית שעמדה ברמזור של
+   J31_42 (y ‏4250) — מחוץ לקופסה — יצאה בירוק, ועד שהמכלית חצתה את הנתיב הדרומי ונכנסה לפנייה (כ-10 שנ׳, עד 24 פיקס׳ בשנייה) — היא כבר הייתה שם (כ-420 פיקס׳).
+   התיקון (בלי שינוי בכבישים ובכיוונים, D‑605):
+   (1) המכלית מתחילה את היציאה רק כשהנתיב הצפוני של LC-C5 פנוי מנקודת ההצטרפות ועד הצומת: אף רכב (עומד או נוסע) ב-y ‏3770–3990, ואף רכב שנוסע צפונה
+       ב-y ‏3990–4270 או שפונה בצומת J31_42 צפונה.
+   (2) מהרגע שהיא יוצאת ('out-b') ועד שהיא בנתיב — זכות קדימה ברורה: "רוח" עומדת בנתיב הצפוני ב-(3132, 3858) — מכונית שמגיעה מדרום עוצרת מאחוריה
+       (כ-100 פיקס׳ לפני הפנייה), במקום להיכנס לגוף של המכלית. כשהמכלית בנתיב — הרוח יוצאת, והמכוניות נוסעות אחריה.
+   (3) אותו דבר ב-E5 (074w, האתר E5F), אם הוא בבנייה: הנתיב החיצוני צפונה של שדרת המזרח מדרום לפנייה. ===== */
+var LGR={err:null,waits:0,claims:0,maxWait:0,by:{}};
+const LGR_SITES={
+ REF:{x0:3108,x1:3158,near:[3770,3990],far:[3990,4270],node:[3110,4250],claim:[3132,3858]},
+ E5F:{x0:4697,x1:4742,near:[3880,4040],far:[4040,4260],node:null,claim:[4719,4010]}};
+function lgrList(){const L=[];try{for(const o of TRAFFIC_CARS)L.push(o)}catch(e){}try{for(const o of BUS_VEHICLES)L.push(o)}catch(e){}try{for(const o of D4_YARD_SEMIS)L.push(o)}catch(e){}try{for(const o of a4FleetActors())L.push(o)}catch(e){}return L}
+function lgrBusy(v,K){for(const o of lgrList()){if(o===v||!(o.x>-9000))continue;
+  if(o.x>=K.x0&&o.x<=K.x1){if(o.y>K.near[0]&&o.y<K.near[1])return o.id;
+   if(o.y>=K.far[0]&&o.y<K.far[1]&&(o.speed||0)>1.5&&Math.sin(o.heading||0)<-.5)return o.id}
+  if(K.node&&Math.hypot(o.x-K.node[0],o.y-K.node[1])<80&&(o.speed||0)>1&&Math.sin(o.heading||0)<-.3)return o.id}
+ try{if(PlayerCar&&PlayerCar.x>=K.x0&&PlayerCar.x<=K.x1&&PlayerCar.y>K.near[0]&&PlayerCar.y<K.far[1])return'PLAYER-CAR'}catch(e){}
+ return null}
+{const p=lgStep;lgStep=function(v,dt,parked){const g=v.logi,K=g&&g.site?LGR_SITES[g.site]:null;
+ if(K&&v.c5.mode==='merge'&&LOGI.sites[g.site]){try{const by=lgrBusy(v,K);if(by){v.speed=0;v.wait=true;g.wait=(g.wait||0)+dt;g.waitBy=by;LGR.waits++;LGR.maxWait=Math.max(LGR.maxWait,g.wait);LGR.by[by]=(LGR.by[by]||0)+1;return}}catch(e){LGR.err=LGR.err||String(e&&e.message||e)}}
+ return p(v,dt,parked)}}
+{const p=collectGhosts2;collectGhosts2=function(){p();try{for(const v of LOGI.veh){const g=v.logi,K=g&&g.site?LGR_SITES[g.site]:null;if(!K||v.c5.mode!=='out-b'||!LOGI.sites[g.site])continue;
+  addGhost2('LGR-CLAIM-'+v.id,K.claim[0],K.claim[1],-Math.PI/2,v.asset,v.ref,0,'c5-yard',0);LGR.claims++}}catch(e){LGR.err=LGR.err||'claim '+String(e&&e.message||e)}}}
+window.__TC_LOGI_REF={stats:()=>Object.assign({},LGR,{by:Object.assign({},LGR.by)})};
+/* ==== S10 א (המשך, 10.11) · PORT-01 — משאית המחסן של הנמל: מחסן הנמל 1 (D6) ← מרכז ההפצה ב-D4 (D‑538; כללים 25 / 32) ===========================
+   רכב של הסימולציה בקו של הלוגיסטיקה (073a): משאית ארגז ב-TRAFFIC_CARS, בכבישים של מנוע הכבישים, ממקור אמיתי ליעד אמיתי, ואף פעם לא מופיעה ולא נעלמת.
+   הדרך לפי הגיליון (סעיף 10 של המתכנן: הרציפים של מחסן 1 נפתחים לחצר של מסוף היבוא, דרך DW-D6-IMPORT / DW-D6-CARRIER):
+   נכנסת מדרך הרציף (PT-Q, מערבה, ימינה) בשער של מסוף היבוא, צפונה בנתיב מהשער, ימינה במעבר, ועומדת במעבר עם הדלת האחורית מול המעבר שבין המקומות
+   (IM-15 / IM-34); המלגזה של המחסן מוציאה 5 משטחים מדלת 3 ומעמיסה; ממשיכה מזרחה ויוצאת ביציאה של המובילים (DW-D6-CARRIER) ימינה לדרך שער המזרח.
+   ב-D4 — פורקת במחסן הגדול (D4W, אותו מפרץ של קו GOODS-01; המלגזה של D4 מכניסה את המשטחים לדלת 2). בלילה — עומדת במעבר של מסוף היבוא. */
+var S10LG={err:null,line:null};
+(function(){try{
+ const PI=Math.PI,nd=id=>NODES.find(n=>n.id===id),proj=(id,d,x,y)=>{const e=EDGES.find(q=>q.id===id),A=nd(e.a),Bn=nd(e.b),s0=d>0?A:Bn,s1=d>0?Bn:A,dx=s1.x-s0.x,dy=s1.y-s0.y,L=Math.hypot(dx,dy);
+  return Math.max(.01,Math.min(.99,((x-s0.x)*dx+(y-s0.y)*dy)/(L*L)))};   /* t — החלק של הקטע מתחילת הנסיעה בכיוון שלה (כמו arrive / join של האתרים ב-073a) */
+ /* פנימה: מהנתיב הצפוני של דרך הרציף (מערבה) ימינה לשער, צפונה בנתיב מהשער (x 4240), ימינה במעבר (y 4682) עד המפרץ */
+ const I=[[4340,4878]];lgLine(I,4290,4878);lgArc(I,4290,4828,50,PI/2,PI,10);lgLine(I,4240,4712);lgArc(I,4270,4712,30,PI,PI*1.5,8);lgLine(I,4372,4682);
+ /* החוצה: מזרחה במעבר, אל היציאה של המובילים (y 4700), על המדרכה בניצב, ימינה לנתיב דרומה של דרך שער המזרח */
+ const B=[[4372,4682]];lgLine(B,4470,4682);lgEase(B,4470,4682,4530,4713,8,'x');lgLine(B,4560,4713);lgArc(B,4560,4742,29,-PI/2,0,8);lgLine(B,4589,4790);   /* S10 א (המשך): דרך הנתיב היוצא של השער המזרחי */
+ const S={id:'D6W',zone:'D6',label:'מחסן הנמל 1 — המעבר של מסוף היבוא, מול דלת 3',arrive:{edge:'PT-Q3',dir:-1,t:proj('PT-Q3',-1,4340,4878)},in:I,bay:{x:4372,y:4682,h:0},outA:null,outB:B,
+  join:{edge:'PT-E1',dir:1,t:proj('PT-E1',1,4589,4790),k:0},inWatch:[],outWatch:[{box:[4566,4580,4610,4760],dir:[0,1]}]};
+ S.pIn=lgPath(S.in);S.pA=null;S.pB=lgPath(S.outB);LOGI.sites.D6W=S;
+ const L={id:'PORT-01',kind:'goods',label:'המחסן של הנמל: מחסן הנמל 1 (D6) ← המחסן הגדול ב-D4',veh:{id:'LOGI-BX-2',asset:'VH-TR-01',ref:'Truck',label:'משאית המחסן של הנמל (קו PORT-01)',color:2},home:'D6W',stops:['D4W'],hours:[6.5,18],
+  work:{D6W:{kind:'load',dur:66,n:5},D4W:{kind:'unload',dur:70,n:5}}};
+ LG_LINES.push(L);S10LG.line=L;LOGI.vehOf=Object.assign(LOGI.vehOf||{},{D6W:L.veh});
+ /* הזריעה — כמו lgSeed: במפרץ הבית, עם העבודה של המפרץ (לא מופיעה אחר כך ולא נעלמת) */
+ const V=L.veh,v={id:V.id,asset:V.asset,ref:V.ref,kind:'freight',label:V.label,colorIndex:V.color,edgeId:S.join.edge,dirSign:S.join.dir,t:S.join.t,lane:0,lanePref:0,laneTarget:0,routeIndex:0,
+  x:S.bay.x,y:S.bay.y,heading:S.bay.h,speed:0,targetSpeed:78,wait:false,stuck:0,ghost:0,plan:null,turn:null,hop:0,
+  c5:{mode:'bay',route:[],finalT:0,purpose:'logi',path:null},logi:{line:L.id,L,site:L.home,next:0,phase:'work',work:null,load:0,s:0,path:null,wait:0}};
+ lgWorkStart(v,L.home);TRAFFIC_CARS.push(v);LOGI.veh.push(v);
+ const i=LOGI.waiting.findIndex(w=>w[0]==='CONT-01');if(i>=0)LOGI.waiting[i]=['CONT-01',LOGI.waiting[i][1],LOGI.waiting[i][2]+' · S10 א: קו PORT-01 (משאית ארגז ממחסן הנמל 1 ל-D4) נבנה; משאית המכולות עצמה — לאישורך (עמודי הצינור בנתיב של השער המערבי)'];
+}catch(e){S10LG.err='seed '+String(e&&e.stack||e).slice(0,300)}})();
+/* ---- הציור: המלגזה של מחסן 1 מעמיסה (דלת 3 ← המעבר בין המקומות ← הדלת האחורית); ב-D4 — המלגזה של המחסן פורקת אל דלת 2 ---- */
+function s10LgDrawD6(g,t,nt,now){if(!e3InView(4280,4490,160,210,30))return;const v=lgVehicleAt('D6W'),W=v&&v.logi.work,on=!!(W&&W.kind==='load'&&!W.done),D=[4290,4336,4482,4505];
+ const open=on?lgSm(Math.min(W.t/3,(W.dur-W.t)/3,1)):0;
+ if(open>0){g.save();g.fillStyle='rgba(20,22,26,.92)';g.fillRect(D[0]+1,D[3]-(D[3]-D[2])*open,D[1]-D[0]-2,(D[3]-D[2])*open);g.restore()}
+ const P0=[4313,4514],P1=[4323,4560],P2=[4323,4660],P3=[4306,4682];let p=P0,h=PI2(),ld=false,mv=false,rev=false;function PI2(){return LG_PI/2}
+ if(on){const c=lgCyc(W),k=Math.floor((W.t-c.t0)/c.T),u=W.t-c.t0-k*c.T;
+  if(W.t>=c.t0&&k<W.n){if(u<1.4){p=lgLerp(P0,P1,lgSm(u/1.4));ld=true;mv=true}else if(u<3.6){p=lgLerp(P1,P2,lgSm((u-1.4)/2.2));ld=true;mv=true}else if(u<4.6){p=lgLerp(P2,P3,lgSm((u-3.6)/1));h=Math.atan2(P3[1]-P2[1],P3[0]-P2[0]);ld=true;mv=true}
+   else if(u<5.4){p=lgLerp(P3,P2,lgSm((u-4.6)/.8));h=Math.atan2(P3[1]-P2[1],P3[0]-P2[0]);mv=true;rev=true}else if(u<7.6){p=lgLerp(P2,P1,lgSm((u-5.4)/2.2));mv=true;rev=true}else if(u<9){p=lgLerp(P1,P0,lgSm((u-7.6)/1.4));mv=true;rev=true}else{p=P0;ld=u>c.T-1.2}}}
+ if(on||open>0)lgForklift(g,p[0],p[1],h,ld,now,'LOGI-FK-D6',mv,rev,nt);
+ if(v&&on){lgQ(v.y+1,()=>lgRearDoors(g,v,open));lgQ(4520,()=>lgMan(g,4346,4518,LG_LOOK.worker,'stand',LG_PI/2,0))}}
+function s10LgDrawD4(g,t,nt,now){if(!e3InView(3920,2700,200,110,30))return;const v=lgVehicleAt('D4W'),W=v&&v.logi.work,on=!!(W&&W.kind==='unload'&&!W.done),D=[4050,4084,2726,2750];if(!on)return;
+ const open=lgSm(Math.min(W.t/3,(W.dur-W.t)/3,1));g.save();g.fillStyle='rgba(20,22,26,.92)';g.fillRect(D[0]+1,D[3]-(D[3]-D[2])*open,D[1]-D[0]-2,(D[3]-D[2])*open);g.restore();
+ const c=lgCyc(W),k=Math.floor((W.t-c.t0)/c.T),u=W.t-c.t0-k*c.T,P0=[4067,2744],P1=[4067,2781],P2=[4048,2777];let p=P0,h=LG_PI/2,ld=false,mv=false,rev=false;
+ if(W.t>=c.t0&&k<W.n){if(u<2.6){p=lgLerp(P0,P1,lgSm(u/2.6));mv=true}else if(u<4){p=lgLerp(P1,P2,lgSm((u-2.6)/1.4));h=LG_PI;mv=true}else if(u<5.4){p=lgLerp(P2,P1,lgSm((u-4)/1.4));h=LG_PI;ld=true;mv=true;rev=true}
+  else if(u<8){p=lgLerp(P1,P0,lgSm((u-5.4)/2.6));h=LG_PI/2;ld=true;mv=true;rev=true}}
+ lgForklift(g,p[0],p[1],h,ld,now,'LOGI-FK-D4',mv,rev,nt);lgQ(v.y+1,()=>lgRearDoors(g,v,open));lgQ(2771,()=>lgMan(g,4098,2770,LG_LOOK.worker,'stand',LG_PI,0))}
+{const pD=lgDraw;lgDraw=function(now){pD(now);if(!LOGI.on||!LOGI.seeded)return;const t=(now||0)/1000;let nt=0;try{nt=typeof g77NightT==='function'?g77NightT():0}catch(e){}
+ try{ctx.save();s10LgDrawD6(ctx,t,nt,now);s10LgDrawD4(ctx,t,nt,now);ctx.restore()}catch(e){S10LG.err=S10LG.err||'draw '+String(e&&e.message||e)}}}
+/* בדיקה (לסוכן ולמתאם): המהירות הגבוהה של המשאית בכל סוג דרך, מול המהירות של מכוניות התנועה; המצב שלה */
+window.__S10LG={err:()=>S10LG.err,state:()=>{const v=LOGI.veh.find(q=>q.id==='LOGI-BX-2');return v?{mode:v.c5.mode,site:v.logi.site,to:v.logi.to,x:Math.round(v.x),y:Math.round(v.y),edge:v.edgeId,load:v.logi.load,speed:+(v.speed||0).toFixed(1)}:null}};
+const PERF={names:[],opsBy:null,hud:false,profile:false,wrapped:false,orig:[],stack:[],acc:null,kacc:null,fnAcc:null,frames:null,rec:false,ops:0,opsPatched:null,
+ timeOfs:0,frame0:null,lastReal:0,roll:[],longTasks:[],lto:null,busy:false,report:null,el:null,status:'',heapLast:0,gcEst:0,growth:null,gpu:null,bench:null};
+function perfNewAcc(keys){const a={};for(const k of keys)a[k]=0;return a}
+function perfMakeWrapper(f,name,cat,kind){
+ const S=PERF.stack,N=PERF.names;
+ const w=function(){const t0=performance.now();S.push(0);N.push(name);try{return f.apply(this,arguments)}finally{N.pop();const el=performance.now()-t0,child=S.pop(),ex=el-child;if(PERF.acc){PERF.acc[cat]+=ex;PERF.kacc[kind]+=ex;PERF.fnAcc[name]=(PERF.fnAcc[name]||0)+ex}if(S.length)S[S.length-1]+=el}};
+ w.__perfOrig=f;return w}
+function perfWrap(){
+ if(PERF.wrapped)return;PERF.orig=[];
+ for(const [name,cat,get,set,kind] of PERF_FN_TABLE){let f;try{f=get()}catch{continue}if(typeof f!=='function'||f.__perfOrig)continue;const w=perfMakeWrapper(f,name,cat,kind);try{set(w);PERF.orig.push([set,f])}catch{}}
+ for(const [name,cat,get,kind] of PERF_METHOD_TABLE){let o;try{o=get()}catch{continue}const [obj,key]=o||[];if(!obj||typeof obj[key]!=='function'||obj[key].__perfOrig)continue;const f=obj[key],w=perfMakeWrapper(f,name,cat,kind);obj[key]=w;PERF.orig.push([g=>{obj[key]=g},f])}
+ PERF.wrapped=true}
+function perfUnwrap(){if(!PERF.wrapped)return;for(const [set,f] of PERF.orig)try{set(f)}catch{}PERF.orig=[];PERF.wrapped=false}
+// canvas draw operations on the game canvas (counted only while a window asks for it)
+const PERF_OPS=['fill','stroke','fillRect','strokeRect','drawImage','fillText','strokeText','clearRect','putImageData'];
+function perfOpsOn(on){
+ if(on&&!PERF.opsPatched){PERF.opsPatched={};for(const k of PERF_OPS){const f=ctx[k];PERF.opsPatched[k]=Object.prototype.hasOwnProperty.call(ctx,k)?f:null;ctx[k]=function(){PERF.ops++;if(k==='drawImage')PERF.img=(PERF.img||0)+1;if(PERF.opsBy){const n=PERF.names.length?PERF.names[PERF.names.length-1]:'(frame)';PERF.opsBy[n]=(PERF.opsBy[n]||0)+1}return f.apply(this,arguments)}}}
+ else if(!on&&PERF.opsPatched){for(const k of PERF_OPS){if(PERF.opsPatched[k])ctx[k]=PERF.opsPatched[k];else delete ctx[k]}PERF.opsPatched=null}}
+const perfHeap=()=>performance.memory?performance.memory.usedJSHeapSize/1048576:null;
+// the frame wrapper: real frame interval, JS time of the whole frame, the SIM advance of the frame, heap drops (GC estimate), an optional
+// clock offset (the port scenario shows a fixed moment of the absolute-time rail / port schedule)
+function perfFrameHook(on){
+ if(on&&!PERF.frame0){const f0=frame;PERF.frame0=f0;
+  frame=function(now){const r0=performance.now(),dtReal=PERF.lastReal?r0-PERF.lastReal:0;PERF.lastReal=r0;
+   const rec=!!((PERF.rec&&PERF.frames)||PERF.profile);if(rec){PERF.acc=perfNewAcc(PERF_CATS);PERF.kacc=perfNewAcc(PERF_KINDS);PERF.fnAcc=PERF.fnAccRun||(PERF.fnAccRun={});PERF.ops=0;PERF.img=0}
+   if(PERF.path)perfPathStep(r0);if(typeof G77_OT!=='undefined'){if(G77_OT.drive)g77OtDriveStep(r0);if(G77_OT.zoom)g77OtZoomStep(r0);if(G77_OT.hide){requestAnimationFrame(frame);return}}   /* D-218 */
+   const SL=typeof SIM_LOOP!=='undefined'?SIM_LOOP:null,s0=SL&&SL.simNow!=null?SL.simNow/1000:SIM.t,k0=SL?SL.steps:TrafficCore2.counts.ticks,c0=perfCounters();PERF.stack.length=0;
+   try{return f0(now+PERF.timeOfs)}finally{const js=performance.now()-r0,sim=(SL&&SL.simNow!=null?SL.simNow/1000:SIM.t)-s0,steps=(SL?SL.steps:TrafficCore2.counts.ticks)-k0,h=perfHeap();let gc=0;
+    if(h!=null){if(PERF.heapLast&&h<PERF.heapLast-.5){gc=1;PERF.gcEst++}PERF.heapLast=h}
+    if(rec){let sum=0;for(const k of PERF_CATS)sum+=PERF.acc[k];const rest=Math.max(0,js-sum);PERF.acc.loop+=rest;PERF.kacc.misc+=rest;
+     const row={t:r0,dt:dtReal,js,cats:PERF.acc,kinds:PERF.kacc,sim,steps,simMax:steps?sim/steps:0,ops:PERF.ops,img:PERF.img||0,gc,c:perfCountersDelta(c0)};
+     if(PERF.rec&&PERF.frames)PERF.frames.push(row);if(PERF.profile){(PERF.liveFrames||(PERF.liveFrames=[])).push(row);while(PERF.liveFrames.length&&r0-PERF.liveFrames[0].t>2000)PERF.liveFrames.shift()}}
+    PERF.roll.push([r0,dtReal,js,gc]);if(typeof G77_FG!=='undefined'&&G77_FG.on)try{g77FgPush(r0,dtReal,js,gc,c0)}catch(e){}   /* D-218 */while(PERF.roll.length&&r0-PERF.roll[0][0]>60000)PERF.roll.shift();
+    if(PERF.hud)perfHudTick(r0)}};
+  frame.__perfOrig=f0}
+ else if(!on&&PERF.frame0&&!PERF.hud&&!PERF.busy&&!PERF.timeOfs&&!(typeof G77_FG!=='undefined'&&G77_FG.on)){frame=PERF.frame0;PERF.frame0=null}}
+const perfQ=(a,q)=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y);return s[Math.min(s.length-1,Math.max(0,Math.ceil(q*s.length)-1))]};
+const perfAvg=a=>a.length?a.reduce((n,v)=>n+v,0)/a.length:0;
+const perfR=(v,d=1)=>+(+v).toFixed(d);
+function perfCanvasMem(){try{return window.__TC_CANVAS_MEM?window.__TC_CANVAS_MEM():null}catch{return null}}
+// stall attribution (v4.55): cumulative counters read before / after every recorded frame — the work that ran inside a long frame
+function perfCounters(){const W=typeof WTC!=='undefined'?WTC.stats:null,B=typeof SBC!=='undefined'?SBC.stats:null,M=typeof PORT_CACHE_MEM!=='undefined'?PORT_CACHE_MEM:null,A=typeof AO!=='undefined'?AO:null,L=typeof SIM_LOOP!=='undefined'?SIM_LOOP:null,F=typeof FS!=='undefined'?FS.stats:null;
+ return[W?W.totalBuildMs||0:0,W?(W.syncBuilt||0)+(W.prefetched||0)+(W.idleBuilt||0):0,B?B.made||0:0,M?M.made||0:0,A?A.work||0:0,W?W.extractMs||0:0,W?W.extracts||0:0,L?L.simMsTotal||0:0,F?F.famMade||0:0,F?F.famMsTotal||0:0,L&&L.sys?L.sys.w:0,L&&L.sys?L.sys.fl:0,L&&L.sys?L.sys.ao:0]}
+function perfCountersDelta(c0){const c=perfCounters();return{tileMs:c[0]-c0[0],tiles:c[1]-c0[1],sbc:c[2]-c0[2],pc:c[3]-c0[3],ao:c[4]-c0[4],extracts:c[6]-c0[6],simMs:c[7]-c0[7],fam:(c[8]||0)-(c0[8]||0),famMs:(c[9]||0)-(c0[9]||0),simW:(c[10]||0)-(c0[10]||0),simFl:(c[11]||0)-(c0[11]||0),simAo:(c[12]||0)-(c0[12]||0)}}
+const PERF_STALL_HE={tiles:'בניית אריחים',bitmaps:'bitmaps חדשים',pictures:'אזורים שמורים חדשים',extract:'extraction',sim:'סימולציה (הרבה צעדים)','airport-plan':'תכנון השדה',gc:'GC','outside-js':'מחוץ ל-JS (כרטיס מסך / דפדפן)','js-other':'JS אחר',families:'בדיקת ספרייטים חדשים'};
+function perfStalls(f){const L=f.filter(x=>x.dt>50&&x.c);if(!L.length)return{n:0};const rows=L.map(x=>{const c=x.c,why=[];if(c.tileMs>8)why.push('tiles');if(c.sbc>0)why.push('bitmaps');if(c.pc>0)why.push('pictures');if(c.extracts>0)why.push('extract');if(c.simMs>16)why.push('sim');if(c.famMs>8)why.push('families');if(c.ao>400)why.push('airport-plan');if(x.gc)why.push('gc');if(x.js<x.dt*.5)why.push('outside-js');return{dt:perfR(x.dt),js:perfR(x.js),simMs:perfR(c.simMs),steps:x.steps,tileMs:perfR(c.tileMs),tiles:c.tiles,sbc:c.sbc,pc:c.pc,ao:c.ao,fam:c.fam,famMs:perfR(c.famMs||0),simW:perfR(c.simW||0),simFl:perfR(c.simFl||0),simAo:perfR(c.simAo||0),gc:x.gc,why}});
+ const cnt={};for(const r of rows)for(const w of (r.why.length?r.why:['js-other']))cnt[w]=(cnt[w]||0)+1;
+ return{n:rows.length,by:cnt,top:rows.sort((a,b)=>b.dt-a.dt).slice(0,8)}}
+function perfSummary(frames,extra={}){
+ const f=frames.filter(x=>x.dt>0),dts=f.map(x=>x.dt),js=f.map(x=>x.js),real=f.length?(f[f.length-1].t-f[0].t+f[0].dt)/1000:0;
+ const cats={};for(const k of PERF_CATS)cats[k]=perfR(perfAvg(f.map(x=>x.cats[k])),2);
+ const kinds={};for(const k of PERF_KINDS)kinds[k]=perfR(perfAvg(f.map(x=>x.kinds[k])),2);
+ const sim=f.reduce((n,x)=>n+x.sim,0),ops=f.map(x=>x.ops).filter(n=>n>0);
+ return{frames:f.length,seconds:perfR(real,1),fps:perfR(real>0?f.length/real:0,1),frameMs:{avg:perfR(perfAvg(dts)),p50:perfR(perfQ(dts,.5)),p95:perfR(perfQ(dts,.95)),p99:perfR(perfQ(dts,.99)),max:perfR(Math.max(0,...dts))},
+  jsMs:{avg:perfR(perfAvg(js)),p95:perfR(perfQ(js,.95))},over100:f.filter(x=>x.dt>100).length,over50:f.filter(x=>x.dt>50).length,over33:f.filter(x=>x.dt>33.4).length,low1Fps:perfR(perfQ(dts,.99)>0?1000/perfQ(dts,.99):0,1),stallsPerMin:{over50:perfR(real>0?f.filter(x=>x.dt>50).length*60/real:0,1),over100:perfR(real>0?f.filter(x=>x.dt>100).length*60/real:0,1)},over16:f.filter(x=>x.dt>16.8).length,
+  sim:{ratio:perfR(real>0?sim/real:0,2),stepsPerFrame:perfR(perfAvg(f.map(x=>x.steps)),2),maxStepS:perfR(Math.max(0,...f.map(x=>x.simMax)),4),maxAdvancePerFrameS:perfR(Math.max(0,...f.map(x=>x.sim)),4),framesWithoutStep:f.filter(x=>x.steps===0).length},
+  gcEstimate:{drops:f.reduce((n,x)=>n+x.gc,0),perMin:perfR(real>0?f.reduce((n,x)=>n+x.gc,0)*60/real:0,1)},
+  cats,kinds,ops:ops.length?{avg:Math.round(perfAvg(ops)),p95:Math.round(perfQ(ops,.95))}:null,load:(()=>{const cf=f.filter(x=>x.c),n=Math.max(1,cf.length),sum=k=>cf.reduce((a,x)=>a+(x.c[k]||0),0),im=f.map(x=>x.img).filter(v=>v>0);return{newBitmapsPerFrame:perfR(sum('sbc')/n,2),newFamiliesPerFrame:perfR(sum('fam')/n,2),tilesPerFrame:perfR(sum('tiles')/n,2),picturesPerFrame:perfR(sum('pc')/n,2),drawImagePerFrame:im.length?perfR(perfAvg(im),1):null}})(),stalls:perfStalls(f),...extra}}
+function perfLongTasks(on){
+ if(on&&!PERF.lto&&typeof PerformanceObserver!=='undefined'){PERF.longTasks=[];try{PERF.lto=new PerformanceObserver(l=>{for(const e of l.getEntries())PERF.longTasks.push(e.duration)});PERF.lto.observe({type:'longtask',buffered:false})}catch{PERF.lto=null}}
+ else if(!on&&PERF.lto){try{PERF.lto.disconnect()}catch{}PERF.lto=null}}
+const perfWait=ms=>new Promise(r=>setTimeout(r,ms));
+// one measurement window on the live loop
+const PERF_FOCUS={lost:0};addEventListener('blur',()=>{PERF_FOCUS.lost++});window.document.addEventListener('visibilitychange',()=>{if(window.document.hidden)PERF_FOCUS.lost++});
+function perfInvalid(m){if(!m)return'אין מדידה';if(m.frames<30)return'רק '+m.frames+' פריימים (פחות מ-30)';if(m.focusLost)return'החלון איבד פוקוס או הוסתר בזמן המדידה';if(m.frameMs&&m.frameMs.max>3000)return'פער של '+Math.round(m.frameMs.max/1000)+' שנ׳ בין פריימים — שינה או הקפאה';return null}
+async function perfMeasure(seconds=15,{profile=true,ops=false,minFrames=0}={}){
+ perfFrameHook(true);if(profile)perfWrap();perfOpsOn(ops);perfLongTasks(true);
+ PERF.fnAccRun={};PERF.frames=[];PERF.lastReal=0;PERF.opsBy=(profile&&ops)?{}:null;const mem=[];
+ PERF.rec=true;let t0=performance.now(),fl0=PERF_FOCUS.lost;let lastMem=0,hid=0;   /* GATE-77P · p243 */
+ while(performance.now()-t0<seconds*1000||(minFrames&&PERF.frames.length<minFrames&&performance.now()-t0<(seconds+12)*1000)){await perfWait(100);if(window.document.hidden&&G77_PVIS.on){await g77PerfVisible();PERF.frames=[];PERF.lastReal=0;t0=performance.now();fl0=PERF_FOCUS.lost;hid=0;continue}if(window.document.hidden)hid++;   /* p243 */if(performance.now()-lastMem>1000){lastMem=performance.now();const h=perfHeap();if(h!=null)mem.push(Math.round(h))}}
+ PERF.rec=false;const focusLost=PERF_FOCUS.lost-fl0+hid;perfOpsOn(false);if(profile&&!PERF.profile)perfUnwrap();perfLongTasks(false);
+ const frames=PERF.frames;PERF.frames=null;PERF.acc=null;
+ const n=Math.max(1,frames.filter(x=>x.dt>0).length),top=Object.entries(PERF.fnAccRun).map(([k,v])=>[k,perfR(v/n,2)]).sort((a,b)=>b[1]-a[1]).slice(0,25);
+ const lt=PERF.longTasks;
+ const opsBy=PERF.opsBy?Object.entries(PERF.opsBy).map(([k,v])=>[k,Math.round(v/n)]).sort((a,b)=>b[1]-a[1]).slice(0,30):null;PERF.opsBy=null;
+ return perfSummary(frames,{focusLost,topFunctions:top,opsByFunction:opsBy,longTasks:{count:lt.length,totalMs:Math.round(lt.reduce((a,b)=>a+b,0)),maxMs:Math.round(Math.max(0,...lt))},heapMB:mem.length?{min:Math.min(...mem),max:Math.max(...mem),last:mem[mem.length-1]}:null,canvasMB:perfCanvasMem(),profiled:profile,opsCounted:ops})}
+// ---- the camera route (QA-52 · PERF-04): same seed / start state / camera in every run ----
+const PERF_SCN={
+ city:{label:'עיר — מסוף E3 בעומס · seed 777 · חימום 120 שנ׳',x:5250,y:2130,zoom:1.1,warm:true},
+ airport:{label:'שדה התעופה בשיא — רחבת המטוסים (שעון השדה ≥ 180 שנ׳)',x:6880,y:880,zoom:1.1,apt:true},
+ tower:{label:'Tower View — כל השדה (E0–G2) במבט אחד',x:6600,y:425,fit:[3600,2550],apt:true},
+ port:{label:'נמל + רכבות — FRT‑1 ברציף E6 · SHT‑C6 ב-W2',x:4900,y:5030,zoom:1.1,port:true},
+ cityzoom:{label:'זום החוצה על העיר — הזום הרחב ביותר במשחק (0.45)',x:3000,y:2600,zoom:.45},
+ extreme:{label:'עומס קיצוני — שדה בשיא + רכבות הנמל + תנועה, זום 0.45 מעל E3–E5',x:5200,y:3400,zoom:.45,apt:true,port:true},
+ long:{label:'ריצה ארוכה — מצלמת העיר',x:5250,y:2130,zoom:1.1,warm:true},
+ cityMax:{label:'עיר בזום המרבי (5.5) — מסוף E3',x:5250,y:2130,zoom:5.5,warm:true},
+ airportMax:{label:'שדה התעופה בזום המרבי (5.5) — רחבת המטוסים',x:6880,y:880,zoom:5.5,apt:true},
+ north:{label:'הצפון — ההר, היערות והשדות (A0–D1), זום 0.45 · World‑a',x:2400,y:0,zoom:.45},   /* p334 · D‑240 (4) */
+ coast:{label:'החוף המזרחי, הרצועה, החוף והמרינה (F3 / F4), זום 1.1 · World‑a',x:6450,y:2650,zoom:1.1}};   /* GATE-77P · p224 */
+const PERF_ROUTE=['city','airport','tower','port','cityzoom','extreme','north','coast'];   /* p334: + the new zones of World‑a */
+// QA-72 · 9: moving between chunks — a fixed camera path at driving speed (zoom 1.1) through A4 → C3 → E3 → E5 → D6 → C6, first
+// time (cold: nothing of the path is cached yet) and again (warm)
+const PERF_PATH=[[900,3000],[2900,2450],[5250,2130],[5400,3700],[4600,4700],[3000,4700]],PERF_PATH_SPEED=600;
+function perfPathLen(){let L=0;for(let i=1;i<PERF_PATH.length;i++)L+=Math.hypot(PERF_PATH[i][0]-PERF_PATH[i-1][0],PERF_PATH[i][1]-PERF_PATH[i-1][1]);return L}
+function perfPathStep(t){const P=PERF.path;let d=(t-P.t0)/1000*PERF_PATH_SPEED;for(let i=1;i<PERF_PATH.length;i++){const a=PERF_PATH[i-1],b=PERF_PATH[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(d<=l){Camera.x=a[0]+(b[0]-a[0])*d/l;Camera.y=a[1]+(b[1]-a[1])*d/l;return}d-=l}const e=PERF_PATH[PERF_PATH.length-1];Camera.x=e[0];Camera.y=e[1];P.done=true}
+async function perfPathRun(){PERF.timeOfs=0;if(typeof SIM_BENCH_OFS!=='undefined')SIM_BENCH_OFS=SIM_RAIL_BASE;perfCamera({x:PERF_PATH[0][0],y:PERF_PATH[0][1],zoom:1.1});await perfWait(1500);PERF.path={t0:performance.now(),done:false};const sec=perfPathLen()/PERF_PATH_SPEED;
+ try{const m=await perfMeasure(sec,{profile:false});return{seconds:perfR(sec,1),fps:m.fps,frameMs:m.frameMs,jsMs:m.jsMs,over50:m.over50,over100:m.over100,stallsPerMin:m.stallsPerMin,low1Fps:m.low1Fps,heapMB:m.heapMB,canvasMB:m.canvasMB}}finally{PERF.path=null}}
+function perfZoom(s){return s.fit?perfR(Math.min(innerWidth/s.fit[0],innerHeight/s.fit[1]),3):s.zoom}
+function perfCamera(s){if(!State.mapQa)toggleMapQa();State.mapOpen=false;try{setMapOpen(false)}catch{}if(State.phoneOpen)try{setPhoneOpen(false)}catch{}Camera.x=s.x;Camera.y=s.y;Camera.zoom=perfZoom(s);Input.held.clear()}
+function perfAirportForward(target=180){
+ if(typeof APT_OPS==='undefined')return null;if(!APT_OPS.ready)aptOpsInit();
+ G76X.ovr=((typeof SIM_LOOP!=='undefined'&&SIM_LOOP.simNow!=null?SIM_LOOP.simNow:0)+(typeof SIM_BENCH_OFS!=='undefined'?SIM_BENCH_OFS:0))/1000-Math.max(target,APT_OPS.clk);G76X.ofs0=G76X.ovr;   // GATE-76 S1: plan with the offset that holds after the forward
+ const h=1/60;let n=0;while(APT_OPS.clk<target&&n<20000){APT_OPS.clk+=h;APT_OPS.frames++;n++;try{g77DetTick(APT_OPS.clk);e1Watch(APT_OPS.clk);f1Watch(APT_OPS.clk);g1Watch(APT_OPS.clk)}catch(e){break}}
+ APT_OPS.last=null;G76X.ofs=G76X.ofs0=G76X.ovr;G76X.ovr=null;return{clk:perfR(APT_OPS.clk,1),steps:n}}
+// the moment of the rail schedule where FRT-1 stands at the E6 quay (W1) and the C6 work train SHT-C6 drives on W2 inside the port camera
+function perfPortTime(){ // S3+: the rail / port schedule runs on SIM_LOOP.simNow (one SIM clock); before S3 on the page clock
+ // absolute moment (ms since the page started) — the port flow, the ships and the rail timetable are functions of absolute time,
+ // so the same moment shows the same port in every run and in every build; the scan starts one hour in (never in the past)
+ const now=(typeof SIM_LOOP!=='undefined'&&SIM_LOOP.simNow!=null)?SIM_LOOP.simNow:performance.now(),base=now<3.0e6?3.6e6:Math.ceil((now+6e5)/6e5)*6e5,cam=PERF_SCN.port,vw=innerWidth/cam.zoom/2,vh=innerHeight/cam.zoom/2,inCam=c=>Math.abs(c.x-cam.x)<vw&&Math.abs(c.y-cam.y)<vh;
+ let best=null;for(let s=0;s<3600;s+=1){const t=base+s*1000,snap=rlSnap(t);let frt=null,sht=null;
+  for(const q of snap){const id=q.S.T.id||q.S.T.label||'';if(/FRT-?1/.test(id)&&q.cars.some(c=>c.x>=4800&&c.x<=6000&&Math.abs(c.y-5120)<20))frt=q;if(/SHT/.test(id)&&q.cars.some(c=>Math.abs(c.y-5158)<20&&inCam(c)))sht=q}
+  if(frt&&sht){const sc=sht.cars.filter(inCam).length+frt.cars.filter(inCam).length;if(!best||sc>best.sc)best={s,sc};if(sc>=8)break}}
+ __rlSnapT=null;const T=best?base+best.s*1000:base;PERF.portAbs=T;return T-now}
+async function perfScenario(name){
+ const s=PERF_SCN[name];if(!s)throw new Error('scenario '+name);PERF.timeOfs=0;if(typeof SIM_BENCH_OFS!=='undefined')SIM_BENCH_OFS=SIM_RAIL_BASE;perfFrameHook(true);
+ const info={scenario:name,label:s.label};
+ if(s.warm){const r=window.__TC_G74T_QA({seconds:120,seed:777,warmup:60});info.warmup={seed:777,seconds:120,actors:r.actors,ok:r.ok}}
+ if(s.apt){info.airport=perfAirportForward(180);try{info.aircraft=AO.ac?AO.ac.length:undefined}catch{}}
+ if(s.port){const ofs=perfPortTime();if(typeof SIM_BENCH_OFS!=='undefined'){SIM_BENCH_OFS=PERF.portAbs-SIM_LOOP.simNow;PERF.timeOfs=0;const tw=performance.now();try{flFrame(PERF.portAbs)}catch{}info.portPrepMs=perfR(performance.now()-tw,1)}else if(typeof SIM_LOOP!=='undefined'&&SIM_LOOP.simNow!=null){SIM_LOOP.simNow=PERF.portAbs;SIM_LOOP.acc=0;PERF.timeOfs=0;const tw=performance.now();try{flFrame(PERF.portAbs)}catch{}info.portPrepMs=perfR(performance.now()-tw,1)}else PERF.timeOfs=ofs;info.timeOffsetS=perfR(ofs/1000,0);info.portAbsS=perfR(PERF.portAbs/1000,0)}
+ perfCamera(s);info.camera={x:s.x,y:s.y,zoom:perfZoom(s),viewport:innerWidth+'×'+innerHeight,dpr};
+ info.actors={road:TRAFFIC_CARS.length,buses:BUS_VEHICLES.length};
+ return info}
+// ---- growth test (QA-72 · 4) — test switch only: doubles the road vehicles that are outside the camera, then removes them ----
+function perfInView(x,y,pad=200){const hw=innerWidth/Camera.zoom/2+pad,hh=innerHeight/Camera.zoom/2+pad;return Math.abs(x-Camera.x)<hw&&Math.abs(y-Camera.y)<hh}
+function perfGrowth(on){
+ if(on){if(PERF.growth)return PERF.growth.length;const n=TRAFFIC_CARS.filter(v=>!v.c5&&!perfInView(v.x,v.y)).length,add=[];
+  const slots=TRAFFIC_SEED_SLOTS.filter(id=>{const e=byEdge[id];if(!e)return false;const a=byNode[e.a],b=byNode[e.b];return a&&b&&!perfInView(a.x,a.y,400)&&!perfInView(b.x,b.y,400)});
+  for(let i=0;i<n&&slots.length;i++){const edgeId=slots[i%slots.length],lap=Math.floor(i/slots.length),spec=pickTrafficAsset(i),dirSign=(i+lap)%2?1:-1,t=.1+((i*.37+lap*.21)%.8),e=byEdge[edgeId],lanePref=i%2,lane=e?.cls==='main'?i%3:e?.cls==='arterial'?lanePref:0,p=trafficEdgePoint(edgeId,dirSign,t,lane);
+   const v={id:'PERF-GROW-'+(i+1),asset:spec.asset,ref:spec.ref,kind:spec.kind,label:spec.label||'רכב',edgeId,dirSign,t,lane,lanePref,laneTarget:lane,x:p.x,y:p.y,heading:p.heading,speed:0,targetSpeed:95+(i%4)*10,wait:false,hop:i,stuck:0,ghost:0,plan:null,runKey:null,c2:null,perfGrowth:true};
+   TRAFFIC_CARS.push(v);add.push(v)}
+  PERF.growth=add;try{CORE2_STATS.placeFix=true}catch{}return add.length}
+ if(!PERF.growth)return 0;const ids=new Set(PERF.growth.map(v=>v.id));for(let i=TRAFFIC_CARS.length-1;i>=0;i--)if(ids.has(TRAFFIC_CARS[i].id))TRAFFIC_CARS.splice(i,1);const n=PERF.growth.length;PERF.growth=null;return n}
+async function perfGrowthTest(seconds=6){
+ // A/B/A/B windows (base, doubled, base, doubled) — the drift of a long scene cancels out; compare the means
+ const offscreen=TRAFFIC_CARS.filter(v=>!v.c5&&!perfInView(v.x,v.y)).length,A=[],B=[];let added=0;
+ try{for(let r=0;r<2;r++){A.push(await perfMeasure(seconds,{profile:false}));added=perfGrowth(true);await perfWait(1500);B.push(await perfMeasure(seconds,{profile:false}));perfGrowth(false);await perfWait(1500)}}finally{perfGrowth(false)}
+ const m=(a,f)=>perfR(perfAvg(a.map(f)),1),d=(a,b)=>a>0?perfR((b-a)/a*100,1):0;
+ const base={fps:m(A,x=>x.fps),frameAvg:m(A,x=>x.frameMs.avg),frameP95:m(A,x=>x.frameMs.p95),jsAvg:m(A,x=>x.jsMs.avg)},grown={fps:m(B,x=>x.fps),frameAvg:m(B,x=>x.frameMs.avg),frameP95:m(B,x=>x.frameMs.p95),jsAvg:m(B,x=>x.jsMs.avg)};
+ return{offscreenBefore:offscreen,added,windows:'A/B/A/B × '+seconds+' s',base,grown,deltaFramePct:d(base.frameAvg,grown.frameAvg),deltaJsPct:d(base.jsAvg,grown.jsAvg),limitPct:5,pass:d(base.frameAvg,grown.frameAvg)<=5}}
+// ---- density ×2 inside the view (QA-72 · 10) — test switch: as many extra road vehicles on the roads in view as are in view now ----
+function perfAddCars(n,slotOk,tag){const slots=TRAFFIC_SEED_SLOTS.filter(id=>{const e=byEdge[id];return e&&byNode[e.a]&&byNode[e.b]&&slotOk(e)}),add=[];
+ for(let i=0;i<n&&slots.length;i++){const edgeId=slots[i%slots.length],lap=Math.floor(i/slots.length),spec=pickTrafficAsset(i),dirSign=(i+lap)%2?1:-1,t=.1+((i*.37+lap*.21)%.8),e=byEdge[edgeId],lanePref=i%2,lane=e?.cls==='main'?i%3:e?.cls==='arterial'?lanePref:0,p=trafficEdgePoint(edgeId,dirSign,t,lane);
+  const v={id:tag+(i+1),asset:spec.asset,ref:spec.ref,kind:spec.kind,label:spec.label||'רכב',edgeId,dirSign,t,lane,lanePref,laneTarget:lane,x:p.x,y:p.y,heading:p.heading,speed:0,targetSpeed:95+(i%4)*10,wait:false,hop:i,stuck:0,ghost:0,plan:null,runKey:null,c2:null,perfGrowth:true};TRAFFIC_CARS.push(v);add.push(v)}
+ try{CORE2_STATS.placeFix=true}catch{}return add}
+function perfRemove(list,arr){if(!list)return 0;const ids=new Set(list.map(v=>v.id));for(let i=arr.length-1;i>=0;i--)if(ids.has(arr[i].id))arr.splice(i,1);return list.length}
+async function perfDensityTest(seconds=6){
+ const inView=TRAFFIC_CARS.filter(v=>!v.c5&&perfInView(v.x,v.y,0)).length+BUS_VEHICLES.filter(v=>perfInView(v.x,v.y,0)).length,A=[],B=[];let added=0;
+ try{for(let r=0;r<2;r++){A.push(await perfMeasure(seconds,{profile:false}));const l=perfAddCars(inView,e=>{const a=byNode[e.a],b=byNode[e.b];return perfInView((a.x+b.x)/2,(a.y+b.y)/2,-60)},'PERF-DENS-');added=l.length;PERF.dens=l;await perfWait(1500);B.push(await perfMeasure(seconds,{profile:false}));perfRemove(PERF.dens,TRAFFIC_CARS);PERF.dens=null;await perfWait(1500)}}finally{perfRemove(PERF.dens,TRAFFIC_CARS);PERF.dens=null}
+ const m=(a,f)=>perfR(perfAvg(a.map(f)),1),d=(a,b)=>a>0?perfR((b-a)/a*100,1):0;const base={fps:m(A,x=>x.fps),frameAvg:m(A,x=>x.frameMs.avg),jsAvg:m(A,x=>x.jsMs.avg)},dense={fps:m(B,x=>x.fps),frameAvg:m(B,x=>x.frameMs.avg),jsAvg:m(B,x=>x.jsMs.avg)};
+ return{inViewBefore:inView,added,windows:'A/B/A/B × '+seconds+' s',base,dense,deltaFramePct:d(base.frameAvg,dense.frameAvg),deltaJsPct:d(base.jsAvg,dense.jsAvg),headroomFps:dense.fps}}
+// ---- future stress mode (PERF-04 / QA-72 · 11) — test switch: end-of-plan quantities that exist as systems today:
+// road vehicles ×2 across the city, pedestrians ×2, and 4 more freight consists on the rail network (the timetable sampled at other
+// moments: FRT-4…FRT-7 of D-35…D-37). Aircraft, ships, passenger trains and port-truck volumes of GATE-76…82 are not simulated yet.
+const PERF_STRESS_RAIL=[190e3,380e3,570e3,760e3];
+function perfStress(on){
+ if(on){if(PERF.stress)return PERF.stress.info;const cars=TRAFFIC_CARS.filter(v=>!v.c5&&!v.perfGrowth).length,peds=[];
+  const add=perfAddCars(cars,()=>true,'PERF-STRESS-');for(let i=0,n=NPC_PEDESTRIANS.length;i<n;i++){const q=NPC_PEDESTRIANS[i],c={...q,id:'PERF-STRESS-PED-'+(i+1),targetId:null,inCrosswalk:null,ghost:0,wait:false,perfGrowth:true};NPC_PEDESTRIANS.push(c);peds.push(c)}
+  const f0=drawFreightTrains;drawFreightTrains=function(now){f0(now);const v=portView(260);for(const dk of PERF_STRESS_RAIL)for(const q of rlSnap(now+dk))for(const c of q.cars){if(c.x>G76_VIS_X||c.x<v.x0-260||c.x>v.x1+260||c.y<v.y0-260||c.y>v.y1+260)continue;portDrawStock(ctx,{asset:c.car.asset,variant:c.car.variant||0,load:flWagonLoad(q.S,c.car,now+dk)},{x:c.x,y:c.y,heading:c.heading},now/1000)}try{__rlSnapT=null}catch{}};
+  PERF.stress={cars:add,peds,f0,info:{roadVehiclesAdded:add.length,pedestriansAdded:peds.length,extraFreightConsists:PERF_STRESS_RAIL.length,notSimulated:'aircraft / ships / passenger trains / port-truck volumes of GATE-76…82'}};return PERF.stress.info}
+ if(!PERF.stress)return null;const S=PERF.stress;perfRemove(S.cars,TRAFFIC_CARS);perfRemove(S.peds,NPC_PEDESTRIANS);drawFreightTrains=S.f0;PERF.stress=null;return true}
+async function perfStressTest(seconds=10){
+ const base=await perfMeasure(seconds,{profile:false});let info=null,st=null;try{info=perfStress(true);await perfWait(2500);st=await perfMeasure(seconds,{profile:true})}finally{perfStress(false)}
+ return{...info,base:{fps:base.fps,frameAvg:base.frameMs.avg,p95:base.frameMs.p95,jsAvg:base.jsMs.avg},stress:{fps:st.fps,frameAvg:st.frameMs.avg,p95:st.frameMs.p95,p99:st.frameMs.p99,jsAvg:st.jsMs.avg,kinds:st.kinds,over50:st.over50,over100:st.over100,heapMB:st.heapMB}}}
+// ---- graphics acceleration check ----
+function perfGpuInfo(){
+ if(PERF.gpu)return PERF.gpu;let renderer='',vendor='',webgl=false;
+ try{const c=document.createElement('canvas'),gl=c.getContext('webgl')||c.getContext('experimental-webgl');if(gl){webgl=true;const ext=gl.getExtension('WEBGL_debug_renderer_info');renderer=ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);vendor=ext?gl.getParameter(ext.UNMASKED_VENDOR_WEBGL):gl.getParameter(gl.VENDOR);try{gl.getExtension('WEBGL_lose_context')?.loseContext()}catch{}}}catch{}
+ const soft=/swiftshader|llvmpipe|softpipe|software|basic render|microsoft basic/i.test(renderer);
+ PERF.gpu={webgl,renderer:String(renderer||''),vendor:String(vendor||''),accelerated:webgl&&!!renderer&&!soft,
+  note:!webgl?'WebGL לא זמין — כנראה שהאצת הגרפיקה כבויה':soft?'רינדור תוכנה — האצת הגרפיקה כבויה: Chrome → הגדרות → מערכת → "השתמש בהאצת גרפיקה כשהיא זמינה"':'האצת הגרפיקה פעילה'};
+ return PERF.gpu}
+// ---- one scenario of the benchmark: clean window (FPS / frame time / SIM / memory) + profiled window (per system) + draw operations ----
+async function perfRun(name,{seconds=12,profSeconds=8,opsSeconds=3,warm=3,cold=3,ops=true,profile=true}={}){
+ PERF.busy=true;try{const info=await perfScenario(name);
+  // cold: the first seconds after the camera arrives (first entry into the area — caches that are made here show up as stalls)
+  const c0=cold>0?await perfMeasure(cold,{profile:false,minFrames:3}):null;await perfWait(Math.max(0,warm-cold)*1000+1000);
+  let clean=await perfMeasure(seconds,{profile:false,ops:false}),inval=perfInvalid(clean),retried=null;if(inval){retried=inval;perfHudStatus('מדידה לא תקפה ('+inval+') — מודד שוב פעם אחת');await perfWait(2000);clean=await perfMeasure(seconds,{profile:false,ops:false});inval=perfInvalid(clean)}let prof=null,o=null;
+  if(profile)prof=await perfMeasure(profSeconds,{profile:true,ops:false});
+  let oi=null,gq=null;if(ops){try{g77GpuReset()}catch(e){}let q=null;try{q=await perfMeasure(opsSeconds,{profile:false,ops:true})}finally{try{gq=g77GpuTake(q)}catch(e){}}o=q.ops;oi=q.load?q.load.drawImagePerFrame:null}   /* D-216 (c) */
+  const r={...info,cold:c0?{fps:c0.fps,maxMs:c0.frameMs.max,over50:c0.over50,over100:c0.over100}:null,fps:clean.fps,low1Fps:clean.low1Fps,frameMs:clean.frameMs,jsMs:clean.jsMs,sim:clean.sim,over33:clean.over33,over50:clean.over50,over100:clean.over100,stallsPerMin:clean.stallsPerMin,gcEstimate:clean.gcEstimate,heapMB:clean.heapMB,canvasMB:clean.canvasMB,longTasks:clean.longTasks,stalls:clean.stalls,ops:o,load:clean.load?{...clean.load,drawImagePerFrame:oi}:null,frames:clean.frames,gd:gq,valid:!inval,invalid:inval||undefined,retried:retried||undefined};
+  if(prof){r.cats=prof.cats;r.kinds=prof.kinds;r.profiledJsMs=prof.jsMs;r.topFunctions=prof.topFunctions.slice(0,12);r.budget=perfBudget(prof.kinds,prof.jsMs.avg)}
+  return r}finally{PERF.busy=false}}
+function perfBudget(k,js){const over=PERF_KINDS.filter(x=>k[x]>PERF_BUDGET[x]),margin=perfR(PERF_BUDGET.frame-js,1);return{ok:!over.length&&margin>=PERF_BUDGET.margin,over,marginMs:margin}}
+const PERF_MODE=/[#&]webgl\b/.test(location.hash)?(/[#&]pq\b/.test(location.hash)?'webgl+pq':'webgl'):(/[#&]pq\b/.test(location.hash)?'pq':'normal'),PERF_MODE_HE={normal:'רגיל',webgl:'עם WebGL',pq:'עם pq','webgl+pq':'WebGL + pq',all:'הכול ברצף'};
+const PERF_LAST_KEY='turbo_city_bench_last_v1'+(PERF_MODE==='normal'?'':'_'+PERF_MODE),PERF_SEQ_KEY='turbo_city_bench_seq_v1',PERF_SEQ=['normal','webgl'];   /* PERF-08 · the owner's run x 3: pq out of the sequence */
+function perfLastReport(){try{const r=JSON.parse(localStorage.getItem(PERF_LAST_KEY)||'null');return r&&r.scenarios?r:null}catch{return null}}
+function perfCompare(cur,prev){
+ if(!prev)return null;const out={build:prev.build,date:prev.date,scenarios:{}};
+ for(const [k,v] of Object.entries(cur.scenarios)){const p=prev.scenarios[k];if(!p||!p.frameMs||!v.frameMs)continue;if(v.invalid||p.invalid){out.scenarios[k]={invalid:true,why:v.invalid||('המדידה הקודמת: '+p.invalid)};continue}const d=perfR((v.frameMs.p95-p.frameMs.p95)/Math.max(.1,p.frameMs.p95)*100,1);out.scenarios[k]={p95Before:p.frameMs.p95,p95Now:v.frameMs.p95,deltaPct:d,regression:d>10,fpsBefore:p.fps,fpsNow:v.fps}}
+ return out}
+async function perfBenchmark({seconds=12,longMinutes=1,route=PERF_ROUTE,growth=true,pan=true,stress=true,onStep=null}={}){
+ if(PERF.busy)return null;const T0=performance.now(),saved={mapQa:State.mapQa,x:Camera.x,y:Camera.y,zoom:Camera.zoom};
+ const out={tool:'Turbo City PERF-04 benchmark v1',mode:PERF_MODE,build:BUILD,version:VER,gate:ACTIVE_GATE,ua:navigator.userAgent,viewport:innerWidth+'×'+innerHeight,dpr,screen:screen.width+'×'+screen.height,
+  benchMode:!!window.__TC_BENCH,seed:window.__TC_BENCH?.seed??null,gpu:perfGpuInfo(),date:new Date().toISOString(),budgetMs:PERF_BUDGET,scenarios:{}};
+ const steps=route.length+(growth?2:0)+(pan?2:0)+(stress?1:0)+(longMinutes>0?1:0);let k=0;const step=t=>{k++;perfHudStatus(`Benchmark ${k}/${steps}: ${t}`);onStep&&onStep(k,steps,t)};
+ try{for(const n of route){step(PERF_SCN[n].label);out.scenarios[n]=await perfRun(n,{seconds})
+   if(n==='city'&&growth){step('מבחן גדילה — הכפלת הרכבים שמחוץ למסך');PERF.busy=true;try{out.growth=await perfGrowthTest(6)}finally{PERF.busy=false}
+    step('מבחן צפיפות ×2 בתוך המסך');PERF.busy=true;try{out.density=await perfDensityTest(6)}finally{PERF.busy=false}}}
+  if(pan){step('מעבר בין Chunks — מסלול מצלמה, פעם ראשונה (cold)');PERF.busy=true;try{out.panCold=await perfPathRun();step('מעבר בין Chunks — אותו מסלול שוב (warm)');out.panWarm=await perfPathRun()}finally{PERF.busy=false}}
+  if(stress){step('מצב Stress לעתיד — כמויות סוף התוכנית (חלקי)');PERF.busy=true;try{await perfScenario('extreme');await perfWait(2000);out.stress=await perfStressTest(10)}finally{PERF.busy=false}}
+  if(longMinutes>0){step('ריצה ארוכה: '+longMinutes+' דק׳');PERF.busy=true;try{await perfScenario('long');await perfWait(2000);const m=await perfMeasure(longMinutes*60,{profile:false});out.long={minutes:longMinutes,fps:m.fps,low1Fps:m.low1Fps,frameMs:m.frameMs,over50:m.over50,over100:m.over100,stallsPerMin:m.stallsPerMin,heapMB:m.heapMB,canvasMB:m.canvasMB,gcEstimate:m.gcEstimate,longTasks:m.longTasks,stalls:m.stalls}}finally{PE

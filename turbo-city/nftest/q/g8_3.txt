@@ -1,0 +1,1143 @@
+y(b=>b.dockX===D4ND.dockX),noFakeGateParking:D4_STALLS.length===0,noDeadTrailers:D4_STATIC_TRAILERS.length===0,fourLiveSemis:D4_YARD_SEMIS.length===4,fourDistinctColors:new Set(D4_YARD_SEMIS.map(v=>v.colorIndex)).size===4,roadRouteRegistered:D4_LOOP.length===19&&D4_CITY_TRUCK_ROUTE.every(q=>!!byEdge[q.edgeId]),routeJoinsAtGate:D4_CITY_TRUCK_ROUTE[0].edgeId===D4_DEPART_EDGE&&Math.abs(d4RouteStart(D4_CITY_TRUCK_ROUTE[0])-D4_DEPART_JOIN_T)<.001,routeReturnsToGate:D4_LOOP[D4_GATE_LEG].edgeId===D4_RETURN_EDGE&&D4_LOOP.at(-1).edgeId==='CL-T3',freightTargetSize:!FLEET_D4_FROZEN&&Math.abs(D4_SEMI_LEN-165)<.5&&Math.abs(D4_SEMI_TARGET.width-25.5)<.05,sharedTurnEngine:String(d4StepSemi).includes('D4_LOOP_N')&&String(TrafficCore2.tick).includes('updateD4YardTraffic'),gateInterlock:typeof d4GateAcquire==='function'&&typeof d4GateRelease==='function'&&typeof d4InboundQueued==='function'&&String(d4StepSemi).includes("d4GateAcquire(v,'out')")&&String(d4StepSemi).includes("d4GateAcquire(v,'in')")&&String(d4StepSemi).includes('!d4InboundQueued(v)')&&String(d4GateAcquire).includes("o.k==='B'"),selectiveFishSale:typeof sellLakeFish==='function'&&String(sellLakeFish).includes('catchId'),fishRecordsVisible:typeof fishRecordLabel==='function'&&String(phoneFishing).includes('fishRecordLabel'),tableSize:!FLEET_D4_FROZEN};return{ok:Object.values(checks).every(Boolean),checks,gate:{...D4_GATE_RESERVATION},bayShift:D4_DOCK_BAY_SHIFT,bays:D4_TRAILER_BAYS.map(b=>({id:b.id,x:+b.x.toFixed(1),y:+b.y.toFixed(1),dockY:+b.dockY.toFixed(1)})),semis:D4_YARD_SEMIS.map(v=>({id:v.id,color:D4_FREIGHT_COLOR_NAMES[v.bay],colorIndex:v.colorIndex,k:v.k,state:v.state,edgeId:v.edgeId||null,routeIndex:v.routeIndex,x:+v.x.toFixed(1),y:+v.y.toFixed(1)})),route:D4_CITY_TRUCK_ROUTE.map(q=>q.edgeId)}};
+window.__TC_V150_D4_QA=window.__TC_V151_D4_QA;
+window.__TC_V188_BUS_QA=()=>{const overlaps=[];for(let i=0;i<BUS_VEHICLES.length;i++)for(let j=i+1;j<BUS_VEHICLES.length;j++){const a=BUS_VEHICLES[i],b=BUS_VEHICLES[j];if(vehicleBodiesOverlap(trafficVehicleShape(a),trafficVehicleShape(b),1.5))overlaps.push(a.id+'/'+b.id)}return{ok:BUS_FREEZE_RECOVER_SECONDS===9.5&&typeof busFreezeWatch2==='function'&&!overlaps.length,total:BUS_VEHICLES.length,frozen:BUS_VEHICLES.filter(b=>(b.freezeT||0)>4).map(b=>({id:b.id,seconds:+b.freezeT.toFixed(1),edge:b.edgeId,term:b.term?.phase||null,dwell:+(b.dwell||0).toFixed(1)})),freezeRecoveries:BUS_VEHICLES.reduce((n,b)=>n+(b.freezeRecoveries||0),0),overlaps};};
+window.__TC_V150_TRAFFIC_QA=window.__TC_V151_TRAFFIC_QA;
+window.__TC_V155_QA=()=>{const heavy=['Bus','Truck','Semi','Ambulance','FireTruck'],expected=Object.fromEntries(heavy.map(r=>[r,+(TurboCity.ref[r][1]*ROAD_VEHICLE_SCALE_FACTOR*HEAVY_VEHICLE_SCALE_FACTOR).toFixed(2)])),laneCenters={local:trafficLaneCenterOffset('local'),avenue:trafficLaneCenterOffset('avenue'),arterial:trafficLaneCenterOffset('arterial')},sample=trafficEdgePoint('LC-D4',1,.5),edge=byEdge['LC-D4'],a=byNode[edge.a],b=byNode[edge.b],roadMidX=(a.x+b.x)/2;   /* p477: הדרך הישנה של D4 יצאה — רחוב המחסנים (צפונה: הנתיב ממזרח למרכז) */const checks={heavyScale90:HEAVY_VEHICLE_SCALE_FACTOR===.9,busWidth:Math.abs(expected.Bus-26.64)<.01,truckWidth:Math.abs(expected.Truck-27.36)<.01,semiWidth:Math.abs(expected.Semi-28.8)<.01,laneLocal22:laneCenters.local===22,laneAvenue22:laneCenters.avenue===22,laneArterial26:laneCenters.arterial===26,d4GateLanes:D4ND.gate.gap[1]-D4ND.gate.gap[0]>=100&&D4ND.gate.R1>=90,trafficPointCentered:Math.abs(sample.x-(roadMidX+22))<.01,freightScaled:Math.abs(D4_SEMI_TARGET.width-25.5)<.05&&Math.abs(D4_TRL_TARGET.width-25.5)<.05,fastCarCruise:Math.min(...TRAFFIC_CARS.map(c=>c.targetSpeed))>=95,fastBusCruise:BUS_VEHICLES.every(b=>b.targetSpeed>=58),fastFreightCruise:D4_YARD_SEMIS.every(v=>v.targetSpeed>=70),restartAccel:TRAFFIC_RESTART_ACCEL===150,deadlockStrict:CORE2.BACKOUT_AFTER===12,followSafety:TRAFFIC_FOLLOW_GAP===15&&TRAFFIC_DECEL===105&&TRAFFIC_BRAKE_MAX===190,junctionLock:typeof movementReady2==='function'&&typeof tryGrant2==='function'&&CORE2.CAP_LEFT===62,busAntiBunching:typeof busAntiBunchCap==='function'};return{ok:Object.values(checks).every(Boolean),checks,expectedWidths:expected,laneCenters,d4:{gateX:D4_LANE.gateX,gateY:D4_LANE.gateY,semi:D4_SEMI_TARGET,trailer:D4_TRL_TARGET}}};
+
+window.__TC_V194_ADAPTIVE_SIGNAL_QA=()=>{TrafficSignalController.update(performance.now());const nodes=[...TrafficSignalController.nodeStates.values()].map(st=>{const p=SIGNAL_PHASES[st.index],d=st.lastDemand;return{node:st.nodeId,phase:p.id,remaining:Math.round(Math.max(0,st.phaseDuration-(performance.now()-st.phaseStart))),h:d.horizontal.count,v:d.vertical.count,hTail:Math.round(d.horizontal.tail),vTail:Math.round(d.vertical.tail),ped:d.ped,inside:d.inside,transitions:st.transitions,holds:st.holds,maxGreen:Math.round(st.maxGreen)}}),conflict=SIGNAL_PHASES.filter(p=>(p.rmid===2&&p.rcenter===2)||((p.rmidLeft===3||p.rmid===2)&&(p.rcenterLeft===3||p.rcenter===2))||(p.ped===5&&(p.rmid||p.rcenter||p.rmidLeft||p.rcenterLeft))).map(p=>p.id),sync=signalPhaseSyncAudit(),crossingStops=NPC_PEDESTRIANS.filter(n=>n.inCrosswalk&&n.wait).map(n=>n.id);return{ok:!conflict.length&&sync.ok&&!crossingStops.length,nodes,conflict,signalSync:sync,crossingStops,pedRule:'enter only on WALK; once in crossing run through without stopping',junctionRule:'Road Core v2: a vehicle enters a box only with a granted movement (signal, conflicts, FIFO, receiving space) and never waits inside it',signalRule:'right == straight on the same road axis; left uses only the protected arrow phase for that same axis'}};
+// =====================================================================================================================================
+// GATE-74T · ROAD CORE v2 + SIGNAL CORE v2
+// One road contract for everything that drives on the public road graph: AI cars and service cars, taxis, C5 trucks, the four bus lines,
+// the D4 semis. The E3 bus terminal, the airport bus bay, the D4 yard, the C5 yard/dock/port, taxi route planning, the A4 emergency
+// paths, the port container trucks (FL, schedule-based), Airport Ground Ops, trains, boats and pedestrians keep their own code and talk
+// to the core only through: lane occupancy ("ghosts"), hold lines, stop points and lane closures. Everything runs on one deterministic
+// simulation clock (SIM), stepped by the frame loop; the core never reads wall time or Math.random.
+//   • lane graph on the existing NODES/EDGES (one lane per direction on local/avenue, two on arterials; lane offsets = trafficEdgePoint)
+//   • pass-through nodes (2 roads, no signal, no crosswalk) are road: connector curves, car-following continues, no ownership
+//   • a junction owns a set of movements (approach lane → exit lane) with a geometric conflict matrix; a vehicle enters a junction only
+//     when its movement is granted: signal allows, no conflicting occupant, FIFO among ready waiters, real receiving space on the exit
+//     corridor (queue tail / next stop line / reservations of vehicles already granted into it), lane not closed, and — when the exit
+//     corridor cannot hold the vehicle — the following junction(s) granted at the same time (linked junctions)
+//   • stop lines are outside the box (crosswalk edge or crossing-road edge + margin); a vehicle never waits inside a junction
+//   • uniform following along the path (same lane → curve → next lane), deterministic lane changes with a gap check
+//   • Signal Core v2: same 14 phases, same drawing/pedestrian API, deterministic cycle with demand-based arrow/ped phases, clearance hold
+//     by real occupancy (vehicles and pedestrians), and signal groups for junctions whose connecting storage is shorter than one vehicle
+//   • failsafe only: a vehicle hard-blocked inside a box for CORE2.BACKOUT_AFTER seconds by another road vehicle backs out and re-queues
+// GATE-75 S3 (D-05): the only engine — the previous one and its #core=1 switch were removed after the last validation run.
+// =====================================================================================================================================
+// GATE-75 S3 · QA-49 / TRAFFIC-03 (D-05): the declarations of the previous engine removed in S3 (88 functions and constants, 48028 chars).
+// The audit reads the game source and proves that none of them is declared, called or assigned any more, that there is no engine
+// switch, and that cars, buses, D4 semis and C5 trucks run on Road Core v2 with the signals on Signal Core v2.
+const ROAD_CORE_V1_REMOVED=['TRAFFIC_BACKOUT_SECONDS','TRAFFIC_BACKOUT_SPEED','TRAFFIC_BOX_CLEARANCE','TRAFFIC_BOX_WAIT_SECONDS','TRAFFIC_COMMIT_COOLDOWN','TRAFFIC_COMMIT_LOOK','TRAFFIC_DEADLOCK_SECONDS','TRAFFIC_HOLD_MARGIN','TRAFFIC_JUNCTION_ACCEL','TRAFFIC_JUNCTION_EXIT_BUFFER','TRAFFIC_JUNCTION_MIN_SPEED','TRAFFIC_PASS_MAX_HOPS','a4FleetLead','airport4ApproachEnd','beginBusTurn','beginTrafficTurn','busAlwaysBodyBlockerAt','busCurbVector','busFixedPlan','busPlanAt','busPoseAt','busReceivingLaneClear','busRecoveryCandidateClear','c5NextEdge','d4FixedRoadPlan','d4FreightGateBusy','d4GateCrossingClosed','d4PlanAt','d4RouteSeg','flLead','recoverFrozenBus','signalQueueDemand','trafficAcquireJunction','trafficAcquireJunctionAt','trafficAcquireLinked','trafficAngle','trafficApproach','trafficApproachFrom','trafficHardStuck','trafficHoldDist','trafficIntersectionClear','trafficIsD4','trafficJunctionActor','trafficJunctionActors','trafficJunctionArbitrate','trafficJunctionGate','trafficJunctionId','trafficJunctionLockedByOther','trafficJunctionLockedByOtherAt','trafficJunctionPick','trafficJunctionPromote','trafficJunctionReserved','trafficJunctionRows','trafficLaneAbandon','trafficLaneBlockerAt','trafficLaneStep','trafficLead','trafficLeadFilter','trafficLeadLegacy189','trafficLinkedGate','trafficMovementAtSignal','trafficMovementOf','trafficNextEdge','trafficObstacleAt','trafficPassPlan','trafficPlan','trafficPlanAt','trafficPromoteBlockingTurn','trafficQaExplainV1','trafficReceivingLaneClear','trafficReleaseJunction','trafficReservationLive','trafficRouteContinuation','trafficSignalAllows','trafficSignalState','trafficSignalStateAt','trafficStopDistance','trafficStopDistanceAt','trafficStuck','trafficTurnBackoutStep','trafficTurnEmergencyRelease','trafficTurnGeometry','trafficTurnJunctionId','trafficWantedLane','updateBusFreezeWatchdogs','updateBusTurn','updateTrafficTurn','vehicleProjectedExtents'],ROAD_CORE_V1_REMOVED_CHARS=48028;
+function roadCoreV1RemovalAudit(){
+ const issues=[];let src='';try{for(const sc of document.scripts)if(!sc.src&&sc.text.length>src.length)src=sc.text}catch{}
+ if(src.length<1e6)issues.push('game source not readable');
+ const left=ROAD_CORE_V1_REMOVED.filter(n=>new RegExp("(^|[^'\\w$.])"+n+"\\s*[(=]").test(src));if(left.length)issues.push('still in the source: '+left.slice(0,8).join(', '));
+ if(src.includes('TRAFFIC_CORE'+'_VERSION')||src.includes('match(/core'+'='))issues.push('engine switch still in the source');
+ if(!TrafficCore2.ready)issues.push('Road Core v2 not initialised');
+ if(TrafficSignalController.core!==2||typeof TrafficSignalController.currentFor!=='function')issues.push('signals not on Signal Core v2');
+ const u=String(updateTrafficCars);if(!u.includes('TrafficCore2.tick')||u.length>160)issues.push('updateTrafficCars is not the Road Core v2 tick');
+ if(!String(TrafficCore2.tick).includes('updateD4YardTraffic')||!String(TrafficCore2.tick).includes('busTick'))issues.push('buses / D4 not on the core tick');
+ return{ok:!issues.length,issues,removed:ROAD_CORE_V1_REMOVED.length,chars:ROAD_CORE_V1_REMOVED_CHARS,sourceChars:src.length}}
+const SIM={t:0,ms:0,frame:0,dt:.05};
+const CORE2_STATS={reroutes:0,readopt:0,readopts:[],events:[],grants:[],logGrants:false,engineStalls:0,stalls:[],clamped:0};
+// limit2: the constraint that holds a vehicle this tick — 'moving' · lead · gate:<why> · hold · stop kinds · contact:<id> · recovery · a4-priority · bus-headway · free (= nothing legal holds it)
+function limit2(v,adv,dStop,stopKind,lead,dLine){const c=v.c2;if(adv>(SIM.dt||.05))return'moving';const cap=externalCap2(v);if(cap<1){try{if(a4FleetRoadPriority(v))return'a4-priority'}catch{}return'bus-headway'}
+ if(dLine!=null&&dLine<=2.5)return'gate:'+(c.why||'pending');if(dStop<=2.5)return stopKind==='line'?'gate:'+(c.why||'pending'):(stopKind||'stop');if(lead&&lead.gap<=22)return'lead';return'free'}
+function core2Event2(name,data){CORE2_STATS.events.push({t:+SIM.t.toFixed(1),name,...data});if(CORE2_STATS.events.length>400)CORE2_STATS.events.shift();Dbg?.event?.('traffic',name,data)}
+// p441 · the stop lines clear of the swept body of the long vehicles turning in the box (a 13.5 m bus swings its front over the opposite lane)
+var FLEET_SWEEP2={on:true,heavy:true,pad:2,max:80,maxSemi:120,yieldAfter:1,yieldBack:40,gateBackAfter:3.5,yields:0,n:0,lanes:[],skipped:[],conf:[]};
+function fleetSweepStops2(dry,lnMv){const S=FLEET_SWEEP2,T=fleetTypes(),keep=lnMv?{n:S.n,lanes:S.lanes,skipped:S.skipped,conf:S.conf}:null;S.n=0;S.lanes=[];S.skipped=[];if(!S.on)return S;   /* linesC (10.11): lnMv — התנועות של האוטובוסים של הקווים (LN.legs, ‏074f/074j), שלא נמצאות ב-BUS_ROUTES; ריצה שנייה, אחרי שהמסלולים של הקווים נבנו */
+ const cap=(L,W)=>({hl:L/2,r:W/2,sp:Math.max(0,L/2-W/2)}),BUS=cap(T.Bus.target[0],T.Bus.target[1]),HEAVY=cap(T.FireTruck.target[0],T.FireTruck.target[1]),WAIT=cap(T.Sedan.target[0],T.Bus.target[1]);
+ const busMv=new Set(lnMv||[]);if(!lnMv)for(const segs of Object.values(BUS_ROUTES)){if(!Array.isArray(segs))continue;for(let i=0;i<segs.length;i++){const a=segs[i],b=segs[(i+1)%segs.length];if(!a||!b)continue;
+  for(let k=0;k<2;k++){const ln=lane2(a.edgeId,a.dirSign,k);if(!ln)continue;const m=findMove2(ln,b.edgeId,b.dirSign);if(m)busMv.add(m.id)}}}
+ const d4Mv=new Set();if(!lnMv)try{const R=D4_CITY_TRUCK_ROUTE;for(let i=0;i<R.length-1;i++){const a=R[i],b=R[i+1];for(let k=0;k<3;k++){const ln=lane2(a.edgeId,a.dirSign,k);if(!ln)continue;const m=findMove2(ln,b.edgeId,b.dirSign);if(m)d4Mv.add(m.id)}}}catch(e){S.d4err=String(e)}   /* p477: הסמי של D4 */
+ let SEMI=null;try{SEMI=cap(D4_SEMI_LEN*FLEET_GAME,D4_SEMI_TARGET.width*FLEET_GAME)}catch{}   /* p490: המעטפת של היום */S.d4=d4Mv.size;
+ const seg=(x,y,h,c)=>{const cx=Math.cos(h),sy=Math.sin(h);return[x-cx*c.sp,y-sy*c.sp,x+cx*c.sp,y+sy*c.sp]},set=new Map();
+ for(const node of NODES2.values()){if(node.pt)continue;const waits=LANE_LIST2.filter(l=>l.nodeTo===node.id&&!l.closed);
+  for(const mv of node.movements){if(mv.kind==='pass'||(mv.kind==='straight'&&!(lnMv&&node.rb)))continue;const isSemi=!!SEMI&&d4Mv.has(mv.id),isBus=busMv.has(mv.id),B=isSemi?SEMI:isBus?BUS:(!lnMv&&S.heavy&&(mv.kind==='right'||mv.kind==='left')?HEAVY:null);if(!B)continue;   /* linesC: בכיכר גם 'straight' מסתובב סביב הטבעת — ראו 074j */const tag=isSemi?'semi':isBus?'bus':'heavy';
+   const P=[];for(let s=0;s<mv.len;s+=3){const p=polyPose2(mv.pts,s);P.push(seg(p.x,p.y,p.heading,B))}{const p=polyPose2(mv.pts,mv.len);P.push(seg(p.x,p.y,p.heading,B))}
+   for(const ln of waits){if(ln.edge===mv.from.edge&&ln.dir===mv.from.dir)continue;const rr=B.r+WAIT.r+S.pad+(lnMv?S.lnPad||0:0),s0=set.has(ln.id)?set.get(ln.id):ln.stopS;
+    const hit=s=>{const q=lanePose2(ln,s-WAIT.hl,ln.k),w=seg(q.x,q.y,q.heading,WAIT);for(const a of P)if(segmentDistanceSq(a[0],a[1],a[2],a[3],w[0],w[1],w[2],w[3])<rr*rr)return true;return false};
+    if(!hit(s0))continue;let s=s0,d=0;while(d<(isSemi?S.maxSemi:S.max)&&hit(s)){s-=2;d+=2}const floor=(NODES2.get(ln.nodeFrom).pt?0:ln.boxFrom+CORE2.BOX_CLEAR)+2*WAIT.hl;
+    if(hit(s)||s<floor){S.skipped.push([ln.id,mv.id,tag]);continue}set.set(ln.id,s);S.lanes.push([ln.id,mv.id,+(ln.stopS-s).toFixed(0),tag])}}}
+ // two movements of a junction whose bodies meet (a bus of the lines on one of them): they conflict — the centre lines may be 38 px apart
+ const CAR=cap(T.Sedan.target[0],T.Sedan.target[1]),poses=(mv,B)=>{const P=[];   // the approach (granted, creeping from the line to the curve), the curve, the first metres of the exit lane
+  for(let s=Math.max(0,mv.from.stopS-B.hl);s<mv.sStart;s+=6){const q=lanePose2(mv.from,s,mv.from.k);P.push(seg(q.x,q.y,q.heading,B))}
+  for(let s=0;s<mv.len;s+=3){const p=polyPose2(mv.pts,s);P.push(seg(p.x,p.y,p.heading,B))}const p=polyPose2(mv.pts,mv.len);P.push(seg(p.x,p.y,p.heading,B));
+  for(let s=mv.sEnd+6;s<=Math.min(mv.to.len,mv.sEnd+B.hl);s+=6){const q=lanePose2(mv.to,s,mv.to.k);P.push(seg(q.x,q.y,q.heading,B))}return P};S.conf=[];
+ for(const node of NODES2.values()){if(node.pt||node.rb)continue;const ms=node.movements;for(let i=0;i<ms.length;i++)for(let j=i+1;j<ms.length;j++){const a=ms[i],b=ms[j];if(a.from===b.from||a.conflicts.has(b.id))continue;
+  const sa=!!SEMI&&d4Mv.has(a.id),sb=!!SEMI&&d4Mv.has(b.id),ba=sa||busMv.has(a.id),bb=sb||busMv.has(b.id);if(!ba&&!bb)continue;const A=sa?SEMI:ba?BUS:CAR,Bc=sb?SEMI:bb?BUS:CAR,PA=poses(a,A),PB=poses(b,Bc),rr=A.r+Bc.r+1;let hit=false;
+  for(const p of PA){for(const q of PB)if(segmentDistanceSq(p[0],p[1],p[2],p[3],q[0],q[1],q[2],q[3])<rr*rr){hit=true;break}if(hit)break}
+  if(hit){S.conf.push([a.id,b.id]);if(!dry){a.conflicts.add(b.id);b.conflicts.add(a.id)}}}}
+ if(!dry){for(const [id,s] of set){LANES2.get(id).stopS=s;S.n++}
+  for(const lane of LANE_LIST2){let s=0,l=lane,d=0;while(l&&d<6){const n=NODES2.get(l.nodeTo);if(!n.pt||!l.ptNext){s+=Math.min(l.stopS,l.len);break}s+=l.ptNext.sStart+l.ptNext.len-l.ptNext.sEnd;l=l.ptNext.to;d++}lane.storageTotal=s}}
+ if(keep){S.ln={n:S.n,lanes:S.lanes.slice(),skipped:S.skipped.slice(),conf:S.conf.slice()};S.n+=keep.n;S.lanes=keep.lanes.concat(S.lanes);S.skipped=keep.skipped.concat(S.skipped);S.conf=keep.conf.concat(S.conf)}
+ return S}
+window.__TC_FLEET=Object.assign(window.__TC_FLEET||{},{sweep:()=>({n:FLEET_SWEEP2.n,lanes:FLEET_SWEEP2.lanes.slice(),skipped:FLEET_SWEEP2.skipped.slice(),conf:FLEET_SWEEP2.conf.slice(),yields:FLEET_SWEEP2.yields})});
+const CORE2={GHOST_YIELD_AFTER:3,GHOST_YIELD_BACK:44,BUS_HEADWAY_CRAWL:14,REROUTE_AFTER:6,
+ GAP:15,LOOK:160,CONFLICT_DIST:38,BOX_MARGIN:6,BOX_CLEAR:2,
+ R_STRAIGHT:56,R_RIGHT:38,R_LEFT:58,R_PASS:22,R_BEND:56,R_UTURN:30,
+ CAP_RIGHT:56,CAP_LEFT:62,CAP_UTURN:30,CAP_BEND:60,
+ COMMIT_LOOK:96,LANE_CHANGE_LEN:70,LANE_CHANGE_MIN_AHEAD:160,
+ BACKOUT_AFTER:12,BACKOUT_SPEED:22,BACKOUT_COOLDOWN:3.5,STUCK_EVENT:8,PED_WAIT:5.5,
+ SIG:{CLEAR_HOLD:450,CLEAR_HOLD_MAX:8,QUEUE_RANGE:460,NEAR:150,MAIN_MIN:5000,MAIN_MAX:13000,LEFT_MIN:3600,LEFT_MAX:8500},
+ GROUP_STORAGE:125,
+ FL_LOOKAHEAD:55,A4_LOOKAHEAD:30
+};
+// ---------------------------------------------------------------------------------------------------------------------------------
+// 1 · lane graph
+// ---------------------------------------------------------------------------------------------------------------------------------
+const LANES2=new Map(),LANE_LIST2=[],NODES2=new Map(),MOVES2=new Map();
+function lane2Id(edgeId,dir,k){return edgeId+':'+(dir>0?'+':'-')+':'+k}
+function laneCount2(e,dir){if(e.oneway){const n=e.cls==='oneway2'?2:1;return dir===e.oneway?n:dir==null?n:0}   /* S16: oneway2 */if(e.cls==='main0')return 3;if(e.cls==='art21')return dir<0?1:2;return e.cls==='main'?3:e.cls==='arterial'?2:1}   /* p522r: חד-סטרי, 2+1 */   /* p474 */
+function lane2(edgeId,dir,k){return LANES2.get(lane2Id(edgeId,dir,k))}
+function lanePose2(lane,s,kFrac=lane.k){return trafficEdgePoint(lane.edge,lane.dir,Math.max(0,Math.min(1,s/lane.len)),kFrac)}
+function bezierPts2(p0,h0,p1,h1,n=14,kScale=.39,kMin=8){
+ const chord=Math.hypot(p1.x-p0.x,p1.y-p0.y),k=Math.max(kMin,chord*kScale),c1={x:p0.x+Math.cos(h0)*k,y:p0.y+Math.sin(h0)*k},c2={x:p1.x-Math.cos(h1)*k,y:p1.y-Math.sin(h1)*k},pts=[];
+ for(let i=0;i<=n;i++){const t=i/n,u=1-t,x=u*u*u*p0.x+3*u*u*t*c1.x+3*u*t*t*c2.x+t*t*t*p1.x,y=u*u*u*p0.y+3*u*u*t*c1.y+3*u*t*t*c2.y+t*t*t*p1.y;pts.push({x,y,s:0,h:0})}
+ for(let i=1;i<pts.length;i++){pts[i].s=pts[i-1].s+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y)}
+ for(let i=0;i<pts.length;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)];pts[i].h=Math.atan2(b.y-a.y,b.x-a.x)}
+ return pts
+}
+function polyPose2(pts,s){
+ if(s<=0)return{x:pts[0].x,y:pts[0].y,heading:pts[0].h};const last=pts[pts.length-1];if(s>=last.s)return{x:last.x,y:last.y,heading:last.h};
+ let i=1;while(i<pts.length-1&&pts[i].s<s)i++;const a=pts[i-1],b=pts[i],f=(s-a.s)/Math.max(1e-6,b.s-a.s);
+ return{x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f,heading:Math.atan2(b.y-a.y,b.x-a.x)}
+}
+function polyMinDist2(p,q){let best=Infinity;for(let i=1;i<p.length;i++)for(let j=1;j<q.length;j++){const d=segmentDistanceSq(p[i-1].x,p[i-1].y,p[i].x,p[i].y,q[j-1].x,q[j-1].y,q[j].x,q[j].y);if(d<best)best=d}return Math.sqrt(best)}
+const NODE_RADIUS2=new Map();function nodeRadius2(node){let r=NODE_RADIUS2.get(node.id);if(r==null){r=Math.max(...incident(node.id).map(e=>TYPES[e.cls].width/2),18);NODE_RADIUS2.set(node.id,r)}return r}
+function buildRoadGraph2(){
+ LANES2.clear();LANE_LIST2.length=0;NODES2.clear();MOVES2.clear();NODE_RADIUS2.clear();
+ const isSignal=id=>SIGNALS.some(s=>s.node===id),hasCw=id=>CROSSWALKS.some(c=>c.signalNode===id);
+ for(const n of NODES){const inc=incident(n.id);NODES2.set(n.id,{id:n.id,x:n.x,y:n.y,deg:inc.length,pt:(inc.length===2||inc.length===1)&&!isSignal(n.id)&&!hasCw(n.id),signal:isSignal(n.id),dead:inc.length<=1,rb:(typeof RB2!=='undefined'&&RB2[n.id])||null,movements:[],inside:[],waiting:[],queue:[]})}
+ for(const e of EDGES){const a=byNode[e.a],b=byNode[e.b],len=Math.max(1,Math.hypot(b.x-a.x,b.y-a.y)),cnt=laneCount2(e);
+  for(const dir of [1,-1])for(let k=0,cnt=laneCount2(e,dir);k<cnt;k++){   /* p522r: לפי הכיוון */
+   const nodeFrom=dir>0?e.a:e.b,nodeTo=dir>0?e.b:e.a,p0=trafficEdgePoint(e.id,dir,0,k),p1=trafficEdgePoint(e.id,dir,1,k);
+   const lane={id:lane2Id(e.id,dir,k),edge:e.id,e,dir,k,cnt,len,cls:e.cls,nodeFrom,nodeTo,ax:p0.x,ay:p0.y,bx:p1.x,by:p1.y,ux:(p1.x-p0.x)/len,uy:(p1.y-p0.y)/len,heading:p0.heading,axis:edgeAxis(e),
+    stopS:len,boxTo:0,boxFrom:0,vs:[],moves:[],ptNext:null,closed:false,storageTotal:len,public:trafficPublicEdge(e),acc:pgRestrictedEdge(e)?'port':null};
+   LANES2.set(lane.id,lane);LANE_LIST2.push(lane)}
+ }
+ // box half-widths and stop lines (nose position on the lane)
+ for(const lane of LANE_LIST2){
+  const nTo=NODES2.get(lane.nodeTo),nFrom=NODES2.get(lane.nodeFrom);
+  lane.boxTo=nTo.pt?0:nTo.rb?nTo.rb.Ro:trafficBoxHalf(lane.nodeTo,lane.edge);lane.boxFrom=nFrom.pt?0:nFrom.rb?nFrom.rb.Ro:trafficBoxHalf(lane.nodeFrom,lane.edge);
+  if(nTo.pt){lane.stopS=lane.len+1e6}
+  else{const cw=nTo.signal?CROSSWALKS.find(c=>c.signalNode===lane.nodeTo&&c.roadId===lane.edge):(ZEBRA_XW.find(z=>!z.rb&&z.node===lane.nodeTo&&z.roadId===lane.edge)||null);let d;
+   if(cw){const n=byNode[lane.nodeTo],depth=(lane.cls==='arterial'||lane.cls==='main')?34:30;d=Math.hypot(cw.x-n.x,cw.y-n.y)+depth/2+4}else d=lane.boxTo+CORE2.BOX_MARGIN;
+   if(nTo.dead)d=Math.max(d,CORE2.R_UTURN+8);
+   lane.stopS=lane.len-d}
+  if(lane.edge==='AR-S2'&&lane.nodeTo==='J31_42')lane.stopS=Math.min(lane.stopS,lane.len-P523.c5StopD);   /* p523s: קו העצירה מערבה ב-x 3360, מזרחית לפתח של C5 */
+ }
+ // movements
+ const kindOf=(h0,h1,sameEdge)=>{const d=trafficSignedTurn(h0,h1),a=Math.abs(d);if(sameEdge||a>2.75)return'uturn';if(d>.25)return'right';if(d<-.25)return'left';return'straight'};
+ for(const lane of LANE_LIST2){
+  const node=NODES2.get(lane.nodeTo);
+  for(const e2 of incident(lane.nodeTo)){
+   const dir2=e2.a===lane.nodeTo?1:-1,cnt2=laneCount2(e2,dir2),sameEdge=e2.id===lane.edge;
+   const h0=lane.heading,h1=trafficEdgePoint(e2.id,dir2,.5,0).heading,kind0=kindOf(h0,h1,sameEdge);
+   if(sameEdge&&kind0!=='uturn')continue;
+   const isU=kind0==='uturn',kind=node.pt&&(!isU||node.dead)?'pass':kind0;
+   // exit lane: right → outer, left/u-turn → inner, straight/pass → same index (clamped)
+   const k2=kind==='right'?cnt2-1:kind==='left'||kind==='uturn'?0:Math.min(lane.k,cnt2-1);
+   const to=lane2(e2.id,dir2,k2);if(!to)continue;
+   const bend=Math.abs(trafficSignedTurn(h0,h1));
+   let R=isU?CORE2.R_UTURN:kind==='pass'?(bend<.2?CORE2.R_PASS:CORE2.R_BEND):kind==='right'?CORE2.R_RIGHT:kind==='left'?CORE2.R_LEFT:CORE2.R_STRAIGHT;
+   R=Math.min(R,lane.len*.4,to.len*.4);if(kind==='right'&&P575_RCAP[lane.nodeTo])R=Math.min(R,P575_RCAP[lane.nodeTo]);
+   // the curve joins the two lane lines around their intersection X: it leaves the approach R before X and joins the exit R after X
+   // (lead-in / lead-out straights when X lies beyond the lane end / before the exit start); parallel lines use the plain scheme
+   const ux=lane.ux,uy=lane.uy,wx=to.ux,wy=to.uy,cross=ux*wy-uy*wx;let sP0,sP1;
+   if(Math.abs(cross)<.05||isU){sP0=lane.len-R;sP1=R}
+   else{const dx=to.ax-lane.bx,dy=to.ay-lane.by,tStar=(dx*wy-dy*wx)/cross,rStar=(dx*uy-dy*ux)/cross;sP0=lane.len+tStar-R;sP1=rStar+R;
+    if(!node.pt&&sP0<lane.stopS+6){const R2=Math.max(10,R-(lane.stopS+6-sP0));sP0=lane.len+tStar-R2;sP1=rStar+R2;R=R2}}
+   const pA=lanePose2(lane,sP0),pB=lanePose2(to,sP1),p0={x:lane.bx+ux*(sP0-lane.len),y:lane.by+uy*(sP0-lane.len)},p1={x:to.ax+wx*sP1,y:to.ay+wy*sP1};
+   const core=isU?bezierPts2(p0,lane.heading,p1,to.heading,16,.7,20):bezierPts2(p0,lane.heading,p1,to.heading,14,.39,8);
+   const raw=[];if(sP0>lane.len)raw.push({x:lane.bx,y:lane.by});raw.push(...core.map(q=>({x:q.x,y:q.y})));if(sP1<0)raw.push({x:to.ax,y:to.ay});
+   const pts=[];for(const q of raw){if(!pts.length||Math.hypot(q.x-pts[pts.length-1].x,q.y-pts[pts.length-1].y)>.01)pts.push({x:q.x,y:q.y,s:0,h:0})}
+   if(pts.length<2)pts.push({x:pts[0].x+ux*.5,y:pts[0].y+uy*.5,s:0,h:0});
+   for(let i=1;i<pts.length;i++)pts[i].s=pts[i-1].s+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y);
+   for(let i=0;i<pts.length;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)];pts[i].h=Math.atan2(b.y-a.y,b.x-a.x)}
+   const sStart=Math.min(lane.len,sP0),sEnd=Math.max(0,sP1),Rin=lane.len-sStart;
+   const mv={id:lane.id+'>'+to.id,node:lane.nodeTo,from:lane,to,kind,pts,len:Math.max(1,pts[pts.length-1].s),sStart,sEnd,Rin,divergeMs:Math.max(0,sP0-lane.len)+R,conflicts:new Set(),axis:lane.axis,vsCurve:[],
+    cap:isU?CORE2.CAP_UTURN:kind==='pass'?(bend<.2?999:CORE2.CAP_BEND):kind==='straight'?999:kind==='right'?CORE2.CAP_RIGHT:kind==='left'?CORE2.CAP_LEFT:CORE2.CAP_UTURN,
+    turnLeft:kind==='left'||kind==='uturn',turnRight:kind==='right'};
+   // conflict geometry covers the whole box transit: box edge on the approach → curve → box edge on the exit lane
+   if(!node.pt){const en=lanePose2(lane,Math.min(sStart,lane.len-lane.boxTo-4)),ex=lanePose2(to,Math.max(sEnd,to.boxFrom+4));mv.cpts=[{x:en.x,y:en.y},...pts.map(q=>({x:q.x,y:q.y})),{x:ex.x,y:ex.y}]}else mv.cpts=pts;
+   MOVES2.set(mv.id,mv);lane.moves.push(mv);node.movements.push(mv);
+   if(node.pt&&kind==='pass')lane.ptNext=mv;
+  }
+ }
+ rbRebuild2();   /* p573 */
+ // the stop line always lies before every curve start of the lane (the vehicle must be able to wait on the lane, outside the box)
+ for(const lane of LANE_LIST2){const n=NODES2.get(lane.nodeTo);if(n.pt||!lane.moves.length)continue;const minStart=Math.min(...lane.moves.map(m=>m.sStart));lane.stopS=Math.min(lane.stopS,minStart-2)}
+ // conflicts (junction nodes only; movements from the same lane are sequential, never conflicting)
+ for(const node of NODES2.values()){if(node.pt||node.rb)continue;const ms=node.movements;
+  for(let i=0;i<ms.length;i++)for(let j=i+1;j<ms.length;j++){const a=ms[i],b=ms[j];if(a.from===b.from)continue;
+   if(a.to===b.to||polyMinDist2(a.cpts,b.cpts)<CORE2.CONFLICT_DIST){a.conflicts.add(b.id);b.conflicts.add(a.id)}}
+ }
+ // corridor storage: nose-line distance from the lane start to the next real stop line (through pass-through nodes)
+ for(const lane of LANE_LIST2){let s=0,l=lane,d=0;while(l&&d<6){const n=NODES2.get(l.nodeTo);if(!n.pt||!l.ptNext){s+=Math.min(l.stopS,l.len);break}s+=l.ptNext.sStart+l.ptNext.len-l.ptNext.sEnd;l=l.ptNext.to;d++}lane.storageTotal=s}
+}
+// ---------------------------------------------------------------------------------------------------------------------------------
+// 2 · Signal Core v2 (deterministic cycles on the simulation clock; groups for junctions that cannot store one vehicle between them)
+// ---------------------------------------------------------------------------------------------------------------------------------
+// ==== 27.10 · K-86 · p329: a movement held only by the space of its next lane is demand while the end of that lane has its main green ====
+var G79_K86={on:true,up:true,uw:1,maxLen:420,hits:0};
+function g79LinkServing(lane){if(!G79_K86.on||!lane||lane.len>G79_K86.maxLen)return false;let l=lane,d=0;
+ while(l&&d<6){const n=NODES2.get(l.nodeTo);if(!n)return false;if(!n.pt){if(!n.signal)return false;const g=SignalCore2.groupOf(n.id);if(!g)return false;
+   const p=SIGNAL_PHASES[g.index],m=l.axis==='horizontal'?p.rmid:p.rcenter;if(m===2){G79_K86.hits++;return true}return false}
+  l=l.ptNext?l.ptNext.to:null;d++}return false}
+const G79_IN=new Map();function g79Incoming(nid){let a=G79_IN.get(nid);if(a)return a;a=[];for(const L of LANE_LIST2){let l=L,d=0;while(l&&d<6){const n=NODES2.get(l.nodeTo);if(!n)break;if(!n.pt){if(n.id===nid)a.push(L);break}l=l.ptNext?l.ptNext.to:null;d++}}G79_IN.set(nid,a);return a}
+function g79UpPressure(g,D){for(const nid of g.nodes)for(const L of g79Incoming(nid)){const up=NODES2.get(L.nodeFrom);if(!up||!up.signal||g.nodes.includes(up.id)||L.len>G79_K86.maxLen)continue;let n=0;for(const e of up.queue){if(e.mv&&e.mv.to===L&&(e.v.speed||0)<10)n++}
+   if(n){const k=L.axis==='horizontal'?0:6;D.w[k]+=G79_K86.uw*n;D.near[k]+=G79_K86.uw*n;G79_K86.up_hits=(G79_K86.up_hits||0)+1}}}
+window.__TC_K86=()=>({on:G79_K86.on,up:G79_K86.up,hits:G79_K86.hits,upHits:G79_K86.up_hits||0});
+const SignalCore2={
+ groups:[],byNode:new Map(),ms:0,
+ init(){
+  this.groups.length=0;this.byNode.clear();this.ms=0;
+  const ids=SIGNALS.map(s=>s.node),parent=new Map(ids.map(id=>[id,id])),find=x=>{while(parent.get(x)!==x){parent.set(x,parent.get(parent.get(x)));x=parent.get(x)}return x},union=(a,b)=>{a=find(a);b=find(b);if(a!==b)parent.set(a,b)};
+  for(const lane of LANE_LIST2){const nFrom=NODES2.get(lane.nodeFrom);if(!nFrom.signal)continue;let l=lane,d=0,endNode=null;while(l&&d<6){const n=NODES2.get(l.nodeTo);if(!n.pt){endNode=n;break}l=l.ptNext?l.ptNext.to:null;d++}
+   if(endNode&&endNode.signal&&endNode.id!==lane.nodeFrom&&(lane.storageTotal-lane.boxFrom)<CORE2.GROUP_STORAGE)union(lane.nodeFrom,endNode.id)}
+  for(const q of P523.wave)if(parent.has(q[0])&&parent.has(q[1]))union(q[0],q[1]);   /* p523s: גל ירוק */
+  const byRoot=new Map();for(const id of ids){const r=find(id);(byRoot.get(r)||byRoot.set(r,[]).get(r)).push(id)}
+  let gi=0;for(const [,nodes] of byRoot){nodes.sort();const start=(stableHash(nodes[0])&1)?6:0;const g={id:'SG'+(gi++),nodes,index:start,lastGreen:start,phaseStart:0,phaseDuration:9000,transitions:0,holds:0,holdRun:0,maxGreen:0,lastPed:-60000,lastDemand:this.emptyDemand(),holdWhy:{},lastHold:null,forced:0,cycleStart:0,cycles:0,cycleMax:0};
+   g.rest=P523.restOf(nodes);if(g.rest!=null){g.index=g.rest;g.lastGreen=g.rest}   /* p523s: לפי דרישה */
+   g.phaseDuration=this.durationFor(g.index,g.lastDemand);this.groups.push(g);for(const n of nodes)this.byNode.set(n,g)}
+ },
+ emptyDemand(){return{horizontal:{count:0,score:0,left:0,tail:0},vertical:{count:0,score:0,left:0,tail:0},ped:0,inside:0,w:{0:0,3:0,6:0,9:0,12:0},near:{0:0,3:0,6:0,9:0,12:0}}},
+ phaseOf(nodeId){const g=this.byNode.get(nodeId);return g?SIGNAL_PHASES[g.index]:SIGNAL_PHASES[0]},
+ groupOf(nodeId){return this.byNode.get(nodeId)||null},
+ GREENS:[0,3,6,9],   /* p521x (R-76): no all-red walk phase — the walkers go with the parallel green */
+ classOf(mv){return mv.axis==='horizontal'?(mv.turnLeft?3:0):(mv.turnLeft?9:6)},
+ // demand per green phase (0 RM main · 3 RM arrow · 6 RC main · 9 RC arrow · 12 pedestrians); "near" = waiting close to the line and able to go
+ demand(g){
+  const D=this.emptyDemand();
+  for(const nid of g.nodes){const node=NODES2.get(nid);if(!node)continue;D.inside+=node.inside.filter(o=>!o.remote&&!o.standing).length;
+   for(const e of node.queue){const v=e.v,c=v.c2;if(!c)continue;const dLine=Math.max(0,e.dist),q=D[e.mv.axis],w=c.profile==='bus'?1.35:(c.profile==='d4'||c.profile==='c5')?1.5:1,slow=(v.speed||0)<10,near=clamp((CORE2.SIG.QUEUE_RANGE-dLine)/CORE2.SIG.QUEUE_RANGE,0,1);q.count++;q.score+=w*(.8+near*.75)*(slow?1.45:1);if(slow)q.tail=Math.max(q.tail,dLine);if(e.mv.turnLeft)q.left+=w;
+    const k=this.classOf(e.mv),blocked=e.mv.to.closed||(!shortCorridor2(v,e.mv)&&corridorFree2(e.mv.to,v)<c.len+CORE2.GAP);if(blocked){if(!e.mv.to.closed&&typeof g79LinkServing==='function'&&g79LinkServing(e.mv.to)){D.w[k]+=w;if(dLine<CORE2.SIG.NEAR)D.near[k]+=w}else if(!e.mv.to.closed){const m2=spillGateMove2(e.mv.to,g);if(m2){const k2=this.classOf(m2);D.w[k2]+=w*.8;if(dLine<CORE2.SIG.NEAR)D.near[k2]+=w*.8}}continue}   /* p477 (S7F193): התור שנחסם נספר לחץ שישחרר אותו */D.w[k]+=w;if(dLine<CORE2.SIG.NEAR)D.near[k]+=w}   /* K-86 · p329 */
+   // a vehicle held at a linked junction on its way here counts as demand here
+   for(const o of node.inside){if(o.ghost||o.standing||!o.remote||!o.v.c2)continue;const q=D[o.mv.axis];q.count++;q.score+=1.2;if(o.mv.turnLeft)q.left+=1;const k=this.classOf(o.mv);D.w[k]+=1;D.near[k]+=1}
+   try{for(const p of NPC_PEDESTRIANS){const edge=p.targetId?pedEdgeBetween(p.nodeId,p.targetId):null,c=edge?.type==='crosswalk'?CROSSWALKS.find(x=>x.id===edge.crosswalkId):p.inCrosswalk?CROSSWALKS.find(x=>x.id===p.inCrosswalk):null;if(c?.signalNode===nid)D.ped++}}catch{}
+   try{if((nid==='AIR-1'||nid==='AIR-2'||['A4C','A4S','A4W','A4SW','B4W','B4X'].includes(nid))&&PlayerProfile.mode==='walk'){const cs=CROSSWALKS.filter(q=>q.signalNode===nid);if(cs.some(c=>Math.hypot(PlayerPed.x-c.x,PlayerPed.y-c.y)<90))D.ped++}}catch{}
+   try{if(nid==='AIR-2')D.ped+=f2PedDemand()}catch{}
+  }
+  try{if(G79_K86.on&&G79_K86.up)g79UpPressure(g,D)}catch(e){}D.w[12]=D.ped;D.near[12]=D.ped;r76PedDemand(g,D);try{P523.extraDemand(g,D)}catch(e){}try{a5hDemand(this,g,D)}catch(e){}try{d5tkDemand(this,g,D)}catch(e){}   /* p521x */
+  return D
+ },
+ minFor(i){return i===12?5200:(i===3||i===9)?CORE2.SIG.LEFT_MIN:CORE2.SIG.MAIN_MIN},
+ durationFor(index,d){const p=SIGNAL_PHASES[index];
+  if(p.id==='RM_MAIN_GREEN')return clamp(CORE2.SIG.MAIN_MIN+d.w[0]*1300,CORE2.SIG.MAIN_MIN,CORE2.SIG.MAIN_MAX);
+  if(p.id==='RC_MAIN_GREEN')return clamp(CORE2.SIG.MAIN_MIN+d.w[6]*1300,CORE2.SIG.MAIN_MIN,CORE2.SIG.MAIN_MAX);
+  if(p.id==='RM_LEFT_GREEN')return clamp(CORE2.SIG.LEFT_MIN+d.w[3]*1600,CORE2.SIG.LEFT_MIN,CORE2.SIG.LEFT_MAX);
+  if(p.id==='RC_LEFT_GREEN')return clamp(CORE2.SIG.LEFT_MIN+d.w[9]*1600,CORE2.SIG.LEFT_MIN,CORE2.SIG.LEFT_MAX);
+  if(p.id==='PED_WALK')return clamp(5200+d.ped*250,5200,6200);
+  return p.baseMs},
+ // next green after a clearance: the next phase in the fixed ring that has demand (ring order guarantees every request is served within one cycle)
+ pickGreen(g,D){const ring=this.GREENS,pos=Math.max(0,ring.indexOf(g.lastGreen??0));for(let k=1;k<=ring.length;k++){const cand=ring[(pos+k)%ring.length];if(D.w[cand]>0)return cand}return g.rest!=null?g.rest:(g.lastGreen===0||g.lastGreen===3)?6:0},
+ nextIndex(index,d){const g={lastGreen:index<=2?0:index<=5?3:index<=8?6:index<=11?9:12};return this.pickGreen(g,d)},
+ clearancePhase(i){return i===2||i===5||i===8||i===11||i===13},
+ movementAllowed(mv,p){const main=mv.axis==='horizontal'?p.rmid:p.rcenter,left=mv.axis==='horizontal'?(p.rmidLeft||0):(p.rcenterLeft||0);return mv.turnLeft?(left===3||main===2&&mv.from.cnt===1&&permissiveLeftOk2(mv)):main===2},   /* p477 (S7F193): שמאלה מנתיב יחיד — גם בירוק כשהגישה הנגדית ריקה */
+ movementYellow(mv,p){const main=mv.axis==='horizontal'?p.rmid:p.rcenter,left=mv.axis==='horizontal'?(p.rmidLeft||0):(p.rcenterLeft||0);return mv.turnLeft?left===1:main===1},
+ pedCrossing(nid){try{for(const n of NPC_PEDESTRIANS)if(n.inCrosswalk){const c=CROSSWALKS.find(q=>q.id===n.inCrosswalk);if(c?.signalNode===nid)return true}}catch{}try{if(nid==='AIR-2'&&f2CrossingOccupied())return true}catch{}return false},
+ // leaving a clearance phase: the released movements must not meet anything still inside, pedestrians must have finished crossing,
+ // and WALK is never shown while a vehicle is inside or committed to the box
+ conflictHold(g,nextIndex){const p=SIGNAL_PHASES[nextIndex],walk=p.ped===5;
+  for(const nid of g.nodes){const node=NODES2.get(nid);if(!node)continue;
+   if(walk){const o=node.inside.find(o=>!o.standing&&!o.remote&&!o.ghost);if(o)return'veh:'+o.v.id;try{if(signalIntersectionOccupied(nid))return'v1occ'}catch{}continue}
+   if(this.pedCrossing(nid))return'ped';
+   if(!node.inside.length)continue;
+   for(const mv of node.movements){if(!this.movementAllowed(mv,p))continue;for(const o of node.inside){if(o.standing||o.ghost||o.remote)continue;if(o.mv.conflicts.has(mv.id))return'in:'+o.v.id}}}
+  return null},
+ enter(g,idx,now,D){g.index=idx;g.phaseStart=now;g.transitions++;if(D)g.lastDemand=D;
+  if(this.GREENS.includes(idx)){g.phaseDuration=this.durationFor(idx,D||g.lastDemand);if(idx===12)g.lastPed=now;if(idx===0||idx===6)g.maxGreen=Math.max(g.maxGreen,g.phaseDuration);
+   if(idx===(g.cycleAnchor??idx)){g.cycleAnchor=idx;if(g.cycleStart)g.cycleMax=Math.max(g.cycleMax,now-g.cycleStart);g.cycleStart=now;g.cycles++}}
+  else g.phaseDuration=SIGNAL_PHASES[idx].baseMs},
+ // actuated control: a green ends at its maximum, or earlier once nobody is left close to the line while another phase is waiting (gap-out)
+ steps:0,
+ step(dt){
+  this.steps++;this.ms+=dt*1000;const now=this.ms;
+  for(const g of this.groups){const i=g.index,el=now-g.phaseStart;
+   if(this.GREENS.includes(i)){
+    let end=el>=g.phaseDuration;
+    if(!end&&el>=this.minFor(i)&&(SIM.frame+g.nodes.length)%4===0){const D=this.demand(g);g.lastDemand=D;const other=this.GREENS.some(k=>k!==i&&D.w[k]>0);
+     if(other&&!(D.near[i]>0))end=true;
+     else if(i!==12){const want=this.durationFor(i,D);if(want>g.phaseDuration)g.phaseDuration=want}}
+    if(end&&g.rest===i){const D=this.demand(g);g.lastDemand=D;if(!this.GREENS.some(k=>k!==i&&D.w[k]>0)){end=false;g.phaseDuration=el+1000;P523.rests++}}   /* p523s: הרחוב הראשי נשאר בירוק */
+    if(end){g.lastGreen=i;this.enter(g,i===12?13:i+1,now)}
+    continue}
+   if(el<g.phaseDuration)continue;
+   if(i===1||i===4||i===7||i===10){this.enter(g,i+1,now);continue}
+   // clearance (all red / ped clear) → next green with demand, once the box is clear for it
+   const D=this.demand(g),next=this.pickGreen(g,D);
+   const hold=g.holdRun<CORE2.SIG.CLEAR_HOLD_MAX?this.conflictHold(g,next):null;
+   if(hold){g.phaseStart=now;g.phaseDuration=CORE2.SIG.CLEAR_HOLD;g.holds++;g.holdRun++;g.lastDemand=D;const k=hold.split(':')[0];g.holdWhy[k]=(g.holdWhy[k]||0)+1;g.lastHold=hold;continue}
+   if(g.holdRun>=CORE2.SIG.CLEAR_HOLD_MAX)g.forced=(g.forced||0)+1;
+   g.holdRun=0;this.enter(g,next,now,D);
+  }
+ },
+ wallStart(g){try{return performance.now()-(this.ms-g.phaseStart)}catch{return g.phaseStart}},
+ stateOf(nodeId){const g=this.groupOf(nodeId);if(!g)return{nodeId,index:0,phaseStart:0,phaseDuration:9000,transitions:0,holds:0,lastDemand:this.emptyDemand(),maxGreen:0,lastPed:-60000,group:null};return{nodeId,index:g.index,phaseStart:this.wallStart(g),simPhaseStart:g.phaseStart,phaseDuration:g.phaseDuration,transitions:g.transitions,holds:g.holds,lastDemand:g.lastDemand,maxGreen:g.maxGreen,lastPed:g.lastPed,group:g.id}},
+ // same surface as the adaptive controller (wall-clock arguments are ignored — the signals run on SIM); installed over TrafficSignalController
+ install(target){const self=this,ref=()=>(SIGNALS.find(s=>s.node==='N3')||SIGNALS[0])?.node||null;
+  const api={
+   get nodeStates(){const m=new Map();for(const g of self.groups)for(const n of g.nodes)m.set(n,self.stateOf(n));return m},
+   get index(){const g=self.groupOf(ref());return g?g.index:0},get phaseStart(){const g=self.groupOf(ref());return g?self.wallStart(g):0},
+   get demand(){const g=self.groupOf(ref())||self.groups[0];return g?{rmid:g.lastDemand.horizontal.score,rcenter:g.lastDemand.vertical.score}:{rmid:0,rcenter:0}},
+   legacyDemand:{rmid:0,rcenter:0},setDemand(){},core:2,
+   ensure(nodeId){return self.stateOf(nodeId)},computeDuration(st,p,d){return self.durationFor(SIGNAL_PHASES.indexOf(p),d)},nextIndex(st,d){return self.nextIndex(st.index,d)},clearancePhase(i){return self.clearancePhase(i)},
+   updateNode(nodeId){return self.phaseOf(nodeId)},update(){return self.phaseOf(ref())},currentFor(nodeId){return self.phaseOf(nodeId)},current(){return self.phaseOf(ref())},
+   duration(nodeId=null){const g=self.groupOf(nodeId||ref());return g?g.phaseDuration:SIGNAL_PHASES[0].baseMs},
+   busiest(){let best=null;for(const g of self.groups){const d=g.lastDemand,pressure=d.horizontal.score+d.vertical.score+d.ped*.8;if(!best||pressure>best.pressure)best={node:g.nodes[0],pressure,st:self.stateOf(g.nodes[0]),d}}return best},
+   snapshot(now,nodeId=null){const g=nodeId?self.groupOf(nodeId):(self.groupOf(ref())||self.groups[0]);if(!g)return{node:null,phase:'?',demand:{hCount:0,hTail:0,vCount:0,vTail:0,ped:0,inside:0,rmid:0,rcenter:0},remainingMs:0,transitions:0,holds:0,maxGreen:0};const p=SIGNAL_PHASES[g.index],d=g.lastDemand;return{node:nodeId||g.nodes[0],group:g.id,phase:p.id,rmid:p.rmid,rmidLeft:p.rmidLeft||0,rcenter:p.rcenter,rcenterLeft:p.rcenterLeft||0,ped:p.ped,remainingMs:Math.max(0,g.phaseDuration-(self.ms-g.phaseStart)),demand:{rmid:+d.horizontal.score.toFixed(1),rcenter:+d.vertical.score.toFixed(1),hCount:d.horizontal.count,vCount:d.vertical.count,hTail:Math.round(d.horizontal.tail),vTail:Math.round(d.vertical.tail),ped:d.ped,inside:d.inside},transitions:g.transitions,holds:g.holds,maxGreen:Math.round(g.maxGreen)}}
+  };
+  for(const k of Object.keys(api)){const dsc=Object.getOwnPropertyDescriptor(api,k);Object.defineProperty(target,k,{...dsc,configurable:true,enumerable:true})}
+ }
+};
+// ---------------------------------------------------------------------------------------------------------------------------------
+// 3 · occupancy: ghosts (actors driven by other code) on lanes and inside junctions
+// ---------------------------------------------------------------------------------------------------------------------------------
+// every lane whose strip the body touches gets the ghost; its "tail" is the rearmost body point on that lane
+var __GL2=null;
+function ghostLaneGrid2(){const L=LANE_LIST2;if(__GL2&&__GL2.list===L&&__GL2.n===L.length)return __GL2;const C=256,pad=SCALE.lane/2+64+4,cells=new Map();
+ for(let i=0;i<L.length;i++){const l=L[i],x0=Math.floor((Math.min(l.ax,l.bx)-pad)/C),x1=Math.floor((Math.max(l.ax,l.bx)+pad)/C),y0=Math.floor((Math.min(l.ay,l.by)-pad)/C),y1=Math.floor((Math.max(l.ay,l.by)+pad)/C);
+  for(let cx=x0;cx<=x1;cx++)for(let cy=y0;cy<=y1;cy++){const k=cx*100003+cy;let a=cells.get(k);if(!a){a=[];cells.set(k,a)}a.push(i)}}
+ __GL2={list:L,n:L.length,C,cells,mark:new Uint32Array(L.length),gen:0};return __GL2}
+function ghostLanes2(body,heading){
+ const out=[],pts=[[body.x??(body.ax+body.bx)/2,body.y??(body.ay+body.by)/2],[body.ax,body.ay],[body.bx,body.by]],r=body.radius||18,halfW=SCALE.lane/2;
+ // GATE-75P: candidate lanes from the grid (bodies with r ≤ 64; a larger body falls back to the full list)
+ let cand=null;if(r<=64){const G=ghostLaneGrid2(),g=++G.gen;cand=[];for(const [x,y] of pts){if(!Number.isFinite(x)||!Number.isFinite(y)){cand=null;break}const k=Math.floor(x/G.C)*100003+Math.floor(y/G.C),a=G.cells.get(k);if(a)for(const i of a)if(G.mark[i]!==g){G.mark[i]=g;cand.push(i)}}if(cand)cand.sort((p,q)=>p-q)}
+ const n=cand?cand.length:LANE_LIST2.length;
+ for(let ci=0;ci<n;ci++){const lane=cand?LANE_LIST2[cand[ci]]:LANE_LIST2[ci];
+  const minx=Math.min(lane.ax,lane.bx)-halfW-r-4,maxx=Math.max(lane.ax,lane.bx)+halfW+r+4,miny=Math.min(lane.ay,lane.by)-halfW-r-4,maxy=Math.max(lane.ay,lane.by)+halfW+r+4;
+  let sMin=Infinity,sMax=-Infinity,hit=false;
+  for(const [x,y] of pts){if(x<minx||x>maxx||y<miny||y>maxy)continue;const dx=x-lane.ax,dy=y-lane.ay,sv=dx*lane.ux+dy*lane.uy;if(sv<-r||sv>lane.len+r)continue;const lat=Math.abs(-dx*lane.uy+dy*lane.ux);if(lat>halfW+r-2)continue;hit=true;sMin=Math.min(sMin,sv);sMax=Math.max(sMax,sv)}
+  if(hit)out.push({lane,sMin:Math.max(0,sMin-r),sMax:Math.min(lane.len,sMax+r),aligned:trafficHeadingDiff(heading,lane.heading)<.65})
+ }
+ return out
+}
+const GHOSTS2=[];
+function addGhost2(id,x,y,heading,asset,ref,speed,kind,lookDist=0,gmv=null){   /* p579e: gmv {node, mv} — waiting at that node's line for that movement */
+ if(!Number.isFinite(x)||!Number.isFinite(y))return;
+ const body=vehicleCollisionShape(asset,ref||'Sedan',x,y,heading||0),hl=body.halfLength;
+ const lanes=ghostLanes2(body,heading||0);
+ for(const q of lanes){const half=(q.sMax-q.sMin)/2,s=q.sMin+half;q.lane.vs.push({ghost:true,id,v:null,s,hl:half,speed,kind,x,y,heading});
+  if(lookDist>0&&q.aligned){const s2=Math.min(q.lane.len,s+lookDist);q.lane.vs.push({ghost:true,id:id+'+',v:null,s:s2,hl:half,speed,kind,x,y,heading,bodyS:s})}}
+ for(const node of NODES2.values()){if(node.pt)continue;if(/^FL-/.test(id)&&!inPortZone(node.x,node.y))continue;   /* p501 (S6) */if(Math.abs(node.x-x)>260||Math.abs(node.y-y)>260)continue;const R=nodeRadius2(node)+body.radius*.5;let hit=false;for(const [px,py] of [[x,y],[body.ax,body.ay],[body.bx,body.by]])if(Math.hypot(node.x-px,node.y-py)<=R){hit=true;break}if(!hit&&segmentDistanceSq(body.ax,body.ay,body.bx,body.by,node.x,node.y,node.x,node.y)<=R*R)hit=true;if(hit)node.inside.push({ghost:true,id,v:null,mv:null,remote:false,x,y,heading:heading||0,gmv:gmv&&gmv.node===node.id?gmv.mv:null})}
+ GHOSTS2.push({id,x,y,heading,hl,kind,lanes:lanes.map(q=>q.lane.id)});
+}
+function collectGhosts2(){
+ GHOSTS2.length=0;
+ // port container trucks (schedule-based): current pose plus a look-ahead point so nobody is granted into their path
+ try{for(const v of FL_ACTIVE){if(!(v.alpha>=.3))continue;addGhost2(v.id,v.x,v.y,v.heading,v.asset,v.ref,40,'fl',CORE2.FL_LOOKAHEAD)}}catch{}
+ // emergency fleet on its station paths
+ try{for(const m of a4FleetActors()){const gm=(()=>{try{if(!((m.holdKind==='signal'&&m.holdT>0)||(m.holdKind==='space'&&!(m.speed>0))))return null;const h=((m.route&&m.route.holds)||[]).find(q=>!q.done&&q.node&&q.mv&&Math.abs(m.d-q.d)<20);if(!h)return null;const n=NODES2.get(h.node),mo=n&&n.movements.find(q=>q.id===h.mv);return mo?{node:h.node,mv:mo}:null}catch(e){return null}})();   /* p579e */
+ addGhost2(m.id,m.x,m.y,m.heading,m.asset,m.ref,m.speed||50,'a4',((m.a5h&&!(m.speed>0))||(m.blocked||0)>A4_UNJAM_T)?0:CORE2.A4_LOOKAHEAD,gm);if(m.claim)for(const q of m.claim)addGhost2(m.id+q[3],q[0],q[1],q[2],m.asset,m.ref,0,'a4',0)}}catch{}   /* p577i: a hotel vehicle pulling out holds the point where it joins the lane */
+ // the player's car whenever it stands or drives on a lane
+ try{if(typeof PlayerCar!=='undefined'&&PlayerCar.x>-9000)addGhost2('PLAYER-CAR',PlayerCar.x,PlayerCar.y,PlayerCar.heading,PlayerCar.asset,PlayerCar.ref||'Sedan',Math.abs(PlayerCar.speed||0),'player',0)}catch{}
+ // buses inside the E3 terminal / the airport bay, C5 trucks in the yard, D4 semis on yard paths: physically present, driven elsewhere
+ for(const b of BUS_VEHICLES)if(b.term||b.airport4)addGhost2(b.id,b.x,b.y,b.heading,b.asset,b.ref,b.speed||0,'bus-yard',0);
+ for(const c of TRAFFIC_CARS)if(c.c5&&c.c5.mode!=='road')addGhost2(c.id,c.x,c.y,c.heading,c.asset,c.ref,c.speed||0,'c5-yard',0);
+ try{for(const v of D4_YARD_SEMIS)if(v.k!=='road')addGhost2(v.id,v.x,v.y,v.heading,v.asset,v.ref,v.speed||0,'d4-yard',0)}catch{}
+}
+// ---------------------------------------------------------------------------------------------------------------------------------
+// 4 · vehicles: profiles, adoption, compat fields, movement choice
+// ---------------------------------------------------------------------------------------------------------------------------------
+function isD4Semi2(v){return typeof D4_YARD_SEMIS!=='undefined'&&D4_YARD_SEMIS.includes(v)}
+function profile2(v){if(v.kind==='bus'&&v.line)return'bus';if(isD4Semi2(v))return'd4';if(v.c5)return'c5';return'car'}
+
+// ==== p491 (הבעלים 10:12): תדלוק אמיתי — מכונית מתחת ל-40% דלק נוסעת לתחנה, מתדלקת וחוזרת לכביש; אף מכונית לא מופיעה ולא נעלמת ====
+// 2.11 11:35: כבוי (FUEL2.on=false) עד S6 — בבדיקות של שעה, מכונית בדרך לעמדה או בחזרה לכביש עצרה פעמיים סמי על שדרת המזרח. הנסיעות והמכלית המצוירות יצאו בכל מקרה.
+window.FUEL_REAL=true;
+const FUEL2={on:false,range:180000,low:.40,stations:null,t:0,lastCheck:0,stats:{decided:0,arrived:0,filled:0,rejoined:0,noRoute:0,cancelled:0,watchdog:0,mergeWait:0}};
+const FUEL_CAR_REFS=new Set(['Compact','Sedan','SUV','Minivan','Van','Pickup','Sports','Premium']);
+function fuelCar2(v){return !!v&&v.kind==='civilian'&&FUEL_CAR_REFS.has(v.ref)&&!v.c5}
+function fuelPub2(e){return !pgRestrictedEdge(e)&&!e.future&&!e.freightOnly}
+function fuelStations2(){if(FUEL2.stations)return FUEL2.stations;const S=[];
+ for(const [id,D] of [['D3',typeof D3ND!=='undefined'?D3ND:null],['C4',typeof C4ND!=='undefined'?C4ND:null]]){const F=D&&D.fuel;if(!F||!F.trips||!F.trips.length)continue;
+  const trips=F.trips.map((q,i)=>{const P=q.inP.map(p=>({x:p[0],y:p[1]})),O=q.outP.map(p=>({x:p[0],y:p[1]}));return{i,entry:P[1],entryNext:P[2],inPts:P.slice(2),outPts:O.slice(0,-3),pre:O[O.length-3],join:O[O.length-2],after:O[O.length-1],a:q.a}});
+  S.push({id,F,trips,bays:trips.map(()=>null)})}
+ return FUEL2.stations=S}
+function fuelSt2(id){return fuelStations2().find(s=>s.id===id)}
+function fuelLegs2(P){const L=[];for(let i=1;i<P.length;i++){const d=Math.hypot(P[i].x-P[i-1].x,P[i].y-P[i-1].y);if(d<.01)continue;L.push(c5Line(P[i-1],P[i],Math.max(2,Math.ceil(d/10))))}return L}
+function fuelVeh2(id){const k=String(id).replace(/\+$/,'');return TRAFFIC_CARS.find(q=>q.id===k)||BUS_VEHICLES.find(q=>q.id===k)||(typeof D4_YARD_SEMIS!=='undefined'?D4_YARD_SEMIS.find(q=>q.id===k):null)||null}
+function fuelTurn2(h,to,dt){let d=to-h;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return h+d*Math.min(1,dt*6)}
+// the way to the station's entrance, arriving in the direction the station's entry path continues (never on the opposite carriageway)
+function fuelApproach2(car,P,Q){const pos=nearestRoadPosition(P.x,P.y,fuelPub2);if(!pos)return null;const te=pos.edge,A=byNode[te.a],B=byNode[te.b];
+ const want=((B.x-A.x)*(Q.x-P.x)+(B.y-A.y)*(Q.y-P.y))>=0?1:-1,e=byEdge[car.edgeId];if(!e)return null;const forward=car.dirSign>0?e.b:e.a,tWant=want>0?pos.u:1-pos.u,fT=taxiFinalClamp(te.id,want,tWant);
+ if(car.edgeId===te.id&&car.dirSign===want&&fT>(car.t||0)+.05)return{nodes:[forward],pos:0,entryNode:forward,finalEdgeId:te.id,finalDirSign:want,finalT:fT,finalActive:true,targetX:P.x,targetY:P.y};
+ const entry=want>0?te.a:te.b,nodes=shortestNodePath(forward,entry,fuelPub2);if(!nodes.length)return null;
+ return{nodes,pos:0,entryNode:entry,finalEdgeId:te.id,finalDirSign:want,finalT:fT,finalActive:false,targetX:P.x,targetY:P.y}}
+function fuelDecide2(v){const S=fuelStations2();let best=null;
+ for(const st of S){const b=st.bays.indexOf(null);if(b<0)continue;const tr=st.trips[b],d=Math.hypot(tr.entry.x-v.x,tr.entry.y-v.y);if(!best||d<best.d)best={st,b,tr,d}}
+ if(!best){v.fuelRetry=FUEL2.t+20;return}
+ const r=fuelApproach2(v,best.tr.entry,best.tr.entryNext);if(!r){v.fuelRetry=FUEL2.t+40;FUEL2.stats.noRoute++;return}
+ best.st.bays[best.b]=v.id;v.taxiRoute={...r,phase:'fuel',hold:false,arrived:false};v.plan=null;v.runKey=null;v.wait=false;v.fuelGo={st:best.st.id,bay:best.b,t0:FUEL2.t};FUEL2.stats.decided++}
+function fuelCancel2(v){const g=v.fuelGo;if(g){const st=fuelSt2(g.st);if(st&&st.bays[g.bay]===v.id)st.bays[g.bay]=null}v.fuelGo=null;if(v.taxiRoute&&v.taxiRoute.phase==='fuel')v.taxiRoute=null;v.plan=null;v.wait=false;v.fuelRetry=FUEL2.t+30;FUEL2.stats.cancelled++}
+// arrived at the entrance (the road stop of its route): it leaves the road network and drives the station's own path to its pump
+function fuelArrived2(v){const g=v.fuelGo,st=g&&fuelSt2(g.st),tr=st&&st.trips[g.bay];
+ if(!tr){v.taxiRoute=null;v.fuelGo=null;v.wait=false;return}
+ if(v.taxiRoute){v.taxiRoute.hold=true;v.taxiRoute.arrived=true}v.speed=0;v.wait=true;v.fuelWait={t:0};FUEL2.stats.arrived++}   // it stands at the entrance (a legal stop) until the way in is clear
+// the way from the road into the station is clear: nobody on it, nobody coming up behind it in the lanes it crosses, and not the player
+function fuelEntryClear2(v,tr){const P=[{x:v.x,y:v.y},...tr.inPts.slice(0,2)],pts=[];for(let i=1;i<P.length;i++){const d=Math.hypot(P[i].x-P[i-1].x,P[i].y-P[i-1].y),n=Math.max(1,Math.ceil(d/12));for(let k=0;k<=n;k++)pts.push({x:P[i-1].x+(P[i].x-P[i-1].x)*k/n,y:P[i-1].y+(P[i].y-P[i-1].y)*k/n})}
+ for(const o of roadVehicles2()){if(o===v)continue;for(const q of pts)if(Math.hypot(o.x-q.x,o.y-q.y)<36)return false;
+  if(o.edgeId===v.edgeId&&o.dirSign===v.dirSign&&(o.t||0)<(v.t||0)&&(o.speed||0)>8&&Math.hypot(o.x-v.x,o.y-v.y)<170)return false}
+ for(const q of pts)if(Math.hypot(PlayerCar.x-q.x,PlayerCar.y-q.y)<40)return false;return true}
+function fuelEnterStation2(v){const g=v.fuelGo,st=g&&fuelSt2(g.st),tr=st&&st.trips[g.bay];if(v.c2){try{releaseGrant2(v)}catch(e){}}v.c2=null;v.taxiRoute=null;v.plan=null;v.runKey=null;v.turn=null;v.fuelWait=null;
+ if(!tr){v.fuelGo=null;v.wait=false;return}
+ v.fuelTrip={st:st.id,bay:g.bay,mode:'in',path:c5Path(...fuelLegs2([{x:v.x,y:v.y},...tr.inPts])),s:0,wait:0,t:0};v.fuelGo=null;v.wait=false}
+function fuelMergeClear2(J,Q){const pos=nearestRoadPosition(J.x,J.y,fuelPub2);if(!pos)return null;const te=pos.edge,A=byNode[te.a],B=byNode[te.b],L=Math.hypot(B.x-A.x,B.y-A.y);
+ const dir=((B.x-A.x)*(Q.x-J.x)+(B.y-A.y)*(Q.y-J.y))>=0?1:-1,t=clamp(dir>0?pos.u:1-pos.u,.03,.97);
+ for(const o of roadVehicles2()){if(Math.hypot(o.x-J.x,o.y-J.y)<75)return{busy:true};if(o.edgeId===te.id&&o.dirSign===dir&&(o.t||0)<t&&(t-(o.t||0))*L<230&&(o.speed||0)>8)return{busy:true}}
+ if(Math.hypot(PlayerCar.x-J.x,PlayerCar.y-J.y)<80)return{busy:true};
+ return{busy:false,te,dir,t}}
+function fuelStep2(v,dt,parked){const f=v.fuelTrip,st=fuelSt2(f.st),tr=st&&st.trips[f.bay];f.t+=dt;if(!tr){v.fuelTrip=null;return}
+ if(f.mode==='pump'){v.speed=0;v.wait=true;f.pt+=dt;v.fuel=Math.min(1,f.fuel0+(1-f.fuel0)*f.pt/f.dwell);
+  if(f.pt>=f.dwell){v.fuel=1;FUEL2.stats.filled++;if(st.bays[f.bay]===v.id)st.bays[f.bay]=null;f.mode='out';f.path=c5Path(...fuelLegs2([{x:v.x,y:v.y},...tr.outPts.slice(1)]));f.s=0;f.wait=0}return}
+ if(f.mode==='merge'){const q=fuelMergeClear2(tr.join,tr.after);v.speed=0;v.wait=true;f.mw=(f.mw||0)+dt;if(q&&q.busy&&f.mw<60){FUEL2.stats.mergeWait+=dt;return}
+  f.mode='enter';f.path=c5Path(...fuelLegs2([{x:v.x,y:v.y},tr.pre,tr.join]));f.s=0;f.wait=0;return}
+ const room=f.path.total-f.s,vmax=f.mode==='enter'?30:20,want=Math.min(vmax,Math.sqrt(70*Math.max(0,room))+3);v.speed=Math.min(want,(v.speed||0)+32*dt);
+ const ns=Math.min(f.path.total,f.s+v.speed*dt),p=c5PathPose(f.path,ns,false);
+ let hit=f.wait>3?null:dynamicVehicleBodyBlocked(v,p.x,p.y,p.heading,parked);
+ if(hit){const o=fuelVeh2(hit);if(!o||!o.fuelTrip||((o.x-v.x)*(p.x-v.x)+(o.y-v.y)*(p.y-v.y))<=0)hit=null}   // only another car of the station ahead of it stops it — a road car waits for it (the way in and the merge were checked clear before)
+ if(!hit&&f.wait<=3){try{if(vehicleBodiesOverlap(trafficVehicleShape(v,p.x,p.y,p.heading),trafficVehicleShape(PlayerCar),2))hit='PLAYER'}catch(e){}}
+ if(hit&&!movingAwayFrom2(v,p,hit)){v.speed=0;v.wait=true;f.wait+=dt;if(f.wait>3)FUEL2.stats.watchdog++;return}
+ f.wait=0;v.wait=false;f.s=ns;v.x=p.x;v.y=p.y;v.heading=fuelTurn2(v.heading,p.heading,dt);
+ if(ns<f.path.total-.05)return;
+ if(f.mode==='in'){f.mode='pump';f.pt=0;f.dwell=22+((stableHash(String(v.id))>>>3)%14);f.fuel0=v.fuel;v.speed=0;v.heading=tr.a;return}
+ if(f.mode==='out'){f.mode='merge';f.mw=0;return}
+ if(f.mode==='enter'){const q=fuelMergeClear2(tr.join,tr.after);const pos=q&&q.te?q:(()=>{const n=nearestRoadPosition(tr.join.x,tr.join.y,fuelPub2),A=byNode[n.edge.a],B=byNode[n.edge.b],d=((B.x-A.x)*(tr.after.x-tr.join.x)+(B.y-A.y)*(tr.after.y-tr.join.y))>=0?1:-1;return{te:n.edge,dir:d,t:clamp(d>0?n.u:1-n.u,.03,.97)}})();
+  const P=trafficEdgePoint(pos.te.id,pos.dir,pos.t,0);v.edgeId=pos.te.id;v.dirSign=pos.dir;v.t=pos.t;v.lane=0;v.lanePref=0;v.laneTarget=0;v.x=P.x;v.y=P.y;v.heading=P.heading;v.speed=12;v.wait=false;v.turn=null;v.plan=null;v.runKey=null;v.ghost=1;v.c2=null;v.fuelTrip=null;FUEL2.stats.rejoined++}}
+function fuelTick2(dt,parked){if(!FUEL2.on)return;const S=fuelStations2();if(!S.length)return;FUEL2.t+=dt;const check=FUEL2.t-FUEL2.lastCheck>=1;if(check)FUEL2.lastCheck=FUEL2.t;
+ for(const v of TRAFFIC_CARS){if(!fuelCar2(v))continue;if(v.fuel==null)v.fuel=.42+(stableHash(String(v.id))%1000)/1000*.58;
+  if(v.fuelTrip){fuelStep2(v,dt,parked);continue}
+  v.fuel=Math.max(0,v.fuel-(v.speed||0)*dt/FUEL2.range);
+  if(v.fuelWait){v.fuelWait.t+=dt;if(!v.taxiRoute||!v.taxiRoute.hold){fuelCancel2(v);v.fuelWait=null;continue}const g=v.fuelGo,st=g&&fuelSt2(g.st),tr=st&&st.trips[g.bay];if(!tr||v.fuelWait.t>45||fuelEntryClear2(v,tr)){if(v.fuelWait.t>45)FUEL2.stats.entryForced=(FUEL2.stats.entryForced||0)+1;fuelEnterStation2(v)}continue}
+  if(!check)continue;
+  if(v.fuelGo){if(!v.taxiRoute){FUEL2.stats.lostRoute=(FUEL2.stats.lostRoute||0)+1;fuelCancel2(v)}else if(FUEL2.t-v.fuelGo.t0>420){FUEL2.stats.timeout=(FUEL2.stats.timeout||0)+1;fuelCancel2(v)}continue}
+  if(v.fuel<FUEL2.low&&!v.taxiRoute&&!v.turn&&(v.fuelRetry||0)<=FUEL2.t)fuelDecide2(v)}}
+function fuelHoses2(){if(!FUEL2.on)return;for(const v of TRAFFIC_CARS){const f=v.fuelTrip;if(!f||f.mode!=='pump')continue;const st=fuelSt2(f.st);if(!st||!e3InView(v.x-60,v.y-60,120,120,20))continue;
+  let pu=null,bd=1e9;for(const m of st.F.pumps){const d=Math.hypot(m[0]-v.x,m[1]-v.y);if(d<bd){bd=d;pu=m}}if(!pu||bd>70)continue;
+  ctx.save();ctx.strokeStyle='#1f2326';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(pu[0],pu[1]-6);ctx.quadraticCurveTo((pu[0]+v.x)/2,pu[1]-14,v.x+Math.cos(v.heading+Math.PI/2)*6,v.y+Math.sin(v.heading+Math.PI/2)*6);ctx.stroke();ctx.restore()}}
+window.__TC_FUEL={stats:FUEL2.stats,stations:()=>fuelStations2().map(s=>({id:s.id,bays:s.bays.slice()})),
+ audit(){const cars=TRAFFIC_CARS.filter(fuelCar2),stuck=cars.filter(v=>v.fuelTrip&&v.fuelTrip.t>150).map(v=>v.id+' '+v.fuelTrip.mode+' '+Math.round(v.fuelTrip.t)),empty=cars.filter(v=>(v.fuel||0)<.05).map(v=>v.id);
+  return{ok:!stuck.length&&!empty.length,cars:cars.length,atStation:cars.filter(v=>v.fuelTrip).length,going:cars.filter(v=>v.fuelGo).length,low:cars.filter(v=>(v.fuel||1)<FUEL2.low).length,minFuel:+Math.min(...cars.map(v=>v.fuel??1)).toFixed(3),stuck,empty,stats:{...FUEL2.stats}}}};
+function roadVehicles2(){
+ const out=[];
+ for(const c of TRAFFIC_CARS){if(c.c5&&c.c5.mode!=='road')continue;if(c.fuelTrip)continue;out.push(c)}   /* p491: בתחנת הדלק — מחוץ לרשת הכבישים */
+ for(const b of BUS_VEHICLES){if(b.term||b.airport4)continue;out.push(b)}
+ try{for(const v of D4_YARD_SEMIS)if(v.k==='road')out.push(v)}catch{}
+ return out
+}
+function syncVehicle2(v){
+ // adopt / re-adopt a vehicle whose road position was written by other code (relocation, spawn, terminal exit, yard exit, save restore)
+ const c=v.c2;
+ if(c&&c.sync&&c.sync.edgeId===v.edgeId&&c.sync.dirSign===v.dirSign&&Math.abs(c.sync.t-(v.t||0))<1e-7){
+  if((v.taxiRoute||null)!==c.taxiRouteRef){c.taxiRouteRef=v.taxiRoute||null;releaseGrant2(v);c.next=null;c.nextKey=null;c.gate=null;c.plans={}}
+  return c}
+ const e=byEdge[v.edgeId];if(!e)return null;
+ const k=e.cls==='main'?clamp(Math.round(Number(v.lane)||0),0,2):e.cls==='arterial'?clamp(Math.round(Number(v.lane)||0),0,1):0,lane=lane2(e.id,v.dirSign>0?1:-1,k);if(!lane)return null;
+ if(c){releaseGrant2(v);CORE2_STATS.readopt++;CORE2_STATS.readopts.push({t:+SIM.t.toFixed(1),id:v.id,from:c.sync?c.sync.edgeId+':'+c.sync.dirSign+'@'+(+c.sync.t).toFixed(3):null,to:v.edgeId+':'+v.dirSign+'@'+(+v.t).toFixed(3),mv:c.mv?c.mv.id:null});if(CORE2_STATS.readopts.length>40)CORE2_STATS.readopts.shift()}
+ const hl=trafficVehicleHalfLength(v),s=clamp(Number(v.t)||0,0,1)*lane.len;
+ const nc={lane,s,laneFrac:k,laneK:k,mv:null,ms:0,next:null,nextKey:null,granted:false,remotes:[],insideNode:null,exitBoxNode:null,ticket:null,ticketAt:0,why:null,blockT:0,stuckT:0,backout:false,cooldown:0,hl,len:hl*2,profile:profile2(v),sync:null,stopPoint:null,pedWait:0,laneChanging:false,laneFrom:null,laneTo:null,laneBlend:0,laneBlendNext:0,plans:{},gate:null,gateDist:Infinity,chainWant:null,laneBack:0,taxiRouteRef:v.taxiRoute||null,forwardClear:0,hardEvent:false,stuckEvent:false,hardBy:null};
+ v.c2=nc;v.turn=null;v.plan=null;v.junctionLock=null;v.wait=false;if(!Number.isFinite(v.speed))v.speed=0;
+ nc.next=movementAt2(v,lane,true);nc.nextKey=lane.id+':'+(v.routeIndex??0);nc.gate=gateFor2(v,lane,nc.next);nc.gateDist=gateLineDist2(v);
+ return nc
+}
+function writeCompat2(v){const c=v.c2;if(!c)return;
+ if(c.mv){const mv=c.mv;v.edgeId=mv.from.edge;v.dirSign=mv.from.dir;v.t=1;v.lane=mv.from.k;v.turn={p:Math.min(1,c.ms/mv.len),len:mv.len,nextEdgeId:mv.to.edge,nextDirSign:mv.to.dir,te:mv.sEnd/mv.to.len,passThrough:mv.kind==='pass',sourceEdgeId:mv.from.edge,sourceDirSign:mv.from.dir,backout:c.backout,blockT:c.blockT,core2:true};v.junctionLock=mv.kind==='pass'?null:mv.node}
+ else{v.edgeId=c.lane.edge;v.dirSign=c.lane.dir;v.t=c.s/c.lane.len;v.lane=c.laneFrac;v.turn=null;v.junctionLock=c.granted&&c.gate?c.gate.node:null}
+ const nx=c.gate?c.gate.mv:c.next;v.plan=nx?{left:nx.turnLeft,right:nx.turnRight,ang:nx.kind==='uturn'?Math.PI:0,next:{edge:nx.to.e,dirSign:nx.to.dir},nodeId:nx.node,key:c.nextKey,passThrough:nx.kind==='pass',core2:true}:null;
+ c.sync={edgeId:v.edgeId,dirSign:v.dirSign,t:v.t}
+}
+function routeSegments2(v){const c=v.c2;if(v.pgRoute)return v.pgRoute;if(c.profile==='bus')return busRouteForLine(v.line);if(c.profile==='d4')return D4_CITY_TRUCK_ROUTE;if(c.profile==='c5')return v.c5.route;return null}
+function routeIndexOnLane2(v,lane){const segs=routeSegments2(v);if(!segs)return-1;let i=v.routeIndex||0;for(let k=0;k<8&&segs[i];k++){if(segs[i].edgeId===lane.edge&&segs[i].dirSign===lane.dir)return i;i++}return-1}
+function findMove2(lane,edgeId,dir){return lane.moves.find(m=>m.to.edge===edgeId&&m.to.dir===dir)||null}
+const TMP_RIRO2=new Set(['E4-IN-N','E4-IN-S','C2-LC-N','LC-E3W']);   /* p681: J46_185 — ימינה בלבד */   /* p604: J31_16 ימינה בלבד (המפה) */   /* p488: החיבורים הזמניים של E4 (TMP-S5-3, TMP-S5-4 — עד S9): ימינה בלבד */
+function tmpLeft2(m){return !!m.turnLeft&&((TMP_RIRO2.has(m.to.edge)&&m.to.edge!=='C2-LC-N')||TMP_RIRO2.has(m.from.edge))}   /* p614: into the villa street from both ways; out — right only */
+
+/* p691 (rules 25 / 32): a live item may draw a vehicle only standing in its place, or when it is a vehicle of the simulation */
+var P691={still:{'A5-HELI':'עומד על המנחת — הרוטור מסתובב והטייס מקיף','A5-PATROL':'עומדת בחצר — האורות מהבהבים','A5-SWEEPER':'חונה בפינה שלו עד שלב השירותים העירוניים',
+  'B4-SWEEPER':'חונה בפינה שלו עד שלב השירותים העירוניים — רק הפנס המהבהב','B5-CART':'חונה בקצה השביל עד שלב השירותים — רק הפנס המהבהב','B5-MOWER':'חונה בקצה המדשאה עד שלב הגננות',
+  'B3-RIDE-MOWER':'חונה במקום שלו עד שלב הגננות — רק הפנס המהבהב','C4-DOCK2-TRUCK':'עומדת ברציף 2 עד שלב הלוגיסטיקה (L1)','A3-MOWER':'חונה בפינה שלו עד שלב הגננות — רק הפנס המהבהב',
+  'C2-STACKER':'המלגזה של שיבולת עומדת ליד הרציף בין המשלוחים, ופורקת כשמשאית הארגז של קו GOODS-01 עומדת ברציף (LOGI, ‏D‑538)','C3-V4-HELI':'עומד על המנחת של וילה 4 עד שלב התעופה — הרצת מנוע, בלי המראה','A4-HELI-FIRE':'עומד על הגג של תחנת הכיבוי עד שלב התעופה — הרצת מנוע, בלי המראה',
+  'A4-HELI-EMS':'עומד על הגג של בסיס האמבולנסים עד שלב התעופה — הרצת מנוע, בלי המראה','A2-HELI':'עומד על המנחת — בדיקה לפני טיסה','C2-VAN':'טנדר הקירור חונה ברציף — אורות ודלת',
+  'D2-TAIL-LIFT':'משאית הארגז חונה במפרץ — רק המעלון זז','D3-TURNTABLE-CAR':'מסתובבת במקום על הבמה','D3-LIFT-CAR':'עולה ויורדת במקום על המעלית'},
+ real:{'E3-FREIGHT':'רכבת של הסימולציה (rlSnap)','C5-SERVICE-PICKUP':'רכב של הצי (p574)','D5-01-TRUCK':'רכב של הצי (p574)','D5-TANKER':'רכב של הצי (D5TK, p574)',
+  'C4-FUEL-CARS':'מכוניות של התנועה (FUEL2 — רכבים אזרחיים מהסימולציה)','D4-SEMIS':'הסמיטריילרים של הצי','B1-BOAT':'סירה בצעדי הסימולציה (b12BoatStep) מהמעגן ואליו','B2-BOAT':'סירה בצעדי הסימולציה (b12BoatStep) מהמעגן ואליו'}};
+function p691FakeLiveAudit(){const out={ok:true,list:[],bad:[]};try{for(const [z,Z] of Object.entries(TC_LIVE.zones)){let ms=[];try{ms=Z.movers(0,true)||[]}catch(e){}
+  for(const m of ms){if(!m||m.kind!=='רכב')continue;const st=P691.still[m.id]?'עומד':P691.real[m.id]?'סימולציה':null;out.list.push([z,m.id,st||'זז — לא של הסימולציה']);if(!st)out.bad.push(z+':'+m.id)}}}catch(e){out.err=String(e&&e.message||e)}
+ out.ok=!out.bad.length&&!out.err;return out}
+window.p691FakeLiveAudit=p691FakeLiveAudit;
+/* the parked ones are no longer live items — they leave the catalog of the movers (they stand, drawn as before, until their stage) */
+var P691_PARKED=new Set(['A5-SWEEPER','B5-MOWER','C4-DOCK2-TRUCK','C2-STACKER','C4-DOCK-MARSHAL']);
+/* the ones that stay in the catalog stand with a live part: the beacon of a parked machine, the rotor run-up of a helicopter on its pad */
+function p691Beacon(g,x,y,t){const on=((t*1.6)%1)<.5;g.save();if(on){g.fillStyle='rgba(255,176,32,.35)';g.beginPath();g.arc(x,y,5,0,Math.PI*2);g.fill()}g.fillStyle=on?'#ffb020':'#7a5410';g.beginPath();g.arc(x,y,2,0,Math.PI*2);g.fill();g.restore()}
+setTimeout(()=>{try{for(const Z of Object.values(TC_LIVE.zones)){if(!Z||Z.__p691||typeof Z.movers!=='function')continue;const f=Z.movers;Z.movers=(t,all)=>(f(t,all)||[]).filter(m=>!(m&&P691_PARKED.has(m.id)));Z.__p691=1}}catch(e){P691.err=String(e&&e.message||e)}},0);
+const P560_NOCAR=new Set(['E3-SOUTH-E','LC-E3N','LC-E3S','LC-E3W','CL-I1','CL-I2','CL-I3','CL-I4','CL-I5','CL-I6','CL-I7','CL-F1','LC-E3B','D2-LCH1','D2-LCH2']);   /* p684: דרך האי — עד S13 רחוב בלי מוצא */   /* p681 */
+function randomMoveFor2(v,lane,consume){
+ // a choice made while planning ahead (gate walk / linked reservation) is the choice taken on arrival
+ const c=v.c2,cached=c.plans[lane.id];if(cached){if(consume){delete c.plans[lane.id];v.hop=(v.hop||0)+1}return cached}
+ // GATE-75 S4: a public vehicle on a port lane (never planned in — only after a relocation) leaves the port by the shortest way
+ if(lane.acc&&!pgCoreAuthorized(v)){const m=pgPublicExitMove(v,lane);if(m){if(consume)v.hop=(v.hop||0)+1;else{c.plans[lane.id]=m}return m}}
+ // a free-roaming car does not turn into a dead-end spur (no through road: it would only U-turn back into the same junction)
+ let opts=lane.moves.filter(m=>m.kind!=='uturn'&&m.to.public&&m.to.edge!==lane.edge&&!spur2(m)&&!tmpLeft2(m)&&!P560_NOCAR.has(m.to.edge));   /* p560: E3 is a dead end until E4 — a free car does not drive in */
+ if(!opts.length)opts=lane.moves.filter(m=>m.kind!=='uturn'&&m.to.public&&m.to.edge!==lane.edge);
+ // no public exit (a spur entered through a pass-through connector): leave it on any ordinary road rather than turning back into it
+ if(!opts.length)opts=lane.moves.filter(m=>m.kind!=='uturn'&&m.to.edge!==lane.edge&&!m.to.e.future&&!m.to.e.freightOnly&&!m.to.e.serviceOnly&&!FL_PORT_EDGES.has(m.to.edge)&&!/^TC-(E6|D6|C6)-R0/.test(m.to.e.globalRoadId||'')&&!m.to.acc);
+ let m;if(opts.length)m=opts[(v.hop||0)%opts.length];else m=lane.moves.find(q=>q.kind==='uturn')||lane.moves[0]||null;
+ if(consume)v.hop=(v.hop||0)+1;else if(m){c.plans[lane.id]=m;const keys=Object.keys(c.plans);if(keys.length>8)delete c.plans[keys[0]]}
+ return m
+}
+// a movement into a dead-end spur: the corridor behind it leads back (through the U-turn connector) to the junction it starts from
+function spur2(m){if(m._spur!==undefined)return m._spur;let l=m.to,d=0,res=false;while(l&&d<6){const n=NODES2.get(l.nodeTo);if(!n.pt){res=n.id===m.node;break}if(!l.ptNext)break;if(l.ptNext.kind==='uturn'||l.ptNext.to.edge===l.edge){res=true;break}l=l.ptNext.to;d++}m._spur=res;return res}
+function taxiMove2(v,lane){
+ const tr=v.taxiRoute,nodeId=lane.nodeTo;
+ if(tr.nodes){const pos=Number.isFinite(tr.pos)?tr.pos:0;let idx=tr.nodes.indexOf(nodeId,pos);if(idx<0)idx=tr.nodes.indexOf(nodeId);
+  if(idx>=0&&idx<tr.nodes.length-1){const nn=tr.nodes[idx+1],m=lane.moves.find(m=>(m.to.dir>0?m.to.e.b:m.to.e.a)===nn);if(m)return m}}
+ if(nodeId===tr.entryNode&&!tr.finalActive){const m=findMove2(lane,tr.finalEdgeId,tr.finalDirSign);if(m)return m}
+ return null
+}
+// the movement a vehicle takes at the end of `lane` (lane = its current lane, or a lane 1–3 segments ahead for linked reservations)
+function movementAt2(v,lane,consume){
+ const c=v.c2,node=NODES2.get(lane.nodeTo),segs=routeSegments2(v);
+ if(segs){const i=routeIndexOnLane2(v,lane);if(i<0)return node.pt?lane.ptNext:null;const nx=segs[i+1];if(!nx)return null;if(node.pt&&lane.ptNext&&lane.ptNext.to.edge===nx.edgeId&&lane.ptNext.to.dir===nx.dirSign)return lane.ptNext;return findMove2(lane,nx.edgeId,nx.dirSign)}
+ const tr=v.taxiRoute;if(tr&&!tr.hold){const m=taxiMove2(v,lane);if(m)return m}
+ if(node.pt&&lane.ptNext)return lane.ptNext;
+ return randomMoveFor2(v,lane,consume)
+}
+function preferredK2(v,mv){if(!mv)return null;const cnt=mv.from.cnt;if(cnt<2)return 0;if(mv.turnRight)return cnt-1;if(mv.turnLeft)return 0;if(v.c2.profile==='bus'||v.logi||v.c2.profile==='d4'&&mv.from.cls==='main')return cnt-1;   /* p700: משאית של קו אספקה — בנתיב הימני */if(mv.kind==='straight'&&mv.to.cnt<cnt)return clamp(Math.round(trafficPreferredLane(v,mv.from.e)),0,mv.to.cnt-1);return clamp(Math.round(trafficPreferredLane(v,mv.from.e)),0,cnt-1)}   /* p477: הסמי של D4 בנתיב הימני בעורק הראשי (השער); בשאר — כמו כולם (בלי נתיב שנגמר ב-N4). S7F193: ישר בצומת שבו הכביש מצטמצם — מהנתיבים שממשיכים, והנתיב הימני נשאר לפונים ימינה */   /* p474: האוטובוס בנתיב החיצוני */
+// the first real junction on the vehicle's path from `lane` (pass-through nodes are crossed on the way): where it must be granted
+function gateFor2(v,lane,first){const path=[];let l=lane,m=first;for(let k=0;k<7&&m;k++){path.push({lane:l,mv:m});const node=NODES2.get(m.node);if(!node.pt)return{node:node.id,mv:m,lane:l,path};if(m.kind!=='pass')return null;l=m.to;m=movementAt2(v,l,false)}return null}
+// path distance from the vehicle's centre to the gate's stop line (centre position); negative when already past it
+function gateLineDist2(v){const c=v.c2,g=c.gate;if(!g)return Infinity;const path=g.path;let d=0;
+ for(let i=0;i<path.length;i++){const h=path[i],last=i===path.length-1;
+  if(i===0){if(c.mv){if(c.mv!==h.mv)return Infinity;d+=h.mv.len-c.ms;if(last)return Infinity}else{if(last)return h.lane.stopS-c.hl-c.s;d+=h.mv.sStart-c.s+h.mv.len}}
+  else if(last)return d+(h.lane.stopS-c.hl-path[i-1].mv.sEnd);
+  else d+=(h.mv.sStart-path[i-1].mv.sEnd)+h.mv.len}
+ return d}
+// ---------------------------------------------------------------------------------------------------------------------------------
+// 5 · junction gate: signal, occupancy, FIFO, receiving space, reservations, linked junctions
+// ---------------------------------------------------------------------------------------------------------------------------------
+function laneReserved2(lane,self=null){let r=0;const nFrom=NODES2.get(lane.nodeFrom);for(const o of nFrom.inside){if(o.ghost||o.standing||o.v===self)continue;const c=o.v.c2;if(!c||o.mv.to!==lane)continue;if(c.lane===lane&&!c.mv)continue;r+=c.len+CORE2.GAP}return r}
+// free length on the corridor that starts at `lane`, measured from the junction box edge on `lane` (path length through connectors)
+// (self: the vehicle asking — a loop road can lead back to its own approach, and it never waits for room behind itself)
+function corridorEnd2(lane,depth=0,self=null){
+ let firstTail=Infinity;
+ for(const o of lane.vs){if(self&&(o.v===self||o.id===self.id))continue;const tail=o.s-o.hl;if(tail<firstTail)firstTail=tail}
+ const pn=lane.ptNext;if(pn)for(const o of pn.vsCurve){if(self&&(o.v===self||o.id===self.id))continue;const tail=pn.sStart+o.ms-o.hl;if(tail<firstTail)firstTail=tail}
+ // a vehicle already past the stop line of the next junction is not where the followers will stop: the corridor ends at that line
+ const pt=NODES2.get(lane.nodeTo).pt;
+ if(firstTail<Infinity)return pt?firstTail-CORE2.GAP:Math.min(firstTail-CORE2.GAP,lane.stopS);
+ if(pt&&pn&&depth<5)return pn.sStart+pn.len-pn.sEnd+corridorEnd2(pn.to,depth+1,self);
+ return lane.stopS
+}
+function corridorFree2(lane,self=null){return corridorEnd2(lane,0,self)-(lane.boxFrom+(NODES2.get(lane.nodeFrom).pt?0:CORE2.BOX_CLEAR))-laneReserved2(lane,self)}
+function sameSignalGroup2(a,b){const ga=SignalCore2.groupOf(a),gb=SignalCore2.groupOf(b);return !!ga&&ga===gb}
+/* p573: the roundabout in Road Core v2 — every movement through an RB2 node: the entry curve onto the ring (radius Rc), the ring arc
+   counter-clockwise (θ decreasing on the screen), the exit curve to its arm; no geometric conflicts — the entry gives way by the gap on the ring */
+function rbRebuild2(){const TAU=Math.PI*2;
+ for(const node of NODES2.values()){const R=node.rb;if(!R)continue;
+  for(const mv of node.movements){const lane=mv.from,to=mv.to,s0=lane.len-(R.Ro+2),s1=Math.min(to.len-4,R.Ro+2);
+   const P0=lanePose2(lane,s0),P1=lanePose2(to,s1),pin=Math.atan2(P0.y-R.y,P0.x-R.x),pout=Math.atan2(P1.y-R.y,P1.x-R.x);
+   const A3=rbArc3(R,pin,pout,lane.edge===to.edge),a0=A3.a0,D=A3.D,a1=a0-D,ring=t=>({x:R.x+R.Rc*Math.cos(t),y:R.y+R.Rc*Math.sin(t)});
+   const e1=bezierPts2({x:P0.x,y:P0.y},P0.heading,ring(a0),a0-Math.PI/2,12,.42,10),e2=bezierPts2(ring(a1),a1-Math.PI/2,{x:P1.x,y:P1.y},P1.heading,12,.42,10);
+   const pts=[],add=q=>{if(!pts.length||Math.hypot(q.x-pts[pts.length-1].x,q.y-pts[pts.length-1].y)>.01)pts.push({x:q.x,y:q.y,s:0,h:0})};
+   for(const q of e1)add(q);const Le=e1[e1.length-1].s,n=Math.max(2,Math.ceil(D/.09));for(let i=1;i<=n;i++)add(ring(a0-D*i/n));for(const q of e2)add(q);
+   for(let i=1;i<pts.length;i++)pts[i].s=pts[i-1].s+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y);
+   for(let i=0;i<pts.length;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)];pts[i].h=Math.atan2(b.y-a.y,b.x-a.x)}
+   Object.assign(mv,{pts,len:Math.max(1,pts[pts.length-1].s),sStart:s0,sEnd:s1,Rin:lane.len-s0,cpts:pts,cap:R.cap,rb:{id:node.id,a0,a1,D,Le,La:R.Rc*D,Rc:R.Rc}});mv.conflicts.clear()}
+  const byLane=new Map();for(const mv of node.movements){if(!byLane.has(mv.from))byLane.set(mv.from,[]);byLane.get(mv.from).push(mv)}
+  for(const [,L] of byLane){const m=Math.min(...L.map(q=>q.rb.Le+q.rb.La));for(const q of L)q.divergeMs=m}}
+ try{rb3Init();rb3Sib()}catch(e){RB3.err=String(e&&e.message||e)}}   /* D‑600: the crossings of the roundabouts on the lanes; two entry lanes of one arm */
+function rbTheta2(c){const m=c.mv,R=m.rb,ms=c.ms;if(ms<R.Le)return{th:R.a0,pre:R.Le-ms,post:0,phase:0};if(ms<=R.Le+R.La)return{th:R.a0-(ms-R.Le)/R.Rc,pre:0,post:0,phase:1};return{th:R.a1,pre:0,post:ms-R.Le-R.La,phase:2}}
+function rbMod2(x){const T=Math.PI*2;x%=T;return x<0?x+T:x}
+// the entry gives way: a vehicle in the roundabout that will pass my entry point within the window, or one still at it — wait (and never more than `max` inside)
+function rbYield2(v,mv,node){const R=mv.rb,cfg=node.rb;if(!R||!cfg)return null;let n=0;{let ly=null;try{ly=typeof lcRbBusYield==='function'?lcRbBusYield(v,mv,node):null}catch(e){}if(ly)return ly}   /* linesC (074j): אוטובוס של הקווים בטבעת שהגוף שלו עובר מעל הכניסה שלי */{let fy=null;try{fy=typeof a4FleetRbYield==='function'?a4FleetRbYield(v,mv,node):null}catch(e){}if(fy)return fy}   /* p596: the fire engine / ambulance of A4 on the ring */
+ {let fa=null;try{fa=rbFleetAhead3(v,mv,node)||rbSibYield3(v,mv,node)}catch(e){}if(fa)return fa}   /* D‑600: an exit that holds one vehicle; the other entry lane of my arm */
+ for(const o of node.inside){if(o.v===v||o.remote||o.ghost||o.standing)continue;const c=o.v&&o.v.c2;if(!c)continue;n++;let th,pre=0,post=0,rem;
+  if(c.mv&&c.mv.rb&&c.mv.node===node.id){const q=rbTheta2(c);th=q.th;pre=q.pre;post=q.post;rem=q.phase===0?c.mv.rb.D:q.phase===1?q.th-c.mv.rb.a1:0}
+  else{const m2=(c.next&&c.next.rb&&c.next.node===node.id)?c.next:(c.gate&&c.gate.mv&&c.gate.mv.rb&&c.gate.node===node.id?c.gate.mv:null);if(!m2||!c.lane||c.lane!==m2.from)continue;th=m2.rb.a0;pre=m2.rb.Le+Math.max(0,m2.sStart-c.s);rem=m2.rb.D}
+  const up=rbMod2(th-R.a0);if(up<=rem+.02&&up*R.Rc+pre<cfg.win+(o.v.speed||0)*1.1)return'rb-yield';
+  const dn=rbMod2(R.a0-th)*R.Rc;if(pre<1&&dn<c.hl+v.c2.hl+14-post)return'rb-yield'}
+ if(n>=cfg.max)return'rb-full';return null}
+// the ring follows: the nearest vehicle ahead on my remaining ring (any movement of this roundabout), entering ones only once at the ring
+function rbLeader2(v,mv,consider){const c=v.c2,R=mv.rb,node=NODES2.get(mv.node);if(!node||!R)return;const me=rbTheta2(c);if(me.phase===2)return;const myRem=me.phase===0?R.D:me.th-R.a1;try{if(typeof a4FleetRbLead==='function')a4FleetRbLead(v,c,R,node,me,myRem,consider)}catch(e){}   /* p596 */
+ for(const o of node.inside){if(o.v===v||o.remote||o.ghost)continue;const c2=o.v&&o.v.c2;if(!c2||!c2.mv||c2.mv===mv||!c2.mv.rb||c2.mv.node!==node.id)continue;
+  const q=rbTheta2(c2);if(q.phase===0&&q.pre>c2.hl+8)continue;if(q.phase===2&&q.post>c2.hl+4)continue;
+  const ah=rbMod2(me.th-q.th);if(ah>Math.min(Math.PI,myRem+.3))continue;if(ah<.02&&me.phase===1&&q.phase===0)continue;
+  const gap=me.pre+ah*R.Rc-q.pre-c.hl-(q.phase===2?c2.hl-q.post:c2.hl)-4;consider(gap,{v:o.v,id:o.v.id,speed:o.v.speed||0,kind:'traffic'})}}
+window.__TC_RB=()=>{const out={};for(const id in RB2){const n=NODES2.get(id);if(!n)continue;out[id]={rb:!!n.rb,moves:n.movements.length,rbMoves:n.movements.filter(m=>m.rb).length,inside:n.inside.filter(o=>!o.remote).length,waiting:n.waiting.length,signal:SIGNAL_NODE_IDS.has(id),zebras:ZEBRA_XW.filter(z=>z.rb&&z.node===id).map(z=>z.id),err:RB2_ERR}}return out};
+function movementReady2(v,mv,node,opts={}){
+ const c=v.c2;if(node.signal&&(mv.turnLeft||mv.turnRight)&&mv.to&&r76PedOnArm(node.id,mv.to.edge))return'ped-yield';   /* p521x: a turning vehicle yields */
+ if(!node.rb&&mv.to.rbz&&rbZebraAhead3(v,mv))return'ped-yield';   /* D‑600: a walker in the crossing of a roundabout right behind this box */
+ if(node.signal&&!opts.ignoreSignal){const p=SignalCore2.phaseOf(node.id);if(!SignalCore2.movementAllowed(mv,p)){const dLine=opts.local?gateLineDist2(v):Infinity,brake=v.speed*v.speed/(2*TRAFFIC_DECEL)+8;if(!(opts.local&&SignalCore2.movementYellow(mv,p)&&dLine<=brake&&v.speed>8))return'signal'}}
+ if(c.cooldown>0)return'cooldown';
+ if(mv.to.closed)return'closed';if(pgBarrierFor2(v,mv))return'barrier';if(node.rb){const w=rbYield2(v,mv,node);if(w)return w}
+ const meStanding=c.gate&&c.gate.node===node.id&&!c.mv&&c.gateDist<-2;
+ for(const o of node.inside){if(o.v===v)continue;if(o.standing&&meStanding&&stableHash(String(o.v.id))>stableHash(String(v.id)))continue;if(o.ghost){if(ghostBehind2(v,o))continue;if(o.gmv&&o.gmv.id!==mv.id&&!o.gmv.conflicts.has(mv.id))continue;return'occupied'}   /* p579e */if(o.mv.conflicts.has(mv.id))return'occupied'}
+ // receiving space: a corridor that can never hold this vehicle is crossed under a linked reservation (the chain checks the space
+ // beyond the next junction); it must not hold anything that is not on its way through
+ if(shortCorridor2(v,mv)){const node2=NODES2.get(nextJunctionLane2(mv.to).nodeTo);if(!corridorPassable2(mv.to,node2,v))return'space'}
+ else if(corridorFree2(mv.to,v)<c.len+CORE2.GAP)return'space';
+ // grants are given in path order: nobody is granted behind a vehicle that still waits for this junction (or a ghost) ahead of it
+ if(opts.local){const lead=pathLeader2(v);if(lead&&lead.gap<Math.max(0,gateLineDist2(v))+4){const o=lead.ref,oc=o&&o.c2;if(lead.ghost||!oc||!((oc.granted&&oc.gate&&oc.gate.node===node.id)||(oc.mv&&oc.mv.node===node.id)))return'queue'}}
+ return null
+}
+function corridorCapacity2(lane){return lane.storageTotal-lane.boxFrom-CORE2.BOX_CLEAR}
+function shortCorridor2(v,mv){return corridorCapacity2(mv.to)<v.c2.len+CORE2.GAP}
+// a corridor that cannot hold the vehicle may only be entered when everything in it is on its way through the next junction
+function spillGateMove2(lane,g){let lead=null;for(const o of lane.vs){if(o.ghost||!o.v||!o.v.c2)continue;if(!lead||o.s>lead.s)lead=o}if(!lead)return null;const c=lead.v.c2;if(!c.gate||c.granted||!g.nodes.includes(c.gate.node))return null;return c.gate.mv}   /* p477 (S7F193) */
+function permissiveLeftOk2(mv){const n=NODES2.get(mv.node);if(!n)return false;const same=m=>m.from.edge===mv.from.edge&&m.from.dir===mv.from.dir;for(const e of (n.queue||[])){const m=e.mv;if(!m||m.axis!==mv.axis||m.turnLeft||same(m))continue;if((e.dist??0)<170)return false}for(const o of (n.inside||[])){if(o.ghost||o.standing||!o.mv)continue;if(o.mv.axis===mv.axis&&!o.mv.turnLeft&&!same(o.mv))return false}return true}   /* p477 (S7F193) */
+function corridorPassable2(lane,node2,self=null){let l=lane,d=0;while(l&&d<7){for(const o of l.vs){if(self&&(o.v===self||o.id===self.id))continue;if(o.ghost)return false;const c=o.v.c2;if(!c)return false;if(!((c.granted&&c.gate&&c.gate.node===node2.id)||(c.mv&&c.mv.node===node2.id)))return false}const n=NODES2.get(l.nodeTo);if(!n.pt||!l.ptNext)break;for(const o of l.ptNext.vsCurve){if(self&&(o.v===self||o.id===self.id))continue;const c=o.v.c2;if(!c||!(c.granted&&c.gate&&c.gate.node===node2.id))return false}l=l.ptNext.to;d++}return true}
+function nextJunctionLane2(lane){let l=lane,d=0;while(NODES2.get(l.nodeTo).pt&&l.ptNext&&d<5){l=l.ptNext.to;d++}return l}
+// reservations needed beyond `mv` when its exit corridor cannot hold the vehicle: every following junction up to the first one with storage
+function linkedChain2(v,mv,depth=0){
+ if(!shortCorridor2(v,mv)||depth>3)return[];
+ const lane=nextJunctionLane2(mv.to),node2=NODES2.get(lane.nodeTo);if(node2.pt)return[];
+ const m2=movementAt2(v,lane,false);if(!m2)return[];   // route ends there (terminal / yard / stop): nothing more to reserve
+ const why=movementReady2(v,m2,node2,{ignoreSignal:!node2.signal||sameSignalGroup2(mv.node,node2.id)});if(why){v.c2.chainWant={node:node2.id,mv:m2,why};return null}
+ const rest=linkedChain2(v,m2,depth+1);if(!rest)return null;
+ return[{node:node2.id,mv:m2},...rest]
+}
+// a free-roaming car that waits at the line because its exit is full chooses another exit of the same lane that has room
+// (a ring of full lanes is otherwise a true gridlock: nobody can move because everybody waits for the one ahead)
+function reroute2(v,dt,dLine){const c=v.c2,g=c.gate;
+ if(c.profile!=='car'||!g||c.granted||(v.taxiRoute&&!v.taxiRoute.hold)||dLine>12||dt<=0){if(dt>0)c.spaceWaitT=0;return false}
+ const why=c.why==='linked'&&c.chainWant?c.chainWant.why:c.why;if(why!=='space'){c.spaceWaitT=0;return false}
+ c.spaceWaitT=(c.spaceWaitT||0)+dt;if(c.spaceWaitT<CORE2.REROUTE_AFTER)return false;c.spaceWaitT=0;
+ const node=NODES2.get(g.node),lane=g.lane;let best=null,bestFree=-Infinity;
+ for(const m of lane.moves){if(m===g.mv||m.kind==='uturn'||m.to.edge===lane.edge||!m.to.public||m.to.closed||spur2(m))continue;const r=movementReady2(v,m,node,{ignoreSignal:true});if(r==='space'||r==='closed')continue;const f=shortCorridor2(v,m)?0:corridorFree2(m.to,v);if(f>bestFree){best=m;bestFree=f}}
+ if(!best)return false;
+ const from=g.mv.id;if(c.lane===lane)c.next=best;else c.plans[lane.id]=best;
+ releaseGrant2(v);c.gate=gateFor2(v,c.lane,c.next);c.ticket=null;
+ v.reroutes2=(v.reroutes2||0)+1;CORE2_STATS.reroutes++;core2Event2('reroute',{id:v.id,node:g.node,from,to:best.id});return true}
+function tryGrant2(v,mv){
+ const c=v.c2,node=NODES2.get(mv.node);c.chainWant=null;
+ if(node.pt)return true;
+ if(!node.waiting.includes(v))node.waiting.push(v);
+ const held=c.remotes.find(r=>r.node===node.id);
+ if(held&&held.mv===mv){const chain=linkedChain2(v,mv);if(!chain){c.why='linked';return false}
+  if(node.rb){const w=rbNear3(v,mv,node);if(w){c.why=w;return false}}   /* D‑600: at the line of a roundabout — the ring first */
+  const o=node.inside.find(o=>o.v===v);if(o)o.remote=false;else node.inside.push({v,mv,remote:false,ghost:false});
+  c.remotes=c.remotes.filter(r=>r.node!==node.id);for(const r of chain){node2Inside(r.node).push({v,mv:r.mv,remote:true,ghost:false});c.remotes.push(r)}
+  c.granted=true;c.insideNode=node.id;c.why=null;c.ticket=null;return true}
+ if(held)releaseRemotes2(v);
+ if(c.ticket==null){c.ticket=++TRAFFIC_JUNCTION_TICKET;c.ticketAt=SIM.t}
+ const why=movementReady2(v,mv,node,{local:true});if(why){c.why=why;return false}
+ // FIFO: an earlier waiter with a conflicting movement goes first when it is ready or merely waiting for the box to empty
+ // (never towards a waiter that my own body in the box — standing past the line — is blocking: it cannot go before me)
+ for(const w of node.waiting){if(w===v)continue;const wc=w.c2;if(!wc||wc.ticket==null||wc.ticket>c.ticket||!wc.gate||wc.gate.node!==node.id)continue;if(!wc.gate.mv.conflicts.has(mv.id))continue;if(node.inside.some(o=>o.v===v&&!o.remote&&o.mv&&o.mv.conflicts.has(wc.gate.mv.id)))continue;const wWhy=movementReady2(w,wc.gate.mv,node,{local:true});if(!wWhy||wWhy==='occupied'){if(wWhy==='occupied'&&fifoBehind2(v,w,wc.gate.mv,node)){CORE2_STATS.fifoBehind=(CORE2_STATS.fifoBehind||0)+1;continue}c.why='fifo';return false}}   /* p579b */
+ const chain=linkedChain2(v,mv);if(!chain){c.why='linked';return false}
+ if(CORE2_STATS.logGrants){CORE2_STATS.grants.push({t:+SIM.t.toFixed(2),id:v.id,node:node.id,mv:mv.id,free:Math.round(corridorFree2(mv.to)),need:Math.round(c.len+CORE2.GAP),short:shortCorridor2(v,mv),res:Math.round(laneReserved2(mv.to)),chain:chain.map(r=>r.node)});if(CORE2_STATS.grants.length>600)CORE2_STATS.grants.shift()}
+ node.inside.push({v,mv,remote:false,ghost:false});for(const r of chain){node2Inside(r.node).push({v,mv:r.mv,remote:true,ghost:false});c.remotes.push(r)}
+ c.granted=true;c.insideNode=node.id;c.why=null;c.ticket=null;
+ return true
+}
+function node2Inside(id){return NODES2.get(id).inside}
+/* p579b: a is behind v — on v's lane behind it, or in the box before it on its way into v's lane */
+function behindMe2(a,v){const ca=a&&a.c2,cv=v&&v.c2;if(!ca||!cv||!cv.lane||a===v)return false;if(ca.lane===cv.lane&&ca.s<cv.s)return true;return!!(ca.mv&&ca.mv.to===cv.lane)}
+/* p579b: all that keeps the waiter w out of the box ('occupied') is the remote reservation of vehicles behind v */
+function fifoBehind2(v,w,wmv,node){let n=0;for(const o of node.inside){if(o.v===w)continue;if(o.ghost)return false;if(!o.mv||!o.mv.conflicts.has(wmv.id))continue;if(!(o.remote&&o.v&&behindMe2(o.v,v)))return false;n++}return n>0}
+function releaseRemotes2(v){const c=v.c2;for(const r of c.remotes){const node=NODES2.get(r.node);const i=node.inside.findIndex(o=>o.v===v&&o.remote);if(i>=0)node.inside.splice(i,1)}c.remotes=[]}
+function releaseGrant2(v){const c=v.c2;if(!c)return;for(const node of NODES2.values()){for(let i=node.inside.length-1;i>=0;i--)if(node.inside[i].v===v)node.inside.splice(i,1);const w=node.waiting.indexOf(v);if(w>=0)node.waiting.splice(w,1)}c.granted=false;c.insideNode=null;c.exitBoxNode=null;c.remotes=[];c.ticket=null;c.why=null}
+// ---------------------------------------------------------------------------------------------------------------------------------
+// 6 · following, stop targets, stepping
+// ---------------------------------------------------------------------------------------------------------------------------------
+function pathLeader2(v){
+ const c=v.c2,look=Math.max(CORE2.LOOK,v.speed*1.5+60);let best=null;
+ const consider=(gap,o)=>{if(o.v===v||o.id===v.id)return;if(gap<look&&(!best||gap<best.gap))best={gap,id:o.id||(o.v&&o.v.id),kind:o.kind||'traffic',ref:o.v||o,ghost:!!o.ghost,speed:o.speed||0}};
+ if(c.mv){const mv=c.mv,swing=mv.kind==='straight'||mv.cap>900?0:1;for(const o of mv.vsCurve){if(o.v===v)continue;if(o.ms>c.ms||(o.ms===c.ms&&String(o.id)>String(v.id)))consider((o.ms-o.hl)-(c.ms+c.hl)-4-(swing?o.hl*.3+4:0),o)}
+  const rem=mv.len-c.ms;for(const o of mv.to.vs){if(o.v===v)continue;const d=rem+(o.s-mv.sEnd);if(d>-o.hl)consider(d-o.hl-c.hl-4,o)}
+  if(mv.to.ptNext)for(const o of mv.to.ptNext.vsCurve){if(o.v===v)continue;consider(rem+(mv.to.len-mv.sEnd)+o.ms-o.hl-c.hl-4,o)}
+  if(mv.rb)rbLeader2(v,mv,consider);   /* p573 */
+  return best}
+ const lane=c.lane;
+ // a ghost's look-ahead point (kept free for the port truck / emergency vehicle) does not stop a vehicle that is already ahead of that ghost
+ for(const o of lane.vs){if(o.v===v)continue;if(o.bodyS!=null&&c.s>=o.bodyS)continue;if(c.laneChanging&&c.lcPass&&o.id==='PLAYER-CAR')continue;   /* p236 */if(o.s>c.s||(o.s===c.s&&String(o.id)>String(v.id)))consider((o.s-o.hl)-(c.s+c.hl)-4,o)}
+ if(c.laneChanging&&c.laneTo)for(const o of c.laneTo.vs){if(o.v===v)continue;if(o.bodyS!=null&&c.s>=o.bodyS)continue;if(o.s>c.s||(o.s===c.s&&String(o.id)>String(v.id)))consider((o.s-o.hl)-(c.s+c.hl)-4,o)}
+ const nx=c.next;if(nx){const dStart=nx.sStart-c.s;
+  for(const o of nx.vsCurve){if(o.v===v)continue;consider(dStart+o.ms-o.hl-c.hl-4-(nx.kind==='straight'||nx.cap>900?0:o.hl*.45+8),o)}
+  for(const o of nx.to.vs){if(o.v===v)continue;consider(dStart+nx.len+(o.s-nx.sEnd)-o.hl-c.hl-4,o)}
+  // vehicles on sibling movements from this lane are ahead of me until they diverge
+  for(const m2 of lane.moves){if(m2===nx)continue;for(const o of m2.vsCurve){if(o.v===v)continue;if(o.ms-o.hl<m2.divergeMs+24)consider(dStart+o.ms-o.hl-c.hl-4-(m2.kind==='straight'||m2.cap>900?0:o.hl*.45+8),o)}}}
+ return best
+}
+function laneChangeClear2(v,target){if(target.closed)return false;const c=v.c2;
+ /* linesA (10.11): לא מתחילים החלפת נתיב אל מאחורי רכב של תת-מערכת שעומד בנתיב היעד (אוטובוס שמחכה למפרץ, משאית במסלול שלה) כשאין מקום להשלים אותה: המכונית נעצרה באמצע ההחלפה, על שני נתיבים, וחסמה את מי שבא מאחור (נמדד: try2942/tr_4, ‏try2950 יום 1 — נסיעה ריקה של קו 3 עמדה מאחוריה 181 שנ׳) */
+ for(const o of target.vs){if(!o.ghost||o.v===v||o.id===v.id||(o.speed||0)>=1)continue;const d=(o.s-o.hl)-(c.s+c.hl);if(d>-2&&d<CORE2.LANE_CHANGE_LEN+CORE2.GAP+6)return false}
+{const res=laneReserved2(target);if(res>0){let tail=Infinity;for(const o of target.vs)if(o.s<c.s&&o.id!==v.id)tail=Math.min(tail,o.s-o.hl);if(tail===Infinity&&(c.s-c.hl-CORE2.GAP-target.boxFrom-CORE2.BOX_CLEAR)<res+c.len+CORE2.GAP)return false}}for(const o of target.vs){if(o.v===v||o.id===v.id)continue;if(Math.abs(o.s-c.s)<o.hl+c.hl+CORE2.GAP)return false;if(o.s<c.s&&c.s-o.s<o.hl+c.hl+CORE2.GAP+(o.speed||0)*1.2)return false}return true}
+
+/* p523s (3.11): רמזורי חירום ביציאה של תחנות הכיבוי — כבויים; אדום לשדרה רק כשהכבאית יוצאת */
+var P523E={list:[{id:'DW-C4-FIRE2',edge:'C4-RC-N',at:[2623,3125],stops:{'1':3070,'-1':3180},heads:[[2402,3070,0],[2618,3180,2]],label:'תחנת כיבוי 2'},
+  {id:'DW-A4-FIRE',edge:'B4-CLW-N',at:[1141,2800],stops:{'1':2734,'-1':2855},heads:[[1128,2731,0],[1272,2855,2]],label:'תחנת הכיבוי של A4'}],
+ on:{},t0:{},holds:0,
+ set(id,v){if(v&&!this.on[id])this.t0[id]=SIM.t;this.on[id]=!!v},
+ state(id){if(!this.on[id])return'dark';return SIM.t-(this.t0[id]||0)<3?'yellow':'red'},
+ hold(v,lane){let s=Infinity;for(const q of this.list){if(lane.edge!==q.edge||this.state(q.id)!=='red')continue;const y=q.stops[String(lane.dir)];if(y==null)continue;s=Math.min(s,(q.at[0]-lane.ax)*lane.ux+(y-lane.ay)*lane.uy);this.holds++}return s},
+ draw(c){for(const q of this.list){const st=this.state(q.id);for(const [x,y,r] of q.heads){if(!e3InView(x-20,y-40,40,60,0))continue;c.save();c.translate(x,y);
+   c.fillStyle='#5c6166';c.fillRect(-.9,-24,1.8,24);c.fillStyle='#1d2124';c.fillRect(-3.4,-37,6.8,14);
+   const cols=st==='red'?['#ff3b2f','#2a2414','#1a1f1a']:st==='yellow'?['#3a1512','#f2b233','#1a1f1a']:['#2b2e31','#2b2e31','#2b2e31'];cols.forEach((k,i)=>{c.fillStyle=k;c.beginPath();c.arc(0,-33.5+i*4.4,1.6,0,Math.PI*2);c.fill()});
+   c.fillStyle='rgba(196,40,36,.92)';c.fillRect(-6,-22,12,5);c.fillStyle='#fff';c.font='700 3.6px "Segoe UI",Arial';c.textAlign='center';c.textBaseline='middle';c.fillText('חירום',0,-19.4);c.restore()}}}};
+window.P523E=P523E;window.__P523_FIRE=(id,v)=>P523E.set(id,v);
+function holdLines2(v,lane){
+ // nose positions (s on lane) the vehicle must not pass right now — the only interface for subsystem "virtual stop lines"
+ let s=Infinity;const c=v.c2;
+ try{s=Math.min(s,P523E.hold(v,lane))}catch{}   /* p523s: רמזור חירום */
+ try{const hl=termHoldLine(v);if(hl){const n=byNode[lane.nodeTo];s=Math.min(s,lane.len-(Math.abs(n.y-hl)+30)+c.hl)}}catch{}
+ try{if(typeof d4ExitHoldDist==='function'){const d=d4ExitHoldDist(v);if(d!=null)s=Math.min(s,c.s+d+c.hl)}}catch{}
+ return s
+}
+function busStopAhead2(v,lane){
+ // same cursor semantics as the previous engine: the next stop is served only on its own route leg; a stop the bus was placed past
+ // on this very lane (relocation) is skipped once, without wrapping the cursor
+ const stops=busStopsForLine(v.line);if(!stops.length)return null;const c=v.c2;
+ for(let g=0;g<stops.length;g++){const st=stops[v.stopCursor];if(!st)return null;const behind=st.routeIndex===v.routeIndex&&st.edgeId===lane.edge&&st.dirSign===lane.dir&&st.t*lane.len<c.s-2.5;if(!behind||v.stopCursor>=stops.length-1)break;v.stopCursor++}
+ const st=stops[v.stopCursor];if(st&&st.routeIndex===v.routeIndex&&st.edgeId===lane.edge&&st.dirSign===lane.dir&&st.t*lane.len>=c.s-2.5)return st;return null
+}
+function stopPoint2(v,lane){
+ // centre position on `lane` where this vehicle must come to rest for its own purpose (bus stop, terminal, airport bay, route end), or null
+ const c=v.c2;
+ if(c.profile==='bus'){const route=busRouteForLine(v.line),lastLeg=v.routeIndex===route.length-1;
+  if(lastLeg&&lane.edge==='LC-E3N'&&lane.dir===-1){const busy=TERM.gate&&BUS_VEHICLES.some(b=>b.id===TERM.gate&&b!==v&&b.term&&b.term.phase==='move');return busy?{s:Math.max(0,lane.len-TERM.waitBack),kind:'term-wait'}:{s:Math.max(0,lane.len-TERM.entryBack),kind:'term-entry'}}   /* p560: into the yard at the gate; while a bus goes out through the gate — it waits back, clear of it */
+  if(v.line===4&&lane.edge==='F2-AIR-S'&&lane.dir===1)return{s:AIRPORT4.entryT*lane.len,kind:'airport4'};
+  const stop=busStopAhead2(v,lane);if(stop)return{s:stop.t*lane.len,kind:'stop',stop};
+  return null}
+ if(c.profile==='c5'){const route=v.c5.route;if(v.routeIndex===route.length-1&&route[v.routeIndex].edgeId===lane.edge&&route[v.routeIndex].dirSign===lane.dir)return{s:v.c5.finalT*lane.len,kind:'c5-final'};return null}
+ if(c.profile==='d4')return null;   /* p477 (S7F193): הסמי לא עוצר על השדרה — נכנס לחצר בתנועה, או ממשיך עוד סיבוב */
+ const tr=v.taxiRoute;if(tr&&!tr.hold&&tr.finalActive&&tr.finalEdgeId===lane.edge&&tr.finalDirSign===lane.dir)return{s:tr.finalT*lane.len,kind:'taxi-final'};
+ return null
+}
+function externalCap2(v){let cap=Infinity;try{if(typeof a4FleetRoadPriority==='function'&&a4FleetRoadPriority(v))cap=0}catch{}if(v.c2.profile==='bus'&&busHoldSafe2(v)){try{cap=Math.min(cap,Math.max(CORE2.BUS_HEADWAY_CRAWL,busAntiBunchCap(v)))}catch{}}return cap}
+// the line headway rule slows a bus (never below a crawl: a bus parked mid-corridor would strand whoever was granted in behind it on the
+// assumption that it drives on to its stop line) and only where slowing blocks nobody's junction: never on a movement, never with a grant or a linked
+// reservation, never while its tail is still in the box it just crossed or inside a keep-clear zone
+function busHoldSafe2(v){const c=v.c2;if(c.mv||c.granted||c.exitBoxNode||c.remotes.length||c.laneChanging)return false;const lane=c.lane;
+ if(!NODES2.get(lane.nodeFrom).pt&&c.s-c.hl<lane.boxFrom+CORE2.BOX_CLEAR)return false;
+ if(lane.keepClear)for(const z of lane.keepClear)if(c.s+c.hl>z.s0&&c.s-c.hl<z.s1)return false;
+ return true}
+function applyPose2(v,pose){v.x=pose.x;v.y=pose.y;v.heading=pose.heading}
+function beginMovement2(v,mv,overshoot){
+ const c=v.c2,node=NODES2.get(mv.node);
+ const w=node.waiting.indexOf(v);if(w>=0)node.waiting.splice(w,1);
+ if(!node.pt&&!c.granted){node.inside.push({v,mv,remote:false,ghost:false});c.granted=true;c.insideNode=mv.node}
+ c.mv=mv;c.ms=Math.max(0,overshoot);c.laneChanging=false;c.lcPass=false;c.lcLen=null;c.laneFrom=null;c.laneTo=null;c.laneFrac=c.laneK=mv.from.k;c.next=null;c.nextKey=null;c.stopPoint=null;if(mv.kind!=='pass'){c.gate=null;c.ticket=null}
+ occAdd2(v);
+}
+function endMovement2(v){
+ const c=v.c2,mv=c.mv;c.lane=mv.to;c.s=mv.sEnd+Math.max(0,c.ms-mv.len);c.laneK=c.laneFrac=mv.to.k;c.mv=null;c.ms=0;c.next=null;c.nextKey=null;if(mv.kind!=='pass'){c.granted=false;c.gate=null;c.insideNode=null}
+ const segs=routeSegments2(v);
+ if(segs){const j=(v.routeIndex||0)+1;if(segs[j]&&segs[j].edgeId===mv.to.edge&&segs[j].dirSign===mv.to.dir)v.routeIndex=j;else{const k=segs.findIndex((q,qi)=>qi>(v.routeIndex||0)&&q.edgeId===mv.to.edge&&q.dirSign===mv.to.dir);if(k>=0)v.routeIndex=k}}
+ const tr=v.taxiRoute;if(tr&&!tr.hold){if(!tr.finalActive&&tr.finalEdgeId===mv.to.edge&&tr.finalDirSign===mv.to.dir&&mv.node===tr.entryNode)tr.finalActive=true;if(tr.nodes){const idx=tr.nodes.indexOf(mv.node);if(idx>=0)tr.pos=idx+1}}
+ // the box is released when the tail clears it (releaseCleared2)
+ c.exitBoxNode=NODES2.get(mv.node).pt?null:mv.node;
+ occAdd2(v);
+}
+// occupancy is rebuilt once per tick; a vehicle that changes lane / curve during its step is registered at once, so that everyone stepping
+// after it in the same tick sees it (receiving space, path leader, passable corridors)
+function occAdd2(v){const c=v.c2;if(c.mv){const L=c.mv.vsCurve;if(L.some(q=>q.v===v))return;const e={v,id:v.id,ms:c.ms,hl:c.hl,speed:v.speed||0,w:1};let i=L.findIndex(q=>q.ms>e.ms);if(i<0)i=L.length;L.splice(i,0,e);return}
+ const L=c.lane.vs;if(L.some(q=>q.v===v))return;const e={v,id:v.id,s:c.s,hl:c.hl,speed:v.speed||0,w:1};let i=L.findIndex(q=>q.s>e.s);if(i<0)i=L.length;L.splice(i,0,e)}
+function releaseCleared2(v){
+ // the box is released once the tail is clear of it — also while the vehicle is already on the pass-through bend that follows a short link
+ const c=v.c2;if(!c.exitBoxNode)return;if(c.mv&&c.mv.kind!=='pass')return;const node=NODES2.get(c.exitBoxNode);
+ const lane=c.mv?c.mv.from:c.lane,tail=c.mv?c.mv.sStart+c.ms-c.hl:c.s-c.hl;
+ if(lane.nodeFrom===node.id&&tail<lane.boxFrom+CORE2.BOX_CLEAR)return;
+ for(let i=node.inside.length-1;i>=0;i--)if(node.inside[i].v===v&&!node.inside[i].remote)node.inside.splice(i,1);c.exitBoxNode=null
+}
+const VEH_BY_ID2=new Map();
+function hardBlock2(v,x,y,heading,parked){
+ const hit=dynamicVehicleBodyBlocked(v,x,y,heading,parked);if(!hit)return null;
+ // two road vehicles touching each other: the one that is moving away (the other is behind it) may go on; the other keeps waiting
+ const o=VEH_BY_ID2.get(hit);if(o&&o.c2&&o.c2.hardBy===v.id){const dx=o.x-v.x,dy=o.y-v.y,ahead=dx*Math.cos(heading)+dy*Math.sin(heading);if(ahead<-4)return null}
+ // GATE-75 S3: a road vehicle that has closed up behind me (its body touches my rear, e.g. a bus cutting the chord of a corner) does not
+ // hold me either — driving on only increases the distance; otherwise I wait for its contact while it waits for me as its lead
+ if(o&&o!==v){const dx=o.x-v.x,dy=o.y-v.y,ahead=dx*Math.cos(heading)+dy*Math.sin(heading);if(ahead<-4&&(x-v.x)*dx+(y-v.y)*dy<=0&&Math.hypot(o.x-x,o.y-y)>Math.hypot(dx,dy)+.01)return null}
+ // a vehicle driven by its own subsystem (emergency fleet, port truck) that has closed up behind me: driving away from it is always allowed
+ if(!o){let g=null;try{g=a4FleetActors().find(q=>q.id===hit)||null}catch{}if(!g)try{g=FL_ACTIVE.find(q=>q.id===hit)||null}catch{}
+  if(!g)try{g=D4_YARD_SEMIS.find(q=>q.id===hit&&q.k!=='road')||null}catch{}   /* linesA (10.11): גם סמי במסלול החצר של D4 שנסגר מאחוריי (יוצא אחריי לרחוב המחסנים) — בלי זה הסמי שעלה לכביש נעצר מהמגע, והבא נכנס לתוכו */
+  if(g){const dx=g.x-v.x,dy=g.y-v.y,ahead=dx*Math.cos(heading)+dy*Math.sin(heading),moveAway=(x-v.x)*dx+(y-v.y)*dy<=0;if(ahead<-4&&moveAway)return null}}
+ return hit
+}
+function stepVehicle2(v,dt,parked){
+ const c=v.c2;
+ if(c.cooldown>0)c.cooldown=Math.max(0,c.cooldown-dt);
+ if(v.ghost>0)v.ghost=Math.max(0,v.ghost-dt);
+ releaseCleared2(v);
+ if(c.mv)return stepOnMovement2(v,dt,parked);
+ if(c.laneBack>0)return laneBackStep2(v,dt,parked);
+ const lane=c.lane,len=lane.len,node=NODES2.get(lane.nodeTo);
+ // movement choice for the end of this lane and the gate (first real junction on the path) — once per lane / route position
+ const key=lane.id+':'+(v.routeIndex??0);
+ if(c.nextKey!==key){c.next=movementAt2(v,lane,true);c.nextKey=key;const g=gateFor2(v,lane,c.next);
+  // a linked reservation made for exactly this gate (short corridor) is kept: it is converted into the grant at the line, ahead of FIFO
+  if(!(g&&c.gate&&g.node===c.gate.node&&g.mv===c.gate.mv)){const keep=!!g&&!c.granted&&c.remotes.some(r=>r.node===g.node&&r.mv===g.mv);if(!keep&&(c.granted||c.remotes.length))releaseGrant2(v);c.ticket=null}
+  c.gate=g}
+ const nx=c.next,g=c.gate;
+ // stop targets as distances from the vehicle centre
+ let dStop=Infinity,stopKind=null;
+ const sp=stopPoint2(v,lane);c.stopPoint=sp;if(sp){dStop=sp.s-c.s;stopKind=sp.kind}
+ if(!nx){const d=Math.min(lane.stopS,len)-c.hl-2-c.s;if(d<dStop){dStop=d;stopKind='dead-end'}}
+ const holdNose=holdLines2(v,lane);if(holdNose<Infinity&&holdNose-c.hl-c.s>=-2&&holdNose-c.hl-c.s<dStop){dStop=Math.max(0,holdNose-c.hl-c.s);stopKind='hold'}
+ {const pg=pgHoldDist2(v,lane,nx);if(pg!=null&&pg>=-2&&pg<dStop){dStop=Math.max(0,pg);stopKind='hold'}}   // GATE-75 S4: port gate arm
+ // keep-clear zones on this lane, or on the next lane behind a pass-through connector (then the hold point is the connector start)
+ {const zs=[];if(lane.keepClear)for(const z of lane.keepClear)if(c.s+c.hl<=z.s0+.5)zs.push({z,zl:lane,d:z.s0-c.hl-c.s,via:null});
+  if(nx&&nx.kind==='pass'&&nx.to.keepClear)for(const z of nx.to.keepClear){const dz=(nx.sStart-c.s)+nx.len+(z.s0-nx.sEnd)-c.hl;zs.push({z,zl:nx.to,d:z.s0<nx.sEnd+c.hl?Math.min(dz,nx.sStart-c.s-c.hl-4):dz,via:nx})}
+  for(const q of zs){const z=q.z,d=q.d,brake=v.speed*v.speed/(2*TRAFFIC_DECEL);if(d<-1)continue;
+   if(z.closed){if(d>=brake*.8-1&&d<dStop){dStop=Math.max(0,d);stopKind='hold'}continue}
+   if(!q.via&&sp&&sp.s>=z.s0-c.hl&&sp.s<=z.s1+c.hl)continue;if(d>Math.max(CORE2.COMMIT_LOOK,brake+20))continue;
+   if(!keepClearOk2(v,q.zl,z,q.via)){if(d<dStop){dStop=Math.max(0,d);stopKind='hold'}}}}
+ let gated=false,dLine=Infinity;
+ if(g&&!(sp&&g.lane===lane&&sp.s<=lane.stopS-c.hl)){dLine=gateLineDist2(v);const brake=v.speed*v.speed/(2*TRAFFIC_DECEL)+8;
+  if(!c.granted&&!c.laneChanging&&dLine<=Math.max(CORE2.COMMIT_LOOK,brake+12)){tryGrant2(v,g.mv);if(!c.granted&&reroute2(v,dt,dLine))return stepVehicle2(v,0,parked)}
+  if(!c.granted){gated=true;if(dLine<dStop){dStop=dLine;stopKind='line'}}}
+ c.gateDist=dLine;
+ // lane change intent (arterials): pre-position for the gate movement when the target lane is free beside me
+ if(lane.cnt>1&&!c.granted&&!c.laneChanging&&!c.exitBoxNode&&!(v.curbStop&&v.curbStop.shift)&&(sp&&(sp.kind==='stop'||sp.kind==='d4-end'||sp.kind==='c5-final'&&v.logi)?true:(g&&(g.lane===lane||g.path&&g.path.length>1&&g.path[0].lane===lane&&g.lane.cnt===lane.cnt)))){const want=sp&&(sp.kind==='stop'||sp.kind==='d4-end'||sp.kind==='c5-final'&&v.logi)?lane.cnt-1:preferredK2(v,g.mv);   /* p477: גם לפני השער של D4. S7F193: וגם בקטע שלפני צומת המעבר, כשמספר הנתיבים זהה */if(want!=null&&want!==c.laneK&&(Math.min(lane.stopS,len)-c.s)>CORE2.LANE_CHANGE_MIN_AHEAD){const target=lane2(lane.edge,lane.dir,want);if(target&&laneChangeClear2(v,target)){c.laneChanging=true;c.laneFrom=lane;c.laneTo=target;c.laneBlend=0;c.laneBlendNext=0;target.vs.push({v,id:v.id,s:c.s,hl:c.hl,speed:v.speed||0,w:1})}}}
+ g77PassPlayerCar(v,c,lane,dt);   /* GATE-77P · p211 · K-142 */
+ // desired speed
+ let desired=Math.min(v.targetSpeed,externalCap2(v));
+ if(nx&&nx.cap<desired){const dCurve=Math.max(0,nx.sStart-c.s);desired=Math.min(desired,Math.sqrt(nx.cap*nx.cap+2*TRAFFIC_DECEL*dCurve))}
+ if(dStop<Infinity)desired=Math.min(desired,Math.sqrt(2*TRAFFIC_DECEL*Math.max(0,dStop-1.5))+2);
+ if(c.profile==='bus'&&sp&&sp.kind==='stop'){if(sp.s-c.s<BUS_CURB_APPROACH)desired=Math.min(desired,38)}
+ if(c.profile==='bus'&&v.curbStop&&v.curbStop.edgeId===lane.edge&&v.curbStop.dirSign===lane.dir)desired=Math.min(desired,36);
+ const lead=pathLeader2(v);
+ let maxAdv=trafficDrive(v,dt,desired,lead);
+ if(dStop<Infinity)maxAdv=Math.min(maxAdv,Math.max(0,dStop));
+ let adv=Math.min(v.speed*dt,maxAdv);if(adv<v.speed*dt)v.speed=adv/Math.max(dt,1e-3);
+ c.limit=limit2(v,adv,dStop,stopKind,lead,null);c.limitLead=lead?lead.id:null;c.limitGap=lead?lead.gap:null;holdNote2(c);if(ghostYield2(v,dt,lead,adv))return;
+ const nextS=c.s+adv;
+ // begin the movement when the curve start is reached (granted at the gate, or a pass-through connector)
+ if(nx&&nextS>=nx.sStart&&(node.pt||c.granted)&&!c.laneChanging){const pose=polyPose2(nx.pts,Math.max(0,nextS-nx.sStart));const hard=adv>.001?hardBlock2(v,pose.x,pose.y,pose.heading,parked):null;if(hard)return blocked2(v,dt,hard,lead);
+  beginMovement2(v,nx,nextS-nx.sStart);applyPose2(v,pose);c.blockT=0;c.stuckT=0;v.wait=false;v.stuck=0;return}
+ let laneFrac=c.laneFrac;
+ if(c.laneChanging){const blend=Math.min(1,c.laneBlend+adv/(c.lcPass&&c.lcLen?c.lcLen:CORE2.LANE_CHANGE_LEN))   /* p236 */;laneFrac=c.laneFrom.k+(c.laneTo.k-c.laneFrom.k)*blend;c.laneBlendNext=blend}
+ const pose=lanePose2(lane,nextS,laneFrac);if(c.profile==='bus')busCurb2(v,lane,nextS,pose,sp);
+ const hard=adv>.001?hardBlock2(v,pose.x,pose.y,pose.heading,parked):null;
+ if(hard){if(c.laneChanging){c.lcBlockT=(c.lcBlockT||0)+dt;if(c.lcBlockT>1.5){const f=c.laneFrom;c.laneFrom=c.laneTo;c.laneTo=f;c.laneBlend=1-c.laneBlend;c.lcBlockT=0;c.lane=f;core2Event2('lane_change_reversed',{id:v.id,blocker:hard})}}return blocked2(v,dt,hard,lead)}
+ c.lcBlockT=0;c.s=nextS;c.laneFrac=laneFrac;applyPose2(v,pose);
+ if(c.laneChanging){c.laneBlend=c.laneBlendNext;if(c.laneBlend>=1){c.lane=c.laneTo;c.laneK=c.laneTo.k;c.laneFrac=c.laneK;c.laneChanging=false;c.laneFrom=null;c.laneTo=null;c.nextKey=null;c.next=null;c.gate=null;c.granted=false;c.lcPass=false;c.lcLen=null}}
+ v.wait=v.speed<3&&(gated||dStop<Infinity||!!lead);
+ if(adv>dt){c.blockT=0;c.stuckT=0;c.pedWait=0;c.stuckEvent=false;c.hardEvent=false;c.hardBy=null}
+ else if(v.wait&&!gated&&!['hold','stop','term-wait','term-entry','airport4','d4-end','c5-final','taxi-final'].includes(stopKind)){c.stuckT+=dt;if(c.stuckT>CORE2.STUCK_EVENT*2&&!c.stuckEvent){c.stuckEvent=true;v.queueWatchdogs=(v.queueWatchdogs||0)+1;core2Event2('queue_watchdog',{id:v.id,lane:lane.id,lead:lead?.id||null})}}
+ v.stuck=c.stuckT+c.blockT;
+ // arrival at a stop point
+ if(sp&&c.s>=sp.s-.05)arrive2(v,sp);
+}
+function stepOnMovement2(v,dt,parked){
+ const c=v.c2,mv=c.mv;
+ if(c.backout)return backoutStep2(v,dt,parked);
+ let desired=Math.min(v.targetSpeed,mv.cap,externalCap2(v));
+ // on a pass-through connector the gate may lie ahead: keep braking for its stop line and ask for the grant on the way
+ let dLine=Infinity;const g=c.gate;
+ if(mv.kind==='pass'&&g&&!c.granted){dLine=gateLineDist2(v);const brake=v.speed*v.speed/(2*TRAFFIC_DECEL)+8;if(!c.granted&&dLine<=Math.max(CORE2.COMMIT_LOOK,brake+12))tryGrant2(v,g.mv);if(!c.granted)desired=Math.min(desired,Math.sqrt(2*TRAFFIC_DECEL*Math.max(0,dLine-1.5))+2);else dLine=Infinity}
+ c.gateDist=dLine;
+ const lead=pathLeader2(v);
+ let maxAdv=trafficDrive(v,dt,desired,lead);
+ if(dLine<Infinity)maxAdv=Math.min(maxAdv,Math.max(0,dLine));
+ let adv=Math.min(v.speed*dt,maxAdv);if(adv<v.speed*dt)v.speed=adv/Math.max(dt,1e-3);
+ c.limit=limit2(v,adv,Infinity,null,lead,dLine<Infinity?dLine:null);c.limitLead=lead?lead.id:null;c.limitGap=lead?lead.gap:null;holdNote2(c);if(ghostYield2(v,dt,lead,adv))return;
+ const ms=c.ms+adv;
+ if(ms>=mv.len){const over=ms-mv.len,pose=lanePose2(mv.to,mv.sEnd+over,mv.to.k);const hard=adv>.001?hardBlock2(v,pose.x,pose.y,pose.heading,parked):null;if(hard)return blocked2(v,dt,hard,lead);
+  c.ms=ms;endMovement2(v);applyPose2(v,pose);c.blockT=0;c.stuckT=0;v.wait=false;v.stuck=0;return}
+ const pose=polyPose2(mv.pts,ms);const hard=adv>.001?hardBlock2(v,pose.x,pose.y,pose.heading,parked):null;
+ if(hard)return blocked2(v,dt,hard,lead);
+ c.ms=ms;applyPose2(v,pose);v.wait=v.speed<3&&(!!lead||dLine<Infinity);if(adv>dt){c.blockT=0;c.stuckT=0;c.hardEvent=false;c.hardBy=null}else if(mv.kind!=='pass'&&c.ms>2){c.stuckT+=dt;if(c.stuckT>=CORE2.BACKOUT_AFTER&&!c.backout&&!mv.rb){c.backout=true;c.forwardClear=0;v.recoveries2=(v.recoveries2||0)+1;v.backouts=(v.backouts||0)+1;const info={id:v.id,junction:mv.node,blocker:lead?lead.id:null,ms:+c.ms.toFixed(1),stuckFor:+c.stuckT.toFixed(1)};core2Event2('junction_backout',info);try{SaveManager.log('traffic','junction_backout',info)}catch{}}}v.stuck=c.blockT+c.stuckT;
+}
+// moving from pose (v.x,v.y) to p increases the distance to the vehicle `hitId` it already touches and does not head towards it
+function movingAwayFrom2(v,p,hitId){try{const o=[...TRAFFIC_CARS,...BUS_VEHICLES,...(typeof D4_YARD_SEMIS==='undefined'?[]:D4_YARD_SEMIS),...(typeof a4FleetActors==='function'?a4FleetActors():[])].find(q=>q.id===hitId);if(!o||o===v)return false;
+ const dx=o.x-v.x,dy=o.y-v.y,mx=p.x-v.x,my=p.y-v.y;if(mx*dx+my*dy>0)return false;if(Math.hypot(o.x-p.x,o.y-p.y)<=Math.hypot(dx,dy))return false;
+ return dynamicVehicleBodyBlocked(v,v.x,v.y,v.heading,parkedStepList())===hitId}catch{return false}}
+// a yard / station vehicle (C5 yard truck, emergency fleet) whose own path crosses my lane is stopped by my body, while I wait for its
+// ghost in front of me: I am the one that can reverse, so I back off a little and let it cross
+/* linesA (10.11): נסיגה מהגוף שכבר נוגעים בו מותרת כשהמרווח בין שני הגופים גדל (לא לפי המרכזים: מול גוף ארוך המרכז מתרחק והזנב מתקרב) */
+function backingAway2(v,p,hitId){try{const o=[...TRAFFIC_CARS,...BUS_VEHICLES,...(typeof D4_YARD_SEMIS==='undefined'?[]:D4_YARD_SEMIS),...(typeof a4FleetActors==='function'?a4FleetActors():[])].find(q=>q.id===hitId);if(!o||o===v)return false;
+ const ob=trafficVehicleShape(o),g=s=>{for(const m of [0,.6,1.2,1.8,2.4,3.2,4.5,6,8,11])if(vehicleBodiesOverlap(s,ob,m))return m;return 99};
+ const g0=g(vehicleCollisionShape(v.asset,v.ref||'Sedan',v.x,v.y,v.heading)),g1=g(vehicleCollisionShape(v.asset,v.ref||'Sedan',p.x,p.y,p.heading));if(g0>=8)return false;   /* לא נוגעים עכשיו — זו לא נסיגה ממגע */
+ return g1>g0||(g1===g0&&g1>0&&Math.hypot(o.x-p.x,o.y-p.y)>Math.hypot(o.x-v.x,o.y-v.y))}catch{return false}}
+function subsystemBlockedBy2(id,v){const gid=String(id).replace(/\+$/,'');
+ try{const t=TRAFFIC_CARS.find(q=>q.id===gid&&q.c5&&q.c5.mode!=='road');if(t)return t.c5.blockedBy===v.id}catch{}
+ try{const m=typeof a4FleetActors==='function'?a4FleetActors().find(q=>q.id===gid):null;if(m){if((m.blocked||0)>0&&m.blockBy!=null)return String(m.blockBy)===String(v.id);   /* linesA (10.11): המכלית, המשאית והטנדר של D5 / C5 רושמים מי חוסם אותם (blockBy) בתנוחה שלהם עצמם (המכלית — על שני סרנים, 6 פיקס׳ בתוך הקשת); הבדיקה לפי הנקודה שבמסלול החזירה "לא חסום", והמכונית שעמדה על הדרך של המכלית לא נסוגה אף פעם */const np=a4FleetPose(m.route,Math.min(m.route.total,m.d+2));return a4FleetBlocked(m,np)===v.id}}catch{}
+ return false}
+function ghostYield2(v,dt,lead,adv){const c=v.c2;
+ if(!(lead&&lead.ghost&&adv<=dt&&dt>0&&!c.laneBack&&!c.backout&&subsystemBlockedBy2(lead.id,v))){c.ghostYieldT=0;return false}
+ c.ghostYieldT=(c.ghostYieldT||0)+dt;if(c.ghostYieldT<CORE2.GHOST_YIELD_AFTER)return false;c.ghostYieldT=0;
+ if(c.mv){if(NODES2.get(c.mv.node).pt||c.ms<=2)return false;c.backout=true;c.forwardClear=0}else c.laneBack=CORE2.GHOST_YIELD_BACK;
+ v.recoveries2=(v.recoveries2||0)+1;v.backouts=(v.backouts||0)+1;core2Event2('ghost_yield',{id:v.id,to:lead.id,lane:c.lane?c.lane.id:null,mv:c.mv?c.mv.id:null});return true}
+function a4BlockedBy2(id,v){try{if(typeof a4FleetActors!=='function')return false;const m=a4FleetActors().find(q=>q.id===id);if(!m||!((m.blocked||0)>1))return false;const ahead=(m.x-v.x)*Math.cos(v.heading)+(m.y-v.y)*Math.sin(v.heading);return ahead>0}catch{return false}}
+// a ghost (port truck / emergency vehicle / yard vehicle) touching the box from behind me on my own approach does not occupy my way out
+function ghostBehind2(v,o){if(o.x==null)return false;const h=v.heading,dx=o.x-v.x,dy=o.y-v.y,along=dx*Math.cos(h)+dy*Math.sin(h),lat=Math.abs(-dx*Math.sin(h)+dy*Math.cos(h));return along<-(v.c2.hl+4)&&lat<18&&trafficHeadingDiff(o.heading,h)<.6}
+function blocked2(v,dt,hardId,lead){
+ const c=v.c2;v.speed=0;v.wait=true;c.blockT+=dt;v.stuck=c.stuckT+c.blockT;c.hardBy=hardId;c.limit='contact:'+hardId;c.limitLead=hardId;
+ // p441: a long vehicle turning in the box held by the body of a vehicle on a lane of the same junction (granted and creeping to its curve,
+ // or at its line) or of a lane it touches both ways: that one can reverse — it backs off 4 m at once (was: the one in the box backed out after 12 s)
+ if(c.mv&&!NODES2.get(c.mv.node).pt&&c.blockT>=FLEET_SWEEP2.yieldAfter){const o=VEH_BY_ID2.get(hardId),oc=o&&o.c2;if(oc&&!oc.mv&&!oc.laneBack&&!oc.backout&&oc.lane&&oc.lane!==c.mv.from&&(oc.lane.nodeTo===c.mv.node||oc.hardBy===v.id)){
+  oc.laneBack=FLEET_SWEEP2.yieldBack;o.recoveries2=(o.recoveries2||0)+1;FLEET_SWEEP2.yields++;c.blockT=0;core2Event2('long_turn_yield',{id:o.id,to:v.id,node:c.mv.node})}}
+ // p441: a granted vehicle creeping to its curve with its nose past its line (a 13.5 m bus reaches 6.7 m ahead of its centre — into the
+ // exit lane of the crossing road) and a vehicle there touch each other, both on lanes: the creeping one backs off 4 m after 1.5 s (was 12 s)
+ if(!c.mv&&c.granted&&c.lane&&!c.laneBack&&c.blockT>=1.5*FLEET_SWEEP2.yieldAfter&&c.s+c.hl>c.lane.stopS+4){const o=VEH_BY_ID2.get(hardId),oc=o&&o.c2;if(oc&&!oc.mv&&oc.hardBy===v.id){
+  c.laneBack=FLEET_SWEEP2.yieldBack;v.recoveries2=(v.recoveries2||0)+1;FLEET_SWEEP2.yields++;core2Event2('creep_yield',{id:v.id,to:o.id,lane:c.lane.id});return}}
+ // p441: turning in the box, held by the body of a vehicle that stands on the next link waiting for its own gate (a signal) — it will not move
+ // soon and cannot reverse: the one in the box backs out along its curve after 3.5 s (was 12 s) and tries again
+ if(c.mv&&!NODES2.get(c.mv.node).pt&&!c.backout&&c.ms>2&&c.blockT>=FLEET_SWEEP2.gateBackAfter){const o=VEH_BY_ID2.get(hardId),oc=o&&o.c2;if(oc&&oc.mv&&oc.mv.node!==c.mv.node&&!oc.hardBy&&!oc.backout){
+  c.backout=true;c.forwardClear=0;v.recoveries2=(v.recoveries2||0)+1;v.backouts=(v.backouts||0)+1;FLEET_SWEEP2.yields++;core2Event2('gate_backout',{id:v.id,to:o.id,junction:c.mv.node});return}}
+ const ped=NPC_PEDESTRIANS.find(q=>q.id===hardId);
+ if(ped){c.pedWait+=dt;if(c.pedWait>CORE2.PED_WAIT){ped.ghost=3.2;ped.blockT=0;c.pedWait=0;v.pedReleases=(v.pedReleases||0)+1;v.deadlockRelease=(v.deadlockRelease||0)+1;core2Event2('ped_release',{id:v.id,ped:hardId})}return}
+ if(c.blockT>=CORE2.STUCK_EVENT&&!c.hardEvent){c.hardEvent=true;v.hardEpisodes=(v.hardEpisodes||0)+1;core2Event2('hard_block',{id:v.id,blocker:hardId,inBox:!!c.mv,lane:c.lane?c.lane.id:null})}
+ // an emergency vehicle on its station path cannot reverse: a road vehicle whose body blocks it (while it blocks the road vehicle) yields
+ const a4Stuck=a4BlockedBy2(hardId,v);
+ if(!c.mv&&c.blockT>=CORE2.BACKOUT_AFTER&&!c.laneBack){const other=VEH_BY_ID2.get(hardId);if(a4Stuck||(other&&other.c2&&other.c2.hardBy===v.id&&stableHash(String(v.id))>=stableHash(String(other.id)))){c.laneBack=34;v.recoveries2=(v.recoveries2||0)+1;v.backouts=(v.backouts||0)+1;const info={id:v.id,lane:c.lane.id,blocker:hardId,blockedFor:+c.blockT.toFixed(1)};core2Event2('lane_backout',info);try{SaveManager.log('traffic','lane_backout',info)}catch{}}}
+ if(c.mv&&!NODES2.get(c.mv.node).pt&&c.blockT>=CORE2.BACKOUT_AFTER&&c.ms>2){const other=VEH_BY_ID2.get(hardId);
+  if(a4Stuck||(other&&other.c2&&!(other.c2.mv&&other.c2.mv.node===c.mv.node&&other.c2.backout))){c.backout=true;c.forwardClear=0;v.recoveries2=(v.recoveries2||0)+1;v.backouts=(v.backouts||0)+1;const info={id:v.id,junction:c.mv.node,blocker:hardId,ms:+c.ms.toFixed(1),blockedFor:+c.blockT.toFixed(1)};core2Event2('junction_backout',info);try{SaveManager.log('traffic','junction_backout',info)}catch{}}}
+ // GATE-75 S3: two vehicles merging from two lanes into one at a pass-through node (lane drop at a corner) that touch side by side block
+ // each other with no junction to arbitrate: the one from the outer (dropped) lane, or the hash loser, backs off along its curve
+ if(c.mv&&NODES2.get(c.mv.node).pt&&c.blockT>=CORE2.BACKOUT_AFTER&&!c.backout){const other=VEH_BY_ID2.get(hardId),oc=other&&other.c2;
+  if(oc&&oc.hardBy===v.id&&!oc.backout){const mk=c.mv.from.k,ok=oc.mv?oc.mv.from.k:(oc.lane?oc.lane.k:0);if(mk>ok||(mk===ok&&stableHash(String(v.id))>=stableHash(String(other.id)))){c.backout=true;c.forwardClear=0;v.recoveries2=(v.recoveries2||0)+1;v.backouts=(v.backouts||0)+1;const info={id:v.id,node:c.mv.node,blocker:hardId,blockedFor:+c.blockT.toFixed(1)};core2Event2('merge_backout',info);try{SaveManager.log('traffic','merge_backout',info)}catch{}}}}
+}
+function backoutStep2(v,dt,parked){
+ const c=v.c2,mv=c.mv;c.limit='recovery';
+ // the way forward opened? finish the turn instead of reversing
+ {let clear=true;for(let d=1;d<=36;d+=2.5){const p=polyPose2(mv.pts,Math.min(mv.len,c.ms+d));if(hardBlock2(v,p.x,p.y,p.heading,parked)){clear=false;break}}if(clear){c.forwardClear=(c.forwardClear||0)+dt;if(c.forwardClear>=1.2){c.backout=false;c.blockT=0;c.forwardClear=0;c.hardEvent=false;core2Event2('junction_backout_resumed',{id:v.id,junction:mv.node});return}}else c.forwardClear=0}
+ const ms=Math.max(0,c.ms-CORE2.BACKOUT_SPEED*dt),pose=polyPose2(mv.pts,ms);v.speed=0;v.wait=true;
+ {const hb=hardBlock2(v,pose.x,pose.y,pose.heading,parked);if(hb&&!backingAway2(v,pose,hb))return}   /* linesA (10.11): נסיגה שמתרחקת מהגוף שכבר נוגעים בו — מותרת (hardBlock2 מתיר להתרחק רק ממי שמאחור; בנסיגה החוסם מלפנים) */
+ c.ms=ms;applyPose2(v,pose);
+ if(ms<=0){const from=mv.from,s=Math.min(mv.sStart,from.stopS-c.hl);const p=lanePose2(from,s,from.k);if(s<mv.sStart&&hardBlock2(v,p.x,p.y,p.heading,parked))return;
+  c.lane=from;c.s=s;c.laneK=c.laneFrac=from.k;c.mv=null;c.ms=0;c.backout=false;c.blockT=0;c.hardEvent=false;c.cooldown=CORE2.BACKOUT_COOLDOWN+(stableHash(String(v.id))%5)*.3;releaseGrant2(v);c.next=null;c.nextKey=null;applyPose2(v,p);core2Event2('junction_backout_done',{id:v.id,junction:mv.node})}
+}
+function laneBackStep2(v,dt,parked){
+ const c=v.c2;c.limit='recovery';const lane=c.lane,step=Math.min(c.laneBack,CORE2.BACKOUT_SPEED*dt),s2=Math.max(0,c.s-step),p=lanePose2(lane,s2,c.laneFrac);v.speed=0;v.wait=true;
+ const done=()=>{c.laneBack=0;c.blockT=0;c.hardEvent=false;c.hardBy=null;c.cooldown=CORE2.BACKOUT_COOLDOWN;if(c.granted||c.remotes.length)releaseGrant2(v);c.nextKey=null;c.next=null;c.gate=null};
+ {const hb=s2>0?hardBlock2(v,p.x,p.y,p.heading,parked):null;if(s2<=0||(hb&&!backingAway2(v,p,hb))){done();return}}   /* linesA (10.11): כנ"ל — מכונית שנעצרה במגע עם המכלית (שחוצה את הנתיב שלה ב-J31_42) ניסתה לסגת 138 פעמים, וכל ניסיון בוטל מיד */
+ c.s=s2;applyPose2(v,p);c.laneBack-=step;if(c.laneBack<=0)done()
+}
+// the kerb pull-in is only drawn from the kerb lane: a bus that could not change into it stops in its own lane (pulling sideways from an
+// inner lane would push its body into the vehicle beside it)
+function curbShift2(v,lane,stop){return(lane.cnt<2||lane.k===lane.cnt-1)?busStopCurbShift(v,stop):0}
+function busCurb2(v,lane,nextS,pose,sp){
+ // kerb pull-in before a street stop and merge back after departure (same shape as busCurbVector)
+ const stop=sp&&sp.kind==='stop'?sp.stop:null,stopRemain=stop?sp.s-nextS:Infinity;let st=null,f=0,shift=0;
+ if(stop&&stopRemain<=BUS_CURB_APPROACH){st=stop;shift=curbShift2(v,lane,st);f=busSmooth01(1-stopRemain/BUS_CURB_APPROACH)}
+ else if(v.curbStop&&v.curbStop.edgeId===lane.edge&&v.curbStop.dirSign===lane.dir){st=v.curbStop;const dist=Math.max(0,nextS-st.t*lane.len);shift=Number.isFinite(st.shift)?st.shift:busStopCurbShift(v,st);if(dist<=BUS_CURB_EXIT)f=1-busSmooth01(dist/BUS_CURB_EXIT);else v.curbStop=null}
+ else if(v.curbStop)v.curbStop=null;
+ if(st&&f>0){pose.x+=st.nx*shift*f;pose.y+=st.ny*shift*f}
+}
+function arrive2(v,sp){
+ const c=v.c2,lane=c.lane;
+ if(sp.kind==='stop'){const stop=sp.stop,stops=busStopsForLine(v.line);c.s=sp.s;const shift=curbShift2(v,lane,stop);v.curbStop={...stop,t:stop.t,shift};const p=lanePose2(lane,c.s,c.laneFrac);p.x+=stop.nx*shift;p.y+=stop.ny*shift;applyPose2(v,p);v.speed=0;const ex=exchangeBusPassengers(v,stop);spawnBusAlighters(v,stop,ex.alight);v.dwell=Math.max(Math.min(5.2,2.1+ex.board*.19+ex.alight*.12),p560Need(v));   /* p560: until the doors close */v.wait=true;v.stopCursor=(v.stopCursor+1)%stops.length;v.stuck=0;c.stuckT=0;SaveManager.log('transit',`line${v.line}_stop`,{line:v.line,bus:v.id,stop:stop.id,dwell:+v.dwell.toFixed(2),passengers:v.passengers});return}
+ if(sp.kind==='term-entry'){writeCompat2(v);const bay=termAdmit(v);if(bay){releaseGrant2(v);beginBusTerminal(v,bay);v.c2=null;return}termEntryWait(v,SIM.dt);v.speed=0;v.wait=true;return}
+ if(sp.kind==='term-wait'){termEntryWait(v,SIM.dt);v.speed=0;v.wait=true;return}
+ if(sp.kind==='airport4'){v.speed=0;v.wait=true;return}   // airport4Tick takes the bus from here (it reads bus.t)
+ if(sp.kind==='c5-final'){writeCompat2(v);releaseGrant2(v);c5RoadArrived(v);v.c2=null;return}
+ if(sp.kind==='d4-end'){v.d4RouteDone=true;v.speed=0;v.wait=true;return}
+ if(sp.kind==='taxi-final'){writeCompat2(v);releaseGrant2(v);taxiServiceArrived(v);return}
+}
+// ---------------------------------------------------------------------------------------------------------------------------------
+// 7 · the step: clock, occupancy rebuild, deterministic order; bus-line bookkeeping; QA surface
+// ---------------------------------------------------------------------------------------------------------------------------------
+// subsystems that put a vehicle onto the road next to a junction ask the core first: nothing may be inside or committed to the box
+function core2BoxClear(nodeId,exceptId=null){const n=NODES2.get(nodeId);return !n||!n.inside.some(o=>!o.standing&&!o.remote&&(o.ghost?o.id:o.v&&o.v.id)!==exceptId&&o.id!=='D4-GATE-OUT')}
+// keep-clear zones: a vehicle enters only when it can leave the zone again (nothing stops inside where another subsystem must merge)
+//  · E3-EAST southbound at the bus-terminal exit merge · F2-AIR-S both ways at the line-4 airport bay entry / exit
+const KEEP_CLEAR2=[];
+function keepClearInit2(){KEEP_CLEAR2.length=0;const add=(laneId,s0,s1,id)=>{const l=LANES2.get(laneId);if(l){const z={id,lane:l,s0:clamp(s0,0,l.len),s1:clamp(s1,0,l.len)};KEEP_CLEAR2.push(z);(l.keepClear||(l.keepClear=[])).push(z)}};
+ try{const e=byEdge['E3-EAST'],ea=byNode[e.a],m=TERM.mergeY-ea.y;add('E3-EAST:+:0',m-105,m+95,'E3-TERM-MERGE')}catch{}
+ try{const e=byEdge['F2-AIR-S'],a=byNode[e.a],b=byNode[e.b];add('F2-AIR-S:+:0',1388-a.y,1570-a.y,'AIR4-BAY-S');add('F2-AIR-S:-:0',b.y-1570,b.y-1388,'AIR4-BAY-N')}catch{}}
+function keepClearOk2(v,lane,z,via=null){const c=v.c2;let need=c.len+CORE2.GAP,end=Infinity;
+ for(const o of lane.vs){if(o.v===v||o.id===v.id||(!via&&o.s<=c.s))continue;const tail=o.s-o.hl;if(tail>=z.s1)end=Math.min(end,tail-CORE2.GAP);else need+=2*o.hl+CORE2.GAP}
+ if(via)for(const o of via.vsCurve){if(o.v!==v)need+=2*o.hl+CORE2.GAP}
+ if(end===Infinity)end=NODES2.get(lane.nodeTo).pt?lane.len+400:lane.stopS;
+ return end-z.s1>=need}
+// room for a vehicle merging into a keep-clear zone from outside the road graph (terminal exit): it must not end up standing inside the zone
+function core2MergeRoom2(zoneId,mergeT,exceptId){const z=KEEP_CLEAR2.find(q=>q.id===zoneId);if(!z)return true;const lane=z.lane,mS=mergeT*lane.len;let need=80+CORE2.GAP,end=Infinity;
+ for(const o of lane.vs){if(o.id===exceptId||(o.v&&o.v.id===exceptId))continue;const tail=o.s-o.hl,head=o.s+o.hl;if(tail>=z.s1)end=Math.min(end,tail-CORE2.GAP);else if(head>mS-60)need+=2*o.hl+CORE2.GAP}
+ if(end===Infinity)end=NODES2.get(lane.nodeTo).pt?lane.len+400:lane.stopS;return end-z.s1>=need}
+function placeFix2(vehicles,parked){
+ for(const v of vehicles){if(profile2(v)!=='car'||v.taxiRoute||v.turn)continue;const e=byEdge[v.edgeId];if(!e)continue;const k=e.cls==='main'?clamp(Math.round(Number(v.lane)||0),0,2):e.cls==='arterial'?clamp(Math.round(Number(v.lane)||0),0,1):0,lane=lane2(e.id,v.dirSign>0?1:-1,k);if(!lane||NODES2.get(lane.nodeTo).pt)continue;
+  const hl=trafficVehicleHalfLength(v),maxS=lane.stopS-hl-4;if(v.t*lane.len<=maxS)continue;
+  let done=false;for(let s2=maxS;s2>=hl+4;s2-=12){const p=lanePose2(lane,s2,k);if(!dynamicVehicleBodyBlocked(v,p.x,p.y,p.heading,parked)){v.t=s2/lane.len;v.x=p.x;v.y=p.y;v.heading=p.heading;v.speed=0;v.c2=null;CORE2_STATS.placeFixed=(CORE2_STATS.placeFixed||0)+1;done=true;break}}
+  if(!done){const op=lane2(lane.edge,-lane.dir,0);if(op){const top=Math.min(NODES2.get(op.nodeTo).pt?op.len*.8:op.stopS-hl-4,op.len-hl-4);for(let s2=top;s2>=hl+4;s2-=12){const p=lanePose2(op,s2,0);if(!dynamicVehicleBodyBlocked(v,p.x,p.y,p.heading,parked)){v.dirSign=op.dir;v.lane=0;v.t=s2/op.len;v.x=p.x;v.y=p.y;v.heading=p.heading;v.speed=0;v.c2=null;CORE2_STATS.placeFixed=(CORE2_STATS.placeFixed||0)+1;break}}}}}
+}
+// isolated-motion watchdog: a vehicle that nothing legal holds (no lead, no red, no hold, no stop, no contact) must move; if it does not, that
+// is an engine stall, not a traffic jam
+function holdNote2(c){if(c.limit!=='moving'&&c.limit!=='free'){c.holdLimit=c.limit;c.holdLead=c.limitLead;c.holdGap=c.limitGap}}
+function motionWatch2(v,dt,x0,y0){const c=v.c2;
+ // isolated-motion watchdog: the core says nothing holds this vehicle ('free' / 'moving') — it must make net progress
+ if(c.limit==='free'||c.limit==='moving'){if(!c.freeAnchor){c.freeAnchor=[x0,y0];c.freeStopT=0}c.freeStopT+=dt;const d=Math.hypot(v.x-c.freeAnchor[0],v.y-c.freeAnchor[1]);if(d>=1){c.freeAnchor=[v.x,v.y];c.freeStopT=0;c.stallEvent=false}}
+ else{c.freeAnchor=null;c.freeStopT=0;c.stallEvent=false}
+ if(c.freeAnchor&&c.freeStopT>=3){if(!c.stallEvent){c.stallEvent=true;CORE2_STATS.engineStalls++;const info={id:v.id,lane:c.lane?c.lane.id:null,s:+(c.s||0).toFixed(1),mv:c.mv?c.mv.id:null,ms:+(c.ms||0).toFixed(1),speed:+(v.speed||0).toFixed(2),gate:c.gate?c.gate.node:null,granted:c.granted,why:c.why,gateDist:+(c.gateDist??0).toFixed(1),lead:c.limitLead,gap:c.limitGap!=null?+c.limitGap.toFixed(1):null,stop:c.stopPoint?c.stopPoint.kind:null,t:+SIM.t.toFixed(1)};CORE2_STATS.stalls.push(info);if(CORE2_STATS.stalls.length>50)CORE2_STATS.stalls.shift();core2Event2('engine_stall',info)}}}
+// explanation of a stopped vehicle for QA: gridlock (a legal blocker holds it) vs contact (bodies touching) vs subsystem vs unexplained
+function core2Explain(v){const c=v.c2;if(!c){if(v.term||v.airport4)return{cls:'subsystem',limit:'bus-terminal'};if(v.c5&&v.c5.mode!=='road')return{cls:'subsystem',limit:'c5-yard'};if(isD4Semi2(v)&&v.k!=='road')return{cls:'subsystem',limit:'d4-yard'};return{cls:'unexplained',limit:'no-core-state'}}
+ let L=c.limit||'free',lead=c.limitLead,gap=c.limitGap,released=false;
+ // released this very tick after a hold: explained by that hold
+ if(L==='moving'&&c.holdLimit&&(c.freeStopT||0)<1){L=c.holdLimit;lead=c.holdLead;gap=c.holdGap;released=true}
+ let cls;if(L==='free'||L==='moving')cls='unexplained';else if(L.startsWith('contact:'))cls='contact';else if(L.startsWith('subsystem')||L==='term-wait'||L==='term-entry'||L==='airport4'||L.startsWith('stop:')||L==='bus-headway'||L==='a4-priority')cls='subsystem';else cls='gridlock';
+ return{cls,limit:L,released,lead,gap:gap!=null?Math.round(gap):null,why:c.why,gate:c.gate?c.gate.node:null,lane:c.lane?c.lane.id:null,mv:c.mv?c.mv.id:null}}
+// sizes of every map / list the core keeps, to see state that accumulates without being cleaned
+function core2StateSizes(){let inside=0,remote=0,standing=0,ghostIn=0,waiting=0,queue=0,stale=0;const live=new Set(roadVehicles2());
+ for(const n of NODES2.values()){inside+=n.inside.length;for(const o of n.inside){if(o.remote)remote++;if(o.standing)standing++;if(o.ghost)ghostIn++;if(o.v&&!live.has(o.v))stale++}waiting+=n.waiting.length;queue+=n.queue.length}
+ let plans=0,remotes=0,adopted=0;for(const v of [...TRAFFIC_CARS,...BUS_VEHICLES,...D4_YARD_SEMIS]){if(!v.c2)continue;adopted++;plans+=Object.keys(v.c2.plans||{}).length;remotes+=(v.c2.remotes||[]).length}
+ let laneOcc=0;for(const l of LANE_LIST2)laneOcc+=l.vs.length;let curveOcc=0;for(const m of MOVES2.values())curveOcc+=m.vsCurve.length;
+ return{locks:TRAFFIC_JUNCTION_LOCKS.size,inside,remote,standing,ghostIn,staleInside:stale,waiting,queue,plans,remotes,adopted,laneOcc,curveOcc,ghosts:GHOSTS2.length,events:CORE2_STATS.events.length,grants:CORE2_STATS.grants.length,readopts:CORE2_STATS.readopts.length,vcs:__VCS.size,parkedMemo:PARKED_INFO_MEMO.size,healthHist:TRAFFIC_HEALTH.hist.size,dbgEvents:(typeof Dbg!=='undefined'?Dbg.events.length:0),ticket:TRAFFIC_JUNCTION_TICKET}}
+function closures2(){
+ for(const z of KEEP_CLEAR2)z.closed=false;
+ try{const z=KEEP_CLEAR2.find(q=>q.id==='E3-TERM-MERGE');if(z&&BUS_VEHICLES.some(b=>b.term&&b.term.phase==='out'&&(b.term.s||0)>=TERM.holdS-90))z.closed=true}catch{}
+ try{const z=KEEP_CLEAR2.find(q=>q.id==='AIR4-BAY-N');if(z&&BUS_VEHICLES.some(b=>b.airport4&&(b.airport4.phase==='out'||b.airport4.phase==='reverse')))z.closed=true}catch{}
+ // D4 freight gate (S7F194): while a semi turns in from the avenue, the avenue's middle lane is closed there (its body swings into it)
+ try{if(D4_YARD_SEMIS.some(o=>o.k==='A'&&(o.s||0)-(o.sA0||0)<170||o.k==='road'&&o.d4Enter)){const l=LANES2.get('D4-RE-C:+:1');if(l)l.closed=true}}catch{}
+}
+const TrafficCore2={
+ ready:false,
+ init(){CORE2_STATS.placeFix=true;buildRoadGraph2();fleetSweepStops2();keepClearInit2();   /* p441 */SignalCore2.init();SignalCore2.install(TrafficSignalController);this.ready=true;
+  for(const v of [...TRAFFIC_CARS,...BUS_VEHICLES,...(typeof D4_YARD_SEMIS==='undefined'?[]:D4_YARD_SEMIS)])v.c2=null;
+  const a=this.audit();Dbg?.event?.('traffic','road_core_v2_init',{lanes:LANE_LIST2.length,movements:MOVES2.size,junctions:a.junctions,passThrough:a.passThrough.length,signalGroups:SignalCore2.groups.length,grouped:a.grouped,routeGaps:a.routeGaps,noExit:a.noExit,keepClear:KEEP_CLEAR2.map(z=>z.id+'@'+z.lane.id+':'+Math.round(z.s0)+'-'+Math.round(z.s1))})},
+ counts:{ticks:0,steps:0,busTicks:0,d4Ticks:0},
+ step(dt){
+  if(!this.ready)this.init();
+  if(dt>.1)CORE2_STATS.clamped++;dt=Math.min(.1,Math.max(0,dt));SIM.t+=dt;SIM.ms+=dt*1000;SIM.frame++;SIM.dt=dt;
+  const parked=parkedStepList();
+  // C5 trucks on yard / dock / port paths are driven by their own code; they are ghosts for the road
+  for(const car of TRAFFIC_CARS)if(car.c5&&car.c5.mode!=='road')c5YardStep(car,dt,parked);
+  try{fuelTick2(dt,parked)}catch(e){FUEL2.err=String(e&&e.message||e)}   /* p491 */
+  const vehicles=roadVehicles2(),live=new Set(vehicles);VEH_BY_ID2.clear();for(const v of vehicles)VEH_BY_ID2.set(v.id,v);
+  // rebuild lane / curve / junction occupancy from state
+  for(const lane of LANE_LIST2){lane.vs.length=0;lane.closed=false}for(const mv of MOVES2.values())mv.vsCurve.length=0;
+  for(const node of NODES2.values()){node.inside=node.inside.filter(o=>!o.ghost&&!o.standing&&o.v&&live.has(o.v)&&o.v.c2&&(o.remote?o.v.c2.remotes.some(r=>r.node===node.id):(o.v.c2.insideNode===node.id||o.v.c2.exitBoxNode===node.id)));node.waiting=node.waiting.filter(w=>live.has(w)&&w.c2&&!w.c2.granted&&w.c2.gate&&w.c2.gate.node===node.id);node.queue.length=0}
+  if(CORE2_STATS.placeFix){CORE2_STATS.placeFix=false;placeFix2(vehicles,parked)}
+  for(const v of vehicles){const c=syncVehicle2(v);if(!c)continue;const w=c.profile==='bus'?1.35:(c.profile==='d4'||c.profile==='c5')?1.5:1;
+   if(c.gate&&!c.granted&&c.gateDist<=CORE2.SIG.QUEUE_RANGE)NODES2.get(c.gate.node).queue.push({v,mv:c.gate.mv,dist:c.gateDist});
+   if(c.gate&&!c.granted&&!c.mv&&c.gateDist<-2)NODES2.get(c.gate.node).inside.push({v,mv:c.gate.mv,remote:false,ghost:false,standing:true});if(c.chainWant&&!c.granted)NODES2.get(c.chainWant.node).queue.push({v,mv:c.chainWant.mv,dist:0});
+   if(c.mv)c.mv.vsCurve.push({v,id:v.id,ms:c.ms,hl:c.hl,speed:v.speed||0,w});
+   else{c.lane.vs.push({v,id:v.id,s:c.s,hl:c.hl,speed:v.speed||0,w});if(c.laneChanging&&c.laneTo)c.laneTo.vs.push({v,id:v.id,s:c.s,hl:c.hl,speed:v.speed||0,w});
+    if((c.profile==='bus'&&v.curbStop)||(c.gate&&!c.granted&&c.gateDist<-2)){const body=trafficVehicleShape(v);for(const q of ghostLanes2(body,v.heading)){if(q.lane===c.lane||(c.laneChanging&&q.lane===c.laneTo))continue;const half=(q.sMax-q.sMin)/2;q.lane.vs.push({ghost:true,id:v.id,v:null,s:q.sMin+half,hl:half,speed:v.speed||0,kind:'body'})}}}}
+  collectGhosts2();r76PedGhosts2();   /* p521x */
+  closures2();
+  for(const lane of LANE_LIST2)if(lane.vs.length>1)lane.vs.sort((a,b)=>a.s-b.s||String(a.id).localeCompare(String(b.id)));
+  for(const mv of MOVES2.values())if(mv.vsCurve.length>1)mv.vsCurve.sort((a,b)=>a.ms-b.ms||String(a.id).localeCompare(String(b.id)));
+  SignalCore2.step(dt);
+  // step every road vehicle in a fixed order (cars, buses, semis — array order)
+  for(const v of vehicles){const c=v.c2;if(!c)continue;
+   if(c.profile==='bus'&&v.dwell>0){v.speed=0;v.wait=true;v.stuck=0;c.limit='stop:dwell';continue}
+   if(v.taxiRoute?.hold){v.speed=0;v.wait=true;c.limit='stop:taxi';continue}
+   if(c.profile==='d4'&&v.d4RouteDone){v.speed=0;v.wait=true;c.limit='subsystem:d4-gate';continue}
+   const x0=v.x,y0=v.y;stepVehicle2(v,dt,parked);
+   if(v.c2){writeCompat2(v);motionWatch2(v,dt,x0,y0)}}
+  this.counts.steps++;
+  // compat view of junction ownership for QA / debug
+  TRAFFIC_JUNCTION_LOCKS.clear();for(const node of NODES2.values()){const o=node.inside.find(o=>!o.remote&&!o.standing);if(o)TRAFFIC_JUNCTION_LOCKS.set(node.id,o.ghost?o.id:o.v.id)}
+  try{c5FleetTick(dt)}catch{}
+ },
+ // one simulation tick for everything on the public road graph, on one clock (SIM): road core + signals + C5 yard, the D4 yard, the bus lines
+ tick(dt){this.inTick=true;try{this.counts.ticks++;this.step(dt);this.counts.d4Ticks++;updateD4YardTraffic(Math.min(.1,Math.max(0,dt)));this.busTick(Math.min(.1,Math.max(0,dt)))}finally{this.inTick=false}},
+ // bus line bookkeeping that is not road motion (terminal, airport bay, dwell timers)
+ busTick(dt){
+  this.counts.busTicks++;BUS_CLOCK.t+=dt;termTick(dt);const parked=parkedInfoList();
+  for(const bus of BUS_VEHICLES){
+   if(bus.ghost>0)bus.ghost=Math.max(0,bus.ghost-dt);
+   if(airport4Tick(bus,dt,parked)){if(bus.c2){releaseGrant2(bus);bus.c2=null}continue}
+   if(bus.term){if(bus.c2){releaseGrant2(bus);bus.c2=null}updateBusTerminal(bus,dt,parked);continue}
+   if(bus.dwell>0){bus.dwell=Math.max(0,bus.dwell-dt);bus.speed=0;bus.wait=true;bus.stuck=0;continue}
+  }
+  busFreezeWatch2(dt);
+ },
+ audit(){
+  const junctions=[...NODES2.values()].filter(n=>!n.pt).length,passThrough=[...NODES2.values()].filter(n=>n.pt).map(n=>n.id),grouped=SignalCore2.groups.filter(g=>g.nodes.length>1).map(g=>g.nodes.join('+'));
+  const routeGaps=[];const chk=(name,segs)=>{for(let i=0;i<segs.length-1;i++){const a=segs[i],b=segs[i+1],e=byEdge[a.edgeId];if(!e)continue;for(let k=0;k<laneCount2(e,a.dirSign);k++){const lane=lane2(a.edgeId,a.dirSign,k);if(lane&&!findMove2(lane,b.edgeId,b.dirSign))routeGaps.push(name+':'+i+':'+lane.id+'>'+b.edgeId)}}};
+  try{for(const l of BUS_LINES)chk('bus'+l,busRouteForLine(l))}catch{}try{chk('d4',D4_CITY_TRUCK_ROUTE)}catch{}try{chk('c5load',C5_ROUTE_LOAD);chk('c5home',C5_ROUTE_HOME)}catch{}
+  const noExit=LANE_LIST2.filter(l=>!l.moves.length).map(l=>l.id);
+  return{ok:!routeGaps.length&&!noExit.length,lanes:LANE_LIST2.length,movements:MOVES2.size,junctions,passThrough,grouped,routeGaps,noExit,signalGroups:SignalCore2.groups.length}
+ },
+ vehicle(id){const v=roadVehicles2().find(o=>o.id===id);if(!v||!v.c2)return null;const c=v.c2,lead=pathLeader2(v);return{id,profile:c.profile,lane:c.lane?c.lane.id:null,s:+c.s.toFixed(1),mv:c.mv?c.mv.id:null,ms:+c.ms.toFixed(1),next:c.next?c.next.id:null,gate:c.gate?c.gate.node+'/'+c.gate.mv.id+'@'+Math.round(c.gateDist):null,granted:c.granted,why:c.why,ticket:c.ticket,remotes:c.remotes.map(r=>r.node),stop:c.stopPoint?c.stopPoint.kind+'@'+Math.round(c.stopPoint.s):null,lead:lead?lead.id+':'+Math.round(lead.gap):null,hardBy:c.hardBy||null,blockT:+c.blockT.toFixed(1),stuckT:+c.stuckT.toFixed(1),wait:v.wait,speed:+(v.speed||0).toFixed(1),laneChanging:c.laneChanging,routeIndex:v.routeIndex,x:Math.round(v.x),y:Math.round(v.y),stopS:c.lane?Math.round(c.lane.stopS):null,free:c.gate?Math.round(corridorFree2(c.gate.mv.to)):null,short:c.gate?shortCorridor2(v,c.gate.mv):null,signal:c.gate&&NODES2.get(c.gate.node).signal?SignalCore2.phaseOf(c.gate.node).id+(SignalCore2.movementAllowed(c.gate.mv,SignalCore2.phaseOf(c.gate.node))?':G':':R'):null}},
+ health(){return trafficHealthSample(SIM.ms,60)}
+};
+function busFreezeWatch2(dt){
+ for(const bus of BUS_VEHICLES){const c=bus.c2;if(!c||bus.term||bus.airport4||bus.dwell>0){bus.freezeT=0;continue}
+  const x0=Number.isFinite(bus.freezeLastX)?bus.freezeLastX:bus.x,y0=Number.isFinite(bus.freezeLastY)?bus.freezeLastY:bus.y,moved=Math.hypot(bus.x-x0,bus.y-y0)>1.1||bus.speed>2.2;bus.freezeLastX=bus.x;bus.freezeLastY=bus.y;
+  if(moved||bus.wait){bus.freezeT=0;continue}
+  bus.freezeT=(bus.freezeT||0)+dt;if(bus.freezeT>=BUS_FREEZE_RECOVER_SECONDS){bus.freezeT=0;bus.freezeRecoveries=(bus.freezeRecoveries||0)+1;SaveManager.log('transit','bus_freeze_watchdog',{bus:bus.id,line:bus.line,lane:c.lane?c.lane.id:null,why:c.why||null})}}
+}
+// deterministic re-placement of the AI cars (QA): same placement as the previous engine, then every actor is re-adopted
+function trafficReseed2(seed=777){trafficReseed(seed);CORE2_STATS.placeFix=true;for(const v of [...TRAFFIC_CARS,...BUS_VEHICLES,...(typeof D4_YARD_SEMIS==='undefined'?[]:D4_YARD_SEMIS)]){v.c2=null;v.recoveries2=0;v.pedReleases=0;v.hardEpisodes=0;v.queueWatchdogs=0;v.backouts=0;v.deadlockRelease=0}for(const node of NODES2.values()){node.inside.length=0;node.waiting.length=0}TRAFFIC_JUNCTION_LOCKS.clear();return{seed}}
+window.__TC_ROAD_CORE2=()=>({version:2,sim:{...SIM},stats:{readopt:CORE2_STATS.readopt,readopts:CORE2_STATS.readopts,events:CORE2_STATS.events},audit:TrafficCore2.audit(),signalGroups:SignalCore2.groups.map(g=>({id:g.id,nodes:g.nodes,phase:SIGNAL_PHASES[g.index].id,transitions:g.transitions,holds:g.holds,holdWhy:g.holdWhy,lastHold:g.lastHold,forced:g.forced,cycles:g.cycles,cycleMax:Math.round(g.cycleMax/1000)})),inside:[...NODES2.values()].filter(n=>n.inside.length).map(n=>({node:n.id,inside:n.inside.map(o=>o.ghost?o.id+'(ghost)':o.v.id+(o.remote?'(remote)':''))})),waiting:[...NODES2.values()].filter(n=>n.waiting.length).map(n=>({node:n.id,waiting:n.waiting.map(w=>w.id+':'+(w.c2?.why||'?'))}))});
+window.__TC_ROAD_CORE2_VEHICLE=id=>TrafficCore2.vehicle(id);
+// GATE-74T · TRAFFIC-01 acceptance harness. Runs the whole city fleet (cars, buses, D4 semis, C5 trucks, A4 emergency fleet, pedestrians,
+// port trucks, signals) headless for `seconds` and reports the owner's acceptance criteria:
+//   no citywide freeze · 0 body overlaps · frozen vehicles ≤ 2 on average after the warm-up and not growing · emergency recoveries ≤ 5/min
+//   over the last 20 min · every bus line, the D4 semis, the C5 trucks and the A4 emergency fleet keep completing cycles (also in the last
+//   20 min) · Road Core, Signal Core, Bus, D4, C5 and A4 advance on one simulation clock (no drift).
+// frozen = no movement for 60 s without a legitimate reason (bus stop / terminal / airport-bay dwell, taxi hold).
+// Diagnostics (diag): every frozen vehicle is classified by what holds it — gridlock (a legal blocker: lead / red signal / occupied box /
+// receiving space / queue order / reservation / hold line), contact (bodies touching), subsystem (terminal, yard, gate) or UNEXPLAINED
+// (nothing holds it: an engine stall, not a jam). It also counts every tick of every subsystem, signal phase advances, the size of every
+// lock / reservation / queue / cache map over time, throughput, and snapshots the first freeze.
+// seed re-places the AI cars deterministically; parkPlayer moves the player's car off the road for the run (restored afterwards).
+window.__TC_G74T_QA=(opts={})=>{
+ const seconds=opts.seconds??1800,dt=opts.dt??.05,warm=opts.warmup??600,seed=opts.seed??777,parkPlayer=opts.parkPlayer!==false,sampleEvery=1,freezeAt=opts.freezeAt??5;
+ const saved={x:PlayerCar.x,y:PlayerCar.y,heading:PlayerCar.heading,mode:PlayerProfile.mode,px:PlayerPed.x,py:PlayerPed.y};
+ if(parkPlayer){PlayerCar.x=-9500;PlayerCar.y=-9500;PlayerPed.x=-9500;PlayerPed.y=-9500}
+ trafficReseed2(seed);TRAFFIC_HEALTH.hist.clear();
+ CORE2_STATS.engineStalls=0;CORE2_STATS.stalls.length=0;CORE2_STATS.reroutes=0;
+ const start=performance.now();let simNow=Math.max(start,...[...TrafficSignalController.nodeStates.values()].map(s=>s.phaseStart||0));
+ const samples=[],stopVisits={1:0,2:0,3:0,4:0},termEnters={1:0,2:0,3:0,4:0},lateStops={1:0,2:0,3:0,4:0},lastCursor=new Map(),wasTerm=new Map();
+ const a4Done=()=>(A4_FLEET_STATE.fire.completed||0)+(A4_FLEET_STATE.ems.completed||0),c5Done=()=>(C5_SIM.delivered||0)+C5_SIM.fleet.reduce((n,v)=>n+(v.c5.cycles||0),0);
+ const a40=a4Done(),c50=c5Done(),wasDock=new Map(D4_YARD_SEMIS.map(v=>[v.id,v.k==='dock']));let d4Docks=0,lateD4=0,lateA4=0,lateC5=0,a4Prev=a40,c5Prev=c50;
+ const clockOf=()=>({sim:SIM.t,sig:SignalCore2.ms/1000,bus:BUS_CLOCK.t,c5:C5_SIM.t,a4:A4_FLEET_STATE.clock});
+ const c0=clockOf();let clockDrift=0;
+ // diagnostics: ticks, phases, frozen classes, throughput, state sizes
+ const phaseSum=()=>SignalCore2.groups.reduce((n,g)=>n+g.transitions,0);
+ const tick={harness:0,traffic:0,roadSteps:0,signalSteps:0,bus:0,d4:0,missed:{traffic:0,road:0,signal:0,bus:0,d4:0},simNowBackwards:0,maxClockStepErr:0};
+ const phase0=phaseSum(),phaseSeries=[];let lastPhase=phase0;
+ const fb={gridlock:0,contact:0,subsystem:0,unexplained:0,rootUnexplained:0,n:0},fbMax={gridlock:0,contact:0,subsystem:0,unexplained:0,rootUnexplained:0},limitHist={},unexplainedSeen=new Map();
+ const thr={edge:0,dist:0,lateEdge:0,lateDist:0,lastEdge:new Map(),lastPos:new Map()};
+ const sizeOf=()=>core2StateSizes();
+ const sizes={first:sizeOf(),max:{},last:null,series:[]};
+ let firstFreeze=null,firstUnexplained=null;const overEvents=[];let portPub=0,portFlOver=0;const portPubIds=[],portFlIds=[],pg0=pgQaTotals();
+ const rel0=trafficReleaseTotal();let maxFrozen=0,maxOver=0,freezeSamples=0,overSamples=0;
+ const steps=Math.max(1,Math.ceil(seconds/dt)),per=Math.max(1,Math.round(sampleEvery/dt)),lateFrom=Math.max(warm,seconds-1200);
+ const explain=v=>core2Explain(v);
+ let prevSimNow=simNow;
+ for(let i=1;i<=steps;i++){
+  simNow+=dt*1000;if(simNow<=prevSimNow)tick.simNowBackwards++;prevSimNow=simNow;TrafficSignalController.update(simNow);
+  const before={t:SIM.t,ticks:TrafficCore2.counts.ticks,steps:TrafficCore2.counts.steps,sig:SignalCore2.steps,bus:TrafficCore2.counts.busTicks,d4:TrafficCore2.counts.d4Ticks};
+  try{f2UpdatePeople(dt)}catch{}updateNPCPedestrians(dt);updateBusAlighters(dt);updateA4Fleet(dt);updateTrafficCars(dt);updateTaxiPassenger();updateD4YardTraffic(dt);updateBusPassengerDemand(dt);try{flFrame(simNow)}catch{}
+  tick.harness++;
+  {const d={ticks:TrafficCore2.counts.ticks-before.ticks,steps:TrafficCore2.counts.steps-before.steps,sig:SignalCore2.steps-before.sig,bus:TrafficCore2.counts.busTicks-before.bus,d4:TrafficCore2.counts.d4Ticks-before.d4};
+   tick.traffic+=d.ticks;tick.roadSteps+=d.steps;tick.signalSteps+=d.sig;tick.bus+=d.bus;tick.d4+=d.d4;if(d.ticks!==1)tick.missed.traffic++;if(d.steps!==1)tick.missed.road++;if(d.sig!==1)tick.missed.signal++;if(d.bus!==1)tick.missed.bus++;if(d.d4!==1)tick.missed.d4++;
+   tick.maxClockStepErr=Math.max(tick.maxClockStepErr,Math.abs((SIM.t-before.t)-Math.min(.1,dt)))}
+  if(i%per===0){
+   const t=i*dt,h=trafficHealthSample(simNow,60),late=t>=lateFrom,parked=allParkedCars().map(parkedCarInfo);
+   for(const b of BUS_VEHICLES){const prev=lastCursor.get(b.id);if(prev!=null&&prev!==b.stopCursor){stopVisits[b.line]=(stopVisits[b.line]||0)+1;if(late)lateStops[b.line]++}lastCursor.set(b.id,b.stopCursor);const inTerm=!!(b.term||b.airport4);if(inTerm&&!wasTerm.get(b.id))termEnters[b.line]=(termEnters[b.line]||0)+1;wasTerm.set(b.id,inTerm)}
+   for(const v of D4_YARD_SEMIS){const d=v.k==='dock';if(d&&!wasDock.get(v.id)){d4Docks++;if(late)lateD4++}wasDock.set(v.id,d)}
+   {const a=a4Done(),c=c5Done();if(late){lateA4+=a-a4Prev;lateC5+=c-c5Prev}a4Prev=a;c5Prev=c}
+   {const k=clockOf(),dS=k.sim-c0.sim;for(const key of ['sig','bus','c5','a4'])clockDrift=Math.max(clockDrift,Math.abs((k[key]-c0[key])-dS))}
+   {const pz=pgQaSample();if(pz.pub){portPub++;for(const id of pz.pubIds)if(portPubIds.length<8)portPubIds.push(id)}if(pz.flOver){portFlOver+=pz.flOver;for(const id of pz.flOverIds)if(portFlIds.length<8)portFlIds.push(id)}}
+   // throughput
+   const rows=trafficRoadActors();for(const r of rows){const v=r.v,le=thr.lastEdge.get(v.id),lp=thr.lastPos.get(v.id);if(le!=null&&le!==v.edgeId){thr.edge++;if(late)thr.lateEdge++}if(lp){const d=Math.hypot(v.x-lp[0],v.y-lp[1]);if(d<400){thr.dist+=d;if(late)thr.lateDist+=d}}thr.lastEdge.set(v.id,v.edgeId);thr.lastPos.set(v.id,[v.x,v.y])}
+   // frozen classification (full list, from the same 60 s history the health sample uses)
+   const frozenRows=[];for(const r of rows){const hh=TRAFFIC_HEALTH.hist.get(r.v.id);if(!hh||hh.length<2||simNow/1000-hh[0][0]<59.9)continue;let maxd=0;for(const q of hh)maxd=Math.max(maxd,Math.hypot(q[1]-r.v.x,q[2]-r.v.y));if(maxd<4&&!trafficLegitStop(r))frozenRows.push(r)}
+   const cls={gridlock:0,contact:0,subsystem:0,unexplained:0,rootUnexplained:0},ex=new Map();
+   for(const r of frozenRows){const e=explain(r.v,parked);ex.set(r.v.id,e);cls[e.cls]++;limitHist[e.limit]=(limitHist[e.limit]||0)+1;if(e.cls==='unexplained'&&!unexplainedSeen.has(r.v.id))unexplainedSeen.set(r.v.id,{t:+t.toFixed(0),...e,edge:r.v.edgeId,x:Math.round(r.v.x),y:Math.round(r.v.y)})}
+   for(const r of frozenRows){let e=ex.get(r.v.id),id=r.v.id,guard=0;while(e&&e.limit==='lead'&&e.lead&&guard++<40){id=e.lead;const o=rows.find(q=>q.v.id===id);if(!o)break;e=ex.get(id)||explain(o.v,parked)}if(e&&e.cls==='unexplained')cls.rootUnexplained++}
+   if(t>=warm){for(const k of Object.keys(cls)){fb[k]+=cls[k];fbMax[k]=Math.max(fbMax[k],cls[k])}fb.n++}
+   if(!firstFreeze&&frozenRows.length>=freezeAt){firstFreeze={t:+t.toFixed(0),frozen:frozenRows.length,classes:{...cls},ticks:{...tick,missed:{...tick.missed}},simT:+SIM.t.toFixed(2),simNow:Math.round(simNow),signalPhaseAdvancesLast60:phaseSum()-(phaseSeries.length>=60?phaseSeries[phaseSeries.length-60]:phase0),vehicles:frozenRows.slice(0,30).map(r=>({id:r.v.id,edge:r.v.edgeId,x:Math.round(r.v.x),y:Math.round(r.v.y),...ex.get(r.v.id)})),sizes:sizeOf()};if(typeof opts.onFreeze==='function')try{firstFreeze.snap=opts.onFreeze(frozenRows.map(r=>r.v))}catch(e){firstFreeze.snap=String(e)}}
+   if(!firstUnexplained&&cls.unexplained>0){const r=frozenRows.find(q=>ex.get(q.v.id).cls==='unexplained');firstUnexplained={t:+t.toFixed(0),id:r.v.id,edge:r.v.edgeId,x:Math.round(r.v.x),y:Math.round(r.v.y),...ex.get(r.v.id),core:window.__TC_ROAD_CORE2_VEHICLE(r.v.id)}}
+   const ph=phaseSum();phaseSeries.push(ph);lastPhase=ph;
+   if(Math.round(t)%60===0){const z=sizeOf();sizes.series.push({t:Math.round(t),...z});for(const [k,v] of Object.entries(z))if(typeof v==='number')sizes.max[k]=Math.max(sizes.max[k]??-Infinity,v)}
+   const s={t:+t.toFixed(0),frozen:h.frozen,over:h.over,rel:h.releases-rel0,waiting:h.waiting,committed:h.committed,unexplained:cls.unexplained,contact:cls.contact,gridlock:cls.gridlock};
+   if(h.frozenIds.length)s.frozenIds=h.frozenIds.slice(0,12);if(h.overIds.length)s.overIds=h.overIds;
+   samples.push(s);
+   if(t>=warm){maxFrozen=Math.max(maxFrozen,h.frozen);if(h.frozen>=h.actors*.6)freezeSamples++}
+   maxOver=Math.max(maxOver,h.over);if(h.over){overSamples++;if(overEvents.length<12)overEvents.push({t:+t.toFixed(0),ids:h.overIds,detail:h.overIds.map(p=>p.split('/').map(id=>{try{const q=window.__TC_ROAD_CORE2_VEHICLE(id);if(q)return q;const r=trafficRoadActors().find(o=>o.v.id===id);return r?{id,x:Math.round(r.v.x),y:Math.round(r.v.y),edge:r.v.edgeId,speed:r.v.speed}:{id}}catch(e){return{id,err:String(e)}}}))})}
+  }
+ }
+ window.__QA_SIMNOW=simNow;
+ if(parkPlayer){PlayerCar.x=saved.x;PlayerCar.y=saved.y;PlayerCar.heading=saved.heading;PlayerPed.x=saved.px;PlayerPed.y=saved.py}
+ sizes.last=sizeOf();
+ const after=samples.filter(s=>s.t>=warm),avgFrozen=after.length?after.reduce((n,s)=>n+s.frozen,0)/after.length:0;
+ const half=Math.floor(after.length/2),avgA=half?after.slice(0,half).reduce((n,s)=>n+s.frozen,0)/half:0,avgB=half?after.slice(half).reduce((n,s)=>n+s.frozen,0)/(after.length-half):0;
+ const lastWin=samples.filter(s=>s.t>=lateFrom),relInWin=lastWin.length>1?(lastWin[lastWin.length-1].rel-lastWin[0].rel):0,relPerMin=lastWin.length>1?relInWin/((lastWin[lastWin.length-1].t-lastWin[0].t)/60):0;
+ const lateMin=(seconds-lateFrom)/60,linesCycling=[1,2,3,4].every(l=>(stopVisits[l]||0)>=3&&(termEnters[l]||0)>=1&&(lateMin<5||lateStops[l]>=2));
+ const a4Total=a4Done()-a40,c5Total=c5Done()-c50,need=Math.max(1,Math.floor(seconds/900));
+ const allUnexplained=samples.reduce((n,s)=>Math.max(n,s.unexplained||0),0),stalls=CORE2_STATS.engineStalls;
+ const checks={noCitywideFreeze:freezeSamples===0,zeroOverlaps:maxOver===0,frozenAvgLE2:avgFrozen<=2,frozenNotGrowing:avgB<=avgA+1,releasesLE5PerMin:relPerMin<=5,busLinesCycling:linesCycling,
+  d4Cycling:d4Docks>=need&&(lateMin<10||lateD4>=1),c5Cycling:c5Total>=need&&(lateMin<10||lateC5>=1),a4Cycling:a4Total>=need*2&&(lateMin<10||lateA4>=1),oneSimulationClock:clockDrift<1e-6,
+  noUnexplainedFrozen:allUnexplained===0&&stalls===0,noMissedTicks:Object.values(tick.missed).every(n=>n===0)&&tick.simNowBackwards===0,portNoPublicInside:portPub===0,portTrucksNoOverlap:portFlOver===0,portArmsNeverOnBody:pgQaDiff(pg0,pgQaTotals()).lowOnBody===0};
+ const ok=Object.values(checks).every(Boolean),runMin=seconds/60,denom=Math.max(1,fb.n);
+ const diag={ticks:tick,signalPhaseAdvances:lastPhase-phase0,signalPhaseAdvancesPerMin:+((lastPhase-phas

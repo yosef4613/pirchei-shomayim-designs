@@ -1,0 +1,923 @@
+ (let i = 1; i < S.length; i++) c.lineTo(S[i][0], S[i][1]); c.stroke(); c.setLineDash([]); continue }
+    if (d.text != null) { if (!d.text) continue; const p = P2(M, d.at), sz = d.size * M.s; if (sz * (o.zoom || 1) < 2.2) continue; c.save(); c.translate(p[0], p[1]); if (!d.flat) c.rotate(Math.PI / 2);
+      c.font = (d.light ? '600 ' : '800 ') + sz + 'px Arial,"Noto Sans Hebrew",sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.direction = 'rtl';
+      const w = c.measureText(d.text).width, mw = d.maxW * M.s; if (w > mw) c.font = (d.light ? '600 ' : '800 ') + (sz * mw / w) + 'px Arial,"Noto Sans Hebrew",sans-serif';
+      if (d.halo) { c.lineJoin = 'round'; c.strokeStyle = d.halo; c.lineWidth = sz * .22; c.strokeText(d.text, 0, 0) } c.fillStyle = d.col; c.fillText(d.text, 0, 0); c.restore(); continue }
+    if (d.mark) { const p = P2(M, d.at), s = d.size * M.s; c.save(); c.translate(p[0], p[1]); c.fillStyle = d.col; c.strokeStyle = d.col; c.lineWidth = s * .16;
+      if (d.mark === 'bird') { c.beginPath(); c.moveTo(0, s * .5); c.lineTo(-s * .4, -s * .4); c.lineTo(0, -s * .15); c.lineTo(s * .4, -s * .4); c.closePath(); c.fill() }
+      else if (d.mark === 'arc') { c.beginPath(); c.arc(0, 0, s * .45, -.4 + Math.PI / 2, 3.5 + Math.PI / 2); c.stroke() }
+      else if (d.mark === 'chev') { c.beginPath(); c.moveTo(0, s * .5); c.lineTo(-s * .45, 0); c.lineTo(-s * .45, -s * .2); c.lineTo(0, s * .3); c.lineTo(s * .45, -s * .2); c.lineTo(s * .45, 0); c.closePath(); c.fill() }
+      else if (d.mark === 'stripes') { for (const k of [-1, 0, 1]) c.fillRect(-s * .45, k * s * .28 - s * .07, s * .9, s * .14) }
+      else if (d.mark === 'sun') { c.beginPath(); c.arc(0, 0, s * .26, 0, TAU); c.fill(); c.beginPath(); for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; c.moveTo(Math.cos(a) * s * .34, Math.sin(a) * s * .34); c.lineTo(Math.cos(a) * s * .5, Math.sin(a) * s * .5) } c.stroke() }
+      else if (d.mark === 'star') { c.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? s * .2 : s * .5; c.lineTo(Math.cos(a) * r, Math.sin(a) * r) } c.closePath(); c.fill() }
+      else if (d.mark === 'ring') { c.beginPath(); c.arc(0, 0, s * .38, 0, TAU); c.stroke() }
+      else if (d.mark === 'leaf') { c.beginPath(); c.ellipse(0, 0, s * .2, s * .48, 0, 0, TAU); c.fill() }
+      else { c.beginPath(); c.moveTo(0, s * .5); c.lineTo(s * .32, 0); c.lineTo(0, -s * .5); c.lineTo(-s * .32, 0); c.closePath(); c.fill() }
+      c.restore(); continue }
+    drawFaces(c, [d], M, 0, oD);
+  }
+}
+function drawGear(c, p, M, o) {
+  o = o || {};
+  const T = p.tyres.slice().sort((a, b) => a.y - b.y);
+  const tyre = r => { const x = M.X + r.x * M.s, yc = M.Y + (r.y - K * r.r) * M.s, hh = r.r * Math.sqrt(1 + K * K) * M.s, hw = r.w / 2 * M.s;
+    c.beginPath(); c.roundRect(x - hw, yc - hh, hw * 2, hh * 2, Math.min(hw, hh) * .7);
+    if (o.solid) { c.fillStyle = o.solid; c.fill(); return }
+    const g = c.createLinearGradient(x - hw, 0, x + hw, 0); g.addColorStop(0, '#2c3136'); g.addColorStop(.45, '#1d2125'); g.addColorStop(1, '#121417'); c.fillStyle = g; c.fill();
+    c.fillStyle = 'rgba(255,255,255,.07)'; c.fillRect(x - hw * .7, yc - hh * .9, hw * 1.4, hh * .35) };
+  const leg = l => { const x = M.X + l.x * M.s, y0 = M.Y + (l.y - K * l.z0) * M.s, y1 = M.Y + (l.y - K * l.z1) * M.s, w = l.r * M.s;
+    if (o.solid) { c.fillStyle = o.solid; c.fillRect(x - w, y1, w * 2, y0 - y1); return }
+    const g = c.createLinearGradient(x - w, 0, x + w, 0); g.addColorStop(0, '#c9ced2'); g.addColorStop(.5, '#9aa1a8'); g.addColorStop(1, '#5d646b'); c.fillStyle = g; c.fillRect(x - w, y1, w * 2, y0 - y1) };
+  if (!o.solid) for (const r of T) { const x = M.X + r.x * M.s, y = M.Y + r.y * M.s; c.fillStyle = 'rgba(8,12,16,.38)'; c.beginPath(); c.ellipse(x + r.w * .15 * M.s, y + r.r * .15 * M.s, (r.w * .75 + .1) * M.s, r.r * .55 * M.s, 0, 0, TAU); c.fill() }   // R‑14 (3): the contact shadow
+  const legs = p.legs || [], back = T.filter(r => r.y < (legs[0] ? legs[0].y : 1e9) - .01), front = T.filter(r => !back.includes(r));
+  back.forEach(tyre); legs.forEach(leg); front.forEach(tyre);
+}
+// a piece of an aircraft (or any piece with faces + decor + tyres)
+function drawPiece(c, p, M, seam, o) {
+  o = o || {};
+  if (p.tyres) drawGear(c, p, M, o); if (!p.faces.length) return;
+  drawFaces(c, p.faces, M, seam, o);
+  if (p.decor && p.decor.length) drawDecor(c, p.decor.filter(d => !d.late), M, o);
+  if (p.decor) drawDecor(c, p.decor.filter(d => d.late), M, o);
+}
+// the shadow of a piece on the ground (opaque; the page lays the shadow layer down with its alpha)
+function shadowPiece(c, p, M) {
+  c.beginPath();
+  const U = SUN(), SHX = U.x, SHY = U.y, S = q => [M.X + (q[0] + q[2] * SHX) * M.s, M.Y + (q[1] + q[2] * SHY) * M.s];
+  if (p.tyres && !p.faces.length) { for (const r of p.tyres) { const a = S([r.x - r.w / 2, r.y - r.r, r.r]), w = r.w * M.s, h = r.r * 2 * M.s; c.rect(a[0], a[1] - h * .2, w + r.r * SHX * M.s, h) } for (const l of p.legs || []) { const a = S([l.x, l.y, l.z0]), b = S([l.x, l.y, l.z1]); c.moveTo(a[0] - l.r * M.s, a[1]); c.lineTo(b[0] - l.r * M.s, b[1]); c.lineTo(b[0] + l.r * M.s, b[1]); c.lineTo(a[0] + l.r * M.s, a[1]); c.closePath() } c.fill(); return }
+  for (const f of p.faces) { if (f.line || f.ns) continue; let Q = f.P.map(S), ar = 0; for (let i = 0; i < Q.length; i++) { const a = Q[i], b = Q[(i + 1) % Q.length]; ar += a[0] * b[1] - b[0] * a[1] } if (Math.abs(ar) < 1e-6) continue; if (ar < 0) Q = Q.reverse();
+    c.moveTo(Q[0][0], Q[0][1]); for (let i = 1; i < Q.length; i++) c.lineTo(Q[i][0], Q[i][1]); c.closePath() }
+  c.fill('nonzero');
+}
+// the screen bounding box of a piece (world px)
+function bboxPiece(p, M) {
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const acc = s => { x0 = Math.min(x0, s[0]); x1 = Math.max(x1, s[0]); y0 = Math.min(y0, s[1]); y1 = Math.max(y1, s[1]) };
+  for (const f of p.faces) for (const q of f.P) acc(P2(M, q));
+  if (p.tyres) for (const r of p.tyres) { acc(P2(M, [r.x - r.w / 2, r.y, r.r * 2.2])); acc(P2(M, [r.x + r.w / 2, r.y + r.r, 0])) }
+  if (p.legs) for (const l of p.legs) acc(P2(M, [l.x, l.y, l.z1]));
+  return [x0 - 1, y0 - 1, x1 + 1, y1 + 1];
+}
+// the sort key of a piece, world px: y of its south edge + its lowest point's height / K
+const keyOf = (p, M) => M.Y + p.yMax * M.s + p.zMin / K * M.s;
+
+// ======================================================================================================================================
+// ground service vehicles of the sample (boxes, the same sun) — a belt loader, a catering truck, a baggage tug with carts, cones
+function gseBelt(x, y, dir, zTip, col) {   // dir: +1 = the belt rises toward east, −1 toward west; x, y = the rear end (metres)
+  const L = 7.4, W = 2.1, f = [], d = dir, X = u => x + d * u;
+  const P = (u0, u1, v0, v1) => [[X(u0), y + v0], [X(u1), y + v0], [X(u1), y + v1], [X(u0), y + v1]];
+  f.push(...boxFaces(P(0, L * .82, -W / 2, W / 2), .45, 1.15, { top: sh(col, -.05), side: sh(col, -.2) }, { mat: 'paint' }));
+  f.push(...boxFaces(P(.2, 1.9, -W / 2 + .1, -.05), 1.15, 2.35, { top: '#2b3036', side: sh(col, -.1) }, { mat: 'paint' }));   // the driver's cab at the rear left
+  const z0 = 1.25, z1 = zTip, u0 = .9, u1 = L + .4, bw = .62;
+  f.push(...boxFaces(P(u0, u1, -bw, bw), [z0 - .25, z1 - .25, z1 - .25, z0 - .25], [z0, z1, z1, z0], { top: '#30353b', side: '#4a5057' }, { mat: 'matte' }));
+  for (const v of [-bw - .05, bw - .05]) f.push(...boxFaces(P(u0, u1, v, v + .1), [z0, z1, z1, z0], [z0 + .35, z1 + .35, z1 + .35, z0 + .35], { top: '#d6d9dc', side: '#9ba2a8' }, { mat: 'metal' }));
+  const wh = []; for (const u of [1.1, L * .7]) for (const v of [-W / 2 + .1, W / 2 - .1]) wh.push({ x: X(u), y: y + v, r: .38, w: .3 });
+  return { faces: f, tyres: wh };
+}
+function gseCatering(x, y, dir, zBox, col, band) {   // (x, y) = the platform's tip at the door; the truck extends from the aircraft along dir (±1 in x)
+  const f = [], d = dir, X = u => x + d * u, W = 2.5;
+  const P = (u0, u1, v0, v1) => { const a = X(u0), b = X(u1); return [[Math.min(a, b), y + v0], [Math.max(a, b), y + v0], [Math.max(a, b), y + v1], [Math.min(a, b), y + v1]] };
+  f.push(...boxFaces(P(1.0, 10.4, -W / 2 + .15, W / 2 - .15), .5, 1.2, { top: '#2b3036', side: '#22262b' }));
+  f.push(...boxFaces(P(8.2, 10.6, -W / 2, W / 2), 1.1, 3.0, { top: sh(col, -.04), side: sh(col, -.15) }, { mat: 'paint' }));
+  f.push(...boxFaces(P(8.35, 8.9, -W / 2 + .2, W / 2 - .2), 2.1, 2.85, { top: '#1d3143', side: '#33434f' }, { mat: 'glass' }));
+  f.push(...boxFaces(P(1.1, 7.4, -W / 2, W / 2), zBox, zBox + 2.6, { top: sh(col, .02), side: col }, { mat: 'paint' }));
+  if (band) f.push(...boxFaces(P(1.1, 7.4, W / 2 - .01, W / 2), zBox + .9, zBox + 1.3, { top: band, side: band }, { mat: 'paint' }));
+  f.push(...boxFaces(P(0, 1.1, -.9, .9), zBox - .05, zBox + .12, { top: '#9aa1a8', side: '#6c737a' }, { mat: 'metal' }));
+  const dec = [];
+  for (const v of [-W / 2 + .3, W / 2 - .3]) { dec.push({ line: 1, P: [[X(1.6), y + v, 1.2], [X(6.6), y + v, zBox]], c: '#5b636b', w: .12 }); dec.push({ line: 1, P: [[X(6.6), y + v, 1.2], [X(1.6), y + v, zBox]], c: '#5b636b', w: .12 }) }
+  const wh = []; for (const u of [2.2, 9.4]) for (const v of [-W / 2 + .15, W / 2 - .15]) wh.push({ x: X(u), y: y + v, r: .45, w: .35 });
+  return { faces: f, decor: dec, tyres: wh };
+}
+function gseTug(x, y, heading, col) {   // heading: 'n' | 's'; x, y = the centre
+  const f = [], L = 2.9, W = 1.5, s = heading === 's' ? 1 : -1;
+  f.push(...boxFaces([[x - W / 2, y - L / 2], [x + W / 2, y - L / 2], [x + W / 2, y + L / 2], [x - W / 2, y + L / 2]], .3, 1.0, { top: sh(col, -.05), side: sh(col, -.2) }, { mat: 'paint' }));
+  const yc = y - s * .4; f.push(...boxFaces([[x - .6, yc - .55], [x + .6, yc - .55], [x + .6, yc + .55], [x - .6, yc + .55]], 1.0, 1.9, { top: '#2b3036', side: '#3a4047' }));
+  const wh = []; for (const u of [-.95, .95]) for (const v of [-.62, .62]) wh.push({ x: x + v, y: y + u, r: .3, w: .26 });
+  return { faces: f, tyres: wh };
+}
+function gseCart(x, y, col) {   // a covered baggage cart, along y, centre (x, y)
+  const f = [], L = 2.7, W = 1.55;
+  f.push(...boxFaces([[x - W / 2, y - L / 2], [x + W / 2, y - L / 2], [x + W / 2, y + L / 2], [x - W / 2, y + L / 2]], .35, .6, { top: '#4a5057', side: '#3a4047' }));
+  f.push(...boxFaces([[x - W / 2 + .05, y - L / 2 + .1], [x + W / 2 - .05, y - L / 2 + .1], [x + W / 2 - .05, y + L / 2 - .1], [x - W / 2 + .05, y + L / 2 - .1]], .6, 1.85, { top: sh(col, .05), side: col }, { mat: 'matte' }));
+  const wh = []; for (const u of [-.95, .95]) for (const v of [-.62, .62]) wh.push({ x: x + v, y: y + u, r: .2, w: .18 });
+  return { faces: f, tyres: wh };
+}
+function cone(x, y) { const f = []; const r = .22, h = .75, N = 10; for (let i = 0; i < N; i++) { const a = i / N * TAU, b = (i + 1) / N * TAU; f.push(face([[x + r * Math.cos(a), y + r * Math.sin(a), .05], [x + r * Math.cos(b), y + r * Math.sin(b), .05], [x, y, h]], '#f07a22', 'paint')) } f.push(face([[x + .02, y + .23, .3], [x - .02, y + .23, .3], [x, y + .16, .45]], '#f4f4f4', 'paint', { both: true })); return { faces: f } }
+
+G.A34 = { NOSE, tab, HELI, buildHeli, fusP, fusN, cockpit3D, cabOf, bandFor, K, LD, VW, get SHX() { return SUN().x }, get SHY() { return SUN().y }, TYPES, LIV, lit, litC, sh, build, bounds, drawPiece, drawFaces, drawDecor, shadowPiece, bboxPiece, keyOf, P2, boxFaces, vcyl, face, gseBelt, gseCatering, gseTug, gseCart, cone, fusShape };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+return !!window.A34}
+/* ---- A34G · p390: the aircraft and the helicopters in 3/4 (a34g.js = exp34/air/a34.js: the nose D‑278 and the windows D‑279, approved).
+   Every aircraft is a set of pieces (body, wings, engines, tailplanes, gear; a helicopter's body, gear and rotor), each with its key —
+   the south edge + the height of the lowest point / K (D‑277: K = 0.6, the sun C34.SUN). The pieces are drawn in their order, once,
+   into one picture for a direction (64 of them; the windows' band for the nearest of 16) and a density (the zoom), a slice of faces at a
+   time with what the frame leaves; until an aircraft's picture is ready the top-down one is drawn (and once drawn in 3/4 it keeps the
+   nearest ready direction rather than going back). The picture and the airport's ground vehicles are drawn in one order, by the key
+   of its front-most piece. ---- */
+var A34G={on:true,bad:new Set(),dirs:64,bandDirs:16,budgetMB:96,mIdleMs:15000,bytes:0,pumpMs:2,minMs:.5,chunk:48,fresh:120,M:new Map(),S:new Map(),frame:0,lastFrame:-1,sh:.24,
+ n:{ac:0,heli:0,air:0,off:0,fb:0,fbAir:0,near:0,sets:0,ready:0,models:0,bands:0,jobs:0,ms:0,pumps:0,evict:0,drop:0,err:0,veh:0,last:''}};
+var A34Q={on:false,q:[]};
+const A34_CARGO=new Set(['AC-CG-01','AC-HC-01','AC-TB-01']),A34_PXM=7.47;
+function a34Err(e){A34G.n.err++;A34G.n.last=String(e&&e.message||e).slice(0,160)}
+// the 3/4 view live; the air pass (wtcOverLive) runs after the frame's 3/4 window is closed (c34Flush): there, the same without it
+function a34Ok(layer){try{return A34G.on&&typeof c34Live==='function'&&(layer==='air'?C34G.on&&C34G.armed&&WTC_MODE!==1&&ctx.canvas===cv&&!MAPBASE.pass:c34Live())&&a34LibInit()}catch(e){a34Err(e);return false}}
+// the livery of a flight: the game's own table (livOf of the aircraft library, p390 exposes it) in the 3/4 library's form
+function a34Liv(id,f){const L=window.__A34LIV;if(!L)return{key:'0',lv:null};const S={c:g77Livery(f)%16,k:f&&/^C[123]$/.test(f.stand||'')?1:0},q=L.livOf({id,ty:A34_CARGO.has(id)?'c':''},S);
+ if(!q)return{key:'0',lv:null};const g=L.LIV.cargo.includes(q)?'c':L.LIV.ga.includes(q)?'g':'p';
+ return{key:g+(g==='c'?L.LIV.cargo:g==='g'?L.LIV.ga:L.LIV.pax).indexOf(q),lv:{n:q.n==='GA'?'':(L.MK_HE[q.n]||q.n),w:q.w,k:q.k,b:q.b,u:q.u,s:q.s,t:q.t,m:q.m,eng:q.eng,d:q.d}}}
+// a piece turned about the vertical axis through the origin by phi (the model's nose, +y, turns to (−sin phi, cos phi))
+function a34Rot(p,phi){const c=Math.cos(phi),sn=Math.sin(phi),R=q=>[q[0]*c-q[1]*sn,q[0]*sn+q[1]*c,q[2]];
+ const rf=f=>{const g=Object.assign({},f);if(f.P)g.P=f.P.map(R);if(f.n)g.n=R(f.n);if(f.g)g.g=f.g.map(R);if(f.at)g.at=R(f.at);if(f.gax)g.gax=f.gax.map(R);if(f.g4)g.g4=f.g4.map(R);return g};
+ const q=Object.assign({},p,{faces:p.faces.map(rf),decor:(p.decor||[]).filter(d=>!d.text||Math.abs(sn)<.01).map(rf)});
+ if(p.tyres)q.tyres=p.tyres.map(t=>Object.assign({},t,{x:t.x*c-t.y*sn,y:t.x*sn+t.y*c}));if(p.legs)q.legs=p.legs.map(l=>Object.assign({},l,{x:l.x*c-l.y*sn,y:l.x*sn+l.y*c}));
+ return A34.bounds(q)}
+// the density of the pictures for this zoom (canvas px per world px), a few steps, at most 2.2
+function a34Dens(){const m=ctx.getTransform(),s=Math.hypot(m.a,m.b);return s<=.75?.75:s<=1.1?1.1:s<=1.6?1.6:2.2}
+// the model of an aircraft / helicopter with its livery (built once, without the windows' band) and the band of one of 16 directions
+function a34Model(mk,id,lv,spin){let e=A34G.M.get(mk);if(e){e.ts=performance.now();return e}const t0=performance.now();   /* mem: ts — לשחרור של מודל שלא נדרש (a34ModelSweep) */
+ const heli=/^AC-HL/.test(id),m=heli?A34.buildHeli(id,{spin,lod:1}):A34.build(id,lv,{lod:1,noBand:1});e={m,heli,B:{},use:A34G.frame,ts:performance.now()};A34G.M.set(mk,e);A34G.n.models++;A34G.n.ms+=performance.now()-t0;return e}
+function a34Band(e,hb){if(e.heli)return e.m;let m=e.B[hb];if(m)return m;m=e.B[hb]=A34.bandFor(e.m,hb*360/A34G.bandDirs);A34G.n.bands++;return m}
+// a picture set: one direction b, density dq, state st ('g' on the ground, 'a' in the air: no gear)
+function a34SetPrep(set){const e=a34Model(set.mk,set.id,set.lv,set.spin),phi=set.b*2*Math.PI/A34G.dirs,h=((-phi*180/Math.PI)%360+360)%360,hb=Math.round(h/(360/A34G.bandDirs))%A34G.bandDirs;
+ const mb=a34Band(e,hb),S=A34_PXM*set.dq,K=A34.K,P=[],sx=A34.SHX,sy=A34.SHY;let sb=[1e9,1e9,-1e9,-1e9];
+ for(const p0 of mb.pieces){if(set.st==='a'&&p0.kind==='gear'&&!e.heli)continue;const p=a34Rot(p0,phi),b=A34.bboxPiece(p,{X:0,Y:0,s:S}),w=Math.ceil(b[2]-b[0])+2,hh=Math.ceil(b[3]-b[1])+2;if(w<2||hh<2||w>4096||hh>4096)continue;
+  const ops=[];if(p.tyres)ops.push(['g']);for(let i=0;i<p.faces.length;i+=A34G.chunk)ops.push(['f',i]);const dn=(p.decor||[]).filter(d=>!d.late),dl=(p.decor||[]).filter(d=>d.late);
+  for(let i=0;i<dn.length;i+=A34G.chunk)ops.push(['d',i,dn]);for(let i=0;i<dl.length;i+=A34G.chunk)ops.push(['d',i,dl]);
+  P.push({p,x0:b[0]-1,y0:b[1]-1,w,h:hh,cv:null,ops,k:(p.yMax+p.zMin/K)*A34_PXM,kind:p.kind,side:p.side||0});
+  for(const f of p.faces)for(const q of f.P){const X=(q[0]+q[2]*sx)*S,Y=(q[1]+q[2]*sy)*S;if(X<sb[0])sb[0]=X;if(X>sb[2])sb[2]=X;if(Y<sb[1])sb[1]=Y;if(Y>sb[3])sb[3]=Y}
+  if(p.tyres)for(const r of p.tyres){const X=r.x*S,Y=r.y*S,R=(r.r*2+r.w)*S;sb=[Math.min(sb[0],X-R),Math.min(sb[1],Y-R),Math.max(sb[2],X+R),Math.max(sb[3],Y+R)]}}
+ // the order inside the aircraft (as the sample page): the gear first; an engine before its wing; the wings, tailplanes and fairings
+ // before the body, except those on the south side (their span toward the camera) — after it; a helicopter's rotor last
+ const bd=P.find(q=>q.kind==='body'),kB=bd?bd.k:0,south=q=>q.side*Math.sin(phi)>.3;
+ for(const q of P){if(q.kind==='gear')q.k=Math.min(q.k,kB-2);else if(q.kind==='rotor')q.k=Math.max(q.k,kB+2);else if(q.kind!=='body'&&!e.heli)q.k=south(q)?Math.max(q.k,kB+1):Math.min(q.k,kB-1)}
+ for(const q of P)if(q.kind==='engine'){const w=P.find(r=>r.kind==='wing'&&r.side===q.side);if(w)q.k=Math.min(q.k,w.k-.5)}
+ // the picture: on the ground its shadow first, then the pieces in their order (the gear, the far wings, the engines, the tailplanes,
+ // the body, the pieces whose span points to the camera); in the air the shadow is a picture of its own, on the ground under it.
+ set.kBody=kB;set.P=P;set.sh={x0:Math.floor(sb[0])-2,y0:Math.floor(sb[1])-2,w:Math.ceil(sb[2]-sb[0])+5,h:Math.ceil(sb[3]-sb[1])+5,cv:null,i:0};
+ const lay=(ids,withSh)=>{if(!ids.length)return null;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const i of ids){const q=P[i];x0=Math.min(x0,q.x0);y0=Math.min(y0,q.y0);x1=Math.max(x1,q.x0+q.w);y1=Math.max(y1,q.y0+q.h)}
+  if(withSh){const h=set.sh;x0=Math.min(x0,h.x0);y0=Math.min(y0,h.y0);x1=Math.max(x1,h.x0+h.w);y1=Math.max(y1,h.y0+h.h)}
+  x0=Math.floor(x0);y0=Math.floor(y0);return{ids,x0,y0,w:Math.ceil(x1-x0),h:Math.ceil(y1-y0),k:Math.max(...ids.map(i=>P[i].k)),cv:null,c:null}};
+ // p390 after its measurement (13:15): one picture per aircraft — the pieces in their order inside it, the picture at the key of its
+ // front-most piece (a helicopter's rotor aside): the draw calls as the top-down drawing's, one each
+ const ord=P.map((q,i)=>i).sort((i,j)=>P[i].k-P[j].k),L0=lay(ord,set.st==='g');if(L0)L0.k=Math.max(kB,...P.filter(q=>q.kind!=='rotor').map(q=>q.k));set.L=L0?[L0]:[];
+ set.I=mb.info;set.li=0;set.pj=0;set.oi=0;set.S=S;set.phase=0}
+function a34Cv(w,h){w=Math.max(2,w);h=Math.max(2,h);const c=document.createElement('canvas');c.width=w;c.height=h;A34G.bytes+=w*h*4;return c}
+function a34Unc(c){if(c){A34G.bytes-=c.width*c.height*4;c.width=c.height=0}}
+// one step of a set's work (false: more to do): the shadow, then each picture piece by piece, a slice of faces at a time
+function a34Step(set,until){if(!set.P){try{a34SetPrep(set)}catch(e){a34Err(e);A34G.bad.add(set.mk);a34Free(set);return true}return false}
+ const S=set.S,sh=set.sh;
+ if(set.phase===0){if(!sh.cv){sh.cv=a34Cv(sh.w,sh.h);sh.c=sh.cv.getContext('2d');sh.c.fillStyle='#0c1016'}
+  while(sh.i<set.P.length){A34.shadowPiece(sh.c,set.P[sh.i++].p,{X:-sh.x0,Y:-sh.y0,s:S});if(performance.now()>until)return false}
+  sh.c=null;set.phase=1;if(performance.now()>until)return false}
+ while(set.li<set.L.length){const Ly=set.L[set.li];
+  if(!Ly.cv){const hf=Ly.shadow?.5:1;Ly.cv=a34Cv(Math.ceil(Ly.w*hf),Math.ceil(Ly.h*hf));Ly.c=Ly.cv.getContext('2d');if(set.st==='g'&&set.li===0){Ly.c.globalAlpha=A34G.sh;if(hf!==1)Ly.c.setTransform(Ly.cv.width/Ly.w,0,0,Ly.cv.height/Ly.h,0,0);Ly.c.drawImage(sh.cv,sh.x0-Ly.x0,sh.y0-Ly.y0);Ly.c.setTransform(1,0,0,1,0,0);Ly.c.globalAlpha=1;a34Unc(sh.cv);sh.cv=null}}   /* p410: the shadow's own picture at half the density */
+  while(set.pj<Ly.ids.length){const q=set.P[Ly.ids[set.pj]],M={X:-Ly.x0,Y:-Ly.y0,s:S},o={zoom:1};
+   while(set.oi<q.ops.length){const op=q.ops[set.oi++];
+    if(op[0]==='g')A34.drawPiece(Ly.c,{kind:q.kind,tyres:q.p.tyres,legs:q.p.legs,faces:[]},M,.6,o);
+    else if(op[0]==='f')A34.drawFaces(Ly.c,q.p.faces.slice(op[1],op[1]+A34G.chunk),M,.6,o);
+    else A34.drawDecor(Ly.c,op[2].slice(op[1],op[1]+A34G.chunk),M,o);
+    if(performance.now()>until)return false}
+   set.pj++;set.oi=0}
+  Ly.c=null;set.li++;set.pj=0}
+ for(const q of set.P){q.p=null;q.ops=null}set.I=a34SlimI(set.I);set.ready=true;A34G.n.ready++;return true}
+/* mem (R-89): ה-info של הדגם (mb.info) מחזיק את פונקציית הגוף F ואת רצועת החלונות band — כל הגאומטריה של המטוס (~0.8 מ״ב לכל סט מוכן).
+   אחרי שהתמונה מוכנה, רק האורות (a34Lights) קוראים ממנו: t, ‏L, ‏R, ‏HS, ‏yC, ‏yTail, ‏heli, ו-wingLE / wingTE / wingZ בנקודה HS בלבד —
+   נשמר עותק עם הערכים האלה בדיוק (אותם מספרים, אותם אורות), והגאומטריה משתחררת. (הכנף נקראת רק ב-HS — ‏a34Lights; בנקודה אחרת — ‏NaN, שיראה מיד) */
+function a34SlimI(I){if(!I||I.slim)return I;const o={slim:1,id:I.id,heli:I.heli,t:I.t,L:I.L,R:I.R,HS:I.HS,yN:I.yN,yC:I.yC,yTail:I.yTail};
+ for(const k of ['wingLE','wingTE','wingZ'])if(typeof I[k]==='function'){const v=I[k](I.HS),H=I.HS;o[k]=x=>x===H?v:NaN}else if(I[k]!==undefined)o[k]=I[k];return o}
+function a34Free(set){if(set.L)for(const Ly of set.L){a34Unc(Ly.cv);Ly.cv=null}if(set.sh&&set.sh.cv){a34Unc(set.sh.cv);set.sh.cv=null}A34G.S.delete(set.key)}
+// the set an aircraft needs now; when it is not ready, the nearest ready one of the same aircraft (any density or state), else null
+function a34MoveDq(){const d=a34Dens();return d>=2.2?d:d>=1.6?1.1:.75}   /* p413 */
+function a34Want(mk,id,lv,spin,phi,st){const N=A34G.dirs,b=((Math.round(phi/(2*Math.PI/N))%N)+N)%N,dq=A34G.dqMove?a34MoveDq():a34Dens(),key=mk+'|'+b+'|'+dq+'|'+st;let set=A34G.S.get(key);
+ if(!set){set={key,mk,id,lv,spin,b,dq,st,ready:false,P:null,req:A34G.frame,use:A34G.frame};A34G.S.set(key,set);A34G.n.sets++}
+ set.req=A34G.frame;if(set.ready){set.use=A34G.frame;return set}
+ let best=null,bd=1e9;for(const s of A34G.S.values()){if(!s.ready||s.mk!==mk)continue;let d=Math.abs(s.b-b);d=Math.min(d,N-d)*4+(s.dq===dq?0:1)+(s.st===st?0:2);if(d<bd){bd=d;best=s}}
+ if(best){best.use=A34G.frame;A34G.n.near++}else set.first=A34G.frame;return best}   /* p410: none ready — drawn from above meanwhile */
+// an aircraft or helicopter of the airport: its pieces into the queue (or the top-down drawing until it has pictures)
+function a34EnqAc(a,now,layer){const [x,y,th,z,al]=a.pose,heli=a.kind==='heli',id=a.id;if(!(al>0))return;
+ const mv=g77Moving(a,x,y);A34G.dqMove=!heli&&mv&&A34G.moveDq!==false;const v=heli?(z>2?4:mv?1:0):(z>8?4:mv?1:0),   /* p413 */L=heli?{key:'h',lv:null}:a34Liv(id,a.f),spin=heli&&v>0,mk=id+'|'+L.key+(spin?'|s':''),phi=th-Math.PI/2,st=(heli?z>2:z>8)?'a':'g';
+ const set=A34G.bad.has(mk)?null:a34Want(mk,id,L.lv,spin,phi,st);if(A34T.pre&&!A34G.bad.has(mk))try{a34TurnPre(a,mk,id,L.lv,spin,phi,st)}catch(e){}   /* p408 */if(!heli&&!A34G.bad.has(mk))try{a34PathPre(a,mk,id,L.lv,spin)}catch(e){}   /* p411 */
+ if(!set){const f=()=>a34GhostDraw(ctx,a,now);A34Q.q.push({k:1e9+y,f});   /* p414 · D-283: its 3/4 silhouette, not the drawing from above */A34G.n.fb++;if(layer==='air')A34G.n.fbAir++;return}
+ if(heli)A34G.n.heli++;else A34G.n.ac++;if(layer==='air')A34G.n.air++;
+ const N=A34G.dirs,dl=phi-set.b*2*Math.PI/N,d=Math.atan2(Math.sin(dl),Math.cos(dl)),dq=set.dq,K=A34.K,lift=K*z,k=z>0?1+z/(heli?300:420):1,sh=set.sh,BL=a34BlendOf(set,d,mk,x,y-lift,k);
+ // the shadow on the ground (offset by the height along the sun), under everything of the airport
+ // only what is on the screen (the view of this frame, C34G.vb; the top-down drawing skips what is off the canvas too)
+ const inV=(x0,y0,w,h)=>typeof c34In!=='function'||c34In(x0-8,y0-8,w+16,h+16);
+ const fade=z>3?Math.max(0,1-z/(heli?200:220)):1;if(set.st==='a'&&sh.cv&&fade>0&&inV(x+z*A34.SHX+sh.x0/dq,y+z*A34.SHY+sh.y0/dq,sh.w/dq,sh.h/dq))A34Q.q.push({k:-1e9+y,f:()=>{ctx.save();ctx.globalAlpha=al*A34G.sh*fade;ctx.translate(x+z*A34.SHX,y+z*A34.SHY);a34Turn(ctx,sh,d);ctx.drawImage(sh.cv,sh.x0/dq,sh.y0/dq,sh.w/dq,sh.h/dq);ctx.restore()}});
+ let vis=false;for(const Ly of set.L){if(!Ly.cv||!inV(x+Ly.x0/dq*k,y-lift+Ly.y0/dq*k,Ly.w/dq*k,Ly.h/dq*k))continue;vis=true;A34Q.q.push({k:y+Ly.k,pic:Ly.shadow?null:{Ly,set,x,y:y-lift,d,k,dq,al,R:[x+Ly.x0/dq*k,y-lift+Ly.y0/dq*k,x+(Ly.x0+Ly.w)/dq*k,y-lift+(Ly.y0+Ly.h)/dq*k]},f:()=>{if(BL&&a34BlendDraw(ctx,Ly,set.L.indexOf(Ly),BL,x,y-lift,k,d,al,dq))return;ctx.save();ctx.globalAlpha=al;ctx.translate(x,y-lift);if(k!==1)ctx.scale(k,k);a34Turn(ctx,Ly,d);ctx.drawImage(Ly.cv,Ly.x0/dq,Ly.y0/dq,Ly.w/dq,Ly.h/dq);ctx.restore()}})}
+ if(!vis)A34G.n.off++;if(vis)A34Q.q.push({k:y+set.kBody+.5,f:()=>a34Lights(set.I,heli,x,y-lift,phi,k,v,al,now)})}
+// the lights: navigation (red on the left wing, green on the right, white at the tail) with power, the red beacon when moving,
+// the white strobes in the air; brighter at night (C34's night)
+function a34Lights(I,heli,X,Y,phi,k,v,al,now){const nt=+window.__TC_NIGHT||0;if(v===0&&nt<=0)return;const c=Math.cos(phi),s=Math.sin(phi),S=A34_PXM*k,K=A34.K;
+ const at=(x,y,z)=>[X+(x*c-y*s)*S,Y+(x*s+y*c-K*z)*S];const L=[];
+ if(heli){const t=I.t;L.push([0,-I.L*.48,t.H*.55,'#ff3b30',v>0?(Math.sin(now/160)>.6?1:0):0,1.6])}
+ else{const t=I.t,HS=I.HS,yw=I.wingLE&&I.wingTE?(I.wingLE(HS)+I.wingTE(HS))/2:I.yC,zw=I.wingZ?I.wingZ(HS):t.zb+I.R,zc=t.zb+I.R;
+  L.push([HS,yw,zw,'#ff3b30',1,1.3],[-HS,yw,zw,'#34d058',1,1.3],[0,I.yTail+.2,zc,'#ffffff',1,1.1]);
+  if(v>0){const on=((now/1000)%1)<.12?1:0;L.push([0,I.yC*.5,zc+I.R+.15,'#ff2a1f',on,1.5],[0,I.yC*.7,t.zb-.05,'#ff2a1f',on,1.4])}
+  if(v===4){const ph=(now/1000)%1.2,on=ph<.05||(ph>.12&&ph<.17)?1:0;L.push([HS,yw-.2,zw,'#ffffff',on,1.6],[-HS,yw-.2,zw,'#ffffff',on,1.6])}}
+ ctx.save();ctx.globalAlpha=al;for(const [x,y,z,col,on,r] of L){if(!on)continue;const [px,py]=at(x,y,z);
+  if(nt>0){ctx.globalCompositeOperation='lighter';const g=ctx.createRadialGradient(px,py,0,px,py,r*5);g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');ctx.globalAlpha=al*.55*nt;ctx.fillStyle=g;ctx.beginPath();ctx.arc(px,py,r*5,0,Math.PI*2);ctx.fill();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=al}
+  ctx.fillStyle=col;ctx.beginPath();ctx.arc(px,py,r*.55,0,Math.PI*2);ctx.fill()}
+ ctx.restore()}
+// a ground vehicle of the airport (and its gauge, and its cart's bags) into the queue by its position
+function a34EnqVeh(a,now,t){const y=a.pose[1],th=a.pose[2];let e=0;try{const s=a.id?aptSpr(a.id):null;if(s&&s.w)e=Math.abs(s.w/2*Math.sin(th))+Math.abs(s.h/2*Math.cos(th))}catch(err){}A34G.n.veh++;A34Q.q.push({k:y+e,veh:a,f:()=>{aptDrawVeh(ctx,a,now);if(a.v&&G77_FI.on&&G77_FI.T&&G77_FI.T[a.v.type])g77FiGauge(ctx,a,t);s6aFlushBags(ctx)}})}
+function a34Enq(a,now,t,layer){try{if(a.kind==='ac'||a.kind==='heli')a34EnqAc(a,now,layer);else a34EnqVeh(a,now,t)}catch(e){a34Err(e);if(a.kind==='ac'||a.kind==='heli'){try{a34GhostDraw(ctx,a,now)}catch(e2){}}else aptDrawVeh(ctx,a,now)}}   /* p414 */
+// the queue in its order, then the pictures' work with what the frame leaves
+function a34QFlush(now,layer){const Q=A34Q.q;Q.sort((p,q)=>p.k-q.k);for(const e of Q){try{e.f()}catch(err){a34Err(err)}}Q.length=0;s6aFlushBags(ctx);if(layer==='ground')a34Pump()}
+function a34Pump(){if(A34G.lastFrame===A34G.frame)return;A34G.lastFrame=A34G.frame;const t0=performance.now();
+ try{const fr=A34G.frame;let need=false;for(const s of A34G.S.values()){if(!s.ready&&fr-s.req>A34G.fresh){a34Free(s);A34G.n.drop++}else if(!s.ready&&s.req===fr)need=true}let first=false;for(const s of A34G.S.values())if(!s.ready&&s.first>=fr-1){first=true;break}
+  const quiet=typeof C34G==='undefined'||performance.now()-C34G.tileT>C34G.tileQuietMs,left=typeof FS!=='undefined'?FS.budgetMs-FS.used:A34G.pumpMs;
+  const B=Math.max(quiet?(need?Math.max(A34G.minMs,Math.min(A34G.pumpMs,left)):Math.min(A34G.pumpMs,left)):0,first?(A34G.firstMs||4):0);   /* p410 */
+  if(B>0){const until=t0+B,J=[...A34G.S.values()].filter(s=>!s.ready).sort((p,q)=>((q.first>=fr-1)-(p.first>=fr-1))||q.req-p.req);   /* p410: a first picture first */for(const s of J){if(performance.now()>until)break;A34G.n.jobs++;
+    while(performance.now()<=until&&!a34Step(s,until)){}}}
+  if(A34G.bytes>A34G.budgetMB*1048576){const R=[...A34G.S.values()].filter(s=>s.ready&&s.use<fr&&!(s.pre&&fr-s.pre<240&&(s.need==null||s.need-APT_OPS.clk<30))).sort((p,q)=>p.use-q.use);for(const s of R){if(A34G.bytes<=A34G.budgetMB*.85*1048576)break;a34Free(s);A34G.n.evict++}}}
+ catch(e){a34Err(e)}A34G.n.ms+=performance.now()-t0;A34G.n.pumps++}
+/* mem (R-89): המודל התלת-ממדי של מטוס (הגוף, הכנפיים, הרצועות — כ-1 מ״ב ב-heap לכל אחד) נדרש רק כדי להכין תמונה חדשה; התמונות המוכנות
+   נשארות במטמון שלהן, והסט שכבר הוכן עובד מהחלקים שלו. מודל שלא נדרש A34G.mIdleMs (‏15 שניות) — יוצא, ונבנה מחדש אם יידרש (אותו מודל, בלי
+   אקראיות). הבדיקה — בשעון, כל 2 שניות: כשהשדה לא על המסך, המשאבה של המטוסים לא רצה */
+function a34ModelSweep(){if(!(A34G.mIdleMs>0)||!A34G.M.size)return;const now=performance.now();
+ for(const [mk,e] of A34G.M)if(now-(e.ts||0)>A34G.mIdleMs){A34G.M.delete(mk);A34G.n.mFree=(A34G.n.mFree||0)+1}}
+setInterval(()=>{try{a34ModelSweep()}catch(e){}},2000);
+window.__TC_A34={on:v=>{if(v!=null)A34G.on=!!v;return A34G.on},stats:()=>({...A34G.n,sets:A34G.S.size,models:A34G.M.size,MB:+(A34G.bytes/1048576).toFixed(1),frame:A34G.frame}),
+ reset:()=>{for(const k in A34G.n)A34G.n[k]=typeof A34G.n[k]==='number'?0:'';return 1},warm:ms=>{const until=performance.now()+(ms||2000);for(const s of A34G.S.values()){while(!s.ready&&performance.now()<until&&!a34Step(s,until)){}}return[...A34G.S.values()].filter(s=>s.ready).length}};
+
+/* ---- A34X · p391: what an aircraft hides (D‑273) — a ground vehicle, or another aircraft, drawn before an aircraft's picture and
+   really covered by it (the picture's own pixels over it, on the screen) is drawn again over it as a see-through silhouette of another
+   colour, with an outline (blue, as the sample). One set of four canvases, reused; at most A34X.ms (~1.5 ms) a frame. ---- */
+var A34X={on:true,cap:false,ms:1.5,fx:0,wk:false,ns:false,mk:0,MK:null,seg0:0,dn:0,cpa:.6,prev:new Set(),cur:new Set(),subj:[],col:'#2f7cf6',edge:'#0b4fc4',a:.45,ea:.95,C:null,K:new Map(),kMax:48,pxMax:6e6,px:0,frame:0,n:{pairs:0,drawn:0,cached:0,miss:0,cut:0,ms:0,max:0,frames:0,err:0,last:''}};
+function a34XEvict(){const K=A34X.K;for(const [k,v] of K){if(K.size<=A34X.kMax&&A34X.px<=A34X.pxMax&&A34X.frame-v.f<=30)break;if(v.c){A34X.px-=v.w*v.h;v.c.width=v.c.height=0}K.delete(k)}}
+function a34XErr(e){A34X.n.err++;A34X.n.last=String(e&&e.message||e).slice(0,160)}
+function a34XCv(W,H){let C=A34X.C;if(!C){C=A34X.C=[0,1].map(()=>{const c=document.createElement('canvas');c.width=c.height=256;return{c,g:c.getContext('2d',{willReadFrequently:true})}})}   // in memory: their work among themselves stays there; one copy to the screen
+ for(const q of C)if(q.c.width<W||q.c.height<H){q.c.width=Math.max(q.c.width,W);q.c.height=Math.max(q.c.height,H)}
+ for(const q of C){q.g.setTransform(1,0,0,1,0,0);q.g.globalCompositeOperation='source-over';q.g.globalAlpha=1;q.g.clearRect(0,0,W,H)}return C}
+// the picture's own pixels, in cells of 8 px (made once per picture): the picture drawn 8 times smaller (a cell = one pixel, its
+// mean alpha), then read — a 64th of the pixels; at most one picture a frame (A34X.mk), never on a frame already over its budget
+function a34XMask(Ly){if(Ly.mask!==undefined)return Ly.mask;try{const W=Ly.cv.width,H=Ly.cv.height,cs=8,gw=Math.ceil(W/cs),gh=Math.ceil(H/cs);let M=A34X.MK;if(!M){const c=document.createElement('canvas');c.width=c.height=64;M=A34X.MK={c,g:c.getContext('2d',{willReadFrequently:true})}}
+  if(M.c.width<gw||M.c.height<gh){M.c.width=Math.max(M.c.width,gw);M.c.height=Math.max(M.c.height,gh)}M.g.clearRect(0,0,gw,gh);M.g.imageSmoothingEnabled=true;M.g.imageSmoothingQuality='medium';M.g.drawImage(Ly.cv,0,0,W,H,0,0,W/cs,H/cs);
+  const d=M.g.getImageData(0,0,gw,gh).data,b=new Uint8Array(gw*gh);for(let i=0;i<gw*gh;i++)if(d[i*4+3]>10)b[i]=1;Ly.mask={cs,gw,gh,b}}catch(e){Ly.mask=null}return Ly.mask}
+// a world rectangle over the picture's pixels? (the small turn of the picture is left out)
+function a34XHit(P,R){const L=P.Ly,M=a34XMask(L);if(!M)return true;const u=wx=>(wx-P.x)/P.k*P.dq-L.x0,v=wy=>(wy-P.y)/P.k*P.dq-L.y0;
+ const i0=Math.max(0,Math.floor(u(R[0])/M.cs)),i1=Math.min(M.gw-1,Math.floor(u(R[2])/M.cs)),j0=Math.max(0,Math.floor(v(R[1])/M.cs)),j1=Math.min(M.gh-1,Math.floor(v(R[3])/M.cs));
+ for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++)if(M.b[j*M.gw+i])return true;return false}
+// a ground vehicle's rectangle on the screen (world px): its footprint and its height (K × ~4 m)
+function a34XRect(a){const [x,y,th]=a.pose;let w=40,h=16;try{const s=aptSpr(a.id);if(s&&s.w){w=s.w;h=s.h}}catch(e){}const c=Math.abs(Math.cos(th)),s=Math.abs(Math.sin(th)),ex=w/2*c+h/2*s,ey=w/2*s+h/2*c;
+ return[x-ex-2,y-ey-A34.K*4*A34_PXM-2,x+ex+2,y+ey+2]}
+// one silhouette: the subject drawn again into a canvas, coloured, kept where the picture covers it; one draw on the screen
+function a34XKey(S,P,R,m){const r=v=>Math.round(v*4);const s=S.pic?('p'+r(S.pic.x)+','+r(S.pic.y)+','+S.pic.Ly.cv.width):S.veh?('v'+(S.veh.v&&S.veh.v.id||S.veh.id)+','+S.veh.pose.map(r).join(',')):('s'+S.k+','+r(S.x)+','+r(S.y)+','+r(S.h||0));
+ return s+'|'+P.key+'|'+Math.round(m.a*1000)}
+// the occluder of an aircraft's picture
+function a34XOccPic(P){return{R:P.R,key:'P'+Math.round(P.x*4)+','+Math.round(P.y*4)+','+P.Ly.cv.width,pic:P,draw:g=>{const L=P.Ly;g.translate(P.x,P.y);if(P.k!==1)g.scale(P.k,P.k);a34Turn(g,L,P.d);g.drawImage(L.cv,L.x0/P.dq,L.y0/P.dq,L.w/P.dq,L.h/P.dq)}}}
+function a34XPair(S,P,m){const Rs=S.pic?S.pic.R:S.veh?a34XRect(S.veh):S.R;let R=[Math.max(Rs[0],P.R[0]),Math.max(Rs[1],P.R[1]),Math.min(Rs[2],P.R[2]),Math.min(Rs[3],P.R[3])];
+ if(R[0]>=R[2]||R[1]>=R[3])return 0;let ck=P.key;if(P.box){const q=P.box(R);if(!q)return 0;R=q.b;ck=q.k}A34X.n.pairs++;
+ const key=a34XKey(S,{key:ck},R,m),hit=A34X.K.get(key);if(hit){hit.f=A34X.frame;A34X.K.delete(key);A34X.K.set(key,hit);if(hit.c){const X=Math.floor(m.a*R[0]+m.e)-2,Y=Math.floor(m.d*R[1]+m.f)-2;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(hit.c,0,0,hit.w,hit.h,X+hit.dx,Y+hit.dy,hit.dw,hit.dh);ctx.restore();A34X.n.cached++}return 0}
+ if(P.pic&&P.pic.Ly.mask===undefined){if(A34X.mk>0){A34X.n.cut++;return 0}A34X.mk++}   // a new picture's cells: one a frame
+ if(P.pic&&!a34XHit(P.pic,R)){A34X.n.miss++;A34X.K.set(key,{c:null,f:A34X.frame});return 0}
+ const cw=ctx.canvas.width,ch=ctx.canvas.height;let Xr=Math.floor(m.a*R[0]+m.e)-2,Yr=Math.floor(m.d*R[1]+m.f)-2,X0=Math.max(0,Xr),Y0=Math.max(0,Yr),X1=Math.min(cw,Math.ceil(m.a*R[2]+m.e)+2),Y1=Math.min(ch,Math.ceil(m.d*R[3]+m.f)+2),W=X1-X0,H=Y1-Y0;
+ if(W<3||H<3||W>1400||H>1400)return 0;
+ // a big pair is made smaller (a half, a third — a soft blue shape needs no more): its cost bounded, as its memory
+ const W0=W,H0=H,sq=W0*H0>480000?1/3:W0*H0>120000?.5:1;W=Math.ceil(W0*sq);H=Math.ceil(H0*sq);
+ // its cost foreseen (the mean of the pairs made): not begun when it would pass the frame's budget — unless it is the frame's first
+ if(A34X.dn>0&&A34X.fx+(performance.now()-A34X.seg0)+A34X.cpa>A34X.ms){A34X.n.cut++;return 0}const tm=performance.now();
+ const [O1,O3]=a34XCv(W,H),T=g=>g.setTransform(m.a*sq,m.b*sq,m.c*sq,m.d*sq,(m.e-X0)*sq,(m.f-Y0)*sq);
+ // the subject, as drawn on the screen (the queues it may feed are put back as they were), coloured
+ T(O1.g);{const g0=ctx,q1=typeof C34G!=='undefined'?C34G.q.length:0,q2=typeof G77_UP!=='undefined'?G77_UP.q.length:0;ctx=O1.g;A34X.cap=true;
+  try{if(S.f)S.f()}finally{ctx=g0;A34X.cap=false;if(typeof C34G!=='undefined')C34G.q.length=Math.min(C34G.q.length,q1);if(typeof G77_UP!=='undefined')G77_UP.q.length=Math.min(G77_UP.q.length,q2)}}
+ O1.g.setTransform(1,0,0,1,0,0);O1.g.globalAlpha=1;O1.g.globalCompositeOperation='source-in';O1.g.fillStyle=A34X.col;O1.g.fillRect(0,0,W,H);
+ // the outline: the silhouette moved a pixel each way, less itself
+ for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]])O3.g.drawImage(O1.c,0,0,W,H,dx,dy,W,H);O3.g.globalCompositeOperation='destination-out';O3.g.drawImage(O1.c,0,0,W,H,0,0,W,H);
+ O3.g.globalCompositeOperation='source-in';O3.g.fillStyle=A34X.edge;O3.g.fillRect(0,0,W,H);
+ // kept only where it is covered: the cover drawn into each with destination-in (one drawing: the picture, or the crane's boxes as one path)
+ for(const q of [O1,O3]){T(q.g);q.g.globalCompositeOperation='destination-in';P.draw(q.g);q.g.setTransform(1,0,0,1,0,0);q.g.globalCompositeOperation='source-over'}
+ // one picture: the fill (alpha a) under the outline (alpha ea), in O3; one copy to the screen
+ O3.g.globalCompositeOperation='destination-over';O3.g.globalAlpha=A34X.a/A34X.ea;O3.g.drawImage(O1.c,0,0,W,H,0,0,W,H);O3.g.globalAlpha=1;O3.g.globalCompositeOperation='source-over';
+ // only its own pixels go to the screen (their box, read from the canvas in memory); none — nothing hidden
+ let bx0=W,by0=H,bx1=-1,by1=-1;{const u=new Uint32Array(O3.g.getImageData(0,0,W,H).data.buffer);for(let y=0;y<H;y++){const r=y*W;let a=-1,b=-1;for(let x=0;x<W;x++)if(u[r+x]){a=x;break}if(a<0)continue;for(let x=W-1;x>=a;x--)if(u[r+x]){b=x;break}if(a<bx0)bx0=a;if(b>bx1)bx1=b;if(y<by0)by0=y;by1=y}}
+ const rep=A34X.prev.has(key);A34X.cur.add(key);
+ if(bx1<0){A34X.n.miss++;if(rep)A34X.K.set(key,{c:null,f:A34X.frame});A34X.cpa=.8*A34X.cpa+.2*Math.min(6,performance.now()-tm);return 0}
+ const bw=bx1-bx0+1,bh=by1-by0+1,ox=X0+bx0/sq,oy=Y0+by0/sq;
+ ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=A34X.ea;ctx.drawImage(O3.c,bx0,by0,bw,bh,ox,oy,bw/sq,bh/sq);ctx.restore();A34X.n.drawn++;A34X.dn++;
+ // kept for the next frames — when the same pair was made the frame before too (a subject that stands), and wholly on the canvas
+ if(rep&&X0===Xr&&Y0===Yr){const c=document.createElement('canvas');c.width=bw;c.height=bh;const g=c.getContext('2d');g.globalAlpha=A34X.ea;g.drawImage(O3.c,bx0,by0,bw,bh,0,0,bw,bh);A34X.K.set(key,{c,w:bw,h:bh,dw:bw/sq,dh:bh/sq,dx:ox-Xr,dy:oy-Yr,f:A34X.frame});A34X.px+=bw*bh;a34XEvict()}
+ A34X.cpa=.8*A34X.cpa+.2*Math.min(6,performance.now()-tm);return 1}
+// after the airport's queue: every subject drawn before a picture that it meets
+function a34XRun(Q){const t0=performance.now();A34X.wk=true;A34X.seg0=t0;const m=ctx.getTransform();
+ outer:for(let j=0;j<Q.length;j++){const P=Q[j];if(!P.pic||!P.pic.Ly.cv)continue;
+  for(let i=0;i<j;i++){const S=Q[i];if(!S.veh&&!S.pic)continue;if(S.pic&&(S.pic.Ly===P.pic.Ly||S.pic.set===P.pic.set))continue;   /* p408: an aircraft's two pictures */
+   const Rs=S.pic?S.pic.R:null;if(Rs&&(Rs[2]<=P.pic.R[0]||Rs[0]>=P.pic.R[2]||Rs[3]<=P.pic.R[1]||Rs[1]>=P.pic.R[3]))continue;
+   if(performance.now()-t0+A34X.fx>A34X.ms){A34X.n.cut++;break outer}
+   try{a34XPair(S,P.occ||(P.occ=a34XOccPic(P.pic)),m)}catch(e){a34XErr(e)}}}
+ const dt=performance.now()-t0;A34X.n.ms+=dt;A34X.fx+=dt}
+const __p391Flush=a34QFlush;
+a34QFlush=function(now,layer){if(!A34X.on||layer!=='ground')return __p391Flush(now,layer);const Q=A34Q.q.slice().sort((p,q)=>p.k-q.k);__p391Flush(now,layer);try{a34XRun(Q)}catch(e){a34XErr(e)}};
+window.__TC_A34X={on:v=>{if(v!=null)A34X.on=!!v;return A34X.on},stats:()=>({...A34X.n,cpa:+A34X.cpa.toFixed(2),msPerFrame:A34X.n.frames?+(A34X.n.ms/A34X.n.frames).toFixed(3):0,max:+A34X.n.max.toFixed(2),cache:A34X.K.size,px:A34X.px}),reset:()=>{for(const k in A34X.n)A34X.n[k]=typeof A34X.n[k]==='number'?0:'';return 1}};
+
+/* ---- R-20 (the external review 12:50): the port's tall equipment — a quay or grab crane in 3/4 (c34Sts: its tops over everything,
+   risen K·z) hides the port street north of it. The entries of the 3/4 queue under it (the cars, the trucks and semis, the player's
+   car; not the container stacks) get the same silhouette. The crane's mask is its own boxes: in this projection a box's outline on
+   the screen is exactly the rectangle [x0, y0 − K·z1, x1, y1 − K·z0] — no second drawing of the crane, no reading of pixels.
+   The player's car first; the same budget a frame. ---- */
+const __p391Begin=c34Begin;c34Begin=function(now){if(A34X.wk){A34X.n.frames++;if(A34X.fx>A34X.n.max)A34X.n.max=A34X.fx}A34X.wk=false;A34X.mk=0;A34X.dn=0;{const t=A34X.prev;t.clear();A34X.prev=A34X.cur;A34X.cur=t}A34X.subj.length=0;A34X.fx=0;A34X.frame++;a34XEvict();return __p391Begin(now)};
+const __p391Push=c34Push;c34Push=function(id,col,x,y,h,o){const n=C34G.q.length,r=__p391Push.apply(this,arguments);if(!A34X.ns&&C34G.q.length>n){const e=C34G.q[C34G.q.length-1];e.sx=x;e.sy=y;e.sh=h;e.sr=(o&&o.r)||60;e.spl=!!(o&&o.player)}return r};
+const __p391Stack=c34Stack;c34Stack=function(){A34X.ns=true;try{return __p391Stack.apply(this,arguments)}finally{A34X.ns=false}};   // the stacks: cargo, not a subject
+const __p391CFlush=c34Flush;c34Flush=function(now){if(A34X.on&&C34G.live&&portInView()){for(const e of C34G.q)if(e.sx!=null){const r=e.sr*.75;A34X.subj.push({k:e.spl?'pl':'q',x:e.sx,y:e.sy,h:e.sh,R:[e.sx-r,e.sy-r-26,e.sx+r,e.sy+r],f:e.f})}
+  A34X.subj.sort((a,b)=>(b.k==='pl')-(a.k==='pl'))}return __p391CFlush(now)};
+// the crane's boxes on the screen (world px): the portal's beams, the boom, the house, the trolley, the cabin, what hangs under it
+function a34XCraneRects(c,P){const o=stsParts(c,P),K=stsK(),B=[...o.side,...o.beams,o.boom,o.house,o.trol,o.cab];
+ if(o.sp){B.push([o.x-16,o.x+16,o.bt-4,o.bt+8,o.Hb-22,o.Hb+2]);const zs=o.zl+o.Hc+2,ty=P.ty,L=o.L,W=o.W;
+  if(P.load)B.push([o.x-L/2,o.x+L/2,ty-W/2,ty+W/2,o.zl,o.zl+o.Hc]);for(const b of [[o.x-L/2-1,o.x+L/2+1,ty-W/2-1,ty-W/2+1],[o.x-L/2-1,o.x+L/2+1,ty+W/2-1,ty+W/2+1],[o.x-L/2-1,o.x-L/2+1,ty-W/2,ty+W/2],[o.x+L/2-1,o.x+L/2+1,ty-W/2,ty+W/2]])B.push([...b,zs,zs])}
+ else if(P.grab){const gb=P.grab,r=11,zs=o.zl+16;B.push([o.x-r-gb.open*4,o.x+r+gb.open*4,P.ty-r,P.ty+r,o.zl,zs])}
+ return B.map(b=>[b[0],b[2]-K*b[5],b[1],b[3]-K*b[4]])}
+function a34XCrane(c,P){const t0=A34X.seg0=performance.now(),m=ctx.getTransform(),Q=a34XCraneRects(c,P);let R=[1e9,1e9,-1e9,-1e9];for(const q of Q){R[0]=Math.min(R[0],q[0]);R[1]=Math.min(R[1],q[1]);R[2]=Math.max(R[2],q[2]);R[3]=Math.max(R[3],q[3])}
+ const ov=(a,b)=>!(a[2]<=b[0]||a[0]>=b[2]||a[3]<=b[1]||a[1]>=b[3]);if(!A34X.subj.some(s=>ov(s.R,R)))return;A34X.wk=true;
+ const occ={R,key:'',
+  // the boxes over a rectangle: their bounding box (the canvas of the pair) and the key of the pair's cache (only those boxes)
+  box:Rq=>{let b=null,k='';for(const q of Q)if(ov(q,Rq)){const x0=Math.max(q[0],Rq[0]),y0=Math.max(q[1],Rq[1]),x1=Math.min(q[2],Rq[2]),y1=Math.min(q[3],Rq[3]);if(!b)b=[x0,y0,x1,y1];else{b[0]=Math.min(b[0],x0);b[1]=Math.min(b[1],y0);b[2]=Math.max(b[2],x1);b[3]=Math.max(b[3],y1)}k+=q.map(v=>Math.round(v)).join(',')+';'}
+   if(b){b[0]-=2;b[1]-=2;b[2]+=2;b[3]+=2}return b?{b,k}:null},
+  draw:g=>{g.fillStyle='#000';g.beginPath();for(const q of Q)g.rect(q[0],q[1],q[2]-q[0],q[3]-q[1]);g.fill()}};
+ for(const s of A34X.subj){if(!ov(s.R,R))continue;if(performance.now()-t0+A34X.fx>A34X.ms){A34X.n.cut++;break}
+  try{a34XPair(s,occ,m)}catch(e){a34XErr(e)}}
+ const dt=performance.now()-t0;A34X.n.ms+=dt;A34X.fx+=dt}
+const __p391Sts=c34Sts;c34Sts=function(c,P,S,now){const ok=__p391Sts(c,P,S,now);if(ok&&A34X.on&&A34X.subj.length){try{a34XCrane(c,P)}catch(e){a34XErr(e)}}return ok};
+
+/* ---- p394 · the owner 15:49 (3): "after entering an area no vehicle is seen from above, not even for a second; until the full picture is
+   ready a simple 3/4 silhouette in the vehicle's colour". Every vehicle with a 3/4 model (VH-, VS-, the kits, the semi, the boxes) drawn from above on
+   the game's canvas while the 3/4 view is on — its picture not made yet, or the view not armed yet in the first 1.5 s — is drawn instead
+   as its footprint raised to its height: the sides that face the camera a shade darker, the roof in its colour, a thin outline. No picture,
+   no waiting: a few path fills. The outermost TurboCity.draw, so every caller is covered; off with C34GH.on = false. ---- */
+var C34GH={on:true,n:{ghost:0,frames:0},g:0,PAL:null};
+// the vehicles with a 3/4 model: the road models (VH-, VS-), the kits of c34Id (bus, coach, shuttle, tanker, forklift, trailer), the semi
+// (c34Semi), the reach stacker (c34ForkProp) and the boxes they carry or stand in the stacks (CT-, the cargo and stack models)
+const C34GH_LV={'LV-BS':1.25,'LV-CH':1.3,'LV-SH':1.2,'LV-TK':1.4,'LV-FK':1.6,'LV-TL':1.05,'LV-SM':1.45,'LV-RS':1.1};
+function c34GhostOk(id){const a=id.charCodeAt(0),b=id.charCodeAt(1);if(id.charCodeAt(2)!==45)return false;if(a===86)return b===72||b===83;if(a===67&&b===84)return true;return a===76&&b===86&&C34GH_LV[id.slice(0,5)]!=null}
+// the height (the same px as the footprint): a car .8 of its width, an SUV or pickup .92, a minivan or van 1.05, a service vehicle 1.05,
+// a bus or truck (longer than 3.2 widths) 1.25; the kits as above; a box 1.05 (2.6 m on 2.44 m)
+function c34GhostH(id,L,W){const p=id.slice(0,5),r=L/Math.max(1,W);if(C34GH_LV[p]!=null)return W*C34GH_LV[p];if(id.charCodeAt(0)===67)return W*1.05;return W*(r>3.2?1.25:p==='VH-MV'||p==='VH-VN'||id.startsWith('VS-')?1.05:p==='VH-SU'||p==='VH-PK'?.92:.8)}
+function c34GhostCol(o){const s=o&&o.state,c=s&&s.c!=null?s.c:0;let P=C34GH.PAL;if(!P){try{P=C34GH.PAL=typeof C34!=='undefined'&&C34.PAL?C34.PAL:(typeof PAL!=='undefined'?PAL:null)}catch(e){P=null}}const e=P&&(P[c]||P[0]);return e?e[1]:'#9aa2aa'}
+function c34GhostSh(hex,f){const m=/^#?([0-9a-f]{6})$/i.exec(hex||'');if(!m)return hex;const v=parseInt(m[1],16),ch=[v>>16&255,v>>8&255,v&255].map(x=>Math.round(f<0?x*(1+f):x+(255-x)*f));return 'rgb('+ch.join(',')+')'}
+function c34Ghost(c,id,x,y,o){if(NR34.on){C34GH.n.skip=(C34GH.n.skip||0)+1;C34GH.g++;return true}   // p453 (R-37): not drawn until ready · p455: counted
+ const I=TurboCity.info(id,o),fp=I&&I.fp;if(!I)return false;
+ const fx=fp?fp[0]:I.w*.08,fy=fp?fp[1]:I.h*.12,fw=fp?fp[2]:I.w*.84,fh=fp?fp[3]:I.h*.76,L=Math.max(fw,fh),W=Math.min(fw,fh),H=c34GhostH(id,L,W);
+ const m=c.getTransform(),sc=Math.sqrt(Math.abs(m.a*m.d-m.b*m.c)),dz=(typeof C34!=='undefined'&&C34.K?C34.K:.6)*H*sc;
+ const P=[[x+fx,y+fy],[x+fx+fw,y+fy],[x+fx+fw,y+fy+fh],[x+fx,y+fy+fh]].map(q=>[m.a*q[0]+m.c*q[1]+m.e,m.b*q[0]+m.d*q[1]+m.f]),T=P.map(p=>[p[0],p[1]-dz]);
+ const col=c34GhostCol(o),cx=(P[0][0]+P[2][0])/2,cy=(P[0][1]+P[2][1])/2;
+ c.save();c.setTransform(1,0,0,1,0,0);
+ for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4];let nx=b[1]-a[1],ny=-(b[0]-a[0]);if(nx*((a[0]+b[0])/2-cx)+ny*((a[1]+b[1])/2-cy)<0){nx=-nx;ny=-ny}if(ny<=0)continue;   // only the sides toward the camera
+  const l=Math.hypot(nx,ny)||1;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.lineTo(b[0],b[1]-dz);c.lineTo(a[0],a[1]-dz);c.closePath();c.fillStyle=c34GhostSh(col,-.28-.12*Math.abs(nx/l));c.fill()}
+ c.beginPath();c.moveTo(T[0][0],T[0][1]);for(let i=1;i<4;i++)c.lineTo(T[i][0],T[i][1]);c.closePath();c.fillStyle=c34GhostSh(col,.05);c.fill();
+ c.beginPath();c.moveTo(P[0][0],P[0][1]);for(const p of [P[1],P[2],P[3]])c.lineTo(p[0],p[1]);c.closePath();for(let i=0;i<4;i++){c.moveTo(T[i][0],T[i][1]);c.lineTo(P[i][0],P[i][1])}c.moveTo(T[0][0],T[0][1]);for(const p of [T[1],T[2],T[3],T[0]])c.lineTo(p[0],p[1]);
+ c.strokeStyle='rgba(12,18,24,.32)';c.lineWidth=Math.max(.6,sc*.6);c.stroke();c.restore();C34GH.n.ghost++;C34GH.g++;return true}
+const __p394Draw=TurboCity.draw;
+TurboCity.draw=function(c,id,x,y,o){
+ if(C34GH.on&&!(typeof NR34!=='undefined'&&NR34.player)&&c===GAME_CTX&&typeof id==='string'&&c34GhostOk(id)&&C34G.on&&!MAPBASE.pass&&WTC_MODE!==1&&ctx===GAME_CTX){   /* p453: the player's car — its own drawing */
+  try{if(c34Ghost(c,id,x,y,o||{}))return}catch(e){}}
+ return __p394Draw.apply(this,arguments)};
+// the replayed props (the yards' forklifts and reach stackers — wtcReplaySprites draws them past TurboCity.draw): when c34ForkProp has no
+// picture yet (or the view is not armed), the silhouette there too, and the replay skips its drawing from above
+const __p394Fork=c34ForkProp;c34ForkProp=function(r){if(__p394Fork(r))return true;
+ if(C34GH.on&&C34G.on&&ctx===GAME_CTX&&WTC_MODE!==1&&!MAPBASE.pass&&r&&typeof r.id==='string'&&c34GhostOk(r.id)){try{return c34Ghost(ctx,r.id,r.x,r.y,r.o||{})}catch(e){}}return false};
+window.__TC_GHOST={on:v=>{if(v!=null)C34GH.on=!!v;return C34GH.on},stats:()=>({...C34GH.n,g:C34GH.g})};
+
+/* ---- p397 · the owner 16:46 (6): an aircraft's motion on the ground is known in advance (the pushback, the taxi), so the directions it
+   will face are prepared before it turns — no jump from "the nearest ready direction" to the right one while it is pushed back or
+   turns on a taxiway. For every aircraft on the ground drawn this frame: its poses over the next A34P.ahead sim seconds (its flight's
+   own tracks, g77AcPoseAt), every A34P.step s, each heading → its direction of 64 (the next A34P.max of them); for an aircraft on the
+   screen or near it that moves now or is pushed back within the horizon. Those pictures are asked for (at this zoom) behind
+   what the frame needs now, in the order the aircraft will face them, and kept asked for while they are ahead. The list of an aircraft
+   is worked out again every A34P.every frames. Within A34G's 96 MB: what is used least long ago goes first, as before. ---- */
+var A34P={on:true,ahead:30,step:1,every:20,max:8,near:400,n:{lists:0,asked:0,poses:0,skip:0}},A34P_L=new WeakMap();
+function a34PreList(a,f,t){const N=A34G.dirs,out=[],seen=new Set();
+ for(let k=1;k*A34P.step<=A34P.ahead;k++){const p=g77AcPoseAt(f,t+k*A34P.step);A34P.n.poses++;if(!p)continue;if((p[3]||0)>8)break;   // airborne: the air's own pictures
+  const phi=p[2]-Math.PI/2,b=((Math.round(phi/(2*Math.PI/N))%N)+N)%N;if(seen.has(b))continue;seen.add(b);out.push(b);if(out.length>=A34P.max)break}   // the next few only
+ A34P.n.lists++;return out}
+function a34Pre(a){if(!A34P.on||!a||a.kind!=='ac'||!a.f||!a.f.tracks)return;const [x,y,,z0]=a.pose,z=z0||0;if(z>8)return;
+ const t=typeof APT_OPS!=='undefined'?APT_OPS.clk:null;if(t==null)return;
+ // only an aircraft on the screen or near it, that moves now or is pushed back within the horizon
+ const R=A34P.near;if(typeof c34In==='function'&&!c34In(x-R,y-R,2*R,2*R)){A34P.n.skip++;return}
+ if(!g77Moving(a,x,y)&&!(a.f.tPush!=null&&a.f.tPush>t-1&&a.f.tPush<t+A34P.ahead)){A34P.n.skip++;return}
+ let e=A34P_L.get(a.f);if(!e||A34G.frame-e.fr>=A34P.every){e={fr:A34G.frame,bs:a34PreList(a,a.f,t)};A34P_L.set(a.f,e)}if(!e.bs.length)return;
+ const L=a34Liv(a.id,a.f),mk=a.id+'|'+L.key,dq=a34Dens();if(A34G.bad.has(mk))return;
+ e.bs.forEach((b,i)=>{const key=mk+'|'+b+'|'+dq+'|g';let set=A34G.S.get(key);
+  if(!set){set={key,mk,id:a.id,lv:L.lv,spin:false,b,dq,st:'g',ready:false,P:null,req:A34G.frame-1-i,use:A34G.frame,pre:1};A34G.S.set(key,set);A34G.n.sets++}
+  if(!set.ready){set.req=Math.max(set.req,A34G.frame-1-Math.min(i,90));A34P.n.asked++}else set.use=A34G.frame})}   // behind the frame's own needs, the nearest in time first
+const __p397Enq=a34EnqAc;a34EnqAc=function(a,now,layer){const r=__p397Enq.apply(this,arguments);try{a34Pre(a)}catch(e){}return r};
+window.__TC_A34P={on:v=>{if(v!=null)A34P.on=!!v;return A34P.on},stats:()=>({...A34P.n})};
+
+/* ---- p392 · D‑283 (the owner 15:49: "after entering an area no vehicle is seen from above, not even for a second"): the vehicles that
+   had no 3/4 model — the airport's ground vehicles (the fuel, water and lavatory trucks, the tugs, the belt and main-deck loaders, the
+   catering truck, the ground power units, the passenger stairs, the staff shuttle, the carts of the baggage trains) and the farm's
+   machines (the tractor, the combine, the trailer) — are kits of the 3/4 library (c34m5.js: btug, ptug, belt, cater, gpu, hilo, stairs,
+   bcart, ftrac, comb, fwag; the tanker and the shuttle as they were). The airport's are drawn where the game draws them (c34Apt, at their
+   real sizes S6A_TYPES / g77GseDim), their picture or — until it is made — their silhouette, never the top view; the carts of a train
+   too, with the game's own bags on their beds. The farm's through TurboCity.draw (as the forklifts' props), the silhouette of p394 until
+   the picture is ready. ---- */
+var P392={on:true,g:0,n:{kit:0,ghost:0,carts:0,farm:0,farmGhost:0}};
+// asset → [kit, options, the silhouette's height ÷ width]
+const C34_GSE={'LV-FT-01':['tanker',null,1.4],'G7-WT':['tanker',null,1.35],'G7-LV':['tanker',null,1.3],'LV-BT-01':['btug',null,1.3],'G7-CU':['btug',null,1.3],'LV-PT-01':['ptug',null,.75],
+ 'G7-BL':['belt',null,1.5],'G7-CT':['cater',null,1.5],'G7-GP':['gpu',null,1],'G7-GC':['gpu',null,1],'G7-HL':['hilo',null,.8],'F2-MS':['stairs',null,1.7],'G7-SH':['shuttle',null,1.2],
+ 'LV-TR-01':['ftrac',null,1.15],'LV-CM-01':['comb',null,1.05],'LV-FW-01':['fwag',null,.65]};
+const P392_FARM={'LV-TR-01':'#3f7f2e','LV-CM-01':'#3f7f2e','LV-FW-01':'#8a5a32'};
+C34GH_LV['LV-TR']=1.15;C34GH_LV['LV-CM']=1.05;C34GH_LV['LV-FW']=.65;   // p394's silhouette for the farm's machines until their pictures are made
+// a box raised to its height in 3/4 (world px; the camera's transform on ctx): the sides that face the camera darker, the top, a thin outline
+function p392Ghost(x,y,th,L,W,H,col,al){if(NR34.on)return;   // p453
+const c=Math.cos(th),s=Math.sin(th),hl=L/2,hw=W/2,dz=(C34.K||.6)*H,P=[[hl,-hw],[hl,hw],[-hl,hw],[-hl,-hw]].map(([u,v])=>[x+u*c-v*s,y+u*s+v*c]),T=P.map(p=>[p[0],p[1]-dz]);
+ ctx.save();if(al!=null&&al<1)ctx.globalAlpha*=al;
+ for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4],ny=a[0]-b[0];if(ny<=0)continue;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineTo(b[0],b[1]-dz);ctx.lineTo(a[0],a[1]-dz);ctx.closePath();ctx.fillStyle=c34GhostSh(col,-.3);ctx.fill()}
+ ctx.beginPath();ctx.moveTo(T[0][0],T[0][1]);for(let i=1;i<4;i++)ctx.lineTo(T[i][0],T[i][1]);ctx.closePath();ctx.fillStyle=c34GhostSh(col,.03);ctx.fill();ctx.strokeStyle='rgba(12,18,24,.32)';ctx.lineWidth=.6;ctx.stroke();ctx.restore()}
+// the carts of a baggage train behind its tug: each a kit (or its silhouette), the game's own bags on the beds (raised to the bed)
+function p392Carts(g,a,al){const tr=a.tr;if(!tr||!tr.carts||!tr.carts.length)return;const cs=[],K=C34.K||.6;let lift=0;
+ for(let i=0;i<tr.carts.length;i++){const q=tr.cartAt(a.pose,i,a.lt,tr),c=tr.carts[i],Lc=2*c.hx,Wc=2*c.hy,id=C34.kit('bcart',Lc,Wc);
+  const ok=c34Now(id,'#aab4bd',q[0],q[1],q[2],{alpha:al<1?al:null,r:Lc*.6+8});if(!ok)p392Ghost(q[0],q[1],q[2],Lc,Wc,Wc*.55,'#aab4bd',al);
+  lift=K*(Wc/1.5)*.55;cs.push(q);P392.n.carts++}
+ f2DrawTrainBags(g,a,cs.map(q=>[q[0],q[1]-lift,q[2]]),al)}
+// an airport ground vehicle of ours: its picture or its silhouette (true: drawn); null — not ours (the earlier c34Apt decides)
+function p392Apt(g,a,t,now){if(!P392.on)return null;const asset=(t&&S6A_ASSET[t])||a.id,k=asset&&C34_GSE[asset];
+ if(!k){if(!asset||!C34_APT[asset])return null;   // a vehicle with a model of its own (VS-): the earlier c34Apt (by its asset), and its silhouette while the picture is made
+  const r=__p392Apt(g,a,S6A_ASSET[t]?t:null,now);if(r)return r;if(g!==ctx||!c34Live())return false;const [x,y,th,,al]=a.pose,[Lw,Ww]=c34Dims(asset,aptVehGs(asset));if(!(Lw>0))return false;
+  p392Ghost(x,y,th,Lw,Ww,Ww*1.05,c34Col({c:0}),al);P392.n.ghost++;P392.g++;return true}
+ if(g!==ctx||!c34Live())return false;const [x,y,th,,al]=a.pose;if(!(al>0))return true;
+ const T=t&&S6A_TYPES[t],D=T?[T[1]*A34_PXM,T[2]*A34_PXM]:asset==='F2-MS'?[F2_MS.len,F2_MS.wid]:(g77GseDim()[asset]||c34Dims(asset,aptVehGs(asset))),Lw=D[0],Ww=D[1];if(!(Lw>0&&Ww>0))return false;
+ const id=C34.kit(k[0],Lw,Ww,k[1]||undefined),v=a.v,bar=!!(v&&a.lt!=null&&g77BeaconSet().has(v.type));
+ const ok=c34Now(id,c34Col({c:0}),x,y,th,{alpha:al<1?al:null,st:c34St(false,false,0,true,bar),key:v&&v.id?'APT|'+v.id:null,r:Lw*.6+12});
+ if(!ok)p392Ghost(x,y,th,Lw,Ww,k[2]*Ww,'#eef1f3',al);P392.n[ok?'kit':'ghost']++;P392.g++;
+ p392Carts(g,a,al);return true}
+// the passenger lift (G77_AMB, painted by g77AmbDraw past c34Apt): a high-lift body like the catering truck's, or its silhouette
+const __p392Amb=g77AmbDraw;g77AmbDraw=function(g,a,now){if(P392.on&&g===ctx&&c34Live()){try{const [x,y,th,,al]=a.pose;if(!(al>0))return;const asset=a.id||'VS-AM-02',[Lw,Ww]=c34Dims(asset,aptVehGs(asset));
+ if(Lw>0){const ok=c34Now(C34.kit('cater',Lw,Ww),c34Col({c:0}),x,y,th,{alpha:al<1?al:null,r:Lw*.6+12});if(!ok)p392Ghost(x,y,th,Lw,Ww,Ww*1.5,'#eef1f3',al);P392.n[ok?'kit':'ghost']++;P392.g++;return}}catch(e){c34Err(e)}}
+ return __p392Amb.apply(this,arguments)};
+const __p392Apt=c34Apt;c34Apt=function(g,a,t,now){let r=null;try{r=p392Apt(g,a,t,now)}catch(e){c34Err(e);r=null}return r===null?__p392Apt.apply(this,arguments):r};
+// the farm's machines (a6DrawMachines through TurboCity.draw, in the frame of the machine): the kit at its ground centre and heading
+function p392Farm(c,id,x,y,o){const m=ctx.getTransform(),I=TurboCity.info(id,o);if(!I||!I.fp)return false;
+ const lx=x+I.fp[0]+I.fp[2]/2,ly=y+I.fp[1]+I.fp[3]/2,[S,e,f]=c34CamM(),X=m.a*lx+m.c*ly+m.e,Y=m.b*lx+m.d*ly+m.f,wx=(X-e)/S,wy=(Y-f)/S,h=Math.atan2(m.b,m.a),k=Math.hypot(m.a,m.b)/S;
+ const Lw=I.fp[2]*k,Ww=I.fp[3]*k,kid=C34.kit(C34_GSE[id][0],Lw,Ww);let ok=false;ctx.save();ctx.setTransform(S,0,0,S,e,f);try{ok=c34Now(kid,P392_FARM[id],wx,wy,h,{r:Lw*.6+12})}finally{ctx.restore()}
+ if(ok){P392.n.farm++;P392.g++}else P392.n.farmGhost++;return ok}
+const __p392Draw=TurboCity.draw;
+TurboCity.draw=function(c,id,x,y,o){
+ if(P392.on&&typeof id==='string'&&P392_FARM[id]&&c===GAME_CTX&&ctx===GAME_CTX&&WTC_MODE!==1&&!MAPBASE.pass&&c34Live()){try{if(p392Farm(c,id,x,y,o||{}))return}catch(e){c34Err(e)}}
+ return __p392Draw.apply(this,arguments)};   // not made yet: p394's silhouette (C34GH_LV) inside
+window.__TC_P392={on:v=>{if(v!=null)P392.on=!!v;return P392.on},stats:()=>({...P392.n,g:P392.g})};
+
+/* ---- p399 · R-20 again (the review of S7F146, the owner 18:21 (8): "no silhouette is seen under the quay crane; the semi under it and
+   the street's name are still hidden"). Two causes: the semis are queued by c34Semi straight into C34G.q (not through c34Push), so
+   they never became subjects of the crane's silhouette (p391) — now they are, like the cars; and the street's name is in the ground's
+   tiles, under the crane, and so are the quays' name plates (PORT_SIGNS) — now, where the crane's boxes cover a name or a plate, it is
+   drawn again over the crane, faded like the silhouette (clipped to the boxes: the rest is the ground's own). ---- */
+var P399={on:true,sp:null,n:{semi:0,name:0,plate:0}};
+const __p399Semi=c34Semi;c34Semi=function(v,x,y,h,Lw){const n=C34G.q.length,r=__p399Semi.apply(this,arguments);
+ if(P399.on&&!A34X.ns&&C34G.q.length>n)for(let i=n;i<C34G.q.length;i++){const e=C34G.q[i];if(e.sx==null){e.sx=x;e.sy=y;e.sh=h;e.sr=(+Lw||200)*.6+20;e.spl=v===PlayerCar;P399.n.semi++}}
+ return r};
+// the street names of the port (once): those within the port's box and 300 px around it
+function p399Spots(){if(P399.sp)return P399.sp;const B=PORT_BOX,m=300;P399.sp=g7RoadNameSpots().filter(s=>s.x>B.x-m&&s.x<B.x+B.w+m&&s.y>B.y-m&&s.y<B.y+B.h+m);return P399.sp}
+function p399Names(c,P){const Q=a34XCraneRects(c,P);if(!Q.length)return;let R=[1e9,1e9,-1e9,-1e9];for(const q of Q){R[0]=Math.min(R[0],q[0]);R[1]=Math.min(R[1],q[1]);R[2]=Math.max(R[2],q[2]);R[3]=Math.max(R[3],q[3])}
+ const z=Camera.zoom;for(const s of p399Spots()){if(s.x<R[0]-400||s.x>R[2]+400||s.y<R[1]-400||s.y>R[3]+400)continue;const p=g7RnPlace(s),g=g7LabelFit(s.t,p.half,z);if(!g)continue;
+  const hw=g.w/2+g.px*.6,hh=g.h/2,ex=s.v?hh:hw,ey=s.v?hw:hh;if(p.x+ex<=R[0]||p.x-ex>=R[2]||p.y+ey<=R[1]||p.y-ey>=R[3])continue;
+  if(!Q.some(q=>!(p.x+ex<=q[0]||p.x-ex>=q[2]||p.y+ey<=q[1]||p.y-ey>=q[3])))continue;
+  ctx.save();ctx.beginPath();for(const q of Q)ctx.rect(q[0],q[1],q[2]-q[0],q[3]-q[1]);ctx.clip();ctx.globalAlpha=A34X.ea*.8;ctx.translate(p.x,p.y);if(s.v)ctx.rotate(-Math.PI/2);g7Label(s.t,0,0,p.half);ctx.restore();P399.n.name++}
+ // the port's own name plates (the quays' names on the street under the cranes: PORT_SIGNS, e4Plate) — the same
+ if(typeof PORT_SIGNS!=='undefined')for(const s of PORT_SIGNS){const w=Math.max(s.w,160),x0=s.x-w/2,x1=s.x+w/2,y0=s.y-8,y1=s.y+8;if(x1<=R[0]||x0>=R[2]||y1<=R[1]||y0>=R[3])continue;
+  if(!Q.some(q=>!(x1<=q[0]||x0>=q[2]||y1<=q[1]||y0>=q[3])))continue;
+  ctx.save();ctx.beginPath();for(const q of Q)ctx.rect(q[0],q[1],q[2]-q[0],q[3]-q[1]);ctx.clip();ctx.globalAlpha=A34X.ea*.8;e4Plate(s.t,s.x,s.y,s.w);ctx.restore();P399.n.plate=(P399.n.plate||0)+1}}
+const __p399Sts=c34Sts;c34Sts=function(c,P,S,now){const ok=__p399Sts(c,P,S,now);if(ok&&P399.on&&A34X.on){try{p399Names(c,P)}catch(e){a34XErr(e)}}return ok};
+window.__TC_P399={on:v=>{if(v!=null)P399.on=!!v;return P399.on},stats:()=>({...P399.n,spots:P399.sp?P399.sp.length:null,x:{...A34X.n}})};
+
+/* ---- p400 · the owner 18:21 (7): the jet bridges in 3/4 with the fleet — the cab at the door's height. Until now the bridge was drawn
+   flat on the ground while the aircraft is drawn at its height (K·z), so the cab ended ~2.5 m short of the door on the screen. Now the
+   bridge has heights: the fixed section and the rotunda at the terminal's floor (zR), the tunnel sloping from it to the cab, the cab's
+   floor at the sill of the docked type's door — read from that type's own model (the first door's outline in a34), so the cab meets the
+   door the picture shows. Every part is a box: its roof (the old plan outline, raised by K·(z+h)), the walls that face the camera, the
+   post from the wheels to the tunnel, the rotunda's column; the shadow on the ground along the sun. The passengers walk on the tunnel's
+   floor at its height, clipped to the bridge's volume on the screen. With no aircraft (or one without a model) the cab rests at zRest.
+   Off with __TC_P400.on(false): the flat bridge as before. ---- */
+var P400={on:true,zR:4.0,h:2.9,hCab:3.1,zRest:3.6,hPax:1.76,hw:{hwF:9.5,hwA:10.5,hwB:9},door:new Map(),n:{drawn:0,flat:0,pax:0,paxOut:0,err:0,last:''}};
+// the parts as drawn: at the tunnels' real widths (the fixed section 2.5 m, A 2.8 m, B 2.4 m — the simulation's K-72 parts are narrower)
+function p400Parts(P){const K=G77_K72,o={hwF:K.hwF,hwA:K.hwA,hwB:K.hwB};Object.assign(K,P400.hw);try{return g77K72Parts(P)}finally{Object.assign(K,o)}}
+function p400Err(e){P400.n.err++;P400.n.last=String(e&&e.message||e).slice(0,160)}
+function p400Live(){try{return P400.on&&typeof c34Live==='function'&&c34Live()&&typeof A34G!=='undefined'&&A34G.on&&a34LibInit()}catch(e){return false}}
+// the sill of a type's first door (the bridge's door), m above the ground, and its plan point in the model's frame (m, nose +y) — once a type
+function p400Door(ac){let d=P400.door.get(ac);if(d!==undefined)return d;d=null;
+ // the first door on each side (L1: the nose drawing's door, R1: the first of the doors on the other side), its sill and its plan point
+ try{if(window.A34&&A34.TYPES[ac]){const m=A34.build(ac,null,{lod:1}),out={};
+  for(const p of m.pieces)for(const q of p.decor||[]){if(!q.line||!q.P)continue;const L1=q.c==='rgba(20,30,40,.75)',R1=q.c==='rgba(28,38,50,.7)';if(!L1&&!R1)continue;
+   let lo=1e9,sx=0,sy=0;for(const v of q.P){if(v[2]<lo)lo=v[2];sx+=v[0];sy+=v[1]}const e={z:lo,x:sx/q.P.length,y:sy/q.P.length},k=e.x>=0?'p':'n';
+   if(L1&&!out.L)out.L=e;else if(R1&&!out[k]&&!(out.L&&k===(out.L.x>=0?'p':'n')))out[k]=e}
+  const D=[out.L,out.p,out.n].filter(Boolean);if(D.length)d={z:D[0].z,x:D[0].x,y:D[0].y,all:D}}}catch(e){p400Err(e)}
+ P400.door.set(ac,d);return d}
+// the door the bridge docks at: of the type's first doors, the one nearest the cab's front (the aircraft at the stand's stop for it)
+function p400DockDoor(P,ac){const d=p400Door(ac);if(!d)return null;try{const A=aptReady(),sp=A.stands.find(q=>q.id===P.id),s=APT_STANDS.find(q=>q.id===P.id)||sp,vw=g77StandView(sp,ac)||{};
+  const x=vw.viewFor?vw.cx:s.cx,y=vw.ngy??sp.ngy,phi=(vw.th??sp.th)-Math.PI/2,c=Math.cos(phi),sn=Math.sin(phi),X=A34_PXM;let best=null;
+  for(const e of d.all){const w=[x+(e.x*c-e.y*sn)*X,y+(e.x*sn+e.y*c)*X],dd=Math.hypot(w[0]-P.front[0],w[1]-P.front[1]);if(!best||dd<best.dd)best={...e,w,dd}}return best}catch(e){p400Err(e);return null}}
+const p400PX=()=>A34_PXM,p400Lift=(v,z)=>[v[0],v[1]-A34.K*z*A34_PXM];
+// the floor's height along the bridge: the rotunda zR, the tunnel sloping to the cab, the cab at the sill
+function p400Prof(P){const ac=(P.dk&&P.dk.ac)||null,d=ac?(P.dd!==undefined?P.dd:(P.dd=p400DockDoor(P,ac))):null,zD=P.dk&&d?d.z:P400.zRest,zR=P400.zR,Lz=Math.max(1,P.bE+(P.acc||0));
+ const zs=v=>{const s=(v[0]-P.R[0])*P.u[0]+(v[1]-P.R[1])*P.u[1];return zR+(zD-zR)*Math.max(0,Math.min(1,s/Lz))};return{zD,zR,zs,ac}}
+// a box on the screen: its roof (the plan outline at z+h) and the walls that face the camera (their outward normal to the south)
+function p400Box(g,p,zf,h,fill,wall,stroke,lw){const n=p.length;let cx=0,cy=0;for(const v of p){cx+=v[0];cy+=v[1]}cx/=n;cy/=n;
+ const top=p.map((v,i)=>p400Lift(v,zf[i]+h)),bot=p.map((v,i)=>p400Lift(v,zf[i]));
+ for(let i=0;i<n;i++){const j=(i+1)%n,a=p[i],b=p[j];let nx=-(b[1]-a[1]),ny=b[0]-a[0];const mx=(a[0]+b[0])/2-cx,my=(a[1]+b[1])/2-cy;if(nx*mx+ny*my<0){nx=-nx;ny=-ny}if(ny<=.05*Math.hypot(nx,ny))continue;
+  g.beginPath();g.moveTo(top[i][0],top[i][1]);g.lineTo(top[j][0],top[j][1]);g.lineTo(bot[j][0],bot[j][1]);g.lineTo(bot[i][0],bot[i][1]);g.closePath();g.fillStyle=wall;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=(lw||1)*.8;g.stroke()}}
+ g.beginPath();g77PolyPath(g,top);g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=lw||1;g.stroke()}return top}
+function p400Draw(g,P){const K=G77_K72,Q=p400Parts(P),F=p400Prof(P),zs=F.zs,h=P400.h,SX=A34.SHX*A34_PXM,SY=A34.SHY*A34_PXM;
+ const zt=p=>p.map(zs),zc=p=>p.map(()=>F.zD),zr=p=>p.map(()=>F.zR);
+ // the shadow: every part's outline on the ground, moved along the sun by its height (one fill)
+ g.save();g.globalAlpha=.22;g.fillStyle='#08121a';g.beginPath();
+ for(const [p,z] of [[Q.fixed,zr(Q.fixed)],[Q.bel1,zr(Q.bel1)],[Q.A,zt(Q.A)],[Q.Bt,zt(Q.Bt)],[Q.bel2,zt(Q.bel2)],[Q.cab,zc(Q.cab)]])g77PolyPath(g,p.map((v,i)=>[v[0]+(z[i]+h*.5)*SX,v[1]+(z[i]+h*.5)*SY]));
+ {const c=Q.drum.c,o=(F.zR+h*.5);g.moveTo(c[0]+o*SX+K.rr,c[1]+o*SY);g.arc(c[0]+o*SX,c[1]+o*SY,K.rr,0,Math.PI*2)}g.fill();g.restore();
+ // on the ground: the wheels, the leg; the post up to the tunnel's floor; the rotunda's column up to the drum
+ const poly=(p,fill,stroke,lw)=>{g.beginPath();g77PolyPath(g,p);g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=lw||1;g.stroke()}};
+ for(const w of Q.wheels)poly(w,'#22272b');poly(Q.leg,'#4a535a');
+ {const W=P.W,zw=zs(W),a=p400Lift(W,0),b=p400Lift(W,zw);g.fillStyle='#5a636a';g.fillRect(a[0]-2.2,b[1],4.4,a[1]-b[1]);g.strokeStyle='#2f363b';g.lineWidth=.6;g.strokeRect(a[0]-2.2,b[1],4.4,a[1]-b[1])}
+ {const c=Q.drum.c,a=p400Lift(c,0),b=p400Lift(c,F.zR),r=K.rr*.45;g.fillStyle='#8d969d';g.fillRect(a[0]-r,b[1],2*r,a[1]-b[1]);g.strokeStyle='#5c646b';g.lineWidth=.8;g.strokeRect(a[0]-r,b[1],2*r,a[1]-b[1])}
+ // the fixed section, the drum, the bellows and the tunnels at their heights; the cab at the door
+ p400Box(g,Q.fixed,zr(Q.fixed),h,'#cfd4d8','#a9b0b6','#6d757c');
+ const bel=(p,z,k)=>{const top=p400Box(g,p,z,h,'#4b545b','#3a4247','#2f363b',.8);g.strokeStyle='rgba(176,186,194,.55)';g.lineWidth=.7;g.beginPath();for(let i=1;i<k;i++){const t=i/k,a=[top[0][0]+(top[1][0]-top[0][0])*t,top[0][1]+(top[1][1]-top[0][1])*t],b=[top[3][0]+(top[2][0]-top[3][0])*t,top[3][1]+(top[2][1]-top[3][1])*t];g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke()};
+ bel(Q.bel1,zr(Q.bel1),4);
+ {const c=Q.drum.c,t=p400Lift(c,F.zR+h),b=p400Lift(c,F.zR);g.save();g.fillStyle='#a3abb1';g.fillRect(t[0]-K.rr,t[1],2*K.rr,b[1]-t[1]);g.fillStyle='#b9c0c6';g.strokeStyle='#5c646b';g.lineWidth=1.2;g.beginPath();g.arc(t[0],t[1],K.rr,0,Math.PI*2);g.fill();g.stroke();g.fillStyle='#7d868d';g.beginPath();g.arc(t[0],t[1],3.2,0,Math.PI*2);g.fill();g.restore()}
+ p400Box(g,Q.Bt,zt(Q.Bt),h,'#c3c9ce','#9ea6ac','#5f676e');p400Box(g,Q.A,zt(Q.A),h,'#d9dde1','#b3bac0','#6d757c');
+ bel(Q.bel2,zt(Q.bel2),3);
+ p400Box(g,Q.cab,zc(Q.cab),P400.hCab,'#e2e6e9','#bcc3c8','#5f676e');
+ {const top=Q.canopy.map(v=>p400Lift(v,F.zD+P400.hCab));g.beginPath();g77PolyPath(g,top);g.fillStyle='#2f3439';g.fill()}
+ {const zz=F.zD+P400.hCab;g.save();g.translate(0,-A34.K*zz*A34_PXM);try{g77ClbDraw(g,P)}catch(e){}g.restore()}
+ {const {C0,uc}=P,nc=[-uc[1],uc[0]],zz=F.zD+P400.hCab;g.fillStyle='#8fc3d6';for(const sd of[-1,1]){const c=[C0[0]+uc[0]*6+nc[0]*sd*(K.cabHW-2),C0[1]+uc[1]*6+nc[1]*sd*(K.cabHW-2)];g.beginPath();g77PolyPath(g,[[c[0]-uc[0]*3-nc[0]*.9,c[1]-uc[1]*3-nc[1]*.9],[c[0]+uc[0]*3-nc[0]*.9,c[1]+uc[1]*3-nc[1]*.9],[c[0]+uc[0]*3+nc[0]*.9,c[1]+uc[1]*3+nc[1]*.9],[c[0]-uc[0]*3+nc[0]*.9,c[1]-uc[1]*3+nc[1]*.9]].map(v=>p400Lift(v,zz)));g.fill()}}
+ P400.n.drawn++}
+const __p400Draw=g77DrawBridge;g77DrawBridge=function(g,P){if(P&&P.S&&g===ctx&&p400Live()){try{p400Draw(g,P);return}catch(e){p400Err(e)}}P400.n.flat++;return __p400Draw.apply(this,arguments)};
+// the bridge's volume on the screen (its roofs and walls), for the passengers' clip; a passenger's point raised to the floor under it
+function p400Vol(P){const Q=p400Parts(P),F=p400Prof(P),h=P400.h,pa=new Path2D(),add=(p,z,hh)=>{const top=p.map((v,i)=>p400Lift(v,z[i]+hh)),bot=p.map((v,i)=>p400Lift(v,z[i]));
+  for(const q of [top,bot]){const r=g77PolyArea(q)<0?q.slice().reverse():q;pa.moveTo(r[0][0],r[0][1]);for(let i=1;i<r.length;i++)pa.lineTo(r[i][0],r[i][1]);pa.closePath()}
+  for(let i=0;i<p.length;i++){const j=(i+1)%p.length,w=[top[i],top[j],bot[j],bot[i]],r=g77PolyArea(w)<0?w.slice().reverse():w;pa.moveTo(r[0][0],r[0][1]);for(let k=1;k<4;k++)pa.lineTo(r[k][0],r[k][1]);pa.closePath()}};
+ const hp=P400.hPax;add(Q.fixed,Q.fixed.map(()=>F.zR),hp);add(Q.bel1,Q.bel1.map(()=>F.zR),hp);add(Q.A,Q.A.map(F.zs),hp);add(Q.Bt,Q.Bt.map(F.zs),hp);add(Q.bel2,Q.bel2.map(F.zs),hp);add(Q.cab,Q.cab.map(()=>F.zD),hp);
+ {const c=p400Lift(Q.drum.c,F.zR+hp),b=p400Lift(Q.drum.c,F.zR),r=K72r();pa.moveTo(c[0]+r,c[1]);pa.arc(c[0],c[1],r,0,Math.PI*2);pa.moveTo(b[0]+r,b[1]);pa.arc(b[0],b[1],r,0,Math.PI*2);pa.rect(b[0]-r,c[1],2*r,b[1]-c[1])}
+ return{pa,F}}
+const K72r=()=>G77_K72.rr;
+var P400_PAX=null;   // the stands' poses of this frame while the passengers are drawn
+const __p400Clip=f2BridgeClip;f2BridgeClip=function(stand){if(!P400_PAX)return __p400Clip.apply(this,arguments);let o=P400_PAX.get(stand);
+ if(o===undefined){o=null;try{const s=APT_STANDS.find(q=>q.id===stand),t=APT_OPS.clk;if(s){const f=f2BridgeFlight(s.id,t),P=g77BridgePose(s,f,f?aoBridge(s.id,t):0);if(P&&P.S)o=Object.assign(p400Vol(P),{P})}}catch(e){p400Err(e)}P400_PAX.set(stand,o)}
+ return o?o.pa:__p400Clip.apply(this,arguments)};
+// the passengers: each raised to the floor under it (the line's point → its station along the bridge → the floor's height there)
+// the place along a polyline (0…1) of the point nearest to (x, y), and the point at a place
+function p400Along(L,x,y){let best=1e18,at=0,acc=0,tot=0;for(let i=1;i<L.length;i++)tot+=Math.hypot(L[i][0]-L[i-1][0],L[i][1]-L[i-1][1]);
+ for(let i=1;i<L.length;i++){const a=L[i-1],b=L[i],dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1e-9,t=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/(l*l))),d=Math.hypot(a[0]+dx*t-x,a[1]+dy*t-y);if(d<best){best=d;at=acc+t*l}acc+=l}return tot>0?at/tot:0}
+function p400At(L,u){let tot=0;for(let i=1;i<L.length;i++)tot+=Math.hypot(L[i][0]-L[i-1][0],L[i][1]-L[i-1][1]);let s=u*tot;
+ for(let i=1;i<L.length;i++){const a=L[i-1],b=L[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(s<=l||i===L.length-1){const t=l>0?Math.min(1,s/l):0;return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,i]}s-=l}return L[L.length-1].concat([L.length-1])}
+const __p400Pax=f2BridgePassengers;f2BridgePassengers=function(){const r=__p400Pax.apply(this,arguments);if(!P400_PAX)return r;
+ for(const p of r){f2BridgeClip(p.stand);const e=P400_PAX.get(p.stand);if(!e)continue;const P=e.P,F=e.F;
+  const old=p.points,u=old&&old.length>1?p400Along(old,p.x,p.y):0,line=[P.T,P.R,P.end,P.C0,P.front],q=p400At(line,u),seg=q[2];
+  const z=seg<=1?F.zR:seg>=4?F.zD:seg===3?F.zs(P.end)+(F.zD-F.zs(P.end))*Math.min(1,Math.hypot(q[0]-P.end[0],q[1]-P.end[1])/Math.max(1,Math.hypot(P.C0[0]-P.end[0],P.C0[1]-P.end[1]))):F.zs([q[0],q[1]]);
+  p.x=q[0];p.y=q[1]-A34.K*z*A34_PXM;try{const m=ctx.getTransform(),X=m.a*p.x+m.c*(p.y-1)+m.e,Y=m.b*p.x+m.d*(p.y-1)+m.f;if(!ctx.isPointInPath(e.pa,X,Y))P400.n.paxOut++}catch(err){}P400.n.pax++}
+ return r};
+const __p400DrawPax=f2DrawBridgePassengers;f2DrawBridgePassengers=function(now,v){if(!p400Live())return __p400DrawPax.apply(this,arguments);P400_PAX=new Map();try{return __p400DrawPax.apply(this,arguments)}finally{P400_PAX=null}};
+// QA (the owner: every stand × type): the docked cab's front on the screen against the door the aircraft's picture shows (m), both raised
+function p400Check(){const A=aptReady(),rows=[],issues=[];
+ for(const s of APT_STANDS){if(s.cargo)continue;const sp=A.stands.find(q=>q.id===s.id);if(!sp||!sp.bridge)continue;
+  for(const ac of sp.accepts){if(typeof s6rBusOnly==='function'&&s6rBusOnly(s.id,ac))continue;const vw=g77StandView(sp,ac),f={ac,sd:vw.viewFor?vw:{th:sp.th,ngy:sp.ngy}},P=g77BridgePose(s,f,1);if(!P||!P.S||!P.dk){issues.push(s.id+'/'+ac+': no dock');continue}
+   const d=p400DockDoor(P,ac),F=p400Prof(P);if(!d){issues.push(s.id+'/'+ac+': no door in the model');continue}
+   // the aircraft's pose at the stand: its nose gear (the model's origin) at (cx, ngy), heading th (a34EnqAc: phi = th − π/2)
+   const x=vw.viewFor?vw.cx:s.cx,y=vw.ngy??sp.ngy,phi=(vw.th??sp.th)-Math.PI/2,c=Math.cos(phi),sn=Math.sin(phi),X=A34_PXM,
+    door=d.w,dS=p400Lift(door,d.z),cS=p400Lift(P.front,F.zD),plan=Math.hypot(P.front[0]-door[0],P.front[1]-door[1])/X,scr=Math.hypot(cS[0]-dS[0],cS[1]-dS[1])/X,
+    flatGap=Math.hypot(P.front[0]-dS[0],P.front[1]-dS[1])/X;
+   const r={stand:s.id,ac,sill:+d.z.toFixed(2),cabZ:+F.zD.toFixed(2),plan:+plan.toFixed(2),screen:+scr.toFixed(2),before:+flatGap.toFixed(2),simDoor:+(Math.hypot(P.front[0]-P.dk.door[0],P.front[1]-P.dk.door[1])/X).toFixed(2)};rows.push(r);
+   if(scr>.5)issues.push(s.id+'/'+ac+': cab '+scr.toFixed(2)+' m off the drawn door')}}
+ const mx=k=>rows.length?Math.max(...rows.map(r=>r[k])):0;return{ok:issues.length===0&&rows.length>0,n:rows.length,maxScreen_m:+mx('screen').toFixed(2),maxBefore_m:+mx('before').toFixed(2),issues,rows}}
+window.__TC_P400={on:v=>{if(v!=null)P400.on=!!v;return P400.on},stats:()=>({...P400.n}),check:p400Check,door:p400Door};
+
+/* p406: the maintenance tug drawn again over its hangar's door — in 3/4 its silhouette, never from above */
+const __p406Xray=g77MlvXrayTug;g77MlvXrayTug=function(g,sd,now){if(g===ctx&&typeof C34G!=='undefined'&&C34G.on&&C34G.armed&&WTC_MODE!==1){try{const c=g77MlvAt(sd.id,APT_OPS.clk);if(!c||!c.tug)return;const a=APT_ACT.find(q=>q.v===c.tug);if(!a)return;const [x,y,th,,al]=a.pose;if(!(al>0))return;const asset=a.id||'LV-PT-01',D=c34Dims(asset,aptVehGs(asset));if(D&&D[0]>0)p392Ghost(x,y,th,D[0],D[1],D[1]*.75,'#d9a521',al);return}catch(e){}}return __p406Xray.apply(this,arguments)};
+/* ---- p405 · R-28 (the owner 20:39): the passenger stairs truck at the door. The truck is a new kit (c34m7.js: after a TLD ABS-580 /
+   Mallaghan ST1000 — the cab in front, the flight from the rear up to the deck over the cab, the deck on columns; the platform and the
+   passage to the door one piece with its bumper). Where the truck stands at an aircraft's door (the nearest door of an aircraft on the
+   ground, ahead of the truck's front, within 1.5 m to the side), the deck's top is that door's sill — read from the aircraft's own model
+   (a34: every door's outline, its lowest point) — and the passage slides out until its front edge meets the door: on the screen, with the
+   height, the same point. Elsewhere (driving) the deck at 3.4 m, the passage in. The flat plate the stairs used to lay on the ground at the
+   door is not drawn in 3/4 (the deck reaches the door). The passengers on the stairs walk on the deck at its height and down the flight.
+   __TC_P405.res(): per truck at a door — the gap on the screen between the bumper (the passage's front edge) and the door's sill (m), and
+   how far the door's middle is from the passage's middle (lat, m). Off: __TC_P405.on(false). ---- */
+var P405={on:true,ac:new Map(),prev:new Map(),doors:new Map(),at:new Map(),n:{drawn:0,docked:0,free:0,ghost:0,pax:0,err:0,last:''},res:new Map()};
+function p405Err(e){P405.n.err++;P405.n.last=String(e&&e.message||e).slice(0,160)}
+// every door of a type (its outline in the a34 model): the middle of its sill — x, y (m, the model's frame) and its height
+function p405Doors(ac){let D=P405.doors.get(ac);if(D)return D;D=[];
+ try{if(window.A34&&A34.TYPES[ac]){const m=A34.build(ac,null,{lod:1});for(const p of m.pieces)for(const q of p.decor||[]){if(!q.line||!q.P||(q.c!=='rgba(20,30,40,.75)'&&q.c!=='rgba(28,38,50,.7)'))continue;
+   let lo=1e9;for(const v of q.P)lo=Math.min(lo,v[2]);const S=q.P.filter(v=>v[2]<lo+.2);let sx=0,sy=0;for(const v of S){sx+=v[0];sy+=v[1]}D.push({x:sx/S.length,y:sy/S.length,z:lo})}}}catch(e){p405Err(e)}
+ P405.doors.set(ac,D);return D}
+// the aircraft on the ground this frame (and the last): the stairs look for their door on them
+const __p405Enq=a34EnqAc;a34EnqAc=function(a,now,layer){try{if(P405.on&&a&&a.kind==='ac'&&a.pose&&!(a.pose[3]>2))P405.ac.set((a.f&&a.f.code)||a.id+'@'+Math.round(a.pose[0]),{id:a.id,x:a.pose[0],y:a.pose[1],th:a.pose[2]})}catch(e){}return __p405Enq.apply(this,arguments)};
+const __p405Begin=c34Begin;c34Begin=function(now){P405.prev=P405.ac;P405.ac=new Map();P405.at.clear();return __p405Begin(now)};
+// the door a truck at (x, y, th) of length L serves: ahead of its front (−0.5 … 3 m), at most 1.5 m to the side
+function p405Find(x,y,th,L){const X=A34_PXM,c=Math.cos(th),s=Math.sin(th),F=[x+c*L/2,y+s*L/2];let best=null;
+ for(const M of [P405.ac,P405.prev])for(const A of M.values()){if(Math.abs(A.x-F[0])>110*X||Math.abs(A.y-F[1])>110*X)continue;const D=p405Doors(A.id);if(!D.length)continue;
+  const ph=A.th-Math.PI/2,pc=Math.cos(ph),ps=Math.sin(ph);
+  for(const d of D){const w=[A.x+(d.x*pc-d.y*ps)*X,A.y+(d.x*ps+d.y*pc)*X],ex=w[0]-F[0],ey=w[1]-F[1],al=ex*c+ey*s,lat=-ex*s+ey*c;
+   if(al<-.5*X||al>3*X||Math.abs(lat)>1.5*X)continue;const sc=Math.abs(lat)+Math.max(0,al)*.2;if(!best||sc<best.sc)best={sc,w,z:d.z,al,lat,ac:A.id}}}
+ return best?{...best,F}:null}
+// the truck: its kit with the deck at the door's sill and the passage out to it; the gap that remains, on the screen (m)
+function p405Truck(a){const [x,y,th,,al]=a.pose,Lw=F2_MS.len,Ww=F2_MS.wid,X=A34_PXM,d=p405Find(x,y,th,Lw);let o=null,res=null;
+ if(d){const hpx=Math.round(d.z*X),ext=Math.max(0,Math.round(d.al));o={hpx,ext,tag:'h'+hpx+'e'+ext};
+  const c=Math.cos(th),s=Math.sin(th),E=[d.F[0]+c*ext,d.F[1]+s*ext],K=C34.K||A34.K;   // the bumper's middle and the door's sill, both raised
+  // the front edge is a segment across the passage (its half width .72 m): the door's sill to the nearest point of it, on the screen
+  const hwE=.72*Ww/2.4,lat=Math.max(-hwE,Math.min(hwE,d.lat)),Q=[E[0]-s*lat,E[1]+c*lat];
+  res=Math.hypot(Q[0]-d.w[0],(Q[1]-K*hpx)-(d.w[1]-K*d.z*X))/X;P405.n.docked++;
+  const key=a.v&&a.v.id||'?';const r=P405.res.get(key)||{max:0,n:0,ac:d.ac};r.max=Math.max(r.max,res);r.n++;r.last=+res.toFixed(3);r.ac=d.ac;r.z=+d.z.toFixed(2);r.ext=+(ext/X).toFixed(2);r.lat=+(d.lat/X).toFixed(2);P405.res.set(key,r);
+  P405.at.set(Math.round(d.w[0])+','+Math.round(d.w[1]),{H:hpx,ext,Lw,pm:Ww/2.4,th,F:d.F})}
+ else{o={hpx:Math.round(3.4*Ww/2.4),ext:0,tag:'free'};P405.n.free++}
+ const id=C34.kit('stairs',Lw,Ww,o),v=a.v,bar=!!(v&&a.lt!=null&&g77BeaconSet().has(v.type));
+ const ok=c34Now(id,c34Col({c:0}),x,y,th,{alpha:al<1?al:null,st:c34St(false,false,0,true,bar),key:v&&v.id?'APT|'+v.id:null,r:Lw*.6+12});
+ if(!ok)p392Ghost(x,y,th,Lw,Ww,(o.hpx||Ww*1.4)/1,'#eef1f3',al);P405.n[ok?'drawn':'ghost']++;return true}
+const __p405Apt=p392Apt;p392Apt=function(g,a,t,now){if(P405.on&&g===ctx&&c34Live()){const asset=(t&&S6A_ASSET[t])||a.id;if(asset==='F2-MS'){try{const [,,,,al]=a.pose;if(!(al>0))return true;return p405Truck(a)}catch(e){p405Err(e)}}}return __p405Apt.apply(this,arguments)};
+// the ground plate at the door: not in 3/4 (the deck reaches the door) — g2DrawRemote paints it with fillRect at the door; skipped there
+const __p405Remote=g2DrawRemote;g2DrawRemote=function(now,v){if(!(P405.on&&c34Live()))return __p405Remote.apply(this,arguments);
+ const fr=ctx.fillRect;P405.inRemote=true;ctx.fillRect=function(x,y,w,h){if(P405.inRemote&&(h===8||Math.abs(h-1.2)<1e-6)&&w===G2_STAIR_GAP+2)return;return fr.apply(this,arguments)};
+ try{return __p405Remote.apply(this,arguments)}finally{ctx.fillRect=fr;P405.inRemote=false}};
+// the passengers between the door and the foot of the stairs: on the deck at its height, then down the flight
+const __p405RPax=g2RemotePassengers;g2RemotePassengers=function(){const r=__p405RPax.apply(this,arguments);if(!P405.inRemote||!P405.at.size)return r;
+ for(const p of r){const f=AO.flights.find(q=>q.code===p.flight),g=f&&f.g2;if(!g)continue;for(const [dr,path] of [[g.door,g.path],[g.door2,g.path2]]){if(!dr||!path)continue;
+   const T=P405.at.get(Math.round(dr[0])+','+Math.round(dr[1]))||[...P405.at.entries()].map(([k,v])=>{const q=k.split(',').map(Number);return{v,d:Math.hypot(q[0]-dr[0],q[1]-dr[1])}}).filter(q=>q.d<12).sort((a,b)=>a.d-b.d).map(q=>q.v)[0];if(!T)continue;
+   const a=path[0],b=path[1],L=Math.hypot(b[0]-a[0],b[1]-a[1])||1,u=((p.x-a[0])*(b[0]-a[0])+(p.y-a[1])*(b[1]-a[1]))/(L*L),off=Math.abs((p.x-a[0])*(b[1]-a[1])-(p.y-a[1])*(b[0]-a[0]))/L;if(u<0||u>1||off>4)continue;
+   const s=u*L,deck=T.ext+T.Lw*.2+1.4*T.pm,zf=T.pm*1.0,z=s<=deck?T.H:Math.max(0,T.H-(T.H-zf)*Math.min(1,(s-deck)/Math.max(1,L-deck)));p.y-=(C34.K||A34.K)*z;P405.n.pax++;break}}
+ return r};
+window.__TC_P405={on:v=>{if(v!=null)P405.on=!!v;return P405.on},stats:()=>({...P405.n}),res:()=>Object.fromEntries([...P405.res.entries()].map(([k,v])=>[k,{...v,max:+v.max.toFixed(3)}])),reset:()=>P405.res.clear()};
+
+/* p407 · R-29: world audits of the opening state only — mid-game (the first bus could have left: BUS_CLOCK past the shortest headway;
+   or a save was restored) they are skipped and the audit line says so ("רק בפתיחה") */
+var G77_OPEN_ONLY=new Set(['v176_six_buses_initially_parked_in_e3_terminal']),G77_NEW_ONLY=new Set(['gate76_s2_rail_air_terminal_4in_4out']),G77_AUD={restored:false};   // NEW_ONLY: the opening's own plan (visits 2–7) — skipped after a restored save
+function g77AuditMid(){try{return G77_AUD.restored||BUS_CLOCK.t>=Math.min(...Object.values(BUS_LINE_HEADWAY))}catch(e){return false}}
+const __p407Apply=applySaveState;applySaveState=function(){G77_AUD.restored=true;return __p407Apply.apply(this,arguments)};
+window.__TC_P407={mars:()=>{const M=G77_MARS||g77MarsCalc();return{ok:M.ok,err:M.err,ms:M.ms,lock:Object.fromEntries([...M.lock].map(([k,v])=>[k,[...v]])),lane:[...M.lane],gap:M.gap}},audit:()=>g77MarsAudit(),mid:()=>g77AuditMid(),held:now=>{const L=AO.stands.find(s=>s.large);return L?{held:g77Held(L,now??APT_OPS.clk),p3:g77P3Blocked(now??APT_OPS.clk),lane:g77LEastClosed()}:null}};
+/* ---- p408 · the turn by the height (see the patch): A34T, the fit of a picture's heights, the second picture (above the fuselage),
+   the transform for the rest of the turn, the next direction asked in advance ---- */
+var A34T={on:true,split:true,pre:true,mode:'split',blend:1.4*Math.PI/180,hd:new Map(),pic:new Map(),n:{split:0,piece:0,fit:0,pre:0,turn:0,blend:0}};
+// the height (world px) of a picture's pixels as αX+βY+γ of its point (X, Y world px about the aircraft's origin) — the faces the
+// camera sees (as A34.drawFaces: the normal against (0, K, 1)), weighted by their area on the screen; a tiny ridge keeps a picture
+// seen edge-on (a fin from the south) to its mean height
+// sh: the shadow's picture — a point of height z lies on the ground at its foot + z·(SHX, SHY) (the sun does not turn with the aircraft):
+// every face counts, at its shadow's place
+function a34ZFit(faces,S0,sh){const K=A34.K,VY=K/Math.hypot(K,1),VZ=1/Math.hypot(K,1),hx=sh?A34.SHX:0,hy=sh?A34.SHY:-K;let sw=0,Sx=0,Sy=0,Sz=0,Sxx=0,Sxy=0,Syy=0,Sxz=0,Syz=0;
+ for(const f of faces){const P=f.P;if(!P||P.length<3||f.line||f.text!=null||f.mark)continue;
+  let nx=0,ny=0,nz=0,a=0,cx=0,cy=0,cz=0;for(let i=0;i<P.length;i++){const p=P[i],q=P[(i+1)%P.length];nx+=(p[1]-q[1])*(p[2]+q[2]);ny+=(p[2]-q[2])*(p[0]+q[0]);nz+=(p[0]-q[0])*(p[1]+q[1]);a+=(p[0]+hx*p[2])*(q[1]+hy*q[2])-(q[0]+hx*q[2])*(p[1]+hy*p[2]);cx+=p[0];cy+=p[1];cz+=p[2]}
+  if(!sh&&!f.both){const n=!f.g&&f.n?f.n:[nx,ny,nz];if(n[1]*VY+n[2]*VZ<=1e-3*Math.hypot(n[0],n[1],n[2]))continue}
+  const w=Math.abs(a)/2;if(!(w>1e-6))continue;cx/=P.length;cy/=P.length;cz/=P.length;const X=(cx+hx*cz)*S0,Y=(cy+hy*cz)*S0,z=cz*S0;
+  sw+=w;Sx+=w*X;Sy+=w*Y;Sz+=w*z;Sxx+=w*X*X;Sxy+=w*X*Y;Syy+=w*Y*Y;Sxz+=w*X*z;Syz+=w*Y*z}
+ if(!(sw>0))return null;const mx=Sx/sw,my=Sy/sw,mz=Sz/sw,cxx=Sxx/sw-mx*mx,cxy=Sxy/sw-mx*my,cyy=Syy/sw-my*my,cxz=Sxz/sw-mx*mz,cyz=Syz/sw-my*mz;
+ const lam=1e-3*(cxx+cyy)+1e-6,a11=cxx+lam,a22=cyy+lam,det=a11*a22-cxy*cxy;let al=0,be=0;if(det>1e-9){al=(cxz*a22-cyz*cxy)/det;be=(cyz*a11-cxz*cxy)/det}
+ return{al,be,ga:mz-al*mx-be*my,sh:!!sh}}
+// a picture's transform for the rest d of the turn (after the translation to the aircraft and its height scale)
+// (the shadow: the same with the sun's vector — a point moves by z·(sun − sun turned by d))
+function a34Turn(g,Ly,d){if(!(Math.abs(d)>1e-6))return;const f=A34T.on&&Ly.zf;if(!f){g.rotate(d);return}const c=Math.cos(d),s=Math.sin(d),K=A34.K,X=A34.SHX,Y=A34.SHY,vx=f.sh?X-(c*X-s*Y):-K*s,vy=f.sh?Y-(s*X+c*Y):K*(c-1);
+ g.transform(c+f.al*vx,s+f.al*vy,-s+f.be*vx,c+f.be*vy,f.ga*vx,f.ga*vy)}
+// near the half-way between two directions (the rest |d| past half a step minus A34T.blend) the next direction's pictures, when made,
+// are drawn over this one's, each turned by its own rest, their weight rising to ½ at the half-way: what is left of the error crosses
+// over smoothly instead of flipping at once
+function a34BlendOf(set,d,mk,x,y,k){if(!A34T.on||!(A34T.blend>0)||!set.ready)return null;const N=A34G.dirs,st=2*Math.PI/N,h=st/2,w=A34T.blend,ad=Math.abs(d);if(ad<h-w||ad>h+1e-6)return null;
+ const sg=d>0?1:-1,b2=((set.b+sg)%N+N)%N,s2=A34G.S.get(mk+'|'+b2+'|'+set.dq+'|'+set.st);if(!s2||!s2.ready||!s2.L||s2.L.length!==set.L.length)return null;s2.use=A34G.frame;A34T.n.blend++;
+ return{s:s2,d2:d-sg*st,f:.5*(ad-(h-w))/w,x,y,k,dq:s2.dq}}
+function a34Blend(g,B,i,al){const L2=B.s.L[i];if(!L2||!L2.cv||L2.shadow)return;   /* not the shadow: a see-through picture drawn twice would darken */g.restore();g.save();g.globalAlpha=al*B.f;g.translate(B.x,B.y);if(B.k!==1)g.scale(B.k,B.k);a34Turn(g,L2,B.d2);g.drawImage(L2.cv,L2.x0/B.dq,L2.y0/B.dq,L2.w/B.dq,L2.h/B.dq)}
+// after a set's preparation: the body's faces above the fuselage's top into a second picture; the fits
+function a34TurnPrep(set){const P=set.P,L=set.L,I=set.I,t=I&&I.t;if(!P||!L||!L.length)return;
+ if(A34T.split&&t&&I.R>0&&!/^AC-HL/.test(set.id)){const zc=t.zb+(t.fh||2*I.R)+.25,bi=P.findIndex(q=>q.kind==='body'),cz=f=>{let m=0;for(const v of f.P)m+=v[2];return m/f.P.length},hiF=f=>!!(f.P&&f.P.length&&cz(f)>=zc);   // above the fuselage's crown (its own height when the type has one): the fin, the upper tail, the upper deck
+  if(bi>=0&&P[bi].p){const q=P[bi],p=q.p,hf=p.faces.filter(hiF),lf=p.faces.filter(f=>!hiF(f));
+   if(hf.length&&lf.length){const D=p.decor||[],hd=D.filter(hiF),ld=D.filter(d=>!hiF(d)),S=set.S;
+    const piece=(faces,decor,low)=>{const pp=Object.assign({},p,{faces,decor});if(!low){delete pp.tyres;delete pp.legs}const b=A34.bboxPiece(pp,{X:0,Y:0,s:S});
+     const ops=[];if(pp.tyres)ops.push(['g']);for(let i=0;i<faces.length;i+=A34G.chunk)ops.push(['f',i]);const dn=decor.filter(d=>!d.late),dl=decor.filter(d=>d.late);
+     for(let i=0;i<dn.length;i+=A34G.chunk)ops.push(['d',i,dn]);for(let i=0;i<dl.length;i+=A34G.chunk)ops.push(['d',i,dl]);
+     return{p:pp,x0:b[0]-1,y0:b[1]-1,w:Math.ceil(b[2]-b[0])+2,h:Math.ceil(b[3]-b[1])+2,cv:null,ops,k:q.k,kind:q.kind,side:q.side}};
+    P[bi]=piece(lf,ld,true);P.push(piece(hf,hd,false));const j=P.length-1,H=P[j];
+    if(H.w>=2&&H.h>=2&&H.w<=4096&&H.h<=4096){const x0=Math.floor(H.x0),y0=Math.floor(H.y0);L.push({ids:[j],x0,y0,w:Math.ceil(H.x0+H.w-x0),h:Math.ceil(H.y0+H.h-y0),k:L[0].k+.001,cv:null,c:null,hi:true});A34T.n.split++}
+    else{P[bi]=q;P.pop()}}}}
+ // on the ground the shadow is a picture of its own, first (turned flat: it lies on the ground) — it was baked into the aircraft's picture
+ if(set.st==='g'&&set.sh&&L[0]){const h=set.sh,L0=L[0];let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const i of L0.ids){const q=P[i];x0=Math.min(x0,q.x0);y0=Math.min(y0,q.y0);x1=Math.max(x1,q.x0+q.w);y1=Math.max(y1,q.y0+q.h)}
+  if(x1>x0){L0.x0=Math.floor(x0);L0.y0=Math.floor(y0);L0.w=Math.ceil(x1-L0.x0);L0.h=Math.ceil(y1-L0.y0)}
+  L.unshift({ids:[],x0:Math.floor(h.x0),y0:Math.floor(h.y0),w:Math.ceil(h.w)+1,h:Math.ceil(h.h)+1,k:L0.k-1e-4,cv:null,c:null,shadow:true})}
+ // the shadow's fit (on the ground: its own layer; in the air: the shadow picture under the aircraft)
+ {const F=[];for(const q of P)if(q&&q.p&&q.p.faces&&!(set.st==='a'&&q.kind==='gear'))for(const f of q.p.faces)F.push(f);const zs=a34ZFit(F,A34_PXM,true);if(set.sh)set.sh.zf=zs;for(const Ly of L)if(Ly.shadow)Ly.zf=zs}
+ // mode 'piece': every piece its own picture, in the drawing order (the shadow in the first, the gear's), the body's high part last
+ if(A34T.mode==='piece'&&!/^AC-HL/.test(set.id)){const sl=L.find(l=>l.shadow),L0=L.find(l=>!l.shadow&&!l.hi),hiL=L.find(l=>l.hi),ids=L0.ids.slice();
+  const NL=ids.map((i,n)=>{const q=P[i],x0=Math.floor(q.x0),y0=Math.floor(q.y0);return{ids:[i],x0,y0,w:Math.ceil(q.x0+q.w-x0),h:Math.ceil(q.y0+q.h-y0),k:L0.k+n*1e-4,cv:null,c:null}});
+  if(sl)NL.unshift(sl);if(hiL){hiL.k=L0.k+ids.length*1e-4;NL.push(hiL)}set.L=NL;A34T.n.piece++}
+ for(const Ly of set.L){if(Ly.shadow)continue;const F=[];for(const i of Ly.ids){const q=P[i];if(q&&q.p&&q.p.faces)for(const f of q.p.faces)F.push(f)}Ly.zf=a34ZFit(F,A34_PXM);if(Ly.zf)A34T.n.fit++}}
+const __p408Prep=a34SetPrep;a34SetPrep=function(set){__p408Prep(set);try{if(A34T.on)a34TurnPrep(set)}catch(e){a34Err(e)}};
+// a turning aircraft: the next direction's picture asked for in advance, in its turn's sense (a frame lower than the pictures needed now)
+function a34TurnPre(a,mk,id,lv,spin,phi,st){const key=(a.f&&a.f.code)||a.nm||mk,fr=A34G.frame,o=A34T.hd.get(key);A34T.hd.set(key,[phi,fr]);
+ if(A34T.hd.size>400){for(const [k,v] of A34T.hd)if(fr-v[1]>600)A34T.hd.delete(k)}
+ if(!o||fr-o[1]>3||fr===o[1])return;let dl=phi-o[0];dl=Math.atan2(Math.sin(dl),Math.cos(dl));if(Math.abs(dl)<2e-4)return;A34T.n.turn++;
+ const N=A34G.dirs,st0=2*Math.PI/N,b=((Math.round((phi+Math.sign(dl)*st0)/st0)%N)+N)%N,dq=A34G.moveDq!==false?a34MoveDq():a34Dens(),k2=mk+'|'+b+'|'+dq+'|'+st;let s=A34G.S.get(k2);
+ if(!s){s={key:k2,mk,id,lv,spin,b,dq,st,ready:false,P:null,req:fr-1,use:fr-1};A34G.S.set(k2,s);A34G.n.sets++;A34T.n.pre++}else if(!s.ready&&s.req<fr-1)s.req=fr-1;s.pre=fr}   /* p410 */
+// the game's way at a heading, for tools/dev/rotseq.js: the nearest direction's pictures (made on the spot), turned by the rest
+function a34PicAt(g,o){const N=A34G.dirs,phi=o.th-Math.PI/2,b=((Math.round(phi/(2*Math.PI/N))%N)+N)%N,dl=phi-b*2*Math.PI/N,d=Math.atan2(Math.sin(dl),Math.cos(dl)),dq=o.dq||2.2,mk=o.mk||o.id+'|0';
+ const get=bb=>{const key='picat|'+mk+'|'+bb+'|'+dq;let s=A34T.pic.get(key);if(s)A34T.pic.delete(key);else{s={key,mk,id:o.id,lv:null,spin:false,b:bb,dq,st:'g',ready:false,P:null,req:0,use:0};let n=0;while(!a34Step(s,performance.now()+4000)&&n<100000)n++}
+  A34T.pic.set(key,s);while(A34T.pic.size>8){const [k0,s0]=A34T.pic.entries().next().value;A34T.pic.delete(k0);a34Free(s0)}return s};   // the last used kept (the two drawn now are the newest)
+ const s=get(b),st=2*Math.PI/N,ad=Math.abs(d),w=A34T.blend;let B=null;if(A34T.on&&w>0&&ad>=st/2-w){const sg=d>0?1:-1,s2=get(((b+sg)%N+N)%N);if(s2.L.length===s.L.length)B={s:s2,d2:d-sg*st,f:.5*(ad-(st/2-w))/w,x:o.x||0,y:o.y||0,k:1,dq}}
+ s.L.forEach((Ly,i)=>{if(!Ly.cv)return;if(B&&a34BlendDraw(g,Ly,i,B,o.x||0,o.y||0,1,d,1,dq))return;g.save();g.translate(o.x||0,o.y||0);a34Turn(g,Ly,d);g.drawImage(Ly.cv,Ly.x0/dq,Ly.y0/dq,Ly.w/dq,Ly.h/dq);g.restore()});   /* p409 */return true}
+window.__TC_A34T={on:v=>{if(v!=null)A34T.on=!!v;return A34T.on},split:v=>{if(v!=null)A34T.split=!!v;return A34T.split},pre:v=>{if(v!=null)A34T.pre=!!v;return A34T.pre},mode:v=>{if(v!=null)A34T.mode=v;return A34T.mode},blend:v=>{if(v!=null)A34T.blend=v*Math.PI/180;return A34T.blend*180/Math.PI},stats:()=>({...A34T.n,hd:A34T.hd.size})};
+/* ---- p409 · the half-way blend of two directions' pictures, linear: both into a small canvas of the screen's pixels ((1 − f)·A, then
+   'lighter' f·B), then onto the game's canvas — the outlines and the shadow mix without a flip ---- */
+var A34B={cv:null,g:null,n:0,big:0};
+function a34BlendDraw(g,Ly,i,BL,x,y,k,d,al,dq){const L2=BL.s.L[i];if(!Ly.cv||!L2||!L2.cv)return false;
+ g.save();g.translate(x,y);if(k!==1)g.scale(k,k);a34Turn(g,Ly,d);const MA=g.getTransform();g.restore();
+ g.save();g.translate(BL.x,BL.y);if(BL.k!==1)g.scale(BL.k,BL.k);a34Turn(g,L2,BL.d2);const MB=g.getTransform();g.restore();
+ const R=(M,L,q)=>{const x0=L.x0/q,y0=L.y0/q,x1=(L.x0+L.w)/q,y1=(L.y0+L.h)/q;return[[x0,y0],[x1,y0],[x0,y1],[x1,y1]].map(([u,v])=>[M.a*u+M.c*v+M.e,M.b*u+M.d*v+M.f])};
+ const Pt=R(MA,Ly,dq).concat(R(MB,L2,BL.dq));let bx0=1e9,by0=1e9,bx1=-1e9,by1=-1e9;for(const p of Pt){if(p[0]<bx0)bx0=p[0];if(p[0]>bx1)bx1=p[0];if(p[1]<by0)by0=p[1];if(p[1]>by1)by1=p[1]}
+ bx0=Math.max(0,Math.floor(bx0));by0=Math.max(0,Math.floor(by0));bx1=Math.min(g.canvas.width,Math.ceil(bx1));by1=Math.min(g.canvas.height,Math.ceil(by1));
+ const w=bx1-bx0,h=by1-by0;if(w<=0||h<=0)return true;if(w>2048||h>2048){A34B.big++;return false}
+ let C=A34B.cv;if(!C){C=A34B.cv=document.createElement('canvas');C.width=C.height=256;A34B.g=C.getContext('2d')}if(C.width<w||C.height<h){C.width=Math.max(C.width,w);C.height=Math.max(C.height,h)}
+ const o=A34B.g;o.setTransform(1,0,0,1,0,0);o.globalCompositeOperation='source-over';o.globalAlpha=1;o.clearRect(0,0,w,h);
+ o.setTransform(MA.a,MA.b,MA.c,MA.d,MA.e-bx0,MA.f-by0);o.globalAlpha=1-BL.f;o.drawImage(Ly.cv,Ly.x0/dq,Ly.y0/dq,Ly.w/dq,Ly.h/dq);
+ o.globalCompositeOperation='lighter';o.setTransform(MB.a,MB.b,MB.c,MB.d,MB.e-bx0,MB.f-by0);o.globalAlpha=BL.f;o.drawImage(L2.cv,L2.x0/BL.dq,L2.y0/BL.dq,L2.w/BL.dq,L2.h/BL.dq);o.globalCompositeOperation='source-over';
+ g.save();g.setTransform(1,0,0,1,0,0);g.globalAlpha=al;g.drawImage(C,0,0,w,h,bx0,by0,w,h);g.restore();A34B.n++;return true}
+window.__TC_A34B={stats:()=>({n:A34B.n,big:A34B.big,cv:A34B.cv?[A34B.cv.width,A34B.cv.height]:null})};
+/* ---- p411 · D-287: an aircraft's directions made before it moves — its path (the flight's own tracks) sampled once, the directions of the
+   next 300 s on the screen asked for every 30 frames at a low priority ---- */
+var A34P={on:true,every:30,H:60,cap:.8,path:new Map(),last:new Map(),n:{asked:0,made:0,skipMem:0,paths:0}};
+function a34PathOf(f){const k=f.code;let P=A34P.path.get(k);const nt=(f.tracks||[]).length;if(P&&P.f===f&&P.n===nt)return P;
+ const N=A34G.dirs,st=2*Math.PI/N,S=[];let lb=-1,lx=0,ly=0;const t0=f.tDraw??f.t0,t1=f.t1;
+ if(t0!=null&&t1!=null&&t1>t0&&t1-t0<20000)for(let t=t0;t<=t1;t+=.5){const p=g77AcPoseAt(f,t);if(!p||(p[3]||0)>8)continue;const phi=p[2]-Math.PI/2,b=((Math.round(phi/st)%N)+N)%N;
+  if(b!==lb||Math.hypot(p[0]-lx,p[1]-ly)>40){S.push([t,p[0],p[1],b]);lb=b;lx=p[0];ly=p[1]}}
+ P={f,n:nt,S};A34P.path.set(k,P);A34P.n.paths++;if(A34P.path.size>80)A34P.path.delete(A34P.path.keys().next().value);return P}
+function a34PathPre(a,mk,id,lv,spin){const f=a.f,fr=A34G.frame;if(!A34P.on||!f||!f.code||a.kind!=='ac')return;
+ if(fr-(A34P.last.get(f.code)??-1e9)<A34P.every)return;A34P.last.set(f.code,fr);if(A34P.last.size>300)for(const [k,v] of A34P.last)if(fr-v>900)A34P.last.delete(k);
+ const full=A34G.bytes>A34G.budgetMB*1048576*A34P.cap;if(full)A34P.n.skipMem++;   /* p412: above the ceiling only what is needed within 20 s */
+ const P=a34PathOf(f),now=APT_OPS.clk,dq=A34G.moveDq!==false?a34MoveDq():a34Dens(),R=(typeof G77_REAL_M!=='undefined'&&G77_REAL_M[id]?G77_REAL_M[id][0]*A34_PXM/2:150)+20,want=new Map(),H=full?20:A34P.H;
+ for(const s of P.S){if(s[0]<now-1)continue;if(s[0]>now+H)break;if(typeof c34In==='function'&&!c34In(s[1]-R,s[2]-R,2*R,2*R))continue;if(!want.has(s[3]))want.set(s[3],s[0])}
+ for(const [b,tn] of want){const k2=mk+'|'+b+'|'+dq+'|g',pri=fr-2-Math.min(90,Math.floor(Math.max(0,tn-now)/1.5));let s=A34G.S.get(k2);   /* p412: the sooner needed, the earlier */
+  if(!s){s={key:k2,mk,id,lv,spin,b,dq,st:'g',ready:false,P:null,req:pri,use:pri};A34G.S.set(k2,s);A34G.n.sets++;A34P.n.made++}else if(!s.ready&&s.req<pri)s.req=pri;
+  s.pre=fr;s.need=tn;A34P.n.asked++}}
+window.__TC_A34P={on:v=>{if(v!=null)A34P.on=!!v;return A34P.on},stats:()=>({...A34P.n,cached:A34P.path.size})};
+/* ---- p414 · D-283: an aircraft without a picture yet — its 3/4 silhouette, never the drawing from above ---- */
+function a34GhostDraw(g,a,now){if(NR34.on)return;   // p453
+ const [x,y,th,z,al]=a.pose;if(!(al>0))return;const heli=a.kind==='heli',A=window.A34,t=A&&(heli?A.HELI:A.TYPES)&&(heli?A.HELI:A.TYPES)[a.id];
+ if(!t)return heli?aptDrawHeli(g,a,now):aptDrawAc(g,a,now);
+ const S=A34_PXM,K=A34.K,phi=th-Math.PI/2,c=Math.cos(phi),s=Math.sin(phi),k=z>0?1+z/(heli?300:420):1,X=x,Y=y-K*z;
+ const P=(mx,my,mz)=>[X+(mx*c-my*s)*S*k,Y+(mx*s+my*c-K*mz)*S*k];
+ const top='#e4e8ec',side='#aeb6be',dark='#8e979f',edge='rgba(20,28,36,.35)';
+ const poly=(pts,fill)=>{g.beginPath();g.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)g.lineTo(pts[i][0],pts[i][1]);g.closePath();g.fillStyle=fill;g.fill();g.strokeStyle=edge;g.lineWidth=Math.max(.5,.6/Math.max(.2,Camera.zoom));g.stroke()};
+ // a prism of a plan outline (model metres, x across, y to the nose) from z0 to z1: the sides toward the camera, then the top
+ const prism=(O,z0,z1)=>{const B=O.map(p=>P(p[0],p[1],z0)),T=O.map(p=>P(p[0],p[1],z1)),n=O.length;let cx=0,cy=0;for(const p of B){cx+=p[0];cy+=p[1]}cx/=n;cy/=n;
+  for(let i=0;i<n;i++){const a1=B[i],b1=B[(i+1)%n];let nx=b1[1]-a1[1],ny=-(b1[0]-a1[0]);if(nx*((a1[0]+b1[0])/2-cx)+ny*((a1[1]+b1[1])/2-cy)<0){nx=-nx;ny=-ny}if(ny<=0)continue;poly([a1,b1,T[(i+1)%n],T[i]],side)}
+  poly(T,top)};
+ g.save();g.globalAlpha=al;
+ if(heli){const L=t.L||10,R=Math.max(.8,(t.fw||L*.16)/2),H=t.H||3,zb=.4,body=[[-R,.42*L],[R,.42*L],[R,-.2*L],[.3*R,-.32*L],[-.3*R,-.32*L],[-R,-.2*L]],boom=[[-.18*R,-.3*L],[.18*R,-.3*L],[.12*R,-.62*L],[-.12*R,-.62*L]];
+  prism(boom,zb+.45*H,zb+.6*H);prism(body,zb,zb+.78*H);const cR=P(0,0,H),r=(t.D||L)/2*S*k;g.beginPath();g.ellipse(cR[0],cR[1],r,r,0,0,Math.PI*2);g.fillStyle='rgba(140,150,160,.18)';g.fill();g.strokeStyle=edge;g.stroke()}
+ else{const L=t.L,R=(t.fw||4)/2,fh=t.fh||t.fw||4,zb=t.zb||1.5,ztop=zb+fh,HS=(t.WS||L)/2,yN=.17*L,yT=yN-L,yC=-.33*L,wc=t.wc||L*.15,tc=t.tc||wc*.3,sw=t.sw||0,H=t.H||ztop+3,hs=(t.hs||.33)*HS;
+  const body=[[-.35*R,yN],[.35*R,yN],[R,yN-.12*L],[R,yT+.2*L],[.22*R,yT],[-.22*R,yT],[-R,yT+.2*L],[-R,yN-.12*L]];
+  const zw=t.high?ztop-.15:zb+.3*fh,wing=sg=>[[sg*R,yC+wc/2],[sg*HS,yC+wc/2-sw],[sg*HS,yC+wc/2-sw-tc],[sg*R,yC-wc/2]].map(p=>P(p[0],p[1],zw));
+  const zt=t.ttail?H-.25:zb+.65*fh,tr=.11*L,tail=sg=>[[sg*.3*R,yT+.17*L],[sg*hs,yT+.17*L-.06*L],[sg*hs,yT+.17*L-.06*L-.45*tr],[sg*.3*R,yT+.17*L-tr]].map(p=>P(p[0],p[1],zt));
+  const fin=[[0,yT+.18*L,ztop],[0,yT+.05*L,ztop],[0,yT+.015*L,H],[0,yT+.09*L,H]].map(p=>P(p[0],p[1],p[2]));
+  if(!t.high){poly(wing(-1),top);poly(wing(1),top)}if(!t.ttail){poly(tail(-1),top);poly(tail(1),top)}
+  prism(body,zb,ztop);if(t.high){poly(wing(-1),top);poly(wing(1),top)}poly(fin,dark);if(t.ttail){poly(tail(-1),top);poly(tail(1),top)}}
+ g.restore();A34G.n.ghost=(A34G.n.ghost||0)+1}
+// an aircraft drawn at once, inside a clip (a hangar's cut-away, s6aHangarXray): its 3/4 pictures turned to its heading, else its silhouette
+function a34DrawNow(g,a,now){if(!(g===ctx&&typeof C34G!=='undefined'&&C34G.on&&C34G.armed&&WTC_MODE!==1&&A34G.on&&a34LibInit()))return aptDrawAc(g,a,now);   /* the 3/4 view on (the cut-away is drawn outside C34's own window) */const [x,y,th,z,al]=a.pose,id=a.id,L=a34Liv(id,a.f),mk=id+'|'+L.key,phi=th-Math.PI/2,set=A34G.bad.has(mk)?null:a34Want(mk,id,L.lv,false,phi,'g');
+ if(!set)return a34GhostDraw(g,a,now);const N=A34G.dirs,dl=phi-set.b*2*Math.PI/N,d=Math.atan2(Math.sin(dl),Math.cos(dl)),dq=set.dq;
+ for(const Ly of set.L){if(!Ly.cv)continue;g.save();g.globalAlpha=al;g.translate(x,y);a34Turn(g,Ly,d);g.drawImage(Ly.cv,Ly.x0/dq,Ly.y0/dq,Ly.w/dq,Ly.h/dq);g.restore()}A34G.n.now=(A34G.n.now||0)+1}
+/* ---- C34 · p449: the rolling stock in 3/4 — the freight trains, the stock standing in E5 and on P2 (the library's rail kits, p398) ---- */
+const C34RL={map:{'RL-FR-01':['loco','floco','#c8501c','#2a2d30'],'RL-FR-02':['wagon','cw','#4a4f55'],'RL-FR-03':['wagon','box','#8a3a2a'],'RL-FR-04':['wagon','tank','#3a3f45','#d8b020'],
+ 'RL-FR-05':['wagon','cw','#4a4f55'],'RL-FR-06':['wagon','hop','#6a625a'],'RL-PS-04':['loco','ploco','#2c4a7a','#e8c030']},col:new Map(),n:{stock:0,flat:0,frames:0}};
+function c34RlCol(hex,v){const k=hex+'|'+v;let c=C34RL.col.get(k);if(c)return c;const n=parseInt(hex.slice(1),16),f=x=>Math.max(0,Math.min(255,Math.round(x+(255-x)*.15*v)));
+ c='#'+[n>>16&255,n>>8&255,n&255].map(x=>f(x).toString(16).padStart(2,'0')).join('');C34RL.col.set(k,c);return c}   // the library's variant: a shade lighter
+// one car: its kit at the size the game draws it, its boxes (the container wagon) as the cargo of the kit; o.now34 — drawn at once (a clip)
+function c34Stock(o,p,t){try{if(!c34Live())return false}catch(e){return false}try{const M=C34RL.map[o.asset];if(!M)return false;
+ const sc=railStockScale(o.asset),I=TurboCity.info(o.asset,{scale:sc}),Lw=I.fp[2],Ww=I.fp[3],ld=o.load&&o.load.length?o.load:null,tag=M[1]==='cw'&&!ld?'flat':M[1];
+ const id=C34.kit(M[0],Lw,Ww,{tag,acc:M[3]}),h=p.heading+(o.flip?Math.PI:0);let opt=null;
+ if(tag==='cw'){const list=ld.map(l=>{const L=PORT_CT_LEN[l.asset]||PORT_CT_LEN['CT-20-01'],tex=c34BoxTex(l.asset,l.v||0);return{u0:l.dx-L/2,u1:l.dx+L/2,tex,col:tex.col}});
+  opt={cargo:{key:ld.map(l=>l.asset+':'+(l.v||0)+':'+(+l.dx).toFixed(1)).join('|'),list}}}
+ const ok=(o.now34?c34Now:c34Push)(id,c34RlCol(M[2],o.variant|0),p.x,p.y,h,{opt,r:Lw*.6+24,key:o.id||null,post:o.post34||null});if(ok)C34RL.n.stock++;return ok}catch(e){c34Err(e);return false}}
+// the standing stock, live every frame (not in the tiles): in 3/4 or today's picture
+function c34Rail(now){if(MAPBASE.pass||ctx.canvas!==cv||WTC_MODE===1)return;C34RL.n.frames++;const v=portView(200),t=now/1000;
+ const one=o=>{const p=railPointAt(o.seg,o.s);if(!p||p.x<v.x0||p.x>v.x1||p.y<v.y0||p.y>v.y1)return;ctx.save();portDrawStock(ctx,o,p,t);ctx.restore()};
+ for(const o of RAIL_STOCK)one(o);for(const o of PORT_STOCK)if(PORT_FLUSH_SEGS.has(o.seg))one(o)}
+{const b0=c34Begin;c34Begin=function(now){b0(now);try{c34Rail(now)}catch(e){c34Err(e)}}}
+
+/* ---- p453 · R-37 (simple): nothing drawn until its 3/4 picture is ready — no silhouette; the player's car and the player always ---- */
+var NR34={on:true,nbMax:Math.PI*2/32*2.5,player:0};
+{const f0=drawPlayerCar;drawPlayerCar=function(){NR34.player++;try{return f0.apply(this,arguments)}finally{NR34.player--}}}
+{const f0=p34Player;p34Player=function(){NR34.player++;try{return f0.apply(this,arguments)}finally{NR34.player--}}}
+window.__TC_NOBLOCK={on:v=>{if(v!=null)NR34.on=!!v;return NR34.on}};
+
+/* ---- p468 · R-53: the rail cars on the rail bridges drawn over the deck — in 3/4 and from above; the counters (roadAudit, __TC_DEV.bridges) ---- */
+// RB-74's deck is painted in the overhead pass, after c34Flush: its redraw (g74DeckTrains) opens the 3/4 window again for itself (C34G.over).
+// The sea decks of RL_BRIDGES are painted with the ground: the train pass draws the cars over them.
+var R53=R53||r53New();   // var: a call before this line (a render while the script loads) finds it, not a dead zone
+function r53New(){return{decks:null,n:{},late:false,frames:0}}
+function r53Decks(){if(!R53)R53=r53New();if(R53.decks)return R53.decks;const B=G74_BRIDGE,D=[{id:'RB-74',over:true,box:[B.x0,B.y0,B.x1,B.y1],seg:null}];
+ const clip={'B-LINK':[RL_COAST_X-4,4700,RL_COAST_X+436,5170],'ISL-A1':[6000,5100,6720,5968],'ISL-B1':[6000,5100,6720,5968],'ISL-A2':[0,0,0,0],'ISL-B2':[0,0,0,0],'ISL-X':[0,0,0,0]};   /* S13 — המשך (D‑634): הסיפון של ה-S */   // as drawLineRail clips these two decks
+ for(const id of RL_BRIDGES){const g=RAIL_SEG_BY_ID[id];if(!g)continue;const h=RL_DECK_W/2;let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+  for(const p of g.pts){x0=Math.min(x0,p[0]);y0=Math.min(y0,p[1]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1])}
+  let b=[x0-h,y0-h,x1+h,y1+h];const c=clip[id];if(c)b=[Math.max(b[0],c[0]),Math.max(b[1],c[1]),Math.min(b[2],c[2]),Math.min(b[3],c[3])];
+  D.push({id,over:false,box:b,seg:g})}
+ for(const d of D){d.cur={on:0,drawn:0,wait:0};R53.n[d.id]={on:0,drawn:0,wait:0,miss:0,frames:0,missFrames:0,last:null}}
+ return R53.decks=D}
+function r53Dist(P,x,y){let m=1e9;for(let i=1;i<P.length;i++){const ax=P[i-1][0],ay=P[i-1][1],dx=P[i][0]-ax,dy=P[i][1]-ay,L=dx*dx+dy*dy||1;
+ const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/L));m=Math.min(m,Math.hypot(ax+t*dx-x,ay+t*dy-y))}return m}
+// one car on a deck, in view, on the game's canvas: counted; paint() — its picture was painted over the deck; after() — not painted: waiting?
+function r53Car(c,over){if(ctx.canvas!==cv||MAPBASE.pass||WTC_MODE===1)return null;const D=r53Decks();let d=null;
+ if(over){d=D[0];const b=d.box;if(c.x<b[0]||c.x>b[2]||c.y<b[1]||c.y>b[3])return null}
+ else{let best=RL_DECK_W/2+.5;for(let i=1;i<D.length;i++){const e=D[i],b=e.box;if(c.x<b[0]||c.x>b[2]||c.y<b[1]||c.y>b[3])continue;const m=r53Dist(e.seg.pts,c.x,c.y);if(m<best){best=m;d=e}}if(!d)return null}
+ const v=portView(0);if(c.x<v.x0||c.x>v.x1||c.y<v.y0||c.y>v.y1)return null;
+ const u=d.cur,w0=C34G.n.wait||0;let done=false;u.on++;
+ return{paint:()=>{if(!done){done=true;u.drawn++}},after:()=>{if(!done&&((C34G.n.wait||0)>w0||(C34G.on&&!C34G.armed)))u.wait++}}}
+function r53Fold(){if(!R53||!R53.decks)return;R53.frames++;for(const d of R53.decks){const u=d.cur;if(u.on){const n=R53.n[d.id],dr=Math.min(u.drawn,u.on),m=Math.max(0,u.on-dr-u.wait);
+  n.frames++;n.on+=u.on;n.drawn+=dr;n.wait+=u.wait;n.miss+=m;if(m)n.missFrames++;n.last={on:u.on,drawn:dr,wait:u.wait,view:C34G.on?'3/4':'top'}}u.on=u.drawn=u.wait=0}}
+// the 3/4 window of the deck redraw: open only when this frame's queue was live (c34Flush has closed it), on the game's canvas
+function r53Open(){if(R53&&C34G.on&&C34G.armed&&R53.late&&!C34G.live&&!C34G.pre&&ctx.canvas===cv&&!MAPBASE.pass&&WTC_MODE!==1){C34G.over=true;return true}return false}
+function r53Close(o){if(o)C34G.over=false}
+function r53Audit(){const D=r53Decks(),issues=[],parts=[];if(!D.length||D[0].id!=='RB-74')issues.push('no RB-74 deck');
+ for(const id of RL_BRIDGES)if(!D.some(d=>d.id===id))issues.push('no deck '+id);if(typeof g74DeckTrains!=='function')issues.push('no RB-74 deck redraw');
+ for(const d of D){const n=R53.n[d.id];if(n.miss)issues.push(d.id+': '+n.miss+' cars on the deck not drawn over it ('+n.missFrames+' frames)');if(n.frames)parts.push(d.id+' '+n.drawn+'/'+n.on+(n.wait?' (+'+n.wait+' waiting for the 3/4 picture)':''))}
+ return{ok:!issues.length,detail:issues.length?issues.join(' | '):D.length+' rail-bridge decks (RB-74 + '+RL_BRIDGES.join(', ')+') · cars drawn over the deck / on it, in view: '+(parts.length?parts.join(' · '):'no train in view yet')+' · 0 missed'}}
+function r53Stats(o){o=o||{};const D=r53Decks();if(o.reset){for(const d of D)Object.assign(R53.n[d.id],{on:0,drawn:0,wait:0,miss:0,frames:0,missFrames:0,last:null});R53.frames=0}
+ const out={};for(const d of D)out[d.id]=Object.assign({deck:d.over?'overhead (redrawn over it)':'ground',box:d.box.map(Math.round)},R53.n[d.id]);
+ return{view:C34G.on?(C34G.armed?'3/4':'3/4 (not armed)'):'top',frames:R53.frames,bridges:out}}
+{const o0=c34Open;c34Open=function(){try{r53Fold()}catch(e){}R53.late=false;C34G.over=false;return o0.apply(this,arguments)}}
+{const f0=c34Flush;c34Flush=function(now){R53.late=!!C34G.live;return f0.apply(this,arguments)}}
+setTimeout(()=>{try{if(window.__TC_DEV)window.__TC_DEV.bridges=o=>r53Stats(o)}catch(e){}},0);
+
+function render(now){try{wldTick(now)}catch(e){}c34Open();   /* D‑572: the night value from the clock */Targets.begin();ctx.setTransform(dpr,0,0,dpr,0,0);const w=innerWidth,h=innerHeight;if((GLG.active=glgWant()))glgBegin(w,h);else{glgOff();if(!WTC.on||wtcScreenBgNeeded()){const bg=ctx.createRadialGradient(w/2,h/2,40,w/2,h/2,Math.max(w,h));bg.addColorStop(0,'#15232d');bg.addColorStop(1,'#060a0e');ctx.fillStyle=bg;ctx.fillRect(0,0,w,h)}}ctx.save();{const s=Camera.zoom*dpr;ctx.setTransform(s,0,0,s,Math.round(dpr*w/2-Camera.x*s),Math.round(dpr*h/2-Camera.y*s))}if(WTC.on)wtcGround(now);else renderGroundClassic(now);drawFreightTrains(now);c34Begin(now);drawParkedCars(now);if(wtcLodLayers()){wtcLodTargets(now);wtcLayerPass('P',now);sbcgBegin();wtcPropsLive(now)}else{if(wtcExactLayers()){wtcExactTargets(now);wtcLayerPass('X1',now);WTC_MODE=2;try{wtcReplaySprites(now,WTC_XL.sprites)}finally{WTC_MODE=0}wtcCoolingLive(now);WTC_XL.stats.live++}else{drawE3Props(now);drawE4Props(now);drawD3Props(now)}drawE5Props(now);drawPortProps(now);pgDraw('base',now);drawB6Props(now);drawA6Props(now);drawB5Props(now);drawC5Props(now);drawA4Props(now);b4Live(now);b3Live(now);c3Live(now);d3NLive(now);c4NLive(now);c5NLive(now);p560Live(now);a5Live(now);a2Live(now);b12Live(now);b5NLive(now);c2NLive(now);try{d2NLive(now)}catch(e){}if(wtcExactLayers()){wtcLayerPass('X3',now);WTC_MODE=2;try{wtcReplaySprites(now,WTC_XL.sprites3)}finally{WTC_MODE=0}wtcAptLive(now)}else drawAptProps(now);}drawTrafficCars(now);fuelHoses2();try{drawA4Fleet(now)}catch(e){}   /* p494: הכבאית והאמבולנס במשימה */drawFlowTrucks(now);drawD4MovingSemis(now);if(window.D3LOOK&&D3LOOK.flushCars)D3LOOK.flushCars();   /* p472: המכוניות שזזות ב-D3 — עם שאר הרכבים (המבקר מ-9) */drawBusLineVehicles(now);try{p560DrawDoors(now)}catch(e){P560D.err=P560D.err||String(e&&e.message||e)}drawBusAlighters(now);drawNPCPedestrians(now);drawB6Visitors(now);drawB5Visitors(now);drawC5Visitors(now);drawC5FleetCargo(now);drawA4Visitors(now);e2DrawVisitors(now);f2DrawPeople(now);drawPlayerCar(now);drawPlayerPed(now);drawActivityWorld(now);sbcgFlush();c34Flush(now);   /* p378 */if(wtcLodLayers()){wtcLayerPass('O',now);wtcOverLive(now)}else{if(wtcExactLayers()){wtcLayerPass('X2',now);WTC_MODE=2;try{wtcReplaySprites(now,WTC_XL.sprites2)}finally{WTC_MODE=0}}else drawE3Canopy(now);drawA5HotelCanopy(now);drawE4Overhead(now);if(WTC_LP!==1){try{p683DrawUx(now)}catch(e){}try{p684DrawLx(now)}catch(e){}try{p684DrawF2Gate(now)}catch(e){}};drawE5Overhead(now);drawPortOverhead(now);pgDraw('top',now);drawAptOverhead(now);try{drawA2Overhead(now)}catch(e){}try{drawC2Overhead(now)}catch(e){}try{drawD2Overhead(now)}catch(e){}}if(window.D3LOOK&&D3LOOK.flushRoofs)D3LOOK.flushRoofs();c5V6Over(now);   /* p489: גג תחנת הדלק מעל המכוניות */if(WTC.on)wtcTrees(now);else{drawChunkTrees(now);drawB6Trees(now);drawA6Trees(now);drawB5Trees(now);drawC5Trees(now);drawA4Trees(now)}drawRoadTargets();drawConnectors();drawLanes();drawGraph();drawPedGraph();if(State.debug){for(const m of Dbg.markers){ctx.save();ctx.strokeStyle='#ffad42';ctx.globalAlpha=.42;ctx.lineWidth=2/Camera.zoom;ctx.beginPath();ctx.arc(m.target.x,m.target.y,38/Camera.zoom,0,Math.PI*2);ctx.stroke();ctx.restore()}}try{wldSkyPaint(now)}catch(e){}   /* D‑572: the sky — the light map (sunset, dusk, night, dawn) */Targets.draw(now);ctx.restore();if(WTC.on)wtcVignette(w,h);else{const v=ctx.createRadialGradient(w/2,h/2,Math.min(w,h)*.34,w/2,h/2,Math.max(w,h)*.75);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.42)');ctx.fillStyle=v;ctx.fillRect(0,0,w,h)}}
+
+let dpr=1;
+// GATE-75P S2: the render resolution is capped — default 1.5 device pixels per CSS pixel (both screens of the reference PC draw at full
+// resolution: dpr 1 and 1.5); the F9 meter can lower it to 1.25 / 1 for a test (kept in localStorage, the save is not touched)
+var P599={zoom:2};function p599Res(z){if(!(z>0))return 1;if(typeof Camera==='undefined'||Camera.zoom<P599.zoom)return Math.min(2,z);const L=(typeof P34G!=='undefined'&&P34G.R)||[1,1.25,1.5,2,2.5,3,4,5.5,8,11];for(const r of L)if(r>=2&&z<=r*1.08)return r;return L[L.length-1]}   /* p599a: stage 4 — the people sharp from the close zoom */
+function dprCap(){try{const v=+localStorage.getItem('turbo_city_dpr_cap');if(v>=1&&v<=2)return v}catch{}return 1.5}
+function resize(){dpr=Math.min(devicePixelRatio||1,dprCap());cv.width=innerWidth*dpr;cv.height=innerHeight*dpr}addEventListener('resize',resize);
+function hudGoalText(){const ground=ew2Hud();if(ground)return ground;const farm=a6Hud();if(farm)return farm;/* GATE-77P · p222: no goal row for the free camera */if(State.licenseExam){const e=State.licenseExam,r=LICENSE_TRIALS[e.id],done=Math.max(0,(PlayerProfile.stats.distanceMeters||0)-e.startDistance),progress=`${Math.min(e.meters,Math.round(done))} / ${e.meters} מ׳`;return`${progress} · מבחן ${r?.name||e.id} · ${r?.vehicle?.label||''}`}if(PlayerProfile.activeMission){const m=PlayerProfile.activeMission,d=MISSION_DEFS[m.id],dist=Math.round(State.navigation?.distanceMeters||0);if(d?.type==='airport-pickup')return f2HudGoal(m);if(d?.type==='runway-observation')return `F1 · תצפית ${Math.min(3,(m.f1?.index||0)+1)}/3 · F במגדל הפיקוח · ${Math.ceil(m.timeRemaining)} שנ׳`;if(d?.type==='shift')return actHudGoal(m,d,dist);if(d?.type==='forklift'){const i=Math.min(D5_FORKLIFT_TASKS.length,(m.forkliftIndex||0)+1);return`מלגזה D5 · משטח ${i}/${D5_FORKLIFT_TASKS.length} · ${m.stage==='forklift-drop'?'הנחה':'איסוף'} · ${dist} מ׳ · F לביצוע · ${Math.ceil(m.timeRemaining)} שנ׳`}if(d?.type==='bus'){const st=busMissionStop(m),hold=m.stopHold||0;return`קו 1 · ${st.label.replace('קו 1 · ','')} · ${dist} מ׳ · ${m.passengers||0} נוסעים${hold>0?' · עצירה '+Math.min(100,Math.round(hold/1.65*100))+'%':''} · ${Math.ceil(m.timeRemaining)} שנ׳`}if(d?.type==='route'){const i=Math.min(d.stops.length,(m.routeIndex||0)+1),id=d.stops[Math.min(d.stops.length-1,m.routeIndex||0)];return`סבב ${i}/${d.stops.length} · ${navPoiRegistry()[id]?.label||id} · ${dist} מ׳ · ${Math.ceil(m.timeRemaining)} שנ׳`}return`${m.stage==='pickup'?(d?.pickupLabel||'איסוף'):(d?.dropoffLabel||'יעד')} · ${d?.name||m.id} · ${dist} מ׳ · ${Math.ceil(m.timeRemaining)} שנ׳`}if(State.navigation)return`יעד: ${State.navigation.target?.label||State.navigation.targetId} · ${Math.round(State.navigation.distanceMeters||0)} מ׳`;if(State.phoneOpen&&State.interactionId)return'F · חזרה למשחק';if(PlayerProfile.mode==='walk'){const tr=State.taxiRide,tc=tr&&taxiCarById(tr.taxiId);if(tr?.phase==='riding')return`מונית · ${tr.destLabel||tr.destId} · ${money(tr.fare)} · T לדילוג`;if(tr?.phase==='waiting'&&tc)return taxiDistanceToPlayer(tc)<=TAXI_BOARD_DIST?`F · עלה למונית · בחר יעד`:`המונית מחכה · ${Math.round(taxiDistanceToPlayer(tc)*WORLD_METERS_PER_PX)} מ׳`;if(tr?.phase==='coming'&&tc)return`מונית בדרך · ${Math.round(taxiDistanceToPlayer(tc)*WORLD_METERS_PER_PX)} מ׳ · עד ${taxiPickupSecondsLeft(tr)} שנ׳`;const a4=nearbyA4Poi();if(a4)return`F · ${a4.label}`;const b5=nearbyB5Poi();if(b5)return`F · ${b5.label}`;const ht=nearestHailableTaxi();if(ht)return`F · עצור מונית חולפת · ${Math.round(ht.d*WORLD_METERS_PER_PX)} מ׳`;const home=nearbyPlayerHome(92);if(home)return`F · ${home.label} · בית / שדרוג`;const shop=nearbyRetailPoi(82);if(shop)return`F · כניסה ל-${shop.label}`;const svc=nearbyD3Service(130);if(svc)return`F · ${svc.label}`;const e3=nearbyE3Poi();if(e3)return`F · ${e3.label}`;const e4=nearbyE4Poi();if(e4)return`F · ${e4.label}`;const e5=nearbyE5Poi();if(e5)return`F · ${e5.label}`;const b2c=nearbyB2Poi();if(b2c)return`F · ${b2c.label}`;const d5=nearbyD5Poi(115);if(d5)return d5.id==='D5-WH'?`F · מחסן נמל D5 · עבודת מלגזה`:`F · ${d5.label}`;const c4=nearbyC4Poi(105);if(c4)return`F · ${c4.label}`;const d4=nearbyD4Poi(110);if(d4)return`F · ${d4.label}`;const v=nearestDriveableVehicle();if(v)return`E · כניסה ל${(typeof VEHICLE_CATALOG!=='undefined'&&VEHICLE_CATALOG[v.asset]?.name)||(typeof G7_VEH_HE!=='undefined'&&G7_VEH_HE[v.asset])||'רכב'}`}else{const svc=nearbyD3Service(165);if(svc&&carKmh()<=2)return`F · ${svc.label}`;const d4=nearbyD4Poi(135,{allowVehicle:carKmh()<=2});if(d4)return`F · ${d4.label} · עבודות לוגיסטיקה`;const d5=nearbyD5Poi(145,{allowVehicle:carKmh()<=2});if(d5)return`F · ${d5.label} · עבודות נמל`}return'חופשי'}
+function updatePlayerHud(fps){actPanelUpdate();const gv=activeVehicleEco();$('hudMoney').innerHTML=money(PlayerProfile.money);$('hudFuel').textContent=Math.round(gv.fuel??100)+'%';$('hudSpeed').textContent=PlayerProfile.mode==='vehicle'?Math.round(carKmh())+' קמ״ש':'ברגל';const goal=hudGoalText();$('hudGoal').textContent=goal;$('hudGoal').title=goal;$('hudFps').textContent=(Number.isFinite(fps)?fps:0).toFixed(0);$('nodeStat').textContent=NODES.length;$('edgeStat').textContent=EDGES.length;$('connStat').textContent=ALL_CONNECTORS.length;$('lotStat').textContent=LOTS.length+D3_VILLAS.length+B3_BUILDINGS.length+C2_BUILDINGS.length+C4_BUILDINGS.length}
+// ===== GATE-75P · K-17 · PERF-02: one SIM clock · fixed SIM steps · interpolated drawing =====
+// SIM_LOOP.simNow is the one clock of the moving world: road traffic, signals, buses, D4 / C5 / A4 fleets, people, the player, the
+// camera follow, the airport, the port trucks + gates and the trains (their timetable is a function of this clock). Each frame adds
+// the real elapsed time to an accumulator and runs whole steps of 1/60 s (at most 4, and not longer than the step budget — behind
+// that the world runs slower instead of spiralling, like the old 0.05 s cap). The frame then draws the world interpolated between the
+// last two steps (alpha), and every time-driven picture (trains, ships, cranes, water, lights) at the same render moment.
+// ---- GATE-75P S4 · Frame Scheduler (D-38): one budget per drawn frame for deferrable work
+const FS={budgetMs:8,used:0,sbcMs:0,sbcMaxMs:1e9,sbcMin:10,famMs:0,famN:0,famMaxMs:1e9,famMin:8,frames:0,stats:{sbcDeferred:0,famDeferred:0,famMade:0,famMsTotal:0,evictRuns:0,evictMs:0,tileStops:0,aoMs:0,usedMax:0}};
+window.__TC_FS=()=>({budgetMs:FS.budgetMs,sbcMaxMs:FS.sbcMaxMs,sbcMin:FS.sbcMin,frames:FS.frames,...FS.stats,aoMs:+FS.stats.aoMs.toFixed(1),evictMs:+FS.stats.evictMs.toFixed(1),usedMax:+FS.stats.usedMax.toFixed(1),sbcAge:SBC.age||null});
+var SIM_BENCH_OFS=0,SIM_RAIL_BASE=0;
+// ==== 27.10 · stage 2 (GATE-84A, W-32) · p330: the one game clock — the hour of the day, on top of the world clock ====
+var G84_CLOCK={v:1,rate:0.5,start:420,base:null,sets:0};   // rate: game minutes per world second (a day = 48 real minutes); start: 07:00
+function g84WorldS(){return((typeof SIM_LOOP!=='undefined'&&SIM_LOOP.simNow!=null?SIM_LOOP.simNow:performance.now())+(typeof SIM_BENCH_OFS!=='undefined'?SIM_BENCH_OFS:0))/1000}
+function gameClock(){const C=G84_CLOCK,w=g84WorldS();if(C.base==null||!Number.isFinite(C.base))C.base=C.start-w*C.rate;const m=C.base+w*C.rate,d=Math.floor(m/1440),mod=m-d*1440,h=Math.floor(mod/60),mi=Math.floor(mod-h*60);
+ return{day:d+1,hour:h,minute:mi,min:+mod.toFixed(2),hhmm:String(h).padStart(2,'0')+':'+String(mi).padStart(2,'0'),worldS:+w.toFixed(2)}}
+function gameClockSet(h,mi){const C=G84_CLOCK,w=g84WorldS(),cur=gameClock(),t=(cur.day-1)*1440+((+h%24+24)%24)*60+(+mi||0);C.base=(t<=cur.min+(cur.day-1)*1440-1e-6?t+1440:t)-w*C.rate;C.sets++;return gameClock()}
+function gameClockSave(){gameClock();return{v:1,base:+G84_CLOCK.base.toFixed(4),rate:G84_CLOCK.rate}}
+function gameClockLoad(o){if(o&&Number.isFinite(o.base)){G84_CLOCK.base=o.base;if(Number.isFinite(o.rate)&&o.rate>0)G84_CLOCK.rate=o.rate}else G84_CLOCK.base=null;return gameClock()}
+window.__TC_CLOCK=()=>Object.assign(gameClock(),{rate:G84_CLOCK.rate,base:G84_CLOCK.base,sets:G84_CLOCK.sets});   // GATE-76 S5: SIM_RAIL_BASE = the rail clock carried over from a loaded save   // GATE-75P S4 · K-36: benchmark-only offset of the rail / port clock (0 in the game)
+const SIM_LOOP={sys:{w:0,fl:0,ao:0},sysT0:0,h:1/60,stepHz:60,maxSteps:4,budgetMs:24,aoEnd:null,aoWork:null,acc:0,simNow:null,lastSteps:0,ratio:1,alpha:1,dropped:0,steps:0,frames:0,renderNow:0,win:[],
+ worldEvery:3,worldDt:.05,worldEnd:null,worldTicks:0,alphaW:1};
+function simWorldOpen(){return !State.mapOpen&&!State.vehicleQaOpen&&!State.phoneOpen&&!State.fishingSetup}
+function simTaxiPhone(){return !!(State.phoneOpen&&State.taxiRide&&['coming','riding'].includes(State.taxiRide.phase))}
+// one fixed step of 1/60 s. The player, the camera, the mission timers, the airport and the train push-away run in every step; the
+// traffic world (road vehicles, buses, people, D4 / C5 / A4 fleets, port trucks + gates) runs in every 3rd step with a step of exactly
+// 0.05 s — the step the Road Core / Signal Core was verified with (QA-44); at 1/60 it gridlocks (GATE-75P S3 §0AE · K-32). Each world
+// step covers the next 3 SIM steps (its state is the state at the end of that window), so the drawing always interpolates between two
+// known world states. Same calls in the same order as the per-frame world update of v1.96 S4.
+function simStep(dt,simNow){SIM_LOOP.sysT0=performance.now();try{b12BoatStep(dt)}catch(e){}try{b12AnglerStep(dt)}catch(e){}
+ const L=SIM_LOOP,world=(L.steps%L.worldEvery)===0,wdt=L.worldDt,wEnd=simNow+(L.worldEvery-1)*dt*1000;
+ if(State.phoneOpen&&!State.mapQa&&PlayerProfile.activeMission?.id==='M-F1-WATCH')updateMission(dt);
+ const taxi=simTaxiPhone(),open=simWorldOpen();
+ if(world){simIpWorldSnapshot();f2UpdatePeople(wdt);if(taxi||open){updateA4Fleet(wdt);updateA5Hotel(wdt);updateD5Tanker(wdt);updateD5Truck(wdt);updateC5Van(wdt)}if(taxi){updateTrafficCars(wdt);updateTaxiPassenger()}}
+ if(open){if(State.mapQa){if(world){updateNPCPedestrians(wdt);updateBusAlighters(wdt);updateTrafficCars(wdt);updateTaxiPassenger();updateD4YardTraffic(wdt);updateBusPassengerDemand(wdt)}Camera.freeUpdate(dt);if(G77_TV&&G77_TV.on)g77TvTick(dt)}   /* GATE-77 S7-b · p193: Tower View runs in the free camera */
+  else{if(PlayerProfile.mode==='vehicle')updateCar(dt);else updatePed(dt);updateLicenseTrial();updateMission(dt);if(world){updateNPCPedestrians(wdt);updateBusAlighters(wdt);updateTrafficCars(wdt);updateTaxiPassenger();updateD4YardTraffic(wdt);updateBusPassengerDemand(wdt)}Camera.update(dt)}}
+ {const t1=performance.now();L.sys.w+=t1-L.sysT0;
+ if(world){flFrame(wEnd+SIM_BENCH_OFS);L.worldEnd=wEnd;L.worldTicks++;simIpWorldPost()}
+ const t2=performance.now();L.sys.fl+=t2-t1;
+ aptOpsTick(simNow);L.sys.ao+=performance.now()-t2;rlPushPlayer(simNow+SIM_BENCH_OFS)}
+ L.steps++}
+// interpolation — two groups: the traffic world (drawn between its last two world steps) and the player / camera / airport clock
+// (drawn between the last two SIM steps)
+const SIM_IP={mw:new Map(),mf:new Map(),fl:new Map(),genW:0,genF:0,saved:[],apt:null,pruneW:0,pruneF:0};
+function simIpWorldEach(fn){for(const v of TRAFFIC_CARS)fn(v);for(const v of BUS_VEHICLES)fn(v);try{for(const v of D4_YARD_SEMIS)fn(v)}catch{}try{for(const m of a4FleetActors())fn(m)}catch{}for(const p of NPC_PEDESTRIANS)fn(p);for(const p of BUS_ALIGHTERS)fn(p);try{for(const p of F2_PEOPLE)fn(p);if(F2_PICKUP.walker)fn(F2_PICKUP.walker)}catch{}}
+function simIpFastEach(fn){fn(PlayerCar);fn(PlayerPed);fn(Camera)}
+function simIpRec(m,o,g){let r=m.get(o);if(!r){r={px:0,py:0,ph:0,cx:NaN,cy:NaN,ch:0,g:0};m.set(o,r)}r.px=o.x;r.py=o.y;r.ph=o.heading;r.g=g}
+function simIpWorldSnapshot(){const m=SIM_IP.mw,g=++SIM_IP.genW;simIpWorldEach(o=>simIpRec(m,o,g));for(const v of FL_ACTIVE){let r=SIM_IP.fl.get(v.id);if(!r){r={px:0,py:0,ph:0,cx:NaN,cy:NaN,ch:0,g:0};SIM_IP.fl.set(v.id,r)}r.px=v.x;r.py=v.y;r.ph=v.heading;r.g=g}}
+function simIpWorldPost(){const m=SIM_IP.mw,g=SIM_IP.genW;
+ simIpWorldEach(o=>{const r=m.get(o);if(r&&r.g===g){r.cx=o.x;r.cy=o.y;r.ch=o.heading}});
+ for(const v of FL_ACTIVE){const r=SIM_IP.fl.get(v.id);if(r&&r.g===g){r.cx=v.x;r.cy=v.y;r.ch=v.heading}else if(r)r.g=0}
+ if(++SIM_IP.pruneW>=200){SIM_IP.pruneW=0;for(const [k,r] of m)if(r.g!==g)m.delete(k);for(const [k,r] of SIM_IP.fl)if(r.g!==g)SIM_IP.fl.delete(k)}}
+function simInterpSnapshot(){const m=SIM_IP.mf,g=++SIM_IP.genF;simIpFastEach(o=>simIpRec(m,o,g));SIM_IP.apt=typeof APT_OPS!=='undefined'?{p:APT_OPS.clk,c:NaN}:null}
+function simInterpPost(){const m=SIM_IP.mf,g=SIM_IP.genF;simIpFastEach(o=>{const r=m.get(o);if(r&&r.g===g){r.cx=o.x;r.cy=o.y;r.ch=o.heading}});if(SIM_IP.apt)SIM_IP.apt.c=APT_OPS.clk}
+function simLerpA(a,b,t){if(!(Number.isFinite(a)&&Number.isFinite(b)))return b;let d=b-a;d=((d+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI;return a+d*t}
+function simInterpOne(o,r,t,gen){if(!r||r.g!==gen||o.x!==r.cx||o.y!==r.cy)return;const dx=r.cx-r.px,dy=r.cy-r.py;if(!(dx*dx+dy*dy<=14400))return;
+ {const s=SIM_IP.saved,n=SIM_IP.sn|0;s[n]=o;s[n+1]=o.x;s[n+2]=o.y;s[n+3]=o.heading;SIM_IP.sn=n+4};o.x=r.px+dx*t;o.y=r.py+dy*t;if(typeof o.heading==='number'&&typeof r.ph==='number')o.heading=simLerpA(r.ph,r.ch,t)}
+// tF: the moment between the last two SIM steps (player / camera / airport); tW: the moment inside the current world window
+function simInterpApply(tF,tW){
+ if(tW<1){const m=SIM_IP.mw,g=SIM_IP.genW;simIpWorldEach(o=>simInterpOne(o,m.get(o),tW,g));for(const v of FL_ACTIVE)simInterpOne(v,SIM_IP.fl.get(v.id),tW,g)}
+ if(tF<1){const m=SIM_IP.mf,g=SIM_IP.genF;simIpFastEach(o=>simInterpOne(o,m.get(o),tF,g));const A=SIM_IP.apt;if(A&&Number.isFinite(A.p)&&APT_OPS.clk===A.c){SIM_IP.aptSaved=APT_OPS.clk;APT_OPS.clk=A.p+(A.c-A.p)*tF}}
+ simTrackSample()}
+// QA (PERF-02 · K-17): the drawn position of one tracked road vehicle in every frame (off unless a test sets SIM_LOOP.trackId)
+function simTrackSample(){const id=SIM_LOOP.trackId;if(id==null)return;const v=TRAFFIC_CARS.find(q=>q.id===id)||BUS_VEHICLES.find(q=>q.id===id);if(!v)return;const T=SIM_LOOP.track||(SIM_LOOP.track=[]);T.push([SIM_LOOP.frameNow,v.x,v.y,SIM_LOOP.lastSteps,SIM_LOOP.worldTicks]);if(T.length>4000)T.splice(0,T.length-4000)}
+function simInterpRestore(){const s=SIM_IP.saved,n=SIM_IP.sn|0;for(let i=0;i<n;i+=4){const o=s[i];o.x=s[i+1];o.y=s[i+2];if(s[i+3]!==undefined)o.heading=s[i+3];s[i]=null}SIM_IP.sn=0;if(SIM_IP.aptSaved!=null){APT_OPS.clk=SIM_IP.aptSaved;SIM_IP.aptSaved=null}}
+// QA (K-23 after the fixed step · PERF-06 determinism): run the real SIM step function N times without drawing — same seed + clock
+// (#qa-freeze) → same result. Every 30 s of SIM: how many road vehicles / buses did not move (< 1 px) since the last sample.
+window.__TC_SIM_STEP_QA=({seconds=600,warmup=60,every=30,seed=null}={})=>{const H=SIM_LOOP.h;if(seed!=null)trafficReseed2(+seed);let t=SIM_LOOP.simNow??performance.now();const n=Math.round(seconds/H),k=Math.round(every/H),samples=[];let prev=null,fmax=0,fsum=0,cnt=0,fp=0,first=null;
+ for(let i=1;i<=n;i++){simStep(H,t+H*1000);t+=H*1000;if(i%k===0){const cur=new Map();for(const v of TRAFFIC_CARS)cur.set(v.id,[v.x,v.y]);for(const v of BUS_VEHICLES)cur.set(v.id,[v.x,v.y]);let fr=0;if(prev)for(const [id,p] of cur){const q=prev.get(id);if(q&&Math.hypot(p[0]-q[0],p[1]-q[1])<1)fr++}prev=cur;const ts=Math.round(i*H);
+  if(ts>warmup){fmax=Math.max(fmax,fr);fsum+=fr;cnt++;if(fr>=40&&first==null)first=ts}samples.push([ts,fr]);for(const v of TRAFFIC_CARS)fp=(Math.imul(fp,31)+Math.round(v.x*8)*3+Math.round(v.y*8))|0;for(const v of BUS_VEHICLES)fp=(Math.imul(fp,31)+Math.round(v.x*8))|0}}
+ SIM_LOOP.simNow=t;return{seconds,steps:n,dt:H,samples,frozenMax:fmax,frozenAvg:cnt?+(fsum/cnt).toFixed(2):0,gridlockAt:first,fingerprint:fp,vehicles:TRAFFIC_CARS.length+BUS_VEHICLES.length}};
+window.__TC_SIM_TRACK=(id)=>{if(id===undefined)return(SIM_LOOP.track||[]).slice();if(id==='pick'){const C=Camera,L=[...TRAFFIC_CARS,...BUS_VEHICLES].filter(v=>(v.speed||0)>25&&Math.abs(v.x-C.x)<600&&Math.abs(v.y-C.y)<400);id=L.length?L[0].id:null}SIM_LOOP.trackId=id;SIM_LOOP.track=[];return id};
+window.__TC_SIM_LOOP=()=>({h:SIM_LOOP.h,stepHz:SIM_LOOP.stepHz,maxSteps:SIM_LOOP.maxSteps,steps:SIM_LOOP.steps,worldTicks:SIM_LOOP.worldTicks,worldDt:SIM_LOOP.worldDt,alphaW:+SIM_LOOP.alphaW.toFixed(3),lastSteps:SIM_LOOP.lastSteps,alpha:+SIM_LOOP.alpha.toFixed(3),ratio:+SIM_LOOP.ratio.toFixed(3),droppedS:+SIM_LOOP.dropped.toFixed(3),simNow:Math.round(SIM_LOOP.simNow||0),frames:SIM_LOOP.frames});
+let last=performance.now(),fps=60,fc=0;function frame(now){const rdt=Math.max(0,(now-last)/1000),dt=Math.min(.05,rdt);last=now;if(typeof G77_LDS!=='undefined'&&G77_LDS.job&&!(G77_LDS.job.bg&&g77LdsBgFrame(rdt))){g77LdsFrame();requestAnimationFrame(frame);return}   /* D-220 · p283: in the background the frame goes on */   /* D-220 (1) · p266 */if(rdt>0)fps+=(1/Math.max(rdt,.004)-fps)*.05;if(!State.paused){PlayerProfile.stats.playTimeSeconds+=dt;a6Update(dt,now);updateFishing(now);updateBorrowedVehicleReturns(dt)}updateB5Show(dt,now);updateA4Practice(dt,now);updateFishingActionButton();if(Input.consume('F3')){State.debug=!State.debug;$('debug').classList.toggle('show',State.debug);$('devPanel').classList.toggle('show',State.debug)}if(Input.consume('KeyT')){if(State.ferryRide)a6SkipFerry();else setPhoneOpen(!State.phoneOpen);}if(Input.consume('KeyM'))setMapOpen(!State.mapOpen);if(Input.consume('KeyQ'))setVehicleQaOpen(!State.vehicleQaOpen);if(Input.consume('F4'))toggleMapQa();   /* GATE-77P · p222: F4 in the normal game again */if(Input.consume('KeyE')&&!State.mapQa)toggleVehicle();if(Input.consume('KeyF')&&!State.mapQa){if(State.fishingSetup)startFishingFromSetup();else if(State.phoneOpen)setPhoneOpen(false);else interactNearbyPoi()}   /* 8.11 · D‑568: F בפעם השנייה סוגר את המסך שנפתח וחוזר למשחק */if(Input.consume('F6'))SaveManager.save('manual');if(Input.consume('F7'))SaveManager.load();const esc=Input.consume('Escape');if(esc&&typeof G77_FF!=='undefined'&&G77_FF.open)g77FfClose();else if(esc&&State.fishingSetup)closeFishingSetup();else if(esc&&State.phoneOpen)setPhoneOpen(false);else if(esc&&State.mapOpen)setMapOpen(false);else if(esc&&State.vehicleQaOpen)setVehicleQaOpen(false);if(Input.consume('F8'))Dbg.marker();if(Input.consume('ReportKey'))copyText(Dbg.text(),'הדוח הועתק');if(Input.consume('PauseKey')){State.paused=!State.paused;$('pauseState').textContent=State.paused?'מושהה':'פעיל';toast(State.paused?'מושהה':'ממשיך')}if(Input.consume('KeyR')){Camera.reset();Targets.clear();toast('הרכב הוחזר לנקודת ההתחלה')}if(Input.consume('GraphKey')){State.graph=!State.graph;toast('Graph '+(State.graph?'ON':'OFF'))}if(Input.consume('LaneKey')){State.lanes=!State.lanes;toast('Lanes '+(State.lanes?'ON':'OFF'))}if(!State.paused&&simWorldOpen())Camera.wheel();if(FS.used>FS.stats.usedMax)FS.stats.usedMax=FS.used;FS.used=0;FS.frames++;{const L=SIM_LOOP,H=L.h;if(L.simNow==null){L.simNow=now;try{gameClock()}catch(e){}}   /* p330: the game clock starts with the world clock */let steps=0;if(State.paused)L.acc=0;else{L.acc+=Math.min(.25,rdt);const t0=performance.now();L.aoEnd=t0+AO.cfg.ms;L.aoWork=null;while(L.acc>=H&&steps<L.maxSteps){simInterpSnapshot();simStep(H,L.simNow+H*1000);L.simNow+=H*1000;L.acc-=H;steps++;if(performance.now()-t0>L.budgetMs)break}L.aoEnd=null;if(steps)simInterpPost();if(steps)try{FS.used+=flPlanAheadStep(Math.max(.5,Math.min(3,FS.budgetMs-FS.used)),L.simNow+SIM_BENCH_OFS)}catch(e){}L.simMsTotal=(L.simMsTotal||0)+(performance.now()-t0);if(L.acc>H){L.dropped+=L.acc-H;L.acc=H}}L.lastSteps=steps;L.frames++;L.frameNow=now;L.alpha=State.paused?1:Math.min(1,L.acc/H);L.renderNow=L.simNow-(1-L.alpha)*H*1000;L.win.push([now,steps*H,rdt]);while(L.win.length>1&&now-L.win[0][0]>2000)L.win.shift();{let s=0,r=0;for(const w of L.win){s+=w[1];r+=Math.min(.25,w[2])}L.ratio=r>0?s/r:1}}if(!State.paused&&simWorldOpen()&&!State.mapQa)updateNavigation(now);Input.wheel=0;Input.pressed.clear();const liveChunk=currentChunkId();if(liveChunk&&liveChunk!==SaveManager._lastChunk){if(SaveManager._lastChunk)SaveManager.save('auto',{backup:false,silent:true});SaveManager._lastChunk=liveChunk;if(!PlayerProfile.progression.discoveredChunks.includes(liveChunk))PlayerProfile.progression.discoveredChunks.push(liveChunk)}mapBaseStep(now);{const L=SIM_LOOP;L.alphaW=(State.paused||L.worldEnd==null)?1:Math.max(0,Math.min(1,1-(L.worldEnd-L.renderNow)/(L.worldDt*1000)));simInterpApply(L.alpha,L.alphaW)}const __ph=g77PhoneHold();try{if(!__ph)render(SIM_LOOP.renderNow+SIM_BENCH_OFS)}finally{simInterpRestore()}if(!__ph&&!(typeof G77_PHS!=='undefined'&&G77_PHS.under))drawMiniMap();   /* D-220 · p289 */if(State.mapOpen)drawFullMap();if(State.vehicleQaOpen)drawVehicleQa();if(State.phoneOpen&&now%1000<40)renderPhone();Targets.ui();updatePlayerHud(fps);const dl=$('driveLine');if(dl)dl.textContent=State.mapQa?`MAP QA CAMERA · ${Math.round(Camera.x)},${Math.round(Camera.y)} · zoom ${Camera.zoom.toFixed(2)}`:(PlayerProfile.mode==='vehicle'?`${PlayerCar.asset} · ${carKmh().toFixed(0)} km/h · ${PlayerCar.surface}${PlayerCar.roadId?' · '+PlayerCar.roadId:''} · collisions ${PlayerCar.collisions}`:`${PLAYER_PERSON_ID} · ON FOOT · ${PlayerPed.pose} · dir ${PlayerPed.dir}`);const il=$('interactionLine');if(il){if(State.mapQa)il.textContent='מצלמה חופשית: WASD / Shift / גרירה / לחיצה במינימפה · F4 חזרה לשחקן';else if(d5ForkliftMission()){const fm=d5ForkliftMission(),ft=forkliftTask(fm),fp=fm.stage==='forklift-drop'?ft.drop:ft.pickup,fd=Math.hypot(PlayerCar.x-fp.x,PlayerCar.y-fp.y);il.textContent=fd<38&&carKmh()<3?`F: ${fm.stage==='forklift-drop'?'הנח משטח':'הרם משטח'} ${Math.min(D5_FORKLIFT_TASKS.length,(fm.forkliftIndex||0)+1)}/${D5_FORKLIFT_TASKS.length}`:`מלגזה: סע לסימון ${fm.stage==='forklift-drop'?'הירוק':'הצהוב'} ועצור`}else{const near=PlayerProfile.mode==='walk'?nearestDriveableVehicle():null,d2=PlayerProfile.mode==='walk'?nearbyD2Poi(105):null,e4=PlayerProfile.mode==='walk'?nearbyE4Poi(105):null,e5=PlayerProfile.mode==='walk'?nearbyE5Poi(110):null,d5=nearbyD5Poi(PlayerProfile.mode==='vehicle'?145:115,{allowVehicle:PlayerProfile.mode==='vehicle'&&carKmh()<=2}),home=PlayerProfile.mode==='walk'?nearbyPlayerHome(92):null,shop=PlayerProfile.mode==='walk'?nearbyRetailPoi(82):null,svc=nearbyD3Service(130),b2=PlayerProfile.mode==='walk'?nearbyB2FishingSpot(78):null,c4=PlayerProfile.mode==='walk'?nearbyC4Poi(105):null,d4=nearbyD4Poi(PlayerProfile.mode==='vehicle'?135:110,{allowVehicle:PlayerProfile.mode==='vehicle'&&carKmh()<=2}),fs=State.fishingSession;const apt=nearbyAptPoi();const a4=nearbyA4Poi();const b5=nearbyB5Poi();const fishHint=b2?(fs?.busy?(['bite','reel'].includes(fs.phase)?(fs.landing?'מעלה את הדג…':`F: משוך ${fs.pullCount||0}/${fs.pullsNeeded||'?'} · ${(fishFightRemainingMs(fs)/1000).toFixed(1)} שנ׳`):'F: ממתינים לנשיכה…'):'F: בחר ציוד לדיג'):'';const pgI=pgNearIntercom();il.textContent=pgI?('F: אינטרקום · '+pgI.label+(PlayerProfile.mode==='vehicle'?' · E: יציאה מהרכב':'')):PlayerProfile.mode==='vehicle'?(d4?`F: ${d4.label} · עבודות D4 · E: יציאה מהרכב`:d5?`F: ${d5.label} · עבודות נמל D5 · E: יציאה מהרכב`:svc&&carKmh()<=2?`F: ${svc.label} · E: יציאה מהרכב`:(carKmh()<=4?'E: יציאה מהרכב':'E: עצור כדי לצאת')):((a4?`F: ${a4.label} · `:apt?`F: ${apt.label} · `:b5?`F: ${b5.label} · `:b2?`${fishHint} · `:d2?`F: ${d2.label} · `:e4?`F: ${e4.label} · `:e5?`F: ${e5.label} · `:d5?`F: ${d5.id==='D5-WH'?'מחסן D5 · עבודת מלגזה':d5.label} · `:home?`F: בית השחקן / שדרוג · `:shop?`F: כניסה ל-${shop.label} · `:svc?`F: ${svc.label} · `:c4?`F: ${c4.label} · `:d4?`F: ${d4.label} · `:'')+(near?'E: כניסה ל'+((typeof VEHICLE_CATALOG!=='undefined'&&VEHICLE_CATALOG[near.asset]?.name)||(typeof G7_VEH_HE!=='undefined'&&G7_VEH_HE[near.asset])||'רכב'):'התקרב לרכב או לכניסה'))}}const ps=$('playerStateLine');if(ps)ps.textContent=`מצב שחקן: ${PlayerProfile.money.toLocaleString('he-IL')} מטבעות · ${PlayerProfile.mode==='walk'?'ברגל':'ברכב'} · בית רמה ${PlayerProfile.home.homeLevel} · רישיונות ${LICS.filter(l=>licenseOwned(l[0])).length}/18 · ${PlayerProfile.progression.discoveredChunks.length} אזורים`;if(State.debug&&++fc%10===0){const a=roadAudit(false),t=Targets.current(),rows=[['Version',VER],['FPS',fps.toFixed(1)],['Camera',Math.round(Camera.x)+','+Math.round(Camera.y)],['Zoom',Camera.zoom.toFixed(2)],['Target',t.id],['Nodes',NODES.length],['Edges',EDGES.length],['Connectors',ALL_CONNECTORS.length],['Lots/Units',LOTS.length+D3_VILLAS.length+B3_BUILDINGS.length+C4_BUILDINGS.length+B2_FISH_SPOTS.length],['Signal',TrafficSignalController.current().id],['Mode',PlayerProfile.mode],['Vehicle',PlayerCar.asset],['Person',PLAYER_PERSON_ID],['Speed',carKmh().toFixed(1)+' km/h'],['Surface',PlayerCar.surface],['Road',PlayerCar.roadId||'—'],['Collisions',PlayerCar.collisions],['Map',State.mapOpen?'FULL':'MINI'],['Chunks',MAP_CHUNKS.length],['Max vehicle width',VEHICLE_WIDTH_MAX+'/'+SCALE.lane],['Save',SaveManager.lastStatus],['Money',PlayerProfile.money+' מטבעות'],['Audit',a.ok?'PASS':'FAIL'],['Markers',Dbg.markers.length],['Reports',Dbg.reports.length]];$('dTable').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');$('eventLog').textContent=Dbg.events.slice(-16).map(e=>`${e.iso.slice(11,19)} [${e.category}] ${e.name}`).join('\n')||'—'}requestAnimationFrame(frame)}
+
+let pd=null;cv.addEventListener('pointerdown',e=>{pd={x:e.clientX,y:e.clientY,m:false};cv.setPointerCapture(e.pointerId);focusGame()});cv.addEventListener('pointermove',e=>{if(!pd)return;const dx=e.clientX-pd.x,dy=e.clientY-pd.y;if(!pd.m&&Math.hypot(dx,dy)<5)return;pd.m=true;if(State.mapQa){Camera.x=worldClampX(Camera.x-dx/Camera.zoom);Camera.y=worldClampY(Camera.y-dy/Camera.zoom)}pd.x=e.clientX;pd.y=e.clientY});cv.addEventListener('pointerup',e=>{if(pd&&!pd.m)g77TapPick(e.clientX,e.clientY);pd=null;focusGame()});   /* GATE-77P · p212 */cv.addEventListener('pointercancel',()=>pd=null);
+miniCv.addEventListener('click',e=>{if(!State.mapQa)return;const r=miniCv.getBoundingClientRect(),T=mapTf(r.width,r.height,WORLD,5),px=e.clientX-r.left,py=e.clientY-r.top;Camera.x=worldClampX((px-T.x(0))/T.s);Camera.y=worldClampY((py-T.y(0))/T.s);toast('מצלמה הועברה לאזור במינימפה');focusGame()});
+$('copyBtn').onclick=()=>copyText(Dbg.text(),'הדוח הועתק');$('jsonBtn').onclick=downloadJson;$('saveBtn').onclick=()=>{SaveManager.save('manual');focusGame()};$('loadBtn').onclick=()=>{SaveManager.load();focusGame()};$('exportSaveBtn').onclick=()=>{SaveManager.export();focusGame()};$('importSaveBtn').onclick=()=>$('importSaveFile').click();$('importSaveFile').onchange=async e=>{const f=e.target.files?.[0];if(f)await SaveManager.importFile(f);e.target.value='';focusGame()};$('saveQaBtn').onclick=()=>{SaveManager.roundTripQA();focusGame()};$('markBtn').onclick=()=>Dbg.marker();$('clearTargetBtn').onclick=()=>{Targets.clear();toast('יעד נוקה');focusGame()};$('auditBtn').onclick=()=>roadAudit(true);$('fitBtn').onclick=()=>{Camera.fit();toast('הרכב הותאם למסך');focusGame()};$('mapBtn').onclick=()=>setMapOpen(true);$('mapQaBtn').onclick=()=>toggleMapQa();$('mapQaBtn').style.display='none';$('phoneBtn').onclick=()=>setPhoneOpen(true);$('phoneClose').onclick=()=>setPhoneOpen(false);$('phoneBack').onclick=()=>{State.phoneApp='home';renderPhone()};$('phoneOverlay').addEventListener('click',e=>{const a6=e.target.closest('[data-a6-action]');if(a6)return a6Action(a6.dataset.a6Action,a6.dataset.a6Arg);if(wdrClick(e))return;   /* D‑593: חדר ההלבשה החדש ומחלקת הלבוש בחנויות */const app=e.target.closest('[data-phone-app]');if(app)return openPhoneApp(app.dataset.phoneApp);const a4=e.target.closest('[data-a4-action]');if(a4)return a4Action(a4.dataset.a4Action,a4.dataset.a4Arg);const e2=e.target.closest('[data-e2-action]');if(e2)return e2Action(e2.dataset.e2Action);const b5=e.target.closest('[data-b5-action]');if(b5)return b5Action(b5.dataset.b5Action,b5.dataset.b5Arg);const b6buy=e.target.closest('[data-b6-buy]');if(b6buy)return b6ShopAction('buy',b6buy.dataset.b6Buy);const b6sell=e.target.closest('[data-b6-sell]');if(b6sell)return b6ShopAction('sell',b6sell.dataset.b6Sell||null);const la=e.target.closest('[data-lot-act]');if(la)return lotAction(la.dataset.lotAct,la.dataset.lotArg);const exb=e.target.closest('[data-exclusive-buy]');if(exb)return buyExclusiveShopItem(exb.dataset.exclusiveShop,exb.dataset.exclusiveBuy);const buy=e.target.closest('[data-shop-buy]');if(buy)return buyShopItem(buy.dataset.shopBuy);const use=e.target.closest('[data-item-use]');if(use)return useInventoryItem(use.dataset.itemUse);const eco=e.target.closest('[data-eco-action]');if(eco){if(eco.dataset.ecoAction==='refuel')refuelAtStation();else if(eco.dataset.ecoAction==='repair')repairAtGarage();return}const ga=e.target.closest('[data-garage-activate]');if(ga)return activateOwnedVehicle(ga.dataset.garageActivate);const gf=e.target.closest('[data-garage-roof]');if(gf)return setOwnedVehicleRoof(activeOwnedVehicle().ownedId,Number(gf.dataset.garageRoof));const gc=e.target.closest('[data-garage-color]');if(gc)return paintOwnedVehicle(activeOwnedVehicle().ownedId,Number(gc.dataset.garageColor));const gr=e.target.closest('[data-garage-rim]');if(gr)return setOwnedVehicleRim(activeOwnedVehicle().ownedId,Number(gr.dataset.garageRim));const db=e.target.closest('[data-dealer-buy]');if(db)return buyDealerVehicle(db.dataset.dealerBuy);const ub=e.target.closest('[data-upgrade-buy]');if(ub)return buyVehicleUpgrade(ub.dataset.upgradeBuy);const hu=e.target.closest('[data-home-upgrade]');if(hu)return buyHomeUpgrade();const lic=e.target.closest('[data-license-start]');if(lic)return startLicenseTrial(lic.dataset.licenseStart);const nav=e.target.closest('[data-nav-target]');if(nav){setNavigationTarget(nav.dataset.navTarget);return renderPhone()}const navClear=e.target.closest('[data-nav-clear]');if(navClear){clearNavigation();return renderPhone()}const sso=e.target.closest('[data-shop-sell-one]');if(sso)return sellLakeFish(sso.dataset.shopSellOne);const ss=e.target.closest('[data-shop-sell]');if(ss?.dataset.shopSell==='fish')return sellLakeFish();const to=e.target.closest('[data-taxi-order]');if(to)return beginTaxiCall(null,'phone');const tc=e.target.closest('[data-taxi-cancel]');if(tc)return cancelTaxiService();const td=e.target.closest('[data-taxi-dest]');if(td)return startTaxiPassengerRide(td.dataset.taxiDest,td.dataset.taxiMode||'watch');const ts=e.target.closest('[data-taxi-skip]');if(ts)return skipTaxiRideToDestination();const mv=e.target.closest('[data-mission-view]');if(mv){MISSION_VIEW_MODE=mv.dataset.missionView==='area'?'area':'type';return renderPhone()}const ms=e.target.closest('[data-mission-start]');if(ms)return startMission(ms.dataset.missionStart);const mc=e.target.closest('[data-mission-cancel]');if(mc){cancelActiveMission();return renderPhone()}const oa=e.target.closest('[data-open-app]');if(oa){State.phoneApp=oa.dataset.openApp;return renderPhone()}const act=e.target.closest('[data-phone-action]');if(!act)return;const a=act.dataset.phoneAction;if(a==='save'){SaveManager.save('manual');renderPhone()}else if(a==='load'){SaveManager.load();renderPhone()}else if(a==='export')SaveManager.export();else if(a==='import')$('importSaveFile').click();else if(a==='reset'){if(confirm('לאפס את כל השמירה ולהתחיל משחק חדש?')){SaveManager.resetAll();renderPhone()}}else if(a==='fullmap'){setPhoneOpen(false);setMapOpen(true)}});$('phoneOverlay').addEventListener('input',e=>{if(e.target.matches?.('[data-a4-aim]')&&State.a4Game?.phase==='ready')State.a4Game.aim=clamp(Number(e.target.value)/100,0,1)});$('fishingActionBtn').onclick=()=>reelLakeFishing();$('fishingSetupOverlay').addEventListener('click',e=>{if(e.target===$('fishingSetupOverlay'))return closeFishingSetup();const start=e.target.closest('[data-fishing-start]');if(start&&State.fishingSetup)return startFishingFromSetup();const rb=e.target.closest('[data-fish-rod]');if(rb&&State.fishingSetup){const st=State.fishingSetup;st.rod=Number(rb.dataset.fishRod);if(!st.bait||!FISHX.fitsLv(st.rod,st.bait)){const hb=fishingBaitsFor(fishingContext(fishingSpotById(st.spot)));st.bait=Object.keys(hb).find(id=>FISHX.fitsLv(st.rod,id)&&(PlayerProfile.inventory[id]||0)>0)||st.bait}return renderFishingSetup()}const bb=e.target.closest('[data-fish-bait]');if(bb&&State.fishingSetup&&(PlayerProfile.inventory[bb.dataset.fishBait]||0)>0){State.fishingSetup.bait=bb.dataset.fishBait;return renderFishingSetup()}});$('fishingSetupCancel').onclick=()=>closeFishingSetup();
+$('phoneHomeBar').onclick=()=>{State.phoneApp='home';renderPhone()};$('closeMap').onclick=()=>setMapOpen(false);$('vehicleQaBtn').onclick=()=>setVehicleQaOpen(true);$('closeVehicleQa').onclick=()=>setVehicleQaOpen(false);$('mapOverlay').addEventListener('click',e=>{if(e.target===$('mapOverlay'))setMapOpen(false)});$('graphBtn').onclick=()=>{State.graph=!State.graph;toast('Graph '+(State.graph?'ON':'OFF'));focusGame()};$('lanesBtn').onclick=()=>{State.lanes=!State.lanes;toast('Lanes '+(State.lanes?'ON':'OFF'));focusGame()};$('houseFitBtn').onclick=()=>{State.houseFit=!State.houseFit;toast('House Fit '+(State.houseFit?'ON':'OFF'));focusGame()};$('lastMarkerBtn').onclick=()=>Dbg.deleteLast();$('resetSaveBtn').onclick=()=>{if(confirm('לאפס את כל השמירה והגיבוי ולהתחיל משחק חדש?'))SaveManager.resetAll();focusGame()};$('resetHistoryBtn').onclick=()=>Dbg.resetHistory();
+window.__TC_V186_QA=()=>{const shopIds=Object.keys(UNIQUE_SHOP_STOCK),exclusiveIds=shopIds.flatMap(id=>UNIQUE_SHOP_STOCK[id].map(q=>q[0])),routeDefs=Object.values(MISSION_DEFS).filter(d=>d.type==='route'),nav=navPoiRegistry(),checks={achievementsLive:PHONE_APPS.find(a=>a.id==='achievements')?.live===1,achievementCatalog:ACHIEVEMENT_DEFS.length>=20,bestFishTracked:'bestValueCatch' in ensureFishingSchema(),shopCount:shopIds.length===23   /* p651: + סוליה, פרחי השדה, גלידת הכפר */   /* p661: D2 − בנק, מסעדה, קפה, מינימרקט + משקפיים, מספרה, טלפונים, ספרים, קולנוע */,fourUniquePerShop:shopIds.every(id=>UNIQUE_SHOP_STOCK[id].length>=4),exclusiveProductCount:exclusiveIds.length>=76&&new Set(exclusiveIds).size===exclusiveIds.length,exclusiveRouting:exclusiveIds.every(id=>SHOP_CATALOG[id]?.exclusive&&SHOP_CATALOG[id]?.shops?.length===1),e3KioskInteractive:!!E3_INTERACTIONS['E3-KIOSK'],routeMissionCount:routeDefs.length===10,routeStopsValid:routeDefs.every(d=>d.stops.length>=3&&d.stops.every(id=>!!nav[id])),routeEngine:typeof updateRouteMission==='function'&&String(startMission).includes("d.type==='route'")&&String(updateMission).includes("d.type==='route'")};return{ok:Object.values(checks).every(Boolean),checks,shops:shopIds.length,exclusiveProducts:exclusiveIds.length,routeMissions:routeDefs.map(d=>({id:d.id,stops:d.stops.length}))}};
+window.__TC_ECONOMY_QA=()=>{ensureEconomySchema();const snap=collectSaveState(),checks={saveValid:validateSave(snap).ok,inventorySaved:JSON.stringify(snap.player.inventory)===JSON.stringify(PlayerProfile.inventory),licensesSaved:JSON.stringify(snap.licenses)===JSON.stringify(PlayerProfile.licenses),garageSaved:JSON.stringify(snap.garage)===JSON.stringify(PlayerProfile.garage),homeSaved:JSON.stringify(snap.home)===JSON.stringify(PlayerProfile.home),fishingSaved:JSON.stringify(snap.fishing)===JSON.stringify(PlayerProfile.fishing),transactionsSaved:Array.isArray(snap.worldPersistent?.transactions),remoteShopReadOnly:(()=>{const a=State.shopId,b=State.interactionId;State.shopId=null;State.interactionId=null;const h=phoneShop();State.shopId=a;State.interactionId=b;return !h.includes('data-shop-buy')&&h.includes('קנייה במקום בלבד')})(),fishingPhoneReadOnly:!phoneFishing().includes('data-fish-action')};return{ok:Object.values(checks).every(Boolean),checks,transactionCount:PlayerProfile.worldPersistent.transactions.length}};
+/* D‑593: המאזין של הבחירה הישנה (data-wardrobe-field, ‏APPEARANCE_LIMITS) יצא */
+window.__TC_GATE06B_DIAGNOSTICS=()=>({world:roadAudit(false),save:validateSave(collectSaveState()),saveStatus:SaveManager.lastStatus});
+function fishingExpectedNet(rod,bait){const sp=fishingSpeciesWeights(rod,bait),sw=sp.reduce((n,x)=>n+x.w,0)||1,base=sp.reduce((n,x)=>n+x.q.value*x.w,0)/sw,sz=fishingSizeChances(rod,bait),sc=[.7,1,1.22,1.48],pulls=[2,3,4,6],escape=[.012,.022,.045,.075];let mult=0;for(let i=0;i<4;i++){const ep=clamp(escape[i]-(rod-1)*.009,.004,.10),success=Math.pow(1-ep,pulls[i]-1);mult+=sz[i]/100*FISH_VALUE_MULT[i]*sc[i]*.99*success}return Math.round((base*mult-(SHOP_CATALOG[bait]?.price||0))*10)/10}
+window.__TC_V148_QA=()=>{const baitProfiles=Object.fromEntries(LAKE_BAIT_IDS.map(id=>[id,fishingSpeciesChances(5,id).map(q=>[q.id,+q.pct.toFixed(2)])]));const checks={phoneViewsRestored:typeof phoneLicenses==='function'&&typeof phoneAchievements==='function'&&typeof phoneStats==='function',nineLakeFish:LAKE_FISH.length===9&&LAKE_FISH.every(q=>!!TurboCity.get(q.id)),fiveBaits:LAKE_BAIT_IDS.length===7&&LAKE_BAIT_IDS.every(id=>!!SHOP_CATALOG[id]),baitPricesSynced:LAKE_BAIT_IDS.every(id=>SHOP_CATALOG[id]?.price===LOT_PRICES[id]),ambientAllFish:B2_LAKE_FISH_ASSETS.length===9&&B2_SWIM_FISH.length===18,antiDeadlock:TrafficCore2.ready&&typeof core2Explain==='function'&&TRAFFIC_FOLLOW_GAP===15&&CORE2.BACKOUT_AFTER>0,busBoxGuard:typeof movementReady2==='function'&&typeof trafficPlanTo==='function',line1Fleet:BUS_VEHICLES.filter(b=>b.line===1).length===7-g77BusDrop(1),line2Live:busStopsForLine(2).length===5&&BUS_VEHICLES.filter(b=>b.line===2).length===6-g77BusDrop(2),line3Live:busStopsForLine(3).length===6&&BUS_VEHICLES.filter(b=>b.line===3).length===5-g77BusDrop(3)};const economy=LAKE_BAIT_IDS.map(id=>({id,label:BAIT_LABELS[id],price:SHOP_CATALOG[id].price,rod1:fishingExpectedNet(1,id),rod5:fishingExpectedNet(5,id)}));return{ok:Object.values(checks).every(Boolean),checks,baits:economy,species:LAKE_FISH.map(q=>q.name),baitProfiles}};
+window.__TC_V152_D4_QA=()=>{const checks={fourTrailerBays:D4_TRAILER_BAYS.length===5,docksOnTheDcFace:D4_TRAILER_BAYS.ever

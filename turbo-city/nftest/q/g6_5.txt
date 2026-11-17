@@ -1,0 +1,1159 @@
+n z<F.dwell?0:F.cycle-z;return z>=F.dwell+F.travel&&z<F.dwell*2+F.travel?0:(F.dwell+F.travel-z+F.cycle)%F.cycle}
+function a6BoardFerry(from){
+ const id=from==='G8'?'G8-FERRY':'A6-FERRY';if(!a6Held(id)||State.ferryRide)return false;
+ if(PlayerProfile.activeMission||State.licenseExam||State.taxiRide)return toast('סיים את הפעילות הנוכחית לפני ההפלגה');
+ const p=a6FerryPose();if(p.phase!==from||p.remaining<4)return toast('המעבורת אינה זמינה לעלייה כרגע');
+ if(PlayerProfile.money<A6_FERRY.fare)return toast('חסרים '+money(A6_FERRY.fare-PlayerProfile.money));
+ const d=a6FerryPersistent(),ride={from,to:from==='A6'?'G8':'A6',paid:A6_FERRY.fare,boardedAt:d.clock};
+ PlayerProfile.money-=A6_FERRY.fare;d.paid=(d.paid||0)+A6_FERRY.fare;d.ride=ride;State.ferryRide={...ride};clearNavigation({force:true,silent:true});setPhoneOpen(false);recordTransaction('ferry-ticket',-A6_FERRY.fare,{from,to:ride.to});a6PlacePassenger();SaveManager.save('ferry-board',{backup:true,silent:true});toast('עלית למעבורת · T לדילוג על ההפלגה');return true;
+}
+function a6PlacePassenger(){if(!State.ferryRide)return;const p=a6FerryPose();PlayerPed.x=p.x-Math.cos(p.heading)*38;PlayerPed.y=p.y-Math.sin(p.heading)*38;PlayerPed.pose='idle';PlayerPed.moving=false;PlayerPed.heading=p.heading;PlayerPed.dir=personDirection(Math.cos(p.heading),Math.sin(p.heading));PlayerProfile.mode='walk'}
+function a6FinishFerry(){const r=State.ferryRide;if(!r)return false;const p=r.to==='G8'?G8_FERRY_POI:A6_POIS['A6-FERRY'];PlayerPed.x=p.x;PlayerPed.y=p.y;PlayerPed.heading=0;PlayerPed.pose='idle';PlayerProfile.mode='walk';const d=a6FerryPersistent();d.trips=(d.trips||0)+1;d.lastTrip={from:r.from,to:r.to,at:iso(),fare:r.paid};d.ride=null;State.ferryRide=null;Camera.x=p.x;Camera.y=p.y;SaveManager.save('ferry-arrive',{backup:false,silent:true});toast(r.to==='G8'?'הגעת למזח האי · F למעבורת חזרה':'הגעת ל-A6 · הרכב נשאר בחניה');return true}
+function a6SkipFerry(){const r=State.ferryRide;if(!r)return false;const d=a6FerryPersistent(),base=Math.floor(d.clock/A6_FERRY.cycle)*A6_FERRY.cycle;d.clock=r.to==='G8'?base+A6_FERRY.dwell+A6_FERRY.travel:base+A6_FERRY.cycle;return a6FinishFerry()}
+function a6Restore(){State.a6Harvest=null;const d=a6FerryPersistent();State.ferryRide=d.ride?{...d.ride}:null;if(State.ferryRide)a6PlacePassenger();for(const m of A6_MACHINES)m.s=m.id.includes('TRACTOR')?70:0}
+function a6Reset(){State.a6Harvest=null;State.ferryRide=null;for(const m of A6_MACHINES)m.s=m.id.includes('TRACTOR')?70:0}
+function a6Update(dt,now=0){
+ if(State.paused||State.mapQa)return;
+ a6FarmPersistent().clock+=dt;const d=a6FerryPersistent();d.clock+=dt;
+ if(State.ferryRide){const p=a6FerryPose();if(p.phase===State.ferryRide.to&&d.clock>State.ferryRide.boardedAt+.01)a6FinishFerry();else a6PlacePassenger()}
+ /* S11: המכונות של החווה — לפי שעון החווה (S11LIVE.machinePose), אין צעד כאן */
+ const h=State.a6Harvest;if(h){if(!a6Held(h.id)){State.a6Harvest=null;toast('הקטיף הופסק · התרחקת מהעמדה')}else if((h.elapsed+=dt)>=3){const f=A6_FIELDS.find(f=>f.id===h.id),p=a6FarmPersistent();PlayerProfile.inventory[f.item]=(PlayerProfile.inventory[f.item]||0)+f.yield;p.harvested=(p.harvested||0)+f.yield;p.crops[f.id]={readyAt:p.clock+120};State.a6Harvest=null;SaveManager.save('a6-harvest',{backup:false,silent:true});toast('נקטפו '+f.yield+' יחידות · אפשר למכור בחנות החווה')}}
+ if(State.phoneOpen&&State.phoneApp==='business'&&(A6_POIS[State.interactionId]||State.interactionId==='G8-FERRY')&&now-(a6Update.lastPhone||0)>500){a6Update.lastPhone=now;renderPhone()}
+}
+function a6Action(action,arg){
+ if(action==='skip')return a6SkipFerry();if(action==='board')return a6BoardFerry(arg);
+ const id=State.interactionId;if(!A6_POIS[id]||!a6Held(id))return toast('התקרב לעמדה ברגל');
+ if(action==='harvest'){if(!a6FieldReady(id)||State.a6Harvest)return false;State.a6Harvest={id,elapsed:0};setPhoneOpen(false);return true}
+ if(action==='buy'){const list=id==='A6-CAFE'?A6_CAFE_ITEMS:A6_MARKET_ITEMS,it=list.find(q=>q[0]===arg);if(!it||PlayerProfile.money<it[2])return toast('אין מספיק כסף');PlayerProfile.money-=it[2];PlayerProfile.inventory[it[0]]=(PlayerProfile.inventory[it[0]]||0)+1;recordTransaction('a6-shop',-it[2],{item:it[0]});SaveManager.save('a6-purchase',{backup:true,silent:true});renderPhone();return true}
+ if(action==='sell'&&id==='A6-MARKET'){const f=A6_FIELDS.find(f=>f.item===arg);if(!f||!(PlayerProfile.inventory[arg]>0))return false;PlayerProfile.inventory[arg]--;PlayerProfile.money+=f.price;a6FarmPersistent().sold=(a6FarmPersistent().sold||0)+1;recordTransaction('a6-produce',f.price,{item:arg});SaveManager.save('a6-sale',{backup:true,silent:true});renderPhone();return true}
+ if(action==='save')return SaveManager.save('a6-manual');return false;
+}
+function a6Button(label,action,arg='',disabled=false){return`<button data-a6-action="${action}" data-a6-arg="${arg}"${disabled?' disabled':''}>${label}</button>`}
+function phoneA6Business(){
+ const id=State.interactionId,p=A6_POIS[id]||(id==='G8-FERRY'?G8_FERRY_POI:null),held=p&&a6Held(id);if(!p)return'';
+ let body=pcard(p.label,pkv([['יתרה',money(PlayerProfile.money)],['תוצרת שנקטפה',a6FarmPersistent().harvested||0],['הפלגות שהושלמו',a6FerryPersistent().trips||0]]));
+ if(['A6-FERRY','A6-FERRY-OFFICE','G8-FERRY'].includes(id)){
+  const from=id==='G8-FERRY'?'G8':'A6',s=a6FerryPose(),wait=a6FerryWait(from),boardingId=from==='G8'?'G8-FERRY':'A6-FERRY',ready=s.phase===from&&s.remaining>=4;
+  body+=pcard('קו המעבורת A6 ↔ האי G8',pkv([['מחיר לכיוון',money(A6_FERRY.fare)],['משך הפלגה',A6_FERRY.travel+' שנ׳'],['מצב',{A6:'עוגנת במזח A6',G8:'עוגנת במזח האי',outbound:'מפליגה אל האי',inbound:'מפליגה אל A6'}[s.phase]],['הגעה למזח שלך',wait===0?'אפשר לעלות · יציאה בעוד '+Math.ceil(s.remaining)+' שנ׳':'בעוד '+Math.ceil(wait)+' שנ׳']])+pnote('לעלייה גש ברגל לראש המזח ולחץ F. המעבורת מיועדת לנוסעים; הרכב נשאר בחניה. אפשר לצפות בהפלגה או לדלג עליה. במזח האי אפשר לרדת ולעלות בחזרה.')+`<div class="phoneActions">${State.ferryRide?a6Button('דלג על ההפלגה','skip'):a6Button('עלה · '+money(A6_FERRY.fare),'board',from,!a6Held(boardingId)||!ready||PlayerProfile.money<A6_FERRY.fare)}${from==='A6'?'<button data-nav-target="A6-FERRY">נווט לראש המזח</button>':''}</div>`);
+ }
+ const f=A6_FIELDS.find(f=>f.id===id);if(f){const ready=a6FieldReady(id),rem=Math.ceil((a6FarmPersistent().crops[id]?.readyAt||0)-a6FarmPersistent().clock);body+=pcard('קטיף ותוצרת',pkv([['מוצר',SHOP_CATALOG[f.item].name],['כמות בקטיף',f.yield],['מחיר ליחידה',money(f.price)],['מוכנות',ready?'מוכן לקטיף':'עוד '+rem+' שנ׳']])+`<div class="phoneActions">${a6Button('התחל קטיף · 3 שנ׳','harvest','',!held||!ready||!!State.a6Harvest)}<button data-nav-target="A6-MARKET">נווט למכירה בחנות</button></div>`)}
+ if(id==='A6-MARKET'||id==='A6-CAFE'){const items=id==='A6-MARKET'?A6_MARKET_ITEMS:A6_CAFE_ITEMS;body+=pcard('דלפק החנות',items.map(q=>`<div class="pc"><b>${q[1]} · ${money(q[2])}</b><div class="phoneActions">${a6Button('קנה','buy',q[0],!held||PlayerProfile.money<q[2])}</div></div>`).join(''));if(id==='A6-MARKET')body+=pcard('מכירת תוצרת',A6_FIELDS.map(f=>`<div class="pc"><b>${SHOP_CATALOG[f.item].name}</b><small>ברשותך ${PlayerProfile.inventory[f.item]||0} · ${money(f.price)} ליחידה</small><div class="phoneActions">${a6Button('מכור יחידה','sell',f.item,!held||!(PlayerProfile.inventory[f.item]>0))}</div></div>`).join(''))}
+ if(id==='A6-BARN'||id==='A6-CARGO')body+=pcard('עבודות החווה',missionCardHtml(MISSION_DEFS['M-A6-CHECK'])+missionCardHtml(MISSION_DEFS['M-A6-PRODUCE']));
+ if(id==='A6-HOUSE')body+=pcard('בית החווה',pnote('בית משפחת החקלאים, חניות משק וגישה לחווה. אפשר לשמור כאן את ההתקדמות.'));
+ if(id==='A6-GREEN-1'||id==='A6-GREEN-2')body+=pcard('גידול בחממות',pnote('החממות משרתות את ערוגות הירקות, שמספקות תוצרת לחנות. גש לעמדת הקטיף הסמוכה.')+'<div class="phoneActions"><button data-nav-target="A6-VEG">נווט לקטיף הירקות</button></div>');
+ return body+pcard('שמירה',`<div class="phoneActions">${a6Button('שמור משחק','save','',!held)}</div>`);
+}
+function a6DrawFerry(now){if(WTC_LP===1)return;
+ const p=a6FerryPose(),F=A6_FERRY;if(!e3InView(p.x-330,p.y-180,660,360,80))return;const sc=F.length/TurboCity.get(F.asset).fp[2],I=TurboCity.info(F.asset,{scale:sc});
+ ctx.save();ctx.lineWidth=1;ctx.translate(p.x,p.y);ctx.rotate(p.heading);TurboCity.draw(ctx,F.asset,-(I.fp[0]+I.fp[2]/2),-(I.fp[1]+I.fp[3]/2),{mode:'runtime',scale:sc,variant:(p.phase==='A6'||p.phase==='G8')?0:1,time:now/1000});ctx.restore();
+ Targets.add({id:F.id,label:'מעבורת A6 ↔ G8 · '+p.phase,category:'ferry',x:p.x,y:p.y,w:F.length,h:F.width});
+ if(p.phase==='A6'||p.phase==='G8'){const x=p.phase==='A6'?800:6592,y=p.phase==='A6'?5120:7330;ctx.fillStyle='#b7b6a2';ctx.fillRect(x-8,y,16,6)}
+ // Visible travellers on deck use the canonical people assets and rotate with the vessel.
+ for(let i=0;i<5;i++){const dx=-88+i*31,dy=i%2?13:-9,x=p.x+dx*Math.cos(p.heading)-dy*Math.sin(p.heading),y=p.y+dx*Math.sin(p.heading)+dy*Math.cos(p.heading);f2DrawPerson({id:'FERRY-'+F.id+'-'+i,asset:i%2?'PE-43':'PE-44',x,y,face:4,state:'idle'},now)}
+}
+function a6Hud(){if(State.ferryRide){const p=a6FerryPose();return 'מעבורת אל '+(State.ferryRide.to==='G8'?'נמל האי':'A6')+' · '+Math.ceil(p.remaining+(p.phase===State.ferryRide.from?A6_FERRY.travel:0))+' שנ׳ · T לדילוג'}if(State.a6Harvest)return'קטיף · '+Math.min(100,Math.round(State.a6Harvest.elapsed/3*100))+'%';const p=nearbyA6Poi();return p?'F · '+p.label:null}
+function a6GeometryAudit(){
+ const issues=[],over=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
+ const roads=EDGES.filter(e=>e.globalRoadId.startsWith('TC-A6-')).map(e=>{const a=byNode[e.a],b=byNode[e.b],half=roadType(e).width/2+20;return{id:e.id,x:Math.min(a.x,b.x)-half,y:Math.min(a.y,b.y)-half,w:Math.abs(a.x-b.x)+half*2,h:Math.abs(a.y-b.y)+half*2}});
+ for(const b of A6_BUILDINGS){if(b.fp.x<0||b.fp.x+b.fp.w>1200||b.fp.y<4250||b.fp.y+b.fp.h>4990)issues.push(b.id+':bounds');for(const r of roads)if(over(b.fp,r))issues.push(b.id+':road '+r.id);if(a6CollisionAt(b.entrance.x,b.entrance.y,5,true))issues.push(b.id+':entrance')}
+ for(let i=0;i<A6_BUILDINGS.length;i++)for(let j=i+1;j<A6_BUILDINGS.length;j++)if(over(A6_BUILDINGS[i].fp,A6_BUILDINGS[j].fp))issues.push('building-overlap');
+ for(const L of A6_LOTS){if(!A6_ACCESS.some(q=>q.lot===L.id&&over(q,L)))issues.push(L.id+':no-access');for(const r of roads)if(over(L,r))issues.push(L.id+':road');for(const b of A6_BUILDINGS)if(over(L,b.fp))issues.push(L.id+':building')}
+ for(const q of A6_ACCESS){const r=roads.find(r=>r.id===q.road);if(!r||!over(q,r))issues.push(q.id+':road-gap')}
+ for(const p of Object.values(A6_POIS))if(a6CollisionAt(p.x,p.y,5,true))issues.push(p.id+':blocked');
+ if(!a6OnPier(A6_POIS['A6-FERRY'].x,A6_POIS['A6-FERRY'].y,5)||!a6OnPier(G8_FERRY_POI.x,G8_FERRY_POI.y,5))issues.push('boarding-off-pier');
+ if(PORT_BERTHS.some(b=>b.kind==='ferry'))issues.push('ferry-still-at-port');
+ if(!MAP_ACTIVE_IDS.has('A6')||!ACTIVE_REGIONS.includes(A6_REGION))issues.push('inactive');
+ for(const f of A6_FIELDS)for(const r of roads)if(over(f,r))issues.push(f.id+':road');
+ return{ok:!issues.length,issues,buildings:A6_BUILDINGS.length,fields:A6_FIELDS.length,parking:A6_STALLS.length,accessible:A6_STALLS.filter(s=>s.accessible).length,trees:A6_TREES.length,props:A6_PROPS.length,machines:A6_MACHINES.length,visitors:12,roads:roads.length,origin:'A6',destination:'G8',portFerries:PORT_BERTHS.filter(b=>b.kind==='ferry').length,ferryFare:A6_FERRY.fare};
+}
+window.__TC_A6_QA=()=>({geometry:a6GeometryAudit(),ferry:{...a6FerryPose(),ride:State.ferryRide,trips:a6FerryPersistent().trips},farm:cloneJson(a6FarmPersistent()),build:BUILD,gate:ACTIVE_GATE});
+
+function missionRouteLabel(d){if(d.type==='ground-training')return d.routeLabel;if(d.type==='runway-observation'||d.type==='airport-pickup')return d.routeLabel;if(d.type==='route')return d.routeLabel||d.stops.map(id=>navPoiRegistry()[id]?.label||id).join(' → ');if(d.type==='bus'||d.type==='forklift'||d.type==='shift')return d.routeLabel;if(d.routeLabel&&!d.pickup)return d.routeLabel;   /* p351 */const from=navPoiRegistry()[d.pickup]?.label||d.pickup,to=navPoiRegistry()[d.dropoff]?.label||d.dropoff;return from+' → '+to}
+function missionStageLabel(m,d){if(d.type==='ground-training')return ew2Hud();if(d.type==='airport-pickup')return f2StageLabel(m);if(d.type==='runway-observation')return 'תצפית '+Math.min(3,(m.f1?.index||0)+1)+'/3 · לחץ F ליד מגדל הפיקוח';if(d.type==='shift')return actStageLabel(m,d);if(d.type==='route'){const i=Math.min(d.stops.length,(m.routeIndex||0)+1),id=d.stops[Math.min(d.stops.length-1,m.routeIndex||0)];return `תחנה ${i}/${d.stops.length} · ${navPoiRegistry()[id]?.label||id}`}if(d.type==='bus'){const st=busMissionStop(m),idx=Math.min(BUS_LINE_1_STOPS.length+1,(m.busStopIndex||0)+1);return `תחנה ${idx}/${BUS_LINE_1_STOPS.length+1} · ${st.label.replace('קו 1 · ','')}`}if(d.type==='forklift')return `${m.stage==='forklift-drop'?'הנחה':'איסוף'} · משטח ${Math.min(D5_FORKLIFT_TASKS.length,(m.forkliftIndex||0)+1)}/${D5_FORKLIFT_TASKS.length}`;return m.stage==='pickup'?d.pickupLabel:d.dropoffLabel}
+let MISSION_VIEW_MODE='type';
+const MISSION_TYPE_META={airport:['שדה תעופה ותצפיות','✈'],
+ sports:['ספורט ואימונים','🏀'],municipal:['שירותי חירום עירוניים','🚒'],taxi:['מונית','🚕'],delivery:['משלוחים ומשאיות','📦'],errand:['שליחויות קלות','🧾'],route:['סיורים ורב־תחנות','🧭'],bus:['תחבורה ציבורית','🚌'],warehouse:['מחסן ומלגזה','🏗️'],logistics:['לוגיסטיקה ונמל','🏭']
+};
+const MISSION_AREA_META={F1:'F1 · מרכז מסלול השדה',C5:'C5 · תעשייה כבדה וחניון משאיות',
+ A4:'A4 · ספורט, כיבוי ואמבולנסים',B5:'B5 · קמפוס, תרבות וציבור',B2:'B2 · פארק ואגם',C2:'C2 · קניון ומסחר',C3:'C3 · בית השחקן',D2:'D2 · עסקים ומלונות',D3:'D3 · שירותי רכב',B4:'B4 · שכונה',C4:'C4 · תעשייה',D4:'D4 · לוגיסטיקה',D5:'D5 · נמל ומחסן',E3:'E3 · תחבורה',E4:'E4 · תשתיות',E5:'E5 · חצר רכבת',C6:'C6 · מסוף מכולות',E6:'E6 · נמל עמוק',BUS:'קו 1 · עירוני'
+};
+function missionTypeKey(d){return d.type==='bus'?'bus':(d.jobKey||'other')}
+function missionAreaKey(d){if(d.type==='ground-training')return 'E2';if(d.type==='runway-observation')return 'F1';if(d.type==='bus')return'BUS';if(d.type==='route')return navPoiRegistry()[d.stops?.[0]]?.chunk||'OTHER';return navPoiRegistry()[d.pickup]?.chunk||String(d.pickup||'').split('-')[0]||'OTHER'}
+function missionGroupLabel(key,mode){if(mode==='type'){const m=MISSION_TYPE_META[key]||['עבודות נוספות','•'];return m[1]+' '+m[0]}return MISSION_AREA_META[key]||key}
+// =====================================================================================================================================
+// v1.94 · F2 / GATE-66 — PASSENGER TERMINAL · APRON FINISH · TERMINAL LANDSIDE  (serial airport pass E1 → E2 → F1 → F2 → G1 → G2)
+// Local scope x 6000–7200 / y 850–1700. Runway, taxiway A, stands P1–P3, terminal/tower sprites and the road graph stay locked.
+// Landside: Terminal Square signal (AIR-2) with three crossings, Kiss & Fly lay-by (6), short-term parking (42), taxi rank (4 pick-up
+// + 8 holding = 12), bus & shuttle plaza (8 bays), platforms, pedestrians that cross only on WALK.
+// Airside: apron service-road finish, ramp service park (baggage trains, apron buses, mobile stairs) beside the terminal, three dedicated baggage
+// make-up points A=1 / B=2 / C=3; bags are drawn and moved one at a time belt ↔ cart ↔ aircraft hold.
+// Live activity: M-F2-PICKUP (meet a passenger of a real arriving flight at the curb) + live flight board + M-F2-TAXI from the rank.
+// =====================================================================================================================================
+const F2_SCOPE={id:'F2',x:6000,y:850,w:1200,h:850,next:'G1',gate:'GATE-66'};
+const F2_RD={y:1090,yN:1042,yS:1138,swN:1022,swS:1158,eW:6702,eE:6798,swW:6682,swE:6818};   // S3a: the frontage road (S2: R-AIR 1202…1298)
+// ---- curb lay-bys on the TERMINAL side (north curb) of the frontage road: passengers step from the door to the car without crossing a road.
+// They serve the west-bound lane: Kiss & Fly between J2 and the AIR-2 west crossing (entry at x1, exit at x0); taxi pick-up between the AIR-2
+// east stop line (+50 px) and the T3N corner.  y0 = deep edge (998), y1 = road edge (1042).
+const F2_KISS={id:'F2-KISS',x0:6110,x1:6604,b0:6148,b1:6564,y0:998,y1:1042,side:'N',label:'הורד ואסוף'};
+const F2_KISS_SPACES=Array.from({length:6},(_,i)=>({id:'K'+(i+1),x:6152+i*68,y:1002,w:66,h:38}));
+const F2_TAXI_LAYBY={id:'F2-TAXI-LAYBY',x0:6890,x1:7094,b0:6920,b1:7064,y0:998,y1:1042,side:'N',label:'איסוף מוניות'};
+const F2_TAXI_PICK=Array.from({length:2},(_,i)=>({id:'T'+(i+1),x:6924+i*68,y:1004,w:64,h:34}));
+const F2_CURB_WALK=992,F2_PLAZA={x0:6088,x1:7152,y0:1158,y1:1318};   // the kerb walk north of the lay-bys; the plaza that replaced R-AIR (reserved for the GATE-74 short-stay lot)
+const F2_PLATFORMS=[{id:'F2-PLAT-W',x:6088,y:1318,w:594,h:54},{id:'F2-PLAT-E',x:6818,y:1318,w:382,h:54}];
+// ---- short-term parking P-TERM (double-loaded rows, two-way aisles, west connector, walkway to the platform) ------------------------
+const F2_LOT={id:'F2-P-SHORT',x:6088,y:1376,w:594,h:316,label:'חניה קצרה — טרמינל'};   // GATE-74: west edge at the K column's east sidewalk (6088)
+const F2_ROWS=[{id:'R1',y:1376,h:68,th:-Math.PI/2},{id:'R2',y:1500,h:68,th:Math.PI/2},{id:'R3',y:1568,h:68,th:-Math.PI/2}];
+const F2_AISLES=[{id:'A1',x:6088,y:1444,w:594,h:56},{id:'A2',x:6088,y:1636,w:594,h:56},{id:'PA-W',x:6088,y:1218,w:594,h:40},{id:'PA-E',x:6818,y:1218,w:266,h:40}];   // GATE-74: AW → the K road; PA-W/PA-E one-way westbound plaza aisles
+const F2_WALK={x:6322,w:38,y0:1372,y1:1692};
+const F2_STALLS=[];
+for(const r of F2_ROWS)for(let c=1;c<15;c++){if(c===7)continue;const x=6056+c*38;F2_STALLS.push({id:'F2-'+r.id+'-'+(c+1),lot:F2_LOT.id,row:r.id,x,y:r.y,w:38,h:r.h,th:r.th,accessible:r.id==='R1'&&(c===6||c===8),ev:r.id==='R1'&&c>=1&&c<=3})}   // GATE-74: column 0 gave way to the K road
+// ---- ground transportation: taxi holding row, aisle A3, bus & shuttle bays, bus platform -----------------------------------------
+const F2_TAXI_HOLD=Array.from({length:8},(_,i)=>({id:'F2-TX-'+(i+1),x:6838+i*38,y:1376,w:38,h:66,th:-Math.PI/2}));
+const F2_A3={id:'F2-A3',x:6818,y:1442,w:382,h:70};
+const F2_BUS_BAYS=Array.from({length:8},(_,i)=>({id:'B'+(i+1),x:6846+i*35,y:1512,w:35,h:94,th:Math.PI/2,role:i===0?'line4':i<3?'hotel':i<5?'coach':i<7?'rental':'crew'}));
+const F2_BUS_PLAT={id:'F2-BUS-PLAT',x:6818,y:1606,w:308,h:28};
+// ---- surfaces registered with the world (driveable lots + curb cuts; the curb lay-bys and platforms are custom painted) -----------
+C4_YARDS.push({id:'APT-F2-P-SHORT',x:6088,y:1376,w:538,h:316,label:F2_LOT.label,skin:true,surface:'asphalt',custom:true},{id:'APT-F2-PLAZA-W',x:6088,y:1158,w:594,h:160,label:'חניה קצרה בכיכר · מערב',skin:true,surface:'asphalt',custom:true},{id:'APT-F2-PLAZA-E',x:6818,y:1158,w:266,h:160,label:'חניה קצרה בכיכר · מזרח',skin:true,surface:'asphalt',custom:true},
+ {id:'APT-F2-A1',x:6626,y:1444,w:56,h:56,label:'יציאה A1',skin:true,surface:'asphalt',custom:true},{id:'APT-F2-A2',x:6626,y:1636,w:56,h:56,label:'יציאה A2',skin:true,surface:'asphalt',custom:true},
+ {id:'APT-F2-TAXI',x:6818,y:1376,w:324,h:66,label:'המתנת מוניות',skin:true,surface:'asphalt',custom:true},
+ {id:'APT-F2-A3',x:F2_A3.x,y:F2_A3.y,w:F2_A3.w,h:F2_A3.h,label:'נתיב רחבת התחבורה',skin:true,surface:'asphalt',custom:true},
+ {id:'APT-F2-BUS',x:6846,y:1512,w:280,h:94,label:'מפרצי אוטובוסים ושאטלים',skin:true,surface:'asphalt',custom:true});
+const F2_CUTS=[{id:'F2-CUT-A1',x:6680,y:1444,w:24,h:56,custom:true},{id:'F2-CUT-A2',x:6680,y:1636,w:24,h:56,custom:true},{id:'F2-CUT-A3',x:6796,y:1442,w:24,h:70,custom:true},
+ {id:'F2-KISS-LANE',x:6110,y:996,w:494,h:48,custom:true},{id:'F2-TAXI-LANE',x:6890,y:996,w:204,h:48,custom:true},
+ {id:'F2-CUT-K-A1',x:6068,y:1444,w:26,h:56,custom:true},{id:'F2-CUT-PW-OUT',x:6068,y:1218,w:20,h:40,custom:true},{id:'F2-CUT-PW-IN',x:6682,y:1218,w:20,h:40,custom:true},
+ {id:'F2-CUT-PE-OUT',x:6798,y:1218,w:20,h:40,custom:true},{id:'F2-CUT-PE-IN',x:7084,y:1218,w:20,h:40,custom:true}];   // GATE-74: K road → A1; plaza loop T3S → PE → R-AIR-E → PW → J1
+C4_ACCESS.push(...F2_CUTS);
+// ---- street lights: the curb lay-bys replace the south sidewalk; lamps move to the platform edge, crossings stay clear -------------
+for(const l of STREET_LIGHTS){
+ const fr=l.roadId==='F2-AIR-W'||l.roadId==='F2-AIR-E',north=l.y<F2_RD.y;
+ if(fr&&north&&((l.x>F2_KISS.x0-6&&l.x<F2_KISS.x1+6)||(l.x>F2_TAXI_LAYBY.x0-6&&l.x<F2_TAXI_LAYBY.x1+6))){l.y=952;l.f2Moved='forecourt-edge'}   // lay-bys replace the north sidewalk
+ if(fr&&Math.abs(l.x-6689)<2){l.x=6638;l.f2Moved='crossing-clear'}          // AIR-2 west crossing
+ if(fr&&Math.abs(l.x-6800.25)<2){l.x=north?6866:6848;l.f2Moved='crossing-clear'}   // AIR-2 east crossing / corner
+ if(l.roadId==='F2-AIR-S'){if(l.y<1180){l.y=1296;l.f2Moved='crossing-clear'}for(const c of[{y0:1444,y1:1500,w:true},{y0:1636,y1:1692,w:true},{y0:1442,y1:1512,w:false}]){const west=l.x<6750;if(west===c.w&&l.y>c.y0-10&&l.y<c.y1+10){l.y=c.y0-14;l.f2Moved='driveway-clear'}}}
+}
+// ---- fences across the three service gaps between the terminal modules (airside stays closed; landside forecourt untouched) ------
+APT_FENCE_SEGS.push([6370,APT_FENCE_Y-2,6430,APT_FENCE_Y-2],[6730,APT_FENCE_Y-2,6790,APT_FENCE_Y-2],[7090,APT_FENCE_Y-2,7110,APT_FENCE_Y-2]);
+// ---- parked vehicles: deterministic, partial occupancy; taxis wait in the rank, shuttles/coach in the plaza ------------------------
+{
+ let s=26618;const rnd=()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296};
+ const mix=[['VH-SD-02','Sedan'],['VH-SD-04','Sedan'],['VH-HB-01','Compact'],['VH-HB-02','Compact'],['VH-SU-03','SUV'],['VH-SD-03','Sedan'],['VH-MV-02','Minivan'],['VH-VN-01','Van'],['VH-SD-01','Sedan']];
+ for(const st of F2_STALLS){if(st.accessible)continue;if(rnd()>.56)continue;const m=mix[Math.floor(rnd()*mix.length)];PARKED_CARS.push(parkInRect('PC-'+st.id,m[0],m[1],st,st.th,Math.floor(rnd()*12)))}
+ [1,2,3,5,6,8].forEach((n,i)=>{const st=F2_TAXI_HOLD[n-1];PARKED_CARS.push(parkInRect('PC-'+st.id,i%3===2?'VS-TX-02':'VS-TX-01','Taxi',st,st.th,null))});
+ for(const t of F2_TAXI_PICK.slice(0,1))PARKED_CARS.push(parkInRect('PC-F2-PICK-'+t.id,'VS-TX-02','Taxi',t,Math.PI,null));   // S3a: head of the rank on the north curb, facing west (west-bound lane)
+ for(const [id,asset] of [['B2','LV-SH-01'],['B3','LV-SH-01'],['B5','LV-CH-01'],['B7','LV-SH-01']]){const b=F2_BUS_BAYS.find(q=>q.id===id);PARKED_CARS.push(parkInRect('PC-F2-BUS-'+id,asset,'Bus',{x:b.x+2,y:b.y+2,w:b.w-4,h:b.h-4},Math.PI/2,null))}
+}
+// ---- GATE-74 · terminal plaza short-stay lots: two rows each (38 × 60) on a one-way WESTBOUND aisle (40 px): in from T3S (PE) or from R-AIR-E (PW),
+// out to J1 on the K road — the westward return loop without a second signal (plan §F2). The P-TERM walkway x 6322–6360 and the bus walk at x 6818–6844
+// cross the lots on paved strips with zebras over the aisle; the old plaza walking line moves to the frontage sidewalk (y 1149).
+const F2_PLAZA_LOTS=[{id:'P-PLAZA-W',key:'PW',x:6088,y:1158,w:594,h:160,cols:[...[0,1,2,3,4,5].map(i=>6094+i*38),...[0,1,2,3,4,5,6,7].map(i=>6360+i*38)]},{id:'P-PLAZA-E',key:'PE',x:6818,y:1158,w:266,h:160,cols:[0,1,2,3,4,5].map(i=>6844+i*38)}];
+const F2_PLAZA_WALKS=[{id:'F2-PW-WALK',x:6322,y:1158,w:38,h:160},{id:'F2-PE-WALK',x:6818,y:1158,w:26,h:160}];
+for(const L of F2_PLAZA_LOTS)for(const [row,y,th] of[['PN',1158,-Math.PI/2],['PS',1258,Math.PI/2]])L.cols.forEach((x,i)=>F2_STALLS.push({id:'F2-'+L.key+'-'+row+'-'+(i+1),lot:L.id,row,x,y,w:38,h:60,th,accessible:L.key==='PW'&&row==='PN'&&(x===6284||x===6360),ev:false,plaza:true}));
+{let s=74074;const rnd=()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296};const mix=[['VH-SD-02','Sedan'],['VH-HB-01','Compact'],['VH-SD-04','Sedan'],['VH-SU-03','SUV'],['VH-HB-02','Compact'],['VH-SD-01','Sedan']];
+ for(const st of F2_STALLS.filter(q=>q.plaza)){if(st.accessible||rnd()>.5)continue;const m=mix[Math.floor(rnd()*mix.length)];PARKED_CARS.push(parkInRect('PC-'+st.id,m[0],m[1],st,st.th,Math.floor(rnd()*12)))}}
+// ---- buildings, props, trees, lamps (canonical assets only) --------------------------------------------------------------------------
+const F2_BUILDINGS=[d2Place('F2-GTC-KIOSK','קיוסק ומודיעין תחבורה','W2SP-17',1,0,7163,1632,'airport-kiosk')];
+APT_BUILDINGS.push(...F2_BUILDINGS);C4_BUILDINGS.push(...F2_BUILDINGS);
+const F2_PROPS=[
+ // forecourt (in front of the terminal row, S3a: y 944–976): planters, benches, bins, info kiosk; the walking line y 968 and the three doors stay clear
+ ...[6120,6300,6470,6700,6860,7040].map((x,i)=>({id:'F2-FC-PLANTER-'+i,asset:'PR-19',x,y:954,scale:.5,solid:true})),
+ ...[6390,6760].map((x,i)=>({id:'F2-FC-BENCH-'+i,asset:'PR-15',x,y:955,scale:.45,solid:true})),
+ ...[6150,6655,7075].map((x,i)=>({id:'F2-FC-BIN-'+i,asset:'PR-16',x,y:954,scale:.42,solid:true})),
+ {id:'F2-FC-INFO',asset:'PR-20',x:6520,y:954,scale:.5,solid:true},
+ // Kiss & Fly (S3a: on the terminal-side curb of the frontage road): a direction sign at the lay-by entry; the forecourt furniture serves the curb.
+ // P-TERM platform (south of the terminal plaza): shelters + benches for the walkway, pay station, EV chargers
+ {id:'F2-KISS-SIGN',asset:'RF-DIR',x:6622,scale:.42,snap:996,solid:true},
+ ...[6250,6500].map((x,i)=>({id:'F2-PLAT-SHELTER-'+i,asset:'PR-35',x,scale:.55,snap:1372,solid:true})),
+ ...[6140,6585].map((x,i)=>({id:'F2-PLAT-BIN-'+i,asset:'PR-16',x,scale:.4,snap:1372,solid:true})),
+ {id:'F2-PARK-PAY',asset:'PR-20',x:6394,scale:.48,snap:1372,solid:true},
+ /* p469: F2's chargers stand at their stalls */   // GATE-74: EV = columns 1–3
+ {id:'F2-PARK-SIGN',asset:'RF-PRK',x:6668,y:1378,scale:.42,solid:true},
+ // taxi platform + rank
+ {id:'F2-TAXI-SHELTER',asset:'PR-35',x:7132,scale:.55,snap:1372,solid:true},
+ {id:'F2-TAXI-BENCH',asset:'PR-15',x:7062,scale:.42,snap:1372,solid:true},
+ {id:'F2-TAXI-SIGN',asset:'RF-DIR',x:7184,scale:.42,snap:1372,solid:true},
+ {id:'F2-TAXI-BOOTH',asset:'PR-20',x:7160,y:1400,scale:.55,solid:true},
+ // bus & shuttle platform (walking line y 1612; shelters and signs in the south strip)
+ ...[6898,6988,7078].map((x,i)=>({id:'F2-BUS-SHELTER-'+i,asset:'PR-35',x,scale:.55,snap:1634,solid:true})),
+ ...[6855,6943,7033].map((x,i)=>({id:'F2-BUS-SIGN-'+i,asset:'RF-BUS',x,scale:.4,snap:1633,solid:true})),
+ {id:'F2-BUS-BENCH',asset:'PR-15',x:7116,scale:.4,snap:1633,solid:true},
+ {id:'F2-BUS-WATER',asset:'PR-28',x:7136,y:1650,scale:.4,solid:true},
+ {id:'F2-BUS-VEND',asset:'PR-11',x:7190,y:1650,scale:.4,solid:true},
+ {id:'F2-BIKE',asset:'PR-29',x:6840,y:1666,scale:.45,solid:true}
+];
+for(const o of F2_PROPS)if(o.snap!=null){const I=TurboCity.info(o.asset,{scale:o.scale,rot:o.rot||0});o.y=o.snap-(I.fp[1]+I.fp[3])+I.h/2}
+const F2_LAMPS=[[6654,1392],[6658,1566],[6328,1532],[6328,1602],[7189,1428],[6830,1650],[7114,1650],[6966,1690]].map(([x,y],i)=>({id:'F2-LAMP-'+i,asset:'SL-PKL',x,y,targetWidth:30}));
+const F2_TREES=[[6662,1418,'TP-UR-02',28],[6650,1530,'TP-AV-01',28],[6664,1606,'TP-UR-03',26],[7188,1392,'TP-UR-02',24],
+ [6862,1676,'TP-AV-01',30],[6922,1684,'TP-UR-03',28],[7006,1676,'TP-AV-01',30],[7072,1686,'TP-UR-02',26],[7136,1680,'TP-UR-03',28]].map(([x,y,asset,w],i)=>({id:'F2-TREE-'+i,asset,x,y,targetWidth:w}));
+const F2_HEDGES=[{x:6088,y:1692,w:538,h:8},{x:6818,y:1694,w:382,h:6},{x:6626,y:1376,w:56,h:68,island:true},{x:6626,y:1500,w:56,h:136,island:true},{x:7142,y:1376,w:58,h:66,island:true},{x:7126,y:1512,w:74,h:94,island:true},{x:6818,y:1634,w:382,h:60,island:true}];
+// remove the generic v1.93 tree row from F2 (it ran through the new lots); E2/G2 trees are untouched
+for(let i=APT_TREES.length-1;i>=0;i--)if(APT_TREES[i].x>=6000&&APT_TREES[i].x<7200)APT_TREES.splice(i,1);
+GRAPHICS_RUNTIME_INFO.required.push(...new Set([...F2_BUILDINGS,...F2_PROPS,...F2_LAMPS,...F2_TREES].map(o=>o.asset)),'PE-40','PE-41','PE-43','PE-44','PE-10','PE-04','PE-09','PE-19');
+var __F2B;
+function f2SpriteBox(o){const k=o.asset+'|'+(o.targetWidth||'')+'|'+o.scale+'|'+(o.rot||0)+'|'+o.x+'|'+o.y;let m=(__F2B||(__F2B=new WeakMap())).get(o);if(m&&m.k===k)return{x:m.x,y:m.y,w:m.w,h:m.h};const I=TurboCity.info(o.asset,o.targetWidth?{targetWidth:o.targetWidth}:{scale:o.scale,rot:o.rot||0});m={k,x:o.x-I.w/2+I.fp[0],y:o.y-I.h/2+I.fp[1],w:I.fp[2],h:I.fp[3]};(__F2B||(__F2B=new WeakMap())).set(o,m);return{x:m.x,y:m.y,w:m.w,h:m.h}}
+function f2SolidAt(x,y,r){if(x<5990||x>7210||y<934||y>1705)return null;for(const o of F2_PROPS)if(o.solid&&circleRectHit(x,y,r,f2SpriteBox(o)))return o.id;for(const o of F2_LAMPS)if(Math.hypot(x-o.x,y-o.y)<r+3)return o.id;for(const o of F2_TREES)if(Math.hypot(x-o.x,y-o.y)<r+3)return o.id;return null}
+// ---- points of interest ----------------------------------------------------------------------------------------------------------------
+Object.assign(APT_INTERACTIONS,{
+ 'APT-SHORT':{...APT_INTERACTIONS['APT-SHORT'],x:6341,y:1404,label:'חניה קצרה P-TERM',kind:'39 חניות + 40 בכיכר · קופה · איתור הרכב',navNode:'AIR-2',navVia:[{x:6750,y:1472},{x:6656,y:1472}]},
+ 'APT-KISS':{id:'APT-KISS',chunk:'F2',label:'הורד ואסוף — מפרץ הטרמינל',kind:'עצירה קצרה · איסוף נוסעים מטיסה',app:'business',x:6300,y:984},
+ 'APT-TAXI':{id:'APT-TAXI',chunk:'F2',label:'תחנת המוניות של הטרמינל',kind:'2 מקומות איסוף בחזית · 8 בהמתנה',app:'business',x:7096,y:1350,navNode:'AIR-2',navVia:[{x:6750,y:1477},{x:7000,y:1477}]},
+ 'APT-BUS':{id:'APT-BUS',chunk:'F2',label:'רחבת אוטובוסים ושאטלים',kind:'8 מפרצים · קו 4 נכנס ב-v1.96',app:'business',x:6944,y:1612,navNode:'AIR-2',navVia:[{x:6750,y:1477},{x:6900,y:1477}]},
+ 'APT-PLAZA':{id:'APT-PLAZA',chunk:'F2',label:'חניה קצרה בכיכר הטרמינל',kind:'40 חניות · כניסה מ-T3S / R-AIR-E · יציאה ל-J1',app:'business',x:6341,y:1238,navNode:'AIR-2',navVia:[{x:6726,y:1180},{x:6726,y:1238}]},
+ 'APT-KISS-PICK':{id:'APT-KISS-PICK',chunk:'F2',label:'מפרץ הורד ואסוף',kind:'עצירה קצרה · צד הטרמינל',phoneOnly:true,x:6355,y:1021},
+ 'APT-TAXI-PICK':{id:'APT-TAXI-PICK',chunk:'F2',label:'איסוף מוניות בטרמינל',kind:'ראש התור · צד הטרמינל',phoneOnly:true,x:6990,y:1021}
+});
+APT_INFO['APT-TERM']=[['מבנה','שלושה אגפים · שרוולים בעמדות P1–P3 · לוח טיסות חי'],['חזית','רחבת כניסה, כיכר הטרמינל המרומזרת ומעברי חציה למפרצי הורד ואסוף, מוניות ואוטובוסים'],['צד אווירי','שתי נקודות מיון מזוודות בין האגפים וחניון שירות רמפה']];
+APT_INFO['APT-PLAZA']=[['חניון','2 חניונים בכיכר הטרמינל · 40 חניות · 2 נגישות'],['תנועה','נתיב חד-סטרי מערבה: כניסה מ-T3S או מ-R-AIR-E, יציאה לעמודת K ליד J1 — בלי רמזור שני'],['הליכה','שבילים מרוצפים אל המדרכה של חזית הטרמינלים ומעברי החצייה ב-AIR-2']];
+APT_INFO['APT-SHORT']=[['חניון','39 חניות בשורות כפולות · 2 נגישות · 3 עמדות טעינה'],['גישה','כניסה ויציאה מדרך R-AIR-E (A1/A2) · כניסה מערבית מעמודת K (A1)'],['הליכה','שביל הולכי רגל מרכזי אל הרציף ומעבר החציה המרומזר']];
+APT_INFO['APT-KISS']=[['מפרץ','6 מקומות עצירה קצרה בשפת המדרכה של הטרמינל (צד הטרמינל), מחוץ לנתיב'],['איסוף','הנוסע יוצא מדלת הטרמינל ישר אל הרכב — בלי לחצות כביש'],['גישה','מהעיר: J1 → J2 → פנייה שמאלה למפרץ; יציאה מערבה אל J2'],['כלל','לא עוצרים בנתיב הנסיעה']];
+APT_INFO['APT-TAXI']=[['תחנה','2 מקומות איסוף בחזית T3 (צד הטרמינל) ו-8 מקומות המתנה ברחבת התחבורה'],['הכוונה','המוניות יוצאות מערבה בחזית הטרמינלים אל J2 ושדרת השדה']];
+APT_INFO['APT-BUS']=[['רחבה','8 מפרצים: קו 4 (v1.96), שאטלי מלונות והשכרה, אוטובוסי תיירות וצוותים'],['רציף','שלוש סככות, שילוט קווים ומים']];
+APT_INFO['APT-KISS-PICK']=[['מפרץ','6 מקומות עצירה קצרה']];APT_INFO['APT-TAXI-PICK']=[['תחנה','ראש תור המוניות']];
+
+// =====================================================================================================================================
+// AIRSIDE · ramp service park + baggage make-up (shared fleet engine; geometry checked against stand envelopes and live paths)
+// =====================================================================================================================================
+// Pockets lie in the corridors between the stand envelopes (P1|P2, P2|P3) and east of P3; never inside a stand box, never on lane L.
+// The parked trains sit on the west side of each corridor: the P2/P3 fuel trucks return down x = cx-150 and their 84 px bodies swing
+// their tails west while turning onto lane L (swept min x ≈ cx-150-29), so the east bay keeps ≥ 6 px from that swept path.
+// Each make-up belt belongs to the module immediately EAST of it: A=1, B=2, C=3.
+// Home parking and the destination belt are independent; a borrowed train still serves the flight's own terminal.
+const F2_POCKETS={
+ A:{id:'A',terminal:'APT-TERM-1',door:'T1',stand:'P1',stands:['P1'],bays:[6201,6221],exitX:6259,muS:6058,muN:6024,beltX:6070,gx0:6010,gx1:6070,label:'כבודה A · טרמינל 1',mu:'MU-A'},
+ B:{id:'B',terminal:'APT-TERM-2',door:'T2',stand:'P2',stands:['P2','P3'],bays:[6531,6551],exitX:6628,labelX:6541,muS:6418,muN:6384,beltX:6430,gx0:6370,gx1:6430,label:'כבודה B · טרמינל 2',mu:'MU-B'},
+ D:{id:'D',terminal:'APT-TERM-3',door:'T3',stand:'P4',stands:['P4'],carts:4,bays:[7182,7202],exitX:7301,dy:-19,uT:545,r1:16,muS:6778,muN:6744,beltX:6790,gx0:6730,gx1:6790,label:'כבודה D · P4',labelX:7192,mu:'MU-C',shared:'C'},   // GATE-77 S5c · D-93
+ C:{id:'C',terminal:'APT-TERM-3',door:'T3',stand:'P6',stands:['P6','P5'],carts:3,dy:-10,uT:550,bays:[6573,6595],exitX:6628,labelX:6584,red:1,muS:6778,muN:6744,beltX:6790,gx0:6730,gx1:6790,label:'כבודה C · טרמינל 3',mu:'MU-C'}};   // S2 GROUND OPS: belt C also serves the remote stands P6 / P5 (their passengers use the T3 bus gate)
+// S2 GROUND OPS (AIR-26): baggage for the remote stands.  The train leaves belt C, goes east on the service road L, north on the GLINK (GLN) to the
+// band road y 590 behind the east-apron tails, east to the stand's west service column (cx − 36), south beside the fuselage and stops with its
+// first cart at the forward hold (nose gear − 30).  Out: 24 px further south, west to the stand's exit column, north to the band road, west to
+// GLS and south to L.  The east side of both stands stays with the passengers (door, stairs, bus).  P6's exit column keeps ≥6 px from the fuel
+// truck column (x 7872); P5's keeps clear of GA2's fuel column (x 7609).
+const F2_REMOTE_BAG={road:484,dy:-11,jog:24,off:36,exit:{P6:7829,P5:7605}};   // GATE-77 S5b: down from the straight road
+function f2RemoteBagRoute(sd){const R=F2_REMOTE_BAG,W=sd.cx-R.off,E=R.exit[sd.id],ys=sd.ngy+R.dy,yj=ys+R.jog,L=AF.L;
+ return{col:W,exit:E,ys,toStand:[[AF.GLN,L,16],[AF.GLN,R.road,24],[W,R.road,18],[W,ys,0]],hairpin:[[W,ys,0],[W,yj,12],[E,yj,14],[E,R.road,18],[AF.GLS,R.road,24],[AF.GLS,L,16]],side:-1,flip:1}}
+function f2BagRemote(sd){return!!(sd&&sd.remote&&F2_REMOTE_BAG.exit[sd.id])}
+function f2PocketForStand(sd){const id=typeof sd==='string'?sd:sd.id;return Object.values(F2_POCKETS).find(p=>(p.stands||[p.stand]).includes(id))||null}
+const G77_CD4=[19,43,67,91];   // GATE-77 S5b: the 4-cart train's cart spacing (as the 2-cart train, two more)
+function f2TrainCarts(sd){const p=f2PocketForStand(sd);return p&&p.carts||2}
+function f2BagCandidates(sd,n){const p=f2PocketForStand(sd);return afOf('BT').filter(v=>!p||!p.carts||p.carts<=2||v.bay.pocket===p.id).sort((a,b)=>(a.bay.pocket===p?.id?0:1)-(b.bay.pocket===p?.id?0:1)||afLast(a)-afLast(b)).slice(0,n)}
+const F2_BAG={top:644,yc:656.7,uTop:584,stop:880,uY:912,belt0:824,belt1:876,cap:6};   // S3a: 206 px north with the terminal row
+const G77_YARD={x0:7144,x1:7236,y0:772,y1:1018,walkY:779,busYc:836,laneY:1001,busLaneY:1005,row2Yc:935,walk:{'F2-AB1':7150,'F2-AB2':7187,'F2-AB3':7187}};   // GATE-77 S6r · M5e: the second row (one bay, in the middle)
+function g77WalkX(b){const w=G77_YARD.walk&&G77_YARD.walk[b.id];return w!=null?w:b.x+G2_GATE.offX}   // GATE-77 S5c · D-95: each bus's walk   // GATE-77 S5c · D-84: the east service yard beside the tower
+const F2_RAMP_C={x0:7144,x1:7236,y0:792,y1:882,bays:[{id:'F2-AB1',kind:'AB',x:7165,w:24},{id:'F2-AB2',kind:'AB',x:7209,w:24},{id:'F2-MS1',kind:'MS',x:7150,w:24},{id:'F2-MS2',kind:'MS',x:7175,w:24}]};
+const F2_MS={len:64,wid:18};
+// called from buildYard: all 6 existing baggage trains keep their identities and move to terminal pockets A/B/C.
+// The apron buses and mobile stairs remain in the separate service pocket S.
+function f2RampBays(A){
+ for(const b of A.bays)if(/^Y-BT[1-6]$/.test(b.id)){b.occupied=false;b.reserve='moved-to-F2-ramp-park'}
+ let n=1;
+ for(const P of Object.values(F2_POCKETS)){const k4=Math.max(0,(P.carts||2)-2)*24;P.bays.forEach((x,i)=>A.bays.push({id:'F2-B'+P.id+(i+1),fleetId:'V-BT'+(n++),kind:'BT',row:'F2',zone:'F2',pocket:P.id,carts:P.carts||2,x,w:20,x0:x-10,x1:x+10,y0:F2_BAG.top+(P.dy||0)-2-k4,y1:F2_BAG.top+(P.dy||0)+70,yc:F2_BAG.yc+(P.dy||0)-k4,th:-Math.PI/2,asset:'LV-BT-01',occupied:true}))}   // GATE-77 S5b: 3-cart bays 24 px longer
+ for(const b of F2_RAMP_C.bays){const ms=b.kind==='MS',hx=ms?F2_MS.len/2:APTT_SPEC.veh['LV-SH-01'].fp[2]/2,yc=ms?656:(b.yc||G77_YARD.busYc);A.bays.push({row2:b.row2?1:0,id:b.id,fleetId:'V-'+b.id.slice(3),kind:b.kind,row:'F2',zone:'F2',pocket:'S',x:b.x,w:b.w,x0:b.x-b.w/2,x1:b.x+b.w/2,y0:b.row2?yc-12:yc-hx-4,y1:b.row2?yc+12:yc+hx+4,yc,th:b.th!=null?b.th:ms?-Math.PI/2:Math.PI/2,asset:ms?'F2-MS':'LV-SH-01',occupied:true,idleUntil:'G2'})}
+}
+// ---- baggage train routes -------------------------------------------------------------------------------------------------------
+// kind 'dep' (loading for a departure): home → make-up belt (bags on, one at a time) → aircraft hold (bags off) → home, empty.
+// kind 'arr' (unloading an arrival):    home → aircraft hold (bags on) → make-up belt (bags off) → home, empty.
+function f2BagN(code){if(G77_BAGN&&G77_BAGN.has(code))return G77_BAGN.get(code);let h=0;for(const ch of String(code||'X'))h=(h*31+ch.charCodeAt(0))>>>0;return 6+h%5}
+// GATE-77 S1: per trip bag stacks (a train of 2 carts holds 12 stacks); the code of a trip is the flight code + '/a0', '/d1' …
+var G77_BAGN=null;
+function g77BagCode(code,ph,k,B){if(!G77_BAGN)G77_BAGN=new Map();const per=B.per||12,c=code+'/'+ph+k,left=Math.max(0,B.units-k*per);G77_BAGN.delete(c);G77_BAGN.set(c,Math.max(2,Math.min(per,left||6)));while(G77_BAGN.size>2000)G77_BAGN.delete(G77_BAGN.keys().next().value);return c}
+function g77Quant(sd,ac,code){const P=g77Prof(sd,ac)||{};return{paxA:g77Pax(code,ac,'arr',sd),paxD:g77Pax(code,ac,'dep',sd),bagsA:g77Bags(code,ac,'arr',sd),bagsD:g77Bags(code,ac,'dep',sd),cargoU:P.cargoU||0,cls:P.cls||0,role:g77Role(sd,ac)}}
+function f2BagBuild(v,sd,ac,hold,kind,code){
+ const b=v.bay,vm=AF.VMAX.BT,L=AF.L,{fy}=afPos(sd,ac),cx=sd.cx,sv=sd.svcSide||-1,dw=Math.max(0,apttAcGeom(ac).F[3]-14.94),LY=s6aBagLay(sd,ac),c1=LY?LY.c1:cx+(36+dw)*sv,c3=LY?LY.c3:cx+(58+dw)*sv,ws=LY?LY.ws:fy-6,home=b.zone==='F2',rem=f2BagRemote(sd)?f2RemoteBagRoute(sd):null;
+ const P=f2PocketForStand(sd),H=home?F2_POCKETS[b.pocket]:null;
+ if(!P)throw new Error('No baggage terminal for '+sd.id);
+ const n=f2BagN(code||sd.id+v.id),muDur=1.4+n*1.45,same=home&&H.id===P.id&&Math.abs(H.exitX-P.muS)<24,r1=home?(H.r1||Math.abs(H.exitX-b.x)/2):0;   // GATE-73 S2: pockets A/B park between the stands, away from their belt: drive via lane L
+ const uT=(H&&H.uT)||F2_BAG.uTop-Math.max(0,(b.carts||2)-2)*24,leaveHome=home?[[b.x,b.yc,0],[b.x,uT,r1],[H.exitX,uT,r1]]:[...afBayOutList(b),[AF.GLN,AF.HW,30],[AF.GLN,L,26]];
+ const toMU=same?[[P.exitX,720,9],[P.muS,758,9],[P.muS,F2_BAG.stop,0]]:[[home?H.exitX:AF.GLN,L,14],[P.muS,L,14],[P.muS,F2_BAG.stop,0]];
+ const muLoop=[[P.muS,F2_BAG.stop,0],[P.muS,F2_BAG.uY,16],[P.muN,F2_BAG.uY,16]];
+ const hairpin=rem?rem.hairpin:LY&&LY.hairpin?LY.hairpin:[[c1,ws,0],[c1,ws-24,12],[c3,ws-24,12],[c3,L,14]];
+ const goHome=home?[[b.x,L,10],[b.x,b.yc,0]]:[[AF.GLS,L,26],[AF.GLS,AF.HE,30],...afBayIn(b)];
+ const toStand=rem?rem.toStand:LY&&LY.toStand?LY.toStand:[[c1,L,14],[c1,ws,0]];
+ const tag=(leg,f2)=>{leg.f2=f2;return leg};
+ const base={n,code:code||null,pocket:P.id,terminal:P.terminal,door:P.door,homePocket:H?.id||'G2',mu:P.mu,cx,sd:sd.id,beltX:P.beltX,muS:P.muS,side:rem?rem.side:sv,flip:rem?rem.flip:sv,remote:!!rem};
+ let legs=[],dOut=0;
+ if(kind==='dep'){
+  const out=afMv(LY&&LY.south&&home&&H.id==='D'?[[b.x,b.yc,0],[b.x,LY.yA,14],[LY.c1,LY.yA,16],[LY.c1,L,14],[P.muS,L,14],[P.muS,F2_BAG.stop,0]]:[...leaveHome,...toMU],vm,{th0:b.th,blend:30,v1:4});out.kind='out';tag(out,{...base,load:0});
+  const e1=out.endPose(),mu=tag(apttHold(e1,muDur,'mu'),{...base,fill:'in',at:'mu'});
+  const mid=afMv([...muLoop,[P.muN,L,18],...toStand],vm,{th0:e1[2],blend:28,v0:5,v1:4});mid.kind='mid';tag(mid,{...base,load:n});
+  const e2=mid.endPose(),svc=tag(apttHold(e2,hold=g77BwHoldAt(v,sd,ac,hold,code,e2,kind),'svc'),{...base,fill:'out',at:'ac'});
+  const back=afMv([...hairpin,...goHome],vm,{th0:e2[2],blend:34,v0:6});back.kind='back';tag(back,{...base,load:0});
+  legs=[out,mu,mid,svc,back];dOut=out.dur+mu.dur+mid.dur;
+ }else{
+  const out=afMv(LY&&LY.south&&home&&H.id==='D'?[[b.x,b.yc,0],[b.x,LY.yA,14],...LY.toStand.slice(2)]:[...leaveHome,...(home?[[H.exitX,L,14]]:[]),...toStand],vm,{th0:b.th,blend:30,v1:5});out.kind='out';tag(out,{...base,load:0});
+  const e1=out.endPose(),svc=tag(apttHold(e1,hold=g77BwHoldAt(v,sd,ac,hold,code,e1,kind),'svc'),{...base,fill:'in',at:'ac'});
+  const mid=afMv([...hairpin,[P.muS,L,14],[P.muS,F2_BAG.stop,0]],vm,{th0:e1[2],blend:34,v0:6,v1:4});mid.kind='mid';tag(mid,{...base,load:n});
+  const e2=mid.endPose(),mu=tag(apttHold(e2,muDur,'mu'),{...base,fill:'out',at:'mu'});
+  // home pocket: straight north out of the make-up loop across lane L; the S-curve onto the bay axis ends south of the parked neighbours
+  const back=afMv(same?[...muLoop,[P.muN,756,10],[b.x,728,10],[b.x,b.yc,0]]:[...muLoop,[P.muN,L,18],...goHome],vm,{th0:e2[2],blend:28,v0:5});back.kind='back';tag(back,{...base,load:0});
+  legs=[out,svc,mid,mu,back];dOut=out.dur;
+ }
+ const trk=afTrackOf(v,legs);trk.f2bag=kind;
+ return{trk,dOut,hold,dur:trk.seq.dur};
+}
+// ---- bag load state of a train at local task time lt (drawn per cart; one bag in flight at a time) --------------------------------
+function f2BagTimes(dur,n){const step=(dur-1.2)/n,fly=Math.min(1,step*.72);return{step,fly,t0:.6}}
+function f2BagState(tr,lt){
+ if(!tr||!tr.seq||lt==null)return null;const q=tr.seq.legAt(lt);if(!q||!q.leg.f2)return null;const f=q.leg.f2,n=f.n;
+ if(f.fill==null)return{k:f.load||0,f,leg:q.leg,t:q.t,fly:null};
+ const T=f2BagTimes(q.leg.dur,n),t=q.t;let done=0,fly=null;
+ for(let j=0;j<n;j++){const s=T.t0+j*T.step,e=s+T.fly;if(t>=e)done++;else if(t>=s){fly={j,u:(t-s)/T.fly}}}
+ if(f.fill==='in')return{k:done,f,leg:q.leg,t,fly};
+ // unloading: the bag in flight has already left the cart
+ return{k:n-done-(fly?1:0),f,leg:q.leg,t,fly};
+}
+const F2_BAG_COLORS=['#e0583a','#2d7fd0','#f0b232','#3fa66a','#8e5bd6','#e86fa0','#39434f','#1fa3a8','#c9792f','#d9d4c6'];
+function f2DrawBagsOnCart(g,k0,seed){ // in cart-local coordinates (cart hx 10 / hy 6.5), 3 × 2 slots
+ for(let s=0;s<k0;s++){const col=s%3,row=s/3|0,x=-6.2+col*4.8,y=-2.6+row*5.2,c=F2_BAG_COLORS[(seed+s*3)%F2_BAG_COLORS.length];
+  g.fillStyle='rgba(8,18,26,.4)';g.fillRect(x-1.6,y-1.1,4.3,3.9);g.fillStyle=c;g.fillRect(x-2.1,y-1.8,4.3,3.9);g.fillStyle='rgba(255,255,255,.38)';g.fillRect(x-2.1,y-1.8,4.3,.9);g.fillStyle='#14181c';g.fillRect(x-.7,y-2.5,1.4,.8);g.strokeStyle='rgba(20,24,28,.6)';g.lineWidth=.4;g.strokeRect(x-2.1,y-1.8,4.3,3.9)}
+}
+function f2DrawFlyBag(g,x,y,u,c){const h=Math.sin(Math.PI*u)*4.5;g.save();g.fillStyle='rgba(8,18,26,.3)';g.fillRect(x-1.6,y-1,4.2,3.6);g.fillStyle=c;g.fillRect(x-2.1,y-1.9-h,4.4,4);g.fillStyle='rgba(255,255,255,.42)';g.fillRect(x-2.1,y-1.9-h,4.4,.9);g.fillStyle='#14181c';g.fillRect(x-.7,y-2.6-h,1.4,.8);g.restore()}
+// called from aptDrawVeh for vehicles with carts (patched): draws bags in the carts, the belt-loader plate at the aircraft and the bag in flight
+function f2DrawTrainBags(g,a,carts,al){
+ const st=f2BagState(a.tr,a.lt),seed=(st?.f?.n||0)*7;if(!st)return;   /* GATE-77P · p247: one colour per bag */
+ if(G77_BW.on&&st.f.at==='ac'&&st.f.fill!=null&&g77BwDraw(g,a,carts,al,st))return;   // GATE-77 S7-a · p187 · D-184: the workers
+ const k=Math.max(0,st.k|0),k0=Math.min(F2_BAG.cap,k),k1=Math.max(0,k-F2_BAG.cap);
+ const svc=st.f.at==='ac'&&st.f.fill!=null;
+ if(G77_MUB.on&&st.f.at==='mu'&&st.f.fill!=null&&g77MubDraw(g,carts,al,st))return;   /* p247 */
+ // belt-loader plate from the cart to the hold door (local +y points at the fuselage: the train stands west of the aircraft, heading north)
+ if(svc&&s6aBagCrew(st,a)){}else if(svc)for(const c of carts){g.save();g.globalAlpha=al;g.translate(c[0],c[1]);g.rotate(c[2]);if((st.f.flip??st.f.side)>0)g.scale(1,-1);g.fillStyle='rgba(8,18,26,.25)';g.fillRect(-4.2,7.6,9,16);g.fillStyle='#3e454c';g.fillRect(-4.6,6.6,9.2,16);g.fillStyle='#8a939b';for(let y=7.8;y<22;y+=2.6)g.fillRect(-4,y,8,1.1);g.restore();break}
+ for(let i=0;i<carts.length;i++){const c=carts[i],kk=i===carts.length-1?Math.max(0,k-i*F2_BAG.cap):Math.max(0,Math.min(F2_BAG.cap,k-i*F2_BAG.cap));if(!kk)continue;g.save();g.globalAlpha=al;g.translate(c[0],c[1]);g.rotate(c[2]);f2DrawBagsOnCart(g,kk,seed+i*F2_BAG.cap*3);g.restore()}
+ if(st.fly){const j=st.fly.j,ci=Math.floor(j/F2_BAG.cap),c=carts[Math.min(ci,carts.length-1)],slot=j%F2_BAG.cap,lx=-6.2+(slot%3)*4.8,ly=-2.6+(slot/3|0)*5.2;
+  const cs=Math.cos(c[2]),sn=Math.sin(c[2]),px=c[0]+lx*cs-ly*sn,py=c[1]+lx*sn+ly*cs;
+  if(st.f.at==='ac'&&s6aBagFly(st,px,py,F2_BAG_COLORS[(seed+j*3)%F2_BAG_COLORS.length]))return;   // GATE-77 S6a M3b
+  const ox=st.f.at==='mu'?st.f.beltX-4:st.f.cx+13*(st.f.side||-1),oy=py;
+  const from=st.f.fill==='in'?[ox,oy]:[px,py],to=st.f.fill==='in'?[px,py]:[ox,oy],u=st.fly.u;
+  f2DrawFlyBag(g,from[0]+(to[0]-from[0])*u,from[1]+(to[1]-from[1])*u,u,F2_BAG_COLORS[(seed+j*3)%F2_BAG_COLORS.length])}
+}
+// ---- mobile stairs truck (no canonical library asset exists: drawn procedurally to the vehicle contract, front = +x) ---------------
+function f2DrawStairs(g,x,y,th,al){
+ const L=F2_MS.len/2,W=F2_MS.wid/2;g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);
+ g.fillStyle='rgba(8,18,26,.24)';g.fillRect(-L+2,-W+2.5,L*2,W*2);
+ g.fillStyle='#22272d';for(const wx of[-L+9,L-11])for(const wy of[-W-.6,W-2.4])g.fillRect(wx,wy,6,3);
+ g.fillStyle='#3d464f';g.fillRect(-L,-W+1,L*2,W*2-2);
+ g.fillStyle='#e3bf3e';g.fillRect(L-15,-W,15,W*2);g.fillStyle='#1d2b36';g.fillRect(L-5,-W+2,3.4,W*2-4);g.fillStyle='#f7f2df';g.fillRect(L-1.4,-W+1.5,1.4,2.2);g.fillRect(L-1.4,W-3.7,1.4,2.2);
+ g.fillStyle='#ef7d22';g.beginPath();g.arc(L-9,0,1.6,0,Math.PI*2);g.fill();
+ g.fillStyle='#c9ced3';g.fillRect(-L+6,-W+2.5,L*2-22,W*2-5);
+ g.strokeStyle='#5b636b';g.lineWidth=.8;for(let sx=-L+8;sx<L-18;sx+=3.2){g.beginPath();g.moveTo(sx,-W+3);g.lineTo(sx,W-3);g.stroke()}
+ g.fillStyle='#b4bbc2';g.fillRect(-L,-W+1.5,8,W*2-3);g.strokeStyle='#e07a2a';g.lineWidth=1.3;g.beginPath();g.moveTo(-L+.5,-W+1.5);g.lineTo(L-16,-W+1.5);g.moveTo(-L+.5,W-1.5);g.lineTo(L-16,W-1.5);g.moveTo(-L+.6,-W+1.5);g.lineTo(-L+.6,W-1.5);g.stroke();
+ g.fillStyle='#14181c';g.fillRect(-L+1,-W+1,1.4,1.4);g.fillRect(-L+1,W-2.4,1.4,1.4);
+ g.restore();
+}
+
+// ---- visible airside travellers: each real flight has an arrival group followed by a departure group ------------------------------
+const F2_PAX_ASSETS=['PE-43','PE-44','PE-09','PE-10','PE-19','PE-04'];
+function f2PaxPlan(f){
+ const s=APT_STANDS.find(s=>s.id===f.stand),P=f2PocketForStand(f.stand);if(!s||!P||!f.bridgeAt)return null;
+ const B=f2BridgeGeometry(s,f),start=f.bridgeAt[0]+7.4,end=f.bridgeAt[1]-.8,inbound=f.states[0]?.[1]==='INBOUND',pl=g77K72PaxLine(s,f)||[B.terminal,B.dock],travel=g2PathLen(pl)/22,gap=.92,window=end-start;
+ const wanted=f.q?Math.max(f.q.paxA,f.q.paxD):12+f2BagN(f.code)%7,room=inbound?(window-4)/2:window-2,count=Math.min(wanted,Math.floor((room-travel)/gap)+1);
+ if(count<1)return null;const dur=travel+(count-1)*gap,arr=inbound?{start,end:start+dur}:null,dep={start:Math.max(arr?arr.end+4:start,end-dur),end};
+ return{flight:f.code,stand:f.stand,terminal:P.terminal,door:P.door,pocket:P.id,count,travel,gap,arr,dep,points:pl};
+}
+function g77PolyAt(pts,d){for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],l=Math.hypot(b[0]-a[0],b[1]-a[1]);if(d<=l||i===pts.length-1){const u=l?Math.max(0,Math.min(1,d/l)):0;return{x:a[0]+(b[0]-a[0])*u,y:a[1]+(b[1]-a[1])*u,dx:b[0]-a[0],dy:b[1]-a[1]}}d-=l}return{x:pts[0][0],y:pts[0][1],dx:0,dy:1}}
+function f2BridgePassengers(t=APT_OPS.clk,flights=AO.flights){
+ const out=[];
+ for(const f of flights){const p=f.pax;if(!p||!f.bridge||f.bridge(t)<.99||t<f.tOB||t>=f.tPush)continue;
+  for(const phase of['arr','dep']){const w=p[phase];if(!w||t<w.start||t>w.end)continue;
+   const pts=phase==='arr'?p.points.slice().reverse():p.points,tot=g2PathLen(pts);   // K-72: along the bridge's line
+   for(let i=0;i<p.count;i++){const lt=t-w.start-i*p.gap;if(lt<0||lt>=p.travel)continue;const u=lt/p.travel,q=g77PolyAt(pts,u*tot),dx=q.dx,dy=q.dy;
+    out.push({id:f.code+'-'+phase+'-'+i,flight:f.code,stand:f.stand,terminal:p.terminal,door:p.door,pocket:p.pocket,phase,asset:F2_PAX_ASSETS[i%F2_PAX_ASSETS.length],x:q.x,y:q.y,face:Math.abs(dx)>Math.abs(dy)?(dx>0?2:6):(dy>0?4:0),alpha:Math.min(1,u*14,(1-u)*14),walkTime:lt+i*.24,points:p.points})}
+  }
+ }
+ return out;
+}
+// p395 · R-22: the people in the bridge at their measured size, inside the bridge's own outline
+const F2_BPAX={clip:new Map(),t:-1,n:{clip:0,none:0}};   // the scale: G77_PE.sc (0.51 = 0.55 m × 7.47 px/m ÷ 8 px, the picture at scale 1)
+function f2BridgeClip(stand){const t=APT_OPS.clk;if(F2_BPAX.t!==t){F2_BPAX.clip.clear();F2_BPAX.t=t}let c=F2_BPAX.clip.get(stand);if(c!==undefined)return c;c=null;
+ try{const s=APT_STANDS.find(q=>q.id===stand);if(s){const f=f2BridgeFlight(s.id,t),P=g77BridgePose(s,f,f?aoBridge(s.id,t):0);if(P&&P.S){const Q=g77K72Parts(P),pa=new Path2D();
+  for(const q of [Q.fixed,Q.bel1,Q.A,Q.Bt,Q.bel2,Q.cab]){if(!q||q.length<3)continue;let ar=0;for(let i=0;i<q.length;i++){const a=q[i],b=q[(i+1)%q.length];ar+=a[0]*b[1]-b[0]*a[1]}const r=ar>=0?q:q.slice().reverse();   // one turn for all: their union filled
+   pa.moveTo(r[0][0],r[0][1]);for(let i=1;i<r.length;i++)pa.lineTo(r[i][0],r[i][1]);pa.closePath()}
+  pa.moveTo(Q.drum.c[0]+Q.drum.r,Q.drum.c[1]);pa.arc(Q.drum.c[0],Q.drum.c[1],Q.drum.r,0,Math.PI*2);c=pa}}}catch(e){c=null}
+ F2_BPAX.n[c?'clip':'none']++;F2_BPAX.clip.set(stand,c);return c}
+function f2BridgeClipLine(g,P){g.beginPath();for(let k=1;k<P.length;k++){const a=P[k-1],b=P[k],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1,w=k===P.length-1?8:6,nx=-dy/len*w,ny=dx/len*w;g77PolyPath(g,[[a[0]+nx,a[1]+ny],[b[0]+nx,b[1]+ny],[b[0]-nx,b[1]-ny],[a[0]-nx,a[1]-ny]])}g.clip()}   // the old way, if the bridge has no outline
+function f2DrawBridgePassengers(now,v){if(WTC_LP===1)return;
+ if(!APT_OPS.ready||!portVis(v,6000,580,1230,200))return;
+ const sc=G77_PE.sc;
+ for(const p of f2BridgePassengers()){
+  const I=TurboCity.info(p.asset,{scale:sc,direction:p.face,pose:'walking'}),feet=I.an.find(q=>q[0]==='Feet')||['Feet',I.w/2,I.h*.55],cl=f2BridgeClip(p.stand);
+  ctx.save();if(cl)ctx.clip(cl);else f2BridgeClipLine(ctx,p.points);ctx.globalAlpha=p.alpha;
+  P34G.k=p.id??null;TurboCity.draw(ctx,p.asset,p.x-feet[1],p.y-feet[2],{mode:'runtime',scale:sc,direction:p.face,pose:'walking',time:p.walkTime});ctx.restore();
+ }
+ g77BcDraw(now);   /* K-157 · D-211: the flight crew through the bridge */
+}
+
+// =====================================================================================================================================
+// PEDESTRIANS · travellers that walk scripted ping-pong routes, cross only on WALK at AIR-2, wait and add demand
+// =====================================================================================================================================
+const F2_DOORS={T1:[6220,947],T2:[6580,947],T3:[6940,947]};   // S3a: landside doors on the new frontage (S2: 1153)
+let F2_XW=null; // crosswalk geometry at AIR-2 (computed once from CROSSWALKS)
+function f2Crosswalks(){if(F2_XW)return F2_XW;const cs=CROSSWALKS.filter(c=>c.signalNode==='AIR-2');const W=cs.find(c=>c.roadId==='F2-AIR-W'),E=cs.find(c=>c.roadId==='F2-AIR-E'),S=cs.find(c=>c.roadId==='F2-AIR-S');
+ return F2_XW={W,E,S,all:cs,wx:W?Math.round(W.x):6675,ex:E?Math.round(E.x):6825,sy:S?Math.round(S.y):1165}}
+function f2Routes(){
+ // S3a: the doors face the frontage road.  Kiss & Fly and taxi passengers walk door → forecourt line F → kerb walk KC: no road crossing.
+ // P-TERM / bus plaza / taxi rank walk north through the terminal plaza to the frontage road and cross on WALK at the AIR-2 crossings.
+ const X=f2Crosswalks(),wx=X.wx,ex=X.ex,sy=X.sy,F=968,KC=F2_CURB_WALK,PS=1149,BP=1612,N=F2_RD.swN+10,S=F2_RD.swS-8;
+ const toT=(door)=>{const d=F2_DOORS[door];return[[d[0],F],[d[0],d[1],'door']]};
+ const viaW=[[wx,PS],[wx,S,'xw'],[wx,N],[wx,F]],viaE=[[ex,PS],[ex,S,'xw'],[ex,N],[ex,F]];
+ return[
+  {id:'F2-PAX-KISS-1',asset:'PE-43',pts:[[6226,KC],[6226,F],...toT('T2')],speed:27},
+  {id:'F2-PAX-KISS-2',asset:'PE-44',pts:[[6480,KC],[6480,F],...toT('T1')],speed:25},
+  {id:'F2-PAX-PARK-1',asset:'PE-09',pts:[[6170,1472],[6341,1472],[6341,PS],...viaW,...toT('T2')],speed:28},
+  {id:'F2-PAX-PARK-2',asset:'PE-10',pts:[[6520,1664],[6341,1664],[6341,PS],...viaW,...toT('T3')],speed:29},
+  {id:'F2-PAX-TAXI-1',asset:'PE-04',pts:[[6956,KC],[6956,F],...toT('T3')],speed:26},
+  {id:'F2-PAX-TAXI-2',asset:'PE-43',pts:[[7020,KC],[7020,F],...toT('T2')],speed:28},
+  {id:'F2-PAX-BUS-1',asset:'PE-19',pts:[[6926,BP],[6808,BP],[6808,sy,'xs'],[6692,sy],[wx,PS],...viaW.slice(1),...toT('T2')],speed:22},
+  {id:'F2-PAX-BUS-2',asset:'PE-44',pts:[[7020,BP],[6830,BP],[6830,PS],...viaE,...toT('T3')],speed:26},
+  {id:'F2-CREW-1',asset:'PE-41',pts:[[6095,1472],[6341,1472],[6341,PS],...viaW,...toT('T1')],speed:30},
+  {id:'F2-CREW-2',asset:'PE-40',pts:[[6240,F],[6900,F]],speed:30,noDoor:true},
+  {id:'F2-FC-1',asset:'PE-10',pts:[[6250,F],[6560,F]],speed:24,noDoor:true},
+  {id:'F2-FC-2',asset:'PE-04',pts:[[6600,F],[6920,F]],speed:23,noDoor:true}
+ ];
+}
+const F2_PEOPLE=[];
+function f2InitPeople(){
+ if(F2_PEOPLE.length)return;
+ // a road crossing is the segment whose first point is flagged 'xw'/'xs'; it is entered from either end only on WALK
+ f2Routes().forEach((r,i)=>{const segs=[];let tot=0;for(let k=1;k<r.pts.length;k++){const a=r.pts[k-1],b=r.pts[k],l=Math.hypot(b[0]-a[0],b[1]-a[1]);segs.push({a,b,l});tot+=l}
+  F2_PEOPLE.push({...r,segs,tot,seg:0,s:((i*97)%Math.max(1,Math.floor(tot*.8))),dir:i%2?-1:1,state:'walk',wait:0,dwell:0,hidden:false,x:r.pts[0][0],y:r.pts[0][1],face:4,crossing:false})});
+ for(const p of F2_PEOPLE){let s=p.s;for(let k=0;k<p.segs.length;k++){if(s<=p.segs[k].l||k===p.segs.length-1){p.seg=k;p.s=Math.min(s,p.segs[k].l);break}s-=p.segs[k].l}
+  const g=p.segs[p.seg];if(g.a[2]==='xw'||g.a[2]==='xs')p.s=p.dir>0?0:g.l;   // never start on the carriageway
+  f2PlacePerson(p)}
+}
+function f2PlacePerson(p){const sg=p.segs[p.seg];if(!sg)return;const u=sg.l?p.s/sg.l:0;p.x=sg.a[0]+(sg.b[0]-sg.a[0])*u;p.y=sg.a[1]+(sg.b[1]-sg.a[1])*u;const dx=(sg.b[0]-sg.a[0])*p.dir,dy=(sg.b[1]-sg.a[1])*p.dir;p.face=Math.abs(dx)>=Math.abs(dy)?(dx>=0?2:6):(dy>=0?4:0)}
+function f2WalkPhase(){try{const st=TrafficSignalController.ensure('AIR-2'),ph=TrafficSignalController.currentFor('AIR-2'),rem=Math.max(0,st.phaseDuration-(performance.now()-st.phaseStart))/1000;return{walk:r76WalkOk(ph,'horizontal'),rem,phase:ph.id}}catch{return{walk:false,rem:0,phase:'?'}}}
+function f2PedDemand(){let n=0;for(const p of F2_PEOPLE)if(p.state==='wait-walk')n++;if(F2_PICKUP.walker&&F2_PICKUP.walker.state==='wait-walk')n++;return n}
+function f2CrossingOccupied(){for(const p of F2_PEOPLE)if(p.crossing)return true;return!!(F2_PICKUP.walker&&F2_PICKUP.walker.crossing)}
+function f2StepWalker(p,dt){
+ if(p.dwell>0){p.dwell-=dt;if(p.dwell<=0){p.dwell=0;p.hidden=false}return}
+ const sg=p.segs[p.seg];if(!sg)return;
+ const atStart=p.dir>0?p.s<=0.001:p.s>=sg.l-0.001,isCross=sg.a[2]==='xw'||sg.a[2]==='xs';
+ if(isCross&&atStart&&!p.crossing){const w=f2WalkPhase(),need=sg.l/p.speed+.4;if(!(w.walk&&w.rem>=need)){p.state='wait-walk';p.wait+=dt;return}p.crossing=true}
+ p.state='walk';
+ let mv=p.speed*dt;
+ while(mv>0){const g=p.segs[p.seg];const rem=p.dir>0?g.l-p.s:p.s;if(mv<rem){p.s+=p.dir*mv;mv=0;break}
+  mv-=rem;p.s=p.dir>0?g.l:0;p.crossing=false;
+  const nk=p.seg+p.dir;
+  if(nk<0||nk>=p.segs.length){ // end of the route: dwell (inside the terminal = hidden), then walk back
+   const end=p.dir>0?g.b:g.a;p.dir=-p.dir;p.dwell=end[2]==='door'?14+((p.id.length*7)%12):5+((p.id.length*5)%7);p.hidden=end[2]==='door';p.state='dwell';mv=0;break}
+  p.seg=nk;p.s=p.dir>0?0:p.segs[nk].l;
+  const ng=p.segs[nk];if(ng.a[2]==='xw'||ng.a[2]==='xs')break;   // stop at the kerb: the WALK check runs next frame
+ }
+ f2PlacePerson(p);
+}
+function f2UpdatePeople(dt){if(typeof State!=='undefined'&&State.paused)return;f2InitPeople();dt=Math.min(.1,Math.max(0,dt||0));for(const p of F2_PEOPLE)f2StepWalker(p,dt);if(F2_PICKUP.walker)f2StepPickupWalker(dt)}
+function f2DrawPerson(p,now){if(p.hidden)return;const moving=p.state==='walk',I=TurboCity.info(p.asset,{scale:1,direction:p.face,pose:moving?'walking':'idle'}),f=I.an.find(q=>q[0]==='Feet')||['Feet',I.w/2,I.h*.55];ctx.save();ctx.lineWidth=1;P34G.k=p.id??null;TurboCity.draw(ctx,p.asset,p.x-f[1],p.y-f[2],{mode:'runtime',scale:1,direction:p.face,pose:moving?'walking':'idle',time:moving?now/1000:0});ctx.restore()}
+function f2DrawPeople(now){if(!e3InView(6000,934,1200,766,60))return;f2InitPeople();for(const p of F2_PEOPLE)f2DrawPerson(p,now);if(F2_PICKUP.walker)f2DrawPerson(F2_PICKUP.walker,now)}
+
+// =====================================================================================================================================
+// LIVE FLIGHT BOARD (FIDS) · arrivals / departures read from the reservation controller
+// =====================================================================================================================================
+const F2_CITIES=['אתונה','רומא','לרנקה','פריז','לונדון','ברלין','מדריד','וינה','פראג','בודפשט','זאגרב','סופיה','ליסבון','אמסטרדם'];
+const F2_AC_NAMES={'AC-NB-01':'צר-גוף','AC-RJ-01':'סילון אזורי','AC-TP-01':'טורבו-פרופ','AC-CG-01':'מטען','AC-PR-01':'מדחף קל','AC-BJ-01':'מטוס עסקים','AC-LT-01':'דו-מנועי קל','AC-CN-01':'עסקים (כנף קדמית)','AC-AM-01':'מטוס ים','AC-TB-01':'משא (2 קורות זנב)'};
+function f2City(code){let h=7;for(const c of String(code))h=(h*33+c.charCodeAt(0))>>>0;return F2_CITIES[h%F2_CITIES.length]}
+function f2StateTime(f,s){const q=f.states.find(x=>x[1]===s);return q?q[0]:null}
+function f2Gate(f){return f.stand}
+function f2Board(now=APT_OPS.clk){
+ const arr=[],dep=[];if(!APT_OPS.ready)return{arr,dep,ready:false,now};
+ for(const f of AO.flights){if(f.heli||f.never||!f.states?.length)continue;const pax=/^P[1-5]$/.test(f.stand||'');if(!pax)continue;
+  const inbound=f.states[0][1]==='INBOUND',tOB=f2StateTime(f,'ON_BLOCK'),tTO=f2StateTime(f,'TAKEOFF_ROLL')??f2StateTime(f,'PUSHBACK'),state=aoStateOf(f,now)||f.states[0][1];
+  if(inbound&&tOB!=null&&tOB>=now-150)arr.push({code:f.code,ac:f.ac,stand:f.stand,city:f2City(f.code+'A'),t:tOB,state,landed:now>=tOB,f});
+  if(tTO!=null&&tTO>=now-25&&!(inbound&&now<tOB))dep.push({code:f.code,ac:f.ac,stand:f.stand,city:f2City(f.code+'D'),t:tTO,state,f});
+ }
+ arr.sort((a,b)=>a.t-b.t);dep.sort((a,b)=>a.t-b.t);return{arr:arr.slice(0,6),dep:dep.slice(0,6),ready:true,now};
+}
+function f2Eta(t,now){const d=Math.round(t-now);return d>2?'בעוד '+d+' שנ׳':d>=-2?'עכשיו':'לפני '+(-d)+' שנ׳'}
+function f2BoardHtml(){if(typeof G77_FIDS!=='undefined'&&G77_FIDS.on)return g77FidsPhone(false);   // GATE-77 S7-a · p191: the same rows as the big board
+
+ const B=f2Board(),L=E2_STATE_LABELS;
+ if(!B.ready)return pcard('לוח טיסות',pnote('בקר השדה מתכונן · הלוח יתעדכן בעוד רגע.'),'career');
+ const row=(q,kind)=>[q.code+' · '+q.city,(F2_AC_NAMES[q.ac]||'')+' · שער '+q.stand+' · '+(L[q.state]||q.state)+' · '+f2Eta(q.t,B.now)];
+ return pcard('נחיתות — לוח חי',B.arr.length?pkv(B.arr.map(q=>row(q,'a'))):pnote('אין כרגע נחיתות מתוכננות לעמדות הנוסעים.'),'career')
+  +pcard('המראות — לוח חי',B.dep.length?pkv(B.dep.map(q=>row(q,'d'))):pnote('אין כרגע המראות מתוכננות.'),'career');
+}
+
+// =====================================================================================================================================
+// LIVE ACTIVITY · M-F2-PICKUP — meet a passenger of a real arriving flight at the Kiss & Fly curb
+// =====================================================================================================================================
+const F2_PICKUP={walker:null};
+const F2_DESTS=[['D2-HOTEL-1','המלון הגדול D2'],['E3-STATION','התחנה המרכזית E3'],['PLAYER-HOME','הבית שלך ב-C3']];
+Object.assign(MISSION_DEFS,{
+ 'M-F2-PICKUP':{id:'M-F2-PICKUP',name:'F2 · איסוף נוסע מטיסה נוחתת',type:'airport-pickup',chunk:'F2',jobKey:'airport',reward:360,timeLimit:600,pickup:'APT-KISS-PICK',dropoff:'D2-HOTEL-1',failOnCollision:false,routeLabel:'טרמינל F2 · מפרץ הורד ואסוף → יעד הנוסע',patience:150,drive:240},
+ 'M-F2-TAXI':{id:'M-F2-TAXI',name:'מונית · טרמינל F2 לתחנה המרכזית',jobKey:'taxi',license:'LIC-02',reward:860,timeLimit:300,pickup:'APT-TAXI-PICK',dropoff:'E3-STATION',pickupLabel:'איסוף נוסעים בתחנת המוניות של הטרמינל',dropoffLabel:'הורדה בתחנה המרכזית E3',pickupToast:'הנוסעים עלו · סע לתחנה המרכזית E3',vehicle:{asset:'VS-TX-01',ref:'Taxi'},failOnCollision:true}
+});
+MISSION_AREA_META.F2='F2 · טרמינל, רחבה וצד יבשתי';
+function f2Persistent(){PlayerProfile.worldPersistent||={};const p=PlayerProfile.worldPersistent.airportTerminal||={pickups:0,bestPickupSeconds:null,lastPickup:null,taxiFromTerminal:0,boardViews:0};for(const k of['pickups','taxiFromTerminal','boardViews'])if(!Number.isFinite(p[k]))p[k]=0;return p}
+function f2NextArrival(now=APT_OPS.clk,exclude){
+ if(!APT_OPS.ready)return null;let best=null;
+ for(const f of AO.flights){if(f.heli||f.never||!/^P[1-36]$/.test(f.stand||'')||f.states?.[0]?.[1]!=='INBOUND')continue;if(exclude&&f.code===exclude)continue;const t=f2StateTime(f,'ON_BLOCK');if(t==null||t<now-25)continue;if(!best||t<best.t)best={code:f.code,stand:f.stand,ac:f.ac,t}}
+ return best;
+}
+function f2StartPickup(d){
+ if(PlayerProfile.mode!=='vehicle')return toast('התחל את האיסוף מתוך רכב');if(carKmh()>2)return toast('עצור לפני התחלת המשימה');
+ const dest=F2_DESTS[(f2Persistent().pickups+(PlayerProfile.progression?.completedMissions?.length||0))%F2_DESTS.length];
+ PlayerProfile.activeMission={id:d.id,stage:'to-curb',reward:d.reward,timeRemaining:d.timeLimit,startedAt:iso(),startCollisions:PlayerCar.collisions||0,returnVehicle:null,f2:{flight:null,stand:null,tReady:null,space:null,waitAtCurb:0,boardedAt:null,dest:dest[0],destLabel:dest[1],patience:d.patience,driveLeft:d.drive,early:false}};
+ f2PickFlight(PlayerProfile.activeMission);setNavigationTarget('APT-KISS-PICK',{mission:true,silent:true});
+ SaveManager.log('mission','mission_state',{id:d.id,state:'started',stage:'to-curb',flight:PlayerProfile.activeMission.f2.flight});SaveManager.save('mission-start',{backup:true,silent:true});setPhoneOpen(false);
+ const a=PlayerProfile.activeMission.f2;toast(a.flight?'איסוף מטיסה '+a.flight+' · סע למפרץ הורד ואסוף בטרמינל F2':'סע למפרץ הורד ואסוף · הטיסה תשובץ כשתתוכנן בבקר')
+}
+function f2PickFlight(m,exclude){const a=m.f2,q=f2NextArrival(APT_OPS.clk,exclude);if(!q){a.flight=null;a.stand=null;a.tReady=null;return false}a.flight=q.code;a.stand=q.stand;a.tReady=q.t+26;return true}
+// a curb space is a stop zone: the car's centre inside the marked box (4 px inset) and the body roughly parallel to the kerb
+function f2SpaceOf(car){if(Math.abs(Math.sin(car.heading||0))>.5)return null;for(const s of F2_KISS_SPACES){if(car.x>=s.x+4&&car.x<=s.x+s.w-4&&car.y>=s.y+4&&car.y<=s.y+s.h-4)return s}return null}
+function f2DoorFor(stand){return f2PocketForStand(stand)?.door||'T2'}
+function f2SpawnPickupWalker(m){
+ const a=m.f2,door=F2_DOORS[f2DoorFor(a.stand)],sp=F2_KISS_SPACES.find(s=>s.id===a.space)||F2_KISS_SPACES[2],cx=sp.x+sp.w/2,F=968,KC=F2_CURB_WALK;
+ // S3a: the Kiss & Fly lay-by is on the terminal-side curb: door → forecourt → along the forecourt → kerb at the car (no road crossing)
+ const pts=[[door[0],door[1]],[door[0],F],[cx,F],[cx,KC],[cx,sp.y-2]];
+ const segs=[];for(let k=1;k<pts.length;k++){const A=pts[k-1],B=pts[k];segs.push({a:A,b:B,l:Math.max(.01,Math.hypot(B[0]-A[0],B[1]-A[1]))})}
+ F2_PICKUP.walker={id:'F2-PICKUP-PAX',asset:a.stand==='P2'?'PE-43':'PE-44',segs,seg:0,s:0,dir:1,state:'walk',wait:0,dwell:0,hidden:false,x:door[0],y:door[1],face:4,speed:30,crossing:false,arrived:false,flight:a.flight,space:sp.id};
+}
+function f2StepPickupWalker(dt){
+ const w=F2_PICKUP.walker,m=PlayerProfile.activeMission;if(!w)return;
+ if(!m||m.id!=='M-F2-PICKUP'||m.stage==='drive'){F2_PICKUP.walker=null;return}
+ if(w.arrived){w.state='idle';return}
+ const sg=w.segs[w.seg],isCross=sg.a[2]==='xw';
+ if(isCross&&w.s<=0.001&&!w.crossing){const ph=f2WalkPhase(),need=sg.l/w.speed+.4;if(!(ph.walk&&ph.rem>=need)){w.state='wait-walk';return}w.crossing=true}
+ w.state='walk';let mv=w.speed*dt;
+ while(mv>0){const g=w.segs[w.seg],rem=g.l-w.s;if(mv<rem){w.s+=mv;mv=0;break}mv-=rem;w.s=g.l;w.crossing=false;if(w.seg>=w.segs.length-1){w.arrived=true;w.state='idle';break}w.seg++;w.s=0;if(w.segs[w.seg].a[2]==='xw')break}
+ f2PlacePerson(w);
+}
+function f2RetargetWalker(spaceId){const w=F2_PICKUP.walker;if(!w)return;const sp=F2_KISS_SPACES.find(s=>s.id===spaceId);if(!sp||w.space===spaceId)return;
+ // only the last two segments (along the platform to the curb) change
+ const n=w.segs.length,cx=sp.x+sp.w/2,PL=F2_CURB_WALK,F=968;w.segs[n-3]={a:w.segs[n-3].a,b:[cx,F],l:Math.max(.01,Math.hypot(cx-w.segs[n-3].a[0],F-w.segs[n-3].a[1]))};w.segs[n-2]={a:[cx,F],b:[cx,PL],l:PL-F};w.segs[n-1]={a:[cx,PL],b:[cx,sp.y-2],l:Math.max(.01,sp.y-2-PL)};if(w.seg>=n-3){w.seg=Math.min(w.seg,n-3);w.s=0;w.arrived=false}w.space=spaceId;f2PlacePerson(w)}
+function f2UpdatePickup(dt,m,d){
+ const a=m.f2||(m.f2={});const now=APT_OPS.clk;a.elapsed=(a.elapsed||0)+dt;
+ if(m.stage==='drive'){a.driveLeft=Math.max(0,(a.driveLeft??d.drive)-dt);m.timeRemaining=a.driveLeft;if(a.driveLeft<=0)return missionFail('timeout');
+  const t=navPoiRegistry()[a.dest];if(!t)return;if(PlayerProfile.mode==='vehicle'&&Math.hypot(PlayerCar.x-t.x,PlayerCar.y-t.y)<72&&carKmh()<5)return missionComplete();return}
+ const atCurb=PlayerProfile.mode==='vehicle'&&carKmh()<1.2?f2SpaceOf(PlayerCar):null;
+ if(!a.flight){if(atCurb){if(m.stage==='to-curb'){m.stage='wait';a.early=true}a.space=atCurb.id}if(f2PickFlight(m))toast('שובצה טיסה '+a.flight+' לעמדה '+a.stand);m.timeRemaining=Math.max(m.timeRemaining-dt*.25,0);if(m.timeRemaining<=0)return missionFail('timeout');return}
+ const f=AO.flights.find(q=>q.code===a.flight);
+ if(!f&&!F2_PICKUP.walker&&now<(a.tReady||0)+5){if(!f2PickFlight(m,a.flight))a.flight=null;return}
+ const ready=now>=(a.tReady||Infinity);
+ const sp=atCurb;
+ if(sp){if(m.stage==='to-curb'){m.stage='wait';if(!ready)a.early=true;toast('עצרת במפרץ '+sp.id+' · ממתינים לנוסע מטיסה '+a.flight)}a.space=sp.id;if(F2_PICKUP.walker)f2RetargetWalker(sp.id)}
+ else if(m.stage==='wait'&&!F2_PICKUP.walker?.arrived)m.stage='to-curb';
+ if(ready&&!F2_PICKUP.walker){f2SpawnPickupWalker(m);toast('הנוסע מטיסה '+a.flight+' יצא מהטרמינל · חוצה ברמזור אל המפרץ')}
+ if(ready){a.patience=Math.max(0,(a.patience??d.patience)-dt);m.timeRemaining=a.patience;if(a.patience<=0)return missionFail('timeout')}
+ else m.timeRemaining=Math.max(0,(a.tReady-now));
+ const w=F2_PICKUP.walker;
+ if(w&&w.arrived&&sp&&w.space===sp.id){
+  m.stage='drive';m.payload=true;a.boardedAt=iso();a.waitAtCurb=Math.round((d.patience-(a.patience??d.patience)));F2_PICKUP.walker=null;
+  setNavigationTarget(a.dest,{mission:true,silent:true});SaveManager.log('mission','mission_state',{id:m.id,state:'progress',stage:'drive',flight:a.flight,dest:a.dest});SaveManager.save('mission-pickup',{backup:false,silent:true});
+  toast('הנוסע עלה · סע אל '+a.destLabel)}
+}
+function f2ResumePickup(m){const a=m.f2||(m.f2={});F2_PICKUP.walker=null;
+ if(m.stage==='drive'){setNavigationTarget(a.dest||'D2-HOTEL-1',{mission:true,silent:true});return}
+ // the airport traffic is rebuilt from config after a load: an old flight code no longer exists, so a new real arrival is chosen
+ m.stage='to-curb';a.space=null;a.patience=MISSION_DEFS['M-F2-PICKUP'].patience;f2PickFlight(m);setNavigationTarget('APT-KISS-PICK',{mission:true,silent:true})}
+function f2OnComplete(m,d){
+ if(d.id==='M-F2-TAXI'){f2Persistent().taxiFromTerminal++;return}
+ if(d.id!=='M-F2-PICKUP')return;const p=f2Persistent(),a=m.f2||{},secs=Math.round((Date.now()-Date.parse(m.startedAt||iso()))/1000);
+ p.pickups++;p.lastPickup={at:iso(),flight:a.flight,stand:a.stand,dest:a.dest,seconds:Math.round(a.elapsed||secs),early:!!a.early};const gs=Math.round(a.elapsed||secs);if(p.bestPickupSeconds==null||gs<p.bestPickupSeconds)p.bestPickupSeconds=gs;
+}
+function f2PickupBonus(m,d){if(d?.id!=='M-F2-PICKUP')return 0;const a=m.f2||{},coll=Math.max(0,(PlayerCar.collisions||0)-(m.startCollisions||0));return(a.early?80:0)+(coll?0:40)}
+function f2StageLabel(m){const a=m.f2||{};if(m.stage==='drive')return 'הנוסע ברכב · סע אל '+(a.destLabel||'היעד');if(!a.flight)return 'ממתין לשיבוץ טיסה נוחתת';const f=AO.flights.find(q=>q.code===a.flight),st=f?aoStateOf(f,APT_OPS.clk):null;
+ if(F2_PICKUP.walker)return 'הנוסע בדרך מהטרמינל · עצור במפרץ '+(a.space||'הורד ואסוף');return 'טיסה '+a.flight+' · '+(E2_STATE_LABELS[st]||'בדרך')+' · '+(a.tReady?f2Eta(a.tReady,APT_OPS.clk):'')}
+function f2HudGoal(m){return 'F2 · '+f2StageLabel(m)+' · '+Math.ceil(m.timeRemaining||0)+' שנ׳'}
+
+// =====================================================================================================================================
+// PHONE CARDS + ACTIONS
+// =====================================================================================================================================
+function f2InsideStall(car){for(const s of F2_STALLS)if(e2InsideBay(car,s))return s;return null}
+function f2PhoneCard(id){
+ const p=APT_INTERACTIONS[id],held=PlayerProfile.mode==='walk'&&p&&Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y)<=80,btn=(label,action,dis=false,arg='')=>`<button data-f2-action="${action}" data-f2-arg="${arg}" ${dis?'disabled':''}>${label}</button>`;
+ const P=f2Persistent();
+ if(id==='APT-TERM'){P.boardViews++;return f2BoardHtml()}
+ if(id==='APT-KISS'){const d=MISSION_DEFS['M-F2-PICKUP'],m=PlayerProfile.activeMission;return pcard('איסוף נוסע מטיסה נוחתת',pnote('המשימה מתחילה מתוך רכב (מאפליקציית העבודות). עוצרים באחד מששת מקומות "הורד ואסוף"; הנוסע יוצא מהטרמינל רק אחרי שהטיסה האמיתית שלו חונה בשער, וחוצה ברמזור. זמן ההמתנה תלוי בתנועה בשדה.')+pkv([['תגמול',money(d.reward)+' + בונוס הגעה לפני הנוסע '+money(80)+' + נסיעה ללא פגיעה '+money(40)],['איסופים',P.pickups],['הזמן הטוב',P.bestPickupSeconds!=null?P.bestPickupSeconds+' שנ׳':'—']])+(m?.id==='M-F2-PICKUP'?pnote(f2StageLabel(m)):''),'nav')}
+ if(id==='APT-SHORT'){const loc=PlayerProfile.worldPersistent?.airportLandside?.parkingLocation,inF2=loc?.zone==='F2';return pcard('איתור הרכב בחניה הקצרה',pnote(inF2?'מקום החניה נשמר: '+loc.slot:'עצור באחת מ-'+F2_STALLS.length+' החניות (P-TERM או הכיכר), צא מהרכב וגש לקופה כדי לשמור את מקומו.')+`<div class="phoneActions">${btn('שמור את מקום הרכב','remember',!held)}${inF2?'<button data-nav-target="APT-MY-PARK">נווט לרכב</button>':''}</div>`,'nav')}
+ if(id==='APT-TAXI'){const d=MISSION_DEFS['M-F2-TAXI'];return pcard('נסיעת מונית מהטרמינל',pnote('עבודת מונית מהתחנה של הטרמינל אל התחנה המרכזית. מתחילים מתוך רכב באפליקציית העבודות; נדרש רישיון מונית.')+pkv([['תגמול',money(d.reward)],['נסיעות',P.taxiFromTerminal],['מוניות בתחנה',PARKED_CARS.filter(c=>/^PC-F2-(TX|PICK)/.test(c.id)).length+' / 12 מקומות']]),'career')}
+ if(id==='APT-BUS')return pcard('מפרצי הרחבה',pkv(F2_BUS_BAYS.map(b=>[b.id,{line4:'קו 4 · שדה התעופה (v1.96)',hotel:'שאטל מלונות',coach:'אוטובוס תיירים',rental:'שאטל השכרת רכב',crew:'הסעת צוותים'}[b.role]+(PARKED_CARS.some(c=>c.id==='PC-F2-BUS-'+b.id)?' · תפוס':' · פנוי')])),'business');
+ return ''
+}
+function f2Action(action){
+ const id=State.interactionId,p=APT_INTERACTIONS[id];if(!p||PlayerProfile.mode!=='walk'||Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y)>80)return false;
+ if(action==='remember'&&id==='APT-SHORT'){const st=f2InsideStall(PlayerCar);if(!st||carKmh()>1)return toast('כדי לשמור מיקום, עצור את הרכב באחת מחניות P-TERM');e2Persistent().parkingLocation={x:PlayerCar.x,y:PlayerCar.y,asset:PlayerCar.asset,slot:st.id,zone:'F2',at:iso()};SaveManager.save('airport-parking-location',{backup:false,silent:true});toast('מקום החניה נשמר · '+st.id);renderPhone();return true}
+ return false
+}
+$('phoneOverlay').addEventListener('click',e=>{const b=e.target.closest('[data-f2-action]');if(!b||b.disabled)return;f2Action(b.dataset.f2Action,b.dataset.f2Arg)});
+
+// =====================================================================================================================================
+// PAINT (cached) + DRAW
+// =====================================================================================================================================
+function f2PaintLand(g){
+ // platforms (concrete) behind the lay-bys and along R-AIR-E; kerb lines
+ g.fillStyle=portPattern('concrete');for(const p of F2_PLATFORMS)g.fillRect(p.x,p.y,p.w,p.h);g.fillRect(F2_BUS_PLAT.x,F2_BUS_PLAT.y,F2_BUS_PLAT.w,F2_BUS_PLAT.h);
+ g.fillRect(7126,1634,74,28);
+ g.strokeStyle='rgba(70,66,58,.55)';g.lineWidth=1.5;for(const p of F2_PLATFORMS){g.strokeRect(p.x+.5,p.y+.5,p.w-1,p.h-1)}
+ // S3a · terminal plaza where R-AIR ran (x 6000–7152, y 1158–1318): pavers, a planted strip, the P-TERM walkway north to the frontage road.
+ // Reserved for the GATE-74 short-stay lot (+28…40); until then pedestrians only.
+ {const Z=F2_PLAZA;g.fillStyle=portPattern('concrete');g.fillRect(Z.x0,Z.y0,Z.x1-Z.x0,Z.y1-Z.y0);   // GATE-74: the plaza holds the two short-stay lots
+  g.fillStyle=portPattern('asphalt');for(const L of F2_PLAZA_LOTS)g.fillRect(L.x,L.y,L.w,L.h);
+  g.fillStyle=portPattern('concrete');for(const W of F2_PLAZA_WALKS)g.fillRect(W.x,W.y,W.w,W.h);
+  g.fillStyle='rgba(246,244,232,.9)';for(const W of F2_PLAZA_WALKS)for(let y=1222;y<1256;y+=8)g.fillRect(W.x+4,y,W.w-8,4);
+  g.fillStyle='rgba(236,232,210,.85)';for(const [x0,x1] of[[6100,6316],[6370,6670],[6850,7080]])for(let x=x0+30;x<x1;x+=90){g.beginPath();g.moveTo(x+7,1234);g.lineTo(x-6,1238);g.lineTo(x+7,1242);g.closePath();g.fill()}
+  aptTxt(g,'חד-סטרי ← J1',6200,1250,7,'rgba(236,232,210,.7)',700);aptTxt(g,'P-PLAZA · חניה קצרה',6520,1226,7,'rgba(236,232,210,.7)',700);aptTxt(g,'כניסה · T3S',7020,1226,7,'rgba(236,232,210,.7)',700)}
+ // lot asphalt + aisles, then landscape islands + hedges on top
+ g.fillStyle=portPattern('asphalt');g.fillRect(6088,1376,538,316);g.fillRect(6626,1444,56,56);g.fillRect(6626,1636,56,56);
+ g.fillRect(6818,1376,324,66);g.fillRect(F2_A3.x,F2_A3.y,F2_A3.w,F2_A3.h);g.fillRect(6846,1512,280,94);
+ for(const h of F2_HEDGES){g.fillStyle=h.island?'#6f9460':'#4f7346';g.fillRect(h.x,h.y,h.w,h.h);if(h.island){g.strokeStyle='#b9b6a8';g.lineWidth=2;g.strokeRect(h.x+1,h.y+1,h.w-2,h.h-2)}}
+ g.fillStyle=portPattern('concrete');g.fillRect(F2_WALK.x,F2_WALK.y,F2_WALK.w,F2_WALK.y1-F2_WALK.y);
+ // stalls
+ g.strokeStyle='#e8e2c8';g.lineWidth=1.3;
+ for(const s of F2_STALLS){if(false){}
+  g.beginPath();g.moveTo(s.x,s.y);g.lineTo(s.x,s.y+s.h);g.moveTo(s.x+s.w,s.y);g.lineTo(s.x+s.w,s.y+s.h);const back=s.th<0?s.y:s.y+s.h;g.moveTo(s.x,back);g.lineTo(s.x+s.w,back);g.stroke();
+  }
+ for(const s of F2_TAXI_HOLD){g.beginPath();g.moveTo(s.x,s.y);g.lineTo(s.x,s.y+s.h);g.moveTo(s.x+s.w,s.y);g.lineTo(s.x+s.w,s.y+s.h);g.moveTo(s.x,s.y);g.lineTo(s.x+s.w,s.y);g.stroke();aptTxt(g,'TAXI',s.x+s.w/2,s.y+s.h-9,7,'#f4d35e')}
+ g.beginPath();g.moveTo(6838+8*38,1376);g.lineTo(6838+8*38,1442);g.stroke();
+ for(const b of F2_BUS_BAYS){g.strokeStyle='#e8e2c8';g.beginPath();g.moveTo(b.x,b.y);g.lineTo(b.x,b.y+b.h);g.stroke();g.strokeStyle='#e6c85b';g.strokeRect(b.x+3,b.y+b.h-12,b.w-6,8);aptTxt(g,b.id,b.x+b.w/2,b.y+b.h-25,9,'#f3eecd');aptTxt(g,b.role==='line4'?'קו 4':b.role==='hotel'?'מלונות':b.role==='coach'?'תיירות':b.role==='rental'?'השכרה':'צוותים',b.x+b.w/2,b.y+14,7,'#e9e3c7')}
+ g.strokeStyle='#e8e2c8';g.beginPath();g.moveTo(6846+280,1512);g.lineTo(6846+280,1606);g.stroke();
+ // walkway zebras across A1/A2 and lot arrows
+ g.fillStyle='rgba(246,244,232,.9)';for(const y0 of[1444,1636])for(let y=y0+4;y<y0+52;y+=8)g.fillRect(F2_WALK.x+4,y,F2_WALK.w-8,4);
+ g.fillStyle='rgba(236,232,210,.8)';for(const [y,dir]of[[1462,-1],[1482,1],[1654,-1],[1674,1]])for(let x=6110;x<6620;x+=150){if(Math.abs(x-6341)<40)continue;g.beginPath();g.moveTo(x-dir*6,y-4);g.lineTo(x+dir*7,y);g.lineTo(x-dir*6,y+4);g.closePath();g.fill()}
+ for(const y of[1466,1478])for(let x=6850;x<7180;x+=120){g.beginPath();g.moveTo(x-6,y-4);g.lineTo(x+7,y);g.lineTo(x-6,y+4);g.closePath();g.fill()}
+ aptTxt(g,'P-TERM · חניה קצרה',6140,1684,10,'rgba(240,236,214,.75)');aptTxt(g,'מוניות · המתנה',6990,1452,9,'rgba(244,211,94,.85)');aptTxt(g,'אוטובוסים ושאטלים',6990,1504,9,'rgba(240,236,214,.75)');
+ // static furniture is baked into the same layer: it stands on platforms/islands only (never on a stall, aisle or lane)
+ f2PaintProps(g);
+}
+function f2PaintCurb(g){
+ // S3a · lay-bys on the terminal-side curb: asphalt over the north sidewalk + the kerb band, kerb on the forecourt side, dashed edge to the
+ // west-bound lane, spaces and words.  L.y1 = road edge, L.y0 = deep edge.
+ const lay=(L)=>{g.fillStyle=portPattern('asphalt');g.beginPath();g.moveTo(L.x0,L.y1);g.lineTo(L.b0,L.y0);g.lineTo(L.b1,L.y0);g.lineTo(L.x1,L.y1);g.closePath();g.fill();
+  g.strokeStyle='#d9d4c2';g.lineWidth=2.4;g.beginPath();g.moveTo(L.x0,L.y1-1);g.lineTo(L.b0,L.y0);g.lineTo(L.b1,L.y0);g.lineTo(L.x1,L.y1-1);g.stroke();
+  g.strokeStyle='rgba(248,248,240,.85)';g.lineWidth=1.6;g.setLineDash([9,7]);g.beginPath();g.moveTo(L.x0+10,L.y1-1.5);g.lineTo(L.x1-10,L.y1-1.5);g.stroke();g.setLineDash([])};
+ lay(F2_KISS);lay(F2_TAXI_LAYBY);
+ g.strokeStyle='rgba(250,250,242,.9)';g.lineWidth=1.3;
+ for(const s of F2_KISS_SPACES){g.strokeRect(s.x+.5,s.y+.5,s.w-1,s.h-1);aptTxt(g,s.id,s.x+8,s.y+s.h/2,8,'#f4f1dc')}
+ aptTxt(g,'KISS & FLY',(F2_KISS.b0+F2_KISS.b1)/2,F2_KISS.y0-4,7,'rgba(244,241,220,.85)');
+ g.strokeStyle='#f4d35e';for(const s of F2_TAXI_PICK){g.strokeRect(s.x+.5,s.y+.5,s.w-1,s.h-1);aptTxt(g,s.id.slice(1),s.x+9,s.y+s.h/2,8,'#f4d35e')}
+ const T=F2_TAXI_PICK[F2_TAXI_PICK.length-1];aptTxt(g,'TAXI',T.x+T.w+14,T.y+T.h/2,9,'#f4d35e');
+}
+function f2PaintBelt(g,P){
+  // conveyor belt out of the module wall + a roller door
+  g.fillStyle='rgba(8,18,26,.28)';g.fillRect(P.beltX-10,F2_BAG.belt0-3,10,F2_BAG.belt1-F2_BAG.belt0+8);
+  g.fillStyle='#4a525a';g.fillRect(P.beltX-9,F2_BAG.belt0-4,9,F2_BAG.belt1-F2_BAG.belt0+8);g.fillStyle='#9aa3ab';g.fillRect(P.beltX-8,F2_BAG.belt0-2,7,F2_BAG.belt1-F2_BAG.belt0+4);
+  g.fillStyle='#646d75';for(let y=F2_BAG.belt0;y<F2_BAG.belt1+2;y+=3.2)g.fillRect(P.beltX-8,y,7,1);
+  g.fillStyle='#14181c';g.fillRect(P.beltX-1.5,F2_BAG.belt0-7,3,F2_BAG.belt1-F2_BAG.belt0+14);
+  g.fillStyle='#e0b93a';g.fillRect(P.beltX-10.5,F2_BAG.belt0-5,1.6,F2_BAG.belt1-F2_BAG.belt0+10);g.fillStyle='#1d2228';for(let y=F2_BAG.belt0-4;y<F2_BAG.belt1+4;y+=6)g.fillRect(P.beltX-10.5,y,1.6,3);
+}
+function f2DrawBelts(v){if(WTC_LP===1)return;for(const P of Object.values(F2_POCKETS))if(portVis(v,P.beltX-12,814,16,72))f2PaintBelt(ctx,P)}
+// GATE-77 S5c · owner 16:17: a pocket between two stand boxes gets its own red parking; the stand lines stop at its edges
+function f2PaintPocketRed(g,P,k4){const x0=Math.min(...P.bays)-13,x1=Math.max(...P.bays)+13,y0=F2_BAG.top+(P.dy||0)-4-k4,y1=F2_BAG.top+(P.dy||0)+70;
+ g.save();g.fillStyle=portPattern('apron');g.fillRect(x0-2,y0-2,x1-x0+4,y1-y0+4);g.strokeStyle='rgba(214,58,52,.85)';g.lineWidth=2;g.setLineDash([12,7]);g.strokeRect(x0,y0,x1-x0,y1-y0);g.restore();return{x0,x1,y0,y1}}
+function f2PaintApron(g){
+ aptReady();
+ // service gaps between the terminal modules: concrete, make-up loop guidance, belts, gates
+ g.fillStyle=portPattern('apron');for(const P of Object.values(F2_POCKETS))g.fillRect(P.gx0,772,P.gx1-P.gx0,170);g.fillRect(7090,772,20,170);
+ for(const P of Object.values(F2_POCKETS)){
+  if(!P.shared){g.strokeStyle='#e0b93a';g.lineWidth=1.6;g.setLineDash([]);g.beginPath();g.moveTo(P.muS,776);g.lineTo(P.muS,F2_BAG.uY-16);g.arc((P.muS+P.muN)/2,F2_BAG.uY-16,(P.muS-P.muN)/2,0,Math.PI);g.lineTo(P.muN,776);g.stroke();
+  g.fillStyle='#e0b93a';g.fillRect(P.muS-8,F2_BAG.stop+6,16,2.5);
+  f2PaintBelt(g,P);}
+  // ramp park pocket: bays + exit lane arrows + label
+  const k4=Math.max(0,(P.carts||2)-2)*24;if(P.red)f2PaintPocketRed(g,P,k4);for(const x of P.bays){g.strokeStyle='rgba(244,242,232,.8)';g.lineWidth=1.2;g.strokeRect(x-10,F2_BAG.top+(P.dy||0)-1-k4,20,68+k4);aptTxt(g,k4?'BAG ×'+P.carts:'BAG',x,F2_BAG.top+(P.dy||0)+60,6,'rgba(244,242,232,.85)')}
+  g.fillStyle='rgba(224,185,58,.75)';if(P.exitX<7220)for(let y=654;y<710;y+=16){g.beginPath();g.moveTo(P.exitX-4,y);g.lineTo(P.exitX+4,y);g.lineTo(P.exitX,y+7);g.closePath();g.fill()}
+  aptTxt(g,P.label,P.labelX??(P.bays[0]+P.exitX)/2,631-k4+(P.dy||0),6,'rgba(244,242,232,.9)');
+  if(!P.shared)aptTxt(g,P.id+' = '+P.door.slice(1),(P.muN+P.muS)/2,791,9,'#fff0b5');
+ }
+ // ramp park C: apron buses + mobile stairs
+ for(const b of F2_RAMP_C.bays){if(b.row2){g.strokeStyle='rgba(244,242,232,.8)';g.lineWidth=1.2;g.strokeRect(b.x-47,b.yc-12,94,24);aptTxt(g,'BUS 3',b.x,b.yc+3,6,'rgba(244,242,232,.85)');continue}const h=b.kind==='AB'?90:72,y0=(b.kind==='AB'?(b.yc||G77_YARD.busYc):656)-h/2;g.strokeStyle='rgba(244,242,232,.8)';g.lineWidth=1.2;g.strokeRect(b.x-b.w/2,y0,b.w,h);aptTxt(g,b.kind==='AB'?'BUS':'STAIRS',b.x,y0+h+6,6,'rgba(244,242,232,.85)')}
+ aptTxt(g,'חצר שירות',7190,1014,5,'rgba(244,242,232,.75)');
+ // S2 GROUND OPS · T3 bus gate: walkway from the bus doors (east side of the bays) along y 923, zebra across the service road, terminal door
+ {const G=G2_GATE,bays=F2_RAMP_C.bays.filter(b=>b.kind==='AB');
+  g.strokeStyle='rgba(246,244,232,.62)';g.lineWidth=1.1;g.setLineDash([3,3]);
+  let drawn=0;for(const b0 of bays.concat(G2_S_BAYS.filter(q=>q.row2))){try{const b=APL.bays.find(q=>q.id===b0.id);if(!b)continue;const P=g2GatePath(b);   // GATE-77 S6b · p145: each bus's walkway along its path
+   for(const sx of[-2,2]){g.beginPath();g.moveTo(P[1][0]+sx,P[1][1]+sx);for(let i=2;i<P.length-1;i++)g.lineTo(P[i][0]+sx,P[i][1]+sx);g.stroke()}drawn++}catch(e){}}
+  if(!drawn){for(const b of bays){const x=g77WalkX(b);for(const sx of[-2,2]){g.beginPath();g.moveTo(x+sx,(b.yc||G77_YARD.busYc)+20);g.lineTo(x+sx,G.walkY-sx);g.stroke()}}
+  const xw0=Math.min(...bays.map(b=>g77WalkX(b))),xw1=Math.max(...bays.map(b=>g77WalkX(b)));
+  for(const sy of[-2.5,2.5]){g.beginPath();g.moveTo(Math.min(xw0,G.door[0])-3,G.walkY+sy);g.lineTo(Math.max(xw1,G.door[0])+3,G.walkY+sy);g.stroke()}}
+  g.setLineDash([]);
+  // zebra across lane L (white bars) between the service-road edge lines
+  if(G.zebra){g.fillStyle='rgba(246,244,232,.85)';for(let y=725;y<746;y+=5)g.fillRect(G.zebra.x0,y,G.zebra.x1-G.zebra.x0,2.6)}
+  // terminal door (airside) + label
+  g.fillStyle='#1f3b55';g.fillRect(G.door[0]-3,G.walkY-6,4,12);g.fillStyle='#8ec5ea';g.fillRect(G.door[0]-2.4,G.walkY-5,2.6,4.4);g.fillRect(G.door[0]-2.4,G.walkY+.6,2.6,4.4);   // the east door of T3
+  aptTxt(g,G.label,(G77_YARD.x0+G77_YARD.x1)/2,G.walkY+8,5.5,'rgba(244,242,232,.9)',700);}   // the label at the yard's head, between the walk and the bays
+ // apron service road (lane L): white edge lines and words
+ g.strokeStyle='rgba(246,244,236,.75)';g.lineWidth=1.4;g.beginPath();g.moveTo(6004,723);g.lineTo(7236,723);g.moveTo(6004,747);g.lineTo(7236,747);g.stroke();
+ for(const x of[6290,6660,7020])aptTxt(g,'SERVICE ROAD',x,735,7,'rgba(246,244,236,.6)');s6rPaintHS(g);s6rPaintPits(g);g77PaintStairs(g);   // GATE-77 S6r · D-106 · M3 (the belt bays on the hardstand, the power pits)
+ // equipment restraint lines at the jet-bridge heads (keep-clear boxes where no vehicle parks)
+ g77K72PaintRest(g);   // GATE-77 S5c · K-72: the bridges' rest wheel spots
+ g.strokeStyle='rgba(206,62,52,.75)';g.lineWidth=1.5;for(const s of APT_STANDS){if(s.cargo)continue;g.strokeRect(s.gateX-17,750,34,20);g.beginPath();g.moveTo(s.gateX-17,750);g.lineTo(s.gateX+17,770);g.moveTo(s.gateX+17,750);g.lineTo(s.gateX-17,770);g.stroke()}
+}
+function f2DrawGround(now){
+ if(!e3InView(6000,554,1200,1146,80))return;const v=aptView(120);
+ if(portVis(v,6000,940,1200,760))portCached('f2-land',6000,940,1200,760,f2PaintLand,1.5);
+ if(portVis(v,6000,554,1220,392))portCached('f2-apron',6000,554,1220,392,f2PaintApron,1.5);
+}
+// drawn after the road base: the curb lay-bys replace the sidewalk strip; driveway aprons cross the R-AIR-E sidewalks
+function f2DrawAccess(now){
+ if(!e3InView(6000,990,1200,710,60))return;const v=aptView(60);
+ if(portVis(v,6100,990,1010,56))portCached('f2-curb',6100,990,1010,56,f2PaintCurb,2);
+ ctx.save();ctx.fillStyle=portPattern('asphalt');ctx.strokeStyle='#e0b85d';ctx.lineWidth=1.6;
+ for(const c of F2_CUTS.filter(q=>!/LANE$/.test(q.id))){if(!portVis(v,c.x,c.y,c.w,c.h))continue;ctx.fillRect(c.x,c.y,c.w,c.h);ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x+c.w,c.y);ctx.moveTo(c.x,c.y+c.h);ctx.lineTo(c.x+c.w,c.y+c.h);ctx.stroke()}
+ ctx.restore();
+}
+function f2DrawSprite(o,now,g=ctx){const opt=o.targetWidth?{targetWidth:o.targetWidth}:{scale:o.scale,rot:o.rot||0},I=TurboCity.info(o.asset,opt);g.save();g.lineWidth=1;TurboCity.draw(g,o.asset,o.x-I.w/2,o.y-I.h/2,{mode:'runtime',...opt,time:now/1000});g.restore()}
+function f2PaintProps(g){for(const o of F2_PROPS)f2DrawSprite(o,0,g)}
+function f2PaintOverhead(g){for(const o of [...F2_LAMPS,...F2_TREES])f2DrawSprite(o,0,g)}
+function f2DrawProps(now){if(WTC_LP===1)return;
+ if(!e3InView(6000,554,1200,1146,80))return;const v=aptView(80);
+ if(portVis(v,6000,960,1200,740)){for(const [t,x,y,w]of[['הורד ואסוף · עד 2 דק׳',6356,982,104],['חניה קצרה P-TERM',6341,1381,96],['מוניות · איסוף',6990,982,74],['אוטובוסים ושאטלים',6970,1640,104],['חניה קצרה בכיכר',6200,1345,90],['תחנת מוניות',7020,1350,74]])e4Plate(t,x,y,w)}
+ for(const P of Object.values(F2_POCKETS))if(portVis(v,P.gx0-4,764,P.gx1-P.gx0+8,190))e4Plate('BAG '+P.mu,(P.muS+P.muN)/2,922,62);
+ // live belts: bags ride the belt while a train is at the make-up point
+ for(const a of APT_ACT){if(a.kind!=='veh'||!a.tr?.carts)continue;const st=f2BagState(a.tr,a.lt);if(!st||st.f.at!=='mu'||st.f.fill==null)continue;const x=st.f.beltX-4.5,ph=(now/1000*14)%10;
+  if(!G77_MUB.on)for(let i=0;i<3;i++){const y=st.f.fill==='in'?F2_BAG.belt0+((ph+i*17)%52):F2_BAG.belt1-((ph+i*17)%52);   /* p247 */ctx.fillStyle=F2_BAG_COLORS[(i*3+st.f.n)%F2_BAG_COLORS.length];ctx.fillRect(x-2,y-1.6,4,3.2)}}
+ // hover targets (QA / picking)
+ Targets.add({id:'F2-KISS',label:'F2 · הורד ואסוף · 6 מקומות · צד הטרמינל',category:'airport',x:6357,y:1020,w:494,h:44});
+ Targets.add({id:'F2-P-SHORT',label:'F2 · חניה קצרה P-TERM · '+F2_STALLS.filter(q=>!q.plaza).length+' חניות',category:'airport',x:6385,y:1534,w:594,h:316});for(const L of F2_PLAZA_LOTS)Targets.add({id:L.id,label:'F2 · חניה קצרה בכיכר · '+F2_STALLS.filter(q=>q.lot===L.id).length+' חניות · חד-סטרי מערבה',category:'airport',x:L.x+L.w/2,y:L.y+L.h/2,w:L.w,h:L.h});
+ Targets.add({id:'F2-GTC',label:'F2 · מוניות 12 · אוטובוסים 8',category:'airport',x:7009,y:1505,w:382,h:250});
+}
+function f2DrawOverhead(now){if(WTC_LP===1)return;if(!e3InView(6000,1140,1200,580,80))return;const v=aptView(80);for(const o of F2_LAMPS)if(portVis(v,o.x-20,o.y-20,40,40))f2DrawSprite(o,now);for(const o of F2_TREES)if(portVis(v,o.x-24,o.y-24,48,48))g77NcEach(o,now,f2DrawSprite)}
+
+// =====================================================================================================================================
+// QA
+// =====================================================================================================================================
+function f2GeometryAudit(){
+ aptReady();
+ const issues=[],over=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y,inside=q=>q.x>=6000-.01&&q.y>=850-.01&&q.x+q.w<=7200+.01&&q.y+q.h<=1700+.01;
+ const roads=aptRoadRects(),fps=APT_BUILDINGS.map(aptFp),X=f2Crosswalks();
+ // registry + scope
+ for(const q of [...F2_STALLS,...F2_TAXI_HOLD,...F2_BUS_BAYS,...F2_KISS_SPACES,...F2_TAXI_PICK,...F2_PROPS.map(f2SpriteBox),...F2_BUILDINGS.map(aptFp)])if(!inside(q))issues.push('outside-F2:'+(q.id||q.x));
+ // lots/stalls never on a road (with sidewalks), never under a building, never overlapping each other
+ const lotRects=[{id:'lot',x:6088,y:1376,w:538,h:316},...F2_PLAZA_LOTS.map(L=>({id:L.id,x:L.x,y:L.y,w:L.w,h:L.h})),{id:'taxi',x:6818,y:1376,w:324,h:66},{id:'A3',...F2_A3},{id:'bus',x:6846,y:1512,w:280,h:94}];
+ for(const L of lotRects){for(const r of roads)if(over(L,r))issues.push('lot-on-road:'+L.id+'/'+r.id);for(const f of fps)if(over(L,f))issues.push('lot-under-building:'+L.id+'/'+f.id)}
+ const stalls=[...F2_STALLS,...F2_TAXI_HOLD,...F2_BUS_BAYS];for(let i=0;i<stalls.length;i++)for(let j=i+1;j<stalls.length;j++)if(over(stalls[i],stalls[j]))issues.push('stall-overlap:'+stalls[i].id+'/'+stalls[j].id);
+ for(const s of F2_STALLS)for(const a of F2_AISLES)if(over(s,a))issues.push('stall-in-aisle:'+s.id);
+ for(const s of F2_STALLS)if(over(s,{x:F2_WALK.x,y:F2_WALK.y,w:F2_WALK.w,h:F2_WALK.y1-F2_WALK.y}))issues.push('stall-on-walkway:'+s.id);
+ for(const s of F2_STALLS)for(const W of F2_PLAZA_WALKS)if(over(s,W))issues.push('stall-on-plaza-walk:'+s.id);for(const s of F2_STALLS.filter(q=>q.plaza)){const a=F2_AISLES.find(q=>q.id===(s.lot==='P-PLAZA-W'?'PA-W':'PA-E'));if(!(s.y+s.h===a.y||s.y===a.y+a.h))issues.push('plaza-access:'+s.id)}   // GATE-74
+ // parked cars fit their stall (visual clearance) and never sit in an aisle, lay-by lane or crossing
+ for(const c of PARKED_CARS.filter(c=>/^PC-F2-/.test(c.id))){const I=TurboCity.info(c.asset,{scale:roadVehicleScaleFor(c.asset,c.ref)}),r=c.slotRect,vert=Math.abs(Math.sin(c.heading||0))>.5,len=I.w-4,wid=I.h-4;if(vert?(wid>r.w+1||len>r.h+1):(len>r.w+1||wid>r.h+1))issues.push('car-clearance:'+c.id)}
+ // curb lay-bys: outside the through lane, inside the sidewalk band, clear of the crossings and of the stop line
+ for(const L of[F2_KISS,F2_TAXI_LAYBY]){if(L.y1!==F2_RD.yN||L.y0<F2_RD.yN-46||L.y0>F2_RD.swN)issues.push(L.id+':band');if(L.y0<APT_FENCE_Y+40)issues.push(L.id+':forecourt-too-narrow');for(const c of X.all){if(c.roadId!=='F2-AIR-S'&&over({x:L.x0,y:L.y0,w:L.x1-L.x0,h:L.y1-L.y0},{x:c.x-15,y:F2_RD.yN-46,w:30,h:48}))issues.push(L.id+':crossing')}}   // S3a: terminal-side curb
+ if(F2_KISS.x1>X.wx-15-50)issues.push('kiss-exit-too-close-to-stop-line');if(F2_TAXI_LAYBY.x0<X.ex+15)issues.push('taxi-entry-on-crossing');
+ // signal + crossings
+ if(X.all.length!==3||!X.all.every(c=>c.signalized))issues.push('air2-crossings');if(!SIGNALS.some(s=>s.node==='AIR-2'))issues.push('air2-signal');
+ // pedestrians: every route point reachable and not blocked by statics (road crossings are allowed only on the zebra lines)
+ for(const r of f2Routes())for(let k=1;k<r.pts.length;k++){const a=r.pts[k-1],b=r.pts[k],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/8),cross=a[2]==='xw'||a[2]==='xs';if(cross)continue;for(let i=0;i<=n;i++){const x=a[0]+(b[0]-a[0])*i/n,y=a[1]+(b[1]-a[1])*i/n;if(y>=1157&&staticPersonBlockedAt(x,y,PLAYER_PERSON_RADIUS+.5))issues.push(r.id+':blocked@'+Math.round(x)+','+Math.round(y)+' '+staticPersonBlockedAt(x,y,PLAYER_PERSON_RADIUS+.5))}}
+ for(const r of f2Routes())for(let k=1;k<r.pts.length;k++){const a=r.pts[k-1],b=r.pts[k];if(a[2]==='xw'){const near=X.all.some(c=>Math.abs(c.x-a[0])<6&&c.roadId!=='F2-AIR-S');if(!near)issues.push(r.id+':crossing-off-zebra')}if(a[2]==='xs'&&Math.abs(X.sy-a[1])>6)issues.push(r.id+':south-crossing-off-zebra')}
+ for(const id of['APT-SHORT','APT-KISS','APT-TAXI','APT-BUS','APT-TERM']){const p=APT_INTERACTIONS[id];if(personBlockedAt(p.x,p.y,5))issues.push(id+':blocked-poi')}
+ // props/trees/lamps never on roads, stalls, lay-bys or aisles
+ const blockers=[...F2_STALLS,...F2_TAXI_HOLD,...F2_BUS_BAYS,...F2_AISLES,F2_A3,{id:'kiss',x:F2_KISS.x0,y:F2_KISS.y0,w:F2_KISS.x1-F2_KISS.x0,h:F2_KISS.y1-F2_KISS.y0},{id:'taxilane',x:F2_TAXI_LAYBY.x0,y:F2_TAXI_LAYBY.y0,w:F2_TAXI_LAYBY.x1-F2_TAXI_LAYBY.x0,h:44},...F2_CUTS.filter(q=>!/LANE$/.test(q.id)),...F2_PLAZA_WALKS];
+ for(const o of F2_PROPS){const q=f2SpriteBox(o);for(const r of roads)if(over(q,r)&&q.y>1200)issues.push(o.id+':on-road');for(const b of blockers)if(over(q,b))issues.push(o.id+':blocks '+(b.id||'area'))}
+ for(const o of [...F2_TREES,...F2_LAMPS]){const q={x:o.x-6,y:o.y-6,w:12,h:12};for(const r of roads)if(over(q,r))issues.push(o.id+':on-road');for(const b of blockers)if(over(q,b))issues.push(o.id+':blocks '+(b.id||'area'))}
+ for(const l of STREET_LIGHTS.filter(l=>l.x>=6000&&l.x<7200&&l.y>1140&&l.y<1700)){const q={x:l.x-5,y:l.y-5,w:10,h:10};for(const b of blockers)if(over(q,b))issues.push(l.id+':blocks '+(b.id||'area'));for(const c of X.all)if(Math.hypot(c.x-l.x,c.y-l.y)<22)issues.push(l.id+':on-crossing')}
+ // airside: pockets clear of stand envelopes, lane L band and buildings; make-up loops inside the gaps
+ const boxes=APL.stands.filter(s=>s.tpl==='bridge').flatMap(s=>s.accepts.flatMap(ac=>aplEnv(ac,s.ngx,s.ngy,s.th).map(e=>({id:s.id,x0:e.x0,x1:e.x1,y0:e.y0,y1:e.y1})))),bld=APTT_C.bld;   // GATE-73 S2: real shapes (fuselage · wing · tail)
+ for(const b of APL.bays.filter(b=>b.zone==='F2')){const hx=b.kind==='BT'?6.5:b.kind==='AB'?APTT_SPEC.veh['LV-SH-01'].fp[3]/2:F2_MS.wid/2,len0=b.kind==='BT'?F2_BAG.yc-12.7:b.y0+4,len1=b.kind==='BT'?F2_BAG.yc+53:b.y1-4,r={x0:b.x-hx,x1:b.x+hx,y0:len0,y1:len1};
+  for(const s of boxes)if(r.x0<s.x1+6&&r.x1>s.x0-6&&r.y0<s.y1+6&&r.y1>s.y0-6)issues.push(b.id+':stand-envelope '+s.id);
+  if(b.kind==='AB'){const Yd=G77_YARD;if(r.x0<Yd.x0||r.x1>Yd.x1||r.y1>Yd.y1||r.y0<AF.L+11+6)issues.push(b.id+':off-yard')}   // GATE-77 S5c: the bus bays in the yard
+  else{if(r.y1>AF.L-11-6)issues.push(b.id+':service-road-band');if(r.y0<F2_BAG.top-48)issues.push(b.id+':too-far-north')}
+  for(const q of bld)if(r.x0<q.x+q.w&&r.x1>q.x&&r.y0<q.y+q.h&&r.y1>q.y)issues.push(b.id+':building '+q.id)}
+ for(const P of Object.values(F2_POCKETS)){for(const x of[P.muS,P.muN])for(const q of bld)if(x-7<q.x+q.w&&x+7>q.x&&F2_BAG.uY+8>q.y&&978<q.y+q.h)issues.push(P.mu+':lane-into-building '+q.id+'@'+x);if(P.muS-P.muN<32)issues.push(P.mu+':u-turn-tight');if(Math.min(...P.bays.map(x=>Math.abs(P.exitX-x)))<30)issues.push(P.id+':exit-lane-tight')}
+ for(const s of APL.stands.filter(s=>s.bridge)){const P=f2PocketForStand(s);if(!P||s.terminal!==P.terminal||s.pocket!==P.id||f2DoorFor(s.id)!==P.door)issues.push(s.id+':terminal-binding')}
+ if(Object.values(F2_POCKETS).filter(p=>!p.shared).length!==3)issues.push('expected-three-baggage-belts');
+ const f2fleet=APL.fleet.filter(f=>APL.bays.find(b=>b.id===f.bay)?.zone==='F2'),bt=APL.fleet.filter(f=>f.type==='BT');
+ if(f2fleet.length!==6+G2_S_BAYS.length+Object.values(F2_POCKETS).filter(p=>p.shared).reduce((a,p)=>a+p.bays.length,0))issues.push('ramp-park-fleet '+f2fleet.length);   // GATE-77 S6r · M5e: the buses of pocket S (G2_S_BAYS)   // GATE-69: MS1/MS2 live in the G2 stair parkif(bt.length!==6)issues.push('baggage-trains '+bt.length);
+ return{ok:!issues.length,issues:[...new Set(issues)],scope:'F2',gate:'GATE-66',terminalBindings:Object.values(F2_POCKETS).map(p=>({belt:p.id,stand:(p.stands||[p.stand]).join('+'),terminal:p.terminal,door:p.door})),parking:F2_STALLS.length,accessible:F2_STALLS.filter(s=>s.accessible).length,ev:F2_STALLS.filter(s=>s.ev).length,kissAndFly:F2_KISS_SPACES.length,taxi:F2_TAXI_PICK.length+F2_TAXI_HOLD.length,busBays:F2_BUS_BAYS.length,
+  parked:PARKED_CARS.filter(c=>/^PC-F2-/.test(c.id)).length,props:F2_PROPS.length,trees:F2_TREES.length,lamps:F2_LAMPS.length,people:f2Routes().length,crossings:X.all.length,rampBays:APL.bays.filter(b=>b.zone==='F2').length,rampFleet:f2fleet.map(f=>f.id),makeUp:Object.keys(F2_POCKETS).length,next:'G1'}
+}
+// baggage-flow statistics of a finished sandbox simulation (called inside aptOpsQa)
+function f2BagStats(T){
+ const issues=[];let tasks=0,dep=0,arr=0,bags=0,f2home=0,g2home=0,remote=0;const mu={'MU-A':0,'MU-B':0,'MU-C':0};const byTerminal={T1:{arr:0,dep:0},T2:{arr:0,dep:0},T3:{arr:0,dep:0}};
+ for(const v of AO.fleet){if(v.type!=='BT')continue;for(const k of v.hist.concat(v.tasks)){if(k.role!=='bag')continue;tasks++;const L=k.tr.seq.legs,kinds=L.map(l=>l.kind).join(',');
+  if(k.tr.f2bag==='dep'){dep++;if(kinds!=='out,mu,mid,svc,back')issues.push('dep-legs '+v.id+' '+kinds)}else if(k.tr.f2bag==='arr'){arr++;if(kinds!=='out,svc,mid,mu,back')issues.push('arr-legs '+v.id+' '+kinds)}else issues.push('legacy-bag-task '+v.id);
+  const m=L.find(l=>l.kind==='mu');if(m?.f2){mu[m.f2.mu]=(mu[m.f2.mu]||0)+1;bags+=m.f2.n;if(m.f2.remote)remote++;const P=f2PocketForStand(m.f2.sd);if(!P||P.mu!==m.f2.mu||P.terminal!==m.f2.terminal||P.door!==m.f2.door)issues.push('wrong-terminal '+v.id+' '+m.f2.sd);else byTerminal[P.door][k.tr.f2bag]++}if(v.bay.zone==='F2')f2home++;else g2home++;
+  for(const l of L)if((l.kind==='mu'||l.kind==='svc')&&!(l.f2&&l.f2.fill))issues.push('no-visible-transfer '+v.id)}}
+ return{ok:!issues.length&&tasks>0&&dep>0&&arr>0&&Object.values(mu).every(n=>n>0),tasks,dep,arr,bags,remote,mu,byTerminal,f2home,g2home,issues:issues.slice(0,8)};
+}
+window.__TC_F2_QA=()=>({geometry:f2GeometryAudit(),board:f2Board(),bridgePassengers:f2BridgePassengers().map(p=>({flight:p.flight,stand:p.stand,terminal:p.terminal,phase:p.phase,x:p.x,y:p.y})),walk:f2WalkPhase(),people:F2_PEOPLE.map(p=>({id:p.id,state:p.state,x:Math.round(p.x),y:Math.round(p.y),hidden:p.hidden})),pickup:{walker:F2_PICKUP.walker&&{state:F2_PICKUP.walker.state,x:Math.round(F2_PICKUP.walker.x),y:Math.round(F2_PICKUP.walker.y)}},persistent:PlayerProfile.worldPersistent?.airportTerminal||null,build:BUILD,gate:ACTIVE_GATE});
+
+// =====================================================================================================================================
+// G2 · REMOTE PASSENGER STANDS P6 / P5 (GATE-69). Apron buses V-AB1/2 and mobile stairs V-MS1/2 leave their home bays in the
+// service pocket S next to terminal 3, serve the aircraft at its real left (east) door and come back to the same bay.
+// Every movement is a persistent-fleet task in the shared reservation table: no spawn, no fade, no overlap.
+//   P6 · RJ : mobile stairs + bus      (east corridor: x 8316 north / x 8340 south, y 818 service row, U-turn east of the stand)
+//   P6 · TP : the turboprop's own airstair + bus
+//   P5 · TP : own airstair + bus       (alley AL2 between the maintenance hangar and hangar S1; the bus backs out of the alley)
+// Order: buses and stairs are placed before the fuel truck, so passengers leave the aircraft before refuelling.
+// =====================================================================================================================================
+const G2_REMOTE_AC=new Set(['AC-TP-01','AC-RJ-01','AC-NB-01','AC-QJ-01']);   // GATE-77 S5b: the narrow-body at P6
+const G2_REM={
+ P5:{via:'AL2',x:7797,busY:862,pivot:[7797,822]},
+ P6:{via:'EAST',xN:8316,xS:8340,y:818.7,uy:770,ux:8072,busX:8106,busY:818,pivotX:8110}
+};
+const G2_STAIR_GAP=8;
+// Homes: the two apron buses stay in pocket S at terminal 3 (the bus gate), now 75 px apart so that turning in and out never sweeps a
+// parked neighbour; the two mobile stairs (needed only at P6) live in the G2 stair park north of the fuel depot, on two drive-through lanes.
+const G2_S_BAYS=[{id:'F2-AB1',kind:'AB',x:7165,w:24},{id:'F2-AB2',kind:'AB',x:7209,w:24},{id:'F2-AB3',kind:'AB',x:7196,w:94,yc:980,row2:1,th:Math.PI}];   // GATE-77 S6r · M5e · D-113: bus 3 (bus 4 — S6b-c, with the yards)   // GATE-77 S5c · D-84: the yard beside the tower
+const G2_STAIR_PARK={x0:8190,x1:8272,lanes:[824,852,880,908],x:8230,entryX:8340,exitX:8136,label:'מדרגות ניידות · P6'};
+function g2RampBays(A){
+ F2_RAMP_C.bays.splice(0,F2_RAMP_C.bays.length,...G2_S_BAYS.map(b=>({...b})));
+ for(let i=A.bays.length-1;i>=0;i--){const b=A.bays[i];if(b.id==='F2-MS1'||b.id==='F2-MS2')A.bays.splice(i,1);if(b.id==='F2-AB2'){b.x=7209;b.x0=b.x-b.w/2;b.x1=b.x+b.w/2}}
+ for(const b of G2_S_BAYS){if(!b.row2||A.bays.some(q=>q.id===b.id))continue;const hx=APTT_SPEC.veh['LV-SH-01'].fp[2]/2;A.bays.push({id:b.id,fleetId:'V-'+b.id.slice(3),kind:'AB',row:'F2',zone:'F2',pocket:'S',x:b.x,w:b.w,x0:b.x-b.w/2,x1:b.x+b.w/2,y0:b.yc-12,y1:b.yc+12,yc:b.yc,th:b.th!=null?b.th:Math.PI/2,asset:'LV-SH-01',occupied:true,idleUntil:'G2',row2:1})}   // GATE-77 S6r · M5e
+ G2_STAIR_PARK.lanes.forEach((y,i)=>A.bays.push({id:'G2-MS'+(i+1),fleetId:'V-MS'+(i+1),kind:'MS',row:'G2',zone:'G2',pocket:'MS',x:G2_STAIR_PARK.x,w:70,x0:G2_STAIR_PARK.x-35,x1:G2_STAIR_PARK.x+35,y0:y-11,y1:y+11,yc:y,th:Math.PI,asset:'F2-MS',occupied:true}));s6rHSBays(A);
+}   // clear of the fuselage box (reservation margin 6 px); the stair's platform reaches the door
+
+// ==== GATE-77 S6c · p170 · AIR-64: the crew shuttle — a crew change at the remote stands ===============================================
+var G77_SH={on:true,after:8,before:20,gap:.8,door:12,ok:0,skip:0,noWin:0};
+// the stop at the aircraft: the departing crew out and up, then the crew that landed down and in (each group: the path at walking pace + the spacing)
+function g77ShWalk(sd,ac){const P=g2PaxPath(sd,ac);let L=G77_SH.door;for(let i=1;i<P.length;i++)L+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);return L/G77_WALK}
+function g77ShHold(sd,ac){return Math.ceil(3+2*(g77ShWalk(sd,ac)+(g77ShN(ac)-1)*G77_SH.gap))}
+function g77ShN(ac){const P=G77_AC[ac];const seats=(P&&P.seats)||90;return 2+Math.max(1,Math.ceil(seats/50))}
+// the destination: the stand's bus stop (free between the arrival and the departure bus). P5 — the bus column x 7797 from the hardstand
+// lane HW north to the stop, a turn on the spot, south down the column and east on HE home. P6 (the bus comes from the east spine) — not yet (no route from the yard rows).
+function g77ShDest(sd,ac){if(!G77_SH.on)return null;const R=G2_REM[sd.id];if(R&&R.via==='EAST'&&G77_EAST.on){const SO=APL.lanes.spineOut,SI=APL.lanes.spineIn;   // GATE-77 S6c · p173 · K-127: P6 — the east spine and the bus approach
+  return{spot:[R.busX,R.busY],node:afNodeEast(),inn:[[SO,R.uy,24],[R.ux,R.uy,20],[R.ux,R.busY,14],[R.busX,R.busY,0]],back:[[R.busX,R.busY,0],[8150,R.busY,12],[8150,R.uy,12],[SI,R.uy,16]]}}
+ if(!R||R.via!=='AL2')return null;
+ return{spot:[R.x,R.busY],node:{inX:R.x,outX:R.x+40},inn:[[R.x,1000,16],[R.x,R.busY,0]],mode:'pivot',dir:1,back:[[R.x,R.busY,0],[R.x,AF.HE,16]]}}   // turn on the spot at the stop (as the bus), south down the column, east on HE
+// the walk of one crew group: the shuttle door → the passengers' path (bus stop → stairs → the aircraft door), or back
+function g77ShPath(j,a){const f=j.f,r=f&&f.g2;if(!r||!r.path)return null;const p=a.pose,D=s6aDimOf('SH'),L=D[0]/2,W=D[1]/2,P=r.path.slice().reverse(),e=P[0],lp=s6aLocal(p,e[0],e[1]),side=Math.sign(lp[1]||1);
+ return[s6aLoc(p,L*.2,side*(W+.9)),...P]}
+function g77ShAt(P,u){let tot=0;const seg=[];for(let i=1;i<P.length;i++){const l=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);seg.push(l);tot+=l}let d=u*tot;
+ for(let i=1;i<P.length;i++){const l=seg[i-1];if(d<=l||i===P.length-1){const k=l?Math.min(1,d/l):1;return[P[i-1][0]+(P[i][0]-P[i-1][0])*k,P[i-1][1]+(P[i][1]-P[i-1][1])*k,Math.atan2(P[i][1]-P[i-1][1],P[i][0]-P[i-1][0])]}d-=l}
+ return[P[P.length-1][0],P[P.length-1][1],0]}
+function g77ShLen(P){let t=0;for(let i=1;i<P.length;i++)t+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);return t}
+// a pilot / flight attendant seen from above: navy jacket, white shirt collar, a cap for the pilots; a trolley bag behind
+function g77DrawFlightCrew(g,x,y,th,t,pilot,al,f){if(al<=0)return;if(G77_PE.on){g77PeDraw(g,pilot?G77_PE.role.pilot:G77_PE.role.cabin,x,y,th,t,true,Math.min(1,al),g77Uniform(f,pilot));if(typeof S6R_PPL!=='undefined')S6R_PPL.n++;return}   // GATE-77 S6d-a · p178
+ g.save();g.globalAlpha*=Math.min(1,al);g.translate(x,y);g.rotate(th);
+ g.fillStyle='rgba(8,18,26,.3)';g.beginPath();g.ellipse(.8,.9,2.2,1.7,0,0,Math.PI*2);g.fill();const s=Math.sin(t*7)*.5;g.fillStyle='#141c2c';g.fillRect(-1.6+s,-.95,1.3,.75);g.fillRect(-1.6-s,.2,1.3,.75);
+ g.fillStyle=pilot?'#1b2540':'#2a3f6e';g.beginPath();g.ellipse(0,0,1.6,1.9,0,0,Math.PI*2);g.fill();g.fillStyle='#f2f4f6';g.fillRect(.3,-.5,.7,1);
+ g.fillStyle=pilot?'#11161f':'#3a2a20';g.beginPath();g.arc(.15,0,.95,0,Math.PI*2);g.fill();if(pilot){g.fillStyle='#e8c25a';g.fillRect(.6,-.25,.35,.5)}
+ g.fillStyle='#2b2f36';g.fillRect(-3.4,-.6,1.3,1.2);g.restore();if(typeof S6R_PPL!=='undefined')S6R_PPL.n++}
+// the shuttle at the aircraft: the first half — the departing crew out and up; the second half — the crew that landed down and in
+function g77ShAct(g,a,j,now){const P=g77ShPath(j,a);if(!P)return;const n=g77ShN(j.ac),T=j.dur,half=T/2,tw=g77ShLen(P)/G77_WALK;
+ for(const grp of ['dep','arr']){const t0=grp==='dep'?1:Math.max(1,T-1-tw-(n-1)*G77_SH.gap);for(let i=0;i<n;i++){const lt=j.t-t0-i*G77_SH.gap;if(lt<0||lt>tw)continue;const u=lt/tw,q=g77ShAt(P,grp==='dep'?u:1-u),al=Math.min(1,lt/.4,(tw-lt)/.4);
+  const st=P.length>=2&&g77UpSegD(q[0],q[1],P[P.length-2],P[P.length-1])<G77_UP.w;g77UpPush(g,q[0],q[1],()=>g77DrawFlightCrew(g,q[0],q[1],grp==='dep'?q[2]:q[2]+Math.PI,now/1000,i<2,al,j.f),st)}}}   // GATE-77 S7-a · p183
+// QA: the crew changes of a run
+function g77ShAudit(all){const o={visits:0,served:0,people:0,skip:G77_SH.skip,noWin:G77_SH.noWin,issues:[]};for(const f of all){if(!f.g2)continue;o.visits++;if(f.sh){o.served++;o.people+=2*f.sh.n;
+  if(f.g2.dep&&f.sh.done>f.g2.dep.at-2&&o.issues.length<6)o.issues.push(f.code+':late');if(f.g2.arr&&f.sh.at<f.g2.arr.done&&o.issues.length<6)o.issues.push(f.code+':early')}}
+ o.ok=!o.issues.length;return o}
+
+// ==== GATE-77 S6c · p175 · AIR-65: FOLLOW ME (V-MX2) leads the arrivals of the remote stands ==============================================
+var G77_FM={on:true,ids:['V-MX2'],st:{P5:1,P6:1},a:28,gap:14,out:8,pre:30,wMin:150,hMin:3,hMax:40,step:5,tries:4,cuts:[0,45,90,135],yLY:86,dt:.05,ok:0,skip:0,noRoom:0,late:0,why:{},diag:false,dl:[]};
+function g77FmHx(){const D=s6aDimOf('MX');return D?D[0]/2:11}
+// the lead leg: from the arrival leg (τ=0 at tA) — the straight lead-in, the wait point W, the launch and the peel-off
+function g77FmLead(sd,ac,arr,tA,cut){const F=G77_FM,g=apttAcGeom(ac),th=sd.th,u=[Math.cos(th),Math.sin(th)],dt=F.dt,n=Math.ceil(arr.dur/dt),hx=g77FmHx();
+ const X=new Float64Array(n+1),Y=new Float64Array(n+1),R=new Float64Array(n+1);
+ for(let i=0;i<=n;i++){const p=arr.pose(Math.min(i*dt,arr.dur));X[i]=p[0];Y[i]=p[1]}
+ for(let i=n-1;i>=0;i--)R[i]=R[i+1]+Math.hypot(X[i+1]-X[i],Y[i+1]-Y[i]);
+ const sx=X[n],sy=Y[n];let i0=n;
+ for(let i=n;i>=0;i--){const dx=X[i]-sx,dy=Y[i]-sy,lat=Math.abs(-dx*u[1]+dy*u[0]),al=dx*u[0]+dy*u[1];if(lat>.8||al>1)break;i0=i}   // the straight lead-in, back from the stop
+ const lead=g.F[1]+F.gap+hx,dN=u[1]>.9?sy-(APTT_X.LY+F.yLY):Infinity,dW=Math.min(R[i0]-lead-F.pre,dN)-(cut||0);if(dW<F.wMin)return null;   // south of taxiway L: the car never waits on it, its turn-in (W − 70) stays F.yLY − 70 px south of it
+ const W=[sx-u[0]*dW,sy-u[1]*dW],xa=i=>dW-R[i],vA=i=>i<n?(R[i]-R[i+1])/dt:0,xEnd=dW+g.F[1]+F.out+hx;
+ let iS=-1;for(let i=0;i<=n;i++)if(xa(i)+lead>=0){iS=i;break}if(iS<0)return null;
+ for(let k=iS;k>=Math.max(0,iS-Math.round(10/dt));k--){let xf=0,vf=0,G=null,ok=true,iP=-1;const xs=[0];
+  for(let i=k+1;i<=n;i++){if(G==null){vf+=F.a*dt;xf+=vf*dt;if(vf>=vA(i))G=xf-xa(i)}else xf=xa(i)+G;
+   if(xf-xa(i)<lead-1e-6){ok=false;break}xs.push(xf);if(xf>=xEnd){iP=i;break}}
+  if(!ok)continue;if(iP<0)return null;
+  const dur=(iP-k)*dt,v1=Math.max(4,(xs[xs.length-1]-xs[xs.length-2])/dt);
+  const pose=t=>{const j=Math.max(0,Math.min(xs.length-1.000001,t/dt)),j0=Math.floor(j),x=xs[j0]+(xs[Math.min(xs.length-1,j0+1)]-xs[j0])*(j-j0);return[W[0]+u[0]*x,W[1]+u[1]*x,th,0,1]};
+  return{W,th,lead,dW,tL:tA+k*dt,tP:tA+iP*dt,dur,pose,v1}}
+ return null}
+// the routes: in — up the corridor between P5 and P6 (the P5 bus column, x 7797) to above W, round into the line (facing the stand);
+// back — straight out of the stand front, round to the column and down to HE (one way for both stands: an `east` node would also send
+// the way in through the east exit of the yard — straight across hangar S1; QA-54 Matrix P6:RJ / QJ caught it).
+function g77FmDests(sd,ac,L){const R=G2_REM[sd.id],C=G2_REM.P5;if(!R||!C||C.x==null)return[];const CX=C.x,cx=L.W[0],Wy=L.W[1],yU=Wy-70,yX=Math.max(sd.ngy+apttAcGeom(ac).F[1]+40,840),LN=APL.lanes;
+ const inn=[[CX,1000,16],[CX,yU,26],[cx,yU,26],[cx,Wy,0]],o=[{node:{inX:CX,outX:CX+40},inn,mode:'lead',back:[[cx,yX,22],[CX,yX,22],[CX,AF.HE,16]]}];
+ return o}
+// the visit: the van leaves its bay so that it waits at W `hMin`…`hMax` s and pulls away exactly at the launch time
+function* g77FmServeG(sd,ac,arr,tA,meta,extra){const F=G77_FM;let late=true,room=false;
+ for(const cut of F.cuts){const L=g77FmLead(sd,ac,arr,tA,cut);if(!L)continue;room=true;
+  for(const D of g77FmDests(sd,ac,L))for(const v of AO.fleet){if(!F.ids.includes(v.id))continue;const B0=afBuild(v,D,F.hMin,{lead:L}),sHi=Math.floor((L.tL-B0.dOut-F.hMin)/AO.DT+1e-9),sLo=Math.max(afSEarliest(),Math.ceil((L.tL-B0.dOut-F.hMax)/AO.DT-1e-9));
+   for(let s=sHi,k=0;s>=sLo&&k<F.tries;s-=Math.max(1,Math.round(F.step/AO.DT)),k++){late=false;if(AO.sliced&&aoOver())yield 0;
+    const B=afBuild(v,D,L.tL-aoT(s)-B0.dOut,{lead:L}),sm=(yield* aoSampG(B.trk,aoSeqLeg(B.trk.seq)));
+    const s2=(yield* afSearchG(v,B.trk,sm,s,s,extra,Math.round((B.dOut+B.hold+16)/AO.DT)));if(s2!==s){const w=aoWhy(sm,s),lg=w&&B.trk.seq.legAt(w.k*AO.DT),key=(w?String(w.b).replace(/\d+/g,'#'):'busy')+'|'+(lg&&lg.leg?lg.leg.kind:'-');F.why[key]=(F.why[key]||0)+1;if(F.diag&&F.dl.length<60){const at=lg?B.trk.seq.at(w.k*AO.DT):null;F.dl.push([meta.code,sd.id,cut,key,+(aoT(s)+w.k*AO.DT-(tA+arr.dur)).toFixed(1),at?at.slice(0,2).map(Math.round):null])}continue}
+    const task=afCommit(v,B.trk,sm,s,'fm',Object.assign({at:aoT(s)+B.dOut,fm:1},meta));return{t0:task.t0,end:task.t1,at:task.at,done:L.tP,v,task,L}}}}
+ if(!room)F.noRoom++;else if(late)F.late++;return null}
+// the drawing: the livery always, the board lit and the beacons on duty
+function g77FmDraw(g,a,now){const v=a.v,[x,y,th,,al]=a.pose,D=s6aDimOf('MX')||[22,8],hx=D[0]/2,hy=D[1]/2,t=APT_OPS.clk;
+ const duty=v.tasks.some(k=>k.fm&&t>=k.t0&&t<k.t1);g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);
+ const q=hy*.5;for(let i=0;i<6;i++){const xx=-hx*.72+i*hx*.24;g.fillStyle=i%2?'#14161a':'#f4c21b';g.fillRect(xx,-hy*.92,hx*.24,q);g.fillStyle=i%2?'#f4c21b':'#14161a';g.fillRect(xx,hy*.92-q,hx*.24,q)}   // the chequered sides
+ const bx=-hx*.5,bw=hx*1.0,by=-hy*.42,bh=hy*.84;if(duty){g.fillStyle='rgba(255,214,60,'+(.28+.12*Math.sin(now/180))+')';g.fillRect(bx-2,by-2,bw+4,bh+4)}
+ g.fillStyle=duty?'#ffe35a':'#c9a632';g.fillRect(bx,by,bw,bh);g.strokeStyle='#14161a';g.lineWidth=.35;g.strokeRect(bx,by,bw,bh);   // the roof board, along the car
+ g.save();if(Math.cos(th)<-.2)g.rotate(Math.PI);g.fillStyle='#14161a';g.font='bold '+(bh*.78).toFixed(2)+'px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(g77Heb('FOLLOW ME'),0,.1,bw*.94);g.restore();
+ if(duty){const on=Math.floor(now/260)%2;for(const sd of [-1,1]){const lit=(sd<0)===!!on;g.fillStyle=lit?'rgba(255,170,30,.45)':'rgba(255,170,30,.08)';g.beginPath();g.arc(hx*.62,sd*hy*.62,lit?3.2:1.6,0,Math.PI*2);g.fill();
+  g.fillStyle=lit?'#ffb12a':'#8a5a10';g.beginPath();g.arc(hx*.62,sd*hy*.62,1.1,0,Math.PI*2);g.fill()}}
+ g.restore()}
+// QA: the arrivals of the remote stands — led or not, and the car always ahead of the nose
+function g77FmAudit(all){const F=G77_FM,o={arr:0,served:0,skip:F.skip,noRoom:F.noRoom,late:F.late,minGap:null,issues:[]},hx=g77FmHx();
+ for(const f of all){if(!f.sd||!F.st[f.sd.id]||f.parked||f.never||f.tOB==null||f.t0==null||f.t0>=f.tOB)continue;o.arr++;if(!f.fm)continue;o.served++;
+  const v=AO.fleet.find(q=>q.id===f.fm.v),k=v&&v.tasks.concat(v.hist||[]).find(q=>q.fm&&q.code===f.code),tr=(f.tracks||[]).find(r=>r.tr&&r.tr.kind==='ac');
+  if(!k||!tr){if(o.issues.length<6)o.issues.push(f.code+':notask');continue}const g=apttAcGeom(f.ac);
+  for(let t=f.fm.tL-2;t<=f.fm.tP+4;t+=.1){const a=tr.tr.seq.at(t-tr.t0),p=k.tr.seq.at(t-k.t0);if(!a||!p)continue;const c=Math.cos(a[2]),s=Math.sin(a[2]),dx=p[0]-a[0],dy=p[1]-a[1],lx=dx*c+dy*s,ly=-dx*s+dy*c;
+   if(Math.abs(ly)>g.F[3]+8)continue;const gap=lx-g.F[1]-hx;if(o.minGap==null||gap<o.minGap)o.minGap=+gap.toFixed(1);if(gap<4&&o.issues.length<6)o.issues.push(f.code+':gap '+gap.toFixed(1)+' @'+(t-f.tOB).toFixed(1))}}
+ o.ok=!o.issues.length;return o}
+
+// ==== GATE-77 S6c · p176 · AIR-65: the passenger lift (V-EMS2) at the right door of the remote stands ========================================
+var G77_AMB={on:true,ids:['V-EMS2'],st:{P5:1,P6:1},every:3,after:6,before:24,gap:2.5,app:40,yF:845,laneY:770,pivY:108,bay:'EM-RES',up:6,cross:9,ok:0,skip:0,noWin:0};
+function g77AmbWants(code){let h=7;for(const ch of String(code||''))h=(h*31+ch.charCodeAt(0))>>>0;return h%G77_AMB.every===0}
+function g77AmbHold(sd,ac){const A=G77_AMB;return 2*A.up+2*A.cross+6}
+// the right front door R1: the mirror of the left door (an.Door) across the fuselage axis
+function g77AmbDoor(sd,ac){const S=APTT_SPEC.ac[ac],ng=S.an['Nose Gear'],d=S.an.Door,th=sd.th,c=Math.cos(th),s=Math.sin(th),dx=d[0]-ng[0],dy=-(d[1]-ng[1]);return[sd.ngx+dx*c-dy*s,sd.ngy+dx*s+dy*c]}
+function g77AmbHx(){const v=AO.fleet&&AO.fleet.find(q=>q.id===G77_AMB.ids[0]);return v&&v._hx?v._hx:28.2}
+// the bay of the emergency base: out — (after the curved reverse into the aisle) east along the aisle onto the south lane of the perimeter
+// road; in — from the north lane west along the aisle and forward into the bay
+// The bay: the empty reserve bay EM-RES at the east end of the base (existing free space, D-176) — the lift's own bay EM-EMS2 sits
+// between parked vehicles: a 56 px vehicle cannot turn 90° between the 54 px aisle and a 34 px bay without sweeping a neighbour
+// (QA-54 Matrix: CONFLICT IDLE V-EMS1, then the fire trucks V-AR1 / V-AR2 over the aisle).  From EM-RES: forward south out of the bay
+// to y pivY, a turn on the spot (the swept circle clears the fire trucks and the south row), east through the gate; back the same way
+// and reversing into the bay.
+function g77AmbBayOut(b){const L=APL.lanes,A=G77_AMB;return b.cs?[[b.x,A.pivY,0],[L.spineIn,A.pivY,18],[L.spineIn,AF.HW,30]]:[[b.x,A.pivY,0],[L.spineIn,A.pivY,18]]}
+function g77AmbBayIn(b){const L=APL.lanes,A=G77_AMB;return b.cs?[[L.spineOut,AF.HE,30],[L.spineOut,A.pivY,18],[b.x,A.pivY,0]]:[[L.spineOut,A.pivY,18],[b.x,A.pivY,0]]}
+function g77AmbPre(b,vm){const A=G77_AMB,r=b.yc>A.pivY?apttVehMove([[b.x,A.pivY],[b.x,b.yc]],[],vm*.4,{th0:b.th,rev:true,v0:2,v1:2}):apttVehMove([[b.x,b.yc],[b.x,A.pivY]],[],vm*.4,{th0:b.th,v0:2,v1:2}),P=AF.PIV,t0=b.th;
+ return{kind:'out',dur:r.dur+P,pose:t=>t<r.dur?r.pose(t):[b.x,A.pivY,t0-Math.PI/2*apttSm((t-r.dur)/P),0,1],endPose:()=>[b.x,A.pivY,t0-Math.PI/2,0,1]}}
+function g77AmbIn(legs,b,vm){const A=G77_AMB,l=legs[legs.length-1],e=l.endPose?l.endPose():l.pose(l.dur),P=AF.PIV;let d=b.th-e[2];while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+ legs.push({kind:'back',dur:P,pose:t=>[b.x,A.pivY,e[2]+d*apttSm(t/P),0,1]});const r=b.yc>A.pivY?apttVehMove([[b.x,A.pivY],[b.x,b.yc]],[],vm*.4,{th0:b.th,v0:2,v1:0}):apttVehMove([[b.x,b.yc],[b.x,A.pivY]],[],vm*.4,{th0:b.th,rev:true,v0:2,v1:0});r.kind='back';legs.push(r)}
+function g77AmbDest(sd,ac){const A=G77_AMB,R=G2_REM[sd.id],L=APL.lanes;if(!A.on||!A.st[sd.id]||!R||sd.th==null||Math.abs(sd.th-Math.PI/2)>.01)return null;
+ const dr=g77AmbDoor(sd,ac),hx=g77AmbHx(),sx=dr[0]-A.gap-hx,xa=sx-A.app,dy=dr[1],xE=R.via==='EAST'&&R.ux!=null?R.ux:8072;
+ return{node:null,spot:[sx,dy],door:dr,mode:'rev',inn:[[L.spineIn,A.laneY,20],[xE,A.laneY,16],[xE,A.yF,16],[xa,A.yF,16],[xa,dy,14],[sx,dy,0]],
+  back:[[xa,dy,0],[xa,A.yF,16],[8150,A.yF,16],[8150,A.laneY,14],[L.spineOut,A.laneY,16]]}}
+// the drawing: the body (white, blue band, the box with the wheelchair sign); at the door the box up, the platform out, the passengers across
+function g77AmbJob(v,t){for(const k of v.tasks){if(t<k.t0||t>=k.t1||k.role!=='amb')continue;const q=k.tr.seq.legAt(t-k.t0);if(!q)return null;return{k,kind:q.leg.kind,t:q.t,dur:q.leg.dur}}return null}
+function g77DrawChair(g,x,y,th,al,att){if(al<=0)return;g.save();g.globalAlpha*=Math.min(1,al);g.translate(x,y);g.rotate(th);if(G77_PE.on)g.scale(1.6,1.6);
+ g.fillStyle='rgba(8,18,26,.3)';g.beginPath();g.ellipse(.6,.8,2.6,2.2,0,0,Math.PI*2);g.fill();
+ g.fillStyle='#2b2f36';g.fillRect(-2.2,-2.4,3.6,.9);g.fillRect(-2.2,1.5,3.6,.9);   // the wheels
+ g.fillStyle='#4f6fae';g.beginPath();g.ellipse(-.2,0,1.6,1.8,0,0,Math.PI*2);g.fill();g.fillStyle='#e6c3a0';g.beginPath();g.arc(-.4,0,.9,0,Math.PI*2);g.fill();
+ if(att&&!G77_PE.on){g.fillStyle='#7fb2e6';g.beginPath();g.ellipse(-3.6,0,1.5,1.8,0,0,Math.PI*2);g.fill();g.fillStyle='#3a2a20';g.beginPath();g.arc(-3.5,0,.85,0,Math.PI*2);g.fill()}
+ g.restore();if(att&&G77_PE.on){const c=Math.cos(th),s=Math.sin(th);g77PeDraw(g,G77_PE.role.attendant,x-c*7.5,y-s*7.5,th,APT_OPS.clk,true,Math.min(1,al))}   // GATE-77 S6d-a · p178: the attendant behind the chair
+if(typeof S6R_PPL!=='undefined')S6R_PPL.n+=att?2:1}
+function g77AmbDraw(g,a,now){const A=G77_AMB,v=a.v,[x,y,th,,al]=a.pose,hx=a.tr&&a.tr.hx?a.tr.hx:28,hy=a.tr&&a.tr.hy?a.tr.hy:10.5,t=APT_OPS.clk,j=g77AmbJob(v,t);
+ let u=0,ph=null;if(j&&j.kind==='svc'){u=Math.max(0,Math.min(1,j.t/A.up,(j.dur-j.t)/A.up));ph=j.t}
+ const bx0=-hx,bx1=hx*.42,lift=u*3.2;g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);
+ g.fillStyle='rgba(8,18,26,.25)';g.fillRect(-hx+2+lift,-hy+2.4+lift,hx*2,hy*2);   // the shadow (longer as the box goes up)
+ g.fillStyle='#3b4148';g.fillRect(-hx,-hy*.86,hx*2,hy*1.72);                       // the chassis
+ g.fillStyle='#f4f6f8';g.fillRect(hx*.5,-hy*.9,hx*.5,hy*1.8);g.fillStyle='#1d2a3a';g.fillRect(hx*.86,-hy*.78,hx*.1,hy*1.56);   // the cab + windscreen
+ if(u>0){g.strokeStyle='#8a939c';g.lineWidth=.8;for(let i=0;i<3;i++){const x0=bx0+4+i*(bx1-bx0-8)/3,x1=x0+(bx1-bx0-8)/3;g.beginPath();g.moveTo(x0,-hy*.7);g.lineTo(x1,hy*.7);g.moveTo(x0,hy*.7);g.lineTo(x1,-hy*.7);g.stroke()}}   // the scissors
+ g.save();g.translate(-lift*.35,-lift*.35);
+ g.fillStyle='#ffffff';g.fillRect(bx0,-hy,bx1-bx0,hy*2);g.fillStyle='#2a6fd6';g.fillRect(bx0,-hy,bx1-bx0,hy*.34);g.fillRect(bx0,hy*.66,bx1-bx0,hy*.34);   // the box, the blue band
+ g.strokeStyle='#9aa4ad';g.lineWidth=.4;g.strokeRect(bx0,-hy,bx1-bx0,hy*2);
+ const cx=(bx0+bx1)/2;g.fillStyle='#2a6fd6';g.fillRect(cx-4,-4,8,8);g.strokeStyle='#ffffff';g.lineWidth=.9;g.beginPath();g.arc(cx-.4,1,2.1,0,Math.PI*2);g.stroke();g.fillStyle='#ffffff';g.beginPath();g.arc(cx-.8,-2.4,.8,0,Math.PI*2);g.fill();g.fillRect(cx-1.2,-1.5,.8,2.6);   // the wheelchair sign
+ if(u>0){const ext=(hx-bx1+A.gap+1)*u;g.fillStyle='#c9ced3';g.fillRect(bx1,-hy*.55,ext,hy*1.1);g.strokeStyle='#6d757d';g.lineWidth=.4;g.strokeRect(bx1,-hy*.55,ext,hy*1.1);g.fillStyle='#f2c230';g.fillRect(bx1+ext-1,-hy*.55,1,hy*1.1)}   // the platform over the cab
+ g.restore();
+ const lit=Math.floor(now/300)%2;g.fillStyle=lit?'#3d8bff':'#9cc4ff';g.beginPath();g.arc(hx*.62,-hy*.55,1.1,0,Math.PI*2);g.fill();g.fillStyle=lit?'#9cc4ff':'#3d8bff';g.beginPath();g.arc(hx*.62,hy*.55,1.1,0,Math.PI*2);g.fill();
+ g.restore();
+ // the passengers: the first crossing — the departing passenger and the attendant from the box into the door; the second — the one who
+ // landed from the door into the box (the attendant behind)
+ if(ph!=null&&u>=1){const c=Math.cos(th),s=Math.sin(th),P=k=>{const lx=bx0*.3+k*(hx+A.gap-bx0*.3)-.35*3.2;return[x+c*lx,y+s*lx]};
+  const t1=ph-A.up,t2=t1-A.cross;
+  if(t1>=0&&t1<=A.cross){const k=t1/A.cross,p=P(k);g77DrawChair(g,p[0],p[1],th,Math.min(1,(1-k)/.12),true)}
+  else if(t2>=0&&t2<=A.cross){const k=1-t2/A.cross,p=P(k);g77DrawChair(g,p[0],p[1],th+Math.PI,Math.min(1,(1-k)/.12+.01,1),true)}}}
+// QA: the turnarounds that want the lift — served or skipped, every visit inside the window between the two buses
+function g77AmbAudit(all){const o={want:0,served:0,skip:G77_AMB.skip,noWin:G77_AMB.noWin,issues:[]};for(const f of all){if(!f.g2||!f.sd||!G77_AMB.st[f.sd.id]||!g77AmbWants(f.code))continue;o.want++;
+  if(f.amb){o.served++;if(f.g2.dep&&f.amb.done>f.g2.dep.at-2&&o.issues.length<6)o.issues.push(f.code+':late');if(f.g2.arr&&f.amb.at<f.g2.arr.done&&o.issues.length<6)o.issues.push(f.code+':early')}}
+ o.ok=!o.issues.length;return o}
+
+// ==== GATE-77 S6c · p177 · D-167: the crew table; the driver seen in every vehicle =================================================
+var G77_DRV={on:true,crew:{PT:2,PW:2,BT:1,BL:1,CU:1,FT:1,FW:1,CT:2,SVC:3,WT:1,LV:1,GP:1,GC:1,MS:1,AB:1,SH:1,MX:1,HL:2,ARFF:3,EMS:2,POL:2,RES:3},
+ open:{BT:[.15,0],CU:[.05,0]},seat:[.74,-.38],seatT:{PT:[.52,-.5],PW:[.52,-.5],HL:[.78,-.42],MS:[.8,-.4],AB:[.86,-.5],SH:[.8,-.4]},n:0};
+function g77DrawDriver(g,a,now){const v=a.v;if(!v||!G77_DRV.crew[v.type])return;if(v.type==='BT'&&typeof G77_BW!=='undefined'&&G77_BW.on&&g77BwOut(a))return;   // GATE-77 S7-a · p187
+const [x,y,th,,al]=a.pose;if(al<.3)return;const hx=a.tr&&a.tr.hx||10,hy=a.tr&&a.tr.hy||5,c=Math.cos(th),s=Math.sin(th);
+ const O=G77_DRV.open[v.type],P=O||G77_DRV.seatT[v.type]||G77_DRV.seat,lx=P[0]*hx,ly=P[1]*hy,px=x+c*lx-s*ly,py=y+s*lx+c*ly;g.save();g.globalAlpha=al;g.translate(px,py);g.rotate(th);
+ if(O){g.fillStyle='#f2b21b';g.beginPath();g.ellipse(-.4,0,1.25,1.65,0,0,Math.PI*2);g.fill();g.fillStyle='#e9edf0';g.beginPath();g.arc(.15,0,.9,0,Math.PI*2);g.fill();g.strokeStyle='#59626b';g.lineWidth=.25;g.stroke()}   // the open seat: vest + helmet
+ else{g.globalAlpha=al*.85;g.fillStyle='#f0b020';g.beginPath();g.ellipse(-.35,0,.85,1.15,0,0,Math.PI*2);g.fill();g.fillStyle='#2a2f36';g.beginPath();g.arc(.1,0,.62,0,Math.PI*2);g.fill()}   // behind the windscreen: shoulders + head
+ g.restore();G77_DRV.n++}
+// QA-93 (first part): every vehicle that moves in the run has a crew in the table
+function g77DrvAudit(){const o={types:0,noCrew:[],moved:0,ok:true};const T=new Set();for(const v of AO.fleet){const k=v.tasks.length+(v.hist||[]).length;if(!k)continue;o.moved++;T.add(v.type);if(!G77_DRV.crew[v.type]&&o.noCrew.indexOf(v.type)<0)o.noCrew.push(v.type)}
+ o.types=T.size;o.ok=!o.noCrew.length;return o}
+
+// ==== GATE-77 S6d-a · p178 · CHAR-01: the workers of the airfield drawn by the city's people system ======================================
+var G77_PE={on:true,sc:.51,w:false,role:{loader:'PE-40',cleaner:'PE-38',caterer:'PE-46',pilot:'PE-41',cabin:'PE-02',attendant:'PE-29'},C:{},n:0};
+// ==== 28.10 · stage 6 (GATE‑88) · p345: uniforms by the airline (part ו, D‑244 (8)) — the colour of each airline's livery, in the order of
+// the library's LIV.pax (index i → airline i % 8, variant ⌊i / 8⌋): Aurelia Air, Sunbeak, Zebrano, Coral Coast, Tidewind Air, Mirage Jet,
+// Confetti Air, Skyline Regional — [variant 0, variant 1]
+const G77_UNI=[['#1f5aa6','#0f7a8a'],['#f6c518','#f28a1c'],['#18181a','#5b2a86'],['#e2563f','#0e9aa7'],['#13294b','#1e5b3a'],['#e0218a','#2b2d42'],['#3a86ff','#7209b7'],['#3a3f8f','#8a1c2b']],
+ g77UniShade=(h,k)=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.slice(i,i+2),16)*k).toString(16).padStart(2,'0')).join('');
+function g77Uniform(f,pilot){if(!f||/^AC-(PR|BJ|LT|CN|AM|CG|HC)/.test(f.ac||'')||/^C[123]$/.test(f.stand||''))return null;   // general aviation and cargo — the navy uniform
+ const c=g77Livery(f)%16,col=G77_UNI[c%8][c>=8?1:0];return pilot?{top:g77UniShade(col,.62),bot:'#1b1f2a',a:c}:{top:col,bot:g77UniShade(col,.55),a:c}}   /* p671: a — the airline (P34U.air) */
+function g77PeDir(th){return((2+Math.round((th||0)/(Math.PI/4)))%8+8)%8}   // heading (0 = east) → PE direction (0 = N … 2 = E … 4 = S … 6 = W)
+function g77PeDraw(g,asset,x,y,th,t,walk,al,st){if(al!=null&&al<=0)return;const d=g77PeDir(th),pose=walk?'walking':G77_PE.force?G77_PE.force:(G77_PE.pose&&Math.sin((t||0)*2.6+x*.37)>.35?'crouch':'idle'),sc=G77_PE.sc,k=asset+'|'+d+'|'+pose;let F=G77_PE.C[k];
+ if(!F){const I=TurboCity.info(asset,{scale:sc,direction:d,pose}),f=I&&I.an&&I.an.find(a=>a[0]==='Feet');F=G77_PE.C[k]=f?[f[1],f[2]]:[(I?I.w:28)/2,(I?I.h:40)*.55]}
+ const fade=al!=null&&al<1;if(fade){g.save();g.globalAlpha*=al}TurboCity.draw(g,asset,x-F[0],y-F[1],{mode:'runtime',scale:sc,direction:d,pose,time:walk?(t||0):0,...(st?{state:st}:{})});if(fade)g.restore();G77_PE.n++}
+
+// ==== GATE-77 S6d-a · p179 · QA-92 (part 1): the service lanes closed to the player on foot; the player's ring in the airfield ======
+var G77_PL={on:true,msgAt:-1e9,box:[4800,8450,-950,1550],ring:'rgba(64,196,255,',n:0};
+function g77PlInApt(x,y){const B=G77_PL.box;return x>B[0]&&x<B[1]&&y>B[2]&&y<B[3]}
+function g77PlLaneBlock(x,y,r){if(!G77_PL.on||typeof APL==='undefined'||!APL||!APL.lanes||!g77PlInApt(x,y))return null;const L=G77_STAIR.lanes||(G77_STAIR.lanes=g77PeopleLanes()),rr=(r||5);
+ for(const l of L)if(x>l.x0-rr&&x<l.x1+rr&&y>l.y0-rr&&y<l.y1+rr){const n=(typeof performance!=='undefined'?performance.now():0);if(n-G77_PL.msgAt>4000&&typeof toast==='function'){G77_PL.msgAt=n;toast('שבילי השירות של השדה — לרכבי שירות בלבד. הולכי רגל — בשבילים המסומנים.')}G77_PL.n++;return'APT-SERVICE-LANE'}
+ return null}
+function g77PlRing(g,x,y,now){const k=.55+.25*Math.sin(now/420);g.save();g.strokeStyle=G77_PL.ring+k.toFixed(2)+')';g.lineWidth=1.6;g.beginPath();g.ellipse(x,y,9,6.2,0,0,Math.PI*2);g.stroke();
+ g.fillStyle=G77_PL.ring+'0.16)';g.beginPath();g.ellipse(x,y,9,6.2,0,0,Math.PI*2);g.fill();g.restore()}
+// QA-92 part 1: a dummy at points on both sides of every lane (every 40 px): into the lane — blocked; away from the lane — free
+function g77Pl92(){const o={points:0,blockedIn:0,contacts:0,stuck:0,skipped:0,closed:0,issues:[],ok:true};if(typeof personBlockedAt!=='function'||!APL)return o;const L=g77PeopleLanes(),r=PLAYER_PERSON_RADIUS||5,m0=G77_PL.msgAt;
+ for(const l of L){const hz=(l.x1-l.x0)>=(l.y1-l.y0);const n=Math.max(1,Math.floor((hz?l.x1-l.x0:l.y1-l.y0)/40));
+  for(let i=0;i<=n;i++){const u=(i+.5)/(n+1);for(const sgn of [-1,1]){let px,py,ix,iy,ax,ay;
+    if(hz){px=l.x0+u*(l.x1-l.x0);py=sgn<0?l.y0-r-3:l.y1+r+3;ix=px;iy=sgn<0?l.y0+2:l.y1-2;ax=px;ay=py+sgn*6}else{py=l.y0+u*(l.y1-l.y0);px=sgn<0?l.x0-r-3:l.x1+r+3;iy=py;ix=sgn<0?l.x0+2:l.x1-2;ay=py;ax=px+sgn*6}
+    {const b0=personBlockedAt(px,py,r);if(b0){o.skipped++;if(/^APT-/.test(String(b0)))o.closed++;continue}}   // the point itself is inside something else (a building, the fence, another lane) — not this lane's case
+    o.points++;if(personBlockedAt(ix,iy,r))o.blockedIn++;else{o.contacts++;if(o.issues.length<6)o.issues.push('IN '+l.id+' ('+Math.round(ix)+','+Math.round(iy)+')')}
+    if(personBlockedAt(ax,ay,r)&&personBlockedAt(px-(ax-px),py-(ay-py),r)&&personBlockedAt(px+(hz?6:0),py+(hz?0:6),r)&&personBlockedAt(px-(hz?6:0),py-(hz?0:6),r)){o.stuck++;if(o.issues.length<6)o.issues.push('STUCK '+l.id+' ('+Math.round(px)+','+Math.round(py)+')')}}}}
+ G77_PL.msgAt=m0;o.ok=!o.contacts&&!o.stuck;return o}
+
+// ==== GATE-77 S6d-b · p180: poses at work; the work scenes fade out with the zoom instead of popping (AIR-50) ==========================
+var G77_LOD={on:true,z0:.35,z1:.45};
+G77_PE.pose=true;
+function g77LodAlpha(){if(!G77_LOD.on||typeof Camera==='undefined')return 1;const z=Camera.zoom;return z>=G77_LOD.z1?1:z<=G77_LOD.z0?0:(z-G77_LOD.z0)/(G77_LOD.z1-G77_LOD.z0)}
+
+// ==== GATE-77 S6d-b · p181 · the owner 23:32 (1): the code of every service vehicle on its roof; F9 — follow a vehicle ==============
+var G77_VC={on:true,minZ:.8,fs:3.6,px:9,fit:1.15,cw:.62,off:{MX:-.8,EMS:-.84,CT:-.9,SH:-.86},def:-.6,follow:null,drawn:{},n:0};
+function g77VcCode(v){return v&&v.id?String(v.id).replace(/^V-/,''):''}
+function g77VcDraw(g,a,now){if(!G77_VC.on||!a.v)return;const v=a.v,code=g77Heb(g77VcCode(v));if(!code)return;   /* p360 */G77_VC.drawn[v.id]=1;if(typeof Camera!=='undefined'&&Camera.zoom<G77_VC.minZ)return;
+ const [x,y,th,,al]=a.pose;if(al<.3)return;const hx=a.tr&&a.tr.hx||10,hy=a.tr&&a.tr.hy||6,k=(G77_VC.off[v.type]!=null?G77_VC.off[v.type]:G77_VC.def),f=k*hx,px=x+Math.cos(th)*f,py=y+Math.sin(th)*f;
+ const z=(typeof Camera!=='undefined'&&Camera.zoom)||1,sn=Math.abs(Math.sin(th)),avail=Math.min(2*hy/Math.max(sn,.2),2*hx*(1-Math.abs(k))+hx*.4),cap=G77_VC.fit*avail/(G77_VC.cw*code.length),fs=Math.max(G77_VC.fs,Math.min(G77_VC.px/z,cap));
+ if(al>=1&&g.globalAlpha===1&&g77VcBlit(g,code,fs,px,py)){G77_VC.n++;return}   /* D-220 (3) · p271: one picture */G77_VCC.stats.vec++;g.save();g.globalAlpha=al;g.font='bold '+fs.toFixed(2)+'px sans-serif';g.textAlign='center';g.textBaseline='middle';g.lineJoin='round';g.lineWidth=Math.max(1.1,fs*.24);g.strokeStyle='rgba(14,18,24,.92)';g.strokeText(code,px,py);g.fillStyle='#ffffff';g.fillText(code,px,py);g.restore();G77_VC.n++}
+// F9: follow one vehicle — the sheet of codes, the lock, the stop
+function g77VcFollowSheet(){const old=window.document.getElementById('g77Follow');if(old){old.remove();return'הרשימה נסגרה'}const d=window.document.createElement('div');d.id='g77Follow';
+ d.style.cssText='position:fixed;left:20px;top:20px;max-width:560px;max-height:80vh;overflow:auto;z-index:9999;background:#1d2228;border:2px solid #e8b92b;border-radius:10px;padding:10px;direction:rtl;font:13px sans-serif;color:#eee';
+ const h=window.document.createElement('div');h.textContent='עקוב אחרי רכב — בחר קוד (לחיצה נצמדת; "הפסק מעקב" ב-F9):';h.style.margin='0 0 8px';d.appendChild(h);
+ const by={};for(const v of AO.fleet)(by[v.type]||(by[v.type]=[])).push(v);
+ for(const t of Object.keys(by).sort()){const row=window.document.createElement('div');row.style.margin='3px 0';for(const v of by[t]){const b=window.document.createElement('button');b.textContent=g77VcCode(v);b.style.cssText='margin:2px;padding:3px 7px;background:#2f3a46;color:#fff;border:1px solid #556;border-radius:5px;cursor:pointer;direction:ltr';
+   b.onclick=e=>{e.stopPropagation();G77_VC.follow=v.id;const r=afPose(v,APT_OPS.clk);perfCamera({x:r.pose[0],y:r.pose[1],zoom:2.2});d.remove()};row.appendChild(b)}d.appendChild(row)}
+ window.document.body.appendChild(d);return'בחר קוד ברשימה'}
+function g77VcFollowTick(){const id=G77_VC.follow;if(!id)return;if(typeof State!=='undefined'&&!State.mapQa){G77_VC.follow=null;return}const v=AO.fleet&&AO.fleet.find(q=>q.id===id);if(!v){G77_VC.follow=null;return}const r=afPose(v,APT_OPS.clk);Camera.x=r.pose[0];Camera.y=r.pose[1]}
+// QA: every vehicle has a code, no duplicates, every one drawn through the hook (the draw paths of aptDrawVeh)
+function g77VcAudit(){const o={vehicles:0,codes:0,dup:[],noCode:[],ok:true},seen={};for(const v of AO.fleet){o.vehicles++;const c=g77VcCode(v);if(!c){o.noCode.push(v.id);continue}o.codes++;if(seen[c])o.dup.push(c);seen[c]=1}
+ o.ok=!o.dup.length&&!o.noCode.length&&o.codes===o.vehicles;return o}
+
+// ==== GATE-77 S7-a · p182 · the owner 00:00 (1): the lavatory truck's bar shows the waste — empty at the start, full → emptied ==========
+var G77_LVG={on:true};
+
+// ==== GATE-77 S7-a · p183 · the owner 00:00 (2): the crew and the cleaners go up the stairs, drawn on the treads ======================
+var G77_UP={on:true,q:[],n:0,stair:0,w:4.5};
+function g77UpSegD(x,y,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy||1,u=Math.max(0,Math.min(1,((x-a[0])*dx+(y-a[1])*dy)/l2));return Math.hypot(x-a[0]-u*dx,y-a[1]-u*dy)}
+function g77UpPush(g,x,y,f,stair){if(!G77_UP.on){f();return}G77_UP.q.push({x,y,f,al:g.globalAlpha,stair:!!stair})}
+// mode: 'under' (before the aircraft) · 'over' (after the aircraft) · 'stair' (after the remote stairs / the turboprop's airstair)
+function g77UpFlush(g,mode){const Q=G77_UP.q;if(!Q.length)return;const keep=[];
+ for(const e of Q){const m=e.stair?'stair':(typeof g77UnderAc==='function'&&g77UnderAc(e.x,e.y))?'under':'over';if(m!==mode){keep.push(e);continue}
+  g.save();g.globalAlpha=e.al;try{e.f()}finally{g.restore()}G77_UP.n++;if(e.stair)G77_UP.stair++}
+ G77_UP.q=keep}
+// the stairs of a flight at a remote stand: [foot, door] (the stair truck or the aircraft's own airstair — g2PaxPath: door → foot → …)
+function g77StairOf(f){const r=f&&f.g2;if(!r||!r.path||r.path.length<2)return null;return[r.path[1],r.path[0]]}
+
+// ==== GATE-77 S7-a · p184 · the owner 00:43: the bridge's fixed arm tight to the terminal wall, and a door in the wall =================
+var G77_BRW={on:true,wall:771.5,dw:3,dd:5.6,n:0};
+function g77BridgeDoor(g,s){if(!G77_BRW.on)return;const S=g77K72Stand(s);if(!S||!S.T)return;const K=G77_K72,x=S.T[0],y0=S.T[1],w=G77_BRW.wall,hw=K.hwF,dw=hw+G77_BRW.dw,dd=G77_BRW.dd;
+ g.save();
+ // the door in the wall: a dark opening with its frame, the glass across it
+ g.fillStyle='#2b3238';g.fillRect(x-dw,w-.6,dw*2,dd);g.strokeStyle='#9aa3ab';g.lineWidth=.8;g.strokeRect(x-dw,w-.6,dw*2,dd);
+ g.fillStyle='rgba(143,195,214,.9)';g.fillRect(x-dw+1.2,w+1.2,dw-1.6,dd-2.6);g.fillRect(x+.4,w+1.2,dw-1.6,dd-2.6);   // two glass leaves
+ g.fillStyle='#9aa3ab';g.fillRect(x-.4,w+.6,.8,dd-1.4);
+ // the fixed arm on to the wall (no gap)
+ if(w+.5>y0){g.fillStyle='#cfd4d8';g.fillRect(x-hw,y0-.5,hw*2,w+.5-y0+.5);g.strokeStyle='#6d757c';g.lineWidth=1;g.beginPath();g.moveTo(x-hw,y0-.5);g.lineTo(x-hw,w+.5);g.moveTo(x+hw,y0-.5);g.lineTo(x+hw,w+.5);g.stroke()}
+ g.restore();G77_BRW.n++}
+
+// ==== GATE-77 S7-a · p185 · the owner 00:00 (3) + 00:06: a small catering van (CS) for the business jets and the small aircraft ===========
+var G77_CS={on:true,ac:{'AC-BJ-01':1,'AC-CN-01':1,'AC-TP-01':1,'AC-RJ-01':1},bay:'EM-EMS2',res:'EM-RES',gap:2.5,n:0,drawn:0}   /* GATE-77P · p220 · D-199: 7 → 2.5 */;
+function g77CsFor(ac){return G77_CS.on&&!!G77_CS.ac[ac]}
+if(G77_CS.on){AF.VMAX.CS=AF.VMAX.SVC;AF.ROLE.cats='CS';G77_SVC_OF.cats='catering';S6A_TYPES.CS=['קייטרינג קטן',5.0,2.0,'cats'];S6A_ASSET.CS='VS-GS-01';G77_DRV.crew.CS=1}
+// the fleet: the van is a guest in EM-EMS2 (empty since p176 parks the lift in EM-RES); the bays of the compound keep their kinds
+function g77CsFleet(A){if(!G77_CS.on)return;const b=A.bays.find(q=>q.id===G77_CS.bay);if(b)b.cs=true}
+function g77CsFleet2(A){if(!G77_CS.on||A.fleet.some(f=>f.id==='V-CS1'))return;const b=A.bays.find(q=>q.id===G77_CS.bay);if(!b||!b.cs)return;A.fleet.push({id:'V-CS1',type:'CS',asset:'VS-GS-01',bay:b.id,scale:.5})}
+// the place at the aircraft, for the van's own size
+function g77CsSpot(sd,ac){const D=s6aDimOf('CS');if(!D)return null;const g=apttAcGeom(ac),S=APTT_SPEC.ac[ac],hw=g.F[3],th=sd.th,u=[Math.cos(th),Math.sin(th)],n=[-Math.sin(th),Math.cos(th)],s=g77SideSign(sd);
+ const P=(a,d)=>[sd.cx+u[0]*a+n[0]*d*s,sd.ngy+u[1]*a+n[1]*d*s],rem=sd.id==='P6'||sd.id==='P5',G=G77_CS.gap;
+ if(sd.tpl==='bridge'||rem){const ad=rem?s6rCatADs(sd,ac):s6rCatAD(ac);if(!ad)return null;const wst=sd.id==='P6'&&typeof g2Rear==='function'&&g2Rear(sd,ac);return P(ad[0],(sd.id==='P6'&&!wst?-1:1)*(hw+G+D[0]/2+.5))}   // square to the galley door
+ const ng=S.an['Nose Gear'],dr=S.an.Door,doorA=dr?dr[0]-ng[0]:g.F[1]-14;return P(doorA,hw+G+D[1]/2+.5)}   // GA: along the fuselage, beside the cabin door
+// the door the caterer goes to (aircraft frame [along, across]) — the galley door (TP / RJ), the cabin door (BJ / CN)
+function g77CsDoorAD(sd,ac){return(ac==='AC-TP-01'||ac==='AC-RJ-01')?((sd&&(sd.id==='P5'||sd.id==='P6'))?s6rCatADs(sd,ac):s6rCatAD(ac)):s6aPortAD(ac,'door')}
+
+// ==== GATE-77 S7-a · p185: the van's paint and its work scene ==============================================================================
+S6A_PAINT.cats=function(g,L,W,st,K){const C=S6A_C,B=S6R_CK;K.shadow();K.tyres([-L*.55,L*.55]);K.body(-L+.3,L-.3,'#f3f5f6',{c2:'#ccd3d8',r:1.6});
+ g.fillStyle=s6aGrad(g,-W,W,C.glass2,C.glass,C.glass2);s6aRR(g,L*.5,-W+1,L*.3,W*2-2,.8);g.fill();
+ const x0=-L+.5,x1=L*.44;g.fillStyle=s6aGrad(g,-W,W,B.box[2],B.box[0],B.box[1]);s6aRR(g,x0,-W+.45,x1-x0,W*2-.9,.8);g.fill();g.strokeStyle='rgba(36,44,52,.6)';g.lineWidth=.4;g.stroke();
+ g.strokeStyle='rgba(120,130,140,.35)';g.lineWidth=.3;g.beginPath();for(let x=x0+2;x<x1-3.5;x+=2.6){g.moveTo(x,-W+1.2);g.lineTo(x,W-1.2)}g.stroke();
+ g.fillStyle=B.band;g.fillRect(x0,W-2.1,x1-x0,1);g.fillRect(x0,-W+1.1,x1-x0,1);g.fillStyle='#59626a';g.fillRect(x1-3.2,-W*.42,2.4,W*.84);
+ g.strokeStyle='#4b545b';g.lineWidth=.35;g.beginPath();g.moveTo(x0+.2,0);g.lineTo(x0+1.6,0);g.stroke();
+ g.fillStyle=C.lamp;g.fillRect(L-.7,-W+.9,.7,1.2);g.fillRect(L-.7,W-2.1,.7,1.2);K.tails(-L+.1)};
+// the caterer carries the trolleys, one by one: out of the van to the door (full), in, out (empty), back into the van — walking pace
+S6A_ACTS.cats=function(g,a,j,now){const p=a.pose,D=s6aDimOf('CS');if(!D||!j.ap)return;const ad=g77CsDoorAD(j.sd,j.ac);if(!ad)return;const sdd=s6aSide(j.ap,p[0],p[1]),door=s6aAcPt(j.ap,ad[0],ad[1]*sdd);
+ const L=D[0]/2,W=D[1]/2,lp=s6aLocal(p,door[0],door[1]),S=s6aLoc(p,Math.max(-L+2,Math.min(L*.4,lp[0])),(lp[1]<0?-1:1)*(W+1.2));   // the side (sliding) door behind the cab, on the door's side
+ const N=s6rCatTrolleys(j.sd,j.ac),t0=1,t1=j.dur-1,T=(t1-t0)/Math.max(1,N);if(j.last||j.t<t0||j.t>=t1||T<2)return;
+ const q=(j.t-t0)/T,ph=q-Math.floor(q),ang=Math.atan2(door[1]-S[1],door[0]-S[0]);let k,full,dir,al=1;
+ if(ph<.42){k=ph/.42;full=true;dir=1;al=Math.min(1,ph/.05)}else if(ph<.5){k=1;full=true;dir=1;al=1-(ph-.42)/.08}else if(ph<.58){k=1;full=false;dir=-1;al=(ph-.5)/.08}else{k=1-(ph-.58)/.42;full=false;dir=-1;al=Math.min(1,(1-ph)/.05)}
+ const x=S[0]+(door[0]-S[0])*k,y=S[1]+(door[1]-S[1])*k,th=dir>0?ang:ang+Math.PI,tx=x+Math.cos(th)*3.2,ty=y+Math.sin(th)*3.2,A=al;
+ g77UpPush(g,x,y,()=>{s6rTrolley(g,tx,ty,full,A);g.save();g.globalAlpha*=A;s6rCaterer(g,x,y,th,now/1000);g.restore()},false);G77_CS.drawn++};
+
+// ==== GATE-77 S7-a · p187 · D-184: the baggage with real workers — out of the train, a chain / the belt, back on board ====================
+var G77_BW={on:true,E0:.8,E1:3,stand:2.6,maxT:14,hand:{cad:.9},belt:{v:20,cad:.6},t:{lift:.25,thr:.3,hold:.3,inn:.25,place:.2},n:0};
+const g77BwL=(A,B,k)=>[A[0]+(B[0]-A[0])*k,A[1]+(B[1]-A[1])*k],g77BwU=(A,B)=>{const dx=B[0]-A[0],dy=B[1]-A[1],l=Math.hypot(dx,dy)||1;return[dx/l,dy/l]},g77BwD=(A,B)=>Math.hypot(B[0]-A[0],B[1]-A[1]);
+function g77BwBeltOf(code,t){for(const v of AO.fleet){if(v.type!=='BL')continue;for(const k of (v.hist||[]).concat(v.tasks)){if(t<k.t0||t>=k.t1||String(k.code).split('/')[0]!==code)continue;const q=k.tr.seq.legAt(t-k.t0);if(q&&q.leg.kind==='svc')return true}}return false}
+function g77BwOut(a){const st=a&&a.tr&&a.lt!=null?f2BagState(a.tr,a.lt):null;return!!(st&&st.f.at==='ac'&&st.f.fill!=null)}
+function g77BwTrainOn(code){if(!code)return false;const t=APT_OPS.clk;for(const v of AO.fleet){if(v.type!=='BT')continue;for(const k of v.tasks){if(t<k.t0||t>=k.t1||String(k.code).split('/')[0]!==String(code))continue;const st=f2BagState(k.tr,t-k.t0);if(st&&st.f.at==='ac'&&st.f.fill!=null)return true}}return false}
+// the layout of the work: the door, the posts of the fixed workers, the stand points beside the cart slots (in the loading order)
+// ap — the aircraft pose; pose — the train's (tractor) pose; carts — the cart poses; belt — the belt loader is at the hold
+function g77BwLay(sd,ac,ap,pose,carts,n,belt,tr){
+ const B=G77_BW,g0=apttAcGeom(ac),hw=g0.F[3],Lf=g0.nose-g0.tail,LY=s6aBagLay(sd,ac),side=s6aSide(ap,pose[0],pose[1]),cap=F2_BAG.cap,mT=B.maxT;
+ let D;if(LY)D=LY.belt?LY.F:LY.door;else{const fr=S6A_HAND[ac]||S6A_BELT[ac]||.28;D=s6aAcPt(ap,g0.nose-fr*Lf,side*hw)}
+ const la=s6aLocal(ap,D[0],D[1])[0],no=g77BwU(s6aAcPt(ap,la,0),D);
+ const slot=idx=>{const ci=Math.min(carts.length-1,Math.floor(idx/cap)),c=carts[ci],s=idx%cap,lx=-6.2+(s%3)*4.8,ly=-2.6+(s/3|0)*5.2,cs=Math.cos(c[2]),sn=Math.sin(c[2]);
+  const lp=s6aLocal(c,D[0],D[1]),sg=lp[1]>=0?1:-1,hy=(AF.cart&&AF.cart.hy)||6.5;return{p:[c[0]+lx*cs-ly*sn,c[1]+lx*sn+ly*cs],st:s6aLoc(c,lx,sg*(hy+2.4))}};
+ const S=[];for(let j=0;j<n;j++)S.push(slot(n-1-j));   // loading order: the last slot first (the count on the cart goes down from the end)
+ let T,M=null,mode,Pb=null,lenBF=0,Fp=null,Bp=null;
+ if(belt&&LY&&LY.belt){mode='belt';Fp=LY.F;Bp=LY.B;lenBF=g77BwD(Bp,Fp);const u=g77BwU(Bp,Fp),pp=[-u[1],u[0]],c0=S[S.length-1].st,sg=((c0[0]-Bp[0])*pp[0]+(c0[1]-Bp[1])*pp[1])>=0?1:-1;
+  M=[Bp[0]+pp[0]*sg*3.4,Bp[1]+pp[1]*sg*3.4];T=[Fp[0]-pp[0]*sg*3.4+u[0]*1.2,Fp[1]-pp[1]*sg*3.4+u[1]*1.2]}
+ else{T=[D[0]+no[0]*B.stand,D[1]+no[1]*B.stand];let near=S[0].st;for(const q of S)if(g77BwD(q.st,T)<g77BwD(near,T))near=q.st;const d=g77BwD(near,T);
+  if(d<=mT)mode='two';else{mode='three';const u=g77BwU(T,near);M=[T[0]+u[0]*Math.min(mT,d/2),T[1]+u[1]*Math.min(mT,d/2)]}}
+ const seat=s6aLoc(pose,((tr&&tr.hx)||12)*.15,0);
+ return{D,no,S,T,M,mode,Fp,Bp,lenBF,seat,belt:mode==='belt',three:mode==='three'}}
+// the schedule (loading order; unloading = the same schedule run backwards): for every bag — its cart worker (two of them take turns when
+// the crew has a spare hand: belt, or by hand with a short reach), the start at the cart, the carry steps; nobody holds two bags at once
+function g77BwSched(Ly,n){if(G77_BX.on)return g77BxSched(Ly,n);   /* GATE-77P · p217 · D-194 */const B=G77_BW,two=Ly.mode==='two',K=two?Ly.T:Ly.M,mT=B.maxT,wk=G77_WALK,t=B.t,cad=Ly.belt?B.belt.cad:B.hand.cad,nC=(two||Ly.belt)?2:1;
+ const tail=Ly.belt?(t.hold+t.place+Ly.lenBF/B.belt.v+t.hold+t.inn):Ly.three?(t.hold+t.thr+t.hold+t.inn):(t.hold+t.inn);
+ const X=[],lastOf=[null,null];
+ for(let j=0;j<n;j++){const P=Ly.S[j].st,d=g77BwD(P,K),R=d<=mT?P:[K[0]+(P[0]-K[0])/d*mT,K[1]+(P[1]-K[1])/d*mT],carry=Math.max(0,d-mT)/wk,w=j%nC;let c=0;
+  if(j>0){const q=X[j-1];c=Math.max(q.c+cad,q.c+q.carry-carry+t.hold+t.thr)}   // the catcher: one bag at a time
+  const y=lastOf[w];if(y){const back=g77BwD(y.R,P)/wk;c=Math.max(c,y.c+t.lift+y.carry+t.thr+back)}else if(w===1)c=Math.max(c,.35);
+  const x={c,P,R,carry,K,w};X.push(x);lastOf[w]=x}
+ const end=X.reduce((m,x)=>Math.max(m,x.c+t.lift+x.carry+t.thr),0);return{X,tail,nC,total:X.length?end+tail:0}}
+// the work at the aircraft needs (the trip planner: at the train's stop, the carts straight behind it)
+function g77BwHoldAt(v,sd,ac,hold,code,e,kind){if(!G77_BW.on||!sd||!e)return hold;const n=f2BagN(code||sd.id+v.id),nc=v.bay&&v.bay.carts>2?v.bay.carts:2,cd=nc>2?G77_CD4.slice(0,nc):AF_CD;
+ const c=Math.cos(e[2]),s=Math.sin(e[2]),carts=cd.map(d=>[e[0]-c*d,e[1]-s*d,e[2]]),ap=[sd.ngx,sd.ngy,sd.th],LY=s6aBagLay(sd,ac);
+ const hand_=typeof G77_BWH!=='undefined'&&G77_BWH.code!=null&&code===G77_BWH.code;if(hand_)G77_BWH.n++;const Ly=g77BwLay(sd,ac,ap,e,carts,n,!!(LY&&LY.belt)&&!hand_,null)   /* p233 */,Sc=g77BwSched(Ly,n),E=g77BwE(Ly,Sc,1e9);return Math.max(hold,2*E+Sc.total+.2)}
+function g77BwE(Ly,Sc,dur){const X=Sc.X,far=Math.max(g77BwD(Ly.seat,Ly.T),Ly.M?g77BwD(Ly.seat,Ly.M):0,g77BwD(Ly.seat,X[0].P),g77BwD(Ly.seat,X[X.length-1].R));return Math.max(G77_BW.E0,Math.min(G77_BW.E1,far/G77_WALK,dur/4))}
+// the whole scene at one moment (the drawing and the QA)
+function g77BwGeo(pose,tr,lt,carts,st,clk){if(G77_BX.on)return g77BxGeo(pose,tr,lt,carts,st,clk);   /* GATE-77P · p217 · D-194 */
+ const f=st.f,code=String(f.code).split('/')[0],fl=s6aFlightOf(code)||(AO.hist||[]).find(q=>q.code===code);if(!fl||!fl.sd||!carts.length)return null;
+ let ap=null;for(const r of fl.tracks||[])if(r.tr.kind==='ac'){ap=r.tr.seq.at(clk-r.t0);if(ap)break}if(!ap)return null;
+ const B=G77_BW,tt=B.t,n=Math.max(1,f.n|0),out=f.fill==='out',dur=st.leg.dur,t=st.t,Ly=g77BwLay(fl.sd,fl.ac,ap,pose,carts,n,g77BwBeltOf(code,clk),tr),Sc=g77BwSched(Ly,n),X=Sc.X,nC=Sc.nC;
+ const E=g77BwE(Ly,Sc,dur),A=Math.max(.5,dur-2*E),k=Sc.total>A?Sc.total/A:1;   // k > 1 — the schedule is pressed into the leg
+ const tw=t-E,tl=Math.max(0,Math.min(Sc.total,(out?tw:A-tw)*k));   // schedule time (loading frame); unloading runs it backwards
+ // a cart worker (w) at schedule time τ
+ const Cat=(w,tau)=>{const mine=X.filter(x=>x.w===w);if(!mine.length)return{p:Ly.seat,face:Ly.T,walk:false,ph:'none'};
+  for(let i=0;i<mine.length;i++){const x=mine[i],a=x.c,b=a+tt.lift+x.carry+tt.thr;
+   if(tau<a){if(i===0)return{p:x.P,face:x.P,walk:false,ph:'wait'};const y=mine[i-1],e0=y.c+tt.lift+y.carry+tt.thr,tb=g77BwD(y.R,x.P)/G77_WALK;
+    if(tau<e0+tb&&tb>.02)return{p:g77BwL(y.R,x.P,(tau-e0)/tb),face:x.P,walk:true,ph:'back'};return{p:x.P,face:x.P,walk:false,ph:'wait'}}
+   if(tau<=b){if(tau<a+tt.lift)return{p:x.P,face:Ly.S[X.indexOf(x)].p,walk:false,ph:'lift'};if(tau<a+tt.lift+x.carry)return{p:g77BwL(x.P,x.R,(tau-a-tt.lift)/(x.carry||1)),face:x.R,walk:true,ph:'carry'};return{p:x.R,face:x.K,walk:false,ph:'throw'}}}
+  const x=mine[mine.length-1];return{p:x.R,face:x.K,walk:false,ph:'done'}};
+ const wk=(p0,p1)=>{if(t<E)return[g77BwL(Ly.seat,p0,t/E),p0];if(t>dur-E)return[g77BwL(p1,Ly.seat,(t-(dur-E))/E),Ly.seat];return null};
+ const W=[];
+ for(let w=0;w<nC;w++){const C=Cat(w,tl),pre=out?Cat(w,0).p:Cat(w,Sc.total).p,post=out?Cat(w,Sc.total).p:Cat(w,0).p,r=wk(pre,post);W.push(r?{k:'tr',p:r[0],walk:true,tgt:r[1]}:{k:'tr',p:C.p,walk:C.walk,tgt:C.face,ph:C.ph})}
+ const iK=Ly.mode==='two'?nC:nC;if(Ly.M){const r=wk(Ly.M,Ly.M);W.push(r?{k:Ly.belt?'low':'mid',p:r[0],walk:true,tgt:r[1]}:{k:Ly.belt?'low':'mid',p:Ly.M,walk:false})}
+ if(Ly.belt)W.push({k:'top',p:Ly.T,walk:false});else{const r=wk(Ly.T,Ly.T);W.push(r?{k:'door',p:r[0],walk:true,tgt:r[1]}:{k:'door',p:Ly.T,walk:false})}
+ const iT=W.length-1,iC=x=>x.w,hand=(w,to)=>{const u=g77BwU(w,to);return[w[0]+u[0]*1.3,w[1]+u[1]*1.3]};
+ // the bags in the work
+ const bags=[],inWork=tw>=0&&tw<=A;
+ for(let j=0;j<n&&inWork;j++){const x=X[j],a=x.c,S=Ly.S[j],c=F2_BAG_COLORS[(j*3+n*7)%F2_BAG_COLORS.length];let tau=tl-a;if(tau<0)continue;const ic=iC(x),W0=W[ic].p,WK=W[iK].p,WT=W[iT].p;let b=null;
+  if(tau<tt.lift)b={p:g77BwL(S.p,hand(W0,x.K),tau/tt.lift),s:'lift',u:.12,w:ic};
+  else if((tau-=tt.lift)<x.carry)b={p:hand(W0,x.K),s:'hand',u:.12,w:ic};
+  else if((tau-=x.carry)<tt.thr)b={p:g77BwL(hand(x.R,WK),hand(WK,x.R),tau/tt.thr),s:'throw',u:tau/tt.thr,a:ic,z:iK,dt:tt.thr,d:g77BwD(x.R,WK)};
+  else{tau-=tt.thr;
+   if(Ly.belt){const ride=Ly.lenBF/B.belt.v;if(tau<tt.hold)b={p:hand(WK,Ly.Bp),s:'hand',u:.1,w:iK};else if((tau-=tt.hold)<tt.place)b={p:g77BwL(hand(WK,Ly.Bp),Ly.Bp,tau/tt.place),s:'lift',u:.06,w:iK};
+    else if((tau-=tt.place)<ride)b={p:g77BwL(Ly.Bp,Ly.Fp,tau/ride),s:'belt',u:0};else if((tau-=ride)<tt.hold)b={p:g77BwL(Ly.Fp,hand(WT,Ly.D),tau/tt.hold),s:'lift',u:.08,w:iT};
+    else if((tau-=tt.hold)<tt.inn)b={p:g77BwL(hand(WT,Ly.D),Ly.D,tau/tt.inn),s:'door',u:.08,al:1-tau/tt.inn,w:iT}}
+   else if(Ly.three){if(tau<tt.hold)b={p:g77BwL(hand(WK,W0),hand(WK,WT),tau/tt.hold),s:'hand',u:.12,w:iK};else if((tau-=tt.hold)<tt.thr)b={p:g77BwL(hand(WK,WT),hand(WT,WK),tau/tt.thr),s:'throw',u:tau/tt.thr,a:iK,z:iT,dt:tt.thr,d:g77BwD(WK,WT)};
+    else if((tau-=tt.thr)<tt.hold)b={p:g77BwL(hand(WT,WK),hand(WT,Ly.D),tau/tt.hold),s:'hand',u:.12,w:iT};else if((tau-=tt.hold)<tt.inn)b={p:g77BwL(hand(WT,Ly.D),Ly.D,tau/tt.inn),s:'door',u:.1,al:1-tau/tt.inn,w:iT}}
+   else{if(tau<tt.hold)b={p:g77BwL(hand(WT,x.R),hand(WT,Ly.D),tau/tt.hold),s:'hand',u:.12,w:iT};else if((tau-=tt.hold)<tt.inn)b={p:g77BwL(hand(WT,Ly.D),Ly.D,tau/tt.inn),s:'door',u:.1,al:1-tau/tt.inn,w:iT}}}
+  if(!b)continue;b.j=j;b.c=c;bags.push(b)}
+ // facing and pose
+ for(let i=0;i<W.length;i++){const w=W[i];if(w.walk){const tg=w.tgt||Ly.seat;w.th=Math.atan2(tg[1]-w.p[1],tg[0]-w.p[0]);w.pose='walking';continue}
+  const mine=bags.filter(b=>b.w===i||b.a===i||b.z===i);let tg=null,crouch=false;
+  if(i<nC){tg=w.tgt||Ly.S[0].p;crouch=w.ph==='lift'}else if(mine.length){const b=mine[0];tg=b.s==='throw'?(b.z===i?W[b.a].p:W[b.z].p):(b.s==='lift'||b.s==='door')?b.p:(i===iT?Ly.D:W[iT].p);crouch=(b.s==='lift'||b.s==='door')}
+  else tg=i===iT?(Ly.M||W[0].p):W[0].p;
+  w.th=Math.atan2(tg[1]-w.p[1],tg[0]-w.p[0]);w.pose=crouch?'crouch':'idle'}
+ // the bags still on the train (loading: not yet lifted; unloading: already put down)
+ let onTrain=0;if(out){for(let j=0;j<n;j++)if(tw<0||X[j].c>tl||(X[j].c===0&&tl===0&&tw<=0))onTrain++}else{if(tw>A)onTrain=n;else if(tw<0)onTrain=0;else for(let j=0;j<n;j++)if(X[j].c>=tl)onTrain++}
+ return{W,bags,onTrain,belt:Ly.belt,three:Ly.three,mode:Ly.mode,E,k,dur,t,D:Ly.D,seat:Ly.seat,n,out,code,st:fl.stand+':'+fl.ac.slice(3,5),total:Sc.total}}
+// the drawing: the bags on the carts, the workers and the bags in the work (after all the vehicles — the queue of p183)
+function g77BwDraw(g,a,carts,al,st){const G=g77BwGeo(a.pose,a.tr,a.lt,carts,st,APT_OPS.clk);if(!G)return false;const seed=(st.f.n||0)*7,   /* p247 */cap=F2_BAG.cap,k=G.onTrain;
+ for(let i=0;i<carts.length;i++){const c=carts[i],kk=i===carts.length-1?Math.max(0,k-i*cap):Math.max(0,Math.min(cap,k-i*cap));if(!kk)continue;g.save();g.globalAlpha=al;g.translate(c[0],c[1]);g.rotate(c[2]);f2DrawBagsOnCart(g,kk,seed+i*F2_BAG.cap*3);g.restore()}
+ const now=performance.now()/1000;
+ for(const w of G.W){const W_=w;g77UpPush(g,w.p[0],w.p[1],()=>{const o=G77_PE.force;G77_PE.force=W_.pose==='crouch'?'crouch':W_.pose==='walking'?null:'idle';g77PeDraw(g,G77_PE.role.loader,W_.p[0],W_.p[1],W_.th,now,W_.pose==='walking',al);G77_PE.force=o},false);G77_BW.n++}
+ for(const b of G.bags){const B_=b;g77UpPush(g,b.p[0],b.p[1],()=>{g.save();g.globalAlpha*=(B_.al!=null?Math.max(0,B_.al):1)*al;f2DrawFlyBag(g,B_.p[0],B_.p[1],B_.u,B_.c);g.restore()},false)}
+ return true}
+// F9 — "כבודה: מהעגלה למטוס": the four sequences (belt / by hand × departure / arrival)
+const G77_BW_LAB={beltOut:'כבודה: מסוע בהמראה — מהעגלה למטוס',beltIn:'כבודה: מסוע בנחיתה — מהמטוס לעגלה',handOut:'כבודה: טעינה ידנית בהמראה — שרשרת אל המטוס',handIn:'כבודה: טעינה ידנית בנחיתה — שרשרת אל העגלה'};
+function g77BwLookAt(want,take){for(const v of AO.fleet){if(v.type!=='BT')continue;for(const k of v.tasks){if(k.role!=='bag'||!k.tr||!k.tr.seq)continue;let tt=0;for(const l of k.tr.seq.legs){if(l.kind==='svc'&&l.f2&&l.f2.at==='ac'&&l.f2.fill!=null){const code=String(k.code).split('/')[0],fl=s6aFlightOf(code);
+   if(fl&&fl.sd){const LY=s6aBagLay(fl.sd,fl.ac),belt=!!(LY&&LY.belt&&g77BwBeltOf(code,k.t0+tt+l.dur/2)),m=(belt?'belt':'hand')+(l.f2.fill==='out'?'Out':'In'),W_=String(want).split('@'),st_=fl.stand+':'+fl.ac.slice(3,5);   /* GATE-77P · p230 */if(W_[1]?(st_===W_[1]&&(W_[0]===m||W_[0]==='any'+(l.f2.fill==='out'?'Out':'In'))):m===want){const p=k.tr.seq.at(tt);if(p)take(k.t0+t

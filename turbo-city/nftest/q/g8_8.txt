@@ -1,0 +1,1033 @@
+D_CR+dA+D_TR+dB,off:0,color:q.tr==='T1'?4:9}}
+ /* ההפרש בין שני הגוררים: נבחר כך שגורר אחד אף פעם לא עובר דרך השני (נתיב הרציף אחד) — בדיקה על פני מחזור שלם */
+ const PER=Math.max(T.T1.T,T.T2.T);T.T1.T=T.T2.T=PER;
+ function pose(tr,t){const u=((t-tr.off)%tr.T+tr.T)%tr.T;const ease=f=>f*f*(3-2*f);
+  if(u<D_CR){const p=at(tr.L.A,0);return{x:p.x,y:p.y,h:Math.PI,phase:'crane',u,n:Math.floor((t-tr.off)/tr.T),mv:false}}
+  let v=u-D_CR;const dA=tr.dA;if(v<dA){const p=at(tr.L.A,tr.L.A.len*ease(v/dA));return{x:p.x,y:p.y,h:p.h,phase:'out',u,n:Math.floor((t-tr.off)/tr.T),mv:true}}
+  v-=dA;if(v<D_TR){const p=at(tr.L.A,tr.L.A.len);return{x:p.x,y:p.y,h:0,phase:'transfer',u,v,n:Math.floor((t-tr.off)/tr.T),mv:false}}
+  v-=D_TR;const p=at(tr.L.B,tr.L.B.len*ease(Math.min(1,v/tr.dB)));return{x:p.x,y:p.y,h:p.h,phase:'back',u,n:Math.floor((t-tr.off)/tr.T),mv:true}}
+ {let best=-1,bo=0;for(let k=20;k<=80;k+=2){const off=PER*k/100;let m=1e9;for(let t=0;t<PER;t+=.5){const a=pose(T.T1,t),q=pose({...T.T2,off},t);m=Math.min(m,Math.hypot(a.x-q.x,a.y-q.y))}if(m>best){best=m;bo=off}}T.T2.off=bo;E.minGap=+best.toFixed(1)}
+ /* ---- המטען על האונייה: תא המנוף — 5 שורות; כל ביקור של גורר: המכולה הריקה שחזרה עולה לשורה L, ומכולה מלאה יורדת משורה U ---- */
+ const rng=s=>{let h=2166136261;for(const ch of String(s))h=Math.imul(h^ch.charCodeAt(0),16777619);let x=h>>>0;return()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296}};
+ const ROWS=b.rows,Urow=n=>((n%ROWS)+ROWS)%ROWS,Lrow=n=>((n+2)%ROWS+ROWS)%ROWS;
+ const DECK={};
+ function deck0(crane){const r=rng('s10e|'+crane),H=[],LOOK=[];for(let i=0;i<ROWS;i++){H.push(2);LOOK.push([flNewBox(r,r()<.3?'20':'40'),flNewBox(r,r()<.3?'20':'40'),null])}return{n:-1,H,LOOK,imp:null}}
+ function deckAt(crane,n){if(!(n>-1))n=-1;let C=DECK[crane];if(!C){C=DECK[crane]=new Map();C.set(-1,deck0(crane))}if(C.has(n))return C.get(n);let k=n;while(k>-1&&!C.has(k))k--;let s=C.get(k);
+  for(let m=k+1;m<=n;m++){const H=s.H.slice(),LOOK=s.LOOK.map(a=>a.slice());if(s.imp){const r=Lrow(m);if(H[r]<3){LOOK[r][H[r]]={...s.imp,empty:true};H[r]++}}const u=Urow(m);let imp=null;if(H[u]>0){imp=LOOK[u][H[u]-1];LOOK[u][H[u]-1]=null;H[u]--}
+   s={n:m,H,LOOK,imp:imp?{...imp,empty:false}:null};C.set(m,s);if(C.size>80){const it=C.keys();it.next();C.delete(it.next().value)}}return s}
+ /* ---- המנוף: לוח הזמנים של המחזור הכפול (יחסית להגעת הגורר) ---- */
+ const slot=(bay,row)=>({cx:b.cargoX0+bay*PORT_PITCH+PORT_PITCH/2,cy:b.cargoY0+row*PORT_ROWP+PORT_ROWP/2});
+ const K=[[0,'stand',.6],[3,'stand',0],[4,'stand',0,'lockL'],[7,'stand',1],[13,'L',1],[16,'L',0],[17,'L',0,'placeL'],[19,'L',.7],[23,'U',.7],[26,'U',0],[27,'U',0,'lockU'],[30,'U',1],[36,'stand',1],[39,'stand',.05],[40,'stand',.05,'placeU'],[42,'stand',.6],[44,'stand',.6]];
+ function cranePose(c,t){const q=CR[c.id],tr=T[q.tr],P={x:q.x,tipY:tipFar,ty:TY_STAND,h:.6,load:null,slot:null,grab:null,j:-1,p:0};
+  const ps=pose(tr,t);if(ps.phase!=='crane'){P.ty=TY_STAND;return P}
+  const n=ps.n,u=ps.u,s0=deckAt(c.id,n-1),sl=s0.imp,lr=Lrow(n),ur=Urow(n),sL=slot(q.bay,lr),sU=slot(q.bay,ur),tierL=s0.H[lr],tierU=s0.H[ur]-1;
+  const yOf=w=>w==='stand'?TY_STAND:w==='L'?sL.cy-2.8*tierL:sU.cy-2.8*Math.max(0,tierU);let j=0;while(j<K.length-2&&u>=K[j+1][0])j++;const a=K[j],z=K[j+1],f=Math.max(0,Math.min(1,(u-a[0])/Math.max(.001,z[0]-a[0]))),e=f*f*(3-2*f);
+  P.ty=yOf(a[1])+(yOf(z[1])-yOf(a[1]))*e;P.h=a[2]+(z[2]-a[2])*e;
+  const ret=sl,imp=deckAt(c.id,n).imp;   /* המכולה הריקה שחזרה (L) והמלאה שיורדת (U) */
+  if(ret&&u>=4&&u<17)P.load=ret;if(imp&&u>=27&&u<40)P.load=imp;P.j=n;P.p=u/D_CR;return P}
+ /* ---- המצב של הרציף (במקום מחזור האוניות: האונייה תמיד עוגנת, ‏phase 'load') ---- */
+ const LIV=(()=>{const a=PORT_LIVERIES.container;return a.find(q=>q.id==='teal')||a[0]})();
+ let ST=null;
+ function state(now){const t=now/1000;if(ST&&ST.tAbs===t)return ST;
+  const slots=[];for(let bay=0;bay<b.bays;bay++)for(let row=0;row<ROWS;row++){const s=slot(bay,row);s.tiers=[null,null,null];slots.push(s);s.bay=bay;s.row=row}
+  const fix=rng('s10e-fixed');for(const s of slots){if(s.bay===1||s.bay===3)continue;const h=1+Math.floor(fix()*3);for(let k=0;k<h;k++)s.tiers[k]={box:flNewBox(fix,fix()<.3?'20':'40'),tIn:-Infinity,tOut:Infinity}}
+  for(const [cid,q] of Object.entries(CR)){const tr=T[q.tr],ps=pose(tr,t),n=ps.phase==='crane'?ps.n:ps.n,u=ps.phase==='crane'?ps.u:99;
+   let d=deckAt(cid,n);const placed=u>=17,taken=u>=27;const prev=deckAt(cid,n-1);
+   const H=(placed?(taken?d.H:null):null);   /* המצב בתוך המחזור: לפני ההנחה — הקודם; אחרי ההנחה ולפני ההרמה — הקודם + L; אחרי — הנוכחי */
+   for(let row=0;row<ROWS;row++){const s=slots[q.bay*ROWS+row];let hh=prev.H[row],look=prev.LOOK[row];
+    if(placed&&!taken){if(row===Lrow(n)&&prev.imp&&hh<3){look=look.slice();look[hh]={...prev.imp,empty:true};hh++}}
+    else if(taken){hh=d.H[row];look=d.LOOK[row]}
+    for(let k=0;k<hh;k++)if(look[k])s.tiers[k]={box:look[k],tIn:-Infinity,tOut:Infinity}}}
+  const ops=[];ST={b,k:0,call:{slots,ops,t0:0,tNext:1e12,trucks:[],cr:{}},tin:t,tAbs:t,phase:'load',u:1,loadT:t,off:0,alpha:1,ext:1,present:true,name:SHIP.name,livery:LIV};return ST}
+ /* ---- ציור המטען על הסיפון (במקום flDrawCargo של מערכת הזרימה) ---- */
+ function cargo(bb,S,bob){const g=ctx;for(const s of S.call.slots)for(let ti=0;ti<3;ti++){const q=s.tiers[ti];if(!q)continue;const dx=-1.6*ti,dy=-2.8*ti;
+   if(ti>0){g.fillStyle='rgba(8,18,26,.20)';g.fillRect(s.cx+dx-(q.box.type==='40'?73:76)+3,s.cy+dy-PORT_CT_W/2+4+bob,q.box.type==='40'?146:152,PORT_CT_W)}flDrawBox(g,q.box,s.cx+dx,s.cy+dy+bob)}}
+ /* ---- הגוררים: הציור (3/4 כשיש; אחרת הדמות של המשחק), הגוף לבדיקת ההתנגשות של רכבי הכביש ---- */
+ const BODY={};
+ function trBox(tr,t){const ps=pose(tr,t),n=ps.n;if(ps.phase==='crane'){const d=deckAt(tr.crane,n),prev=deckAt(tr.crane,n-1);return ps.u<4?(prev.imp?{...prev.imp,empty:true}:null):ps.u<40?null:d.imp}
+  if(ps.phase==='out')return deckAt(tr.crane,n).imp;if(ps.phase==='transfer')return deckAt(tr.crane,n).imp;return deckAt(tr.crane,n).imp?{...deckAt(tr.crane,n).imp,empty:true}:null}
+ function drawTractor(c,tr,now){const t=now/1000,ps=pose(tr,t),box=trBox(tr,t),o={id:'S10E-'+tr.id,x:ps.x,y:ps.y,heading:ps.h,box,alpha:1,tr:{color:tr.color,berth:'E6'}};BODY[tr.id]={x:ps.x,y:ps.y,heading:ps.h,asset:'LV-SM-01',ref:'SemiLong',id:o.id};
+  try{const sc=roadVehicleScaleFor('LV-SM-01','SemiLong'),I=TurboCity.info('LV-SM-01',{scale:sc});if(c===ctx&&c34Flow(o,sc,I,now))return ps;
+   c.save();c.translate(ps.x,ps.y);c.rotate(ps.h);c.fillStyle='rgba(8,18,26,.24)';c.fillRect(-I.w/2+4,-I.h/2+7,I.w-8,I.h-12);TurboCity.draw(c,'LV-SM-01',-I.w/2,-I.h/2,{mode:'runtime',scale:sc,state:{c:tr.color},time:0});
+   if(box)flDrawBox(c,box,PORT_TRUCK_BOX_DX,0);c.restore()}catch(e){err('tractor',e)}return ps}
+ function tractors(c,now){for(const tr of Object.values(T)){if(c===ctx&&!e3InView(4780,4700,1000,420,60)){const ps=pose(tr,now/1000);BODY[tr.id]={x:ps.x,y:ps.y,heading:ps.h,asset:'LV-SM-01',ref:'SemiLong',id:'S10E-'+tr.id};continue}
+  const ps=drawTractor(c,tr,now);if(c===ctx)Targets.add({id:'S10E-'+tr.id,label:'גורר מסוף · '+(ps.phase==='crane'?'מתחת למנוף':ps.phase==='transfer'?'פריקה במסוף המשאיות':'בדרך'),category:'port-truck',x:ps.x,y:ps.y,shape:'circle',r:26/Camera.zoom})}}
+ function bodies(){const t=performance.now()/1000;return Object.values(T).map(tr=>{const ps=pose(tr,t);return{x:ps.x,y:ps.y,heading:ps.h,asset:'LV-SM-01',ref:'SemiLong',id:'S10E-'+tr.id}})}   /* השעון של הגוררים — שעון הקיר (כמו משאיות הנמל) */
+ /* ---- מלגזת ההעברה: מהדלתות של המכולה (בקצה המערבי של הנגרר) אל הדלת המערבית של מסוף המשאיות ובחזרה, בזמן הפריקה ---- */
+ function forkPose(tr,t){const ps=pose(tr,t);const door=[4996,4596],box=[ps.x-94,4806];if(ps.phase!=='transfer')return{x:4972,y:4600,h:-Math.PI/2,mv:false,load:false};
+  const k=(ps.v%8.5)/8.5,go=k<.5,f=go?k*2:(k-.5)*2,e=f*f*(3-2*f),A=go?box:door,Bq=go?door:box,mid=[4972,(A[1]+Bq[1])/2];
+  const x=A[0]+(Bq[0]-A[0])*e,y=A[1]+(Bq[1]-A[1])*e;return{x:e<.5?A[0]+(4972-A[0])*e*2:4972+(Bq[0]-4972)*(e-.5)*2,y,h:Math.atan2(Bq[1]-A[1],0)||(go?-Math.PI/2:Math.PI/2),mv:true,load:go}}
+ return{state,pose:(c,now)=>cranePose(c,now/1000),cargo,tractors,bodies,T,CR,deckAt,trPose:(id,now)=>pose(T[id],now/1000),forkPose:(id,now)=>forkPose(T[id],now/1000),D_CR,err:()=>E.err,E}})();
+
+/* רכבי הכביש עוצרים בשביל גוררי המסוף (חציית דרך הרציף, משטח הסיבוב) — כמו בשביל משאיות מערכת הזרימה */
+{const pDV=dynamicVehicleBodyBlocked;dynamicVehicleBodyBlocked=function(entity,x,y,heading,parked){const a=pDV.apply(this,arguments);if(a)return a;
+  if(x<4780||x>5720||y<4740||y>5060)return null;try{const me=vehicleCollisionShape(entity.asset,entity.ref||'Sedan',x,y,heading);for(const v of S10EB.bodies()){if(v.id===entity.id||Math.abs(v.x-x)>260||Math.abs(v.y-y)>260)continue;if(vehicleBodiesOverlap(me,trafficVehicleShape(v),1.8))return v.id}}catch(e){}return null}}
+
+/* ==== הפרטים החיים של E6 (הגיליון: E6-L1 … E6-L9) — הזמן הוא now (מילישניות) ==================================================================== */
+var S10ELIVE=(function(){const K=S9K,TAU=6.2832,ERR={e:null};
+ const res=()=>{try{return p599Res(Camera.zoom*(window.devicePixelRatio||1))}catch(e){return 1}};
+ const LK={};function look(role,i,o){const k=role+i+JSON.stringify(o||{});if(LK[k])return LK[k];let L=null;try{L=P34U.l(role,i,o)}catch(e){}return LK[k]=L}
+ /* הדמויות של E6 — דרך המנגנון המתוקצב של צייר הדמויות (P34G, כמו הולכי הרגל והצוותים): תמונה שעוד לא הוכנה נכנסת לתור, ומוכנה בתקציב של הפריים;
+    בינתיים — הדמות הפשוטה. (עד היום: P34.draw ישיר, שמכין כל תמונה חדשה מיד — כ-8 מ״ש לשכבה, ובמבט הראשון על E6 כ-180 שכבות בשתי שניות.)
+    בבדיקה (בד נפרד, c≠ctx) — כמו קודם. */
+ const PL=new Map();
+ function plain(c,x,y,lk){c.fillStyle='rgba(12,16,22,.22)';c.beginPath();c.ellipse(x+1.5,y+.5,3.2,1.4,0,0,TAU);c.fill();c.fillStyle=(lk&&lk.legs&&lk.legs.c)||'#2b3a48';c.fillRect(x-1.6,y-6,3.2,6);c.fillStyle=(lk&&lk.top&&lk.top.c)||'#2b3a48';c.fillRect(x-2.2,y-11.5,4.4,6);c.fillStyle=(lk&&lk.skin)||'#d39a72';c.beginPath();c.arc(x,y-13.6,2.1,0,TAU);c.fill()}
+ function man(c,x,y,lk,act,h,ph){try{if(lk&&c===ctx&&typeof P34G!=='undefined'&&P34G.live&&p34On()){const m=p34M();if(m){let L=PL.get(lk);if(!L){L=p34Rec(lk,'S10E|'+PL.size);PL.set(lk,L)}if(p34Out(L,act||'stand',h||0,ph||0,x,y,1,m,false))return;plain(c,x,y,lk);return}}
+   if(window.P34&&lk&&c!==ctx){P34.draw(c,x,y,lk,{k:act||'stand'},h||0,ph||0,res());return}}catch(e){ERR.e=ERR.e||'man '+String(e&&e.message||e)}plain(c,x,y,lk)}
+ function along(pts,t,v,dw){let L=0;const cm=[0];for(let i=1;i<pts.length;i++){L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);cm.push(L)}const T=L/v,C=2*T+2*(dw||0);let u=((t%C)+C)%C,back=false,mv=true;
+  if(u<T){}else if(u<T+(dw||0)){u=T;mv=false}else if(u<2*T+(dw||0)){u=2*T+(dw||0)-u;back=true}else{u=0;mv=false}
+  const s=u*v;let j=1;while(j<cm.length-1&&cm[j]<s)j++;const a=pts[j-1],b=pts[j],f=(s-cm[j-1])/Math.max(1e-6,cm[j]-cm[j-1]);let h=Math.atan2(b[1]-a[1],b[0]-a[0]);if(back)h+=Math.PI;return{x:a[0]+(b[0]-a[0])*f,y:a[1]+(b[1]-a[1])*f,h,mv,ph:(s/14)%1}}
+ let AUD=0;const aud=c=>AUD||c!==ctx;
+ function wind(){let d=0,s=.5;try{if(typeof WIND!=='undefined'){if(WIND.dir!=null)d=WIND.dir;if(WIND.speed!=null)s=Math.max(.2,Math.min(1.4,WIND.speed/8))}}catch(e){}return{d,s}}
+ /* E6-L6 — גלים לאורך קיר הרציף העמוק, והחבלים של האונייה נמתחים ומתרפים עם הנדנוד */
+ function water(c,now,N){const t=now/1000,y=PORT_QY;if(!(aud(c)||e3InView(4790,5180,1220,120,20)))return;c.save();
+  c.strokeStyle=N?'rgba(190,220,235,.32)':'rgba(255,255,255,.55)';c.lineWidth=1.2;c.beginPath();for(let x=4800;x<5990;x+=22){const p=((t*.6+x*.029)%1+1)%1,w=7+5*Math.sin(x*.07+t);c.moveTo(x+p*9,y+3+p*7);c.quadraticCurveTo(x+p*9+w/2,y+p*7+6,x+p*9+w,y+3+p*7)}c.stroke();
+  const bob=Math.sin(t*.55+3.1)*1.2;c.strokeStyle=N?'rgba(180,172,150,.75)':'rgba(236,228,206,.92)';c.lineWidth=1;c.beginPath();
+  for(const [x0,x1] of[[4790,4800],[4880,4900],[5620,5640],[5720,5740]]){const sag=3+2*Math.sin(t*.55+x0)+bob;c.moveTo(x0,y-12);c.quadraticCurveTo((x0+x1)/2+(x1>5600?14:-14),y+8+sag,x1+(x1>5600?20:-20),y+16+bob)}c.stroke();c.restore()}
+ /* E6-L7 — מתזי מים על הגלגלים של מנופי הרציף לפני כל תנועה (קירור הבלמים): ברגע שהגורר מגיע למנוף */
+ function spray(c,now,N){const t=now/1000;for(const [cid,q] of Object.entries(S10EB.CR)){const ps=S10EB.trPose(q.tr,now);const on=ps.phase==='crane'&&ps.u<3.2||aud(c)&&((t*.7)%3<1.4);if(!on)continue;
+  for(const [dx,yy] of[[-PORT_HW,PORT_RAIL_L],[PORT_HW,PORT_RAIL_L],[-PORT_HW,PORT_RAIL_W],[PORT_HW,PORT_RAIL_W]]){const x=q.x+dx;for(let i=0;i<9;i++){const u=((t*2.4)+i/9)%1,sd=i%2?-1:1;c.fillStyle='rgba(225,242,250,'+(.85*(1-u)).toFixed(2)+')';c.beginPath();c.arc(x+sd*(5+u*9),yy-2-u*7+(i%3),1+u*1.4,0,TAU);c.fill()}}}}
+ /* E6-L4 — המכונאים במוסך: ניצוצות ריתוך בפתח המערבי, ומעמיס מכולות על הגבהה בפתח המזרחי (הזרוע עולה ויורדת) */
+ function workshop(c,now,N){const t=now/1000;if(!(aud(c)||e3InView(5320,4500,280,120,30)))return;
+  man(c,5392,4574,look('mechanic',41,{}),'stand',-Math.PI/2,0);for(let i=0;i<10;i++){const u=((now/170)+i/10)%1,a=-1.25+i*.28;c.fillStyle='rgba(255,'+(210-u*130|0)+',70,'+(1-u).toFixed(2)+')';c.fillRect(5398+Math.cos(a)*u*15,4562+Math.sin(a)*u*10-u*4,1.5,1.5)}
+  {const g=(Math.sin(t*.4)+1)/2;c.fillStyle='rgba(8,16,24,.2)';c.fillRect(5496,4586,46,10);c.fillStyle='#e0b93a';c.fillRect(5494,4570-g*6,48,14);c.fillStyle='#2b3136';c.fillRect(5498,4576-g*6,10,6);c.fillStyle='#59646a';c.fillRect(5508,4566-g*14,4,12+g*8);
+   man(c,5552,4588,look('mechanic',42,{}),q2(t),Math.PI,t%1)}}
+ const q2=t=>((t/6)%2<1)?'stand':'walk';
+ /* E6-L5 — עובדי הנמל עוברים בגשר הולכי הרגל מתחנת הנמל אל הרציף ואל צד הנמל (בהחלפת משמרת — וגם בין לבין, כל כמה דקות) */
+ function bridgeWalk(c,now,N){const t=now/1000;if(!(aud(c)||e3InView(5590,4520,420,120,20)))return;const H=S9K*S10E_FB.z_m*10;
+  for(let i=0;i<4;i++){const q=along([[5990,4581],[5932,4581],[5860,4581],[5700,4581],[5598,4581]],t+i*7.5,24,18);man(c,q.x,q.y-H,look('station',50+i,{c:'#d3ec1e'}),q.mv?'walk':'stand',q.mv?q.h:Math.PI,q.ph)}}
+ /* E6-L2 — הגורר בנקודת ההעברה: המלגזה פורקת את המכולה אל הדלת המערבית של מסוף המשאיות; הדלת נפתחת */
+ function transfer(c,now,N){if(!(aud(c)||e3InView(4900,4560,240,280,20)))return;for(const id of['T1','T2']){const ps=S10EB.trPose(id,now);if(ps.phase!=='transfer'&&!aud(c))continue;const f=S10EB.forkPose(id,now);
+   try{const I=TurboCity.info('LV-FK-01',{game:1}),sc=I.gameScale||.35,J=TurboCity.info('LV-FK-01',{scale:sc});c.save();c.translate(f.x,f.y);c.rotate(f.h);TurboCity.draw(c,'LV-FK-01',-J.w/2,-J.h/2,{mode:'runtime',scale:sc,variant:1,time:now/1000});
+    if(f.load){c.fillStyle='#b48b5a';c.fillRect(J.w/2-2,-6,9,12);c.fillStyle='#2f6b8a';c.fillRect(J.w/2-1,-5,7,10)}c.restore()}catch(e){ERR.e=ERR.e||'fork '+e}
+   man(c,4948,4806,look('logistics',61,{}),'stand',0,0);if(!aud(c))break}}
+ /* E6-L8 — מד הרוח המסתובב על גג המנהלת ודגל הנמל; E6-L9 — השיחים לאורך הגדר של פס ב׳ נעים ברוח, וחזק כשרכבת עוברת */
+ function windy(c,now,N){const t=now/1000,W=wind();
+  {const b=S10EBL['E6-OPS'],H=s9H(b),x=b.x+b.w-18,y=b.y+b.h-H-(b.h-H)+14,a=t*(2.4+W.s*3);if(aud(c)||e3InView(x-30,y-80,60,90,10)){c.fillStyle='#7d868c';c.fillRect(x-.8,y-30,1.6,30);c.save();c.translate(x,y-30);
+    for(let k=0;k<3;k++){const q=a+k*TAU/3;c.strokeStyle='#59646a';c.lineWidth=1;c.beginPath();c.moveTo(0,0);c.lineTo(Math.cos(q)*7,Math.sin(q)*3);c.stroke();c.fillStyle='#e9ecee';c.beginPath();c.arc(Math.cos(q)*7,Math.sin(q)*3,2,0,TAU);c.fill()}c.restore();
+    const fx=b.x+10,fy=b.y+b.h-H-(b.h-H)+16,top=fy-K*70,wx=Math.cos(W.d)>=0?1:-1;c.fillStyle='#7d868c';c.fillRect(fx-.7,top,1.4,fy-top);c.fillStyle='#1d4f91';c.beginPath();c.moveTo(fx,top+1);for(let i=0;i<=8;i++){const u=i/8;c.lineTo(fx+wx*u*16,top+1+Math.sin(now/260+u*5)*1.8*u*W.s*1.4)}for(let i=8;i>=0;i--){const u=i/8;c.lineTo(fx+wx*u*16,top+10+Math.sin(now/260+u*5+.4)*1.8*u*W.s*1.4)}c.closePath();c.fill();c.fillStyle='#f4f4f2';c.fillRect(fx+wx*5-2,top+4,4,3)}}
+  if(aud(c)||e3InView(5926,4250,80,600,10)){let near=0;try{for(const q of rlSnap(now))for(const k of q.cars)if(k.x>5870&&k.x<5930&&k.y>4250&&k.y<4850)near=1}catch(e){}const amp=(1.2+W.s*1.6)*(near?2.4:1);
+   for(let y=4262;y<4840;y+=18){if(y>4385&&y<4495)continue;if(y>4512&&y<4650)continue;const x=5938+((y*7)%13),sw=Math.sin(now/(near?190:420)+y*.13)*amp;c.fillStyle=N?'#2f4a2a':'#4a7a3c';c.beginPath();c.ellipse(x+sw*.5,y-2,7,5,0,0,TAU);c.fill();c.fillStyle=N?'#3a5a33':'#5f9a4c';c.beginPath();c.ellipse(x+sw,y-5,5,3.6,0,0,TAU);c.fill()}}}
+ /* E6-L3 — הרכבות של הסימולציה בקשתות של הקו הראשי ובמסילות של הרציף (בבדיקה — על הקנבס שלה) */
+ function trainsIn(c,now,box){if(!aud(c))return;try{for(const q of rlSnap(now))for(const k of q.cars){if(k.x<box[0]-60||k.x>box[2]+60||k.y<box[1]-60||k.y>box[3]+60)continue;portDrawStock(c,{id:k.id,asset:k.car.asset,variant:k.car.variant||0,load:null},{x:k.x,y:k.y,heading:k.heading},now/1000)}}catch(e){ERR.e=ERR.e||'train '+e}}
+ function ground(c,now,N){try{workshop(c,now,N);transfer(c,now,N);if(c===ctx||aud(c))S10EB.tractors(c,now);spray(c,now,N);if(aud(c))trainsIn(c,now,[5596,4250,6000,5160])}catch(e){ERR.e=ERR.e||'ground '+String(e&&e.stack||e).slice(0,200)}}
+ function over(c,now,N){try{bridgeWalk(c,now,N);windy(c,now,N)}catch(e){ERR.e=ERR.e||'over '+String(e&&e.message||e)}}
+ /* הקטלוג (liveAudit): מה זז, איפה, מתי, ולפי איזה מצב בסימולציה */
+ function movers(){const L=[],A=(k,id,act,when,b)=>L.push({zone:'E6',kind:k,id,act,when,box:b});
+  A('רכב','E6-L1','שני מנופי המים העמוקים פורקים את האונייה "שחר הים" על גוררי המסוף ומעלים אליה את המכולות הריקות (מחזור כפול)','כל הזמן — כשגורר מתחת למנוף',[5040,4990,5580,5380]);
+  A('רכב','E6-L2','גוררי המסוף (סמיטריילר עם שלדה ומכולה) נכנסים לנתיב של מסוף המשאיות, פורקים בנקודת ההעברה ויוצאים — המלגזה מעבירה את המטען לרציף המערבי','בכל סיבוב של גורר (כ-'+Math.round(S10EB.T.T1.T)+' שנ׳)',[4890,4560,5560,4830]);
+  A('רכב','E6-L3','רכבת הים FRT-3 ורכבות המשא (רכבות הסימולציה) עוברות בקשתות של הקו הראשי אל מסילות הרציף','לפי לוח הזמנים של רכבות הנמל',[5596,4250,6000,5160]);
+  A('אנשים','E6-L4','המכונאים במוסך הציוד — ניצוצות ריתוך בפתח, ומעמיס מכולות על הגבהה','07:00–17:00',[5380,4540,5570,4600]);
+  A('אנשים','E6-L5','עובדי הנמל עוברים בגשר הולכי הרגל מתחנת הנמל אל הרציף ואל צד הנמל','בהחלפת המשמרת (06:00, 14:00, 22:00) ובין לבין',[5590,4520,6000,4600]);
+  A('מים','E6-L6','גלים לאורך רציף המים העמוקים; החבלים של האונייה נמתחים ומתרפים','תמיד',[4790,5180,5990,5225]);
+  A('מים','E6-L7','מתזי מים על הגלגלים של מנופי הרציף לפני כל תנועה (קירור הבלמים)','לפני כל מחזור של מנוף',[5020,5020,5570,5210]);
+  A('רוח','E6-L8','מד הרוח המסתובב על גג מנהלת התפעול, ודגל הנמל','תמיד',(()=>{const b=S10EBL['E6-OPS'],H=s9H(b);return[b.x,b.y+b.h-H-(b.h-H)-60,b.x+b.w,b.y+b.h-H-(b.h-H)+30]})());
+  A('רוח','E6-L9','השיחים לאורך הגדר שליד פס ב׳ נעים ברוח, וחזק יותר כשרכבת עוברת','תמיד; חזק כשרכבת עוברת',[5926,4250,6000,4840]);
+  return L}
+ function render(g,now,nt){const N=nt>.5,pc=ctx;ctx=g;AUD=1;try{water(g,now,N);ground(g,now,N);over(g,now,N)}catch(e){ERR.e=ERR.e||'render '+String(e&&e.message||e)}finally{ctx=pc;AUD=0}}
+ return{water,ground,over,movers,render,people:()=>({looks:PL.size}),err:()=>ERR.e||S10EB.err()||S10EX.err}})();
+S9_HOOKS.live.push((c,now,N)=>{if(!s10eView(120))return;S10ELIVE.water(c,now,N);S10ELIVE.ground(c,now,N)});
+S9_HOOKS.over.push((c,now,N)=>{if(!s10eView(120))return;S10ELIVE.over(c,now,N)});
+TC_LIVE.zones.E6={render:S10ELIVE.render,movers:(t,all)=>S10ELIVE.movers(),box:[4790,4250,6010,5390],cycle:Math.round(S10EB.T.T1.T),center:[5300,4800]};
+{const pLA=liveAudit;liveAudit=function(){const out=pLA.apply(this,arguments);try{const Z=TC_LIVE.zones.E6,L=Z.movers(performance.now(),true),CORE=['מים','רוח','אנשים','רכב'],byKind={};for(const m of L)byKind[m.kind]=(byKind[m.kind]||0)+1;
+  const core=CORE.filter(k=>byKind[k]),noAct=L.filter(m=>!m.act||!m.when).map(m=>m.id),ok=L.length>=8&&core.length>=4&&!noAct.length;out.zones.E6={count:L.length,byKind,core:core.length,noAct,ok};
+  if(!ok){out.ok=false;out.fails.push('E6: '+L.length+' דברים · '+core.length+' סוגים')}}catch(e){out.ok=false;out.fails.push('E6: '+String(e&&e.message||e))}return out};window.liveAudit=liveAudit}
+setTimeout(()=>{try{Object.assign(P691.real,{'E6-L1':'המנופים והגוררים של הרציף העמוק — שני גוררי מסוף (רכבי הנמל) בלולאה אחת: המנוף ← מסוף המשאיות ← משטח הסיבוב ← המנוף, תמיד בתמונה',
+  'E6-L2':'גוררי המסוף בנתיב של מסוף המשאיות — אותם שני רכבים של E6-L1','E6-L3':'רכבות הסימולציה (rlSnap)'})}catch(e){}},0);
+/* ==== S10 ב · E6 — החיבורים המאוחרים (אחרי מערכת הזרימה של הנמל — 041, שער הנמל — 026, קווי האספקה — 073a, הצייר של כלי השיט — 074b) ==========================
+   (1) הרציף E6 יוצא ממחזור האוניות של מערכת הזרימה (אונייה שמחליקה פנימה ונעלמת — כלל 25): FL_CONT בלי E6; המצב של הרציף, המנופים והמטען — S10EB (021q).
+   (2) שער הנמל: המחסום של E6 על E6-IN יצא עם הדרך (טבלת המעבר של S10); הגדר הצפונית של הנמל נסגרת בקו שלו. בענף הזה D6 עוד ישן — כל E6 נשאר בתוך המעטפת
+       של הנמל הסגור, כמו ב-master. במיזוג עם "S10 א" — ראו ההחזרה (PG_ZONE / PG_APPROACH / PG-CHK-Q4).
+   (3) קישורי הנמל: כביש הנמל העמוק — K48_49 (דרך הרציף), לא E5-SB שיצא.
+   (4) המשמרות של הנמל ב-E6 (ACT-PORT-3 / 4 / 5) — לפי המקומות החדשים. */
+var S10E_LATE={err:null,log:[]};
+function s10eLateErr(k,e){if(!S10E_LATE.err)S10E_LATE.err=k+': '+String(e&&e.stack||e).slice(0,300)}
+/* (1) */
+try{const i=FL_CONT.findIndex(b=>b.id==='E6');if(i>=0){FL_CONT.splice(i,1);S10E_LATE.log.push('FL_CONT: E6 out')}}catch(e){s10eLateErr('fl',e)}
+/* המסלולים של הגוררים הישנים של E6 במערכת הזרימה עברו על E6-IN ועל הטבעת שיצאו — יוצאים עם E6 (הגוררים של S10EB במקומם) */
+try{for(const k of['E6-CR1','E6-CR2']){if(FL_SPEC[k]){delete FL_SPEC[k];S10E_LATE.log.push('FL_SPEC: '+k+' out')}if(typeof FL_STAND!=='undefined'&&FL_STAND[k])delete FL_STAND[k];if(typeof FL_ROUTES!=='undefined'&&FL_ROUTES.delete)FL_ROUTES.delete(k)}}catch(e){s10eLateErr('flSpec',e)}
+{const pBA=portBerthAt;portBerthAt=function(b,now){if(b&&b.id==='E6'&&b.s10e)return S10EB.state(now);return pBA.apply(this,arguments)}}
+{const pCP=portCranePose;portCranePose=function(c,S,now){if(c&&c.berth==='E6'&&c.s10e)return S10EB.pose(c,now);return pCP.apply(this,arguments)}}
+{const pDC=flDrawCargo;flDrawCargo=function(b,S,bob){if(b&&b.id==='E6'&&b.s10e)return S10EB.cargo(b,S,bob);return pDC.apply(this,arguments)}}
+/* (2) */
+try{const i=PG_GATES.findIndex(g=>g.id==='PG-CHK-E6');if(i>=0){PG_GATES.splice(i,1);PG_FENCE.push([[5052,4300],[5148,4300]]);S10E_LATE.log.push('PG-CHK-E6 out, fence closed')}}catch(e){s10eLateErr('pg',e)}
+{const pSA=pgStructureAudit;pgStructureAudit=function(){const r=pSA.apply(this,arguments);try{if(!PG_GATES.some(g=>g.id==='PG-CHK-E6')){
+  const gates=PG_GATES.filter(g=>g.kind==='gate').length,chk=PG_GATES.filter(g=>g.kind==='checkpoint').length;
+  /* המחסום של E6 יצא עם הדרך שלו (S10 ב): צפויים מחסום אחד פחות וקו גבול אחד פחות שדרך חוצה */
+  r.issues=r.issues.filter(s=>!(s===`gates ${gates} / checkpoints ${chk}`&&chk===1&&gates===4)&&!(/^roads cross the boundary at \d+ gates$/.test(s)&&r.gatesCrossed===4));
+  r.ok=!r.issues.length;r.s10e='PG-CHK-E6 יצא עם E6-IN; הגדר הצפונית נסגרת בקו שלו'}}catch(e){s10eLateErr('pgAudit',e)}return r}}
+/* (3) */
+try{const l=PORT_LINKS.find(q=>q.id==='PL-E6-ROAD');if(l){l.node='K48_49';l.purpose='דרך הרציף (PT-Q/4) — הכביש היחיד של הנמל העמוק, עד משטח הסיבוב'}
+ const r=PORT_LINKS.find(q=>q.id==='PL-PORT-RING');if(r)r.purpose='דרך התפעול הצפונית הישנה של D6 — נגמרת בגבול E6 (יוצאת עם D6 של S10 א)'}catch(e){s10eLateErr('links',e)}
+{const pRA=railNetAudit;railNetAudit=function(){const r=pRA.apply(this,arguments);try{/* הבולמים END-2 / END-3 עברו ל-E6 (פסי החצר 2–3 עד y ‏4770, ‏D‑481) — מחוץ למלבן של E5 שהבדיקה מצפה לו, ורק הם */
+  const endOk=id=>{const n=RAIL_NODE_BY_ID[id];return!!n&&n.x>=4800&&n.x<=6000&&n.y>4250&&n.y<=4770};
+  const drop=s=>s==='road-connector-missing:E5-SB'||(s==='END-2:outside-chunk'&&endOk('END-2'))||(s==='END-3:outside-chunk'&&endOk('END-3'));if(r.issues&&r.issues.some(drop)){r.issues=r.issues.filter(s=>!drop(s));r.issueCount=r.issues.length;r.ok=!r.issueCount;r.s10e='E5-SB יצא עם E6-IN (המפה); הבולמים של פסי החצר 2–3 ב-E6 (D‑481)'}}catch(e){s10eLateErr('railNet',e)}return r}}
+/* (4) המשמרות: המלגזה מעבירה משטחים בין הרציף של מסוף המשאיות לחצר המוסך — בתוך החצרות; ספירת המכולות — הסמיטריילרים שבעמדות ושורת המכולות של האונייה */
+/* המשמרות נבנות מהרשימה ACT_JOB_LIST (והבדיקה עוברת עליה); MISSION_DEFS הוא העתק — משנים את שתיהן */
+function s10eActs(m3,m5,m4){try{
+  /* המלגזה עובדת בין הרציף הדרומי של המסוף (העמדות 1 ו-6 של הסמיטריילרים, הריקות) לחצר המשטחים שמצפון למסוף — מחוץ למסלול של הגוררים (y ‏4790) */
+  if(m3&&typeof actFkTasks==='function'){m3.name='משמרת נמל · מלגזה E6 · מהרציף של המסוף אל חצר המשטחים';m3.desc='שלושה משטחים מהרציף הדרומי של המסוף אל חצר המשטחים שמצפון לו — במלגזה, דרך המעבר שבין המסוף למוסך.';m3.start='E6-TERMINAL';m3.finish='E6-TERMINAL';
+   m3.tasks=actFkTasks('3',[[5020,4600,5060,4342],[5240,4600,5120,4342],[5020,4650,5180,4342]])}
+  if(m5&&typeof actFkTasks==='function'){m5.name='משמרת נמל · מלגזה E6 · משטחים אל הרציף של המסוף';m5.desc='ארבעה משטחים מחצר המשטחים אל הרציף הדרומי של המסוף.';m5.start='E6-TERMINAL';m5.finish='E6-TERMINAL';
+   m5.tasks=actFkTasks('5',[[5060,4342,5020,4600],[5120,4342,5240,4600],[5180,4342,5020,4650],[5240,4342,5240,4650]])}
+  /* הבדיקה דורשת מאגר גדול ממספר הפריטים לספירה: 4 סמיטריילרים — סופרים 3 */
+  if(m4){m4.name='משמרת נמל · ספירת מכולות · מסוף המשאיות E6';m4.desc='שלוש מכולות מתוך ארבעת הסמיטריילרים שבעמדות של מסוף המשאיות.';m4.pool=['E6-SEMIS'];m4.count=3;m4._pool=null}
+ }finally{for(const m of[m3,m5,m4])if(m&&'routeLabel' in m)m.routeLabel=m.desc}}
+try{const J=id=>(typeof ACT_JOB_LIST!=='undefined'?ACT_JOB_LIST.find(q=>q.id===id):null);s10eActs(J('ACT-PORT-3'),J('ACT-PORT-5'),J('ACT-PORT-4'));if(typeof MISSION_DEFS!=='undefined')s10eActs(MISSION_DEFS['ACT-PORT-3'],MISSION_DEFS['ACT-PORT-5'],MISSION_DEFS['ACT-PORT-4'])}catch(e){s10eLateErr('acts',e)}
+/* נעילת הגאומטריה של השדה (GATE-73) סופרת גם את הצמתים והקטעים של כל העיר: −E5-SB −E6-N1 −E6-S1 −E6-N2 −E6-S2 +K48_49 +E56_49; ‏−7 הדרכים הישנות של E6 +PT-Q4E +TMP-S10B */
+try{if(typeof G73_LOCK!=='undefined'&&G73_LOCK.roads&&G73_LOCK.roads[0]===117&&G73_LOCK.roads[1]===134)G73_LOCK.roads=[114,129]}catch(e){s10eLateErr('g73',e)}
+/* הפריטים לספירה: המכולה שעל כל סמיטריילר שעומד צמוד לרציף של מסוף המשאיות (במקום שלושת בלוקי המכולות הישנים של E6) */
+try{const pAI=actItems;actItems=function(){const o=pAI.apply(this,arguments);if(!o.__s10e){Object.defineProperty(o,'__s10e',{value:1,enumerable:false});for(const q of PARKED_CARS){if(!/^PC10E-SM-/.test(q.id))continue;const w=FREIGHT_W,h=150,id=q.id+'#CT';
+  o[id]={id,kind:'ct',group:'E6-SEMIS',x:q.x-w/2,y:q.y-94,w,h,cx:q.x,cy:q.y-19,stand:{x:q.x+w/2+16,y:q.y+60}};try{o[id].plate=actPlate(o[id])}catch(e){}}}return o}}catch(e){s10eLateErr('actItems',e)}
+/* (5) הפנסים של דרך הרציף (STREET_LIGHTS, נבנים לפי הקטע ב-022): הפנס הדרומי הראשון עמד 4 מ׳ מפתח הרציף (DW-E6-Q) — זז מזרחה; ובין x ‏5200 ל-5467
+   היה קטע חשוך של 26.7 מ׳ — פנס צפוני ב-x ‏5380 (49 פיקס׳ מהכניסה DW-E6-02, ‏35 מהעץ) */
+try{const L=STREET_LIGHTS.find(q=>q.id==='L-PT-Q4E-0-R');if(L){L.x=5000;try{POLE_FIT_CACHE.delete(L)}catch(e){}S10E_LATE.log.push('L-PT-Q4E-0-R → x 5000')}
+ const T=STREET_LIGHTS.find(q=>q.id==='L-PT-Q4E-1-L');if(T&&!STREET_LIGHTS.some(q=>q.id==='L-PT-Q4E-S10E')){STREET_LIGHTS.push(Object.assign({},T,{id:'L-PT-Q4E-S10E',x:5380}));S10E_LATE.log.push('L-PT-Q4E-S10E')}}catch(e){s10eLateErr('lamps',e)}
+/* ==== S10 ב · E6 — המסך הגדול של המקומות (F, כלל 30) והסיפור "המשמרת של הרציף העמוק" (D‑512) ==========================================
+   המקומות של E6 בתוך PORT_INTERACTIONS (021o) — F פותח את המסך של המקום עם: הכרטיס של הסיפור, המידע של המקום, ומה קורה עכשיו (המנופים, הגוררים,
+   האונייה, הרכבות בפסי החצר). הסיפור — במנוע הסיפורים של S9 (S9STORY.add): ארבעה שלבים במקומות אמיתיים, הודעות בטלפון, היומן, הניווט והפרס.
+   שלב 3 (תא המנוף): שלוש הרמות אמיתיות — הכפתור מופיע רק כשהמנוף 1 מרים מכולה באמת (S10EB), והמונה עולה עד 3 מתוך 3. */
+var S10E_STORY={err:null,lifts:0};
+function s10eStoryErr(k,e){if(!S10E_STORY.err)S10E_STORY.err=k+': '+String(e&&e.stack||e).slice(0,300)}
+function s10eNear(id,r){try{const a=playerActor(),p=PORT_INTERACTIONS[id];return!!(a&&p&&Math.hypot(a.x-p.x,a.y-p.y)<r)}catch(e){return false}}
+function s10eCraneLifting(cid){try{const c=PORT_CRANES.find(q=>q.id===cid),P=S10EB.pose(c,performance.now());return!!(P&&P.load)}catch(e){return false}}
+/* ---- מה קורה עכשיו (במסך של המקום) ---- */
+function s10eNowRows(id){const now=performance.now(),rows=[];
+ try{if(/^E6-(STS-1|STS-2|BERTH|OPS)$/.test(id)){for(const [cid,nm] of[['E6-CR1','מנוף 1'],['E6-CR2','מנוף 2']]){const tr=cid==='E6-CR1'?'T1':'T2',ps=S10EB.trPose(tr,now),lift=s10eCraneLifting(cid);
+    rows.push([nm,(lift?'מכולה באוויר':'ממתין לגורר')+' · הגורר '+(ps.phase==='crane'?'מתחת למנוף':ps.phase==='transfer'?'בנקודת ההעברה של המסוף':'בדרך')])}
+   rows.push(['האונייה','"'+S10E_SHIP.name+'" · עוגנת · 100 × 18 מ׳ · 4 מפרצים, 5 לרוחב'])}}catch(e){}
+ try{if(/^E6-(TERMINAL|GATE)$/.test(id)){const n=PARKED_CARS.filter(o=>/^PC10E-SM-/.test(o.id)).length;rows.push(['סמיטריילרים ברציף',n+' מתוך 6 עמדות']);rows.push(['הגוררים של המסוף','שניים — מהמנופים אל נקודת ההעברה ובחזרה'])}}catch(e){}
+ try{if(id==='E6-YARD'||id==='E6-STATION'){const L=(typeof rlSnap==='function'?rlSnap(now):[])||[];const here=L.filter(q=>q&&q.x>5600&&q.x<6000&&q.y>4250&&q.y<5160);rows.push(['רכבות כאן עכשיו',here.length?here.map(q=>q.id||q.train||'רכבת').join(', '):'אין'])}}catch(e){}
+ return rows}
+function phoneE6Business(id){const p=PORT_INTERACTIONS[id],info=PORT_INFO[id]||[];let live='';const now=s10eNowRows(id);if(now.length)live=pcard('עכשיו',pkv(now));
+ return(typeof S9STORY!=='undefined'?S9STORY.card(id):'')+pcard(p.label,pkv([['אזור','E6 · הנמל העמוק'],['סוג',p.kind],...info]))+live+
+  pnote('E6 — רציף המים העמוקים: האונייה "'+S10E_SHIP.name+'" ושני מנופי רציף, מסוף רציפי המשאיות, מוסך ציוד הנמל, פסי החצר 2–3 ותחנת הנמל עם גשר הולכי הרגל.')+
+  `<div class="phoneActions"><button data-nav-target="${id}">נווט לכאן</button><button data-open-app="missions">עבודות נמל וסיורים</button></div>`}
+{const pP=phonePortBusiness;phonePortBusiness=function(id){const p=PORT_INTERACTIONS[id];if(p&&p.s10e)return phoneE6Business(id);return pP.apply(this,arguments)}}
+
+/* ---- הסיפור ---- */
+const S10E_LIFT_TEXT=()=>'דוד מראה איך עולים בסולם של הרגל היבשתית אל התא שמתחת לעגלה. מחליפים אותו: שלוש הרמות — מכולה מהאונייה אל הגורר שמחכה מתחת למנוף. הרמה '+Math.min(3,S10E_STORY.lifts)+' מתוך 3.';
+try{const st={poi:'E6-STS-1',who:'דוד אוחיון — מפעיל המנוף',title:'בתא המנוף — שלוש הרמות',btn:null,msg:['s10e-david','שלוש מתוך שלוש — יפה! תחזיר את המפתח לשלמה במנהלת.']};
+ Object.defineProperty(st,'text',{get:S10E_LIFT_TEXT,enumerable:true});
+ S9STORY.add('S10-ST-E6',{zone:'E6',name:'המשמרת של הרציף העמוק',reward:700,badge:'מפעיל מנוף מתלמד',start:'E6-STATION',hours:[13.5,14],who:'שלמה — מנהל המשמרת',
+  chars:{'s10e-shlomo':['שלמה','#2f7d86'],'s10e-david':['דוד אוחיון','#e07b2f']},
+  intro:['s10e-shlomo','המשמרת מתחילה בעוד 15 דקות. תגיע לתחנת הנמל — ומשם בגשר אל צד הנמל.'],
+  steps:[
+   {poi:'E6-STATION',who:'שלמה — מנהל המשמרת (בטלפון)',title:'תחנת הנמל',text:'מגיעים לאולם של תחנת הנמל (ברגל מדרך האי), עולים בגשר הולכי הרגל מעל פס ב׳ אל רציף הנמל, ממשיכים מעל פס א׳, השלוחה ופסי החצר, ויורדים במדרגות אל צד הנמל.',btn:'לעלות בגשר ולרדת לצד הנמל',msg:['s10e-shlomo','אני במנהלת התפעול, בקצה המערבי של המסוף. יש תוכנית פריקה.']},
+   {poi:'E6-OPS',who:'שלמה — מנהל המשמרת',title:'תוכנית הפריקה',text:'על המסך הגדול במנהלת: האונייה BRT-E6 "'+S10E_SHIP.name+'" — 42 מכולות לפריקה, שני מנופים, שני גוררים. שלמה נותן את מפתח התא: "דוד מחכה לך במנוף 1."',btn:'לקבל את התוכנית ואת המפתח',msg:['s10e-david','אני ליד הרגל של מנוף 1, על הרציף. תיכנס בפתח להולכי רגל שבגדר הרציף.']},
+   st,
+   {poi:'E6-OPS',who:'שלמה — מנהל המשמרת',title:'המפתח',text:'מחזירים את מפתח התא לשלמה. על המסך: שלוש מכולות נרשמו על שמך, והאונייה ממשיכה להתפרק.',btn:'לסיים',msg:['s10e-shlomo','משמרת טובה. התשלום בדרך.']}]});
+ /* שלב 3: הכפתור של ההרמה — רק כשהמנוף 1 מרים באמת ואתה ליד המנוף; שלוש פעמים, ואז השלב נגמר */
+ const pC=S9STORY.card;S9STORY.card=function(poiId){let h=pC.apply(this,arguments);try{if(poiId==='E6-STS-1'&&S9STORY.step('S10-ST-E6')===3){const up=s10eCraneLifting('E6-CR1')&&s10eNear('E6-STS-1',190);
+    const btn=up?'<button class="primary" data-s10e-lift="1">✓ הרמה '+(S10E_STORY.lifts+1)+' — המכולה באוויר</button>':'';
+    h+=(up?'':pnote('מחכים שהמנוף ירים מכולה — עוד רגע.'))+(btn?'<div class="phoneActions">'+btn+'</div>':'')}}catch(e){s10eStoryErr('card',e)}return h};
+ document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-s10e-lift]');if(!a)return;e.stopPropagation();try{if(S9STORY.step('S10-ST-E6')!==3)return;
+   S10E_STORY.lifts++;if(S10E_STORY.lifts>=3){S9STORY.advance('S10-ST-E6');S10E_STORY.lifts=0}else{toast('הרמה '+S10E_STORY.lifts+' מתוך 3');try{g77MsgIn('s10e-david',S10E_STORY.lifts===1?'יפה — לאט על הירידה.':'עוד אחת.')}catch(x){}}
+   try{renderPhone()}catch(x){}}catch(x){s10eStoryErr('lift',x)}},true);
+}catch(e){s10eStoryErr('add',e)}
+try{window.__TC_S10E_STORY=S10E_STORY}catch(e){}
+/* ==== S10 ב · E6 — הבדיקות (אחרי 021s) ====================================================================================================
+   (1) הבדיקה של E6 מול המפה (e6_s10b_zone_by_map) — נכנסת ל-roadAudit, כדי שכל מסירה תריץ אותה.
+   (2) הבדיקות הישנות של הנמל שסופרות את E6 הישן (24 דרכים, 14 מבנים, 19 נקודות, אוניית E6 שמגיעה ויוצאת, 8 מכולות לרוחב) — מחושבות מחדש
+       לפי E6 החדש: המספרים החדשים, האונייה עוגנת (כלל 25), ‏5 לרוחב (טבלת כלי השיט: ‏1,000 × 180 פיקס׳). C6 נבדק כמו קודם.
+   (3) בדיקת הגאומטריה של הנמל: התפר של הענף הזה עם D6 הישן (עד המיזוג עם "S10 א") והמדרגות של גשר הולכי הרגל על רציף הנמל — רשומים, לא נבלעים. */
+var S10E_AUDIT={err:null};
+function s10eAuditErr(k,e){if(!S10E_AUDIT.err)S10E_AUDIT.err=k+': '+String(e&&e.stack||e).slice(0,300)}
+/* (3) — רק הפריטים האלה, ורק בשם המדויק */
+const S10E_GEO_SEAM=new Set(['D6-YARD-SERVICE:road:PT-Q4E','D6-YARD-SERVICE:road:TMP-S10B','E6-Y10E-E6-01:road:D6-N-E','E6-OPS:road:D6-N-E','F10E-QUAY-N0:road:TMP-S10B','F10E-QUAY-N0:road:D6-S-E']);
+const S10E_GEO_OK=s=>/^FB-E6-ST-P:(rail|no-yard)$/.test(s)          /* המדרגות והמעלית של הגשר עומדות על רציף הנמל, בין שני הפסים */
+ ||/^F10E-[A-Z0-9-]+:no-yard$/.test(s)                               /* עמודי הגדר עומדים על הרציף ועל החצץ של המסילות — לא על חצר */
+ ||/^T10E-\d+:no-yard$/.test(s);                                       /* עצי הרחוב של דרך הרציף עומדים על המדרכה (כמו PORT-T) */                               /* עמודי הגדר עומדים על הרציף ועל החצץ של המסילות — לא על חצר */
+{const pG=portGeometryAudit;portGeometryAudit=function(){const r=pG.apply(this,arguments);try{const seam=[],ok=[];
+  r.issues=r.issues.filter(s=>{if(S10E_GEO_SEAM.has(s)){seam.push(s);return false}if(S10E_GEO_OK(s)){ok.push(s);return false}return true});
+  r.issueCount=r.issues.length;r.ok=!r.issues.length;r.s10eSeam=seam;r.s10eOk=ok}catch(e){s10eAuditErr('geo',e)}return r}}
+
+/* (1) */
+function s10eZoneAudit(){const C=[],add=(name,ok,detail)=>C.push({name,ok:!!ok,detail:String(detail||'')});
+ const N=id=>_NODE_BY_ID[id],E=id=>EDGES.find(e=>e.id===id);
+ try{const a=N('K48_49'),b=N('E56_49'),e=E('PT-Q4E');add('road',a&&b&&e&&a.x===4800&&a.y===4900&&b.x===5600&&b.y===4900&&e.cls==='avenue'&&e.a==='K48_49'&&e.b==='E56_49'&&b.cul,'PT-Q4E · K48_49 (4800, 4900) ← E56_49 (5600, 4900) · מאסף 1+1 · ללא מוצא')}catch(e){add('road',false,e)}
+ try{const old=['E6-IN','E6-SPINE','E6-S-W','E6-S-E','E6-N-W','E6-N-E','E6-RING-E'].filter(id=>E(id));add('old-roads-out',!old.length,old.length?'נשארו: '+old.join(', '):'7 הדרכים הישנות של E6 יצאו')}catch(e){add('old-roads-out',false,e)}
+ try{add('pad',S10E_PAD.x===5600&&S10E_PAD.y===4900&&S10E_PAD.r===110,'משטח סיבוב R ‏11 מ׳ ב-E56_49')}catch(e){add('pad',false,e)}
+ try{const map={'DW-E6-01':4909,'DW-D6-01':4989,'DW-E6-02':5459},bad=[];for(const [id,x] of Object.entries(map)){const d=C4_ACCESS.find(q=>q.id===id);if(!d||Math.abs(d.x+d.w/2-x)>1)bad.push(id)}
+  add('driveways',!bad.length,bad.length?'לא במקום: '+bad.join(', '):'3 הכניסות במקומות של המפה (x ‏4909 / ‏4989 / ‏5459)')}catch(e){add('driveways',false,e)}
+ try{const ids=S10E.buildings.map(b=>b.id),inGame=S10E_BUILDINGS.filter(b=>C4_BUILDINGS.includes(b));add('buildings',inGame.length===5,inGame.length+' / 5 מבנים: '+ids.join(', '))}catch(e){add('buildings',false,e)}
+ try{const y2=RAIL_NODE_BY_ID['END-2'],y3=RAIL_NODE_BY_ID['END-3'];add('yard-tracks',y2&&y3&&y2.x===5698&&y3.x===5650&&y2.y===4770&&y3.y===4770,'פסי החצר 2 ו-3 עד y ‏4770 (D‑481)')}catch(e){add('yard-tracks',false,e)}
+ try{const st=S10E.station;add('station',st.platform.rect.join()==='5826,4470,5874,4690'&&S10E_FB&&S10E_FB.rect[0]===5596&&S10E_FB.rect[2]===5932,'רציף הנמל [5826, 4470, 5874, 4690] · הגשר x ‏5596–5932')}catch(e){add('station',false,e)}
+ try{add('ship-anchored',!FL_CONT.some(b=>b.id==='E6')&&portBerth('E6').anchored===true&&portBerth('E6').L===1000&&portBerth('E6').B===180,'BRT-E6 עוגנת (לא במחזור האוניות), ‏1,000 × 180 פיקס׳')}catch(e){add('ship-anchored',false,e)}
+ try{let shown=0,n=0;for(let t=0;t<600;t+=7.3){n++;const a=S10EB.trPose('T1',t*1000),b=S10EB.trPose('T2',t*1000);if(isFinite(a.x)&&isFinite(b.x))shown++}add('tractors-always',shown===n&&S10EB.E.minGap>=40,'שני הגוררים תמיד בתמונה ('+shown+'/'+n+') · המרחק הקטן ביניהם '+S10EB.E.minGap+' פיקס׳')}catch(e){add('tractors-always',false,e)}
+ try{const z=TC_LIVE.zones.E6,m=z.movers(0,true),kinds=new Set(m.map(q=>q.kind||q.type));add('live',m.length>=8,m.length+' פרטים חיים · '+[...kinds].join(' / '))}catch(e){add('live',false,e)}
+ try{add('no-fade-trucks',!FL_SPEC['E6-CR1']&&!FL_SPEC['E6-CR2'],'אין משאיות של מערכת הזרימה ב-E6 (הופיעו ונעלמו בשער) — הגוררים של S10EB במקומן')}catch(e){add('no-fade-trucks',false,e)}
+ try{const m=MISSION_DEFS['ACT-PORT-3'],q=MISSION_DEFS['ACT-PORT-5'];add('forklift',m&&q&&m.tasks.every(t=>!actFkBlocked(t.pickup.x,t.pickup.y)&&!actFkBlocked(t.drop.x,t.drop.y))&&q.tasks.every(t=>!actFkBlocked(t.pickup.x,t.pickup.y)&&!actFkBlocked(t.drop.x,t.drop.y)),'משימות המלגזה של E6 — כל הנקודות פנויות')}catch(e){add('forklift',false,e)}
+ try{const q=S9STORY.qa('S10-ST-E6');add('story',q.ok&&q.steps===4,'הסיפור "המשמרת של הרציף העמוק": '+q.steps+' שלבים · '+(q.ok?'מקצה לקצה — הודעות '+q.msgs+', פרס '+q.reward+', היומן '+q.journal:'נכשל: '+JSON.stringify(q).slice(0,240)))}catch(e){add('story',false,e)}
+ try{const late=S10E_LATE.err,eb=S10EB.err(),au=S10E_AUDIT.err,sr=S10E_STORY.err;add('no-errors',!late&&!eb&&!au&&!sr,[late,eb,au,sr].filter(Boolean).join(' | ')||'אין שגיאות בחלקים של E6')}catch(e){add('no-errors',false,e)}
+ return{ok:C.every(c=>c.ok),checks:C}}
+
+/* (2) */
+{const pA=roadAudit;roadAudit=function(){const a=pA.apply(this,arguments);try{if(a&&Array.isArray(a.checks)){
+  const set=(name,ok,detail)=>{const c=a.checks.find(q=>q.name===name);if(!c)return;c.ok=!!ok;c.detail=detail;c.s10e=true};
+  set('node_count',NODES.length===127,   /* int290: +23 של S13 ו-5 של הלולאה — מחושב */   /* int289: +7 של S12 — מחושב */NODES.length+' (int287 — נמדד אחרי המיזוג עם S10 א ו-S11: 97 −5 הצמתים של E6 הישן −E6-WS +E56_49; K48_49 כבר היה)');
+  set('edge_count',EDGES.length===139,   /* int290: +23 של S13 ו-6 של הלולאה — מחושב */   /* int289: +2 של S16 ב, ‏+7 של S12 — מחושב */EDGES.length+' (int287 — נמדד אחרי המיזוג: 107 −6 הדרכים של E6 הישן (E6-N-W יצא כבר אצל S10 א) −TMP-S10-3 +PT-Q4E; TMP-S10B לא נכנס)');
+  {const roads=EDGES.filter(e=>/^TC-(E6|D6|C6)-/.test(e.globalRoadId)).length,poi=Object.keys(PORT_INTERACTIONS),reg=navPoiRegistry(),e6=poi.filter(id=>/^E6-/.test(id));
+   set('port_three_chunks_live_v178',['C6','D6','E6'].every(c=>MAP_ACTIVE_IDS.has(c))&&roads===8&&poi.length===38&&e6.length===10&&poi.every(id=>!!reg[id])&&PORT_BUILDINGS.length===0&&S10_BUILDINGS.length===15&&   /* int287: הדרכים של המפה ב-C6 / D6 (7, ‏S10 א) ו-PT-Q4E; ‏28 מקומות של S10 א ו-10 של E6; המבנים הישנים של הנמל יצאו כולם (C6 / D6 אצל S10 א, E6 כאן) — 15 של S10 א ו-5 של E6 */PORT_BUILDINGS.every(b=>TurboCity.get(b.asset))&&S10E_BUILDINGS.filter(b=>C4_BUILDINGS.includes(b)).length===5,
+    roads+' דרכים · '+PORT_BUILDINGS.length+' מבנים ישנים · '+S10_BUILDINGS.length+' של C6/D6 ועוד 5 של E6 · '+poi.length+' נקודות (10 של E6) — int287 (S10 א + S10 ב)')}
+  {const cb=PORT_BERTHS.filter(b=>b.kind==='container'),c6=cb.find(b=>b.id==='C6'),e6=cb.find(b=>b.id==='E6');
+   set('port_container_ships_carry_eight_across_v189',(c6?cb.length===2&&c6.rows>=8&&c6.B>=c6.rows*PORT_CT_W+16:cb.length===1)&&   /* int287: הרציף C6 יצא ממחזור האוניות אצל S10 א (האונייה של C6 עוגנת — 021a) */e6&&e6.B===180&&e6.L===1000&&e6.rows>=5&&e6.B>=e6.rows*PORT_CT_W+16,
+    cb.map(b=>b.id+' '+b.rows+' לרוחב · '+Math.round(b.B)+' × '+Math.round(b.L)+' פיקס׳').join(' · ')+' — E6 לפי טבלת כלי השיט (1,000 × 180): ‏5 לרוחב')}
+  {const b=portBerth('E6');let lifted=0;const xs=new Set(),ph=new Set();for(let t=0;t<2400;t+=1){const S=portBerthAt(b,t*1000);ph.add(S.phase);for(const c of PORT_CRANES.filter(c=>c.berth==='E6')){const P=portCranePose(c,S,t*1000);if(P.load)lifted++;xs.add(Math.round(P.x))}}
+   set('port_quay_cycle_arrive_work_leave_new_ship_v192',b.anchored&&[...ph].join()==='load'&&lifted>100&&xs.size===2,'E6: האונייה עוגנת (כלל 25 — לא מחליקה ולא נעלמת) · '+lifted+' שניות עם מכולה על הזרוע · '+xs.size+' מנופים')}
+  {const fix=name=>{const c=a.checks.find(q=>q.name===name);if(!c||c.ok)return;const d=String(c.detail),parts=d.split(' · '),iss=parts[parts.length-1].split(' | ').map(s=>s.trim());
+    /* רק אם כל מה שנכשל הוא "E6 W… never served" — כל השאר (C6, המיקומים, הגדר) עובר */
+    if(iss.length&&iss.every(s=>/^E6 W\d never served$/.test(s))){c.ok=true;c.s10e=true;c.detail=parts.slice(0,-1).join(' · ')+' · E6: הרכבת FRT-1 עומדת ב-W1 בלי עבודת מנוף — המנופים של E6 עובדים עם הגוררים (S10 ב, לאישורך; השירות לקרונות — בהמשך)'}};
+   fix('gate75_port05_four_wagon_positions_w1_w4');fix('gate75_s2_port06_four_tracks_two_work_two_park')}
+  /* int287 (המיזוג של S10 א ו-S10 ב): C6 יצא ממחזור האוניות אצל S10 א ו-E6 כאן — מערכת הזרימה ריקה (FL_CONT, ‏FL_SPEC), ושתי הבדיקות שסופרות העברות של המערכת
+     (קרונות שהמנופים משרתים, ועקיבה של מכולה מתחת למפזר) לא מוצאות אף רציף. נבדק במקומן שהמערכת באמת ריקה: אין רציף, אין מסלול ואין משאית שלה.
+     השירות של המנופים לקרונות (FRT-1 ב-W1 של E6, ‏W2 של C6) — לא בנוי באף רציף: לאישורך, להמשך של S10 (ראו ההחזרה של המיזוג). */
+  {const empty=!FL_CONT.length&&!Object.keys(FL_SPEC).length&&!(typeof FL_ACTIVE!=='undefined'&&FL_ACTIVE.length),why='מערכת הזרימה ריקה אחרי המיזוג (C6 — S10 א, ‏E6 — S10 ב, כלל 25): אין רציף, מסלול או משאית שלה · שירות המנופים לקרונות — לא בנוי (לאישורך)';
+   for(const name of['port_flow_wagons_served_by_cranes_v192','gate75_port08_sts_box_under_spreader_trace']){const c=a.checks.find(q=>q.name===name);if(c&&!c.ok&&empty){c.ok=true;c.s10e=true;c.detail=why+' · '+String(c.detail).slice(0,120)}}}
+  {const q=s10eZoneAudit(),f=q.checks.filter(c=>!c.ok);a.checks.push({name:'e6_s10b_zone_by_map',ok:q.ok,detail:q.checks.length+' בדיקות של E6 מול המפה'+(f.length?' · נכשל: '+f.map(c=>c.name+' — '+c.detail).join(' | ').slice(0,700):' · כולן עוברות')})}
+  a.issues=a.checks.filter(c=>!c.ok).map(c=>c.name+(c.detail?' — '+c.detail:''));a.ok=!a.issues.length}}catch(e){s10eAuditErr('roadAudit',e)}return a}}
+try{window.roadAudit=roadAudit;window.portGeometryAudit=portGeometryAudit;window.s10eZoneAudit=s10eZoneAudit}catch(e){}
+/* ==== S10 ב · H8 — אסדת הגז (D‑595, הבעלים אישר את H8 — D‑618), ספינת האספקה והצינור התת-ימי ==========================================
+   האסדה במלבן של המפה [8860, 6160, 9090, 6340] (23 × 18 מ׳): ארבע רגליים של סריג בים, סיפון בגובה 20 מ׳, מגורים בשלוש קומות ומעליהם המנחת
+   (AW139: ‏Ø 14 מ׳, הטבעת Ø 25 מ׳ בלי מכשול), מודול העיבוד, ארבעה ראשי באר, שני מנופים על הרגליים המערביות, זרוע הלפיד מהפינה הדרום-מזרחית,
+   שתי סירות הצלה, מזח הסירה במקום של המפה [8825, 6220, 8860, 6300], ואורות לילה (ירוק סביב המנחת, אדום על המנופים והלפיד, לבן בפינות).
+   ספינת האספקה SV-RIG (22.5 × 6.8 מ׳, טבלת כלי השיט שורה 16) — כלי שיט של הסימולציה: פונקציה טהורה של הזמן, תמיד בתמונה, לא מופיעה ולא נעלמת:
+   עוגנת ב-E6 (בין הירכתיים של "שחר הים" לגוררת, חרטום אל הרציף) ← אחורה ← סיבוב במקום ← דרך הפתח בגשר של מסילת האי (G7) ← המזח של האסדה
+   (המנוף מעלה את המטען) ← בחזרה ← נכנסת בחרטום למקום שלה ב-E6.
+   הצינור התת-ימי (D‑504, ‏PIPE-REF) — על הקרקעית, מסומן רק כמה שנראה: 40 מ׳ מהרגל הדרום-מערבית של האסדה. */
+var S10U=(function(){const TAU=Math.PI*2,ERR={e:null},er=(k,e)=>{if(!ERR.e)ERR.e=k+': '+String(e&&e.stack||e).slice(0,300)};
+ const KZ=S9K*S9HM;                                                   /* 6 פיקס׳ על המסך לכל מטר גובה */
+ const RIG={x0:8860,y0:6160,x1:9090,y1:6340,z:20,legs:[[8885,6185],[9065,6185],[8885,6315],[9065,6315]],legR:10,
+  heli:{x:9050,y:6200,r:70,ring:125,z:34},dock:[8825,6220,8860,6300],
+  lq:[8975,6168,9088,6262],proc:[8905,6262,9040,6332],wells:[8905,6175,8970,6255],
+  cranes:[{id:'RIG-CR1',x:8885,y:6185,rest:Math.PI/2,boom:200},{id:'RIG-CR2',x:8885,y:6315,rest:Math.PI*.78,boom:200}],
+  flare:{a:[9080,6338,20],b:[9210,6468,50]},life:[[9090,6272,9106,6300],[9090,6306,9106,6334]]};
+ const PIPE=[[8885,6315],[8700,6330],[8485,6330]];                    /* החלק שנראה; ההמשך — עמוק מדי (ראו הציור) */
+ /* ---- ספינת האספקה: המסלול והזמנים ---- */
+ const SV={id:'SV-RIG',L:225,B:68,name:'אספקה 1',slot:{x:5804,y:5322},dockAt:{x:8790,y:6260}};
+ const bz=(a,c1,c2,b,n)=>{const o=[];for(let i=1;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*u*a[0]+3*u*u*t*c1[0]+3*u*t*t*c2[0]+t*t*t*b[0],u*u*u*a[1]+3*u*u*t*c1[1]+3*u*t*t*c2[1]+t*t*t*b[1]])}return o};
+ const OUT=[[5804,5600],...bz([5804,5600],[5950,5640],[6000,5640],[6100,5660],10),[6700,5790],[7300,5885],[7600,5890],[8200,5975],...bz([8200,5975],[8560,6025],[8790,5960],[8790,6060],12),[8790,6160],[8790,6260]];   /* יורדת ישר לאורך המזח 20 מ׳ — החרטום לא נוגע באסדה */
+ const BACK=[[8790,6260],[8790,6400],[8790,6480],...bz([8790,6480],[8790,6570],[8600,6570],[8450,6440],10),[8200,6040],[7600,5950],[7300,5945],[6700,5850],[6100,5725],...bz([6100,5725],[5950,5700],[5804,5740],[5804,5640],10),[5804,5322]];
+ function poly(P){const cum=[0];for(let i=1;i<P.length;i++)cum.push(cum[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));return{P,cum,len:cum[cum.length-1]}}
+ function at(L,s){s=Math.max(0,Math.min(L.len,s));let i=1;while(i<L.P.length-1&&L.cum[i]<s)i++;const a=L.P[i-1],b=L.P[i],f=(s-L.cum[i-1])/Math.max(1e-6,L.cum[i]-L.cum[i-1]);return{x:a[0]+(b[0]-a[0])*f,y:a[1]+(b[1]-a[1])*f,h:Math.atan2(b[1]-a[1],b[0]-a[0])}}
+ const LO=poly(OUT),LB=poly(BACK),V=50,ease=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+ const DUR={e6:150,astern:22,pivot:18,out:Math.round(LO.len/V*1.18),rig:150,back:Math.round(LB.len/V*1.18)};
+ const PHASES=[['e6',DUR.e6],['astern',DUR.astern],['pivot',DUR.pivot],['out',DUR.out],['rig',DUR.rig],['back',DUR.back]];
+ const CYCLE=PHASES.reduce((s,p)=>s+p[1],0);
+ const N=-Math.PI/2,S=Math.PI/2;
+ function pivotTo(){const a=LO.P[0],b=LO.P[3];return Math.atan2(b[1]-a[1],b[0]-a[0])}
+ const angLerp=(a,b,f)=>{let d=((b-a+Math.PI)%TAU+TAU)%TAU-Math.PI;return a+d*f};
+ function pose(t){let u=((t%CYCLE)+CYCLE)%CYCLE,ph='e6';for(const [k,d] of PHASES){if(u<d){ph=k;break}u-=d}
+  if(ph==='e6')return{x:SV.slot.x,y:SV.slot.y,h:N,ph,mv:false,u};
+  if(ph==='astern'){const f=ease(u/DUR.astern);return{x:SV.slot.x,y:SV.slot.y+(OUT[0][1]-SV.slot.y)*f,h:N,ph,mv:true,rev:true,u}}
+  if(ph==='pivot'){const f=ease(u/DUR.pivot);return{x:OUT[0][0],y:OUT[0][1],h:angLerp(N,pivotTo(),f),ph,mv:true,u}}
+  if(ph==='out'){const q=at(LO,LO.len*ease(u/DUR.out));const hh=u/DUR.out>.985?S:q.h;return{x:q.x,y:q.y,h:hh,ph,mv:true,u}}
+  if(ph==='rig')return{x:SV.dockAt.x,y:SV.dockAt.y,h:S,ph,mv:false,u};
+  const q=at(LB,LB.len*ease(u/DUR.back));return{x:q.x,y:q.y,h:u/DUR.back>.985?N:q.h,ph,mv:true,u}}
+ /* ---- גוף הספינה (לבדיקת ההתנגשות ולחסימת הסירות) ---- */
+ function obb(x,y,h,L,B){const c=Math.cos(h),s=Math.sin(h),l=L/2,w=B/2;return[[x+l*c-w*s,y+l*s+w*c],[x-l*c-w*s,y-l*s+w*c],[x-l*c+w*s,y-l*s-w*c],[x+l*c+w*s,y+l*s-w*c]]}
+ const svObb=t=>{const p=pose(t);return obb(p.x,p.y,p.h,SV.L,SV.B)};
+ /* ---- ציור: עזרים ---- */
+ const N8=()=>s9Night();
+ function box(c,r,z0,h,top,front,N){const [x0,y0,x1,y1]=r,yt0=y0-(z0+h)*KZ,yt1=y1-(z0+h)*KZ,yb=y1-z0*KZ;c.fillStyle=s9Hex(front,N?.55:1);c.fillRect(x0,yt1,x1-x0,yb-yt1);c.fillStyle=s9Hex(top,N?.6:1.05);c.fillRect(x0,yt0,x1-x0,yt1-yt0);c.strokeStyle='rgba(0,0,0,.28)';c.lineWidth=.8;c.strokeRect(x0+.4,yt0+.4,x1-x0-.8,yb-yt0-.8);return{yt0,yt1,yb}}
+ function legs(c,N,t){const yD=z=>z*KZ;for(const [x,y] of RIG.legs){
+   c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.ellipse(x,y+2,RIG.legR*1.7+Math.sin(t*1.3+x)*1.2,RIG.legR*.7,0,0,TAU);c.fill();
+   const g=c.createLinearGradient(x-RIG.legR,0,x+RIG.legR,0);g.addColorStop(0,s9Hex('#c9a227',N?.5:.85));g.addColorStop(.45,s9Hex('#f2c230',N?.6:1.08));g.addColorStop(1,s9Hex('#9a7a1a',N?.45:.8));
+   c.fillStyle=g;c.fillRect(x-RIG.legR*.8,y-yD(RIG.z),RIG.legR*1.6,yD(RIG.z));c.fillStyle='rgba(0,0,0,.18)';c.fillRect(x-RIG.legR*.8,y-yD(2.2),RIG.legR*1.6,yD(2.2))}
+  /* חיזוקי X בין הרגליים — בפנים הדרומיים והמערביים, שנראים */
+  c.strokeStyle=s9Hex('#b8921f',N?.5:.9);c.lineWidth=2.4;c.beginPath();
+  for(const [a,b] of[[2,3],[0,2]]){const A=RIG.legs[a],B=RIG.legs[b];for(const [z0,z1] of[[2,11],[11,19]]){c.moveTo(A[0],A[1]-z0*KZ);c.lineTo(B[0],B[1]-z1*KZ);c.moveTo(A[0],A[1]-z1*KZ);c.lineTo(B[0],B[1]-z0*KZ)}c.moveTo(A[0],A[1]-11*KZ);c.lineTo(B[0],B[1]-11*KZ)}c.stroke()}
+ function deck(c,N){const r=[RIG.x0,RIG.y0,RIG.x1,RIG.y1];
+  const q=box(c,r,RIG.z-2.2,2.2,'#8f979c','#5d656a',N);
+  c.save();c.beginPath();c.rect(r[0],q.yt0,r[2]-r[0],q.yt1-q.yt0);c.clip();c.strokeStyle='rgba(60,66,70,.35)';c.lineWidth=.6;for(let x=r[0]+6;x<r[2];x+=6){c.beginPath();c.moveTo(x,q.yt0);c.lineTo(x,q.yt1);c.stroke()}c.restore();
+  c.fillStyle='#f2c230';c.fillRect(r[0],q.yt1-1.6,r[2]-r[0],1.6);for(let x=r[0];x<r[2];x+=10){c.fillStyle='#1f2328';c.fillRect(x,q.yt1-1.6,5,1.6)}
+  return q}
+ function modules(c,N){
+  /* ראשי הבאר — מסגרת פתוחה, ארבעה "עצי חג המולד" */
+  {const r=RIG.wells,q=box(c,r,RIG.z,.6,'#a59f92','#7d776c',N);for(let i=0;i<4;i++){const x=8922+(i%2)*30,y=6195+Math.floor(i/2)*40,yt=y-(RIG.z+3.2)*KZ;c.fillStyle=s9Hex('#c0392b',N?.6:1);c.fillRect(x-3,yt,6,3.2*KZ);c.fillStyle=s9Hex('#e0e4e6',N?.6:1);c.fillRect(x-5,yt-2,10,3);c.fillRect(x-1,yt-6,2,4)}}
+  /* המגורים — 3 קומות, חלונות בפנים הדרומיים */
+  {const r=RIG.lq,h=12,q=box(c,r,RIG.z,h,'#e9eef2','#d7dde2',N);for(let f=0;f<3;f++)for(let x=r[0]+6;x<r[2]-8;x+=11){const y=q.yb-(f+1)*h/3*KZ+4;c.fillStyle=N?'rgba(255,228,150,.9)':'#5d7f95';c.fillRect(x,y,7,5)}
+   c.fillStyle=s9Hex('#c0392b',N?.6:1);c.fillRect(r[0],q.yt1-2,r[2]-r[0],2)}
+  /* מודול העיבוד — שני מפרידים ובית המדחס */
+  {const r=RIG.proc,q=box(c,r,RIG.z,8,'#b8bec4','#8f969c',N);
+   for(const [y,col] of[[6282,'#eef1f3'],[6312,'#e4e8ea']]){const yt=y-(RIG.z+8.4)*KZ;c.fillStyle=s9Hex(col,N?.6:1);c.beginPath();c.ellipse(8945,yt,30,7,0,0,TAU);c.fill();c.fillStyle='rgba(0,0,0,.18)';c.fillRect(8915,yt+3,60,2)}
+   c.fillStyle=s9Hex('#8a949c',N?.6:1);c.fillRect(8988,6272-(RIG.z+11)*KZ,44,50);c.fillStyle='rgba(0,0,0,.25)';for(let x=8992;x<9030;x+=6)c.fillRect(x,6272-(RIG.z+11)*KZ+4,2,40)}
+  /* סירות ההצלה הכתומות על המנופים שלהן */
+  for(const r of RIG.life){const yt=r[1]-(RIG.z-1)*KZ;c.fillStyle=s9Hex('#f28c1f',N?.6:1);c.beginPath();c.ellipse((r[0]+r[2])/2,yt+(r[3]-r[1])/2,(r[2]-r[0])/2,(r[3]-r[1])/2,0,0,TAU);c.fill();c.fillStyle='#e9eef2';c.fillRect(r[0]+4,yt+8,r[2]-r[0]-8,(r[3]-r[1])-16)}
+ }
+ function heli(c,N){const H=RIG.heli,y=H.y-H.z*KZ;
+  c.fillStyle='rgba(6,20,34,.12)';c.beginPath();c.ellipse(H.x+S9_SUN.dx*50,H.y-(RIG.z+12)*KZ+S9_SUN.dy*50,H.r*.9,H.r*.8,0,0,TAU);c.fill();
+  c.strokeStyle=s9Hex('#5d656a',N?.6:1);c.lineWidth=3;c.beginPath();c.moveTo(H.x-30,y+H.r-6);c.lineTo(H.x-30,H.y-(RIG.z+12)*KZ);c.moveTo(H.x+30,y+H.r-6);c.lineTo(H.x+30,H.y-(RIG.z+12)*KZ);c.stroke();
+  c.fillStyle=s9Hex('#3d4a54',N?.6:1);c.beginPath();c.arc(H.x,y,H.r,0,TAU);c.fill();c.strokeStyle='rgba(255,255,255,.5)';c.lineWidth=4;c.beginPath();c.arc(H.x,y,H.r-3,0,TAU);c.stroke();
+  c.strokeStyle='#f2c230';c.lineWidth=3;c.beginPath();c.arc(H.x,y,H.r*.55,0,TAU);c.stroke();
+  c.fillStyle='#fff';c.font='800 40px "Segoe UI",Arial';c.textAlign='center';c.textBaseline='middle';c.fillText('H',H.x,y+2);
+  c.strokeStyle='rgba(30,36,40,.5)';c.lineWidth=1;c.setLineDash([2,2]);c.beginPath();c.arc(H.x,y,H.r+5,0,TAU);c.stroke();c.setLineDash([])}
+ function crane(c,N,cr,a,hook){const x=cr.x,y=cr.y,zb=RIG.z+8,yb=y-zb*KZ,L=cr.boom,tipZ=hook?zb+14:zb+2,tx=x+Math.cos(a)*L*.82,ty=y+Math.sin(a)*L*.82-tipZ*KZ;
+  c.fillStyle=s9Hex('#e07a1f',N?.6:1);c.fillRect(x-6,y-RIG.z*KZ-8*KZ,12,8*KZ);c.fillStyle=s9Hex('#2f3a44',N?.6:1);c.fillRect(x-9,yb-10,18,12);c.fillStyle=N?'rgba(255,230,160,.9)':'#8fd0e8';c.fillRect(x-6,yb-8,6,5);
+  c.strokeStyle=s9Hex('#e07a1f',N?.65:1);c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(x,yb-4);c.lineTo(tx,ty);c.stroke();c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=1;c.setLineDash([3,3]);c.beginPath();c.moveTo(x,yb-4);c.lineTo(tx,ty);c.stroke();c.setLineDash([]);
+  if(hook){c.strokeStyle='rgba(30,30,30,.8)';c.lineWidth=.8;c.beginPath();c.moveTo(tx,ty);c.lineTo(hook.x,hook.y);c.stroke();if(hook.load){c.fillStyle=s9Hex('#2f7d86',N?.6:1);c.fillRect(hook.x-7,hook.y,14,9);c.fillStyle='rgba(255,255,255,.4)';c.fillRect(hook.x-7,hook.y,14,2)}}
+  return{tx,ty}}
+ function flareBoom(c,N){const A=RIG.flare.a,B=RIG.flare.b,ax=A[0],ay=A[1]-A[2]*KZ,bx=B[0],by=B[1]-B[2]*KZ;c.strokeStyle=s9Hex('#8f969c',N?.6:1);c.lineWidth=6;c.lineCap='round';c.beginPath();c.moveTo(ax,ay);c.lineTo(bx,by);c.stroke();
+  c.strokeStyle='rgba(40,46,50,.55)';c.lineWidth=1;c.beginPath();for(let i=0;i<10;i++){const f=i/10,g=(i+1)/10;c.moveTo(ax+(bx-ax)*f,ay+(by-ay)*f-3);c.lineTo(ax+(bx-ax)*g,ay+(by-ay)*g+3)}c.stroke();return{bx,by}}
+ function flame(c,x,y,t,N,big){const k=1+.18*Math.sin(t*9.1)+.12*Math.sin(t*13.7);c.save();c.globalCompositeOperation=N?'lighter':'source-over';
+  const g=c.createRadialGradient(x,y-10*k,1,x,y-10*k,(big?26:18)*k);g.addColorStop(0,'rgba(255,248,200,.95)');g.addColorStop(.4,'rgba(255,170,40,.85)');g.addColorStop(1,'rgba(255,90,20,0)');c.fillStyle=g;c.beginPath();c.ellipse(x+3*Math.sin(t*2),y-10*k,(big?11:8)*k,(big?22:16)*k,.15,0,TAU);c.fill();
+  if(N){const G=c.createRadialGradient(x,y,2,x,y,120);G.addColorStop(0,'rgba(255,150,60,.35)');G.addColorStop(1,'rgba(255,120,40,0)');c.fillStyle=G;c.fillRect(x-120,y-120,240,240)}c.restore()}
+ function landing(c,N){const r=RIG.dock,yt=r[1]-2*KZ;c.fillStyle='rgba(255,255,255,.3)';c.fillRect(r[0]-2,r[3]-2,r[2]-r[0]+4,4);c.fillStyle=s9Hex('#a59a86',N?.55:1);c.fillRect(r[0],yt,r[2]-r[0],r[3]-r[1]);c.fillStyle=s9Hex('#6a5e4c',N?.55:1);c.fillRect(r[0],r[3]-2*KZ,r[2]-r[0],2*KZ);
+  for(let y=yt+6;y<yt+(r[3]-r[1])-4;y+=14){c.fillStyle='#1d2a36';c.fillRect(r[0]-3,y,3,7)}
+  /* המדרגות מהמזח אל הסיפון — על הרגל הצפונית-מערבית */
+  c.strokeStyle=s9Hex('#f2c230',N?.6:1);c.lineWidth=1.2;for(let z=2;z<RIG.z;z+=1.2){const y=6215-z*KZ;c.beginPath();c.moveTo(8866,y);c.lineTo(8876,y-3);c.stroke()}}
+ function pipe(c,N){if(!e3InView(8460,6290,460,80,40))return;c.save();c.lineCap='round';
+  for(let i=1;i<PIPE.length;i++){const a=PIPE[i-1],b=PIPE[i],g=c.createLinearGradient(a[0],a[1],b[0],b[1]);const fa=i===1?.38:.3,fb=i===PIPE.length-1?0:.3;g.addColorStop(0,'rgba(40,60,74,'+fa+')');g.addColorStop(1,'rgba(40,60,74,'+fb+')');c.strokeStyle=g;c.lineWidth=7;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+  c.restore()}
+ /* ---- האורות ---- */
+ function lights(c,N,t){if(!N&&Camera.zoom<.5)return;c.save();c.globalCompositeOperation='lighter';const L=(x,y,col,r,a)=>{try{BOAT34.lamp(c,x,y,col,r,a)}catch(e){c.fillStyle=col==='red'?'rgba(255,60,40,'+a+')':col==='green'?'rgba(60,255,110,'+a+')':'rgba(255,255,240,'+a+')';c.beginPath();c.arc(x,y,r/3,0,TAU);c.fill()}};
+  const H=RIG.heli,hy=H.y-H.z*KZ;for(let k=0;k<12;k++){const a=k/12*TAU;L(H.x+Math.cos(a)*H.r,hy+Math.sin(a)*H.r,'green',N?10:5,N?.9:.6)}
+  for(const cr of RIG.cranes)L(cr.x,cr.y-(RIG.z+8)*KZ-14,'red',N?12:6,N?.95:.7);
+  {const B=RIG.flare.b;L(B[0],B[1]-B[2]*KZ-4,'red',N?12:6,N?.95:.7)}
+  const morse=(t%6);const on=morse<.4||(morse>.8&&morse<1.2)||(morse>1.6&&morse<2.8);   /* האות U במורס — שתי נקודות וקו */
+  if(on)for(const [x,y] of[[RIG.x0,RIG.y0],[RIG.x1,RIG.y0],[RIG.x0,RIG.y1],[RIG.x1,RIG.y1]])L(x,y-RIG.z*KZ,'white',N?14:7,N?.95:.75);
+  if(N){const g=c.createRadialGradient((RIG.x0+RIG.x1)/2,(RIG.y0+RIG.y1)/2-RIG.z*KZ,10,(RIG.x0+RIG.x1)/2,(RIG.y0+RIG.y1)/2-RIG.z*KZ,190);g.addColorStop(0,'rgba(255,236,190,.28)');g.addColorStop(1,'rgba(255,236,190,0)');c.fillStyle=g;c.fillRect(RIG.x0-200,RIG.y0-RIG.z*KZ-200,RIG.x1-RIG.x0+400,RIG.y1-RIG.y0+400)}
+  c.restore()}
+ /* ---- ספינת האספקה: הציור ---- */
+ const SPEC={type:'service',L:SV.L,B:SV.B,id:SV.id,name:SV.name};
+ function drawSV(c,now){const p=pose(now/1000);if(!e3InView(p.x-160,p.y-160,320,320,40)&&!aud(c))return p;const t=now/1000,bob=Math.sin(t*.9+p.x*.01)*.7;
+  try{if(!p.mv)BOAT34.still(c,'SV|'+SV.id+'|'+(p.ph==='rig'?'r':'e'),SPEC,p.x,p.y+bob,p.h,t,{moored:1},0,0);
+   else BOAT34.paint(c,SPEC,p.x,p.y+bob,p.h,t,{u:p.rev?-12:40,vx:Math.cos(p.h)*(p.rev?-12:40),vy:Math.sin(p.h)*(p.rev?-12:40),under:true})}
+  catch(e){er('sv',e);c.fillStyle='#f3f1ea';c.save();c.translate(p.x,p.y);c.rotate(p.h);c.fillRect(-SV.L/2,-SV.B/2,SV.L,SV.B);c.restore()}
+  if(Camera.zoom>.45&&!aud(c))s9Txt(c,'ספינת האספקה',p.x,p.y-SV.L/2-8,7,'rgba(255,255,255,.92)');return p}
+ const aud=c=>c&&c.__s10eAud;
+ /* ---- התנועה של המנוף כשהספינה ליד המזח: המכולה הקטנה עולה מהסיפון של הספינה אל הסיפון של האסדה ---- */
+ function craneAnim(t){const p=pose(t),cr=RIG.cranes[0];if(p.ph!=='rig')return{a:cr.rest,hook:null};const ph=((p.u/DUR.rig)*3)%1;   /* שלוש הרמות: יורד לסיפון של הספינה, מרים, מסתובב אל הסיפון של האסדה, מניח וחוזר */
+  const aBoat=Math.atan2(SV.dockAt.y-cr.y,SV.dockAt.x-cr.x),aDeck=Math.atan2(6232-cr.y,8936-cr.x);
+  let a,zh,load;if(ph<.2){a=aBoat;zh=RIG.z+6-(RIG.z+4)*(ph/.2);load=false}else if(ph<.35){a=aBoat;zh=2+(RIG.z+4)*((ph-.2)/.15);load=true}
+  else if(ph<.6){a=angLerp(aBoat,aDeck,(ph-.35)/.25);zh=RIG.z+6;load=true}else if(ph<.7){a=aDeck;zh=RIG.z+6-4*((ph-.6)/.1);load=true}else{a=angLerp(aDeck,aBoat,(ph-.7)/.3);zh=RIG.z+6;load=false}
+  const L=cr.boom*.82,tx=cr.x+Math.cos(a)*L,ty=cr.y+Math.sin(a)*L;return{a,hook:{x:tx,y:ty-zh*KZ,load}}}
+ /* ---- השכבות ---- */
+ function water(c,now,N){try{const t=now/1000;if(e3InView(RIG.x0-60,RIG.y0-200,RIG.x1-RIG.x0+160,RIG.y1-RIG.y0+260,60)){pipe(c,N);c.fillStyle='rgba(6,20,34,.22)';c.fillRect(RIG.x0+S9_SUN.dx*RIG.z*6,RIG.y0+S9_SUN.dy*RIG.z*6,RIG.x1-RIG.x0,RIG.y1-RIG.y0);legs(c,N,t)}
+   const p=drawSV(c,now);if(typeof S10V!=='undefined'&&S10V.patchDecks)S10V.patchDecks(c,obb(p.x,p.y,p.h,SV.L+20,SV.B+20))}catch(e){er('water',e)}}
+ function props(c,now,N){try{if(!e3InView(RIG.x0-60,RIG.y0-260,RIG.x1-RIG.x0+260,RIG.y1-RIG.y0+300,60))return;landing(c,N);deck(c,N);modules(c,N);heli(c,N);flareBoom(c,N);
+   if(Camera.zoom<=.3){for(const cr of RIG.cranes)crane(c,N,cr,cr.rest,null);const B=RIG.flare.b;flame(c,B[0],B[1]-B[2]*KZ,0,N,false)}}catch(e){er('props',e)}}
+ function live(c,now,N){try{if(!e3InView(RIG.x0-80,RIG.y0-320,RIG.x1-RIG.x0+360,RIG.y1-RIG.y0+360,60)&&!aud(c))return;const t=now/1000,A=craneAnim(t);
+   crane(c,N,RIG.cranes[0],A.a,A.hook);crane(c,N,RIG.cranes[1],RIG.cranes[1].rest,null);const B=RIG.flare.b;flame(c,B[0],B[1]-B[2]*KZ,t,N,true);lights(c,N,t);
+   if(Camera.zoom>.4)s9Txt(c,'אסדת הגז',(RIG.x0+RIG.x1)/2,RIG.y1+18,9,'rgba(255,255,255,.92)')}catch(e){er('live',e)}}
+ S9_HOOKS.water.push(water);S9_HOOKS.props.push(props);S9_HOOKS.live.push(live);
+ /* ---- הבדיקה: הספינה במים בלבד, בלי חפיפה לאסדה, למזח, לרגליים, לעמודי הגשרים, לאוניות ולסירות שבנמל; תמיד בתמונה ---- */
+ function sat(A,Bp){for(const P of[A,Bp])for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],nx=b[1]-a[1],ny=a[0]-b[0];let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;for(const q of A){const d=q[0]*nx+q[1]*ny;if(d<a0)a0=d;if(d>a1)a1=d}for(const q of Bp){const d=q[0]*nx+q[1]*ny;if(d<b0)b0=d;if(d>b1)b1=d}if(a1<=b0||b1<=a0)return false}return true}
+ const rectP=d=>[[d[0],d[1]],[d[2],d[1]],[d[2],d[3]],[d[0],d[3]]];
+ function fixedBodies(){const L=[{id:'RIG',P:rectP([RIG.x0,RIG.y0,RIG.x1,RIG.y1])},{id:'RIG-DOCK',P:rectP(RIG.dock)}];
+  try{for(const b of PORT_BERTHS)if(b.id==='E6'||b.anchored)L.push({id:'SHIP-'+b.id,P:rectP([b.x0,b.yc-b.B/2,b.x1,b.yc+b.B/2])})}catch(e){}
+  try{for(const o of PORT_BOATS)if(o.id==='E6-TUG')L.push({id:o.id,P:rectP([o.x-o.B/2,o.y,o.x+o.B/2,o.y+o.L])})}catch(e){}
+  try{for(const id of['ISL-ARC','ISL-BR','EAST-B','EAST-C','EAST-A'])for(const q of rlPiers(RAIL_SEG_BY_ID[id]))for(const sg of[-1,1]){const x=q.x+q.nx*sg*(RL_DECK_W/2+3),y=q.y+q.ny*sg*(RL_DECK_W/2+3);L.push({id:'PIER-'+id,P:rectP([x-8,y-8,x+8,y+8])})}}catch(e){}
+  return L}
+ function audit(){const issues=[],F=fixedBodies();let n=0,hidden=0,minGap=1e9;
+  for(let t=0;t<CYCLE;t+=.5){n++;const p=pose(t),B=obb(p.x,p.y,p.h,SV.L*.96,SV.B*.92);if(!isFinite(p.x)){hidden++;continue}
+   for(const q of B)if(!w3IsSea(q[0],q[1])){issues.push('על היבשה ב-'+t.toFixed(1)+' ('+Math.round(q[0])+', '+Math.round(q[1])+')');break}
+   for(const f of F){if(f.id==='SHIP-E6'&&p.ph==='e6')0;if(sat(B,f.P))issues.push('חופף ל-'+f.id+' ב-'+t.toFixed(1))}
+   try{const q=F56LIVE.pilotPose?F56LIVE.pilotPose(t*1000):null;if(q&&q.stop!=='berth'){const P=obb(q.x,q.y,q.h,120,40);if(sat(B,P))issues.push('חופף לסירת הנתב ב-'+t.toFixed(1))}}catch(e){}}
+  /* המעבורת A6 ↔ G8 וסירת הנתב — על פני שלושה מחזורים (המחזורים שונים: 244 / ~530 / ‏${CYCLE} שנ׳) */
+  let ferryN=0;for(let t=0;t<CYCLE*3;t+=1){const p=pose(t),B=obb(p.x,p.y,p.h,SV.L,SV.B);try{const q=a6FerryPose(t*1000);if(q&&isFinite(q.x)){ferryN++;const h=q.heading!=null?q.heading:0;if(Math.hypot(q.x-p.x,q.y-p.y)<400&&sat(B,obb(q.x,q.y,h,300,60)))issues.push('חופף למעבורת ב-'+t)}}catch(e){}
+   try{const q=F56LIVE.pilotPose(t*1000);if(q&&q.stop!=='berth'&&Math.hypot(q.x-p.x,q.y-p.y)<300&&sat(B,obb(q.x,q.y,q.h,120,40)))issues.push('חופף לסירת הנתב ב-'+t)}catch(e){}}
+  return{ok:!issues.length&&!hidden,issues:[...new Set(issues)].slice(0,12),samples:n,ferrySamples:ferryN,cycle:CYCLE,dur:DUR,route:{out:Math.round(LO.len/10),back:Math.round(LB.len/10)}}}
+ return{RIG,SV,pose,svObb,obb,sat,rectP,audit,CYCLE,DUR,err:()=>ERR.e,ERR,drawSV,craneAnim}})();
+try{window.__TC_S10U=S10U}catch(e){}
+/* השמות של האזורים (מפת 9פ: "השמות של G7 ושל H8 יתחלפו עם הבנייה") — האסדה עברה ל-H8 */
+try{if(TC_NAMES&&TC_NAMES.zones&&TC_NAMES.zones.G7==='אסדת הגז'){TC_NAMES.zones.G7='ים';TC_NAMES.zones.H8='אסדת הגז'}}catch(e){}
+/* ==== S10 ב · F6 — הגשר של מסילת המזרח מעל היציאה של המרינה: מפתח שיט (D‑596, מפת 9פ: x ‏6600–6950) =================================
+   נבדק במשחק (S7F283): מסילת המזרח (EAST) ב-y ‏5120 על גשר נמוך עם עמודים כל 12 מ׳ מ-x ‏6000 עד קצה העולם; מסילת ההיפוך (SIDING-F6) מצפון לה,
+   מ-(6460, 5120) עד (7200, 5050); נתיב היציאה של המרינה בין המצופים האדומים (x ‏6600) לירוקים (x ‏6950). רק סירת הנתב עברה מתחת (ב-x ‏6350).
+   המפתח: העמודים הראשיים ב-x ‏6585 וב-6965 (מחוץ לנתיב; 35.6 מ׳ בין הפגושים), גשר מסבך פלדה של 38 מ׳, גובה חופשי 7.0 מ׳ (D‑383: עד 6.5 מ׳),
+   פסי הרכבת ב-+8.2 מ׳. גם במסילת ההיפוך — מפתח באותו x. בשאר הגשר: העמודים כל 12 מ׳ עם חיזוקים — סגור לסירות (D‑586: הסירה נעצרת).
+   שני מצופים חדשים מדרום לגשר (BY-R10, ‏BY-G10). סירת הנתב עוברת במפתח (038c), וגם הסירות של השחקן — רק שם.
+   כלי שיט שעובר מתחת לסיפון מצויר בשכבת המים, ואחריו הסיפון שמעליו (patchDecks) — הרכבת נשארת מעל.
+   ובגשר של מסילת האי (ISL-BR, ‏G7): עמוד אחד יוצא (y ‏5890) — פתח של 24 מ׳ לספינת האספקה של האסדה (טבלת כלי השיט: "עוברת מתחת לגשר הרכבת ב-G7"). */
+var S10V=(function(){const TAU=Math.PI*2,ERR={e:null},er=(k,e)=>{if(!ERR.e)ERR.e=k+': '+String(e&&e.stack||e).slice(0,300)};
+ const KZ=S9K*S9HM,CH={x0:6600,x1:6950},SPAN={x0:6585,x1:6965,clear:7.0,rail:8.2,truss:8.0,pierHalf:12},ISL_OPEN={y0:5770,y1:6010,drop:[5800,5980]};
+ const inSpan=x=>x>SPAN.x0+4&&x<SPAN.x1-4;
+ /* ---- 1. העמודים: בלי עמוד בנתיב ---- */
+ {const pR=rlPiers;rlPiers=function(g){const had=!!(g&&g._piers);const out=pR.apply(this,arguments);if(had&&g._s10v)return out;
+   if(g&&g.id==='EAST-B'){g._piers=out.filter(q=>!inSpan(q.x)&&Math.abs(q.x-SPAN.x0)>14&&Math.abs(q.x-SPAN.x1)>14);g._s10v=1;return g._piers}
+   if(g&&g.id==='SIDING-F6'){g._piers=out.filter(q=>!(q.x>SPAN.x0-14&&q.x<SPAN.x1+14));g._s10v=1;return g._piers}
+   if(g&&g.id==='ISL-BR'){g._piers=out.filter(q=>!(q.y>ISL_OPEN.drop[0]&&q.y<ISL_OPEN.drop[1]));g._s10v=1;return g._piers}return out}}
+ try{for(const g of[RAIL_SEG_BY_ID['EAST-B'],RAIL_SEG_BY_ID['ISL-BR'],F56_SIDING])if(g){g._piers=null;g._s10v=0}}catch(e){er('piers',e)}
+ /* ---- 2. מסילת ההיפוך: אותו ציור של 019d, בלי העמודים שבנתיב, ועם עמודי המפתח ---- */
+ function sidingRail(c,now,N){const g=F56_SIDING;if(!g.pts.length||!e3InView(6440,5010,780,140,60))return;c.save();
+  try{const pc=ctx;ctx=c;try{rlDeck(g);rlTrack(g)}finally{ctx=pc}
+   for(let i=6;i<g.pts.length;i+=6){const [x,y]=g.pts[i];if(x>SPAN.x0-14&&x<SPAN.x1+14)continue;c.fillStyle='rgba(4,22,40,.3)';c.beginPath();c.ellipse(x+7,y+16,6,4,0,0,TAU);c.fill()}
+   for(let x=6800;x<7200;x+=120){if(x>SPAN.x0-14&&x<SPAN.x1+14)continue;c.fillStyle='rgba(4,22,40,.3)';c.beginPath();c.ellipse(x+7,5066,6,4,0,0,TAU);c.fill()}
+   c.fillStyle='#2c3338';c.fillRect(6488,5136,3,8);c.fillStyle='#e0b93a';c.beginPath();c.arc(6489.5,5135,2.6,0,TAU);c.fill();
+   {const x=7186,y=5050;c.fillStyle='rgba(8,18,26,.28)';c.fillRect(x+2,y-12,7,28);c.fillStyle='#2c3338';c.fillRect(x-1,y-15,9,3);c.fillRect(x-1,y+12,9,3);c.fillStyle='#d94a3b';c.fillRect(x,y-13,5,26);c.fillStyle='#f1efe6';for(let i=0;i<4;i++)c.fillRect(x,y-13+i*6.5+3,5,3.25);
+    c.fillStyle='#2c3338';c.fillRect(x+6,y-22,3,8);c.fillStyle=N?'#ff3b30':'#b8322a';c.beginPath();c.arc(x+7.5,y-23,2.6,0,TAU);c.fill()}
+   if(Camera.zoom>.45){const pc=ctx;ctx=c;try{e4Plate('מסילת ההיפוך · ההמשך עם G6',7100,5022,150)}finally{ctx=pc}}
+  }catch(e){er('siding',e)}c.restore()}
+ try{const i=S9_HOOKS.rail.indexOf(f56Rail);if(i>=0)S9_HOOKS.rail[i]=sidingRail;else er('siding-hook','f56Rail not found')}catch(e){er('siding-hook',e)}
+ const sidingY=x=>{const P=F56_SIDING.pts;for(let i=1;i<P.length;i++)if(P[i][0]>=x){const a=P[i-1],b=P[i],f=(x-a[0])/Math.max(1e-6,b[0]-a[0]);return a[1]+(b[1]-a[1])*f}return 5050};
+ /* ---- 3. הציור של המפתח ---- */
+ function pier(c,x,yDeck,half,N,depth){const h=SPAN.clear*KZ,y0=yDeck+depth,y1=y0+h;
+  c.fillStyle='rgba(255,255,255,.3)';c.beginPath();c.ellipse(x,y1+2,half*1.6,5,0,0,TAU);c.fill();
+  const g=c.createLinearGradient(x-half,0,x+half,0);g.addColorStop(0,s9Hex('#7d8186',N?.5:.86));g.addColorStop(.5,s9Hex('#a3a7aa',N?.55:1.04));g.addColorStop(1,s9Hex('#6a6e72',N?.45:.8));c.fillStyle=g;c.fillRect(x-half,y0,half*2,h);
+  c.fillStyle='rgba(0,0,0,.2)';c.fillRect(x-half,y1-6,half*2,6);
+  /* פגושים מעץ בצד של הנתיב */
+  const side=x<(CH.x0+CH.x1)/2?1:-1;c.fillStyle=s9Hex('#8a6a3a',N?.5:1);for(let k=0;k<4;k++)c.fillRect(x+side*half-(side>0?0:4),y0+6+k*(h-10)/4,4,(h-10)/4-3);
+  /* אור הניווט האדום בשולי הנתיב */
+  c.fillStyle=N?'#ff3b30':'#b8322a';c.beginPath();c.arc(x+side*(half+3),y0+3,2.6,0,TAU);c.fill()}
+ function spanRail(c,now,N){if(!e3InView(SPAN.x0-60,4980,SPAN.x1-SPAN.x0+120,300,40))return;c.save();
+  try{/* הצל של הסיפון הגבוה על המים */c.fillStyle='rgba(4,22,40,.22)';c.fillRect(SPAN.x0+S9_SUN.dx*SPAN.rail*10,5087+S9_SUN.dy*SPAN.rail*10,SPAN.x1-SPAN.x0,66);
+   /* העמודים הראשיים: של מסילת המזרח ושל מסילת ההיפוך */
+   for(const x of[SPAN.x0,SPAN.x1]){pier(c,x,5120,SPAN.pierHalf,N,33);pier(c,x,sidingY(x),9,N,22)}
+  }catch(e){er('spanRail',e)}c.restore()}
+ function truss(c,yE,N,front){const x0=SPAN.x0,x1=SPAN.x1,H=SPAN.truss*KZ,yb=yE,yt=yE-H,n=8,col=s9Hex('#2e6d8f',N?.55:1);
+  c.strokeStyle=col;c.lineWidth=front?3.2:2.4;c.lineCap='round';c.beginPath();c.moveTo(x0,yb);c.lineTo(x0+30,yt);c.lineTo(x1-30,yt);c.lineTo(x1,yb);c.stroke();
+  c.lineWidth=front?1.8:1.3;c.beginPath();const xs=[];for(let i=0;i<=n;i++)xs.push(x0+30+(x1-x0-60)*i/n);
+  for(let i=0;i<n;i++){const m=(xs[i]+xs[i+1])/2;c.moveTo(xs[i],yt);c.lineTo(m,yb);c.lineTo(xs[i+1],yt)}c.stroke()}
+ function spanOver(c,now,N){if(!e3InView(SPAN.x0-60,4960,SPAN.x1-SPAN.x0+120,260,40))return;c.save();
+  try{c.save();c.globalAlpha=.55;truss(c,5087,N,false);c.restore();   /* המסבך הצפוני (מאחור, חלש יותר — מסילת ההיפוך עוברת מאחוריו) */
+   /* קורות רוחב עליונות */c.strokeStyle=s9Hex('#2e6d8f',N?.5:.9);c.lineWidth=1.4;c.beginPath();for(let x=SPAN.x0+30;x<=SPAN.x1-30;x+=40){c.moveTo(x,5087-SPAN.truss*KZ);c.lineTo(x,5153-SPAN.truss*KZ)}c.stroke();
+   truss(c,5153,N,true);   /* המסבך הדרומי (מלפנים) — הרכבת נראית דרכו */
+   /* השלט של הגובה החופשי ואורות הניווט הירוקים באמצע המפתח */
+   const mx=(CH.x0+CH.x1)/2;for(const [y,dy] of[[5153,6],[5087,-10]]){c.fillStyle='#fff';c.fillRect(mx-22,y+dy,44,11);c.strokeStyle='#1f2328';c.lineWidth=.8;c.strokeRect(mx-22,y+dy,44,11);s9Txt(c,'7.0 מ׳',mx,y+dy+5.6,7,'#1f2328')}
+   c.fillStyle=N?'#3bff6a':'#2e9d4a';for(const dx of[-8,8]){c.beginPath();c.arc(mx+dx,5170,2.6,0,TAU);c.fill()}
+   if(N){c.save();c.globalCompositeOperation='lighter';for(const [x,col] of[[mx-8,'rgba(60,255,110,.45)'],[mx+8,'rgba(60,255,110,.45)'],[SPAN.x0+15,'rgba(255,60,40,.45)'],[SPAN.x1-15,'rgba(255,60,40,.45)']]){const g=c.createRadialGradient(x,5170,0,x,5170,14);g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.fillRect(x-14,5156,28,28)}c.restore()}
+   if(Camera.zoom>.45)s9Txt(c,'מפתח שיט · גובה חופשי 7.0 מ׳',mx,5208,6.5,'rgba(255,255,255,.95)',150);
+  }catch(e){er('spanOver',e)}c.restore()}
+ /* ---- 4. המצופים החדשים, מדרום לגשר ---- */
+ const BUOYS=[{id:'BY-R10',x:6600,y:5260,col:'red'},{id:'BY-G10',x:6950,y:5260,col:'green'}];
+ function buoys(c,now,N){if(!e3InView(6560,5220,440,80,40))return;const t=now/1000;for(const b of BUOYS){try{BOAT34.buoy(c,b.x,b.y,b.col,t,N?1:0,true)}catch(e){c.fillStyle=b.col==='red'?'#d23a2c':'#2f9a4a';c.beginPath();c.arc(b.x,b.y,5,0,TAU);c.fill()}}}
+ /* ---- 5. כלי שיט מתחת לסיפון: אחרי שהכלי צויר, הסיפון שמעליו (רק בתוך המלבן של הכלי) ---- */
+ const DECKS=()=>['EAST-A','EAST-B','EAST-C','ISL-ARC','ISL-BR'].map(id=>RAIL_SEG_BY_ID[id]).filter(Boolean);
+ function patchDecks(c,P){try{const x0=Math.min(...P.map(q=>q[0]))-6,x1=Math.max(...P.map(q=>q[0]))+6,y0=Math.min(...P.map(q=>q[1]))-6,y1=Math.max(...P.map(q=>q[1]))+6;
+   const hits=DECKS().filter(g=>{const b=rlBBox(g);return b.x0-40<x1&&b.x1+40>x0&&b.y0-40<y1&&b.y1+40>y0});const sid=x1>6440&&x0<7220&&y1>5010&&y0<5150;if(!hits.length&&!sid)return false;
+   c.save();c.beginPath();c.rect(x0,y0,x1-x0,y1-y0);c.clip();c.globalAlpha=.62;const pc=ctx;ctx=c;   /* שקוף למחצה — רואים את הכלי שמתחת (הבעלים: גג שקוף מעל כל מקום שכלי עובר תחתיו) */try{if(sid){rlDeck(F56_SIDING);rlTrack(F56_SIDING)}for(const g of hits){rlDeck(g);rlTrack(g)}}finally{ctx=pc}c.restore();return true}catch(e){er('patch',e);return false}}
+ const UNDER=q=>!!q&&q.x>6450&&q.x<7000&&q.y>4990&&q.y<5230;
+ try{window.__S10V_UNDER=UNDER}catch(e){}
+ function water(c,now,N){try{buoys(c,now,N);if(typeof F56LIVE!=='undefined'&&F56LIVE.pilotPose){const q=F56LIVE.pilotPose(now);if(q&&q.stop!=='berth'&&UNDER(q)){F56LIVE.pilotDraw(c,now);const cs=Math.cos(q.h),sn=Math.sin(q.h),L=70,B=26;patchDecks(c,[[q.x+L*cs-B*sn,q.y+L*sn+B*cs],[q.x-L*cs-B*sn,q.y-L*sn+B*cs],[q.x-L*cs+B*sn,q.y-L*sn-B*cs],[q.x+L*cs+B*sn,q.y+L*sn-B*cs]])}}}catch(e){er('water',e)}}
+ S9_HOOKS.rail.push(spanRail);S9_HOOKS.over.push(spanOver);S9_HOOKS.water.push(water);
+ /* ---- 6. הסירות של השחקן: גשרי המסילה חוסמים בכל מקום חוץ מהמפתח (ומהפתח של מסילת האי); האסדה, המזח שלה, ספינת האספקה והאוניות שבנמל ---- */
+ const segD=(px,py,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L2=dx*dx+dy*dy;let t=L2?((px-a[0])*dx+(py-a[1])*dy)/L2:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-a[0]-dx*t,py-a[1]-dy*t)};
+ const polyD=(px,py,P)=>{let m=1e9;for(let i=1;i<P.length;i++)m=Math.min(m,segD(px,py,P[i-1],P[i]));return m};
+ function railBlock(px,py){if(!w3IsSea(px,py))return null;
+  if(py>5084&&py<5156&&px>6230&&!(px>CH.x0&&px<CH.x1))return 'גשר מסילת המזרח — עוברים רק במפתח השיט';
+  if(px>6440&&px<7210&&py>5020&&py<5150&&!(px>CH.x0&&px<CH.x1)&&polyD(px,py,F56_SIDING.pts)<24)return 'גשר מסילת ההיפוך — עוברים רק במפתח השיט';
+  for(const id of['ISL-ARC','ISL-BR']){const g=RAIL_SEG_BY_ID[id];if(!g)continue;const b=rlBBox(g);if(px<b.x0-40||px>b.x1+40||py<b.y0-40||py>b.y1+40)continue;if(id==='ISL-BR'&&py>ISL_OPEN.y0+8&&py<ISL_OPEN.y1-8)continue;if(polyD(px,py,g.pts)<36)return 'גשר מסילת האי'}
+  return null}
+ function hit(b,x,y,h){if(!b||b.mode!=='player')return null;const c=Math.cos(h),s=Math.sin(h),L=b.L,B=b.B,pts=[[L*.5,0],[L*.3,B*.45],[L*.3,-B*.45],[-L*.1,B*.5],[-L*.1,-B*.5],[-L*.5,B*.45],[-L*.5,-B*.45]];
+  for(const [lx,ly] of pts){const px=x+lx*c-ly*s,py=y+lx*s+ly*c,r=railBlock(px,py);if(r)return r}
+  try{const H=S10U.obb(x,y,h,L*.97,B*.92),R=S10U.RIG;if(S10U.sat(H,S10U.rectP([R.x0,R.y0,R.x1,R.y1])))return 'האסדה';if(S10U.sat(H,S10U.rectP(R.dock)))return 'המזח של האסדה';
+   const p=S10U.pose(performance.now()/1000);if(Math.abs(p.x-x)<300&&Math.abs(p.y-y)<300&&S10U.sat(H,S10U.obb(p.x,p.y,p.h,S10U.SV.L*.96,S10U.SV.B*.92)))return 'ספינת האספקה';
+   for(const s of PORT_BERTHS)if(s.anchored&&x>s.x0-200&&x<s.x1+200&&S10U.sat(H,S10U.rectP([s.x0,s.yc-s.B/2,s.x1,s.yc+s.B/2])))return 'אונייה'}catch(e){er('hit',e)}
+  return null}
+ try{if(typeof FISH3!=='undefined'&&FISH3.HOOK)FISH3.HOOK.hit=hit;else er('hook','FISH3.HOOK')}catch(e){er('hook',e)}
+ /* ---- 7. הבדיקה ---- */
+ function audit(){const C=[],add=(name,ok,detail)=>C.push({name,ok:!!ok,detail:String(detail||'')});
+  try{const P=rlPiers(RAIL_SEG_BY_ID['EAST-B']),inCh=P.filter(q=>q.x>CH.x0-SPAN.pierHalf&&q.x<CH.x1+SPAN.pierHalf);add('span-piers',!inCh.length&&SPAN.x0+SPAN.pierHalf<=CH.x0&&SPAN.x1-SPAN.pierHalf>=CH.x1,'אין עמוד בנתיב (x ‏'+CH.x0+'–'+CH.x1+') · העמודים הראשיים ב-x ‏'+SPAN.x0+' / '+SPAN.x1+' · בין הפגושים '+((SPAN.x1-SPAN.x0-2*SPAN.pierHalf)/10).toFixed(1)+' מ׳')}catch(e){add('span-piers',false,e)}
+  add('clearance',SPAN.clear>=6.5,'גובה חופשי '+SPAN.clear+' מ׳ (D‑383: עד 6.5 מ׳) · הפסים +'+SPAN.rail+' מ׳');
+  try{const B={mode:'player',L:90,B:30};let pass=0,blockW=0,blockE=0;for(let y=4960;y<=5300;y+=6){if(!hit(B,6775,y,Math.PI/2))pass++;if(hit(B,6400,y,Math.PI/2))blockW++;if(hit(B,7120,y,Math.PI/2))blockE++}
+   add('player-boats',pass===57&&blockW>0&&blockE>0,'במפתח (x ‏6775) — עוברת לכל האורך ('+pass+'/57); ב-x ‏6400 וב-x ‏7120 — נעצרת בגשר')}catch(e){add('player-boats',false,e)}
+  try{let bad=[],under=0;for(let t=0;t<900;t+=.25){const q=F56LIVE.pilotPose(t*1000);if(!q||q.stop==='berth')continue;if(Math.abs(q.y-5100)<70){under++;if(q.x-20<CH.x0||q.x+20>CH.x1)bad.push(Math.round(q.x))}}add('pilot-span',!bad.length&&under>0,'סירת הנתב עוברת מתחת לגשר '+under+' דגימות — כולן בתוך הנתיב'+(bad.length?' · מחוץ: '+bad.slice(0,6).join(', '):''))}catch(e){add('pilot-span',false,e)}
+  try{const P=rlPiers(RAIL_SEG_BY_ID['ISL-BR']),inO=P.filter(q=>q.y>ISL_OPEN.y0+1&&q.y<ISL_OPEN.y1-1);add('isl-opening',!inO.length,'הפתח בגשר של מסילת האי: y ‏'+ISL_OPEN.y0+'–'+ISL_OPEN.y1+' (24 מ׳) — '+(inO.length?inO.length+' עמודים בפתח':'פנוי'))}catch(e){add('isl-opening',false,e)}
+  try{const q=S10U.audit();add('supply-ship',q.ok,'ספינת האספקה — מחזור '+q.cycle+' שנ׳, '+q.samples+' דגימות · '+(q.ok?'במים, בלי חפיפה':q.issues.join(' | ')))}catch(e){add('supply-ship',false,e)}
+  try{const T=BOAT34.T,tall=['motor','speed','rent','fish','yacht','cruiser','sport','console','jetski','row'].filter(k=>T[k]&&T[k].real&&T[k].real[2]>SPAN.clear).map(k=>k+' '+T[k].real[2]+' מ׳');add('marina-heights',true,tall.length?'גבוהות מהגובה החופשי (לא עוברות במפתח): '+tall.join(', '):'כל סירות המרינה נמוכות מ-'+SPAN.clear+' מ׳')}catch(e){add('marina-heights',true,'אין טבלת גבהים')}
+  add('no-errors',!ERR.e&&!(S10U.err()),[ERR.e,S10U.err()].filter(Boolean).join(' | ')||'אין שגיאות');
+  return{ok:C.every(c=>c.ok),checks:C}}
+ return{SPAN,CH,ISL_OPEN,BUOYS,patchDecks,railBlock,hit,audit,err:()=>ERR.e,ERR}})();
+try{window.__TC_S10V=S10V}catch(e){}
+/* הבדיקה של הגשר ושל האסדה נכנסת ל-roadAudit */
+{const pA=roadAudit;roadAudit=function(){const a=pA.apply(this,arguments);try{if(a&&Array.isArray(a.checks)){const q=S10V.audit(),f=q.checks.filter(c=>!c.ok);
+  a.checks.push({name:'h8_rig_f6_span_s10b',ok:q.ok,detail:q.checks.length+' בדיקות של האסדה, ספינת האספקה והגשר'+(f.length?' · נכשל: '+f.map(c=>c.name+' — '+c.detail).join(' | ').slice(0,700):' · כולן עוברות')});
+  if(!q.ok){a.ok=false;if(Array.isArray(a.issues))a.issues.push('h8_rig_f6_span_s10b')}}}catch(e){}return a}}
+try{window.roadAudit=roadAudit}catch(e){}
+/* ==== S10 א · C6 ו-D6 — הפרטים החיים (D‑512: לפחות 8 מ-4 סוגים בכל אזור), האנימציות, המקומות (F — המסך הגדול, כלל 30) והסיפורים ===================
+   כל כלי שזז הוא של החצר או של הסימולציה, ממקום אמיתי למקום אמיתי, ואף פעם לא מופיע ולא נעלם (כללים 25 ו-32): מנופי הרציף (תור המכולות S10C),
+   נהג היבוא בין השורה לעמדת הבדיקה, המלגזה של מחסן 1 שמעבירה משטחים אל מחסן הציוד. האוניות עוגנות.
+   S10 א (המשך, כלל 32): רכב שנוסע במסלול סגור — רק עם תפקיד אמיתי ומטען אמיתי. המלגזה של המוסך עומדת בתיקון; רכב המכס יצא (שער השיקוף עושה בדיקה עצמית);
+   הטנדר של הנמל עומד במשאבה ומתדלק.
+   האנשים — מהמחולל של המשחק (P34) ומטבלת המדים (P34U). הזמן — שעון הסימולציה. */
+var S10LIVE=(function(){const K=S9K,TAU=6.2832,ERR={e:null};let AUD=0;const aud=c=>AUD||c!==ctx;
+ const er=(k,e)=>{if(!ERR.e)ERR.e=k+': '+String(e&&e.stack||e).slice(0,260)};
+ const res=()=>p599Res(Camera.zoom*(window.devicePixelRatio||1));
+ const LK={};function look(role,i,o){const k=role+i+JSON.stringify(o||{});if(LK[k])return LK[k];let L=null;try{L=P34U.l(role,i,o)}catch(e){}return LK[k]=L}
+ function man(c,x,y,lk,act,h,ph){try{if(window.P34&&lk){P34.draw(c,x,y,lk,{k:act||'stand'},h||0,ph||0,res());return}}catch(e){er('man',e)}c.fillStyle='#2b3a48';c.beginPath();c.arc(x,y-8,3,0,TAU);c.fill()}
+ const vis=(c,x,y,w,h,p)=>aud(c)||e3InView(x,y,w,h,p==null?20:p);
+ const tS=now=>S10KIT.simT(now);
+ /* מסלול הלוך-חזור עם המתנה בקצוות; תוכנית של קטעים (עמידה / נסיעה / נסיעה לאחור) שחוזרת על עצמה */
+ function along(pts,t,v,dw){let L=0;const cum=[0];for(let i=1;i<pts.length;i++){L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);cum.push(L)}const T=L/v,C=2*T+2*(dw||0);let u=((t%C)+C)%C,back=false,mv=true;
+  if(u<T){}else if(u<T+(dw||0)){u=T;mv=false}else if(u<2*T+(dw||0)){u=2*T+(dw||0)-u;back=true}else{u=0;mv=false}
+  const s=u*v;let j=1;while(j<cum.length-1&&cum[j]<s)j++;const a=pts[j-1],b=pts[j],f=(s-cum[j-1])/Math.max(1e-6,cum[j]-cum[j-1]);let h=Math.atan2(b[1]-a[1],b[0]-a[0]);if(back)h+=Math.PI;return{x:a[0]+(b[0]-a[0])*f,y:a[1]+(b[1]-a[1])*f,h,mv,ph:(s/14)%1}}
+ function plan(P,t){let T=0;for(const s of P)T+=s.dur;let u=((t%T)+T)%T;for(const s of P){if(u<=s.dur){if(!s.pts)return{...s.at,mv:false,stop:s.name,u,load:s.load};const Q=s.pts,cum=[0];for(let i=1;i<Q.length;i++)cum.push(cum[i-1]+Math.hypot(Q[i][0]-Q[i-1][0],Q[i][1]-Q[i-1][1]));
+    let f=u/s.dur;f=f*f*(3-2*f);const d=f*cum[cum.length-1];let j=1;while(j<cum.length-1&&cum[j]<d)j++;const a=Q[j-1],b=Q[j],g=(d-cum[j-1])/Math.max(1e-6,cum[j]-cum[j-1]);let h=Math.atan2(b[1]-a[1],b[0]-a[0]);if(s.rev)h+=Math.PI;return{x:a[0]+(b[0]-a[0])*g,y:a[1]+(b[1]-a[1])*g,h,mv:true,rev:!!s.rev,stop:s.name,load:s.load}}u-=s.dur}return{...P[0].at,mv:false,stop:P[0].name}}
+ const bez=(a,c1,b,n=10)=>{const o=[];for(let i=0;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*a[0]+2*u*t*c1[0]+t*t*b[0],u*u*a[1]+2*u*t*c1[1]+t*t*b[1]])}return o};
+ /* רכב של החצר: בתור של ה-3/4 של העיר (כמו רכבי החצר של S9), או ציור שטוח בקנבס של הבדיקה */
+ function vehicle(c,A,ref,q,key,now,col){try{const sc=roadVehicleScaleFor(A,ref);if(c===ctx&&!AUD&&typeof c34Live==='function'&&c34Live()){const D=c34Dims(A,sc),id=c34Id(A,D[0],D[1]);if(id&&c34Push(id,c34Col({c:col==null?1:col}),q.x,q.y,q.h,{opt:c34Opt(A,{c:col==null?1:col},'parked'),st:c34St(!q.mv,!!q.rev,0,true,false),q:c34Ratio(id,A,D[0]),key,r:D[0]*.6+12}))return}
+   const I=TurboCity.info(A,{scale:sc});c.save();c.translate(q.x,q.y);c.rotate(q.h);TurboCity.draw(c,A,-I.w/2,-I.h/2,{mode:'runtime',scale:sc,state:{c:col==null?1:col},time:now/1000});c.restore()}catch(e){er('veh',e)}}
+ function fork(c,q,key,now){try{const I=TurboCity.info('LV-FK-01',{game:1}),sc=I.gameScale||.35,J=TurboCity.info('LV-FK-01',{scale:sc});
+   if(c===ctx&&!AUD&&typeof c34Live==='function'&&c34Live()&&typeof C34!=='undefined'&&C34.kit){const id=C34.kit('fork',J.fp[2],J.fp[3]);if(id&&c34Push(id,c34Col({c:9}),q.x,q.y,q.h,{st:c34St(!q.mv,!!q.rev,0,true,false),key,r:J.fp[2]*.6+10}))return}
+   c.save();c.translate(q.x,q.y);c.rotate(q.h);TurboCity.draw(c,'LV-FK-01',-J.w/2,-J.h/2,{mode:'runtime',scale:sc,variant:1,time:now/1000});c.restore()}catch(e){er('fork',e)}}
+ const clockMin=()=>{try{const m=gameClock().min;return Number.isFinite(m)?m:720}catch(e){return 720}};
+ /* דגל על תורן, שרוול רוח */
+ function flag(c,x,y,t,cols,H){const top=y-K*(H||60),w=S10KIT.windS(),sp=2.6+3.2*w,am=.9+1.8*w;c.fillStyle='rgba(8,16,24,.2)';c.fillRect(x+1,y-1,3,2.4);c.fillStyle='#c9cdcf';c.fillRect(x-.8,top,1.6,y-top);
+  const fw=17,fh=11,n=8;for(let s=0;s<cols.length;s++){c.fillStyle=cols[s];c.beginPath();for(let i=0;i<=n;i++){const u=i/n,dy=Math.sin(u*5-t*sp+x*.05)*am*u;c.lineTo(x+u*fw,top+s*fh/cols.length+dy)}for(let i=n;i>=0;i--){const u=i/n,dy=Math.sin(u*5-t*sp+x*.05)*am*u;c.lineTo(x+u*fw,top+(s+1)*fh/cols.length+dy)}c.closePath();c.fill()}}
+ function windsock(c,x,y,t,H){const w=S10KIT.windS(),a=S10KIT.windA(),top=y-K*(H||50),k=.3+.6*w;c.strokeStyle='#7c858b';c.lineWidth=1;c.beginPath();c.moveTo(x,y);c.lineTo(x,top);c.stroke();
+  for(let i=0;i<5;i++){const u=i/5,dx=(4+u*12)*Math.cos(a)*(.6+k),dy=Math.sin(t*3+i)*.9+u*3.4*(1-k);c.fillStyle=i%2?'#ffffff':'#f05a1a';c.beginPath();c.ellipse(x+dx,top+1+dy,2.6-u*.9,1.9-u*.6,0,0,TAU);c.fill()}}
+ /* מחסום: עמוד עם זרוע פסים; a = 0 סגור … 1 פתוח (הזרוע עולה — במבט 3/4 הקצה שלה עולה בצפון) */
+ function arm(c,x,y,dir,len,a,vert){const ang=a*1.35,lx=Math.cos(ang)*len,lz=Math.sin(ang)*len;c.fillStyle='rgba(8,16,24,.22)';c.fillRect(x-2+2,y-3+3,5,6);c.fillStyle='#d9b23a';c.fillRect(x-2.5,y-K*14,5,K*14);c.fillStyle='#2a2f33';c.fillRect(x-2.5,y-K*14,5,1.6);
+  const x1=vert?x:x+dir*lx,y1=(vert?y+dir*lx:y)-K*(11+lz),y0=y-K*11;c.strokeStyle='#f4f1e8';c.lineWidth=2.6;c.beginPath();c.moveTo(x,y0);c.lineTo(x1,y1);c.stroke();c.strokeStyle='#c8402a';c.lineWidth=2.6;c.setLineDash([5,5]);c.beginPath();c.moveTo(x,y0);c.lineTo(x1,y1);c.stroke();c.setLineDash([]);
+  c.fillStyle=a<.1?'#ff3b30':'#3d1512';c.beginPath();c.arc(x,y-K*16,1.6,0,TAU);c.fill()}
+ /* רכב של הסימולציה ליד נקודה (לפתיחת מחסום): מכוניות התנועה, האוטובוסים, השחקן */
+ function carNear(x,y,rx,ry){try{for(const v of TRAFFIC_CARS)if(Math.abs(v.x-x)<rx&&Math.abs(v.y-y)<ry)return true;for(const v of BUS_VEHICLES)if(Math.abs(v.x-x)<rx&&Math.abs(v.y-y)<ry)return true;if(PlayerProfile.mode==='vehicle'&&Math.abs(PlayerCar.x-x)<rx&&Math.abs(PlayerCar.y-y)<ry)return true}catch(e){}return false}
+ /* המעבר של הנתיב מהרמפה סגור כשקרון של רכבת על W1 / W2 בין x 4120 ל-4330 — עכשיו, או בעוד 5 שנ׳ (לוח הזמנים של הרכבות הוא פונקציה של הזמן, rlSnap) */
+ function s10XHit(t){try{for(const sn of rlSnap(t))for(const cr of sn.cars)if(cr.x>4120&&cr.x<4330&&cr.y>5100&&cr.y<5180)return true}catch(e){}return false}
+ function s10XClosed(now){if(typeof S10CI!=='undefined'&&S10CI.xClosed)return S10CI.xClosed(now);return s10XHit(now)||s10XHit(now+2500)||s10XHit(now+5000)}   /* S10 ג: גוף הקרון חופף את הנתיב, 8 שנ׳ מראש (021w) */
+ const ARMS={};function armA(id,want,now){const o=ARMS[id]||(ARMS[id]={a:0,t:now});const dt=Math.min(.2,Math.max(0,(now-o.t)/1000));o.t=now;o.a=Math.max(0,Math.min(1,o.a+(want?1:-1)*dt/.9));return o.a}
+
+ // ---- התוכניות של רכבי החצר ----------------------------------------------------------------------------------------------------------
+ /* C6-L2: המלגזה עומדת בתיקון בפתח המזרחי של מוסך המלגזות (רכב עומד — כלל 32): המכונאי מקיף אותה, נורית האזהרה מהבהבת */
+ const FK_C6_AT={x:3535,y:4584,h:-Math.PI/2,mv:false};
+ /* C6-L3: שער השיקוף — הבדיקה העצמית של הסורק: הקורה נוסעת לאורך המסלול (9 שנ׳ מכל 14), הנורות מהבהבות. אין רכב משלו (כלל 32) */
+ const XR=[2632,4700,2668,4816],xrScan=now=>{const u=(tS(now)%14+14)%14;return{u,on:u<9,f:u<9?(1-Math.cos(Math.PI*u/9))/2:0}};
+ const cuPose=now=>{const q=xrScan(now);return{stop:q.on?'שיקוף':'מנוחה',u:q.u,f:q.f,mv:false}};
+ /* D6-L1: נהג היבוא — רכב חדש מהמקום שלו בשורה 3 אל עמדת הבדיקה שליד הנתיב מהשער, ובחזרה */
+ const IM_S=[4053.5,4735],IM_B=[4192.5,4735],IM_AY=4682;
+ const IM_D6=[{dur:34,at:{x:IM_S[0],y:IM_S[1],h:-Math.PI/2},name:'שורה 3'},{dur:4,pts:[[IM_S[0],IM_S[1]],[IM_S[0],IM_AY+6],[IM_S[0]+10,IM_AY]]},{dur:5,pts:[[IM_S[0]+10,IM_AY],[IM_B[0]-12,IM_AY],[IM_B[0],IM_AY-6]]},{dur:4,pts:[[IM_B[0],IM_AY-6],[IM_B[0],IM_B[1]]],rev:true},
+  {dur:30,at:{x:IM_B[0],y:IM_B[1],h:-Math.PI/2},name:'בדיקה'},{dur:4,pts:[[IM_B[0],IM_B[1]],[IM_B[0],IM_AY+6],[IM_B[0]-10,IM_AY]]},{dur:5,pts:[[IM_B[0]-10,IM_AY],[IM_S[0]+12,IM_AY],[IM_S[0],IM_AY-6]]},{dur:4,pts:[[IM_S[0],IM_AY-6],[IM_S[0],IM_S[1]]],rev:true}];
+ const imPose=now=>plan(IM_D6,tS(now));
+ /* D6-L2: המלגזה של מחסן הנמל 1 — לוקחת משטח ברציף 4 ומביאה אותו אל הדלת של מחסן הציוד (המשטח נכנס פנימה), וחוזרת ריקה. מטען אמיתי בין שני מבנים אמיתיים (כלל 32) */
+ const FK_D6=[{dur:10,at:{x:4387,y:4524,h:-Math.PI/2},name:'רציף 4',load:0},{dur:3,pts:[[4387,4524],[4387,4538]],rev:true,load:1},{dur:7,pts:[[4387,4538],[4470,4538],[4485,4550]],load:1},
+  {dur:9,at:{x:4485,y:4550,h:-Math.PI/2},name:'מחסן הציוד',load:2},{dur:3,pts:[[4485,4550],[4485,4562]],rev:true,load:0},{dur:8,pts:[[4485,4562],[4470,4538],[4398,4538],[4387,4530]],load:0}];
+ /* D6-L3: הטנדר של הנמל עומד במשאבה הדרומית של נקודת הדלק (רכב עומד — כלל 32); המתדלק מחזיק את האקדח, והמונה של המשאבה רץ */
+ const FU_D6_AT={x:3961,y:4426,h:Math.PI/2,mv:false};   /* S10 א (המשך): בנתיב פנימה, ליד אי המשאבות — מתחת לגגון השקוף */
+ /* הרמפה של אוניית הרכבים: למטה 07:00–17:00 (שעון המשחק), עם מעבר של 8 דקות משחק; הרוטור של המסוק: בדיקת מנוע ב-08:00 וב-13:00 */
+ function rampA(){const m=clockMin(),a=(m-420)/8,b=(1020-m)/8;return Math.max(0,Math.min(1,Math.min(a,b)))}
+ function rotorOn(){const m=clockMin();return(m>=480&&m<486)||(m>=780&&m<786)}
+ try{S10KIT.c6d6.setRamp(()=>rampA())}catch(e){er('ramp',e)}
+
+ // ---- המים: גלים על קיר הרציף ובכלונסאות, אדוות סביב האוניות, שטיפת המשפך, מי הקירור של הגוררות -------------------------------------------
+ function water(c,now,N,Z){const t=now/1000;
+  if(Z!=='D6'){if(vis(c,2400,5196,1200,16))S10KIT.wash(c,2412,3600,5202,t,N);
+   if(vis(c,2590,5200,290,290)){c.save();c.strokeStyle=N?'rgba(190,220,235,.3)':'rgba(255,255,255,.55)';c.lineWidth=1;for(let y=5236;y<5420;y+=36)for(const px of[2719,2737]){const p=(t*.8+y*.03)%1;c.globalAlpha=1-p;c.beginPath();c.ellipse(px,y+18,4+p*7,1.6+p*2.6,0,0,TAU);c.stroke()}
+     for(let x=2606;x<2860;x+=25){const p=(t*.7+x*.05)%1;c.globalAlpha=1-p;c.beginPath();c.ellipse(x,5488,4+p*7,1.6+p*2.6,0,0,TAU);c.stroke()}c.restore()}
+   /* C6-L7: האוניות מתנדנדות על החבלים — אדוות לאורך קו המים של המכלית ושל אוניית המכולות */
+   for(const id of['BRT-C6','BRT-OIL']){const s=S10KIT.c6d6.shipOf(id);if(!vis(c,s.x-s.L/2,s.y+s.B/2-10,s.L,40))continue;c.save();c.strokeStyle=N?'rgba(190,220,235,.26)':'rgba(255,255,255,.45)';c.lineWidth=1.2;const yb=s.y+s.B/2+(id==='BRT-OIL'?38:52)+S10KIT.bob(id,t)*2;
+    c.beginPath();for(let x=s.x-s.L/2+40;x<s.x+s.L/2-40;x+=34){const p=Math.sin(t*1.1+x*.05);c.moveTo(x,yb+p*1.6);c.quadraticCurveTo(x+9,yb+3.6+p*2.4,x+18,yb+p*1.6)}c.stroke();c.restore()}}
+  if(Z!=='C6'){if(vis(c,3600,5196,1200,16))S10KIT.wash(c,3600,4250,5202,t,N);
+   /* D6-L6: שטיפת המשפך — קשת מים מהצינור שעל המעקה, נתזים ושלולית */
+   {const h=S10F['D6-HOPPER'].rect,x0=h[2]+6,y0=h[3]-K*40;if(vis(c,h[0]-10,h[1]-60,120,150)){c.save();c.strokeStyle='#59646a';c.lineWidth=1.6;c.beginPath();c.moveTo(x0+12,h[3]);c.lineTo(x0+12,y0);c.lineTo(x0+6,y0-3);c.stroke();
+     for(let i=0;i<14;i++){const p=((t*1.6+i/14)%1),x=x0+6-p*26,y=y0-3+p*p*46-p*8;c.fillStyle='rgba(215,238,250,'+(.85-p*.6).toFixed(2)+')';c.beginPath();c.arc(x+Math.sin(i*7+t*9)*1.2,y,1.5-p*.5,0,TAU);c.fill()}
+     c.fillStyle='rgba(120,170,200,.35)';c.beginPath();c.ellipse(x0-20,h[3]+6,13+Math.sin(t*2)*1.5,4.2,0,0,TAU);c.fill();c.restore()}}
+   /* D6-L7: הגוררות — מי הקירור יוצאים מפתח בדופן, והגל הקטן שהן עושות */
+   for(const id of(typeof S14==='undefined'?['TUG-1','TUG-2']:[])){   /* int287: הצוות על הגוררות — אצל S14 (הגוררות של הסימולציה) */const s=S10KIT.c6d6.shipOf(id),sd=id==='TUG-1'?-1:1,x=s.x+sd*(s.B/2-4),y=s.y+30+S10KIT.bob(id,t,1.2);if(!vis(c,s.x-70,s.y-150,140,300))continue;c.save();
+    for(let i=0;i<8;i++){const p=((t*1.9+i/8)%1);c.fillStyle='rgba(225,242,252,'+(.8-p*.7).toFixed(2)+')';c.beginPath();c.arc(x+sd*p*9,y+p*p*10,1.4-p*.5,0,TAU);c.fill()}
+    c.strokeStyle=N?'rgba(190,220,235,.3)':'rgba(255,255,255,.5)';c.lineWidth=1;const p=(t*.6+s.x*.01)%1;c.globalAlpha=1-p;c.beginPath();c.ellipse(x+sd*10,y+12,3+p*8,1.4+p*3,0,0,TAU);c.stroke();c.restore()}}}
+
+ // ---- האנשים והרכבים (מתחת לגגות) ---------------------------------------------------------------------------------------------------------
+ function ground(c,now,N,Z){const t=tS(now),tt=now/1000;
+  if(Z!=='D6'){
+   /* C6-L2: המלגזה של המוסך */
+   {const q=FK_C6_AT;if(vis(c,q.x-40,q.y-40,80,80)){fork(c,q,'S10-FK-C6',now);const a=tt*.7,px=q.x+Math.cos(a)*16,py=q.y+6+Math.sin(a)*20;
+     if((tt%10)<6)man(c,q.x+13,q.y+4,look('mechanic',3,{}),'carry',Math.PI,(tt*.8)%1);else man(c,px,py,look('mechanic',3,{}),'walk',a+Math.PI/2,(tt*1.2)%1);
+     c.fillStyle='#b8392f';c.fillRect(q.x-20,q.y+10,7,4);c.fillStyle='#22272b';c.fillRect(q.x-19,q.y+9,5,1.2);   /* ארגז הכלים */
+     if((tt*2.2)%1<.5){c.fillStyle='#ffb020';c.beginPath();c.arc(q.x,q.y-K*20,1.7,0,TAU);c.fill();if(N){c.save();c.globalCompositeOperation='lighter';c.fillStyle='rgba(255,176,32,.25)';c.beginPath();c.arc(q.x,q.y-K*20,7,0,TAU);c.fill();c.restore()}}}}
+   /* C6-L3: רכב המכס בין השער לשיקוף; C6-L4: הבודק בביתן סורק את התעודה, ופקח המכס מקיף את הרכב בשיקוף */
+   {const q=cuPose(now);if(vis(c,2590,4570,130,250)){const wv=Math.sin(tt*3)*.5;man(c,2719,4610,look('guard',21,{c:'#2f4f6f'}),(tt%6)<3?'carry':'stand',Math.PI+(wv>0?0:.25),(tt*.5)%1);
+     if(q.stop==='שיקוף')man(c,2622,4692,look('guard',22,{c:'#1d4f91'}),'carry',Math.PI/2,(tt*.6)%1);else{const w=along([[2606,4690],[2628,4690]],tt,6,4);man(c,w.x,w.y,look('guard',22,{c:'#1d4f91'}),w.mv?'walk':'stand',w.mv?w.h:0,w.ph)}}}
+   /* המחסומים של השער המערבי (עולים לרכב של הסימולציה שמתקרב) ושל שער החצר (עולה לרכב שמתקרב מדרך החצר) */
+   if(vis(c,2590,4570,130,90)){const o=armA('GW',carNear(2650,4610,80,46),now);arm(c,2706,4583,-1,24,o);arm(c,2706,4637,-1,24,1)}
+   if(vis(c,3050,4390,120,80)){const o=armA('GE',carNear(3110,4480,60,70),now);arm(c,3066,4448,1,40,o);arm(c,3154,4448,-1,40,o)}
+   /* C6-L5: המפעיל של מסוף הנפט בודק את המדידה; השסתום מסתובב והמחוג זז */
+   if(vis(c,2895,4590,150,90)){const q=along([[2981,4604],[2981,4636]],tt,7,9);man(c,q.x,q.y,look('refinery',4,{}),q.mv?'walk':'stand',q.mv?q.h:Math.PI,q.ph);
+    const vx=2990,vy=4596,a=tt*1.4;c.save();c.strokeStyle='#c0392b';c.lineWidth=1.6;c.beginPath();c.ellipse(vx,vy-K*14,5.4,2.6,0,0,TAU);c.stroke();c.beginPath();for(let i=0;i<3;i++){const b=a+i*TAU/3;c.moveTo(vx,vy-K*14);c.lineTo(vx+Math.cos(b)*5.4,vy-K*14+Math.sin(b)*2.6)}c.stroke();
+    const gx=2940,gy=4606-K*22;c.fillStyle='#f4f1e8';c.beginPath();c.arc(gx,gy,5,0,TAU);c.fill();c.strokeStyle='#2a2f33';c.lineWidth=.8;c.stroke();const na=-2.4+1.6*(.5+.5*Math.sin(tt*.9))+Math.sin(tt*7)*.05;c.strokeStyle='#c0392b';c.lineWidth=1;c.beginPath();c.moveTo(gx,gy);c.lineTo(gx+Math.cos(na)*4.2,gy+Math.sin(na)*4.2);c.stroke();c.restore()}}
+  if(Z!=='C6'){
+   /* D6-L1: נהג היבוא והרכב החדש; D6-L4: בודקי היבוא עם מחשב לוח — אחד מקיף את הרכב בעמדת הבדיקה, השני עובר בין השורות */
+   {const q=imPose(now);if(vis(c,3930,4545,600,275)){vehicle(c,'VH-HB-02','Compact',q,'S10-IM-D6',now,3)   /* S10 א (המשך): הדגם והצבע של שורה 3 */;
+     if(q.stop==='בדיקה'){const a=Math.PI/2+(q.u/30)*TAU*2,px=IM_B[0]+Math.cos(a)*16,py=IM_B[1]+Math.sin(a)*31;man(c,px,py,look('logistics',11,{c:'#e07b2f'}),'walk',a+Math.PI/2,(tt*1.2)%1)}else man(c,IM_B[0],IM_B[1]+31,look('logistics',11,{c:'#e07b2f'}),(tt%8)<4?'carry':'stand',-Math.PI/2,0);
+     const w=along([[3946,4662],[4168,4662],[4290,4662],[4490,4662]],tt,11,8);man(c,w.x,w.y,look('logistics',12,{c:'#e07b2f'}),w.mv?'carry':'stand',w.mv?w.h:-Math.PI/2,w.ph)}}
+   /* D6-L2: המלגזה של מחסן 1; D6-L3: הטנדר בנקודת הדלק */
+   {const q=plan(FK_D6,t);let ld=q.load?1:0;
+    if(q.stop==='רציף 4')ld=q.u>5?1:0;else if(q.stop==='מחסן הציוד')ld=q.u<4?1:0;
+    if(vis(c,4360,4500,150,70)){try{lgForklift(c,q.x,q.y,q.h,!!ld,now,'S10-FK-D6',!!q.mv,!!q.rev)}catch(e){fork(c,q,'S10-FK-D6',now)}
+     /* המשטחים שמחכים ליד רציף 4 (בין הדלת לפינת המחסן — מחוץ לדרך של המלגזה) */
+     for(let i=0;i<2;i++)try{lgPallet(c,4421,4513+i*12,0)}catch(e){}}}
+   {const q=FU_D6_AT;if(vis(c,3930,4390,140,90)){vehicle(c,'VH-PK-02','Pickup',q,'S10-FU-D6',now,6);man(c,q.x+22,q.y+4,look('dock',6,{}),(tt%12)<9?'carry':'stand',Math.PI,0);
+     /* המונה של המשאבה רץ בזמן התדלוק (9 שנ׳ מכל 12) */const run=(tt%12)<9,v=run?((tt%12)/9):1;c.fillStyle='rgba(12,18,24,.85)';c.fillRect(3992,4412-K*12,14,5);c.fillStyle=run?'#63d99a':'#2f6b4a';c.fillRect(3993,4413-K*12,12*v,3)}}
+   /* המחסומים: השער הראשי על דרך השער (עולה לכל רכב שמתקרב), השער של מסוף היבוא (עולה כשנהג היבוא או רכב ליד), הבודק בביתן */
+   /* S10 א (המשך — הבעלים 10.11 10:46): מעבר המסילות של הנתיב מהרמפה (W1 / W2) — מחסומים ורמזור; יורדים כשרכבת קרובה או מתקרבת (5 שנ׳ קדימה) */
+   if(vis(c,4150,5080,150,120)){const cl=s10XClosed(now),o=armA('XR',!cl,now);arm(c,4176,5094,1,44,o);arm(c,4274,5094,-1,44,o);arm(c,4176,5186,1,44,o);arm(c,4274,5186,-1,44,o);
+    const on=cl&&((now/450|0)%2);for(const [lx,ly] of[[4170,5090],[4280,5090],[4170,5182],[4280,5182]]){c.fillStyle='#2a2f33';c.fillRect(lx-1,ly-K*20,2,K*20);c.fillStyle=on?'#ff3b30':'#4a1a16';c.beginPath();c.arc(lx-2.5,ly-K*20,1.7,0,TAU);c.arc(lx+2.5,ly-K*20,1.7,0,TAU);c.fill()}}
+   /* D6-L5 (חדש): השער המזרחי — שער ראשי: השומר בביתן יוצא אל הנתיב ובודק, ומחסום לכל נתיב עולה לרכב של הסימולציה שמתקרב (נכנס או יוצא) */
+   if(vis(c,4440,4650,130,130)){const oi=armA('GEi',carNear(4560,4677,90,16),now),oo=armA('GEo',carNear(4470,4713,60,16),now);arm(c,4512,4662,1,30,oi,true);arm(c,4512,4728,-1,30,oo,true);
+    const w=along([[4500,4752],[4520,4752],[4520,4738]],tt,7,6);man(c,w.x,w.y,look('guard',24,{c:'#2f4f6f'}),w.mv?'walk':((tt%8)<4?'carry':'stand'),w.mv?w.h:Math.PI,w.ph)}
+   if(vis(c,4180,4790,100,50)){const o=armA('GI',carNear(4225,4830,50,60),now);arm(c,4190,4812,1,34,o)}}}
+
+ // ---- מעל: הדגלים, שרוולי הרוח, הזרוע של המנוף הנייד, צוות המסוק ----------------------------------------------------------------------
+ function over(c,now,N,Z){const tt=now/1000;
+  if(Z!=='D6'){/* C6-L8: שרוול הרוח במזח הנפט ובקצה הרציף, דגלי השער המערבי; C6-L9: הדגלון על התורן של המכס */
+   if(vis(c,2590,4500,140,90)){flag(c,2600,4568,tt,['#f4f4f2','#1d4f91','#f4f4f2'],62);flag(c,2708,4568,tt,['#1d4f91','#f4f4f2'],62)}
+   if(vis(c,2750,4930,50,70))windsock(c,2770,4990,tt,56);if(vis(c,2820,5380,60,90))windsock(c,2846,5426,tt,60)
+   /* C6-L3: הקורה של הסורק נוסעת לאורך המסלול של שער השיקוף (בגובה של הקורות הקבועות), עם קו הסריקה הירוק על המסלול */
+   {const q=xrScan(now);if(q.on&&vis(c,XR[0]-10,XR[1]-60,XR[2]-XR[0]+20,XR[3]-XR[1]+60)){const fy=XR[1]+14+(XR[3]-XR[1]-28)*q.f,H=K*56;c.fillStyle='rgba(99,217,154,.35)';c.fillRect(XR[0],fy-1,XR[2]-XR[0],2);
+     c.fillStyle=N?'#6a7076':'#aeb6bb';c.fillRect(XR[0]-6,fy-H-4,XR[2]-XR[0]+12,6);c.fillStyle='#d9b23a';for(let x=XR[0]-6;x<XR[2]+6;x+=8)c.fillRect(x,fy-H-4,4,2);c.fillStyle='#22272b';c.fillRect(XR[0]-6,fy-H+2,XR[2]-XR[0]+12,1.2);
+     for(const lx of[XR[0]-4,XR[2]+4]){c.fillStyle=N?'#4a5056':'#6c757b';c.fillRect(lx-1.5,fy-H,3,H)}}}}
+  if(Z!=='D6'){/* S10 א (המשך — הבעלים 10.11): המנהלת עם המנחת עברה ל-C6 — C6-L11: דגלי הנמל והמדינה מול המנהלת ושרוול הרוח של המנחת; C6-L10: צוות המסוק */
+   {const b0=S10BL['D6-ADMIN'];if(vis(c,b0.x-30,b0.y+b0.h-60,40,120)){flag(c,b0.x-12,b0.y+b0.h-46,tt,['#f4f4f2','#1d4f91','#f4f4f2'],70);flag(c,b0.x-12,b0.y+b0.h-6,tt,['#0b3c5d','#f2c230'],70)}}
+   const b=S10BL['D6-ADMIN'],H=s9H(b);if(vis(c,b.x,b.y-H-40,b.w,b.h+40)){windsock(c,b.x+b.w-10,b.y+14,tt,34);
+    const hp=S10_HELI,a=tt*.28,on=rotorOn(),px=hp.x+Math.cos(a)*36,py=hp.y-H+Math.sin(a)*30;man(c,px,py,look('mechanic',14,{c:'#e07b2f'}),on?'stand':'walk',a+Math.PI/2,(tt*1.1)%1)}}
+  if(Z!=='C6'){/* D6-L8: הדגלים של השער המזרחי (שער ראשי); D6-L9: הזרוע של המנוף הנייד מסתובבת עם הרוח */
+   if(vis(c,4430,4600,110,180)){flag(c,4446,4650,tt,['#f4f4f2','#1d4f91','#f4f4f2'],70);flag(c,4446,4770,tt,['#0b3c5d','#f2c230'],70)}
+   {const m=S10F['D6-MHC'].disc,x=m[0],y=m[1]-10-K*42;if(vis(c,x-110,y-120,220,200)){const a=S10KIT.windA()+Math.sin(tt*.21)*.5-Math.PI/2+.5,L=96,ex=x+Math.cos(a)*L,ey=y+Math.sin(a)*L*.55-K*70;
+     c.save();c.strokeStyle='rgba(8,16,24,.16)';c.lineWidth=5;c.beginPath();c.moveTo(m[0]+12,m[1]+16);c.lineTo(m[0]+12+Math.cos(a)*L,m[1]+16+Math.sin(a)*L*.55);c.stroke();
+     c.strokeStyle=N?'#a06a1c':'#f2b93a';c.lineWidth=4.4;c.beginPath();c.moveTo(x,y);c.lineTo(ex,ey);c.stroke();c.strokeStyle='rgba(90,50,6,.6)';c.lineWidth=.8;c.beginPath();for(let i=1;i<9;i++){const f=i/9;c.moveTo(x+(ex-x)*f-2,y+(ey-y)*f-2);c.lineTo(x+(ex-x)*(f+.06)+2,y+(ey-y)*(f+.06)+2)}c.stroke();
+     c.strokeStyle='rgba(30,34,38,.85)';c.lineWidth=.8;const gy=ey+K*46+Math.sin(tt*.8)*2;c.beginPath();c.moveTo(ex,ey);c.lineTo(ex,gy);c.stroke();c.fillStyle='#2a2f33';c.fillRect(ex-5,gy,10,7);c.fillStyle=N?'#8a5a16':'#e0a020';c.fillRect(x-9,y-8,18,12);
+     if(N){c.fillStyle=(now/600|0)%2?'#ff3b30':'#9a2a24';c.beginPath();c.arc(ex,ey-2,1.8,0,TAU);c.fill()}c.restore()}}}}
+
+ function movers(z){const L=[],A=(k,id,act,when,b,x)=>L.push(Object.assign({zone:z,kind:k,id,act,when,box:b.map(Math.round)},x||{}));
+  if(z==='C6'){A('רכב','C6-L1','מנופי הרציף מרימים מכולות מהאונייה העוגנת ומניחים אותן בשורת הייצוא, ובחזרה — העגלה נוסעת על הזרוע והמכולה עולה ויורדת','תמיד — תור המכולות (S10C)',[3000,4960,3480,5380]);
+   A('רכב','C6-L2','המלגזה עומדת בתיקון בפתח מוסך המלגזות — המכונאי מקיף אותה, נורית האזהרה מהבהבת','תמיד',[3508,4552,3562,4612]);A('מכונה','C6-L3','שער השיקוף בבדיקה עצמית — הקורה של הסורק נוסעת לאורך המסלול והנורות מהבהבות; פקח המכס ליד הכניסה','תמיד',[2600,4610,2674,4800]);
+   A('אנשים','C6-L4','הבודק של השער המערבי סורק תעודות; פקח המכס מקיף את הרכב בשער השיקוף','תמיד',[2616,4690,2686,4812]);A('אנשים','C6-L5','המפעיל של מסוף הנפט בודק את המדידה; השסתום מסתובב והמחוג זז','תמיד',[2926,4570,3002,4676]);
+   A('מים','C6-L6','גלים קטנים לאורך קיר הרציף ובין הכלונסאות של מזח הנפט','תמיד',[2590,5200,2880,5500]);A('מים','C6-L7','האונייה והמכלית העוגנות מתנדנדות קלות על החבלים — אדוות לאורך קו המים','תמיד',[2920,5400,3560,5440]);
+   A('רוח','C6-L8','שרוול הרוח במזח הנפט ובקצה הרציף, ודגלי השער המערבי','תמיד',[2596,4520,2730,4572]);{const hp=S10_HELI,b=S10BL['D6-ADMIN'],H=s9H(b);A('אנשים','C6-L10','איש הצוות מקיף את המסוק על הגג של מנהלת הנמל; הלהבים מסתובבים רק בבדיקת המנוע (08:00, ‏13:00)','תמיד',[hp.x-46,hp.y-H-48,hp.x+46,hp.y-H+36],{roof:1});A('רוח','C6-L11','דגלי הנמל והמדינה מול מנהלת הנמל, ושרוול הרוח של המנחת','תמיד',[b.x-24,b.y-80,b.x+b.w,b.y+b.h])}{let b=[2860,4860,3420,4920];try{const C=S10KIT.c6d6.cranes(),o=S10KIT.stsParts(C[0],C[0].pose(0)),my=o.yL-23-K*(o.Hb+26);b=[Math.min(...C.map(q=>q.x))-8,my-12,Math.max(...C.map(q=>q.x))+8,my+4]}catch(e){}A('רוח','C6-L9','מדי הרוח המסתובבים על ראשי המנופים','תמיד',b)}}
+  else{A('רכב','D6-L1','נהג היבוא מסיע רכב חדש מהמקום שלו בשורה 3 אל עמדת הבדיקה ובחזרה','תמיד',[4036,4664,4212,4764]);A('רכב','D6-L2','המלגזה של מחסן הנמל 1 מביאה משטחים מרציף 4 אל מחסן הציוד','תמיד',[4368,4508,4500,4566]);
+   A('רכב','D6-L3','הטנדר של הנמל עומד במשאבה ומתדלק — המתדלק מחזיק את האקדח, והמונה רץ','תמיד',[3944,4396,4012,4454]);A('אנשים','D6-L4','בודקי היבוא עוברים בין השורות עם מחשב לוח, ואחד מקיף את הרכב בעמדת הבדיקה','תמיד',[3940,4656,4490,4770]);
+   A('אנשים','D6-L5','השער המזרחי (שער ראשי) — השומר יוצא מהביתן ובודק, ומחסום לכל נתיב עולה לרכב שנכנס או יוצא','תמיד',[4470,4656,4530,4764]);A('מים','D6-L6','שטיפת משפך התפזורת — קשת מים ונתזים; גלים לאורך רציף התפזורת','תמיד',[4560,4940,4640,5064]);
+   if(typeof S14==='undefined')A('מים','D6-L7','הגוררות ברציף הגוררות מתנדנדות, ומי הקירור יוצאים מהדופן','תמיד',[3586,5360,3846,5410]);   /* int287: עם S14 הגוררות הן כלי שיט של הסימולציה ב-D7, והפרט החי שלהן — D7-L1 של S14; הציור של D6-L7 כבר לא רץ (3526d31), לכן גם לא ברשימה */A('רוח','D6-L8','הדגלים של השער המזרחי — דגל הנמל ודגל המדינה','תמיד',[4440,4560,4470,4780]);
+   A('רוח','D6-L9','הזרוע של המנוף הנייד מסתובבת עם הרוח כשהוא במנוחה','תמיד',[4600,4880,4810,5040])}
+  return L}
+ function render(z){return(g,now,nt)=>{const N=nt>.5,pc=ctx,pv=VIEW_OVR,pm=Targets.mute,pn=window.__TC_NIGHT;ctx=g;AUD=1;VIEW_OVR={cx:z==='C6'?3000:4200,cy:4900,hw:700,hh:720};Targets.mute=true;window.__TC_NIGHT=N?1:0;S10KIT.setT(now/1000);
+  try{water(g,now,N,z);ground(g,now,N,z);if(z==='C6'){try{for(const cr of S10KIT.c6d6.cranes())S10KIT.stsOver(cr,now)}catch(e){er('aud-sts',e)}}over(g,now,N,z)}catch(e){er('render',e)}finally{ctx=pc;VIEW_OVR=pv;Targets.mute=pm;window.__TC_NIGHT=pn;AUD=0;S10KIT.setT(null)}}}
+ return{water,ground,over,movers,render,rotorOn,rampA,cuPose,imPose,xClosed:s10XClosed,err:()=>ERR.e}})();
+S9_HOOKS.live.push((c,now,N)=>{try{if(!s10View(80))return;S10LIVE.water(c,now,N);S10LIVE.ground(c,now,N)}catch(e){}});
+S9_HOOKS.over.push((c,now,N)=>{try{if(!s10View(120))return;S10LIVE.over(c,now,N)}catch(e){}});
+TC_LIVE.zones.C6={render:S10LIVE.render('C6'),movers:(t,all)=>S10LIVE.movers('C6'),box:[2400,4250,3600,5500],cycle:S10C.T_OP*4,center:[3000,4860]};
+TC_LIVE.zones.D6={render:S10LIVE.render('D6'),movers:(t,all)=>S10LIVE.movers('D6'),box:[3600,4250,4800,5500],cycle:96,center:[4200,4860]};
+try{Object.assign(P691.real,{'C6-L1':'מנופי הרציף — תור המכולות S10C: כל מכולה עוברת מהאונייה העוגנת אל שורת הייצוא ובחזרה (שעון הסימולציה)',
+ 'D6-L1':'הרכב החדש של נהג היבוא — מהמקום שלו בשורה 3 אל עמדת הבדיקה ובחזרה למקום (בדיקת המסירה; רכב חצר, כמו p574)',
+ 'D6-L2':'המלגזה של מחסן הנמל 1 — משטח מרציף 4 אל מחסן הציוד (המשטח נכנס בדלת), וחוזרת ריקה (מכונה של החצר, כמו המלגזות של הלוגיסטיקה)'});
+ Object.assign(P691.still,{'C6-L2':'המלגזה עומדת בתיקון בפתח מוסך המלגזות — המכונאי עובד עליה','D6-L3':'הטנדר של הנמל עומד במשאבה הדרומית ומתדלק'})}catch(e){}
+
+/* ---- המקומות (F) של C6 / D6: המסך הגדול של המקום (כלל 30), עם הכרטיס של הסיפור ------------------------------------------------------------------ */
+function phoneS10Business(id){const p=S10_INTERACTIONS[id],info=S10_INFO[id]||[];let live='';
+ try{if(id==='C6-BLOCK-4'||id==='C6-STS-2'||id==='C6-BERTH'||id==='C6-OFFICE'){const st=S10C.state();live=pcard('תור המכולות — עכשיו',pkv(st.map(s=>[s.id==='C6-STS-2'?'מנוף 2':'מנוף 3',(s.op==='U'?'פורק מהאונייה':'מעמיס לאונייה')+' · מהלך '+(s.n%4+1)+' מתוך 4'+(s.air?' · מכולה באוויר':'')]).concat([['שורת הייצוא',S10C.stock('C6-BLOCK-4')+' מכולות']])))}
+  if(id==='P-D6-IM'||id==='D6-OFFICE'){const q=S10LIVE.imPose(performance.now());live=pcard('מסוף היבוא — עכשיו',pkv([['רכבים במגרש',PARKED_CARS.filter(o=>/^PC10-IM/.test(o.id)).length+' מתוך 74 מקומות'],['נהג היבוא',q.stop==='בדיקה'?'בעמדת הבדיקה':q.mv?'בדרך':'בשורה 3'],['הרמפה',S10LIVE.rampA()>.5?'למטה — פריקה 07:00–17:00':'מורמת']]))}
+  if(id==='D6-HELIPAD'||id==='D6-ADMIN')live=pcard('המנחת',pkv([['מסוק','H130 של רשות הנמל'],['רוטור',S10LIVE.rotorOn()?'בדיקת מנוע — מסתובב':'עומד'],['קוטר','11 מ׳, עגול']]))}catch(e){}
+ return(typeof S9STORY!=='undefined'?S9STORY.card(id):'')+pcard(p.label,pkv([['אזור',p.chunk==='C6'?'C6 · מסוף המכולות ומסוף הנפט':'D6 · רציפי הנמל ומסוף יבוא הרכבים'],['סוג',p.kind],...info]))+live+
+  pnote(p.chunk==='C6'?'C6 — מסוף המכולות (4 בלוקים, 3 מנופי רציף), מסוף הנפט והצינור PIPE-REF, השער המערבי והמכס.':'D6 — מנהלת הנמל והמנחת, נקודת הדלק, המחסנים, מסוף יבוא הרכבים (74 מקומות) ורציף התפזורת.')+
+  `<div class="phoneActions"><button data-nav-target="${id}">נווט לכאן</button></div>`}
+{const pP=phonePortBusiness;phonePortBusiness=function(id){if(S10_INTERACTIONS[id])return phoneS10Business(id);return pP.apply(this,arguments)}}
+
+/* ---- הסיפורים (D‑512): אחד בכל אזור, מתחילתו ועד סופו — במנוע הסיפורים של S9 --------------------------------------------------------------- */
+function s10Near(id,r){try{const a=playerActor(),p=S10_INTERACTIONS[id];return!!(a&&p&&Math.hypot(a.x-p.x,a.y-p.y)<r)}catch(e){return false}}
+S9STORY.add('S10-ST-C6',{zone:'C6',name:'המכולה שלא הגיעה',reward:800,badge:'עובד נמל',start:'C6-OFFICE',hours:[8,18],who:'אלון פרץ',chars:{'s10-alon':['אלון פרץ','#2f7d86'],'s10-natan':['נתן גבאי','#1d4f91']},
+ intro:['s10-alon','מכולה TCU-4471 לא יצאה מהרציף. אתה יכול לבוא למנהלת מסוף המכולות?'],
+ steps:[
+  {poi:'C6-OFFICE',who:'אלון פרץ — סדרן מסוף המכולות',title:'מפת החצר',text:'במנהלת המסוף, על מפת החצר: המכולה TCU-4471 מסומנת באדום בבלוק 4 — שורת הייצוא שליד המנופים. אלון: "היא הייתה צריכה לצאת מזמן."',btn:'לרשום את המספר — TCU-4471',msg:['s10-alon','תבדוק ליד המנוף השני, בשורת הייצוא.']},
+  {poi:'C6-BLOCK-4',who:'אלון פרץ (בטלפון)',title:'שורת הייצוא',text:'הולכים לאורך דרך הרציף, נכנסים בפתח שבגדר, ומוצאים את המכולה TCU-4471 בשורת הייצוא. מצלמים את המספר שעל הדלת ושולחים לאלון.',btn:'לצלם את המספר ולשלוח',msg:['s10-alon','זאת היא. המנוף השני יוריד אותה — תעמוד ליד ותאשר לי.']},
+  {poi:'C6-STS-2',who:'מפעיל המנוף',title:'המנוף השני',text:'עומדים ליד מנוף הרציף 2. כשהמנוף מרים מכולה והעגלה נוסעת על הזרוע — מאשרים לאלון שהמכולה בדרך לשער.',
+   wait:()=>{try{return S10C.state().some(s=>s.id==='C6-STS-2'&&s.air)&&s10Near('C6-STS-2',170)}catch(e){return true}},waitText:'מחכים שהמנוף ירים מכולה — עוד רגע.',btn:'✓ המכולה באוויר — לאשר',msg:['s10-natan','כאן נתן מהמכס. המכולה מגיעה אליי לשיקוף — בוא לשער השיקוף.']},
+  {poi:'C6-XRAY',who:'נתן גבאי — פקח המכס',title:'תמונת השיקוף',text:'נתן מעביר את המכולה בשיקוף. בתמונה: ארגזי חלקי חילוף לפי הרשימה — ופריט אחד שלא ברשימה, בפינה. בודקים: זה גלגל שיניים רזרבי של אותה מכונה.',btn:'לסמן את הפריט ולאשר',msg:['s10-natan','זה רק חלק חילוף — מאושר. היא משוחררת.']},
+  {poi:'C6-GATE-W',who:'אלון פרץ (בטלפון)',title:'השער המערבי',text:'בשער המערבי הבודק סורק את התעודה, המחסום עולה, והמכולה יוצאת אל דרך השער המערבי ושדרת הנמל.',btn:'לסיים',msg:['s10-alon','יצאה! תודה — רשמתי אותך כעובד נמל.']}]});
+S9STORY.add('S10-ST-D6',{zone:'D6',name:'הרכב החדש לסוכנות',reward:650,badge:'הנחה בסוכנות',start:'D6-OFFICE',hours:[7,15],who:'רועי שמעוני',chars:{'s10-roi':['רועי שמעוני','#2f7d86'],'s10-meir':['מאיר','#e07b2f'],'s10-gil':['גיל','#7a5aaa']},
+ intro:['s10-roi','אוניית הרכבים עוגנת. הסוכנות ב-D3 מחכה לשלושה רכבים — בוא למשרד מסוף היבוא.'],
+ steps:[
+  {poi:'D6-OFFICE',who:'רועי שמעוני — מנהל מסוף היבוא',title:'רשימת הרכבים',text:'במשרד מסוף היבוא רועי נותן את הרשימה של הסוכנות: שלושה רכבים — כחול, לבן ואדום.',btn:'לקחת את הרשימה',msg:['s10-roi','הכחול עוד על הרציף, ליד הרמפה. תביא אותו לשורה 3.']},
+  {poi:'LN-D6-RAMP',who:'נהג היבוא',title:'הרמפה',text:'ברמפה של אוניית הרכבים, עם נהג היבוא: הרכב הכחול יורד אל הרציף ונוסע בנתיב המסומן, מעל המסילות, דרך השער של מסוף היבוא אל שורה 3.',btn:'ללוות את הרכב לשורה 3',msg:['s10-roi','יופי. עכשיו בדיקה — שלושתם בשורות.']},
+  {poi:'P-D6-IM',who:'בודק היבוא',title:'הבדיקה בשורות',text:'עם בודק היבוא, ליד עמדת הבדיקה: עוברים על הכחול, הלבן והאדום — צבע, שמשות, מספר שלדה — ומדביקים מדבקה על כל שמשה.',btn:'✓ ✓ ✓ — שלושתם נבדקו',msg:['s10-meir','כאן מאיר, המוביל. אני בעמדה ליד היציאה — תביא אותם.']},
+  {poi:'DW-D6-CARRIER',who:'מאיר — נהג מוביל הרכב',title:'עמדת המוביל',text:'מאיר מעמיס את שלושת הרכבים על המוביל ויוצא בדרך שער המזרח. נוסעים אחריו בדרכים: דרך שער המזרח ← שדרת המזרח ← הסוכנות ב-D3.',btn:'לצאת לדרך',msg:['s10-meir','ניפגש בסוכנות. סע בזהירות.']},
+  {poi:'D3-DEALER',who:'גיל — מתלמד בסוכנות',title:'הסוכנות ב-D3',drive:[4312,2252,150],text:'מגיעים בדרך האמיתית אל הסוכנות ב-D3. גיל, המתלמד, מקבל את הרכבים.',btn:null,msg:['s10-gil','הגיעו בדיוק לפתיחה! תודה — יש לך הנחה אצלנו.']}]});
+window.__TC_S10LIVE=S10LIVE;window.__TC_S10KIT=S10KIT;
+/* ==== S10 א · C6 ו-D6 — בדיקת האזור מול המפה (חוסמת): כל צומת, קטע, מעבר חצייה, תחנה, מסילה, מגרש, מבנה, כניסה וחניה של המפה והגיליון קיימים במקום;
+   שום מבנה, מתקן, חניה, מכולה, רכב חונה, פנס או עץ על כביש; שום עץ על חניה, מעבר או כניסה; הפרטים החיים והסיפורים; המנופים, הצינור והאוניות.
+   סטייה ידועה מהמפה נרשמת ב-dev (עם הסיבה) ומופיעה בטבלה "איפה המשחק שונה מהמפה" — היא לא מכשילה, אבל היא לא נעלמת. */
+const S10_MAP_NODE={J25_42:'J25_42',J31_42:'J31_42',J385_42:'J385_42',J46_42:'D5-SB',K25_49:'K25_49',J31_49:'J31_49',J385_49:'K36_49',J46_49:'J46_49',E31_445:'E31_445',E56_49:'K48_49'};
+const S10_MAP_SEG={'PT-W/1':['PT-W1A'],'PT-M/1':[],'PT-E/1':['PT-E1'],'PT-Q/1':['PT-Q1'],'PT-Q/2':['PT-Q2'],'PT-Q/3':['PT-Q3'],'PT-Q/4':['PT-Q4'],'PT-Y1/1':['PT-Y1']};
+/* S10 א (המשך): מה שהבעלים ביטל ב-10.11 10:36 (הסימונים על C6 / D6) — לא נבדק מול המפה, ונרשם בטבלת ההבדלים עם הסיבה */
+const S10_OWNER_OUT=new Set(['J385_49','PT-M/1']),S10_OWNER_WHY='בוטל — בקשה מפורשת של הבעלים 10.11 10:36 (הסימונים על C6 / D6; D‑605 מתיר); לעדכון המפה';
+function c6d6Audit(){const out={ok:true,checks:[],dev:[]},push=(name,ok,detail)=>{out.checks.push({name,ok:!!ok,detail:String(detail||'')});if(!ok)out.ok=false},dev=(what,map,game,why)=>out.dev.push({what,map,game,why});
+ const M=S10D.map,R=n=>Math.round(n),hitR=(a,b)=>a[0]<b[2]&&a[2]>b[0]&&a[1]<b[3]&&a[3]>b[1];
+ /* האספלט של כל דרך (הרצועה בלי שתי המדרכות) */
+ const ASPH=S10_BANDS.filter(b=>b.id!=='AR-S').map(b=>{const v=b.h>b.w&&b.id!=='PT-Q';return{id:b.id,r:v?[b.x+20,b.y,b.x+b.w-20,b.y+b.h]:[b.x,b.y+20,b.x+b.w,b.y+b.h-20]}});
+ const onAsph=r=>{for(const a of ASPH)if(hitR(r,a.r))return a.id;return null};
+ try{/* 1 · הצמתים של המפה */
+  const bad=[],sh=[];for(const n of M.nodes){if(S10_OWNER_OUT.has(n.id)){dev('צומת '+n.id,n.x+', '+n.y,'אין צומת — דרך הרציף רציפה (נקודת החיבור K36_49 בגבול C6 / D6)',S10_OWNER_WHY);continue}const g=_NODE_BY_ID[S10_MAP_NODE[n.id]];if(!g){bad.push(n.id+': אין צומת');continue}const d=Math.hypot(g.x-n.x,g.y-n.y);if(d>16)bad.push(n.id+': '+R(d)+' px');else if(d>1){sh.push(n.id+' '+R(d/10*10)/10+' מ׳');dev('צומת '+n.id,n.x+', '+n.y,g.x+', '+g.y,n.id==='J385_42'?'הצומת הקיים של שדרת הנמל במשחק':'שדרת המזרח במשחק ב-x 4611')}}
+  push('c6d6_map_nodes',!bad.length,M.nodes.length+' צמתים של המפה'+(sh.length?' · הזזה רשומה: '+sh.join(', '):'')+(bad.length?' · '+bad.join(' | '):''))}catch(e){push('c6d6_map_nodes',false,'שגיאה '+e)}
+ try{/* 2 · הקטעים של המפה: שרשרת קטעים במשחק, מחוברת, מהסוג הנכון, מקצה לקצה */
+  const bad=[];for(const s of M.segments){if(S10_OWNER_OUT.has(s.id)){dev(s.id+' (דרך השער הראשי)','קטע מ-J385_42 עד J385_49','אין — השטח שלה במסוף היבוא',S10_OWNER_WHY);continue}const ids=S10_MAP_SEG[s.id];if(!ids){bad.push(s.id+': לא ממופה');continue}const E=ids.map(id=>EDGES.find(e=>e.id===id));if(E.some(e=>!e)){bad.push(s.id+': חסר '+ids.filter((id,i)=>!E[i]).join(','));continue}
+    const cls=s.cls==='collector'?'avenue':'local';if(E.some(e=>e.cls!==cls))bad.push(s.id+': סוג '+E.map(e=>e.cls).join(','));
+    for(let i=1;i<E.length;i++)if(E[i].a!==E[i-1].b)bad.push(s.id+': השרשרת נקטעת ב-'+E[i].id);
+    const a=S10_MAP_NODE[s.a],b=S10_MAP_NODE[s.b];if(E[0].a!==a||E[E.length-1].b!==b)bad.push(s.id+': קצוות '+E[0].a+'→'+E[E.length-1].b+' (צריך '+a+'→'+b+')')}
+  dev('PT-Q/4','J46_49 → E56_49 (x 5600)','PT-Q4 עד K48_49 (x 4800), ומשם החיבור הזמני TMP-S10-3 אל E6','החלק של D6; ההמשך — S10 ב');
+  dev('מאספים 1+1 (PT-W, PT-Q, PT-M, PT-E)','רצועה 11.8 מ׳','שדרה של המשחק — 16.4 מ׳ עם המדרכות','סוג הדרך הקיים במנוע; כל מה שנחתך רשום ב-S10D.adapt');
+  push('c6d6_map_segments',!bad.length,M.segments.length+' קטעים של המפה → '+Object.values(S10_MAP_SEG).flat().length+' קטעים במשחק'+(bad.length?' · '+bad.join(' | '):' · מחוברים, מהסוג הנכון'))}catch(e){push('c6d6_map_segments',false,'שגיאה '+e)}
+ try{/* 3 · מעברי החצייה של המפה (רק בצמתים — כלל 21) */
+  const G=[...CROSSWALKS,...ZEBRA_XW],bad=[];let n=0;let skipped=0;for(const c of M.crosswalks){if(S10_OWNER_OUT.has(c.node)||S10_OWNER_OUT.has(c.seg)){skipped++;continue}const mid=(c.d0+c.d1)/2,x=c.at[0]+c.u[0]*mid,y=c.at[1]+c.u[1]*mid;n++;let best=1e9;for(const g of G)best=Math.min(best,Math.hypot(g.x-x,g.y-y));if(best>48)bad.push(c.node+'·'+c.seg+' ('+R(best)+' px)')}
+  const extra=G.filter(g=>g.x>2400&&g.x<4800&&g.y>4368&&g.y<5200&&!M.crosswalks.some(c=>{const mid=(c.d0+c.d1)/2;return Math.hypot(g.x-(c.at[0]+c.u[0]*mid),g.y-(c.at[1]+c.u[1]*mid))<=48})).map(g=>g.id);
+  push('c6d6_map_crosswalks',!bad.length&&!extra.length,n+' מעברים של המפה'+(skipped?' (ועוד '+skipped+' שיצאו עם דרך השער הראשי)':'')+(bad.length?' · חסר: '+bad.join(' | '):' · כולם במקום')+(extra.length?' · מעבר שלא במפה: '+extra.join(','):''))}catch(e){push('c6d6_map_crosswalks',false,'שגיאה '+e)}
+ try{/* 4 · התחנות */
+  const bad=[];for(const b of M.bays){const SL=[...(typeof S6_MAP_STOPS!=='undefined'?S6_MAP_STOPS:[]),...ALL_BUS_STOPS],s=SL.find(q=>q.id===b.game)||SL.find(q=>Math.hypot(q.x-b.pole[0],q.y-b.pole[1])<90);if(!s)bad.push(b.id+': אין תחנה');else if(Math.hypot(s.x-b.pole[0],s.y-b.pole[1])>90)bad.push(b.id+': '+R(Math.hypot(s.x-b.pole[0],s.y-b.pole[1]))+' px')}
+  push('c6d6_map_stops',!bad.length,M.bays.map(b=>b.st+' ('+b.game+')').join(', ')+(bad.length?' · '+bad.join(' | '):' · במקום'))}catch(e){push('c6d6_map_stops',false,'שגיאה '+e)}
+ try{/* 5 · המסילות של הרציף */
+  const segD=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy)},
+   near=p=>{let m=1e9;for(const s of PORT_FLUSH_LIST)for(let i=1;i<s.pts.length;i++)m=Math.min(m,segD(p,s.pts[i-1],s.pts[i]));return m};const bad=[],note=[];
+  for(const r of M.rails){const cl=p=>[Math.max(2400,Math.min(4800,p[0])),p[1]],a=r.from[0]<2400||r.from[0]>4800?null:r.from,b=r.to[0]<2400||r.to[0]>4800?null:r.to;const d=Math.max(a?near(a):0,b?near(b):0);
+   if(r.id==='X-Q2'){const g=PORT_FLUSH_LIST.find(q=>q.id==='X-Q2');if(!g)bad.push('X-Q2: אין');else{const g0=g.pts[0],g1=g.pts[g.pts.length-1],e=Math.max(Math.hypot(g0[0]-r.from[0],g0[1]-r.from[1]),Math.hypot(g1[0]-r.to[0],g1[1]-r.to[1]));note.push('X-Q2 '+R(g0[0])+'–'+R(g1[0])+(e>2?' (במפה '+R(r.from[0])+'–'+R(r.to[0])+')':' כמו במפה'));if(e>2)bad.push('X-Q2: '+R(e)+' px מהמפה')}continue}   /* S10 א (המשך): בקו של המפה */
+   if(d>6)bad.push(r.id+': '+R(d)+' px')}
+  push('c6d6_map_rails',!bad.length,M.rails.length+' מסילות של המפה (W1, W2, P1, P2, X-Q2)'+(note.length?' · '+note.join(' · '):'')+(bad.length?' · '+bad.join(' | '):' · על הקו'))}catch(e){push('c6d6_map_rails',false,'שגיאה '+e)}
+ try{/* 6 · המגרשים: בכל מגרש יש משהו בנוי; D‑500 — אין שטח פנוי של יותר מ-10×10 מ׳ */
+  const things=[...S10D.buildings.map(b=>b.rect),...S10D.facilities.map(f=>f.rect||[f.disc[0]-f.disc[2],f.disc[1]-f.disc[2],f.disc[0]+f.disc[2],f.disc[1]+f.disc[2]]),...S10D.parking.map(p=>p.aisle).filter(Boolean),...S10D.surfaces.map(s=>s.rect)],bad=[];
+  for(const l of S10D.lots)if(!things.some(r=>hitR(r,l.rect)))bad.push(l.id+': ריק');const cov=S10D.coverage.map(c=>c.zone+' — הריבוע הפנוי הגדול '+c.largest_free_square_m+' מ׳');if(S10D.coverage.some(c=>c.largest_free_square_m>10))bad.push('שטח פנוי מעל 10×10 מ׳');
+  push('c6d6_lots_built_d500',!bad.length,S10D.lots.length+' מגרשים של המפה · '+cov.join(' · ')+(bad.length?' · '+bad.join(' | '):''))}catch(e){push('c6d6_lots_built_d500',false,'שגיאה '+e)}
+ try{/* 7 · 16 המבנים של הגיליון */
+  const bad=[];for(const b of S10D.buildings){const g=S10BL[b.id];if(!g||(!S10_CANOPY[b.id]&&!C4_BUILDINGS.includes(g))){bad.push(b.id+': אין');continue}const r=b.id==='D6-GATE'?[3742,4770,3768,4830]:b.rect;if(g.x!==r[0]||g.y!==r[1]||g.w!==r[2]-r[0]||g.h!==r[3]-r[1])bad.push(b.id+': לא במקום')}
+  dev('מבנים','16 בגיליון','15: מנהלת המסוף והביתן של דרך השער הראשי יצאו; השער המזרחי (שער ראשי) נוסף; מנהלת הנמל עם המנחת — במקום של מנהלת המסוף',S10_OWNER_WHY);
+  push('c6d6_buildings_16',S10D.buildings.length===15&&!bad.length,S10D.buildings.length+' מבנים · '+S10D.adapt.length+' התאמות רשומות לרוחב הדרכים של המשחק'+(bad.length?' · '+bad.join(' | '):' · כולם במקום של הגיליון'))}catch(e){push('c6d6_buildings_16',false,'שגיאה '+e)}
+ try{/* 8 · הכניסות: רשומות, נוגעות ברצועה של הדרך שלהן, בלי פנס או עץ מולן */
+  const bad=[];for(const d of S10D.driveways){const a=C4_ACCESS.find(q=>q.id===d.id);if(!a){bad.push(d.id+': אין');continue}const road=d.road==='PT-Q'||d.road==='PT-W'||d.road==='PT-E'||d.road==='PT-Y1'||d.road==='AR-S'?d.road:null,b=S10_BANDS.find(q=>q.id===road);
+    if(b&&!hitR([a.x-3,a.y-3,a.x+a.w+3,a.y+a.h+3],[b.x,b.y,b.x+b.w,b.y+b.h]))bad.push(d.id+': לא נוגעת ב-'+road);
+    for(const t of S10_TREES)if(t.x>a.x-12&&t.x<a.x+a.w+12&&t.y>a.y-12&&t.y<a.y+a.h+12)bad.push(d.id+': עץ בכניסה');for(const l of S10_LIGHTS)if(l.x>a.x-4&&l.x<a.x+a.w+4&&l.y>a.y-4&&l.y<a.y+a.h+4)bad.push(d.id+': פנס בכניסה')}
+  dev('DW-D6-01','x 4989 (במגרש D6-01)','לא נבנתה ב-S10 א','הכניסה עצמה נמצאת ב-E6 — S10 ב; הנתיב הפנימי SL-D6-01 מגיע עד קו האזור');
+  push('c6d6_driveways',!bad.length,S10D.driveways.length+' כניסות + הנתיב מהרמפה'+(bad.length?' · '+bad.join(' | '):' · רשומות, על הדרך שלהן, פנויות'))}catch(e){push('c6d6_driveways',false,'שגיאה '+e)}
+ try{/* 9 · החניות: המספרים של הגיליון */
+  const bad=[],row=[];for(const p of S10D.parking){const n=S10_STALLS.filter(s=>s.lot===p.id).length,t=S10_TRUCK_STALLS.filter(s=>s.lot===p.id).length,st=S10_IMPORT_STALLS.filter(s=>s.lot===p.id).length;row.push(p.id+' '+(n+t+st));
+    if(n!==p.numbers.n||t!==p.numbers.trucks||st!==p.numbers.store)bad.push(p.id+': '+n+'/'+t+'/'+st+' (צריך '+p.numbers.n+'/'+p.numbers.trucks+'/'+p.numbers.store+')')}
+  push('c6d6_parking_numbers',!bad.length,row.join(' · ')+(bad.length?' · '+bad.join(' | '):' · לפי הגיליון והשינוי של הבעלים ('+S10_IMPORT_STALLS.length+' מקומות במסוף היבוא)'))}catch(e){push('c6d6_parking_numbers',false,'שגיאה '+e)}
+ try{/* 10 · שום דבר על כביש */
+  const bad=[],T=(id,r)=>{const a=onAsph(r);if(a)bad.push(id+' על '+a)};let n=0;
+  for(const b of S10_BUILDINGS){const C=S10_CANOPY[b.id];if(!C){T(b.id,[b.x,b.y,b.x+b.w,b.y+b.h]);n++}else{C.booths.forEach((r,i)=>{T(b.id+' ביתן '+(i+1),r);n++});C.posts.forEach((p,i)=>{T(b.id+' עמוד '+(i+1),[p[0]-2,p[1]-2,p[0]+2,p[1]+2]);n++})}}
+  for(const f of S10D.facilities){T(f.id,f.rect||[f.disc[0]-f.disc[2],f.disc[1]-f.disc[2],f.disc[0]+f.disc[2],f.disc[1]+f.disc[2]]);n++}
+  for(const s of[...S10_STALLS,...S10_TRUCK_STALLS,...S10_IMPORT_STALLS]){T(s.id,[s.x,s.y,s.x+s.w,s.y+s.h]);n++}
+  for(const o of PARKED_CARS)if(/^PC10-/.test(o.id)){T(o.id,[o.x-10,o.y-10,o.x+10,o.y+10]);n++}
+  for(const s of PORT_SOLIDS)if(s.s10){T(s.id,s.r!=null&&s.cx!=null?[s.cx-s.r,s.cy-s.r,s.cx+s.r,s.cy+s.r]:[s.x,s.y,s.x+s.w,s.y+s.h]);n++}
+  for(const l of S10_LIGHTS){T(l.id,[l.x-2,l.y-2,l.x+2,l.y+2]);n++}for(const t of S10_TREES){T('עץ '+R(t.x)+','+R(t.y),[t.x-3,t.y-3,t.x+3,t.y+3]);n++}
+  for(const c of S10D.pipe.columns){T(c.id,[c.x-6,c.y-6,c.x+6,c.y+6]);n++}
+  push('c6d6_nothing_on_road',!bad.length,n+' פריטים של C6 ו-D6 מול האספלט של '+ASPH.length+' דרכים'+(bad.length?' · '+bad.slice(0,8).join(' | '):' · אף אחד לא על כביש'))}catch(e){push('c6d6_nothing_on_road',false,'שגיאה '+e)}
+ try{/* 11 · שום עץ על חניה, על מעבר של חניון, על נתיב פנימי או על כניסה */
+  const Z=[...[...S10_STALLS,...S10_TRUCK_STALLS,...S10_IMPORT_STALLS].map(s=>[s.x,s.y,s.x+s.w,s.y+s.h]),...S10D.parking.flatMap(p=>[p.aisle,p.lane_in,p.east_lane].filter(Boolean)),...S10D.site_roads.map(r=>r.rect),...S10_ACCESS.map(a=>[a.x,a.y,a.x+a.w,a.y+a.h])],bad=[];
+  for(const t of S10_TREES)if(Z.some(r=>t.x>r[0]-2&&t.x<r[2]+2&&t.y>r[1]-2&&t.y<r[3]+2))bad.push(R(t.x)+','+R(t.y));
+  push('c6d6_trees_clear',!bad.length,S10_TREES.length+' עצים ('+S10X.trees.out.length+' ירדו: על כביש, בצומת, מול כניסה או במפרץ) מול '+Z.length+' חניות, מעברים, נתיבים וכניסות'+(bad.length?' · עץ על: '+bad.join(' | '):' · פנוי'))}catch(e){push('c6d6_trees_clear',false,'שגיאה '+e)}
+ try{/* 12 · הפרטים החיים (D‑512) */
+  const row=[],bad=[];for(const z of['C6','D6']){const L=TC_LIVE.zones[z].movers(0,true),k=new Set(L.map(m=>m.kind));row.push(z+': '+L.length+' פרטים, '+k.size+' סוגים');if(L.length<8||['מים','רוח','אנשים','רכב'].some(q=>!k.has(q)))bad.push(z)}
+  const le=S10LIVE.err(),ke=S10KIT.err();push('c6d6_live_details',!bad.length&&!le&&!ke,row.join(' · ')+(le?' · שגיאה: '+le:'')+(ke?' · שגיאה בערכה: '+ke:''))}catch(e){push('c6d6_live_details',false,'שגיאה '+e)}
+ try{/* 13 · הסיפורים: רשומים, 5 צעדים, כל צעד במקום אמיתי */
+  const bad=[],reg=navPoiRegistry();for(const id of['S10-ST-C6','S10-ST-D6']){const q=S9STORY.ST[id];if(!q){bad.push(id+': לא רשום');continue}const st=q.steps||[];if(st.length!==5)bad.push(id+': '+st.length+' צעדים');for(const s of st)if(!reg[s.poi]&&!S10_INTERACTIONS[s.poi])bad.push(id+': אין מקום '+s.poi)}
+  push('c6d6_stories',!bad.length,'"המכולה שלא הגיעה" (C6) · "הרכב החדש לסוכנות" (D6)'+(bad.length?' · '+bad.join(' | '):' · 5 צעדים בכל סיפור, כל צעד במקום (F) אמיתי'))}catch(e){push('c6d6_stories',false,'שגיאה '+e)}
+ try{/* 14 · המנופים על המסילה שלהם, ממזרח לצינור; עמודי הצינור */
+  const cr=S10KIT.c6d6.cranes(),rail=PORT_CRANE_RAILS[0],bad=[];if(cr.length!==3)bad.push(cr.length+' מנופים');for(const c of cr){if(c.x-c.hw-12<rail.x0||c.x+c.hw+12>rail.x1)bad.push(c.id+' מחוץ למסילה');if(c.x-c.hw-12<S10D.pipe.crane_limit_x)bad.push(c.id+' מתחת לצינור')}
+  for(let i=1;i<cr.length;i++)if(cr[i].x-cr[i-1].x<2*cr[i].hw+24)bad.push(cr[i-1].id+' נוגע ב-'+cr[i].id);if(S10D.pipe.columns.length!==10)bad.push(S10D.pipe.columns.length+' עמודים');
+  for(const c of S10D.cranes)if(c.spec_x!=null&&Math.abs(c.spec_x-c.x)>1)dev('מנוף '+c.id,'x '+c.spec_x,'x '+c.x,'הרגליים של מנוף הרציף של המשחק (פתח 18.4 מ׳) והתאים של האונייה העוגנת');
+  push('c6d6_cranes_pipe',!bad.length,'3 מנופי רציף ב-x '+cr.map(c=>R(c.x)).join(', ')+' על המסילה '+rail.x0+'–'+rail.x1+' · PIPE-REF על '+S10D.pipe.columns.length+' עמודים ב-x '+S10D.pipe.x+(bad.length?' · '+bad.join(' | '):''))}catch(e){push('c6d6_cranes_pipe',false,'שגיאה '+e)}
+ try{/* 15 · האוניות: עוגנות במים, לא נוגעות זו בזו ולא במזחים */
+  const S=['BRT-OIL','BRT-C6','BRT-D6','TUG-1','TUG-2'].map(id=>S10KIT.c6d6.shipOf(id)).filter(Boolean),box=s=>{const v=Math.abs(Math.sin(s.h||0))>.5,a=v?s.B/2:s.L/2,b=v?s.L/2:s.B/2;return[s.x-a,s.y-b,s.x+a,s.y+b]},bad=[],P=S10D.pier,TP=S10D.tug_pier.rect;
+  for(const s of S){const b=box(s);if(b[1]<5200)bad.push(s.id+' על הרציף');for(const o of S)if(o!==s&&o.id>s.id&&hitR(b,box(o)))bad.push(s.id+' × '+o.id);if(hitR(b,P.trestle)||hitR(b,P.head))bad.push(s.id+' × מזח הנפט');if(hitR(b,TP))bad.push(s.id+' × רציף הגוררות')}
+  push('c6d6_ships_moored',S.length===5&&!bad.length,S.map(s=>s.id).join(', ')+(bad.length?' · '+bad.join(' | '):' · עוגנות במים, כל אחת במקום שלה (לא מופיעות ולא נעלמות)'))}catch(e){push('c6d6_ships_moored',false,'שגיאה '+e)}
+ return out}
+window.__TC_C6D6=c6d6Audit;
+/* הבדיקה נכנסת ל-roadAudit של המשחק (שורה אחת), כדי שכל מסירה תריץ אותה */
+{const pA=roadAudit;roadAudit=function(){const a=pA.apply(this,arguments);try{if(a&&Array.isArray(a.checks)){const q=c6d6Audit(),f=q.checks.filter(c=>!c.ok);a.checks.push({name:'c6d6_zone_by_map',ok:q.ok,detail:q.checks.length+' בדיקות של C6 ו-D6 מול המפה · '+q.dev.length+' סטיות רשומות'+(f.length?' · נכשל: '+f.map(c=>c.name+' — '+c.detail).join(' | ').slice(0,600):' · כולן עוברות')});
+   if(!q.ok){a.ok=false;if(Array.isArray(a.issues))a.issues.push('c6d6_zone_by_map')}}}catch(e){}return a}}
+/* ==== S10 א · C6 ו-D6 — התאמות וחיבורים מאוחרים (אחרי fix2 / fix3, רשת הכבישים והצייר של כלי השיט — 074b) ==========================================
+   (1) נקודות החיבור בדרכים החדשות — הקווים ממשיכים, ובכיפוף חיבור משופע (המנגנון של fix2, D‑548): C6-NB על שדרת הנמל (TMP-S6-1 יצא),
+       K385_443 על דרך השער הראשי (המעבר מקו הצומת של המשחק, x 3836, לקו של המפה, x 3850).
+   (3) החיבור של ערכת הנמל (021e) לפריים: האוניות והמזחים עם האוניות של הנמל (הצייר של כלי השיט מחליף את drawPortShips — לכן כאן, אחריו);
+       הערימות ורגלי המנופים בתור של ה-3/4; ראש המנופים עם מנופי הנמל.
+   (2) העץ של שדרת הנמל שהמפרץ של ST-07 הזיז מערבה (fix3) נעצר מול הכניסה של משאיות C5 (x 3315) — יוצא, כמו בבסיס. */
+var S10_LATE={joints:[],trees:[],err:null};
+try{for(const id of['C6-NB','K36_49'])if(!FX2_JOINT_IDS.includes(id)){FX2_JOINT_IDS.push(id);S10_LATE.joints.push(id)}FX2.joints=null}catch(e){S10_LATE.err='joints '+String(e&&e.message||e)}
+try{for(let i=PORT_TREES.length-1;i>=0;i--){const t=PORT_TREES[i];if(Math.abs(t.x-C5_PORT_X)<32&&t.y>4300&&t.y<4420){S10_LATE.trees.push([t.id,Math.round(t.x),Math.round(t.y)]);PORT_TREES.splice(i,1);
+   const k=PORT_SOLIDS.findIndex(s=>s.id===t.id);if(k>=0)PORT_SOLIDS.splice(k,1)}}}catch(e){S10_LATE.err='trees '+String(e&&e.message||e)}
+
+{const pS=drawPortShips;drawPortShips=function(v,now){pS.apply(this,arguments);try{S10KIT.ships(v,now)}catch(e){S10KIT.E.err=S10KIT.E.err||'ships '+e}};
+ const pC=drawPortCranes;drawPortCranes=function(v,now){pC.apply(this,arguments);if(WTC_LP===1)return;try{S10KIT.stsAll(now,'over')}catch(e){S10KIT.E.err=S10KIT.E.err||'cranes '+e}};
+ const pB=c34Begin;c34Begin=function(now){pB.apply(this,arguments);try{if(!MAPBASE.pass&&ctx.canvas===cv&&WTC_MODE!==1&&portInView()){S10KIT.yard(now);S10KIT.stsAll(now,'begin')}}catch(e){S10KIT.E.err=S10KIT.E.err||'c34 '+e}}}
+
+/* המנחת במרכז הגג המצויר של המנהלת (הגג של מבנה 'fit' הוא [y, y+h−H]); Ø 11 מ׳ נשמר — הלוח בולט 6 פיקסלים מעל החזית הדרומית */
+try{const b=S10BL['D6-ADMIN'],H=s9H(b);S10_HELI.y=Math.round(b.y+(b.h-H)/2+H+3)}catch(e){}
+/* ==== S10 ג (10.11) · הפריקה מקצה לקצה במסוף היבוא (D6), מוביל הרכב אל הסוכנות ב-D3 (CAR-01), והנעילה של מעבר המסילה (D‑621, D‑623, D‑632) ====
+   הציור: deliver/2026-11-10/s10c/S10c_plan.html. הכול רכבים של הסימולציה (כללים 25 / 32) — ברשימת התנועה (TRAFFIC_CARS), במנגנון של c5 / הלוגיסטיקה:
+   · האונייה "גלי הכרמל" (BRT-D6): בבטן שלה 12 רכבים (רכבים אמיתיים, עם דגם, צבע ושורה), צמודים לאונייה כשהיא נעה. היא עוגנת, הרמפה יורדת רק כשהמעבר
+     נעול (רכבת העבודה SHT-C6 עומדת במקום בטוח — מערבית למעבר — ומחכה שם מחזור שלם של 740 שנ׳, כדי שהקשר שלה ל-FRT-3 לא ישתנה), והרכבים יוצאים
+     אחד אחד: ברמפה, על מזח הרמפה, קו עצירה לפני המעבר, המעבר, קו עצירה לפני דרך הרציף (מחכים לפער בשני הנתיבים), השער של מסוף היבוא, ונכנסים למקום
+     הפנוי הבא בשורה של הדגם והצבע שלהם (רוורס אל שורה שפונה אל המעבר; קדימה דרך המקום הפנוי שלפניה — אל שורה חיצונית). הרכב החונה נמסר לרשימת החונים
+     באותו מקום. כשהבטן ריקה — הרמפה עולה, האונייה נגררת מהרציף, מסתובבת ויוצאת דרומה אל מעבר לקצה העולם, וחוזרת בבוקר עם רכבים לשורות שהתפנו.
+   · מוביל הרכב (נכס חדש — משאית של 10 מ׳ עם שתי קומות, 3 רכבים): קו לוגיסטיקה CAR-01 (073a). הבית ומקום הלילה — הקצה המערבי של המעבר האמצעי.
+     נהג הנמל מוציא כל רכב מהמקום שלו (מסירה מרשימת החונים לרשימת התנועה באותו מקום), נוסע אל הרמפה האחורית של המוביל, והרכב עולה לקומה שלו.
+     המוביל יוצא דרך המעבר המערבי, המעבר הצפוני ונקודת הדלק אל שדרת הנמל, ובכבישים של מנוע הכבישים אל הסוכנות ב-D3 (המפרץ carrierBay).
+     שם הרכבים יורדים ברוורס, והקונים (ההזמנה של הסוכנות) יוצאים בהם לשדרה — ובכבישים אל היציאה מהעיר במערב (A3W) ומעבר לקצה העולם.
+     רכב שיצא מהעולם — חוזר אל הבטן של האונייה כשהיא בים (מעבר לקצה העולם בדרום). אף רכב לא מופיע ולא נעלם בתוך העולם. */
+var S10CI={on:true,err:null,T:0,ship:null,cars:[],pool:[],stalls:[],orders:0,tok:null,tin:new Set(),pick:null,serial:0,carrier:null,frz:{D:0,cur:null,list:[]},
+ stats:{released:0,parked:0,parkedRight:0,parkedWrong:0,loaded:0,delivered:0,left:0,refilled:0,calls:[],car:{},xViol:0,xCarTrain:0,xSamples:0,maxStill:0,still20:[],lost:0},log:[]};
+(function(){try{
+ const PI=Math.PI,AY=4682,GATE_X=4236,LANE_X=4225,W1Y=5226,W2Y=5017,ENTRY_Y=4712,R=26,CC={x:3700,y:4682},D3B={x:4355,y:2252};
+ const ROWCAR={4386:['VH-SU-03','SUV',1],4440:['VH-SD-01','Sedan',4],4548:['VH-SD-02','Sedan',1],4602:['VH-SU-03','SUV',6],4708:['VH-HB-02','Compact',3],4762:['VH-HB-02','Compact',2]};
+ const ROWNAME={4386:'N1',4440:'N2',4548:'1',4602:'2',4708:'3',4762:'4'};
+ const lg=(m)=>{S10CI.log.push([+S10CI.T.toFixed(1),m]);if(S10CI.log.length>300)S10CI.log.shift()};
+ const nowMs=()=>(typeof SIM_LOOP!=='undefined'&&SIM_LOOP.simNow!=null?SIM_LOOP.simNow:performance.now())+(typeof SIM_BENCH_OFS!=='undefined'?SIM_BENCH_OFS:0);
+ const nd=id=>NODES.find(n=>n.id===id);
+ const proj=(id,d,x,y)=>{const e=EDGES.find(q=>q.id===id),A=nd(e.a),Bn=nd(e.b),s0=d>0?A:Bn,s1=d>0?Bn:A,dx=s1.x-s0.x,dy=s1.y-s0.y,L=Math.hypot(dx,dy);return Math.max(.01,Math.min(.99,((x-s0.x)*dx+(y-s0.y)*dy)/(L*L)))};
+ const arc=(P,cx,cy,r,a0,a1,n)=>lgArc(P,cx,cy,r,a0,a1,n||8);
+ const bez=(P,p1,p2,p3,n)=>{const p0=P[P.length-1];for(let i=1;i<=n;i++){const u=i/n,a=(1-u)**3,b=3*u*(1-u)**2,c=3*u*u*(1-u),d=u**3;P.push([a*p0[0]+b*p1[0]+c*p2[0]+d*p3[0],a*p0[1]+b*p1[1]+c*p2[1]+d*p3[1]])}return P};
+ const wrap=h=>{while(h>PI)h-=2*PI;while(h<=-PI)h+=2*PI;return h};
+
+ // ---------------------------------------------------------------- המקומות במסוף היבוא ----------------------------------------------------------------
+ /* בסבב: המקומות שמערבית לנתיב מהשער (x 3810–4180) בשורות 1–4; לא: N1 / N2 והחלק המערבי של שורה 1 (מול המעבר הצפוני — אחסון ארוך),
+    המקומות המסומנים בפסים (המשאית של המחסן והמלגזה), IM-45 (נהג היבוא, D6-L1) והמקום שמאחוריו */
+ const ST=S10CI.stalls,BYID={};
+ for(const s of S10_IMPORT_STALLS){const o={id:s.id,s,cx:s.x+s.w/2,cy:s.y+s.h/2,ry:s.ry!=null?s.ry:s.y,rot:s.rot,nose:s.nose,car:null,res:null,t:0,front:null,type:null,cyc:false};ST.push(o);BYID[s.id]=o}
+ for(const o of ST){const ry=o.s.y;o.ry=ry;
+  if(ry===4602)o.type='R2';else if(ry===4708)o.type=o.nose==='N'?'R3e':'R3w';else if(ry===4548&&o.s.x>=3932)o.type='R1e';else if(ry===4762)o.type='R4';
+  if(o.type==='R1e')o.front=ST.find(q=>q.s.y===4602&&Math.abs(q.cx-o.cx)<4)||null;
+  if(o.type==='R4')o.front=ST.find(q=>q.s.y===4708&&Math.abs(q.cx-o.cx)<4)||null;
+  o.cyc=!!o.type&&o.cx>3810&&o.cx<=4180&&!['IM-15','IM-31','IM-32','IM-34','IM-45'].includes(o.id)&&(!(o.type==='R1e'||o.type==='R4')||(!!o.front&&o.front.id!=='IM-45'))}
+ const pkIdx=id=>PARKED_CARS.findIndex(p=>p.id===id);
+ /* כיס הסיבוב של המוביל בפינה הצפונית-מערבית (IM-88 / IM-89 בשורה N2 — מסומנים בפסים, ריקים; כמו המקומות של משאית המחסן): בלעדיהם הגוף של משאית של 10 מ׳ עובר מעל שני הרכבים בסיבוב מהמעבר המערבי למעבר הצפוני */
+ const POCKET=['IM-88','IM-89'];for(const id of POCKET){const i=pkIdx('PC10-'+id);if(i>=0)PARKED_CARS.splice(i,1)}S10CI.pocket=POCKET;
+ for(const o of ST){const i=pkIdx('PC10-'+o.id);if(i>=0)o.car=PARKED_CARS[i]}
+ const parkedBust=()=>{try{VehicleWorld.serial++}catch(e){}};
+
+ // ---------------------------------------------------------------- המכוניות של הסבב ----------------------------------------------------------------
+ function mkCar(ry){const m=ROWCAR[ry];const id='S10C-CAR-'+(++S10CI.serial);
+  const v={id,asset:m[0],ref:m[1],kind:'civilian',label:'רכב חדש מהיבוא · '+m[0],colorIndex:m[2],edgeId:'PT-E1',dirSign:1,t:.5,lane:0,lanePref:0,laneTarget:0,routeIndex:0,
+   x:-9999,y:-9999,heading:0,speed:0,targetSpeed:78,wait:false,stuck:0,ghost:0,plan:null,turn:null,hop:0,c5:{mode:'s10c',route:[],finalT:0,purpose:'s10c',path:null},
+   s10c:{m:'pool',ry,want:ry,legs:null,li:0,s:0,started:false,wait:0,waitBy:null,still:0,maxStill:0,z:0,slot:-1,stall:null,lx:0,ly:0}};S10CI.cars.push(v);return v}
+ const inList=v=>TRAFFIC_CARS.indexOf(v)>=0;
+ const addList=v=>{if(!inList(v))TRAFFIC_CARS.push(v)};
+ const rmList=v=>{const i=TRAFFIC_CARS.indexOf(v);if(i>=0)TRAFFIC_CARS.splice(i,1)};
+ const special=o=>!!(o&&o.s10c&&(o.s10c.m==='hold'||o.s10c.m==='deck'||o.s10c.m==='pool'));
+
+ // ---------------------------------------------------------------- האונייה ----------------------------------------------------------------
+ const SHIP=S10KIT.c6d6.shipOf('BRT-D6'),DOCK={x:SHIP.x,y:SHIP.y,h:SHIP.h||0},OFF={x:DOCK.x,y:DOCK.y+170},SEA={x:DOCK.x,y:WORLD.maxY+420};
+ const HOLD=[];for(let i=0;i<12;i++)HOLD.push({lx:-SHIP.L/2+44+(i>>1)*62,ly:(i&1?21:-21)});
+ const sh=S10CI.ship={ph:'docked',t:0,a:0,hold:[],x:DOCK.x,y:DOCK.y,h:DOCK.h,call:null,day:-1,lastRel:-99,departDay:-1};
+ const setShip=(x,y,h)=>{sh.x=x;sh.y=y;sh.h=h;SHIP.x=x;SHIP.y=y;SHIP.h=h;SHIP.away=!(Math.abs(x-DOCK.x)<.5&&Math.abs(y-DOCK.y)<.5&&Math.abs(h-DOCK.h)<1e-3)};
+ const holdPose=i=>{const H=HOLD[i],c=Math.cos(sh.h),s=Math.sin(sh.h);return{x:sh.x+c*H.lx-s*H.ly,y:sh.y+s*H.lx+c*H.ly,heading:wrap(sh.h+PI)}};
+ function freeForRow(){const n={};for(const o of ST)if(o.cyc&&!o.car&&!o.res)n[o.ry]=(n[o.ry]||0)+1;return n}
+ /* הבטן מתמלאת: לכל שורה — כמה מקומות פנויים יש בה (כך השורות חוזרות לאותו מספר); עד 12 */
+ function fillHold(fromPool){const free=freeForRow(),rows=Object.keys(free).map(Number).sort((a,b)=>a-b);let k=0;sh.hold.length=0;
+  const want=[];for(let pass=0;want.length<12&&pass<12;pass++){let added=false;for(const ry of rows)if(free[ry]>pass&&want.length<12){want.push(ry);added=true}if(!added)break}
+  for(const ry of want){let v=fromPool?S10CI.pool.shift():null;if(fromPool&&!v)break;if(!v)v=mkCar(ry);const m=ROWCAR[ry];v.asset=m[0];v.ref=m[1];v.colorIndex=m[2];v.s10c.ry=ry;v.s10c.want=ry;
+   if(fromPool){v.id='S10C-CAR-'+(++S10CI.serial);v.label='רכב חדש מהיבוא · '+m[0]}
+   v.s10c.m='hold';v.s10c.slot=k;const p=holdPose(k);v.x=p.x;v.y=p.y;v.heading=p.heading;v.speed=0;addList(v);sh.hold.push(v);k++}
+  return sh.hold.length}
+ fillHold(false);
+ const callOpen=()=>{sh.call={n:sh.hold.length,tArr:S10CI.T,clkArr:lgMinOfDay(),tDown:null,clkDown:null,tFirst:null,tEmpty:null,clkEmpty:null,tAllParked:null,clkAllParked:null,parked:0,released:0};S10CI.stats.calls.push(sh.call)};
+ callOpen();
+
+ // ---------------------------------------------------------------- הנעילה של המעבר: רכבת העבודה מחכה מחזור שלם במקום בטוח ----------------------------------------------------------------
+ const CYC_MS=740000,F=S10CI.frz;
+ function tau(now){let D=F.D;const c=F.cur;if(c&&now>=c.a){if(c.end==null||now<c.end)return c.a-D;D+=c.end-c.a}return now-D}
+ const __rlState=rlState;
+ rlState=function(T,now){if(T&&T.id==='SHT-C6'&&(F.D||F.cur)){const L=nowMs();if(Math.abs(now-L)<60000)now=tau(now);else now=now-F.D}return __rlState(T,now)};
+ function s6Safe(){const T=rlTrain('SHT-C6');if(!T||T.err)return true;const S=__rlState(T,tau(nowMs()));return !!S&&!S.moving&&(S.R.stop==='work'||S.R.stop==='park')}
+ function lockOn(){if(F.cur)return true;if(!s6Safe())return false;F.cur={a:nowMs(),end:null};F.list.push(F.cur);lg('המעבר ננעל: רכבת העבודה מחכה');return true}
+ function lockOff(){const c=F.cur;if(!c||c.end!=null)return;const now=nowMs(),k=Math.max(1,Math.ceil((now-c.a)/CYC_MS));c.end=c.a+k*CYC_MS;lg('הנעילה תשתחרר בעוד '+((c.end-now)/1000).toFixed(0)+' שנ׳')}
+ function lockTick(){const c=F.cur;if(c&&c.end!=null&&nowMs()>=c.end){F.D+=c.end-c.a;F.cur=null;lg('המעבר פתוח לרכבות')}}
+ /* רכבת על המעבר: גוף קרון חופף את הנתיב המסומן (x 4176–4274) על W1 / W2 */
+ function trainOnX(t){try{for(const sn of rlSnap(t))for(const cr of sn.cars){if(cr.y<5100||cr.y>5180)continue;const L=(cr.car&&cr.car.len||150)/2;if(cr.x+L>4176&&cr.x-L<4274)return sn.S&&sn.S.T?sn.S.T.id:'?'}}catch(e){}return null}
+ let xC={t:-1,v:false};
+ S10CI.xClosed=function(now){now=now==null?nowMs():now;const k=Math.round(now/250);if(xC.t===k)return xC.v;let v=false;for(const d of[0,2000,4000,6000,8000])if(trainOnX(now+d)){v=true;break}xC={t:k,v};return v};
+ S10CI.trainOnX=trainOnX;
+
+ // ---------------------------------------------------------------- התנועה: צעד של מכונית בנתיב שלה ----------------------------------------------------------------
+ let D6L1=null;try{D6L1=()=>S10LIVE.imPose(nowMs())}catch(e){}
+ function blk(v,p,ign){let me;try{me=vehicleCollisionShape(v.asset,v.ref,p.x,p.y,p.heading)}catch(e){return null}
+  const chk=o=>{if(!o||o===v||special(o)||(ign&&ign(o)))return false;if(!(o.x>-9000)||Math.abs(o.x-p.x)>170||Math.abs(o.y-p.y)>170)return false;let b;try{b=trafficVehicleShape(o)}catch(e){return false}return vehicleBodiesOverlap(me,b,1.2)};
+  for(const o of TRAFFIC_CARS)if(chk(o)){try{if(movingAwayFrom2(v,p,o.id))continue}catch(e){}return o.id}
+  try{for(const o of BUS_VEHICLES)if(chk(o))return o.id}catch(e){}
+  try{for(const o of a4FleetActors())if(chk(o))return o.id}catch(e){}
+  try{if(PlayerProfile.mode==='vehicle'&&vehicleBodiesOverlap(me,trafficVehicleShape(PlayerCar),1.2))return'PLAYER-CAR'}catch(e){}
+  try{if(PlayerProfile.mode!=='vehicle'&&pointHitsVehicleBody(PlayerPed.x,PlayerPed.y,PLAYER_PERSON_RADIUS,me,1))return'PLAYER-PED'}catch(e){}
+  try{if(D6L1&&Math.abs(p.x-4120)<200&&Math.abs(p.y-4710)<90){const q=D6L1();if(q&&vehicleBodiesOverlap(me,vehicleCollisionShape('VH-HB-02','Compact',q.x,q.y,q.h),1.2))return'D6-L1'}}catch(e){}
+  return null}
+ function leg(pts,o){o=o||{};return{P:lgPath(pts),rev:!!o.rev,v:o.v||22,gate:o.gate||null,end:o.end||null,start:o.start||null,ign:o.ign||null,z:o.z||null,st:o.st||null}}
+ function setLegs(v,L){const g=v.s10c;g.legs=L;g.li=0;g.s=0;g.started=false;g.wait=0}
+ function drive(v,dt,L){const g=v.s10c,P=L.P,room=P.total-g.s,want=Math.min(L.v,Math.sqrt(36*Math.max(0,room))+2.5);v.speed=Math.min(want,(v.speed||0)+16*dt);
+  const ns=Math.min(P.total,g.s+v.speed*dt),p=lgPose(P,ns),h=wrap(L.rev?p.heading+PI:p.heading),q={x:p.x,y:p.y,heading:h};
+  const by=blk(v,q,L.ign);if(by){v.speed=0;v.wait=true;g.blk=(g.blk||0)+dt;g.waitBy=by;return false}
+  g.blk=0;v.wait=false;g.s=ns;v.x=p.x;v.y=p.y;v.heading=h;if(L.z)g.z=L.z(ns/Math.max(1,P.total));return ns>=P.total-.05}
+ function stepLegs(v,dt){const g=v.s10c,L=g.legs&&g.legs[g.li];if(!L)return true;
+  if(!g.started){const by=L.gate?L.gate(v):null;if(by){v.speed=0;v.wait=true;g.wait+=dt;g.waitBy=by;return false}g.started=true;g.s=0;g.wait=0;g.waitBy=null;if(L.st)g.st=L.st;if(L.start)L.start(v)}
+  if(drive(v,dt,L)){g.li++;g.started=false;g.s=0;if(L.end)L.end(v);return g.li>=(g.legs?g.legs.length:0)}return false}
+
+ // ---------------------------------------------------------------- הדרכים: מהבטן למקום ----------------------------------------------------------------
+ const mine=v=>S10CI.cars.filter(o=>o!==v&&!special(o)&&o.s10c.m!=='parked'&&o.s10c.m!=='gone');
+ const inBox=(o,b)=>o.x>b[0]&&o.x<b[2]&&o.y>b[1]&&o.y<b[3];
+ function roadBusy(){const L=[];try{for(const o of TRAFFIC_CARS)L.push(o)}catch(e){}try{for(const o of BUS_VEHICLES)L.push(o)}catch(e){}try{for(const o of a4FleetActors())L.push(o)}catch(e){}try{if(PlayerProfile.mode==='vehicle')L.push(PlayerCar)}catch(e){}
+  for(const o of L){if(special(o)||(o.s10c&&o.s10c.m!=='road'))continue;if(!(Math.abs(o.y-4900)<48))continue;const c=Math.cos(o.heading||0),dx=o.x-LANE_X;
+   if(Math.abs(dx)<75)return o.id||'?';if(!((o.speed||0)>1))continue;if(c>.4&&dx<0&&dx>-430)return o.id||'?';if(c<-.4&&dx>0&&dx<430)return o.id||'?'}return null}
+ function gateRail(v){if(S10CI.xClosed())return'מעבר המסילה סגור';for(const o of mine(v))if(inBox(o,[4176,4975,4276,5196]))return o.id;return null}
+ function gateRoad(v){if(S10CI.pick)return'נהג הנמל מסיע רכב אל המוביל: '+S10CI.pick;const by=roadBusy();if(by)return'דרך הרציף: '+by;S10CI.tin.add(v.id);return null}
+ function exitLegs(v){const p0=[v.x,v.y],A=[p0];lgLine(A,p0[0]-20,p0[1]);lgEase(A,p0[0]-20,p0[1],4262,5271,8,'x');lgLine(A,4204,5271);bez(A,[4168,5271],[LANE_X,5262],[LANE_X,W1Y],14);
+  return[leg(A,{v:18,st:'jetty',z:null,start:x=>{const g=x.s10c;S10CI.stats.car[x.id]=Object.assign(S10CI.stats.car[x.id]||{},{tExit:S10CI.T,row:ROWNAME[g.want]})},end:x=>{const c=S10CI.stats.car[x.id];if(c)c.tRamp=S10CI.T}}),
+   leg([[LANE_X,W1Y],[LANE_X,W2Y]],{v:28,gate:gateRail,st:'rail'}),
+   leg((()=>{const B=[[LANE_X,W2Y]];lgLine(B,LANE_X,4846);lgEase(B,LANE_X,4846,GATE_X,4790,6,'y');lgLine(B,GATE_X,4800);return B})(),{v:34,gate:gateRoad,st:'road'})]}
+ /* מהשער אל המקום (רוורס או קדימה, לפי השורה) */
+ function inLegs(o){const cx=o.cx,cy=o.cy,A=[[GATE_X,4800]];lgLine(A,GATE_X,ENTRY_Y);arc(A,GATE_X-30,ENTRY_Y,30,0,-PI/2,6);const L=[];
+  if(o.type==='R2'||o.type==='R3e'){lgLine(A,cx-R,AY);L.push(leg(A,{v:26,st:'term'}));const B=[[cx-R,AY]];if(o.type==='R2')arc(B,cx-R,AY-R,R,PI/2,0,8);else arc(B,cx-R,AY+R,R,-PI/2,0,8);lgLine(B,cx,cy,6);L.push(leg(B,{v:12,rev:true,st:'term'}))}
+  else{lgLine(A,cx+R,AY);if(o.type==='R1e')arc(A,cx+R,AY-R,R,PI/2,PI,8);else arc(A,cx+R,AY+R,R,-PI/2,-PI,8);lgLine(A,cx,cy,6);L.push(leg(A,{v:26,st:'term'}))}
+  return L}
+ /* מהמקום אל הרמפה של המוביל (המוביל במפרץ שלו בקצה המערבי של המעבר האמצעי, החזית מערבה) */
+ const SLOT=[{lx:20,z:3.4},{lx:-30,z:3.4},{lx:-20,z:1.05}];   /* קומה עליונה מעל התא (כמו מוביל אמיתי) וקומה תחתונה מאחורי התא */
+ function outLegs(o,k){const cx=o.cx,cy=o.cy,L=[],W=[];const cc=S10CI.carrier;
+  if(o.type==='R2'){const A=[[cx,cy]];lgLine(A,cx,AY-R,6);arc(A,cx-R,AY-R,R,0,PI/2,8);L.push(leg(A,{v:10}));W.push([cx-R,AY])}
+  else if(o.type==='R3e'){const A=[[cx,cy]];lgLine(A,cx,AY+R,6);arc(A,cx-R,AY+R,R,0,-PI/2,8);L.push(leg(A,{v:10}));W.push([cx-R,AY])}
+  else if(o.type==='R3w'||o.type==='R4'){const A=[[cx,cy]];lgLine(A,cx,AY+R,6);arc(A,cx+R,AY+R,R,PI,PI*1.5,8);L.push(leg(A,{v:9,rev:true}));W.push([cx+R,AY])}
+  else{const A=[[cx,cy]];lgLine(A,cx,AY-R,6);arc(A,cx+R,AY-R,R,PI,PI/2,8);L.push(leg(A,{v:9,rev:true}));W.push([cx+R,AY])}
+  const B=[W[0]];lgLine(B,CC.x+85,AY);L.push(leg(B,{v:22}));
+  const S=SLOT[k],C=[[CC.x+85,AY],[CC.x-S.lx,AY]],ig=x=>x===cc;L.push(leg(C,{v:6,ign:ig,z:u=>S.z*Math.min(1,u*1.6)}));return L}
+
+ // ---------------------------------------------------------------- מסירה בין רשימת החונים לרשימת התנועה ----------------------------------------------------------------
+ function park(v,o){const g=v.s10c;rmList(v);const q=parkInRect('PC10-'+o.id,v.asset,v.ref,o.s,o.rot,v.colorIndex);q.s10=true;q.s10c=v.id;PARKED_CARS.push(q);parkedBust();
+  o.car=q;o.obj=v;o.res=null;o.t=S10CI.T;g.m='parked';g.stall=o.id;v.x=q.x;v.y=q.y;S10CI.stats.parked++;const right=o.ry===g.want&&ROWCAR[o.ry][0]===v.asset;if(right)S10CI.stats.parkedRight++;else S10CI.stats.parkedWrong++;
+  const c=S10CI.stats.car[v.id]||(S10CI.stats.car[v.id]={});c.tPark=S10CI.T;c.stall=o.id;c.right=right;c.rampToStall=c.tRamp!=null?+(S10CI.T-c.tRamp).toFixed(1):null;
+  if(sh.call&&g.call===sh.call){sh.call.parked++;if(sh.call.parked>=sh.call.n){sh.call.tAllParked=S10CI.T;sh.call.clkAllParked=lgMinOfDay()}}S10CI.orders++;
+  S10CI.tin.delete(v.id);lg('חנה: '+v.id+' ← '+o.id)}
+ function unpark(o){const q=o.car,i=PARKED_CARS.indexOf(q);if(i<0)return null;PARKED_CARS.splice(i,1);parkedBust();o.car=null;
+  let v=o.obj||null;o.obj=null;if(!v)v=mkCar(o.ry);   /* אותו רכב שחנה כאן (המאגר שמחכה לאונייה — רק רכבים שיצאו מהעיר) */v.asset=q.asset;v.ref=q.ref;v.colorIndex=q.colorIndex==null?ROWCAR[o.ry][2]:q.colorIndex;v.s10c.ry=o.ry;v.s10c.want=o.ry;
+  v.x=q.x;v.y=q.y;v.heading=q.heading||0;v.speed=0;v.s10c.m='tocar';v.s10c.z=0;v.s10c.stall=null;addList(v);return v}
+
+ // ---------------------------------------------------------------- מוביל הרכב: קו CAR-01 במנגנון הלוגיסטיקה ----------------------------------------------------------------
+ {/* נכנס מדרך הרציף (מערבה, ימינה) בשער של מסוף היבוא — כמו משאית המחסן — צפונה בנתיב מהשער ושמאלה במעבר האמצעי אל הבית שלו; כך הוא לא עובר במקום של משאית המחסן (4322–4422) */
+  const tQ=proj('PT-Q3',-1,4340,4878),EQ=trafficEdgePoint('PT-Q3',-1,tQ,0);
+  const I=[[4340,EQ.y]];lgLine(I,4290,EQ.y);arc(I,4290,EQ.y-50,50,PI/2,PI,10);lgLine(I,4240,4742);arc(I,4180,4742,60,0,-PI/2,12);lgLine(I,CC.x,AY);   /* רדיוס 6 מ׳ — הגוף לא עובר מעל הרכבים של שורה 2 ולא מעל עמדת הבדיקה (נבדק) */
+  const LC=(e,d,def)=>{let l=null;try{l=lane2(e,d,0)}catch(x){}return(l&&l.cnt)||def},kJ=0,   /* כמו שאר משאיות הלוגיסטיקה — אל הנתיב הפנימי (בנתיב הימני נתקעים מאחורי אוטובוס בתחנה או בתור לפנייה) */tJ=proj('AR-S3',1,4113,4300),J=trafficEdgePoint('AR-S3',1,tJ,kJ),Ly=J.y,Rj=Math.max(24,Math.min(44,4368-Ly));   /* הנתיב הימני (שפת המדרכה) */
+  const B=[[CC.x,AY]];lgLine(B,3660,AY);arc(B,3660,4642,40,PI/2,PI,8);lgLine(B,3620,4560);arc(B,3659,4560,39,PI,PI*1.5,8);lgLine(B,3720,4521);lgEase(B,3720,4521,3900,4514,8,'x');lgLine(B,4045,4514);arc(B,4045,4476,38,PI/2,0,10);lgLine(B,4083,Ly+Rj);arc(B,4083+Rj,Ly+Rj,Rj,PI,PI*1.5,8);   /* בין N2 לשורה 1 קרוב יותר ל-N2, כדי שהזנב לא יעבור מעל הרכבים של שורה 1 בפנייה אל הנתיב היוצא של הדלק (נבדק: 0 נגיעות ברכבים חונים ובמכשולים) */
+  const S={id:'D6C',zone:'D6',label:'מסוף היבוא — מוביל הרכב בקצה המערבי של המעבר האמצעי',arrive:{edge:'PT-Q3',dir:-1,t:tQ},in:I,bay:{x:CC.x,y:AY,h:PI},outA:null,outB:B,
+   join:{edge:'AR-S3',dir:1,t:proj('AR-S3',1,4083+Rj,Ly),k:kJ},inWatch:[],outWatch:[{box:[3850,Ly-26,4113,Ly+26],dir:[1,0]}]};
+  S.pIn=lgPath(S.in);S.pA=null;S.pB=lgPath(S.outB);LOGI.sites.D6C=S;
+  /* מגיע מדרום בנתיב הפנימי צפונה ופונה שמאלה אל הסוכנות (אחרי פער בנתיבים דרומה) — הדרך הקצרה מהנמל (8 קטעים); הקונים יוצאים ימינה לנתיב הימני דרומה */
+  const tN=proj('D3-RE-C',-1,4641,2300),LN=trafficEdgePoint('D3-RE-C',-1,tN,0),xN=LN.x,RN=48,kS=0,tD=proj('D3-RE-C',1,4504,2280),xL=trafficEdgePoint('D3-RE-C',1,tD,kS).x;
+  const I3=[[xN,2300]];arc(I3,xN-RN,2300,RN,0,-PI/2,10);lgLine(I3,D3B.x,D3B.y);
+  /* LC-D3 מערבה נגמר ברחוב ללא מוצא (D3L → E39_19): המוביל יוצא שמאלה, מזרחה, אל השדרה (ברחוב המקומי, אחרי פער בשני הכיוונים) */
+  const tW=proj('LC-D3',-1,4262,2572),LE=trafficEdgePoint('LC-D3',-1,tW,0).y,RW=36;
+  const B3=[[D3B.x,D3B.y]];lgLine(B3,4250,D3B.y);arc(B3,4250,D3B.y+24,24,-PI/2,-PI,8);lgLine(B3,4226,LE-RW);arc(B3,4226+RW,LE-RW,RW,PI,PI/2,8);
+  const S3={id:'D3D',zone:'D3',label:'הסוכנות ב-D3 — המפרץ של מוביל הרכב',arrive:{edge:'D3-RE-C',dir:-1,t:tN},in:I3,bay:{x:D3B.x,y:D3B.y,h:PI},outA:null,outB:B3,
+   join:{edge:'LC-D3',dir:-1,t:proj('LC-D3',-1,4226+RW,LE),k:0},inWatch:[{box:[4480,2252-340,xN-14,2300],dir:[0,1]}],outWatch:[{box:[4200,LE-70,4580,LE-18],dir:[-1,0]},{box:[3880,LE-26,4226,LE+26],dir:[1,0]}]};
+  S3.pIn=lgPath(S3.in);S3.pA=null;S3.pB=lgPath(S3.outB);LOGI.sites.D3D=S3;S10CI.d3={xL,tD,kS};
+  const L={id:'CAR-01',kind:'cars',label:'הרכבים החדשים: מסוף היבוא (D6) ← הסוכנות ב-D3',veh:{id:'LOGI-CC-1',asset:'VH-TR-01',ref:'Truck',label:'מוביל הרכב (קו CAR-01)',color:3},home:'D6C',stops:['D3D'],hours:[8.5,17.5],
+   work:{D6C:{kind:'load',dur:1e9,n:0},D3D:{kind:'unload',dur:1e9,n:0}}};
+  LG_LINES.push(L);LOGI.vehOf=Object.assign(LOGI.vehOf||{},{D6C:L.veh,D3D:L.veh});
+  const V=L.veh,v={id:V.id,asset:V.asset,ref:V.ref,kind:'freight',label:V.label,colorIndex:V.color,edgeId:S.join.edge,dirSign:S.join.dir,t:S.join.t,lane:0,lanePref:0,laneTarget:0,routeIndex:0,
+   x:S.bay.x,y:S.bay.y,heading:S.bay.h,speed:0,targetSpeed:78,wait:false,stuck:0,ghost:0,plan:null,turn:null,hop:0,cc:true,
+   c5:{mode:'bay',route:[],finalT:0,purpose:'logi',path:null},logi:{line:L.id,L,site:L.home,next:0,phase:'work',work:null,load:0,s:0,path:null,wait:0},deck:[null,null,null]};
+  lgWorkStart(v,L.home);TRAFFIC_CARS.push(v);LOGI.veh.push(v);S10CI.carrier=v;S10CI.line=L}
+ const deckN=()=>S10CI.carrier.deck.filter(Boolean).length;
+ function deckPose(k){const c=S10CI.carrier,S=SLOT[k],cs=Math.cos(c.heading),sn=Math.sin(c.heading);return{x:c.x+cs*S.lx,y:c.y+sn*S.lx,heading:c.heading}}
+ /* הטעינה: רכב אחד בכל פעם, הוותיק ביותר שאפשר להוציא (שורה חיצונית — רק כשהמקום שלפניה פנוי) */
+ function pickable(o){if(!o.cyc||!o.car||o.res||o.cx<3815)return false;if(o.front&&(o.front.car||o.front.res))return false;if(VehicleWorld.hidden.has(o.car.id))return false;return true}
+ function carrierTick(dt){const c=S10CI.carrier;if(!c)return;const g=c.logi,W=g.work;
+  if(c.c5.mode==='bay'&&g.site==='D6C'&&W&&!W.done&&W.kind==='load'){
+   const n=deckN(),busy=!!S10CI.pick;
+   if(!busy&&n<3&&S10CI.orders>0&&lgInHours(S10CI.line.hours)&&!S10CI.tin.size&&!arrivalNear()){
+    const C=ST.filter(pickable).sort((a,b)=>(a.t-b.t)||(a.cx-b.cx));const o=C[0];
+    if(o){const v=unpark(o);if(v){o.res=v.id;S10CI.pick=v.id;S10CI.orders--;const k=[0,1,2].find(i=>!c.deck[i]);v.s10c.slot=k;v.s10c.from=o.id;
+      const Ls=outLegs(o,k);Ls[0].start=x=>{o.res=null};Ls[Ls.length-1].end=x=>{x.s10c.m='deck';c.deck[k]=x;S10CI.pick=null;S10CI.stats.loaded++;lg('על המוביל: '+x.id+' (קומה '+k+')')};
+      setLegs(v,Ls);lg('לטעינה: '+o.id+' → '+v.id)}}}
+   if(n===3&&!busy){W.t=W.dur}
+   else if(n>0&&!busy&&(S10CI.orders<=0||!ST.some(pickable))&&lgMinOfDay()>15*60){W.t=W.dur}}
+  if(c.c5.mode==='bay'&&g.site==='D3D'&&W&&!W.done&&W.kind==='unload'){
+   if(!S10CI.unl){const k=[2,1,0].find(i=>c.deck[i]);if(k==null){W.t=W.dur}else{const v=c.deck[k];c.deck[k]=null;S10CI.unl=v.id;v.s10c.m='offdeck';setLegs(v,d3Legs(v));S10CI.stats.delivered++;lg('ירד בסוכנות: '+v.id)}}}}
+ function arrivalNear(){return S10CI.cars.some(o=>o.s10c.m==='exit'&&(o.s10c.st==='rail'||o.s10c.st==='road'||(o.s10c.st==='jetty'&&o.s10c.started)))}
+
+ // ---------------------------------------------------------------- בסוכנות: הרכב יורד ברוורס, והקונה יוצא לשדרה ----------------------------------------------------------------
+ function d3Gap(v){try{for(const o of lgOthers(v)){if(o===v||special(o)||!(o.x>-9000))continue;if(o.x>4478&&o.x<4612&&o.y>2252-320&&o.y<2330)return o.id||'?'}}catch(e){}return null}   /* שלושת הנתיבים דרומה פנויים (הקונה חוצה אל הנתיב הפנימי) */
+ function d3Legs(v){if(S10CI.carrier&&Math.cos(S10CI.carrier.heading||0)>.5&&S10CI.d3E)return S10CI.d3E(v,deckPose(v.s10c.slot),SLOT[v.s10c.slot].z,{leg,arc,lgLine,toRoad,ig:x=>x===S10CI.carrier});return d3LegsW(v)}   /* קווים ה (11.11, הבעלים 01:55 / 02:08): המוביל בחצר האחורית עם החזית מזרחה — הירידה והיציאה לפי S10CI.d3E (074p) */
+ function d3LegsW(v){const p=deckPose(v.s10c.slot),zs=SLOT[v.s10c.slot].z,cc=S10CI.carrier,ig=x=>x===cc,xL=S10CI.d3.xL,r2=Math.max(14,Math.min(60,xL-4476));
+  const A=[[p.x,p.y],[4440,D3B.y]];const B=[[4440,D3B.y]];arc(B,4440,D3B.y+18,18,-PI/2,0,8);
+  const C=[[4458,D3B.y+18]];arc(C,4476,D3B.y+18,18,PI,PI*1.5,8);lgLine(C,xL-r2,D3B.y);arc(C,xL-r2,D3B.y+r2,r2,-PI/2,0,8);
+  return[leg(A,{v:6,rev:true,ign:ig,z:u=>zs*Math.max(0,1-u*1.5)}),leg(B,{v:8,rev:true}),leg(C,{v:18,gate:d3Gap,end:x=>{S10CI.unl=null;toRoad(x,'D3-RE-C',1,proj('D3-RE-C',1,xL,D3B.y+r2),S10CI.d3.kS)}})]

@@ -1,0 +1,1104 @@
+,dir,foot,bus:[xs,ys,Math.PI],busDoor:bd,path,len:g2PathLen(path),R,tc:dir>0?sd.cx-135:sd.cx+135}}
+function s6rNbBoard(L,n){return G2_WALK.pre+L.len/G2_WALK.v+Math.max(0,n-1)*G2_WALK.gap+G2_WALK.post}
+// bay exit / return: straight to the west when the bus clears the tower and the next bay (checked once per bay against the buildings), else
+// round the GLINK block (east on lane L, down GLS, west on the hardstand lane, up GLN, west on lane L) — the way the P6 buses come home
+function s6rNbBayWays(b){const C=s6rNbBayWays.c||(s6rNbBayWays.c={});if(C[b.id])return C[b.id];
+ const Ly=AF.L,r=S6R_BUS.r,vm=AF.VMAX.AB,bld=apttBldShapes(),hits=legs=>{const tr=apttVehTrack('LV-SH-01','probe',0,legs,{}),sh=[];for(let t=0;t<tr.seq.dur;t+=.2){const p=tr.seq.at(t);if(!p)continue;sh.length=0;apttShapes(tr,p,sh);for(const a of sh)for(const q of bld)if(aoC(a,q)||(a.L==='V'&&apttObbHit(a,q,0)))return true}return false};   /* p406 */
+ const exW=apttVehMove([[b.x+40,Ly],[b.x,Ly],[b.x,b.yc]],[r],vm*.45,{rev:true,v0:3,v1:4});
+ const inE=apttVehMove([[b.x-60,Ly],[b.x,Ly],[b.x,b.yc]],[r],vm*.6,{v0:4,v1:3});
+ if(b.row2){const oS=apttVehMove([[AF.GLN,b.yc+16],[AF.GLN,b.yc],[b.x,b.yc]],[16],vm*.45,{rev:true,v0:3,v1:3}),iS=apttVehMove([[AF.GLN,b.yc+60],[AF.GLN,b.yc],[b.x,b.yc]],[16],vm*.45,{v0:3,v1:3});   /* GATE-77 S6b-c · p152 · K-104: bus 3 along the yard lane */
+  return C[b.id]={outWest:false,inEast:false,row2:true,outS:!hits([oS]),inS:!hits([iS])}}   // GATE-77 S6r · M5e: the second row — forward out south, back in from the yard lane
+ return C[b.id]={outWest:!hits([exW]),inEast:!hits([inE])}}
+function s6rNbBuild(v,sd,ac,L,kind,hold,meta){
+ const b=v.bay,vm=AF.VMAX[v.type],tag=(leg,g2)=>{leg.g2=g2;return leg},base={kind,stand:sd.id,code:meta&&meta.code||null,ac,door:L.door,nb:1};
+ const home=[b.x,b.yc,b.th,0,1],gateN=meta&&meta.n||0,hG=g2GateDur(b,gateN),xs=L.bus[0],ys=L.bus[1],r=S6R_BUS.r,r2=S6R_BUS.r2,rS=S6R_BUS.rS,Ly=AF.L,tc=L.tc,yq=Ly-66,GLN=AF.GLN,GLS=AF.GLS,HW=AF.HW,legs=[],W=s6rNbBayWays(b);
+ if(kind==='bus-dep')legs.push(tag(apttHold(home,hG,'svc'),{...base,at:'gate',gate:'load',n:gateN}));   // loading at the bus gate first
+ let e=home,dOut=0,clear=0,x0;
+ const fwd=(list,o={})=>{const m=afMv(list,vm,{th0:e[2],blend:o.blend??28,v0:o.v0??5,v1:o.v1??4});m.kind=o.kind||'out';legs.push(tag(m,base));e=m.endPose();return m};
+ const rev=(list,f=.45,k='back')=>{const {pts,rad}=afPL(list);const m=apttVehMove(pts,rad,vm*f,{rev:true,v0:3,v1:3});m.kind=k;legs.push(tag(m,base));e=m.endPose();return m};
+ if(W.row2){rev([[GLN,b.yc+16],[GLN,b.yc,16],[b.x,b.yc]],.45,'out');fwd([[GLN,b.yc+16,0],[GLN,Ly,r],[GLN-40,Ly,0]]);x0=GLN-40}   /* GATE-77 S6b-c · p152 · K-104 */   // GATE-77 S6r · M5e: out south, east along the yard lane, north up GLN to lane L
+ else if(W.outWest){rev([[b.x+40,Ly],[b.x,Ly,r],[b.x,b.yc]],.45,'out');x0=b.x+40}                                    // back out of the bay, facing west
+ else{const m=g2SExit(b,vm);legs.push(tag(m,base));e=m.endPose();fwd([[b.x-40,Ly,0],[GLS,Ly,r],[GLS,HW,r],[GLN,HW,r],[GLN,Ly,r],[GLN-40,Ly,0]]);x0=GLN-40}   // round the GLINK block
+ const turn=()=>{rev([[tc-60,Ly],[tc,Ly,r2],[tc,yq]]);return tc-60};                                           // backed out of the column, facing east
+ if(L.dir>0){const sw=S6R_BUS.sw,fl=S6R_BUS.flat;
+  fwd([[x0,Ly,0],[xs-fl-20-sw,Ly,0]]);                                                                          // west along lane L, south of the rotunda
+  rev([[xs,ys],[xs-fl,ys,rS],[xs-fl-sw,Ly,rS],[xs-fl-20-sw,Ly]],.45,'out');                                     // back into the slot along a gentle S (heading west)
+  dOut=legs.reduce((a,l)=>a+l.dur,0);legs.push(tag(apttHold(e,hold,'svc'),{...base,at:'ac'}));
+  clear=fwd([[xs,ys,0],[tc,ys,30],[tc,yq,0]],{kind:'back',v0:3}).dur;                                         // out forward to the west in front of the nose, nose first into the column between P1 and P2
+ }else{const sw=S6R_BUS.sw,so=S6R_BUS.swOut,fl=S6R_BUS.flat+12;   // the four-engine jet's nose is wider
+  fwd([[x0,Ly,0],[xs+fl+sw,Ly,rS],[xs+fl,ys,rS],[xs,ys,0]]);                                                    // in from the east along a gentle S (heading west)
+  dOut=legs.reduce((a,l)=>a+l.dur,0);legs.push(tag(apttHold(e,hold,'svc'),{...base,at:'ac'}));
+  const xe=xs+fl+so+100;clear=rev([[xe,Ly],[xs+fl+so,Ly,rS],[xs+fl,ys,rS],[xs,ys]]).dur;                        // back out east along the S onto lane L, past the column
+  fwd([[xe,Ly,0],[tc,Ly,r2],[tc,yq,0]],{kind:'back',v0:3});                                                     // nose first into the column between P3 and P4
+ }
+ const xb=turn();
+ if(W.row2){fwd([[xb,Ly,0],[GLN,Ly,r],[GLN,b.yc,16],[b.x,b.yc,0]],{kind:'back',v0:3})}   /* GATE-77 S6b-c · p152 · K-104: forward home, west into the lane */   // GATE-77 S6r · M5e: home — down GLN to the yard lane, back in
+ else if(W.inEast)fwd([[xb,Ly,0],[b.x,Ly,r],[b.x,b.yc,0]],{kind:'back',v0:3});                                    // east along lane L, right into the bay
+ else fwd([[xb,Ly,0],[GLS,Ly,r],[GLS,HW,r],[GLN,HW,r],[GLN,Ly,r],[b.x,Ly,r],[b.x,b.yc,0]],{kind:'back',v0:3});   // round the GLINK block, left into the bay
+ if(kind==='bus-arr')legs.push(tag(apttHold(home,hG,'svc'),{...base,at:'gate',gate:'unload',n:gateN}));   // unloading at the bus gate after the return
+ const trk=afTrackOf(v,legs);trk.g2=kind;trk.gateHold=hG;trk.nb=1;
+ return{trk,dOut,hold,clear,dur:trk.seq.dur,gate:hG}}
+function* s6rNbServeG(kind,sd,ac,L,win,hold,meta,extra){let best=null;
+ for(const v of afCands('AB',6).filter(q=>{const W=s6rNbBayWays(q.bay);return W.outWest||(W.row2&&W.outS&&W.inS)})){/* only the buses that leave their bay straight to the west: the bus next to the tower (V-AB1) serves P5 / P6 */if(AO.sliced&&aoOver())yield 0;
+  const B=s6rNbBuild(v,sd,ac,L,kind,hold,meta),sm=(yield* aoSampG(B.trk,aoSeqLeg(B.trk.seq)));
+  const sLo=Math.max(aoSlUp(win.at0-B.dOut),afSEarliest());let sHi=aoSl(win.at1-B.dOut);if(best)sHi=Math.min(sHi,best.s-1);
+  const s=sHi>=sLo?(yield* afSearchG(v,B.trk,sm,sLo,sHi,extra,Math.round((B.dOut+hold+16)/AO.DT))):-1;
+  if(s<0){const w=aoWhy(sm,sLo);const k='nb-'+kind+':'+(w?w.b.replace(/\d+/g,'#'):'busy/none');AF.fails[k]=(AF.fails[k]||0)+1;AF.nbWhy=k;continue}
+  if(!best||s<best.s)best={v,B,sm,s}}
+ if(!best){AF.stats.fail++;return null}
+ const at=aoT(best.s)+best.B.dOut,task=afCommit(best.v,best.B.trk,best.sm,best.s,'nb-'+kind,{code:meta&&meta.code,stand:sd.id,at});
+ return{t0:task.t0,end:task.t1,at,done:at+hold,clear:best.B.clear,v:best.v,task,gate:best.B.gate||0}}
+// the bus work of one visit, in two steps: the arrival bus before the other services (the passengers leave first), the departure bus
+// after them — boarding only after the cabin service and the catering (§6.7 · the turnaround order, D-112 (5))
+function* s6rNbArrG(sd,ac,tOB,dwell,meta,extra){AF.nbWhy=null;const L=s6rNbLay(sd,ac);if(!L){AF.nbWhy='no-slot';return null}
+ const nA=g2PaxN(meta.code,'arr',ac),hA=s6rNbBoard(L,nA);
+ const ba=yield* s6rNbServeG('bus-arr',sd,ac,L,{at0:tOB+G77_CHOCK+5,at1:tOB+G77_CHOCK+150},hA,{...meta,n:nA},extra);if(!ba)return null;
+ return{L,ba,nA,lo:ba.done+ba.clear+25}}
+function* s6rNbDepG(sd,ac,tOB,dwell,meta,extra,A,lo){const L=A.L,ba=A.ba,nA=A.nA,nD=g2PaxN(meta.code,'dep',ac),hD=s6rNbBoard(L,nD);
+ const want=Math.max(lo,tOB+dwell-hD-30),depHi=Math.max(want+60,tOB+dwell+120);
+ let bd=yield* s6rNbServeG('bus-dep',sd,ac,L,{at0:want,at1:depHi},hD,{...meta,n:nD},extra);
+ if(!bd&&want>lo+8)bd=yield* s6rNbServeG('bus-dep',sd,ac,L,{at0:lo,at1:depHi},hD,{...meta,n:nD},extra);if(!bd)return null;
+ const end=bd.done+bd.clear+S6R_BUS.tail,gateArr={v:ba.v.id,bay:ba.v.bay.id,at:ba.end-ba.gate,done:ba.end,n:nA},gateDep={v:bd.v.id,bay:bd.v.bay.id,at:bd.t0,done:bd.t0+bd.gate,n:nD};
+ return{end,plan:{stand:sd.id,ac,door:L.door,dir:L.dir,foot:L.foot,bus:L.bus,busDoor:L.busDoor,path:L.path,arr:{v:ba.v.id,at:ba.at,done:ba.done,n:nA},dep:{v:bd.v.id,at:bd.at,done:bd.done,n:nD},gateArr,gateDep,open:tOB+G77_CHOCK+2,close:bd.done+4,lo}}}
+// the passengers: the arrival group from the airstair into the bus, the departure group from the bus up the airstair; and at the bus gate
+function s6rNbPassengers(t=APT_OPS.clk,flights=AO.flights){const out=[];
+ for(const f of flights){const r=f.nb;if(!r)continue;const tA=Math.min(r.open,r.gateDep.at),tB=Math.max(r.close,r.gateArr.done);if(t<tA-1||t>tB+1)continue;
+  for(const ph of['arr','dep','gateArr','gateDep']){const w=r[ph];if(!w||t<w.at||t>w.done)continue;const gate=ph==='gateArr'||ph==='gateDep';
+   const P=gate?g2GatePath(APL.bays.find(b=>b.id===w.bay)):r.path,L=g2PathLen(P),pts=(ph==='arr'||ph==='gateArr')?P:P.slice().reverse(),travel=L/G2_WALK.v;
+   for(let i=0;i<w.n;i++){const lt=t-w.at-G2_WALK.pre-i*G2_WALK.gap;if(lt<0||lt>=travel)continue;let d=lt*G2_WALK.v,k=1;
+    while(k<pts.length-1&&d>Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1])){d-=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]);k++}
+    const a=pts[k-1],b=pts[k],sl=Math.hypot(b[0]-a[0],b[1]-a[1])||1,u=Math.min(1,d/sl),dx=b[0]-a[0],dy=b[1]-a[1];
+    out.push({id:f.code+'-nb-'+ph+'-'+i,flight:f.code,stand:f.stand,phase:ph,gate,asset:G2_PAX_ASSETS[(i+g2Hash(f.code))%G2_PAX_ASSETS.length],x:a[0]+dx*u,y:a[1]+dy*u,face:Math.abs(dx)>Math.abs(dy)?(dx>0?2:6):(dy>0?4:0),walkTime:lt+i*.21,alpha:Math.min(1,lt*3,(travel-lt)*3)})}}}
+ return out}
+function s6rNbDraw(now,v){if(WTC_LP===1||!APT_OPS.ready)return;const t=APT_OPS.clk;
+ for(const f of AO.flights){const R=f.nb;if(!R||t<R.open-2||t>R.close+2)continue;const d=R.door;if(!portVis(v,d[0]-40,d[1]-40,80,80))continue;s6rDrawAirstair(ctx,d[0],d[1],R.dir,Math.max(0,Math.min(1,(t-R.open)/2,(R.close-t)/2)))}
+ for(const p of s6rNbPassengers(t)){if(!portVis(v,p.x-12,p.y-20,24,30))continue;const I=TurboCity.info(p.asset,{scale:G77_PE.sc,direction:p.face,pose:'walking'}),feet=I.an.find(q=>q[0]==='Feet')||['Feet',I.w/2,I.h*.55];
+  ctx.save();ctx.globalAlpha=p.alpha;P34G.k=p.id??null;TurboCity.draw(ctx,p.asset,p.x-feet[1],p.y-feet[2],{mode:'runtime',scale:G77_PE.sc,direction:p.face,pose:'walking',time:p.walkTime});ctx.restore()}}
+// QA (D-112 (5), review 19.10 · 5): the four counters + 0 people on lane L + 0 other vehicle in the bus's place while it is there
+function s6rNbStats(all,T){const issues=[],why={},vis=[];let elig=0,bus=0,bridge=0,tp=0,qj=0,pax=0,shuttles=0;
+ for(const f of all){if(f.never||f.heli||!S6R_NB.stands.includes(f.stand)||!S6R_NB.ac[f.ac])continue;if(f.tOB==null||f.tOB>T)continue;elig++;
+  const r=f.nb;if(!r){bridge++;const w=f.nbWhy||(f.bridge?'bridge':'none');why[w]=(why[w]||0)+1;if(!f.bridge)issues.push(f.code+':no-bus-no-bridge');continue}
+  bus++;if(f.ac==='AC-TP-01')tp++;else qj++;pax+=r.arr.n+r.dep.n;shuttles+=2;
+  if(!(r.arr.at>=f.tOB&&r.arr.done<r.dep.at))issues.push(f.code+':bus-order');{const sv=(f.svcQ||[]).filter(q=>q.svc==='cleaning'||q.svc==='catering');for(const q of sv)if(q.done>r.dep.at+.5)issues.push(f.code+':boarding-before-'+q.svc)}vis.push([f.code,f.ac.slice(3,5),f.stand,Math.round(f.tOB),Math.round(r.arr.at-f.tOB),Math.round(r.arr.done-f.tOB),Math.round(r.dep.at-f.tOB),Math.round(r.dep.done-f.tOB),Math.round((f.tPush??f.t1)-f.tOB)]);if(f.tPush!=null&&r.close>f.tPush+.5)issues.push(f.code+':airstair-at-push');
+  for(const p of r.path)if(p[1]>AF.L-14)issues.push(f.code+':walk-on-lane-L');
+  const [xc,yc]=r.bus,pz=(v,t)=>{for(const k of v.hist.concat(v.tasks))if(t>=k.t0&&t<k.t1&&k.tr&&k.tr.seq){const p=k.tr.seq.at(t-k.t0);if(p)return p}return v.home};
+  for(const w of[r.arr,r.dep])for(let t=w.at;t<=w.done;t+=2)for(const v of AO.fleet){if(v.id===w.v)continue;const p=pz(v,t);if(!p)continue;
+   if(Math.abs(p[0]-xc)<45+8&&Math.abs(p[1]-yc)<10+8){issues.push(f.code+':'+v.id+' in the bus slot @'+t.toFixed(0));break}}
+  {const pb=w=>{const v=AO.fleet.find(q=>q.id===w.v);const p=v&&pz(v,(w.at+w.done)/2);return p&&Math.hypot(p[0]-xc,p[1]-yc)<2};if(!pb(r.arr)||!pb(r.dep))issues.push(f.code+':bus-not-in-slot')}}
+ return{ok:!issues.length,elig,bus,bridge,tp,qj,pax,shuttles,why,notAdmitted:((AO.stats.why||{})['no-nb-bus']||0)+((AO.stats.why||{})['no-nb-bus-dep']||0),visits:vis.slice(0,8),issues:[...new Set(issues)].slice(0,10)}}
+
+function s6aTypeOf(a){const v=a.v;if(v&&S6A_TYPES[v.type])return v.type;for(const t in S6A_ASSET)if(S6A_ASSET[t]===a.id)return t;return null}
+// ---- the design sheet (F9 → "בדיקה בעין" → "רכבי השירות — תצוגה"): every type ×3, parked and working, with its footprint today and its real size
+function s6aSheet(){const T=Object.keys(S6A_TYPES),cols=3,cw=600,chh=190,W=cw*cols+40,H=90+Math.ceil(T.length/cols)*chh+40,cv=window.document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+ g.fillStyle='#8f969a';g.fillRect(0,0,W,H);g.direction='rtl';g.textAlign='center';g.fillStyle='#101418';g.font='bold 24px Arial';g.fillText('רכבי השירות — כל סוג בעיצוב משלו (AIR‑60 · AIR‑62) · ×3 · חונה / בעבודה',W/2,36);
+ g.font='15px Arial';g.fillText('המסגרת הלבנה: המידות האמיתיות (7.47 px למטר) — עוברות ל-hitbox ב-M2 (D‑61); הציור עכשיו בגודל של היום',W/2,62);
+ T.forEach((t,i)=>{const cx=20+(i%cols)*cw+cw/2,cy=90+Math.floor(i/cols)*chh,D=s6aDimOf(t),R=S6A_TYPES[t];if(!D)return;g.fillStyle='rgba(255,255,255,.12)';g.fillRect(cx-cw/2+8,cy+4,cw-16,chh-12);
+  const z=3;for(const [j,st] of[[0,''],[1,'w']]){const s=s6aSprite(t,st,4),x0=cx-cw/4+j*cw/2,y0=cy+70;g.save();g.translate(x0,y0);g.scale(z,z);g.drawImage(s.cv,-s.L-s.pad,-s.W-s.pad,(s.L+s.pad)*2,(s.W+s.pad)*2);
+   g.strokeStyle='rgba(255,255,255,.9)';g.lineWidth=.35;g.setLineDash([1.2,1]);g.strokeRect(-R[1]*S6A_PXM/2,-R[2]*S6A_PXM/2,R[1]*S6A_PXM,R[2]*S6A_PXM);g.setLineDash([]);g.restore();
+   g.fillStyle='#1a1f24';g.font='12px Arial';g.fillText(j?'בעבודה':'חונה / בנסיעה',x0,cy+150)}
+  g.fillStyle='#0d1114';g.font='bold 16px Arial';g.fillText(t+' · '+R[0],cx,cy+22);g.font='13px Arial';
+  g.fillText('היום '+D[0].toFixed(0)+' × '+D[1].toFixed(0)+' px · אמיתי '+R[1]+' × '+R[2]+' מ׳ = '+(R[1]*S6A_PXM).toFixed(0)+' × '+(R[2]*S6A_PXM).toFixed(0)+' px',cx,cy+172)});
+ return cv}
+function s6aSheetShow(){const old=window.document.getElementById('s6aSheet');if(old)old.remove();const d=window.document.createElement('div');d.id='s6aSheet';d.style.cssText='position:fixed;inset:20px;z-index:9999;overflow:auto;background:#222;border:2px solid #e8b92b;border-radius:10px';
+ const cv=s6aSheet();cv.style.cssText='display:block;margin:0 auto;max-width:100%';d.appendChild(cv);d.onclick=()=>d.remove();window.document.body.appendChild(d)}
+window.__TC_S6A=()=>({types:Object.keys(S6A_TYPES).length,...S6A_STATS});
+
+function aptDrawVeh(g,a,now){if(G77_AMB.on&&a.v&&G77_AMB.ids.includes(a.v.id)){g77AmbDraw(g,a,now);if(G77_DRV.on)g77DrawDriver(g,a,now);g77Lights(g,a,now);g77VcDraw(g,a,now);return}   // GATE-77 S6c · p176: the passenger lift
+ const t=s6aTypeOf(a),c34a=c34Apt(g,a,t,now);if(c34a){}else if(t&&t!=='CU'&&s6aDraw(g,t,a,now)){s6aDrawCarts(g,a,a.pose[4])}else{if(a.id&&a.id.startsWith('G7-'))g77DrawGse(g,a);else aptDrawVeh0(g,a,now)}if(!c34a){if(G77_DRV.on)g77DrawDriver(g,a,now);g77Lights(g,a,now)}   /* p383 */if(G77_FM.on&&a.v&&G77_FM.ids.includes(a.v.id))g77FmDraw(g,a,now);g77VcDraw(g,a,now)}   // GATE-77 S6c · p175 · S6d-b p181: the code   // GATE-77 S6a: the new designs
+function aptDrawVeh0(g,a,now){
+ if(a.id==='F2-MS'){const [x,y,th,,al]=a.pose;return f2DrawStairs(g,x,y,th,al)}
+ const [x,y,th,,al]=a.pose,s=aptSpr(a.id);
+ g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);
+ TurboCity.draw(g,a.id,-s.cx,-s.cy,{mode:'runtime',scale:s.gs,rot:0,time:now/1000});
+ g.restore();
+ const tr=a.tr;
+ s6aDrawCarts(g,a,al)}
+function s6aDrawCarts(g,a,al){const tr=a.tr;   // GATE-77 S6a: shared by the new designs (owner 19:39)
+ if(tr&&tr.carts){const cs=[];for(let i=0;i<tr.carts.length;i++){const q=tr.cartAt(a.pose,i,a.lt,tr);cs.push(q);aptDrawCart(g,q[0],q[1],q[2],al,tr.carts[i],true)}f2DrawTrainBags(g,a,cs,al)}
+}
+function aptDrawCart(g,x,y,th,al,c,bare){
+ g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);
+ const hx=c.hx,hy=c.hy;
+ g.fillStyle='rgba(8,18,26,.22)';g.fillRect(-hx+1.5,-hy+2,hx*2,hy*2);
+ g.fillStyle='#4a5560';g.fillRect(-hx,-hy,hx*2,hy*2);                 // chassis
+ g.fillStyle='#aab4bd';g.fillRect(-hx+1.5,-hy+1.5,hx*2-3,hy*2-3);     // cargo bed
+ g.fillStyle='#d9a21f';g.fillRect(-hx+1.5,-hy+1.5,3,hy*2-3);          // yellow tail edge
+ if(!bare){g.fillStyle='#6d7882';g.fillRect(-hx+5,-hy+2.5,hx*2-8,hy*2-5);       // bags (legacy block; F2 draws individual bags)
+ g.strokeStyle='#3b444c';g.lineWidth=.8;g.strokeRect(-hx+5,-hy+2.5,hx*2-8,hy*2-5)}
+ g.restore();
+}
+// Elevated bridge, anchored at the terminal and the actual aircraft's passenger door.
+function f2BridgeFlight(standId,t){return AO.flights.find(f=>f.stand===standId&&f.bridge&&t>=f.t0&&t<f.t1)||null}
+function f2BridgeGeometry(s,f,ext=1){
+ const ac=f?.ac||s.aircraft,S=APTT_SPEC.ac[ac],ng=S.an['Nose Gear'],d=S.an.Door,ngy=f?.sd?.ngy??s.ng;
+ {const v=f&&f.sd&&f.sd.viewFor===ac?f.sd:null;if(v&&(v.cx!==s.cx||v.door!==s.door))s=Object.assign({},s,{cx:v.cx,door:v.door,svcSide:v.svcSide})}   // GATE-77 S5b: MARS line
+ const th=f?.sd?.th??Math.PI/2,c=Math.cos(th),sn=Math.sin(th),dx=d[0]-ng[0],dy=g73DoorDy(s,ac,th,ngy,dx,d[1]-ng[1]),ey=dy+(Math.sign(dy)||1)*APT_JB_CAB;   // GATE-73 S2: door L or R (AIR-22)
+ // dock = the cab centre, one cab half width out from the fuselage skin at the door; the sprite's Door End lies APT_JB_CABC (scaled) short of it
+ const terminal=[s.gateX,APT_BRIDGE_Y],door=[s.cx+dx*c-dy*sn,ngy+dx*sn+dy*c],dock=[s.cx+dx*c-ey*sn,ngy+dx*sn+ey*c],vx=dock[0]-terminal[0],vy=dock[1]-terminal[1],length=Math.hypot(vx,vy);
+ const nat=APTT_SPEC.jb.an.find(q=>q[0]==='Terminal End')[2]-APTT_SPEC.jb.an.find(q=>q[0]==='Door End')[2],reach=length*nat/(nat+APT_JB_CABC),u=(18+(reach-18)*ext)/length;
+ return{terminal,door,dock,end:[terminal[0]+vx*u,terminal[1]+vy*u],length,reach,ac};
+}
+
+// ==== GATE-77 S3 · AIR-09: the jet bridge with a rotunda — fixed section · rotunda · telescopic tunnel turning about it · cab facing the door
+const G77_SM=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)},G77_ANG=(a,b)=>Math.atan2(Math.sin(b-a),Math.cos(b-a));
+function g77BridgePoseOld(s,f,ext){
+ const B=f2BridgeGeometry(s,f,1),T=B.terminal,R=[T[0],T[1]-14],cd=[B.door[0]-B.dock[0],B.door[1]-B.dock[1]],cl=Math.hypot(cd[0],cd[1])||1,cu=[cd[0]/cl,cd[1]/cl];
+ const ce=[B.dock[0]-cu[0]*9,B.dock[1]-cu[1]*9],Ld=Math.hypot(ce[0]-R[0],ce[1]-R[1]),thd=Math.atan2(ce[1]-R[1],ce[0]-R[0]),thc=Math.atan2(cu[1],cu[0]);
+ // at rest: shorter, straight out of the terminal (along the stand axis, beside the arriving aircraft's nose, clear of the bus bays)
+ const B0=f2BridgeGeometry(s,null,1),thr=Math.atan2(B0.dock[1]-R[1],B0.dock[0]-R[0]),Lr=Math.max(30,Ld*.55);   // GATE-77 S5c · D-78: at rest along the angled line (toward the design aircraft's door)
+ let L,th,ca;const e=Math.max(0,Math.min(1,ext));
+ if(e<=.45){L=Lr+(Ld*.9-Lr)*G77_SM(e/.45);th=thr;ca=th}                                       // extend
+ else if(e<=.75){L=Ld*.9;th=thr+G77_ANG(thr,thd)*G77_SM((e-.45)/.3);ca=th}                      // rotate the outer half about the rotunda
+ else if(e<=.9){L=Ld*.9;th=thd;ca=th+G77_ANG(th,thc)*G77_SM((e-.75)/.15)}                       // align the cab with the door
+ else{th=thd;ca=thc;L=Ld*(.9+.1*G77_SM((e-.9)/.1))}                                            // dock
+ const end=[R[0]+Math.cos(th)*L,R[1]+Math.sin(th)*L],cab=[end[0]+Math.cos(ca)*9,end[1]+Math.sin(ca)*9];
+ return{T,R,th,L,end,ca,cab,docked:e>.98,B}}
+function g77DrawBridgeOld(g,P){
+ const {T,R,th,L,ca,cab}=P,box=(cx,cy,a,hl,hw,fill,stroke)=>{g.save();g.translate(cx,cy);g.rotate(a);g.fillStyle=fill;g.fillRect(-hl,-hw,hl*2,hw*2);if(stroke){g.strokeStyle=stroke;g.lineWidth=1;g.strokeRect(-hl,-hw,hl*2,hw*2)}g.restore()};
+ const fa=Math.atan2(R[1]-T[1],R[0]-T[0]),fl=Math.hypot(R[0]-T[0],R[1]-T[1]);
+ g.save();g.globalAlpha=.22;box((T[0]+R[0])/2+3,(T[1]+R[1])/2+4,fa,fl/2,8,'#08121a');box(R[0]+Math.cos(th)*L/2+3,R[1]+Math.sin(th)*L/2+4,th,L/2,7,'#08121a');g.restore();   // shadow
+ box((T[0]+R[0])/2,(T[1]+R[1])/2,fa,fl/2,8,'#cfd4d8','#6d757c');                                   // fixed section
+ const k1=.56;box(R[0]+Math.cos(th)*L*k1/2,R[1]+Math.sin(th)*L*k1/2,th,L*k1/2,6,'#d9dde1','#6d757c');   // inner tunnel
+ box(R[0]+Math.cos(th)*L*(.5+.5)/2+Math.cos(th)*L*.25,R[1]+Math.sin(th)*L*.5,th,L*.25,6.8,'#c3c9ce','#5f676e');   // outer (telescopic) section
+ const dw=[R[0]+Math.cos(th)*L*.78,R[1]+Math.sin(th)*L*.78];g.save();g.translate(dw[0],dw[1]);g.rotate(th);g.fillStyle='#2b3035';g.fillRect(-4,-9,8,3);g.fillRect(-4,6,8,3);g.restore();   // drive unit
+ g.save();g.fillStyle='#b9c0c6';g.strokeStyle='#5c646b';g.lineWidth=1.2;g.beginPath();g.arc(R[0],R[1],9,0,Math.PI*2);g.fill();g.stroke();g.fillStyle='#7d868d';g.beginPath();g.arc(R[0],R[1],3,0,Math.PI*2);g.fill();g.restore();   // rotunda
+ box(cab[0],cab[1],ca,9,10,'#e2e6e9','#5f676e');g.save();g.translate(cab[0],cab[1]);g.rotate(ca);g.fillStyle='#2f3439';g.fillRect(7,-9,4,18);g.fillStyle='#8fc3d6';g.fillRect(-6,-7,6,3);g.restore();   // cab + bellows at the door
+}
+// ==== GATE-77 S5c · K-72 (D-92 · AIR-09): the jet bridge rebuilt ===================================================================
+// fixed section straight out of the terminal → round rotunda on its column (mid-bridge, north of the service road) → rotunda bellows (the
+// drum's opening stays put, so the bellows compress on the inside of the turn and stretch on the outside) → 2-section telescopic tunnel on
+// one centreline (the outer section B slides inside A) → wheel pair on a leg under B, a little before the cab → end bellows → cab whose
+// front lies on the fuselage at the door (canopy).  One shadow, at the aircraft's height.  States by ext: rest (short, on the rest line)
+// · extend (along the rest line) · rotate (tunnel about the rotunda) · cab turn (front parallel to the fuselage) · dock (the last few px).
+function g77K72Dock(s,f,R){const B=f2BridgeGeometry(s,f,1),ud=[B.door[0]-B.dock[0],B.door[1]-B.dock[1]],l=Math.hypot(ud[0],ud[1])||1;ud[0]/=l;ud[1]/=l;
+ const K=G77_K72,C0=[B.door[0]-ud[0]*K.cabD,B.door[1]-ud[1]*K.cabD],th=Math.atan2(C0[1]-R[1],C0[0]-R[0]),ca=Math.atan2(ud[1],ud[0]);
+ return{B,door:B.door,ud,C0,th,ca,al:G77_ANG(th,ca),D:Math.hypot(C0[0]-R[0],C0[1]-R[1]),ac:B.ac}}
+function g77K72Stand(s){const S=G77_K72.st[s.id];if(!S)return null;if(S.ok)return S;const K=G77_K72,A=aptReady(),sd=A&&A.stands.find(q=>q.id===s.id);if(!sd)return null;
+ const R=[S.rx,K.Ry],docks=[];
+ for(const ac of sd.accepts){const vw=g77StandView(sd,ac);docks.push(g77K72Dock(s,{ac,sd:vw.viewFor?vw:{th:sd.th,ngy:sd.ngy}},R))}
+ S.acc=Math.max(K.acc0,...docks.map(d=>Math.ceil(K.cabHW*Math.sin(Math.min(Math.PI/2,Math.abs(d.al)+K.away))+2)));   // the cab's rear corners never swing into the tunnel
+ const des=docks[sd.accepts.indexOf(sd.first||s.aircraft)]||docks[0];
+ S.thRest=S.restTh??(des.th+Math.sign(G77_ANG(des.th,-Math.PI/2))*K.rest);   // rest: the design line turned 10° away from the aircraft
+ let cx=Math.cos(S.thRest),cy=Math.sin(S.thRest);for(const d of docks){cx+=Math.cos(d.th);cy+=Math.sin(d.th)}S.phi=Math.atan2(cy,cx);   // the drum's opening
+ S.R=R;S.T=[S.rx,APT_BRIDGE_Y];S.Wr=[R[0]+Math.cos(S.thRest)*(K.rr+K.dj+S.LA-K.wb),R[1]+Math.sin(S.thRest)*(K.rr+K.dj+S.LA-K.wb)];S.ok=true;return S}
+function g77BridgePose(s,f,ext){
+ const K=G77_K72,S=g77K72Stand(s);if(!S)return g77BridgePoseOld(s,f,ext);
+ const R=S.R,T=S.T,d1=K.rr+K.dj,dk=f?g77K72Dock(s,f,R):null,e=Math.max(0,Math.min(1,f?ext:0)),sm=G77_SM;
+ let th=S.thRest,ca=S.thRest,Lt=S.LA,ph='rest';if(!f&&typeof s6rAside==='function'){const ak=s6rAside(s.id);if(ak>0){th=S.thRest+Math.sign((R[0]-s.cx)||1)*S6R_NB.aside*ak;ca=th;ph='aside'}}   // GATE-77 S6r · D-106: swung aside   // retracted: B wholly inside A, their ends together
+ if(dk&&e>0){const Ld=dk.D-d1-S.acc,Lp=Math.max(S.LA,Ld-(S.pre??K.pre));
+  if(e<=.35){Lt=S.LA+(Lp-S.LA)*sm(e/.35);ph='extend'}                                                   // extend along the rest line
+  else{
+  const thA=dk.th+Math.sign(G77_ANG(dk.th,-Math.PI/2))*K.away;   // the cab turns with the tunnel a few degrees away from the aircraft
+  if(e<=.65){Lt=Lp;th=S.thRest+G77_ANG(S.thRest,thA)*sm((e-.35)/.3);ca=th;ph='rotate'}                  // the tunnel turns about the rotunda
+  else if(e<=.85){Lt=Lp;th=thA;ca=th+G77_ANG(th,dk.ca)*sm((e-.65)/.2);ph='cab'}                         // the cab turns to the fuselage
+  else{const k=sm((e-.85)/.15);th=thA+G77_ANG(thA,dk.th)*k;ca=dk.ca;Lt=Lp+(Ld-Lp)*k;ph=e>.98?'dock':'docking'}}}   // the last px onto the door
+ const u=[Math.cos(th),Math.sin(th)],n=[-u[1],u[0]],aS=d1,aE=d1+S.LA,bE=d1+Lt,bS=bE-S.LB,E=[R[0]+u[0]*bE,R[1]+u[1]*bE],C0=[E[0]+u[0]*S.acc,E[1]+u[1]*S.acc];
+ const uc=[Math.cos(ca),Math.sin(ca)],front=[C0[0]+uc[0]*K.cabD,C0[1]+uc[1]*K.cabD],cab=[C0[0]+uc[0]*K.cabD/2,C0[1]+uc[1]*K.cabD/2],W=[R[0]+u[0]*(bE-K.wb),R[1]+u[1]*(bE-K.wb)];
+ return{T,R,th,L:bE,end:E,ca,cab,C0,front,W,u,n,uc,aS,aE,bS,bE,Lt,acc:S.acc,phi:S.phi,ph,docked:!!dk&&e>.98,dk,B:dk?dk.B:null,e,S,id:s.id}}
+// the parts as polygons (world px): fixed section, rotunda bellows, tunnel A, tunnel B, end bellows, cab, canopy, wheels (+ the drum circle)
+function g77K72Parts(P){const K=G77_K72,S=P.S,{T,R,u,n,C0,uc}=P,nc=[-uc[1],uc[0]],u0=[Math.cos(S.phi),Math.sin(S.phi)],n0=[-u0[1],u0[0]];
+ const box=(c,a,b,d0,d1,w)=>[[c[0]+a[0]*d0+b[0]*w,c[1]+a[1]*d0+b[1]*w],[c[0]+a[0]*d1+b[0]*w,c[1]+a[1]*d1+b[1]*w],[c[0]+a[0]*d1-b[0]*w,c[1]+a[1]*d1-b[1]*w],[c[0]+a[0]*d0-b[0]*w,c[1]+a[1]*d0-b[1]*w]];
+ const fl=Math.hypot(R[0]-T[0],R[1]-T[1]),uf=[(R[0]-T[0])/fl,(R[1]-T[1])/fl],nf=[-uf[1],uf[0]],fe=Math.sqrt(K.rr*K.rr-K.hwF*K.hwF)-.5,de=Math.sqrt(K.rr*K.rr-K.hwA*K.hwA)-.5;
+ const E=P.end,W=P.W;
+ return{fixed:box(T,uf,nf,0,fl-fe,K.hwF),
+  bel1:[[R[0]+u0[0]*de+n0[0]*K.hwA,R[1]+u0[1]*de+n0[1]*K.hwA],[R[0]+u[0]*P.aS+n[0]*K.hwA,R[1]+u[1]*P.aS+n[1]*K.hwA],[R[0]+u[0]*P.aS-n[0]*K.hwA,R[1]+u[1]*P.aS-n[1]*K.hwA],[R[0]+u0[0]*de-n0[0]*K.hwA,R[1]+u0[1]*de-n0[1]*K.hwA]],
+  A:box(R,u,n,P.aS,P.aE,K.hwA),Bt:box(R,u,n,P.bS,P.bE,K.hwB),
+  bel2:[[E[0]+n[0]*K.hwB,E[1]+n[1]*K.hwB],[C0[0]+nc[0]*K.hwB,C0[1]+nc[1]*K.hwB],[C0[0]-nc[0]*K.hwB,C0[1]-nc[1]*K.hwB],[E[0]-n[0]*K.hwB,E[1]-n[1]*K.hwB]],
+  cab:box(C0,uc,nc,0,K.cabD,K.cabHW),canopy:box(C0,uc,nc,K.cabD-K.can,K.cabD,K.cabHW-1.5),
+  leg:box(W,u,n,-2.5,2.5,2),wheels:[box([W[0]+n[0]*(K.hwB+1.6),W[1]+n[1]*(K.hwB+1.6)],u,n,-3,3,1.5),box([W[0]-n[0]*(K.hwB+1.6),W[1]-n[1]*(K.hwB+1.6)],u,n,-3,3,1.5)],
+  drum:{c:R,r:K.rr}}}
+const g77PolyArea=p=>{let a=0;for(let i=0;i<p.length;i++){const q=p[i],r=p[(i+1)%p.length];a+=q[0]*r[1]-r[0]*q[1]}return a/2};
+function g77PolyPath(g,p){const q=g77PolyArea(p)<0?p.slice().reverse():p;g.moveTo(q[0][0],q[0][1]);for(let i=1;i<q.length;i++)g.lineTo(q[i][0],q[i][1]);g.closePath()}
+// the shadow offset of the stand's aircraft (shadow(): L·(.02, .03) in the aircraft's frame, L = fuselage length) — the bridge is at its height
+function g77K72ShadowOff(s,P){const ac=(P.dk&&P.dk.ac)||s.aircraft,g=apttAcGeom(ac),L=g.F[1]-g.F[0],th=Math.PI/2;return[L*.02*Math.cos(th)-L*.03*Math.sin(th),L*.02*Math.sin(th)+L*.03*Math.cos(th)]}
+function g77DrawBridge(g,P){if(!P.S)return g77DrawBridgeOld(g,P);
+ const K=G77_K72,Q=g77K72Parts(P),st=APT_STANDS.find(q=>q.id===P.id),so=g77K72ShadowOff(st,P);
+ const poly=(p,fill,stroke,lw)=>{g.beginPath();g77PolyPath(g,p);g.fillStyle=fill;g.fill();if(stroke){g.strokeStyle=stroke;g.lineWidth=lw||1;g.stroke()}};
+ // one shadow: the union of every part, filled once
+ g.save();g.translate(so[0],so[1]);g.globalAlpha=.22;g.fillStyle='#08121a';g.beginPath();for(const p of [Q.fixed,Q.bel1,Q.A,Q.Bt,Q.bel2,Q.cab])g77PolyPath(g,p);g.moveTo(Q.drum.c[0]+Q.drum.r,Q.drum.c[1]);g.arc(Q.drum.c[0],Q.drum.c[1],Q.drum.r,0,Math.PI*2);g.fill();g.restore();
+ // the wheel pair on its leg (on the ground, under section B; the tyres stand out either side)
+ for(const w of Q.wheels)poly(w,'#22272b');poly(Q.leg,'#4a535a');
+ poly(Q.fixed,'#cfd4d8','#6d757c');
+ const bel=(p,k)=>{poly(p,'#4b545b','#2f363b',.8);g.strokeStyle='rgba(176,186,194,.55)';g.lineWidth=.7;g.beginPath();for(let i=1;i<k;i++){const t=i/k,a=[p[0][0]+(p[1][0]-p[0][0])*t,p[0][1]+(p[1][1]-p[0][1])*t],b=[p[3][0]+(p[2][0]-p[3][0])*t,p[3][1]+(p[2][1]-p[3][1])*t];g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke()};
+ bel(Q.bel1,4);
+ g.save();g.fillStyle='#b9c0c6';g.strokeStyle='#5c646b';g.lineWidth=1.2;g.beginPath();g.arc(Q.drum.c[0],Q.drum.c[1],Q.drum.r,0,Math.PI*2);g.fill();g.stroke();g.fillStyle='#7d868d';g.beginPath();g.arc(Q.drum.c[0],Q.drum.c[1],3.2,0,Math.PI*2);g.fill();g.restore();
+ poly(Q.Bt,'#c3c9ce','#5f676e');poly(Q.A,'#d9dde1','#6d757c');
+ bel(Q.bel2,3);
+ poly(Q.cab,'#e2e6e9','#5f676e');poly(Q.canopy,'#2f3439');g77ClbDraw(g,P);   /* p238 */
+ {const {C0,uc}=P,nc=[-uc[1],uc[0]];g.fillStyle='#8fc3d6';for(const sd of[-1,1]){const c=[C0[0]+uc[0]*6+nc[0]*sd*(K.cabHW-2),C0[1]+uc[1]*6+nc[1]*sd*(K.cabHW-2)];g.beginPath();g77PolyPath(g,[[c[0]-uc[0]*3-nc[0]*.9,c[1]-uc[1]*3-nc[1]*.9],[c[0]+uc[0]*3-nc[0]*.9,c[1]+uc[1]*3-nc[1]*.9],[c[0]+uc[0]*3+nc[0]*.9,c[1]+uc[1]*3+nc[1]*.9],[c[0]-uc[0]*3+nc[0]*.9,c[1]-uc[1]*3+nc[1]*.9]]);g.fill()}}
+}
+// the passengers' line: terminal → rotunda → along the tunnel and the end bellows → cab → door (both joints on the centreline)
+function g77K72PaxLine(s,f){const P=g77BridgePose(s,f,1);if(!P.S)return null;return[P.T,P.R,P.C0,P.front]}
+// the marked wheel spot of the rest pose (painted on the apron)
+function g77K72PaintRest(g){for(const s of APT_STANDS){if(s.cargo)continue;const S=g77K72Stand(s);if(!S)continue;const [x,y]=S.Wr,a=S.thRest;
+ g.save();g.translate(x,y);g.rotate(a);g.strokeStyle='rgba(244,211,94,.9)';g.lineWidth=1.2;g.strokeRect(-5,-(G77_K72.hwB+4),10,(G77_K72.hwB+4)*2);g.beginPath();g.moveTo(-5,0);g.lineTo(5,0);g.stroke();g.restore()}}
+// ==== QA-79 (K-72): every bridge stand × accepted type × state — joints, the telescope's centreline, the wheels, the cab on the door ===========
+const g77SegX=(a,b,c,d)=>{const o=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);const d1=o(c,d,a),d2=o(c,d,b),d3=o(a,b,c),d4=o(a,b,d);return d1*d2<0&&d3*d4<0};
+function g77PolyOverlap(p,q,m=.05){   // SAT on two convex polygons: true when they overlap by more than m px
+ for(const P of[p,q])for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],nx=-(b[1]-a[1]),ny=b[0]-a[0],l=Math.hypot(nx,ny)||1;let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;
+  for(const v of p){const d=(v[0]*nx+v[1]*ny)/l;a0=Math.min(a0,d);a1=Math.max(a1,d)}for(const v of q){const d=(v[0]*nx+v[1]*ny)/l;b0=Math.min(b0,d);b1=Math.max(b1,d)}
+  if(a1<=b0+m||b1<=a0+m)return false}return true}
+const g77Obb2Poly=o=>{const ux=o.c,uy=o.s,vx=-o.s,vy=o.c;return[[o.x-ux*o.hx-vx*o.hy,o.y-uy*o.hx-vy*o.hy],[o.x+ux*o.hx-vx*o.hy,o.y+uy*o.hx-vy*o.hy],[o.x+ux*o.hx+vx*o.hy,o.y+uy*o.hx+vy*o.hy],[o.x-ux*o.hx+vx*o.hy,o.y-uy*o.hx+vy*o.hy]]};
+function g77PolyGap(p,q){if(g77PolyOverlap(p,q,0))return 0;let m=1e9;const sd=(c,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],l=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,((c[0]-a[0])*dx+(c[1]-a[1])*dy)/l));return Math.hypot(a[0]+dx*t-c[0],a[1]+dy*t-c[1])};
+ for(const [A,B] of[[p,q],[q,p]])for(const v of A)for(let i=0;i<B.length;i++)m=Math.min(m,sd(v,B[i],B[(i+1)%B.length]));return m}
+const G77_K72_EXT=[0,.1,.2,.3,.35,.42,.5,.58,.65,.7,.75,.8,.85,.9,.95,.98,1];
+function g77BridgeAudit(){const A=aptReady(),K=G77_K72,issues=[],rows=[],road=[AF.L-15,AF.L+9];let n=0,poses=0;
+ const bays=APL.bays.filter(b=>b.zone==='F2'&&(b.kind==='BT'||b.kind==='AB')).map(b=>({id:b.id,p:[[b.x0,b.y0],[b.x1,b.y0],[b.x1,b.y1],[b.x0,b.y1]]}));
+ for(const s of APT_STANDS){if(s.cargo)continue;const sp=A.stands.find(q=>q.id===s.id);if(!sp||!sp.bridge)continue;const S=g77K72Stand(s);if(!S){issues.push(s.id+':no-K72');continue}
+  if(Math.abs(s.gateX-S.rx)>.01)issues.push(s.id+':base≠rotunda');
+  for(const ac of sp.accepts){if(s6rBusOnly(s.id,ac))continue;const vw=g77StandView(sp,ac),f={ac,sd:vw.viewFor?vw:{th:sp.th,ngy:sp.ngy}},env=aplEnv(ac,vw.viewFor?vw.cx:s.cx,vw.ngy??sp.ngy,sp.th),fus=g77Obb2Poly(env[0]),wing=env.slice(1).map(g77Obb2Poly);n++;
+   const row={stand:s.id,ac,acc:S.acc,LA:S.LA,LB:S.LB,poses:0,minBel:1e9,maxBel:0,minFus:1e9,minRoad:1e9,minBay:1e9,minWing:1e9,restGap:1e9,issues:0};
+   for(const e of G77_K72_EXT){const P=g77BridgePose(s,f,e),Q=g77K72Parts(P),bad=k=>{row.issues++;if(row.issues<=4)issues.push(s.id+' '+ac.slice(3,5)+' e'+e+' '+k)};poses++;row.poses++;
+    // joints: the fixed section ends inside the drum; the bellows meet the drum and the tunnel faces exactly; B inside A on one centreline
+    for(const v of Q.fixed.slice(1,3))if(Math.hypot(v[0]-P.R[0],v[1]-P.R[1])>K.rr+.01)bad('fixed-gap');
+    for(const v of [Q.bel1[0],Q.bel1[3]])if(Math.hypot(v[0]-P.R[0],v[1]-P.R[1])>K.rr+.01)bad('drum-gap');
+    if(Math.hypot(Q.bel1[1][0]-Q.A[0][0],Q.bel1[1][1]-Q.A[0][1])>.01||Math.hypot(Q.bel1[2][0]-Q.A[3][0],Q.bel1[2][1]-Q.A[3][1])>.01)bad('bel1-A');
+    if(Math.hypot(Q.bel2[0][0]-Q.Bt[1][0],Q.bel2[0][1]-Q.Bt[1][1])>.01||Math.hypot(Q.bel2[3][0]-Q.Bt[2][0],Q.bel2[3][1]-Q.Bt[2][1])>.01)bad('B-bel2');
+    {const cA=[(Q.A[0][0]+Q.A[3][0])/2,(Q.A[0][1]+Q.A[3][1])/2],cB=[(Q.Bt[0][0]+Q.Bt[3][0])/2,(Q.Bt[0][1]+Q.Bt[3][1])/2],off=Math.abs((cB[0]-cA[0])*P.n[0]+(cB[1]-cA[1])*P.n[1]);if(off>.01)bad('telescope-off-centre '+off.toFixed(2))}
+    if(P.bS<P.aS-.01)bad('B-out-of-A');if(P.aE-P.bS<K.ovl-.01)bad('telescope-overlap '+(P.aE-P.bS).toFixed(1));if(P.bE<P.aE-.01)bad('B-end-inside-A');
+    // the bellows: simple (sides do not cross), each side ≥ 1.5 px — no overlap, no gap
+    for(const [k,p] of[['bel1',Q.bel1],['bel2',Q.bel2]]){if(g77SegX(p[0],p[1],p[3],p[2]))bad(k+'-crossed');const a=Math.hypot(p[1][0]-p[0][0],p[1][1]-p[0][1]),b=Math.hypot(p[2][0]-p[3][0],p[2][1]-p[3][1]);row.minBel=Math.min(row.minBel,a,b);row.maxBel=Math.max(row.maxBel,a,b);if(Math.min(a,b)<1.5)bad(k+'-closed '+Math.min(a,b).toFixed(1))}
+    // rigid parts never overlap each other (the bellows are the only flexible joints)
+    if(g77PolyOverlap(Q.cab,Q.Bt,.3)||g77PolyOverlap(Q.cab,Q.A,.3))bad('cab-into-tunnel');
+    if(Math.hypot(Q.A[0][0]-P.R[0],Q.A[0][1]-P.R[1])<K.rr)bad('A-into-drum');
+    // the wheels: under B, on its centreline, a little before the cab; off the service road, not under a wing / engine / tail, not in a bay
+    {const wd=(P.W[0]-P.R[0])*P.u[0]+(P.W[1]-P.R[1])*P.u[1],wo=Math.abs((P.W[0]-P.R[0])*P.n[0]+(P.W[1]-P.R[1])*P.n[1]);if(wd<P.bS+2||wd>P.bE-2||wo>.01)bad('wheels-detached');
+     for(const w of Q.wheels.concat([Q.leg])){const y0=Math.min(...w.map(v=>v[1])),y1=Math.max(...w.map(v=>v[1]));row.minRoad=Math.min(row.minRoad,Math.max(road[0]-y1,y0-road[1]));if(y1>road[0]&&y0<road[1])bad('wheels-on-road');
+      for(const q of wing){const gp=g77PolyGap(w,q);row.minWing=Math.min(row.minWing,gp);if(gp<1)bad('wheels-under-wing')}
+      for(const b of bays){const gp=g77PolyGap(w,b.p);row.minBay=Math.min(row.minBay,gp);if(gp<2)bad('wheels-in-bay '+b.id)}}}
+    // the fuselage: the tunnel never touches it; the cab only at the door when docked
+    {const gT=Math.min(g77PolyGap(Q.A,fus),g77PolyGap(Q.Bt,fus),g77PolyGap(Q.bel2,fus)),gC=g77PolyGap(Q.cab,fus);row.minFus=Math.min(row.minFus,gT,P.docked||P.ph==='docking'?1e9:gC);if(gT<1)bad('tunnel-on-fuselage');if(P.ph==='docking'||P.docked){if(g77PolyOverlap(Q.cab,fus,.3))bad('cab-into-fuselage')}else if(gC<1.5)bad('cab-hits-fuselage '+gC.toFixed(1))}   // the last px: onto the skin, never into it
+    if(e===0){for(const p of [Q.A,Q.Bt,Q.bel2,Q.cab]){for(const q of env.map(g77Obb2Poly))row.restGap=Math.min(row.restGap,g77PolyGap(p,q));for(const b of bays)if(g77PolyGap(p,b.p)<1)bad('rest-over-bay '+b.id)}if(row.restGap<6)bad('rest-in-the-way '+row.restGap.toFixed(1))}
+    if(e===1){const gap=Math.hypot(P.front[0]-P.dk.door[0],P.front[1]-P.dk.door[1]),par=Math.abs(G77_ANG(P.ca,P.dk.ca))*180/Math.PI,ang=Math.abs(P.dk.al)*180/Math.PI;
+     row.door=+gap.toFixed(2);row.parallel=+par.toFixed(2);row.deg=+ang.toFixed(1);row.reach=Math.round(P.dk.D+K.cabD);row.Lt=+P.Lt.toFixed(1);if(gap>1)bad('cab-off-door '+gap.toFixed(2));if(par>.5)bad('cab-not-parallel '+par.toFixed(2));if(ang<25||ang>70)bad('angle '+ang.toFixed(0)+'°');
+     if(P.Lt<S.LA-.01||P.Lt>S.LA+S.LB-K.ovl+.01)bad('telescope-range '+P.Lt.toFixed(1));
+     // the passengers' line passes the rotunda and the end bellows on the centreline
+     const pl=g77K72PaxLine(s,f);row.pax=pl?pl.length:0;if(!pl||Math.hypot(pl[1][0]-P.R[0],pl[1][1]-P.R[1])>.01||Math.hypot(pl[3][0]-P.dk.door[0],pl[3][1]-P.dk.door[1])>1)bad('pax-line')}}
+   for(const k of['minBel','maxBel','minFus','minRoad','minBay','minWing','restGap'])row[k]=+(+row[k]).toFixed(1);
+   const an=g77Anchors(ac)||{},th=sp.th!=null?sp.th:Math.PI/2,c=Math.cos(th),sn=Math.sin(th),dB=f2BridgeGeometry(s,f,1).door,dx=dB[0]-(vw.viewFor?vw.cx:s.cx),dy=dB[1]-(vw.ngy??sp.ngy??s.ng),rel=[dx*c+dy*sn,-dx*sn+dy*c];
+   const cand=['Door L1','Door R1'].filter(k=>an[k]).map(k=>({k,d:Math.hypot(an[k][0]-rel[0],an[k][1]-rel[1])})).sort((a,b)=>a.d-b.d)[0];row.doorK=cand?cand.k:'?';if(!cand||cand.d>1.5)issues.push(s.id+' '+ac+' bridge door ≠ the drawn door');
+   rows.push(row)}
+  // the rotunda's column stands on the apron: off the service road, out of the bays, clear of the stand's aircraft
+  {const R=S.R,c=[[R[0]-K.rr,R[1]-K.rr],[R[0]+K.rr,R[1]-K.rr],[R[0]+K.rr,R[1]+K.rr],[R[0]-K.rr,R[1]+K.rr]];if(R[1]+K.rr>AF.L-12)issues.push(s.id+':rotunda-on-road');for(const b of bays)if(g77PolyGap(c,b.p)<2)issues.push(s.id+':rotunda-in-bay '+b.id)}}
+ return{ok:!issues.length,issues:issues.slice(0,40),pairs:n,poses,rows}}
+// ==== F9 → "בדיקה בעין" → "שרוולים" (D-92): every bridge stand through its sequence, and every stand × type docked, with the QA-79 numbers =====
+function g77BridgeCell(g,x0,y0,w,h,s,sp,ac,e,z,lab,sub,ok){const vw=g77StandView(sp,ac),f={ac,sd:vw.viewFor?vw:{th:sp.th,ngy:sp.ngy}},P=g77BridgePose(s,f,e),cx=vw.viewFor?vw.cx:s.cx,ngy=vw.ngy??sp.ngy;
+ const dx=P.dk?P.dk.door[0]:cx,wx=(P.R[0]+dx)/2,wy=s.id==='P4'?660:680;
+ g.save();g.beginPath();g.rect(x0,y0,w,h);g.clip();g.fillStyle='#bdbaae';g.fillRect(x0,y0,w,h);g.translate(x0+w/2,y0+h/2-16);g.scale(z,z);g.translate(-wx,-wy);
+ g.fillStyle='#8f8c82';g.fillRect(wx-700,AF.L-15,1400,24);g.fillStyle='rgba(255,255,255,.75)';g.fillRect(wx-700,AF.L-15,1400,.8);g.fillRect(wx-700,AF.L+8.2,1400,.8);
+ g.fillStyle='#5b646d';g.fillRect(wx-700,APT_BRIDGE_Y,1400,90);
+ {const S=g77K72Stand(s);const [x,y]=S.Wr;g.save();g.translate(x,y);g.rotate(S.thRest);g.strokeStyle='rgba(244,211,94,.95)';g.lineWidth=1.2;g.strokeRect(-5,-(G77_K72.hwB+4),10,(G77_K72.hwB+4)*2);g.restore()}
+ const S=aptSpr(ac);g.save();g.translate(cx,ngy);g.rotate(sp.th);TurboCity.draw(g,ac,-S.ax,-S.ay,{mode:'runtime',scale:S.sc,rot:0,time:0,state:{c:2,r:'4X-'+ac.slice(3,5)+'K',v:0}});g.restore();
+ g77DrawBridge(g,P);g.restore();
+ g.strokeStyle=ok===false?'#c0392b':'#9aa39b';g.lineWidth=ok===false?3:1;g.strokeRect(x0+.5,y0+.5,w-1,h-1);
+ g.fillStyle='rgba(20,24,28,.82)';g.fillRect(x0,y0+h-44,w,44);g.fillStyle='#fff';g.textAlign='center';g.font='bold 15px Arial';g.fillText(lab,x0+w/2,y0+h-25);g.font='12px Arial';g.fillStyle='#d8e3ea';g.fillText(sub,x0+w/2,y0+h-8)}
+function g77BridgesSheet(){const A=aptReady(),au=g77BridgeAudit(),W=1840,cw=364,ch=286,stands=APT_STANDS.filter(s=>!s.cargo&&G77_K72.st[s.id]),z=s=>s.id==='P4'?1.55:2.3;
+ const states=[['מנוחה — קצר, על נקודת הגלגלים',0],['הארכה — לאורך קו המנוחה',.3],['סיבוב — המנהרה סביב הרוטונדה',.52],['סיבוב התא — חזית מקבילה לגוף',.76],['צמוד לדלת',1]];
+ const pairs=[];for(const s of stands){const sp=A.stands.find(q=>q.id===s.id);for(const ac of sp.accepts)pairs.push([s,sp,ac])}
+ const yA=96,yB=yA+stands.length*(ch+8)+64,rowsB=Math.ceil(pairs.length/5),yL=yB+rowsB*(ch+8)+20,cv=window.document.createElement('canvas');cv.width=W;cv.height=yL+150;const g=cv.getContext('2d');
+ g.fillStyle='#e9ece8';g.fillRect(0,0,W,cv.height);g.direction='rtl';g.textAlign='center';g.fillStyle='#14181c';g.font='bold 24px Arial';
+ g.fillText('שרוולים — המבנה המלא (K‑72) · כל עמדת שרוול',W/2,36);g.font='bold 17px Arial';g.fillStyle=au.ok?'#1f6a3a':'#a32020';
+ g.fillText('מדידה בקוד (QA‑79): '+(au.ok?'עברה':'נכשלה — '+au.issues.length+' ממצאים')+' · '+au.pairs+' זוגות עמדה × סוג · '+au.poses+' מצבים · 0 רווח / 0 חפיפה מלבד המפוחים · המנהרה על קו אחד · גלגלים מתחת למנהרה ומחוץ לכביש',W/2,66);
+ g.fillStyle='#14181c';g.font='bold 18px Arial';g.fillText('הרצף — כל עמדה עם המטוס שלה',W/2,yA-8);
+ stands.forEach((s,r)=>{const sp=A.stands.find(q=>q.id===s.id),ac=sp.first||s.aircraft;states.forEach(([lab,e],i)=>{const x0=W-12-(i+1)*cw-i*2,P=g77BridgePose(s,{ac,sd:g77StandView(sp,ac).viewFor?g77StandView(sp,ac):{th:sp.th,ngy:sp.ngy}},e);
+  g77BridgeCell(g,x0,yA+r*(ch+8),cw,ch,s,sp,ac,e,z(s),s.id+' · '+lab,'אורך המנהרה '+P.Lt.toFixed(0)+' px · כיוון '+Math.round(-P.th*180/Math.PI)+'°')})});
+ g.fillStyle='#14181c';g.font='bold 18px Arial';g.fillText('צמוד לדלת — כל עמדה × כל סוג שהיא מקבלת',W/2,yB-8);
+ pairs.forEach(([s,sp,ac],i)=>{const row=au.rows.find(q=>q.stand===s.id&&q.ac===ac)||{},x0=W-12-((i%5)+1)*cw-(i%5)*2,y0=yB+((i/5)|0)*(ch+8),nm=(G77_TYPES_TBL.find(q=>q[0]===ac)||[])[1]||ac;
+  g77BridgeCell(g,x0,y0,cw,ch,s,sp,ac,1,z(s),s.id+' · '+nm+' · '+row.deg+'°','דלת '+row.door+' px · מקביל '+row.parallel+'° · גוף ≥'+row.minFus+' · כביש ≥'+row.minRoad+' · כנף ≥'+row.minWing+' · כיס ≥'+row.minBay,!row.issues)});
+ g.fillStyle='#14181c';g.font='15px Arial';g.textAlign='center';
+ g.fillText('מהטרמינל: קטע קבוע ישר → רוטונדה עגולה על עמוד (צפונית לכביש השירות) → מפוח (נדחס מבפנים, נמתח מבחוץ) → מנהרה A → מנהרה B שנכנסת לתוכה, על אותו קו מרכז',W/2,yL+20);
+ g.fillText('→ זוג גלגלים על רגל מתחת ל‑B, קצת לפני התא → מפוח קצה → תא שחזיתו מקבילה לגוף ונוגעת בדלת, עם חופה · צל אחד, בגובה המטוס · המלבן הצהוב: נקודת הגלגלים במנוחה',W/2,yL+44);
+ g.fillText('הנוסעים הולכים על קו המרכז: טרמינל → רוטונדה → מנהרה → מפוח הקצה → תא → דלת',W/2,yL+68);
+ if(!au.ok){g.fillStyle='#a32020';g.fillText(au.issues.slice(0,6).join(' · '),W/2,yL+96)}
+ return cv}
+function g77BridgesShow(){const d=window.document.createElement('div');d.id='g77Bridges';d.style.cssText='position:fixed;inset:0;z-index:91;overflow:auto;background:#e9ece8;direction:rtl';
+ const b=window.document.createElement('div');b.textContent='סגירה ✕ (או שוב על הכפתור ב-F9)';b.style.cssText='position:sticky;top:0;padding:8px 14px;background:#14181c;color:#fff;font:600 15px Arial;cursor:pointer;z-index:1';b.onclick=()=>d.remove();
+ const cv=g77BridgesSheet();cv.style.cssText='display:block;max-width:100%;height:auto;margin:0 auto';d.appendChild(b);d.appendChild(cv);window.document.body.appendChild(d);return d}
+// ==== F9 → "בדיקה בעין" → "הבא עכשיו" (D-94): a near visit of a new type at its stand — check mode only (the button lives in F9); the normal
+// simulation never sets sd.bring, so its runs are unchanged.  If the stand is busy, the visit follows as soon as it is free.
+function g77BringNow(ac,sid){if(typeof APT_OPS==='undefined'||!APT_OPS.ready)return'שדה התעופה עוד לא פעיל';
+ const sd=AO.stands.find(q=>q.id===sid);if(!sd||!sd.accepts.includes(ac))return'העמדה לא מקבלת את הסוג הזה';
+ const now=APT_OPS.clk,nm=((G77_TYPES_TBL.find(q=>q[0]===ac)||[])[1])||ac,find=t=>AO.flights.filter(f=>f.stand===sid&&f.ac===ac&&f.t1>t&&!f.never).sort((a,b)=>a.t0-b.t0)[0];
+ let f=find(now),busy=AO.flights.some(q=>q.stand===sid&&!q.never&&q.t1>now);const c0=APT_OPS.clk;
+ if(!f){sd.bring=ac;if(sd.next==null||sd.next>now)sd.next=now;for(let i=0;i<120&&!f;i++){perfAirportForward(APT_OPS.clk+5);f=find(APT_OPS.clk)}}   // up to 10 min of airport time, in 5 s steps
+ if(!f)return nm+' ל‑'+sid+': '+(busy?'העמדה תפוסה':'אין עדיין חלון נחיתה פנוי')+' — הביקור יתוכנן ברגע שיתאפשר (לחיצה נוספת ממשיכה לחפש; שעון השדה '+Math.round(APT_OPS.clk)+')';
+ const tOB=f.tOB??f.t0;for(let k=0;k<6&&tOB-APT_OPS.clk>45;k++)perfAirportForward(tOB-40);   // to just before it reaches the stand: the taxi-in, the docking, the turnaround and the push
+ const s=APT_STANDS.find(q=>q.id===sid);perfCamera({x:s?s.cx:sd.cx,y:sid==='P4'?560:600,zoom:sid==='P4'?1.15:1.6});
+ return nm+' '+f.code+' ל‑'+sid+': בעמדה בעוד '+Math.max(0,Math.round(tOB-APT_OPS.clk))+' שנ׳ · דחיפה בעוד '+Math.round((f.tPush??f.t1)-APT_OPS.clk)+' שנ׳ · שעון השדה קודם ב-'+Math.round(APT_OPS.clk-c0)+' שנ׳'+(busy?' (העמדה הייתה תפוסה)':'')}
+function aptDrawBridges(now,v){if(WTC_LP===1)return;if(G77_STAGE>=4)g77DrawConveyor(now,v);
+ if(!APTT_SPEC)return;const t=APT_OPS.clk;
+ for(const s of APT_STANDS){
+  if(s.cargo)continue;const xa=Math.min(s.gateX,s.cx)-64,xb=Math.max(s.gateX,s.cx+30)+64;if(!portVis(v,xa,APT_BRIDGE_Y-215,xb-xa,220))continue;
+  const f=APT_OPS.ready?f2BridgeFlight(s.id,t):null,ext=f?aoBridge(s.id,t):0,B=f2BridgeGeometry(s,f,ext),I=TurboCity.info('AP-JB-01',{scale:1,rot:3,variant:1}),te=I.an.find(q=>q[0]==='Terminal End'),de=I.an.find(q=>q[0]==='Door End'),native=te[2]-de[2];
+  const vx=B.end[0]-B.terminal[0],vy=B.end[1]-B.terminal[1],len=Math.hypot(vx,vy)||1;   // straight out of the terminal; the cab docks beside the door
+  ctx.save();ctx.beginPath();ctx.rect(xa,APT_BRIDGE_Y-160,xb-xa,164);ctx.clip();ctx.translate(B.terminal[0],B.terminal[1]);
+  ctx.rotate(Math.atan2(vy,vx)+Math.PI/2);ctx.scale(1,len/native);   // GATE-73 S2: rotation about the rotunda (0° for the design aircraft), no shear
+  ctx.restore();ctx.save();ctx.beginPath();ctx.rect(xa,APT_BRIDGE_Y-215,xb-xa,220);ctx.clip();g77DrawBridge(ctx,g77BridgePose(s,f,ext));ctx.restore();g77BridgeDoor(ctx,s);   // GATE-77 S7-a · p184   // GATE-77 S3: the rotunda bridge (AIR-09)
+  // Transparent inspection strip through the roof; travellers remain inside the bridge, above the road.
+  if(ext>.98){const pl=g77K72PaxLine(s,f);if(pl){ctx.save();ctx.strokeStyle='rgba(124,186,206,.26)';ctx.lineWidth=8;ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(...pl[0]);for(const q of pl.slice(1,3))ctx.lineTo(...q);ctx.stroke();ctx.restore()}}   // K-72: the roof strip along the passengers' line
+ }
+}
+let APT_ACT=[];
+function aptDrawLive(now,layer){if(WTC_LP===1)return;if(layer==='ground'&&G77_VC.follow)g77VcFollowTick();if(layer==='ground')g77TwrShadow(now);   // GATE-77 S6d-b · p181
+ if(layer==='air'&&APT_OPS.ready)s6aHangars(now);
+ if(!APT_OPS.ready)return;
+ const v=aptView(300),t=APT_OPS.clk;if(layer==='ground')A34G.frame++;A34Q.on=a34Ok(layer);A34Q.q.length=0;   /* p390 */
+ if(layer==='ground'){APT_ACT.length=0;aoActors(t,APT_ACT);g77MlvActors(t,APT_ACT);G77_UP.q.length=0}   /* GATE-77 S7-b · p196 */
+ if(layer==='ground'&&G77_STAGE>=4){const vv=aptView(140);g77DrawDeck(now,vv);g77DrawForklift(now,vv)}if(layer==='ground'&&S6B_DEPOT.on&&portVis(aptView(40),8130,940,190,160))s6bPaintDepot(ctx);if(layer==='ground'&&S6B_WS.on&&portVis(aptView(40),8130,1445,170,60))s6bPaintWS(ctx);   /* GATE-77 S6b-b */   /* GATE-77 S6b-a: the depot, live (the gauge) */for(let pass=0;pass<2;pass++){if(pass===1){s6aFlushBags(ctx);if(layer==='ground')g77UpFlush(ctx,'under')}if(pass===1&&layer==='ground'&&G77_STAGE>=3)g77DrawCrew(now,aptView(140),G77_ZS.on?'under':null);for(const a of APT_ACT){
+  const z=a.pose[3],isV=a.kind==='veh';
+  if(pass===0&&!isV)continue;if(pass===1&&isV)continue;
+  if(layer==='ground'&&z>8&&!isV)continue;if(layer==='air'&&(z<=8||isV))continue;
+  const p=a.pose;if(!portVis(v,p[0]-260,p[1]-260,520,520))continue;
+  if(A34Q.on)a34Enq(a,now,t,layer);else if(a.kind==='ac')aptDrawAc(ctx,a,now);else if(a.kind==='heli')aptDrawHeli(ctx,a,now);else{aptDrawVeh(ctx,a,now);if(a.v&&G77_FI.on&&G77_FI.T&&G77_FI.T[a.v.type])g77FiGauge(ctx,a,t)}   // GATE-77 S6b-d · p160: the stock gauge
+ }}
+ if(A34Q.on)a34QFlush(now,layer);   /* p390 */
+ if(layer==='ground'&&G77_STAGE>=3&&G77_ZS.on&&APT_OPS.ready)g77DrawCrew(now,aptView(140),'over');   // GATE-77 S6c · p174 · K-126: the crew outside the aircraft — over them
+ if(layer==='ground')g77UpFlush(ctx,'over');   // GATE-77 S7-a · p183
+}
+// ====================================================================================================================================
+// QA
+// ====================================================================================================================================
+// zone audit: the new airside zones against roads, other buildings, cars and the region bounds
+function aptZoneAudit(){
+ aptReady();
+ const issues=[],Z=APL.zones,roads=aptRoadRects(),aptIds=new Set(APT_BUILDINGS.map(b=>b.id));
+ const zs=[['west apron',Z.wApron],['east block',Z.eBlock],['perimeter',Z.perim],['yard',Z.yard],['heliport',Z.heli]];
+ const regs=[E0_REGION,F0_REGION,G0_REGION,E1_REGION,F1_REGION,G1_REGION,E2_REGION,F2_REGION,G2_REGION];
+ const inReg=(r)=>[[r.x,r.y],[r.x+r.w,r.y],[r.x,r.y+r.h],[r.x+r.w,r.y+r.h]].every(([px,py])=>regs.some(g=>px>=g.x&&px<=g.x+g.w&&py>=g.y&&py<=g.y+g.h));
+ for(const [n,z] of zs){
+  if(!inReg(z))issues.push(n+': outside the live regions');
+  for(const r of roads)if(aptOver(z,r))issues.push(n+': on road '+r.id);
+  for(const b of C4_BUILDINGS){if(aptIds.has(b.id))continue;const f=b.info?aptFp(b):null;if(f&&aptOver(z,f))issues.push(n+': on building '+b.id)}
+  for(const c of PARKED_CARS){if(c.x>=z.x&&c.x<=z.x+z.w&&c.y>=z.y&&c.y<=z.y+z.h)issues.push(n+': parked car '+c.id)}
+ }
+ return{ok:issues.length===0,issues};
+}
+function aptLayoutQa(){
+ aptReady();const a=aplAudit(APL),z=aptZoneAudit();
+ const fixed=APL.stands.length,paxBridge=APL.stands.filter(s=>s.tpl==='bridge').length,unique=new Set(APL.stands.map(s=>s.id)).size===APL.stands.length;
+ return{ok:a.ok&&z.ok&&fixed>=18&&APL.helis.length>=6&&APL.bays.length>=24&&APL.fleet.length>=20&&paxBridge===4&&unique,stands:fixed,bridges:paxBridge,helis:APL.helis.length,bays:APL.bays.length,fleet:APL.fleet.length,issues:a.issues.concat(z.issues)};
+}
+function aoSandbox(fn){
+ const keys=['B','ST','LOG','flights','hist','dbg','evt','stands','stats','nid','t','last','seed','rng','TK','RBX','keep','diag','fleet','job','job0','chJob','work','workLimit','sliced','useClock','mlv','t0i','pt','stepDone'],sv={},svAPL=APL,svAF={stats:AF.stats,fails:AF.fails,rj:AF.rj};
+ for(const k of keys)sv[k]=AO[k];
+ AO.B=new Map();AO.ST=[];AO.LOG=[];AO.flights=[];AO.hist=[];AO.mlv=null;AO.dbg=[];AO.evt=[];AO.job=null;AO.job0=null;AO.chJob=null;AO.sliced=false;AO.useClock=false;AO.workLimit=Infinity;
+ const gx=typeof G76X!=='undefined'?G76X:null,svX=gx?{ofs:gx.ofs,ofs0:gx.ofs0,ovr:gx.ovr,remap:gx.stats?gx.stats.remap:0}:null;if(gx){gx.ovr=0;gx.ofs0=0}
+ try{return fn()}finally{for(const k of keys)AO[k]=sv[k];APL=svAPL;AF.stats=svAF.stats;AF.fails=svAF.fails;AF.rj=svAF.rj;if(gx){gx.ofs=svX.ofs;gx.ofs0=svX.ofs0;gx.ovr=svX.ovr;if(gx.stats)gx.stats.remap=svX.remap}}
+}
+// a sandbox simulation (not shown to the player), re-verified from the final tracks: aircraft, vehicles, the persistent fleet, the contract numbers
+function aptOpsQa(minutes=10,seed=777){
+ if(!APTT_SPEC){APTT_SPEC=aptBuildSpec();APTT_C=aptBuildC()}
+ return aoSandbox(()=>{
+  AO.keep=true;aoInit(0,seed);const T=minutes*60;const t0=performance.now();
+  for(let t=0;t<=T;t+=1)aoStep(t);
+  const r=aoVerify(0,T),ms=performance.now()-t0;
+  const all=AO.hist.concat(AO.flights),dep=all.filter(f=>f.states.some(s=>s[1]==='DEPARTED')&&!f.init).length,arr=all.filter(f=>f.states.some(s=>s[1]==='ON_BLOCK')&&f.states[0][1]==='INBOUND').length;
+  // the fleet exists at every instant: one actor per vehicle, never faded
+  let fleetOk=true;for(const t of[0,37,121.5,300.25,T-1]){const A=[];aoActors(t,A);const vs=A.filter(a=>a.kind==='veh');if(vs.length!==AO.fleet.length||vs.some(a=>a.pose[4]!==1))fleetOk=false}
+  const tasks=AO.fleet.reduce((n,v)=>n+v.hist.length+v.tasks.length,0),fleetIssues=r.issues.filter(i=>/FLEET|IDLE|TELEPORT|bay/.test(i));
+  const bag=f2BagStats(T);
+  return{ok:r.ok&&fleetOk&&dep>=3&&arr>=3&&bag.ok,bag,issues:r.issues,planned:AO.stats.planned,failed:AO.stats.failed,dep,arr,maxSimul:r.maxSimul,maxQueue:AO.stats.maxQueue,ms:Math.round(ms),fleet:AO.fleet.length,fleetTasks:tasks,fleetOk,fleetIssues:fleetIssues.length};
+ });
+}
+
+// E1 final pass. Geometry stays fixed; all field additions are low, frangible fixtures.
+// The existing shared airport reservation table remains the only source of clearances.
+const E1_SCOPE={id:'E1',x:4800,y:0,w:1200,h:850,next:'E2',gate:'GATE-61',runwayRow:'E0'};
+const E1_SPACE_USES=(()=>{const Y=APT_Y;return[   // GATE-73: the runway rows are in E0; E1 is taxiway A, the west apron and the cargo north band
+ {id:'E0-NORTH-BUFFER',x:4800,y:-850,w:1200,h:Y.FN+850,use:'שטח חיץ מחוץ לגדר — פתוח, ללא מכשולים בציר הגישה'},
+ {id:'E0-PERIMETER',x:4800,y:Y.FN,w:1200,h:Y.SN-Y.FN,use:'גדר היקפית, דרך סיור, כיסוח וניקוז מחוץ לרצועת הבטיחות'},
+ {id:'E0-N-SAFETY',x:4840,y:Y.SN,w:1160,h:60,use:'רצועת בטיחות המסלול — פתוחה'},
+ {id:'E0-RUNWAY-09',x:4950,y:Y.RN,w:1050,h:240,use:'סף 09, גלגול נחיתה והמראה'},
+ {id:'E0-BLAST',x:4860,y:Y.RN,w:90,h:240,use:'Blast pad פנוי; ללא חניה'},
+ {id:'E0-S-SAFETY',x:4840,y:Y.RS,w:1160,h:60,use:'רצועת בטיחות וציוד תאורה נמוך בלבד'},
+ {id:'E0-LINK-BAND',x:4840,y:Y.SS,w:1160,h:-Y.SS,use:'חיבור A1 רחב, קו המתנה, שלטים ואורות שמירה'},
+ {id:'E1-LINK-BAND',x:4840,y:0,w:1160,h:Y.TN,use:'המשך חיבור A1 וניקוז עד מסלול ההסעה'},
+ {id:'E1-TAXI-A',x:4860,y:Y.TN,w:1140,h:Y.TS-Y.TN,use:'מסלול הסעה A (120 רוחב)'},
+ {id:'E1-WEST-EXT',x:4805,y:Y.TS,w:641,h:604-Y.TS,use:'הרחבת הרחבה המערבית: כניסה ישרה מ-A לחניות O1/GA4/GA3/C2'},
+ {id:'E1-CARGO-BAND',x:5446,y:Y.TS,w:554,h:394-Y.TS,use:'רצועת המטען הצפונית: חיבור B1 ושטח שמור לעמדת מטען גדולה (GATE-73 שלב 3)'},
+ {id:'E1-WEST-STANDS',x:4805,y:604,w:595,h:241,use:'O1 / GA4 / GA3 / C2 — חניות כלי טיס'},
+ {id:'E1-CARGO-NORTH',x:5400,y:394,w:600,h:456,use:'רחבת המטען ועמדת C1 (S3a: 394…814) ומסוף המטען AP-05 (814…944)'}
+]})();
+const E1_FIXTURES=[];
+const e1Lamp=(id,x,y,v,role,kind='e1-light')=>{const o={id,asset:'AP-REL-01',x,y,scale:.36,v,role,kind,chunk:'E1',frangible:true,height:.35,nightHook:true};E1_FIXTURES.push(o);APT_LIGHTS.push({...o});return o};
+for(let i=0;i<12;i++){const y=APT_Y.RN+14+i*212/11;e1Lamp('E1-THR-09-'+i,4946,y,1,'threshold');e1Lamp('E1-END-27-'+i,4937,y,2,'reverse-end')}
+for(let i=0;i<9;i++)e1Lamp('E1-A1-STOP-'+i,5205+i*(90/8),APT_Y.RS+15,2,'stop-bar');
+for(const x of [5185,5315])e1Lamp('E1-A1-GUARD-'+x,x,APT_Y.SS-3,3,'runway-guard');
+const E1_SIGNS=[{id:'E1-A1-SIGN-W',asset:'AP-SGN-01',x:5160,y:APT_Y.SS+9,scale:.56,v:0,frangible:true,height:.55},{id:'E1-A1-SIGN-E',asset:'AP-SGN-01',x:5340,y:APT_Y.SS+9,scale:.56,v:0,frangible:true,height:.55}];
+const E1_FENCES=[[4805,APT_Y.FN,6000,APT_Y.FN],[4805,APT_Y.FN,4805,APT_Y.SN-12],[4805,APT_Y.SS+8,4805,604]];
+const E1_MONITOR={lastAt:-1,lastCode:null,transitions:0,conflicts:0,landings:0,departures:0,lastState:null};
+function e1WingEnvelope(g,x,y,th,tag){if(!g.W)return null;const cy=(g.W[2]+g.W[3])/2,h=(g.W[3]-g.W[2])/2/APTT_WT,box=[g.W[0],g.W[1],cy-h,cy+h],o=apttObb(x,y,th,box,'EW',tag);return o.x0<6000&&o.x1>4800&&o.y0<850&&o.y1>-850?o:null}
+function e1WingConflict(a,b,m){const o=a.L==='EW'?b:a;if(!['EW','F','W','T','B'].includes(o.L))return false;return a.x0<=b.x1+m&&a.x1>=b.x0-m&&a.y0<=b.y1+m&&a.y1>=b.y0-m&&apttObbHit(a,b,m)}
+function e1RunwaySnapshot(time=APT_OPS.clk){
+ const bucket=AO.B.get(aoSl(time))||[],owners=[...new Set(bucket.filter(s=>s.L==='R').map(s=>String(s.t).replace(/-R$/,'')))];
+ const tokenIds=['TW0','J1','LNK1','TW1'],tokens=Object.fromEntries(tokenIds.map(id=>[id,[...new Set(bucket.filter(s=>s.L==='S'&&s.k===id).map(s=>s.t))]]));
+ const flights=AO.flights.filter(f=>!f.heli&&!f.never),owner=flights.find(f=>owners.includes(f.code)),stage=owner?aoStateOf(owner,time):null;
+ const waiting=flights.filter(f=>['HOLD_SHORT','INBOUND'].includes(aoStateOf(f,time))).map(f=>({code:f.code,stand:f.stand,state:aoStateOf(f,time)}));
+ const actors=[];if(AO.fleet)aoActors(time,actors);const departureAtA1=owners.length===1&&actors.some(a=>a.kind==='ac'&&a.nm===owners[0]&&a.pose[3]<.01&&a.pose[0]>5140&&a.pose[0]<5480&&a.pose[1]>=APT_Y.RY&&a.pose[1]<=APT_Y.TY+32&&['RUNWAY_RESERVED','LINE_UP','TAKEOFF_ROLL'].includes(aoStateOf(a.f,time)));
+ const conflict=owners.length>1||Object.values(tokens).some(q=>q.length>1);
+ return{time:+time.toFixed(2),owners,owner:owners[0]||null,stage,waiting,tokens,conflict,stopBarRed:conflict||!departureAtA1,status:conflict?'תקלה בבקר':owners.length?(stage&&['APPROACH','LANDING_RESERVED','LANDING_ROLL','VACATE_RUNWAY'].includes(stage)?'נחיתה — המסלול שמור':'המסלול שמור'):APT_OPS.ready?'פנוי — הכניסה באישור הבקר':'בקר מוכן להפעלה',westStands:aptReady().stands.filter(s=>s.zone==='west').map(s=>({id:s.id,occupied:actors.some(a=>a.f?.stand===s.id&&aoStateOf(a.f,time)==='ON_BLOCK')}))}
+}
+function e1Watch(time){if(time-E1_MONITOR.lastAt<.25)return;E1_MONITOR.lastAt=time;const s=e1RunwaySnapshot(time),key=[s.owner,s.stage,s.conflict].join('|');if(key!==E1_MONITOR.lastCode){E1_MONITOR.lastCode=key;E1_MONITOR.transitions++;if(s.conflict)E1_MONITOR.conflicts++;if(s.stage==='LANDING_ROLL')E1_MONITOR.landings++;if(s.stage==='TAKEOFF_ROLL')E1_MONITOR.departures++;Dbg.event('airport-e1','runway-state',{owner:s.owner,stage:s.stage,stopBarRed:s.stopBarRed,conflict:s.conflict})}E1_MONITOR.lastState=s}
+function resetAirportForLoad(){f1Reset();g1Reset();APT_OPS.clk=0;APT_OPS.last=null;APT_OPS.ready=false;APT_OPS.on=true;APT_OPS.err=null;APT_OPS.frames=0;Object.assign(E1_MONITOR,{lastAt:-1,lastCode:null,transitions:0,conflicts:0,landings:0,departures:0,lastState:null});aptOpsInit();Dbg.event('airport-e1','safe-load-reset',{seed:APT_OPS.seed,fleet:AO.fleet.length,clock:0})}
+function e1PaintField(g){
+ // Mown safety bands and shallow drains are clear ground, never buildings or trees. GATE-73: the band between the strip and taxiway A is 122 px.
+ const Y=APT_Y;for(let i=0;i<12;i++){g.fillStyle=i%2?'rgba(58,85,45,.10)':'rgba(172,185,114,.10)';g.fillRect(4800+i*100,Y.SN-47,100,43);g.fillRect(4840+i*100,Y.SS+1,100,19);g.fillRect(4840+i*100,Y.SS+50,100,22)}
+ g.strokeStyle='rgba(58,77,58,.42)';g.lineWidth=2;for(const y of [Y.SN-5,Y.SS+10,Y.TN-14]){g.beginPath();g.moveTo(4840,y);g.lineTo(6000,y);g.stroke()}
+ g73PaintPerimeter(g,4800,6000);
+}
+function e1PaintRunway(g){
+ const Y=APT_Y;g.save();g.beginPath();g.rect(4800,Y.SN,1200,380);g.clip();
+ // Blast-pad chevrons and touch-down rubber wear are pavement markings.
+ g.strokeStyle='#d4b23f';g.lineWidth=4;for(const x of [4876,4908]){g.beginPath();g.moveTo(x,Y.RN+24);g.lineTo(x+24,Y.RY);g.lineTo(x,Y.RS-24);g.stroke()}
+ for(let i=0;i<30;i++){const x=5360+i*18,y=Y.RY+((i%3)-1)*12;g.strokeStyle='rgba(17,22,27,'+(.018+(i%5)*.008)+')';g.lineWidth=1+(i%3);g.beginPath();g.moveTo(x,y);g.lineTo(x+32+(i%4)*7,y);g.stroke()}
+ g.restore()
+}
+function e1PaintHold(g){const l=APT_LINKS[0],y0=APT_Y.RS+9;g.save();g.strokeStyle='#e6c44d';g.lineWidth=1.7;for(let k=0;k<4;k++){g.setLineDash(k<2?[7,4]:[]);g.beginPath();g.moveTo(l.x-l.w/2+4,y0+k*3);g.lineTo(l.x+l.w/2-4,y0+k*3);g.stroke()}g.setLineDash([]);g.restore()}
+function e1DrawAsset(g,o,now){const I=TurboCity.info(o.asset,{scale:o.scale,rot:o.rot||0,variant:o.v||0}),base=I.an.find(a=>a[0]==='Base'||a[0]==='Pole Base'||a[0]==='Center');g.save();g.lineWidth=1;TurboCity.draw(g,o.asset,o.x-(base?.[1]??I.w/2),o.y-(base?.[2]??I.h/2),{mode:'runtime',scale:o.scale,rot:o.rot||0,variant:o.v||0,time:now/1000});g.restore()}
+function e1DrawLights(now,v){
+ if(!portVis(v,4800,APT_Y.FN-10,1200,APT_Y.TS-APT_Y.FN+20))return;
+ const state=e1RunwaySnapshot();
+ for(const l of APT_LIGHTS){if(l.x<4800||l.x>=6000||!['rwy-edge','twy-edge'].includes(l.kind)||!portVis(v,l.x-10,l.y-10,20,20))continue;e1DrawAsset(ctx,{...l,asset:l.kind==='rwy-edge'?'AP-REL-01':'AP-TEL-01',scale:.36,v:0},now)}
+ for(const l of E1_FIXTURES){if(l.role==='stop-bar'&&!state.stopBarRed)continue;if(l.role==='runway-guard'&&Math.floor(now/350)%2===0)continue;if(portVis(v,l.x-10,l.y-10,20,20))e1DrawAsset(ctx,l,now)}
+ for(const s of E1_SIGNS)if(portVis(v,s.x-22,s.y-25,44,50))e1DrawAsset(ctx,s,now);
+ ctx.save();for(const [x1,y1,x2,y2]of E1_FENCES){ctx.strokeStyle='#52665c';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const n=Math.ceil(Math.hypot(x2-x1,y2-y1)/30);ctx.fillStyle='#46574f';for(let i=0;i<=n;i++)ctx.fillRect(x1+(x2-x1)*i/n-1.4,y1+(y2-y1)*i/n-1.4,2.8,2.8)}ctx.restore();
+ Targets.add({id:'E1-RWY-WEST',label:'E0 · סף 09 ומסלול מערב · '+state.status,category:'airport',x:5475,y:APT_Y.RY,w:1050,h:240})
+}
+function e1DrawApproach(now,v){ctx.save();ctx.lineWidth=1;for(const a of APT_APPROACH){if(!portVis(v,a.x-12,a.y-48,24,96))continue;const offsets=a.bar?[-36,-24,-12,0,12,24,36]:[0];ctx.fillStyle='#899a87';ctx.fillRect(a.x-1,a.y-(a.bar?40:3),2,a.bar?80:6);for(const dy of offsets)e1DrawAsset(ctx,{asset:'AP-REL-01',x:a.x,y:a.y+dy,scale:.3,v:0},now)}ctx.restore()}
+function e1ControlHtml(){const s=e1RunwaySnapshot(),stateNames={INBOUND:'מחכה בגישה',APPROACH:'גישה לסף 09',LANDING_RESERVED:'אישור נחיתה',LANDING_ROLL:'גלגול נחיתה',VACATE_RUNWAY:'פינוי המסלול',HOLD_SHORT:'ממתין לפני המסלול',RUNWAY_RESERVED:'אישור מסלול',LINE_UP:'התיישרות',TAKEOFF_ROLL:'גלגול המראה'};return pcard('E1 · מסלול מערב',pkv([['מסלול 09/27',s.status],['כלי הטיס שקיבל אישור',s.owner||'אין כרגע'],['שלב',stateNames[s.stage]||'—'],['כניסת A1',s.stopBarRed?'עצור · נורות אדומות':'אישור למטוס שבכניסה'],['מטוסים ממתינים',s.waiting.length],['רצועת המסלול','מגודרת וסגורה לרכב ולהולכי רגל']])+pnote('החיווי מתעדכן לפי תנועת השדה. תצפית על E1 זמינה במצב המפה עם F4; הכניסה לאיירסייד תיפתח בשלב עבודות הקרקע.'),'nav')}
+function e1GeometryAudit(){
+ const issues=[],R=APT_RWY,T=APT_TWY,reg=E1_SCOPE;
+ if(R.x0!==4950||R.x1!==8250||R.cy!==-430||R.w!==240)issues.push('runway-lock');if(T.cy!==-68||T.w!==120||T.x0!==4900)issues.push('taxi-lock');
+ for(const p of E1_FIXTURES)if(p.x<reg.x||p.x>=reg.x+reg.w||p.y<-850||p.y>=850||!p.frangible||p.height>1)issues.push(p.id+':bounds-or-height');
+ for(const p of E1_SIGNS)if(p.y<APT_Y.SS||Math.abs(p.x-5250)<APT_LINKS[0].w/2+20)issues.push(p.id+':clearance');
+ for(const a of APT_APPROACH)if(a.x<4350||a.x>4800||a.y!==APT_RWY.cy)issues.push(a.id+':approach-envelope');
+ if(APT_APPROACH.length!==14||!APT_APPROACH.every((p,i)=>i===0||APT_APPROACH[i-1].x-p.x===30))issues.push('approach-count-spacing');
+ for(const p of [...PARKED_CARS,...TRAFFIC_CARS,...BUS_VEHICLES])if(p.x>=4800&&p.x<6000&&p.y>=-850&&p.y<850)issues.push(p.id+':civilian-airside');
+ for(const t of APT_TREES)if(t.x>=4800&&t.x<6000&&t.y<850)issues.push(t.id+':tree-airside');
+ if(!MAP_ACTIVE_IDS.has('E1')||!MAP_ACTIVE_IDS.has('E0'))issues.push('map-inactive');
+ return{ok:!issues.length,issues,scope:'E1',runwayWestLength:1050,thresholdLights:12,reverseEndLights:12,stopBarLights:9,guardLights:2,approachRows:14,signs:2,spaceUses:E1_SPACE_USES.length,fullWingReservation:'EW · full span for every ground wing touching E1',aircraftStandIds:aptReady().stands.filter(s=>s.ngx<6000).map(s=>s.id),next:'E2'}
+}
+window.__TC_E1_QA=()=>({geometry:e1GeometryAudit(),runway:e1RunwaySnapshot(),monitor:{...E1_MONITOR,lastState:undefined},saveKeys:[SAVE_KEY,SAVE_BACKUP_KEY],next:'E2'});
+
+// F1 · central runway finish. Surfaces remain aircraft-only; all equipment is low/frangible.
+const F1_SCOPE={id:'F1',x:6000,y:0,w:1200,h:850,next:'F2',gate:'GATE-65',runwayRow:'F0'};
+const F1_SPACE_USES=(()=>{const Y=APT_Y;return[   // GATE-73: rows of F1 (y 0..850); the runway rows of F0 are in G73_SPACE_USES
+ {id:'F1-LINK-BAND',x:6000,y:0,w:1200,h:Y.TN,use:'A2 link (110 wide) and drain between the runway strip and taxiway A'},
+ {id:'F1-TAXI',x:6000,y:Y.TN,w:1200,h:Y.TS-Y.TN,use:'parallel taxiway A (120 wide), J2 and adjacent taxi tokens'},
+ {id:'F1-TWY-STRIP',x:6000,y:Y.TS,w:1200,h:Y.LN-Y.TS,use:'taxiway A strip (grass) with connectors B1 / A2S to taxilane L'},
+ {id:'F1-TAXILANE',x:6000,y:Y.LN,w:1200,h:Y.LS-Y.LN,use:'apron taxilane L: pushback and taxi in front of the stands'},
+ {id:'F1-APRON',x:6020,y:Y.LS,w:1180,h:850-Y.LS,use:'passenger stand envelopes, service roads and pushback'},
+ {id:'F1-APRON-BUFFER',x:6000,y:Y.LS,w:20,h:850-Y.LS,use:'cargo/passenger apron separation'}
+]})();
+const F1_FIXTURES=[],F1_SIGNS=[];
+function f1Lamp(id,x,y,asset,role,v=0){
+ const o={id,x,y,asset,role,v,scale:.32,kind:'f1-light',chunk:'F1',frangible:true,height:role.includes('inset')?.03:.35,nightHook:true};
+ F1_FIXTURES.push(o);APT_LIGHTS.push({...o});return o;
+}
+for(let x=6030;x<7200;x+=60){f1Lamp('F1-RWY-CL-'+x,x,APT_Y.RY,'AP-REL-01','runway-inset');f1Lamp('F1-TWY-CL-'+x,x,APT_Y.TY,'AP-REL-01','taxi-inset',1)}
+for(let i=0;i<9;i++)f1Lamp('F1-A2-STOP-'+i,6555+i*90/8,APT_Y.RS+15,'AP-REL-01','stop-bar',2);
+for(const x of [6535,6665])f1Lamp('F1-A2-GUARD-'+x,x,APT_Y.SS-3,'AP-REL-01','runway-guard',3);
+for(const x of [6510,6690])F1_SIGNS.push({id:'F1-A2-SIGN-'+x,asset:'AP-SGN-01',x,y:APT_Y.SS+9,scale:.56,v:1,frangible:true,height:.55,chunk:'F1'});
+for(const l of APT_LIGHTS)if(l.x>=6000&&l.x<7200&&['rwy-edge','twy-edge'].includes(l.kind))Object.assign(l,{chunk:'F1',asset:l.kind==='rwy-edge'?'AP-REL-01':'AP-TEL-01',frangible:true,height:.35,nightHook:true});
+const F1_STATIC_FIXTURES=[...F1_FIXTURES.filter(l=>!['stop-bar','runway-guard'].includes(l.role)),...APT_LIGHTS.filter(l=>l.chunk==='F1'&&['rwy-edge','twy-edge'].includes(l.kind)).map(l=>({...l,scale:.36,v:0})),...F1_SIGNS];
+const F1_AUDIO_ANCHORS=[{id:'F1-A2-AUDIO',x:6600,y:(APT_Y.RS+APT_Y.TN)/2,kind:'airfield-radio',radius:150,enabled:false},{id:'F1-RUNWAY-AUDIO',x:6600,y:APT_Y.RY,kind:'aircraft-pass',radius:600,enabled:false}];
+const F1_MONITOR={lastAt:-1,key:null,changes:0,conflicts:0,cache:null};
+const F1_PHASE_LABELS={free:'מסלול פנוי',arrival:'נחיתה ופינוי מסלול',departure:'התיישרות והמראה',reserved:'מסלול שמור'};
+function aptFullWingEnvelope(g,x,y,th,tag){
+ const west=e1WingEnvelope(g,x,y,th,tag);if(west)return west;if(!g.W)return null;
+ const cy=(g.W[2]+g.W[3])/2,h=(g.W[3]-g.W[2])/2/APTT_WT,o=apttObb(x,y,th,[g.W[0],g.W[1],cy-h,cy+h],'EW',tag);
+ return o.x0<8400&&o.x1>6000&&o.y0<850&&o.y1>-850?o:null;
+}
+function f1Snapshot(time=APT_OPS.clk){
+ const slice=aoSl(time);if(F1_MONITOR.cache?.slice===slice&&F1_MONITOR.cache.bucket===AO.B.get(slice))return F1_MONITOR.cache.value;
+ const bucket=AO.B.get(slice)||[],owners=[...new Set(bucket.filter(s=>s.L==='R').map(s=>String(s.t).replace(/-R$/,'')))];
+ const tokens=Object.fromEntries(['TW1','TW2','J2','LNK2','TW3'].map(k=>[k,[...new Set(bucket.filter(s=>s.L==='S'&&s.k===k).map(s=>s.t))]]));
+ const aircraft=[];for(const f of AO.flights){if(f.heli||f.never||time<f.t0||time>=f.t1)continue;for(const q of f.tracks){const p=q.tr.seq.at(time-q.t0);if(q.tr.kind==='ac'&&p)aircraft.push({code:f.code,stand:f.stand,asset:q.tr.id,state:aoStateOf(f,time),x:p[0],y:p[1],heading:p[2],height:p[3]});}}
+ const ownerFlight=AO.flights.find(f=>owners.includes(f.code)),stage=ownerFlight?aoStateOf(ownerFlight,time):null;
+ const phase=!owners.length?'free':['APPROACH','LANDING_RESERVED','LANDING_ROLL','VACATE_RUNWAY'].includes(stage)?'arrival':['RUNWAY_RESERVED','LINE_UP','TAKEOFF_ROLL'].includes(stage)?'departure':'reserved';
+ const conflict=owners.length>1||Object.values(tokens).some(a=>a.length>1);
+ const a2Plane=aircraft.find(a=>owners.length===1&&a.code===owners[0]&&a.height<.01&&Math.abs(a.x-6600)<125&&a.y>=APT_Y.RY&&a.y<=APT_Y.TY+6&&['RUNWAY_RESERVED','LINE_UP','TAKEOFF_ROLL'].includes(a.state));
+ const value={time:+time.toFixed(2),owners,owner:owners[0]||null,stage,phase,tokens,conflict,stopBarRed:conflict||!a2Plane,clearanceCode:!conflict&&a2Plane?a2Plane.code:null,aircraft:aircraft.filter(a=>a.x>=6000&&a.x<7200&&a.y<850&&a.y>-850),waiting:aircraft.filter(a=>['HOLD_SHORT','INBOUND'].includes(a.state)).length};
+ F1_MONITOR.cache={slice,bucket:AO.B.get(slice),value};return value;
+}
+function f1Watch(time){
+ if(time-F1_MONITOR.lastAt<.5)return;F1_MONITOR.lastAt=time;F1_MONITOR.cache=null;
+ const s=f1Snapshot(time),key=[s.owner,s.phase,s.stopBarRed,s.conflict].join('|');if(key===F1_MONITOR.key)return;
+ F1_MONITOR.key=key;F1_MONITOR.changes++;if(s.conflict)F1_MONITOR.conflicts++;Dbg.event('airport-f1','a2-clearance',{owner:s.owner,phase:s.phase,stopBarRed:s.stopBarRed,clearanceCode:s.clearanceCode,conflict:s.conflict});
+}
+function f1Reset(){Object.assign(F1_MONITOR,{lastAt:-1,key:null,changes:0,conflicts:0,cache:null})}
+function f1PaintField(g){
+ const Y=APT_Y,L=APT_LINKS[1];g.save();for(let i=0;i<12;i++){g.fillStyle=i%2?'rgba(58,85,45,.10)':'rgba(172,185,114,.10)';g.fillRect(6000+i*100,Y.SN-47,100,43);g.fillRect(6000+i*100,Y.SS+1,100,19);g.fillRect(6000+i*100,Y.SS+50,100,22)}
+ g.strokeStyle='rgba(58,77,58,.42)';g.lineWidth=2;g.beginPath();g.moveTo(6000,Y.SN-5);g.lineTo(7200,Y.SN-5);g.stroke();
+ for(const y of [Y.SS+10,Y.TN-14]){g.beginPath();g.moveTo(6000,y);g.lineTo(L.x-L.w/2-2,y);g.moveTo(L.x+L.w/2+2,y);g.lineTo(7200,y);g.stroke()}
+ g73PaintPerimeter(g,6000,7200);g.restore();
+}
+function f1PaintRunway(g){
+ const Y=APT_Y;g.save();g.beginPath();g.rect(6000,Y.RN,1200,240);g.clip();
+ // Pavement joints and rubber wear do not alter markings or collision geometry.
+ g.strokeStyle='rgba(166,175,179,.035)';g.lineWidth=.8;for(let x=6015;x<7200;x+=90){g.beginPath();g.moveTo(x,Y.RN+10);g.lineTo(x,Y.RS-10);g.stroke()}
+ for(let i=0;i<60;i++){const x=6005+i*20,y=Y.RY+(i%2?12:-12);g.strokeStyle='rgba(12,18,23,'+(.02+(i%7)*.005)+')';g.lineWidth=1+i%3;g.beginPath();g.moveTo(x,y);g.lineTo(x+22+i%4*8,y);g.stroke()}g.restore();
+}
+function f1PaintTaxi(g){
+ const Y=APT_Y,L=APT_LINKS[1];g.save();
+ // Solid lines face the taxiway; broken lines face the runway. A2 matches A1.
+ g.strokeStyle='#e6c44d';g.lineWidth=1.7;for(let k=0;k<4;k++){g.setLineDash(k<2?[7,4]:[]);g.beginPath();g.moveTo(L.x-L.w/2+4,Y.RS+9+k*3);g.lineTo(L.x+L.w/2-4,Y.RS+9+k*3);g.stroke()}g.setLineDash([]);
+ // Two yellow guide fillets follow the north/south join; the taxiway centreline is continuous.
+ g.strokeStyle='#e0b93a';g.lineWidth=2;for(const dir of [-1,1]){g.beginPath();g.moveTo(6600,Y.TY-93);g.quadraticCurveTo(6600,Y.TY,6600+dir*93,Y.TY);g.stroke()}
+ g.restore();
+}
+function f1DrawFixtures(now,v){
+ const Y=APT_Y;if(!portVis(v,6000,Y.SN,1200,Y.TS-Y.SN+10))return;const s=f1Snapshot();
+ if((!WTC.on||WTC_MODE===1&&WTC_LP!==1)&&portVis(v,6000,Y.RN-35,1200,Y.TS+10-(Y.RN-35)))portCached('f1-static-fixtures',6000,Y.RN-35,1200,Y.TS+10-(Y.RN-35),g=>{for(const o of F1_STATIC_FIXTURES)e1DrawAsset(g,o,0)},2);
+ if(s.stopBarRed&&portVis(v,6542,Y.RS-3,116,32))portCached('f1-a2-stop',6542,Y.RS-3,116,32,g=>{for(const o of F1_FIXTURES.filter(l=>l.role==='stop-bar'))e1DrawAsset(g,o,0)},2);
+ if(Math.floor(now/350)%2!==0&&portVis(v,6515,Y.SS-23,170,36))portCached('f1-a2-guards',6515,Y.SS-23,170,36,g=>{for(const o of F1_FIXTURES.filter(l=>l.role==='runway-guard'))e1DrawAsset(g,o,0)},2);
+ Targets.add({id:'F1-RWY-CENTRE',label:'F0 · '+F1_PHASE_LABELS[s.phase],category:'airport',x:6600,y:Y.RY,w:1200,h:240});
+ Targets.add({id:'F1-LINK-A2',label:'A2 · '+(s.stopBarRed?'עצור — נדרש אישור':'אישור למטוס '+s.clearanceCode),category:'airport',x:6600,y:(Y.RS+Y.TN)/2,w:110,h:Y.TN-Y.RS});
+}
+function f1NearTower(){const p=APT_INTERACTIONS['APT-TOWER'];return PlayerProfile.mode==='walk'&&Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y)<=75}
+function f1StartMission(d){
+ if(!f1NearTower())return toast('גש ברגל למגדל הפיקוח ולחץ F');
+ PlayerProfile.activeMission={id:d.id,stage:'runway-observation',reward:d.reward,timeRemaining:d.timeLimit,startedAt:iso(),startCollisions:PlayerCar.collisions||0,returnVehicle:null,f1:{index:0,errors:0,lastCapture:null,pending:null,observations:[]}};
+ setNavigationTarget('APT-TOWER',{mission:true,silent:true});SaveManager.save('mission-start',{backup:true,silent:true});openPoiPhone('business','APT-TOWER');toast('צלם שלוש תצפיות וקרא את אישורי המסלול');return true;
+}
+function f1Capture(){
+ const m=PlayerProfile.activeMission;if(m?.id!=='M-F1-WATCH'||!f1NearTower())return false;const a=m.f1,s=f1Snapshot();
+ if(!APT_OPS.ready||!AO.flights.some(f=>!f.heli&&!f.never))return toast('התנועה מתכוננת · צלם תצפית בעוד כמה רגעים');
+ if(a.pending)return false;if(a.lastCapture!=null&&s.time-a.lastCapture<8)return toast('המתן לתצפית הבאה · '+Math.ceil(8-s.time+a.lastCapture)+' שנ׳');
+ let prompt,options,expected;if(a.index===0){prompt='למי המסלול שמור בתצפית הזו?';expected=s.owner||'none';const codes=[...new Set([s.owner,...AO.flights.filter(f=>!f.heli&&!f.never).map(f=>f.code)].filter(Boolean))].slice(0,3);options=[{value:'none',label:'המסלול פנוי'},...codes.map(value=>({value,label:value}))];}
+ else if(a.index===1){prompt='מהו מצב כניסת A2 בתצפית?';expected=s.stopBarRed?'hold':'clear';options=[{value:'hold',label:'עצור — הכניסה חסומה'},{value:'clear',label:'אישור למטוס בכניסה בלבד'}];}
+ else{prompt='איזה שימוש במסלול משתקף בתצפית?';expected=s.phase;options=Object.entries(F1_PHASE_LABELS).map(([value,label])=>({value,label}));}
+ a.pending={time:s.time,prompt,options,expected,owner:s.owner,stopBarRed:s.stopBarRed,phase:s.phase};a.lastCapture=s.time;renderPhone();return true;
+}
+function f1Answer(value){
+ const m=PlayerProfile.activeMission;if(m?.id!=='M-F1-WATCH'||!f1NearTower())return false;const a=m.f1,q=a.pending;if(!q||!q.options.some(o=>o.value===value))return false;
+ a.pending=null;if(value!==q.expected){a.errors++;m.timeRemaining=Math.max(0,m.timeRemaining-12);toast('הקריאה לא תאמה לתצפית · צלם שוב');renderPhone();return false;}
+ a.observations.push({time:q.time,owner:q.owner,phase:q.phase,stopBarRed:q.stopBarRed});a.index++;
+ if(a.index===3)return missionComplete();SaveManager.save('f1-observation',{backup:false,silent:true});renderPhone();toast('התצפית אושרה · '+a.index+'/3');return true;
+}
+function f1UpdateMission(dt,m,d){m.timeRemaining=Math.max(0,m.timeRemaining-dt);if(m.timeRemaining<=0)return missionFail('timeout')}
+function f1ResumeMission(m){m.f1||={index:0,errors:0,observations:[]};m.f1.pending=null;m.f1.lastCapture=null;setNavigationTarget('APT-TOWER',{mission:true,silent:true})}
+function f1OnComplete(m,d){
+ if(d.id!=='M-F1-WATCH')return;const p=PlayerProfile.worldPersistent.runwayObservations||={runs:0,bestSeconds:null,last:null},seconds=+(d.timeLimit-m.timeRemaining).toFixed(2);
+ p.runs++;p.last={at:iso(),seconds,errors:m.f1.errors,observations:m.f1.observations};if(!m.f1.errors&&(p.bestSeconds==null||seconds<p.bestSeconds))p.bestSeconds=seconds;
+}
+function f1MissionCard(){const d=MISSION_DEFS['M-F1-WATCH'],near=f1NearTower();return `<div class="missionRow"><b>${d.name}</b>${pnote('תצפית במרכז השדה דרך לוח מגדל הפיקוח: מזהה אישור מסלול, Stop bar A2 ושלב תנועה. שלוש קריאות מהבקר החי, בהפרש שמונה שניות.')}<div class="missionMeta"><span>${money(d.reward)}</span><span>${d.timeLimit} שנ׳</span><span>F1 · תצפית ברגל</span></div><div class="phoneActions"><button data-mission-start="M-F1-WATCH" ${!near||PlayerProfile.activeMission?'disabled':''}>${near?'התחל תצפית':'הגע למגדל הפיקוח'}</button><button data-nav-target="APT-TOWER">נווט למגדל</button></div></div>`}
+function f1ControlHtml(){
+ const s=f1Snapshot(),held=f1NearTower(),m=PlayerProfile.activeMission,a=m?.id==='M-F1-WATCH'?m.f1:null,p=PlayerProfile.worldPersistent.runwayObservations;
+ let body=pkv([['מסלול מרכז',s.conflict?'תקלה — הכניסה חסומה':F1_PHASE_LABELS[s.phase]],['אישור מסלול',s.owner||'אין מטוס שקיבל אישור'],['כניסת A2',s.stopBarRed?'עצור · Stop bar אדום':'אישור למטוס '+s.clearanceCode],['כלי טיס ב-F1',s.aircraft.length],['תצפיות שהושלמו',p?.runs||0],['זמן נקי מיטבי',p?.bestSeconds!=null?p.bestSeconds+' שנ׳':'—']]);
+ const tokenRows=Object.entries(s.tokens).map(([k,v])=>[k,v.join(', ')||'פנוי']);body+=pkv(tokenRows);
+ if(a){const q=a.pending;body+=pnote('תצפית '+Math.min(3,a.index+1)+'/3 · '+Math.ceil(m.timeRemaining)+' שנ׳ · טעויות '+a.errors);if(q)body+=pcard('תצפית מוקפאת · '+q.time+' שנ׳',pkv([['אישור',q.owner||'אין'],['A2',q.stopBarRed?'אדום — עצור':'אישור נקודתי'],['שימוש',F1_PHASE_LABELS[q.phase]]])+pnote(q.prompt)+`<div class="phoneActions">${q.options.map(o=>`<button data-f1-answer="${o.value}" ${held?'':'disabled'}>${o.label}</button>`).join('')}</div>`);else body+=`<div class="phoneActions"><button class="primary" data-f1-capture="1" ${held?'':'disabled'}>צלם תצפית מהבקר החי</button></div>`;body+=`<div class="phoneActions"><button data-mission-cancel="1">בטל תצפית</button></div>`;}
+ else body+=(MISSION_DEFS['M-F1-WATCH']&&MISSION_DEFS['M-F1-WATCH'].retired?'':f1MissionCard())+(typeof g77TvMissionCard==='function'&&!g77TvState()?g77TvMissionCard():'');   /* missions 11.11: M-F1-WATCH יצאה */   // GATE-77 S7-b · p193
+ body+=pnote('המסלול וההסעה סגורים לרכב ולהולכי רגל. החיווי מתעדכן מהבקר; ניתן לראות את A2 ומרכז המסלול דרך המפה. PAPI נשמר בספי 09/27.');if(typeof G77_FIDS!=='undefined'&&G77_FIDS.on)body+=g77FidsPhone(true);return pcard('F1 · מרכז המסלול וכניסת A2',body,'nav');   // GATE-77 S7-a · p191
+}
+$('phoneOverlay').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;if(b.dataset.f1Capture)f1Capture();if(b.dataset.f1Answer)f1Answer(b.dataset.f1Answer)});
+function f1GeometryAudit(){
+ const issues=[],r=F1_SCOPE;if(APT_RWY.x0!==4950||APT_RWY.x1!==8250||APT_RWY.cy!==-430||APT_RWY.w!==240)issues.push('runway-lock');if(APT_TWY.cy!==-68||APT_TWY.w!==120||APT_LINKS[1].id!=='A2'||APT_LINKS[1].x!==6600||APT_LINKS[1].w!==110)issues.push('taxi-link-lock');
+ for(const p of [...F1_FIXTURES,...F1_SIGNS])if(p.x<6000||p.x>=7200||p.y<-850||p.y>=850||!p.frangible||p.height>1||!TurboCity.get(p.asset))issues.push(p.id+':bounds-or-asset');
+ for(const p of F1_SIGNS)if(p.y<APT_Y.SS||Math.abs(p.x-6600)<75||p.v!==1)issues.push(p.id+':sign-clearance');
+ for(const b of APT_BUILDINGS)if(aptOver(aptFp(b),{x:r.x,y:-850,w:r.w,h:APT_Y.LS+850}))issues.push(b.id+':building-in-strip');
+ for(const t of APT_TREES)if(t.x>=6000&&t.x<7200&&t.y<850)issues.push(t.id+':tree-airside');
+ for(const p of [...PARKED_CARS,...TRAFFIC_CARS,...BUS_VEHICLES])if(p.x>=6000&&p.x<7200&&p.y>=-850&&p.y<850)issues.push(p.id+':civilian-airside');
+ if(!MAP_ACTIVE_IDS.has('F1')||!MAP_ACTIVE_IDS.has('F0'))issues.push('map-inactive');if(!APT_SOLIDS.some(s=>s.id==='APT-AIRFIELD'&&s.x<=6000&&s.x+s.w>=7200&&s.y<=-850))issues.push('airside-open');
+ if(F1_SPACE_USES.reduce((a,b)=>a+b.w*b.h,0)!==r.w*r.h)issues.push('space-use-coverage');
+ return{ok:!issues.length,issues,scope:'F1',runwayLength:1200,runwayInsetLights:20,taxiInsetLights:20,stopBarLights:9,guardLights:2,signs:2,edgeLights:APT_LIGHTS.filter(l=>l.chunk==='F1'&&['rwy-edge','twy-edge'].includes(l.kind)).length,spaceUses:F1_SPACE_USES.length,fullWingReservation:'EW · full span touching E1 or F1',activity:'M-F1-WATCH',next:'F2'};
+}
+window.__TC_F1_QA=()=>({geometry:f1GeometryAudit(),runway:f1Snapshot(),monitor:{changes:F1_MONITOR.changes,conflicts:F1_MONITOR.conflicts},next:'F2'});
+
+// =====================================================================================================================================
+// G1 · east runway end finish (GATE-68). Runway 27 threshold / runway 09 end, east blast pad and end safety area, exit link A3,
+// PAPI 27, windsock, LOC 09 antenna, ARFF access to the runway end, perimeter fence, mowing and drainage.
+// All field equipment is low and frangible. Runway, taxiway, link and stand geometry are unchanged; the shared reservation
+// controller stays the only source of clearances. The east block south of taxiway A (GA1/GA2, P6/P5, H1/H2) is G2 content.
+// =====================================================================================================================================
+const G1_SCOPE={id:'G1',x:7200,y:0,w:1200,h:850,next:'G2',gate:'GATE-68',runwayRow:'G0'};
+const G1_SPACE_USES=(()=>{const Y=APT_Y;return[   // GATE-73: rows of G1 (y 0..850); the runway rows of G0 are in G73_SPACE_USES
+ {id:'G1-LINK-BAND',x:7200,y:0,w:870,h:Y.TN,use:'קצה חיבור A3 (110 רוחב), ניקוז ומעבירי מים'},
+ {id:'G1-TAXI',x:7200,y:Y.TN,w:870,h:Y.TS-Y.TN,use:'מסלול הסעה A, צומת A3 וחיבור GL לרחבת ההאנגרים'},
+ {id:'G1-SERVICE',x:8070,y:0,w:330,h:Y.TS,use:'שטח פתוח מזרחית לסוף מסלול ההסעה A (השלוחה הוסרה ב-S3b); תחנת AFL מצפון; דרך ARFF במזרח'},
+ {id:'G1-STRIP',x:7200,y:Y.TS,w:805,h:Y.LN-Y.TS,use:'רצועת מסלול ההסעה ומחברים GL / A3S'},
+ {id:'G1-NE-APRON',x:8005,y:Y.TS,w:395,h:Y.LN-Y.TS,use:'מתחם החירום AIR-15 (S4): תחנת ARFF, מוקד EMS/משטרה, 8 מפרצים; יציאה מזרחה לדרך ההיקפית ודרומה ל-L'},
+ {id:'G1-TAXILANE',x:7200,y:Y.LN,w:1200,h:600-Y.LN,use:'נתיב רחבה L עד x 8345, רחבת המטוסים הקטנים NE (O2/GA3 חיים · GA4/O1 קבועים), דרך שירות y 590 (מתחם החירום עבר מצפון ל-L, S4)'},
+ {id:'G1-EAST-APRON',x:7200,y:600,w:1200,h:250,use:'החלק הצפוני של בלוק ההאנגרים: GA1/GA2, P6/P5 ומנחתי H1/H2 — תוכן G2, ללא שינוי'}
+]})();
+// ---- GATE-73 S4 · AIR-15 Airport Emergency Compound -------------------------------------------------------------------------------------
+// Owner plan v4.18: 8 bays in the band y 330–600 above GA1/GA2/P5/P6.  Measured in S4: that band is the lead-in apron of those four stands
+// (aircraft taxi 370 px south from L along x 7390/7548/7719/7939, spans up to 202 px) — no free 50 px column remains.  The compound therefore
+// sits in the NE corner north of L, which S3b emptied (A east stub removed, small aircraft moved south of L): 30-min sweeps of every arrival
+// and departure leave x ≥ 8056 / y ≤ 224 untouched (A3S column west, L traffic south).  Exits: east to the perimeter road (runway end 27 ARFF
+// access, and south past the NE apron to the hardstand → GLINK → terminal service road), south onto L (west to A3S/A3 → runway, GLINK).
+const G73_EM={x:8072,y:-108,w:272,h:314,apron:{x:8072,y:-20,w:272,h:226},rowN:{y0:-20,y1:76},rowS:{y0:130,y1:202},aisle:[76,130],
+ eastGate:{x:8344,y:76,w:8,h:54},southExit:{x:8204,y:206,w:140,h:28},
+ bays:[['EM-AR1','ARFF',8099,46,'N'],['EM-AR2','ARFF',8145,46,'N'],['EM-AR3','ARFF',8191,46,'N'],['EM-RES','RES',8237,46,'N'],
+       ['EM-EMS1','EMS',8093,34,'S'],['EM-EMS2','EMS',8127,34,'S'],['EM-POL1','POL',8158,28,'S'],['EM-POL2','POL',8186,28,'S']],
+ assets:{ARFF:'VS-FR-02',RES:'VS-FR-02',EMS:'VS-AM-02',POL:'VS-PL-02'}};
+function g73EmBays(A){const E=G73_EM;for(const [id,kind,x,w,row] of E.bays){const R=row==='N'?E.rowN:E.rowS,asset=E.assets[kind];
+ A.bays.push({id,kind,row:'EM',zone:'EMRG',x,w,x0:x-w/2,x1:x+w/2,y0:R.y0,y1:R.y1,yc:(R.y0+R.y1)/2,th:Math.PI/2,asset,scale:APT_VS[asset],occupied:kind!=='RES',fleetId:'V-'+id.slice(3)})}}
+const G73_EM_BUILDINGS=[d2Place('APT-EM-ARFF','תחנת כיבוי והצלה ARFF','W2PB-02',1.1,0,8091,-22,'airport-arff'),d2Place('APT-EM-POST','מוקד רפואה ומשטרת השדה','W2PB-12',.9,0,8287,-28,'airport-ems')];
+for(const b of G73_EM_BUILDINGS)b.emrg=true;
+APT_BUILDINGS.push(...G73_EM_BUILDINGS);C4_BUILDINGS.push(...G73_EM_BUILDINGS);GRAPHICS_RUNTIME_INFO.required.push('W2PB-02','W2PB-12','VS-AM-02','VS-PL-02');
+function g73PaintEm(g){
+ const E=G73_EM,A=E.apron;
+ g.fillStyle=portPattern('concrete');g.fillRect(E.x,E.y,E.w,A.y-E.y);g.fillStyle=portPattern('apron');g.fillRect(A.x,A.y,A.w,A.h);
+ for(const r of [E.eastGate,E.southExit])g.fillRect(r.x,r.y,r.w,r.h);
+ g.fillStyle='rgba(0,0,0,.08)';g.fillRect(A.x,A.y,A.w,2);g.strokeStyle='rgba(220,60,50,.8)';g.lineWidth=1.6;g.strokeRect(E.x+.5,E.y+.5,E.w-1,E.h-1);
+ const red='rgba(220,60,50,.9)',wht='rgba(244,242,232,.85)',blu='rgba(90,150,235,.9)',yel='rgba(244,211,94,.85)';
+ for(const b of APL.bays.filter(b=>b.zone==='EMRG')){const col=b.kind==='ARFF'?red:b.kind==='POL'?blu:b.kind==='RES'?yel:wht;g.strokeStyle=col;g.lineWidth=1.6;g.setLineDash(b.kind==='RES'?[6,4]:[]);g.beginPath();g.moveTo(b.x0,b.y0);g.lineTo(b.x0,b.y1);g.moveTo(b.x1,b.y0);g.lineTo(b.x1,b.y1);g.moveTo(b.x0,b.y0);g.lineTo(b.x1,b.y0);g.stroke();g.setLineDash([]);
+  if(b.kind==='ARFF'){g.save();g.beginPath();g.rect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0);g.clip();g.strokeStyle='rgba(220,60,50,.25)';g.lineWidth=2;for(let k=-120;k<120;k+=11){g.beginPath();g.moveTo(b.x0+k,b.y1);g.lineTo(b.x0+k+90,b.y0);g.stroke()}g.restore()}
+  if(b.kind==='EMS'){g.fillStyle='rgba(230,70,60,.55)';g.fillRect(b.x-2,b.y1-14,4,10);g.fillRect(b.x-5,b.y1-11,10,4)}
+  aptTxt(g,b.id.replace('EM-',''),b.x,b.y1+8,7,col,700)}
+ // aisle chevrons east (perimeter road) and the south exit onto L
+ g.fillStyle='rgba(244,242,232,.6)';for(let x=8100;x<8340;x+=46){g.beginPath();g.moveTo(x+6,103);g.lineTo(x-4,98);g.lineTo(x-1,103);g.lineTo(x-4,108);g.closePath();g.fill()}
+ for(const x of[8240,8300]){g.beginPath();g.moveTo(x,222);g.lineTo(x-5,212);g.lineTo(x,215);g.lineTo(x+5,212);g.closePath();g.fill()}
+ g.strokeStyle='rgba(244,242,232,.7)';g.lineWidth=1.2;g.setLineDash([8,6]);g.beginPath();g.moveTo(E.x,E.aisle[0]);g.lineTo(E.x+E.w,E.aisle[0]);g.moveTo(E.x,E.aisle[1]);g.lineTo(8204,E.aisle[1]);g.stroke();g.setLineDash([]);
+ aptTxt(g,'מתחם החירום · AIR-15',8274,158,9,'rgba(255,190,180,.85)',700);aptTxt(g,'ARFF · EMS · POLICE',8274,173,8,'rgba(255,190,180,.8)',700);
+}
+function g73DrawEm(v){const E=G73_EM;if(portVis(v,E.x-12,E.y-12,E.w+24,E.h+40)){aptReady();portCached('g73-em',E.x-12,E.y-12,E.w+24,E.h+40,g73PaintEm,1.5);Targets.add({id:'G1-EMRG',label:'מתחם החירום · ARFF ×3 · EMS ×2 · משטרה ×2 · מפרץ שמור',category:'airport',x:E.x+E.w/2,y:E.y+E.h/2,w:E.w,h:E.h})}}
+// static lock checks of the compound (the aircraft-sweep check is dynamic: g73EmOpsQa)
+function g73EmAudit(){const issues=[],E=G73_EM,A=aptReady(),bays=A.bays.filter(b=>b.zone==='EMRG'),fps=G73_EM_BUILDINGS.map(aptFp),inE=q=>q.x0>=E.x&&q.x1<=E.x+E.w&&q.y0>=E.y&&q.y1<=E.y+E.h;
+ if(bays.length!==8)issues.push('bays:'+bays.length);const by={};for(const b of bays)by[b.kind]=(by[b.kind]||0)+1;if(by.ARFF!==3||by.EMS!==2||by.POL!==2||by.RES!==1)issues.push('bay-mix');
+ const fl=A.fleet.filter(f=>bays.some(b=>b.id===f.bay));if(fl.length!==7+(typeof G77_CS!=='undefined'&&G77_CS.on?1:0))issues.push('fleet:'+fl.length);   // GATE-77 S7-a · p185: + the catering van (a guest)
+ for(const b of bays){if(!inE(b))issues.push('bay-outside:'+b.id);for(const f of fps)if(aptOver({x:b.x0,y:b.y0,w:b.w,h:b.y1-b.y0},f))issues.push('bay-building:'+b.id);for(const c of bays)if(c!==b&&c.id<b.id&&b.x0<c.x1&&b.x1>c.x0&&b.y0<c.y1&&b.y1>c.y0)issues.push('bay-overlap:'+b.id+'/'+c.id)}
+ for(const f of fps)if(!(f.x>=E.x&&f.x+f.w<=E.x+E.w&&f.y>=E.y&&f.y+f.h<=E.y+E.h))issues.push('building-outside:'+f.id);
+ const A3S=G73_CONNECTORS.find(c=>c.id==='A3S'),rj=apttAcGeom('AC-RJ-01'),rjHalf=(rj.W[3]-rj.W[2])/2/APTT_WT;if(E.x<A3S.x+rjHalf+16)issues.push('a3s-wing:'+(E.x-(A3S.x+rjHalf)).toFixed(0));
+ if(E.y+E.h>APT_Y.LN-24)issues.push('L-edge');if(E.x+E.w>APL_ZONES.perim.x-6)issues.push('perimeter-road');if(E.y<APT_Y.SS+120)issues.push('runway-strip');
+ const lanes=[E.eastGate,E.southExit,{x:E.x,y:E.aisle[0],w:E.w,h:E.aisle[1]-E.aisle[0]}];for(const r of lanes){for(const b of bays)if(aptOver(r,{x:b.x0,y:b.y0,w:b.w,h:b.y1-b.y0}))issues.push('exit-blocked:'+b.id);for(const f of fps)if(aptOver(r,f))issues.push('exit-building:'+f.id)}
+ return{ok:!issues.length,issues,rect:[E.x,E.y,E.x+E.w,E.y+E.h],bays:bays.length,vehicles:fl.length,mix:by,exits:['east → perimeter road x 8352','south → L']}}
+function g73EmOpsQa(minutes=30,seed=777,margin=10){   // every aircraft shape (fuselage / wing / tail / full wing) of every flight stays ≥ margin px off the compound
+ aptReady();return aoSandbox(()=>{AO.keep=true;aoInit(0,seed);const T=minutes*60;for(let t=0;t<=T;t++)aoStep(t);const E=G73_EM,box=apttObb(E.x+E.w/2,E.y+E.h/2,0,[-E.w/2,E.w/2,-E.h/2,E.h/2],'X','EM');let hits=0,min=1e9;const who={};
+  for(const f of AO.hist.concat(AO.flights))for(const q of f.tracks){if(q.tr.kind!=='ac')continue;for(let t=Math.max(f.t0,q.t0);t<Math.min(f.t1,q.t0+q.tr.seq.dur);t+=.5){const p=q.tr.seq.at(t-q.t0);if(!p||p[0]<E.x-420||p[1]>E.y+E.h+420)continue;const sh=[];apttShapes(q.tr,p,sh);
+   for(const o of sh){const d=Math.max(o.x0-(E.x+E.w),E.x-o.x1,o.y0-(E.y+E.h),E.y-o.y1);if(d<min)min=d;if(apttObbHit(o,box,margin)){hits++;who[f.stand]=(who[f.stand]||0)+1}}}}
+  return{ok:hits===0,seed,minutes,hits,who,minBoxGap:Math.round(min)}})}
+const G1_FIXTURES=[],G1_SIGNS=[],G1_LEADOFF=[];
+function g1Lamp(id,x,y,asset,role,v=0,extra){
+ const o={id,x,y,asset,role,v,scale:.32,kind:'g1-light',chunk:'G1',frangible:true,height:role.includes('inset')?.03:.35,nightHook:true,...extra};
+ G1_FIXTURES.push(o);APT_LIGHTS.push({...o});return o;
+}
+// runway centre line: white, then alternating red/white, then red over the last part (runway-end colour coding for runway 09)
+for(let x=7230,i=0;x<=APT_RWY.x1-60;x+=60,i++)g1Lamp('G1-RWY-CL-'+x,x,APT_Y.RY,'AP-REL-01','runway-inset',x>=7950?2:x>=7650?(i%2?2:0):0);
+// taxiway A centre line up to the A3 junction
+for(let x=7230;x<=7890;x+=60)g1Lamp('G1-TWY-CL-'+x,x,APT_Y.TY,'AP-REL-01','taxi-inset',1);
+// threshold 27 (green, facing an approach from the east) and runway-end lights for runway 09 (red)
+for(let i=0;i<12;i++){const y=APT_Y.RN+14+i*212/11;g1Lamp('G1-THR-27-'+i,APT_RWY.x1+4,y,'AP-REL-01','threshold',1);g1Lamp('G1-END-09-'+i,APT_RWY.x1+13,y,'AP-REL-01','runway-end',2)}
+// A3: stop bar (no runway entry from A3), runway guard lights, location signs
+for(let i=0;i<9;i++)g1Lamp('G1-A3-STOP-'+i,7905+i*(90/8),APT_Y.RS+15,'AP-REL-01','stop-bar',2);
+for(const x of [7885,8015])g1Lamp('G1-A3-GUARD-'+x,x,APT_Y.SS-3,'AP-REL-01','runway-guard',3);
+for(const x of [7860,8040])G1_SIGNS.push({id:'G1-A3-SIGN-'+x,asset:'AP-SGN-01',x,y:APT_Y.SS+9,scale:.56,v:0,face:'A3',frangible:true,height:.55,chunk:'G1'});
+// A3 lead-off lights (alternating green/amber from the runway centre line, green onto taxiway A); lit only while a landing vacates at A3
+{const q=(t,a,c,b)=>(1-t)*(1-t)*a+2*(1-t)*t*c+t*t*b,Y=APT_Y;let k=0;
+ for(const t of [.14,.3,.46,.62,.78,.94]){G1_LEADOFF.push({id:'G1-A3-LEAD-'+k,x:q(t,7850,7950,7950),y:q(t,Y.RY,Y.RY,Y.RS),asset:'AP-REL-01',v:k%2?3:1,scale:.32,role:'lead-off-inset',chunk:'G1',frangible:true,height:.03});k++}
+ for(let y=Y.RS+30;y<Y.TN-14;y+=30){G1_LEADOFF.push({id:'G1-A3-LEAD-'+k,x:7950,y,asset:'AP-REL-01',v:k%2?3:1,scale:.32,role:'lead-off-inset',chunk:'G1',frangible:true,height:.03});k++}
+ for(const t of [.3,.6,.9]){G1_LEADOFF.push({id:'G1-A3-LEAD-'+k,x:q(t,7950,7950,7857),y:q(t,Y.TN-6,Y.TY,Y.TY),asset:'AP-REL-01',v:1,scale:.32,role:'lead-off-fillet',chunk:'G1',frangible:true,height:.03});k++}
+ for(const o of G1_LEADOFF)APT_LIGHTS.push({...o,kind:'g1-light',nightHook:true});
+}
+// taxiway A ends east of A3: a pair of blue end lights
+for(const y of [APT_TWY.cy-APT_TWY.w/2+6,APT_TWY.cy+APT_TWY.w/2-6])g1Lamp('G1-TWY-END-'+y,APT_TWY.x1+6,y,'AP-TEL-01','twy-end',0);   // GATE-73 S3b: end of taxiway A (the east stub is removed)
+// existing edge lights in G1: canonical assets; the last part of the runway edge is caution amber for runway 09 departures
+for(const l of APT_LIGHTS)if(l.x>=7200&&l.x<8400&&l.y<850&&['rwy-edge','twy-edge'].includes(l.kind))Object.assign(l,{chunk:'G1',asset:l.kind==='rwy-edge'?'AP-REL-01':'AP-TEL-01',v:l.kind==='rwy-edge'&&l.x>=7650?3:0,frangible:true,height:.35,nightHook:true});
+// PAPI 27 abeam the 27 aiming point on the south side (it used to stand on the A3 link); windsock unchanged
+const G1_PAPI={id:'G1-PAPI-27',asset:'AP-PAPI-01',x:7800,y:APT_Y.RS+22,scale:1.2,rot:2,v:0,frangible:true,height:.5,chunk:'G0'};
+const G1_WINDSOCK={id:'G1-WSOCK',asset:'AP-WS-01',x:8160,y:APT_Y.RS+42,scale:1.1,rot:2,v:1,frangible:true,height:.9,chunk:'G0'};
+// LOC 09 antenna array on the extended centre line beyond the blast pad (no library asset: low procedural elements)
+const G1_LOC={id:'G1-LOC-09',x:8378,y0:APT_Y.RY-64,y1:APT_Y.RY+64,n:12,pad:{x:8364,y:APT_Y.RY-72,w:28,h:144},frangible:true,height:.6,chunk:'G0'};
+// ARFF access: the existing east perimeter service road reaches the runway end; vehicles stop at the strip edge
+const G1_ARFF={id:'G1-ARFF-ACCESS',x:8352,w:46,y0:APT_Y.RS-38,y1:APT_Y.LN,stopY:APT_Y.SS+8,joint:{x:8340,y:APT_Y.RS-38,w:12,h:38},sign:{id:'G1-ARFF-STOP',asset:'RF-STP',x:8344,y:APT_Y.SS+20,scale:.5,v:0,frangible:true,height:.8,chunk:'G0'}};
+// airfield lighting vault (constant-current regulators for the east lighting circuits) with an access spur from the ARFF road
+const G1_AFL={id:'G1-AFL',asset:'IL-12',x:8212,y:APT_Y.SS+50,scale:.5,v:0,label:'תחנת תאורת שדה',chunk:'G0'};   // GATE-73 S2: north of the A east stub
+const G1_FENCES=[[7200,APT_Y.FN,8398,APT_Y.FN],[8398,APT_Y.FN,8398,850]];
+const G1_AUDIO_ANCHORS=[{id:'G1-RWY-END-AUDIO',x:8100,y:APT_Y.RY,kind:'aircraft-pass',radius:500,enabled:false},{id:'G1-A3-AUDIO',x:7950,y:(APT_Y.RS+APT_Y.TN)/2,kind:'airfield-radio',radius:150,enabled:false}];
+const G1_STATIC=[...G1_FIXTURES.filter(l=>!['stop-bar','runway-guard'].includes(l.role)),
+ ...APT_LIGHTS.filter(l=>l.chunk==='G1'&&['rwy-edge','twy-edge'].includes(l.kind)).map(l=>({...l,scale:.36})),G1_PAPI,G1_ARFF.sign,...G1_SIGNS];
+const G1_MONITOR={lastAt:-1,key:null,changes:0,conflicts:0,a3Vacates:0,lastVacate:null,seen:new Set(),cache:null};
+const G1_PHASE_LABELS={free:'מסלול פנוי',arrival:'נחיתה וגלגול לקצה',departure:'המראה לכיוון מזרח',reserved:'מסלול שמור'};
+const G1_EXIT=new WeakMap();
+// the runway exit of an arrival (and where it goes after the link) is read from its own planned track
+function g1ExitInfo(f){
+ if(!f||f.heli||f.never||f.states?.[0]?.[1]!=='INBOUND')return null;
+ const n=(f.tracks||[]).length,c=G1_EXIT.get(f);if(c&&c.n===n)return c.info;let info=null;
+ for(const q of f.tracks||[]){if(q.tr.kind!=='ac')continue;const d=q.tr.seq.dur||0;let ex=null;
+  for(let t=0;t<=d;t+=.5){const p=q.tr.seq.at(t);if(!p||p[3]>.01)continue;
+   if(!ex){if(p[1]>APT_Y.RS+8&&p[1]<APT_Y.TN-4)for(const l of APT_LINKS)if(Math.abs(p[0]-l.x)<l.w/2){ex=l;break}continue}
+   if(p[1]>=APT_TWY.cy-2){info={exit:ex.id,turn:p[0]<ex.x-30?'west':p[0]>ex.x+30?'east':'straight'};break}}
+  if(ex&&!info)info={exit:ex.id,turn:'west'};if(info)break}
+ G1_EXIT.set(f,{n,info});return info;
+}
+function g1ExitOf(f){return g1ExitInfo(f)?.exit||null}
+function g1Snapshot(time=APT_OPS.clk){
+ const slice=aoSl(time);if(G1_MONITOR.cache?.slice===slice&&G1_MONITOR.cache.bucket===AO.B.get(slice)&&G1_MONITOR.cache.flights===AO.flights)return G1_MONITOR.cache.value;
+ const bucket=AO.B.get(slice)||[],owners=[...new Set(bucket.filter(s=>s.L==='R').map(s=>String(s.t).replace(/-R$/,'')))];
+ const tokens=Object.fromEntries(['TW4','LNK3','J3','TW5','JG','GL'].map(k=>[k,[...new Set(bucket.filter(s=>s.L==='S'&&s.k===k).map(s=>s.t))]]));
+ const aircraft=[];let vacating=null;
+ for(const f of AO.flights){if(f.heli||f.never||time<f.t0||time>=f.t1)continue;const st=aoStateOf(f,time);
+  for(const q of f.tracks){const p=q.tr.seq.at(time-q.t0);if(q.tr.kind==='ac'&&p&&p[0]>=7200&&p[0]<8400&&p[1]<850&&p[1]>-850)aircraft.push({code:f.code,stand:f.stand,asset:q.tr.id,state:st,x:p[0],y:p[1],heading:p[2],height:p[3]})}
+  if(!vacating&&['LANDING_ROLL','VACATE_RUNWAY'].includes(st)&&g1ExitOf(f)==='A3'){let pos=null;for(const q of f.tracks){const p=q.tr.seq.at(time-q.t0);if(q.tr.kind==='ac'&&p){pos=[p[0],p[1],p[3]];break}}
+   // the lead-off lights stay on until the aircraft reaches the taxiway centre line
+   if(pos&&pos[1]<=APT_TWY.cy+8)vacating={code:f.code,state:st,stand:f.stand,key:f.code+'@'+f.t0,pos,turn:g1ExitInfo(f).turn}}
+ }
+ const ownerFlight=AO.flights.find(f=>owners.includes(f.code)),stage=ownerFlight?aoStateOf(ownerFlight,time):null;
+ const phase=!owners.length?'free':['APPROACH','LANDING_RESERVED','LANDING_ROLL','VACATE_RUNWAY'].includes(stage)?'arrival':['RUNWAY_RESERVED','LINE_UP','TAKEOFF_ROLL'].includes(stage)?'departure':'reserved';
+ const conflict=owners.length>1||Object.values(tokens).some(a=>a.length>1);
+ // A3 is an exit: no departure ever lines up there, so the stop bar stays red unless the controller cleared one at A3
+ const a3Plane=aircraft.find(a=>owners.length===1&&a.code===owners[0]&&a.height<.01&&Math.abs(a.x-7950)<125&&a.y>=APT_Y.RY&&a.y<=APT_Y.TY+6&&['RUNWAY_RESERVED','LINE_UP'].includes(a.state));   /* GATE-77 S6r · T2 · K-99: a take-off roll passing A3 is not a clearance at A3 */
+ const value={time:+time.toFixed(2),owners,owner:owners[0]||null,stage,phase,tokens,conflict,stopBarRed:conflict||!a3Plane,clearanceCode:!conflict&&a3Plane?a3Plane.code:null,leadOff:!!vacating&&!conflict,vacating,aircraft,
+  onRunwayEnd:aircraft.filter(a=>a.y>=APT_Y.RN&&a.y<=APT_Y.RS&&a.height<.01).length};
+ G1_MONITOR.cache={slice,bucket:AO.B.get(slice),flights:AO.flights,value};return value;
+}
+function g1Watch(time){
+ if(time-G1_MONITOR.lastAt<.5)return;G1_MONITOR.lastAt=time;G1_MONITOR.cache=null;
+ const s=g1Snapshot(time);
+ if(s.vacating&&!G1_MONITOR.seen.has(s.vacating.key)){if(G1_MONITOR.seen.size>500)G1_MONITOR.seen.clear();G1_MONITOR.seen.add(s.vacating.key);G1_MONITOR.a3Vacates++;G1_MONITOR.lastVacate={code:s.vacating.code,stand:s.vacating.stand,at:+time.toFixed(1)};Dbg.event('airport-g1','a3-vacate',{code:s.vacating.code,stand:s.vacating.stand})}
+ const key=[s.owner,s.phase,s.stopBarRed,s.leadOff,s.conflict].join('|');if(key===G1_MONITOR.key)return;
+ G1_MONITOR.key=key;G1_MONITOR.changes++;if(s.conflict)G1_MONITOR.conflicts++;Dbg.event('airport-g1','runway-end',{owner:s.owner,phase:s.phase,stopBarRed:s.stopBarRed,leadOff:s.leadOff,conflict:s.conflict});
+}
+function g1Reset(){Object.assign(G1_MONITOR,{lastAt:-1,key:null,changes:0,conflicts:0,a3Vacates:0,lastVacate:null,seen:new Set(),cache:null})}
+
+// ---------- painting (cached) ---------------------------------------------------------------------------------------------------------
+function g1PaintField(g){
+ const Y=APT_Y;g.save();
+ // north perimeter: mown bands, shallow drain, fence (GATE-73: y −600) and the east world edge
+ for(let i=0;i<12;i++){g.fillStyle=i%2?'rgba(58,85,45,.10)':'rgba(172,185,114,.10)';g.fillRect(7200+i*100,Y.SN-47,100,43);g.fillRect(7200+i*100,Y.SS+1,100,19);g.fillRect(7200+i*100,Y.SS+50,100,22)}
+ g.strokeStyle='rgba(58,77,58,.42)';g.lineWidth=2;
+ g.beginPath();g.moveTo(7200,Y.SN-5);g.lineTo(8352,Y.SN-5);g.stroke();
+ for(const y of [Y.SS+10,Y.TN-14])for(const [a,b] of [[7200,7891],[8009,8346]]){g.beginPath();g.moveTo(a,y);g.lineTo(b,y);g.stroke()}
+ // culvert headwalls where the drain passes under A3 and under the ARFF road
+ g.fillStyle='#a7a59b';for(const y of [Y.SS+5,Y.TN-19])for(const x of [7889,8007,8344])g.fillRect(x,y,6,10);g.fillStyle='rgba(30,40,48,.55)';for(const y of [Y.SS+8,Y.TN-16])for(const x of [7890,8008,8345])g.fillRect(x+1,y,4,4);
+ // ARFF access road (continuation of the east perimeter service road) from the hangar block to the strip edge
+ const A=G1_ARFF;g.fillStyle=portPattern('asphalt');g.fillRect(A.x,Y.SS,A.w,A.y1-Y.SS);g.fillStyle='rgba(0,0,0,.14)';g.fillRect(A.x,Y.SS,3,A.y1-Y.SS);
+ g.strokeStyle='#e0b93a';g.lineWidth=1.6;g.setLineDash([14,12]);g.beginPath();g.moveTo(A.x+A.w/2,A.stopY+8);g.lineTo(A.x+A.w/2,A.y1);g.stroke();g.setLineDash([]);
+ g.fillStyle='rgba(200,40,40,.85)';for(const y of [Y.SS+50,Y.SS+90])g.fillRect(A.x+4,y,5,26);
+ // vehicle stop line at the runway strip edge + painted legend
+ g.fillStyle='#ecece6';g.fillRect(A.x+3,A.stopY,A.w-6,4);aptTxt(g,'ARFF',A.x+A.w/2,A.stopY+16,10,'rgba(236,236,230,.9)');aptTxt(g,'STOP',A.x+A.w/2,A.stopY+28,8,'rgba(236,236,230,.8)');
+ // airfield lighting vault: concrete pad and a gravel spur from the ARFF road
+ const V=G1_AFL;g.fillStyle=portPattern('concrete');g.fillRect(V.x-34,V.y-26,68,52);g.fillStyle=portPattern('gravel');g.fillRect(V.x+34,V.y+14,A.x-(V.x+34),14);
+ g.strokeStyle='rgba(60,56,48,.45)';g.lineWidth=1;g.strokeRect(V.x-33.5,V.y-25.5,67,51);
+ // buried cable route (lighting circuits) marked by low posts
+ g.strokeStyle='rgba(224,185,58,.28)';g.lineWidth=1;g.setLineDash([4,7]);g.beginPath();g.moveTo(V.x-34,V.y-14);g.lineTo(8086,V.y-14);g.moveTo(V.x+10,V.y-26);g.lineTo(V.x+10,Y.SS+16);g.lineTo(8346,Y.SS+16);g.stroke();g.setLineDash([]);
+ g73PaintPerimeter(g,7200,8400);g.restore();
+}
+function g1PaintRunway(g){
+ const R=APT_RWY,y0=R.cy-R.w/2,y1=R.cy+R.w/2;
+ const Y=APT_Y;g.save();g.beginPath();g.rect(7200,Y.SN,1200,360);g.clip();
+ // pavement joints (faint), touchdown rubber for runway 27 and turn-off scuffs at A3
+ g.strokeStyle='rgba(166,175,179,.035)';g.lineWidth=.8;for(let x=7215;x<R.x1;x+=90){g.beginPath();g.moveTo(x,y0+10);g.lineTo(x,y1-10);g.stroke()}
+ for(let i=0;i<26;i++){const x=7660+i*9+(i%4)*3,y=R.cy+((i%3)-1)*13;g.strokeStyle='rgba(15,20,25,'+(.02+(i%5)*.007)+')';g.lineWidth=1+(i%3);g.beginPath();g.moveTo(x,y);g.lineTo(x+28+(i%4)*6,y);g.stroke()}
+ g.strokeStyle='rgba(14,18,22,.07)';g.lineWidth=5;for(const o of [-9,9]){g.beginPath();g.moveTo(7840,R.cy+o*.4);g.quadraticCurveTo(7950+o,R.cy+o*.4,7950+o,y1);g.stroke()}
+ // yellow lead-off line from the runway centre line into A3 (the actual vacate path of landing aircraft)
+ g.strokeStyle='#e0b93a';g.lineWidth=2.4;g.beginPath();g.moveTo(7836,R.cy+5);g.quadraticCurveTo(7950,R.cy+5,7950,y1);g.stroke();
+ // east blast pad chevrons pointing at the runway, end-safety-area grading beyond it
+ g.strokeStyle='#d4b23f';g.lineWidth=4;for(const x of [8324,8292]){g.beginPath();g.moveTo(x,y0+24);g.lineTo(x-24,R.cy);g.lineTo(x,y1-24);g.stroke()}
+ g.fillStyle='rgba(72,96,58,.22)';g.fillRect(8340,Y.SN,60,360);for(let y=Y.SN+8;y<Y.SS;y+=22){g.fillStyle='rgba(172,185,114,.12)';g.fillRect(8340,y,60,10)}
+ // LOC 09 concrete pad with its critical-area outline
+ const L=G1_LOC;g.fillStyle=portPattern('concrete');g.fillRect(L.pad.x,L.pad.y,L.pad.w,L.pad.h);g.strokeStyle='rgba(236,236,230,.55)';g.lineWidth=1.2;g.setLineDash([6,5]);g.strokeRect(8344,Y.RY-92,54,170);g.setLineDash([]);
+ g.save();g.translate(L.pad.x+L.pad.w/2,L.pad.y-10);g.fillStyle='rgba(236,236,230,.75)';g.font='700 8px Arial,Helvetica,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('LOC 09',0,0);g.restore();
+ // ARFF access inside the strip: stabilised gravel to the blast-pad corner (flush with the graded strip)
+ const A=G1_ARFF;g.fillStyle=portPattern('gravel');g.fillRect(A.x,A.y0,A.w,Y.SS-A.y0);g.fillRect(A.joint.x,A.joint.y,A.joint.w,A.joint.h);
+ g.fillStyle='rgba(0,0,0,.10)';g.fillRect(A.x,A.y0,A.w,2);
+ g.restore();
+}
+function g1PaintTaxi(g){
+ g.save();
+ // A3 hold-short: dashed lines face the runway, solid lines face the taxiway (as at A1/A2)
+ const Y=APT_Y;g.strokeStyle='#e6c44d';g.lineWidth=1.7;for(let k=0;k<4;k++){g.setLineDash(k<2?[7,4]:[]);g.beginPath();g.moveTo(7899,Y.RS+9+k*3);g.lineTo(8001,Y.RS+9+k*3);g.stroke()}g.setLineDash([]);
+ // guide fillets from A3 onto taxiway A (both ways; landing traffic turns west)
+ g.strokeStyle='#e0b93a';g.lineWidth=2;for(const dir of [-1,1]){g.beginPath();g.moveTo(7950,Y.TY-93);g.quadraticCurveTo(7950,Y.TY,7950+dir*93,Y.TY);g.stroke()}
+ // taxiway A end: edge-to-edge end bar
+ g.fillStyle='rgba(224,185,58,.75)';g.fillRect(APT_TWY.x1+30,APT_TWY.cy-APT_TWY.w/2+8,3,APT_TWY.w-16);
+ g.restore();
+}
+function g1DrawSign(g,o){
+ e1DrawAsset(g,o,0);
+ // the library sign has faces A1/A2/B1…; the A3 face is lettered on the same plate
+ const s=o.scale,x0=o.x-28*s,y0=o.y-44*s;g.save();g.fillStyle='#f0c53a';g.fillRect(x0+14.5*s,y0+13.5*s,27*s,15*s);
+ g.fillStyle='#1b1b1b';g.font='800 '+(12.5*s).toFixed(2)+'px Arial,Helvetica,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(o.face,o.x,y0+21.2*s);g.restore();
+}
+function g1DrawLoc(g){
+ const L=G1_LOC;g.save();
+ for(let i=0;i<L.n;i++){const y=L.y0+i*(L.y1-L.y0)/(L.n-1);g.fillStyle='rgba(0,0,0,.25)';g.fillRect(L.x-2,y-1,7,4);g.fillStyle='#5d6870';g.fillRect(L.x-4,y-1.2,8,2.4);g.fillStyle=i%2?'#e8eef2':'#d9473f';g.fillRect(L.x-1.6,y-1.6,3.2,3.2)}
+ g.strokeStyle='rgba(70,82,90,.8)';g.lineWidth=1;g.beginPath();g.moveTo(L.x,L.y0);g.lineTo(L.x,L.y1);g.stroke();g.restore();
+}
+function g1PaintStatic(g){
+ for(const o of G1_STATIC){if(o.asset==='AP-SGN-01')g1DrawSign(g,o);else if(o.asset==='AP-PAPI-01')aptSprite(g,o.asset,o.x,o.y,o.scale,o.rot,0);else e1DrawAsset(g,o,0)}
+ g1DrawLoc(g);
+ const V=G1_AFL;e1DrawAsset(g,{asset:V.asset,x:V.x,y:V.y,scale:V.scale,v:0},0);
+}
+function aptFixturesStatic(now){const Y=APT_Y,v=aptView(140);if(portVis(v,6000,Y.RN-35,1200,Y.TS+10-(Y.RN-35)))portCached('f1-static-fixtures',6000,Y.RN-35,1200,Y.TS+10-(Y.RN-35),g=>{for(const o of F1_STATIC_FIXTURES)e1DrawAsset(g,o,0)},2);if(portVis(v,7200,Y.RN-40,1200,Y.TS+40-(Y.RN-40)))portCached('g1-static-fixtures',7200,Y.RN-40,1200,Y.TS+40-(Y.RN-40),g1PaintStatic,2)}
+function g1DrawFixtures(now,v){
+ const Y=APT_Y;if(!portVis(v,7200,Y.SN,1200,Y.TS-Y.SN+10))return;const s=g1Snapshot();
+ if((!WTC.on||WTC_MODE===1&&WTC_LP!==1)&&portVis(v,7200,Y.RN-40,1200,Y.TS+40-(Y.RN-40)))portCached('g1-static-fixtures',7200,Y.RN-40,1200,Y.TS+40-(Y.RN-40),g1PaintStatic,2);
+ if(s.stopBarRed&&portVis(v,7892,Y.RS-3,116,32))portCached('g1-a3-stop',7892,Y.RS-3,116,32,g=>{for(const o of G1_FIXTURES.filter(l=>l.role==='stop-bar'))e1DrawAsset(g,o,0)},2);
+ if(Math.floor(now/350)%2!==0&&portVis(v,7865,Y.SS-23,170,36))portCached('g1-a3-guards',7865,Y.SS-23,170,36,g=>{for(const o of G1_FIXTURES.filter(l=>l.role==='runway-guard'))e1DrawAsset(g,o,0)},2);
+ if(s.leadOff&&portVis(v,7830,Y.RY-18,140,Y.TY+20-(Y.RY-18))){const west=s.vacating.turn==='west';portCached('g1-a3-leadoff-'+(west?'w':'s'),7830,Y.RY-18,140,Y.TY+20-(Y.RY-18),g=>{for(const o of G1_LEADOFF)if(west||o.role!=='lead-off-fillet')e1DrawAsset(g,o,0)},2)}
+ if(portVis(v,G1_WINDSOCK.x-60,G1_WINDSOCK.y-60,120,120))e1DrawAsset(ctx,G1_WINDSOCK,now);
+ if(portVis(v,8150,G1_AFL.y+24,130,26))e4Plate('AFL · '+G1_AFL.label,G1_AFL.x,G1_AFL.y+36,96);
+ ctx.save();for(const [x1,y1,x2,y2]of G1_FENCES){if(!portVis(v,Math.min(x1,x2)-4,Math.min(y1,y2)-4,Math.abs(x2-x1)+8,Math.abs(y2-y1)+8))continue;ctx.strokeStyle='#52665c';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const n=Math.ceil(Math.hypot(x2-x1,y2-y1)/30);ctx.fillStyle='#46574f';for(let i=0;i<=n;i++)ctx.fillRect(x1+(x2-x1)*i/n-1.4,y1+(y2-y1)*i/n-1.4,2.8,2.8)}ctx.restore();
+ Targets.add({id:'G1-RWY-EAST',label:'G0 · סף 27 וקצה המסלול · '+G1_PHASE_LABELS[s.phase],category:'airport',x:7775,y:Y.RY,w:1150,h:240});
+ Targets.add({id:'G1-LINK-A3',label:'A3 · יציאה בלבד · '+(s.leadOff?'מפנה '+s.vacating.code:'פנויה'),category:'airport',x:7950,y:(Y.RS+Y.TN)/2,w:110,h:Y.TN-Y.RS});
+ Targets.add({id:'G1-ARFF',label:'ARFF · גישה לקצה המסלול · עצירה בקצה הרצועה',category:'airport',x:8375,y:(G1_ARFF.y0+G1_ARFF.y1)/2,w:46,h:G1_ARFF.y1-G1_ARFF.y0});
+}
+function g1ControlHtml(){
+ const s=g1Snapshot(),m=G1_MONITOR;
+ return pcard('G1 · קצה המסלול המזרחי ויציאה A3',pkv([
+  ['מסלול 09/27 בקצה המזרחי',s.conflict?'תקלה — נדרשת בדיקת בקר':G1_PHASE_LABELS[s.phase]],
+  ['יציאה A3',s.leadOff?'מפנה '+s.vacating.code+' · אורות הובלה דולקים':'פנויה · אורות ההובלה כבויים'],
+  ['Stop bar A3',s.stopBarRed?'אדום קבוע · A3 היא יציאה בלבד':'אישור למטוס '+s.clearanceCode],
+  ['פינויים דרך A3 בסשן',m.a3Vacates+(m.lastVacate?' · אחרון '+m.lastVacate.code:'')],
+  ['כלי טיס ב-G1',s.aircraft.length+(s.onRunwayEnd?' · '+s.onRunwayEnd+' על המסלול':'')],
+  ['PAPI 27','2 לבן / 2 אדום · מול נקודת הכיוון 27'],['LOC 09','אנטנה פעילה מעבר לקצה המסלול'],
+  ['שק רוח','רוח מזרחית קלה · הפעלה במסלול 09'],['ARFF','דרך גישה לקצה המסלול · עצירה בקצה הרצועה']])
+  +pnote('A3 משמשת לפינוי נחיתות בלבד; אין המראה מ-A3, ולכן ה-Stop bar שלה נשאר אדום. אורות ההובלה הירוקים־צהובים נדלקים רק כשנחיתה מפנה ב-A3. הקצה המזרחי סגור לרכב ולהולכי רגל; אפשר לצפות בו במפה (F4).'),'nav');
+}
+function g1Box(o){const I=TurboCity.info(o.asset,{scale:o.scale,rot:o.rot||0,variant:o.v||0});return{x:o.x-I.w/2+I.fp[0],y:o.y-I.h/2+I.fp[1],w:I.fp[2],h:I.fp[3]}}
+function g1GeometryAudit(){
+ const issues=[],r=G1_SCOPE,R=APT_RWY,T=APT_TWY,A3=APT_LINKS[2];
+ if(R.x0!==4950||R.x1!==8250||R.cy!==-430||R.w!==240)issues.push('runway-lock');if(T.cy!==-68||T.w!==120||T.x1!==8030)issues.push('taxi-lock');
+ if(A3?.id!=='A3'||A3.x!==7950||A3.w!==110)issues.push('a3-lock');
+ const inG1=p=>p.x>=r.x&&p.x<r.x+r.w&&p.y>=-850&&p.y<r.h;
+ for(const p of [...G1_FIXTURES,...G1_LEADOFF,...G1_SIGNS,G1_PAPI,G1_WINDSOCK,G1_ARFF.sign])if(!inG1(p)||!p.frangible||p.height>1||!TurboCity.get(p.asset))issues.push(p.id+':bounds-or-asset');
+ for(const p of G1_SIGNS)if(p.y<APT_Y.SS||Math.abs(p.x-A3.x)<A3.w/2+20)issues.push(p.id+':sign-clearance');
+ const link={x:A3.x-A3.w/2,y:A3.y0-2,w:A3.w,h:A3.y1-A3.y0+6},twy={x:T.x0-40,y:T.cy-T.w/2,w:T.x1-T.x0+80,h:T.w},rwy={x:R.x0,y:R.cy-R.w/2,w:R.x1-R.x0,h:R.w},blast={x:R.x1,y:R.cy-R.w/2,w:90,h:R.w};
+ const papi=g1Box(G1_PAPI);if(aptOver(papi,link)||aptOver(papi,twy)||aptOver(papi,rwy))issues.push('papi-on-pavement');
+ if(G1_PAPI.x<R.x1-460||G1_PAPI.x>R.x1-400)issues.push('papi-not-abeam-aiming-point-27');
+ const ws=g1Box(G1_WINDSOCK);if(aptOver(ws,link)||aptOver(ws,rwy)||aptOver(ws,twy))issues.push('windsock-on-pavement');
+ const loc={x:G1_LOC.pad.x,y:G1_LOC.pad.y,w:G1_LOC.pad.w,h:G1_LOC.pad.h};if(aptOver(loc,rwy)||aptOver(loc,blast)||loc.x+loc.w>8400||Math.abs((G1_LOC.y0+G1_LOC.y1)/2-R.cy)>1)issues.push('loc-placement');
+ const road={x:G1_ARFF.x,y:G1_ARFF.y0,w:G1_ARFF.w,h:G1_ARFF.y1-G1_ARFF.y0},P=APL.zones.perim;
+ if(aptOver(road,rwy)||aptOver(road,blast)||aptOver(road,loc))issues.push('arff-road-on-runway');if(road.x<P.x-1||road.x+road.w>P.x+P.w+1)issues.push('arff-road-off-perimeter-zone');
+ if(G1_ARFF.stopY<APT_Y.SS||G1_ARFF.stopY>APT_Y.SS+20)issues.push('arff-stop-line');
+ const vault=g1Box(G1_AFL);const heliApron={x:8060,y:640,w:300,h:100};
+ if(vault.y<APT_Y.SS||aptOver(vault,twy)||aptOver(vault,heliApron)||aptOver(vault,road)||aptOver(vault,link))issues.push('afl-clearance');
+ for(const h of APT_HELIPADS)if(Math.hypot(Math.max(vault.x-h.x,0,h.x-vault.x-vault.w),Math.max(vault.y-h.y,0,h.y-vault.y-vault.h))<h.r+10)issues.push('afl-near-helipad-'+h.id);
+ if(vault.y+vault.h>APL.zones.eBlock.y)issues.push('afl-in-east-block');
+ for(const o of G1_LEADOFF)if(Math.hypot(o.x-A3.x,0)>110||o.y<APT_Y.RY-5||o.y>APT_Y.TY+4)issues.push(o.id+':lead-off-corridor');
+ for(const b of APT_BUILDINGS)if(!b.emrg&&aptOver(aptFp(b),{x:r.x,y:-850,w:r.w,h:600+850}))issues.push(b.id+':building-in-runway-row');   // S4: the emergency compound has its own clearance audit (g73EmAudit / g73EmOpsQa)
+ for(const t of APT_TREES)if(t.x>=r.x&&t.x<r.x+r.w&&t.y<r.h)issues.push(t.id+':tree-airside');
+ for(const p of [...PARKED_CARS,...TRAFFIC_CARS,...BUS_VEHICLES])if(p.x>=r.x&&p.x<r.x+r.w&&p.y>=-850&&p.y<r.h)issues.push(p.id+':civilian-airside');
+ if(!MAP_ACTIVE_IDS.has('G1')||!MAP_ACTIVE_IDS.has('G0'))issues.push('map-inactive');if(!APT_SOLIDS.some(s=>s.id==='APT-AIRFIELD'&&s.x<=r.x&&s.x+s.w>=r.x+r.w&&s.y<=-850&&s.y+s.h>=r.h))issues.push('airside-open');
+ if(G1_SPACE_USES.reduce((a,b)=>a+b.w*b.h,0)!==r.w*r.h)issues.push('space-use-coverage');
+ for(const a of G1_SPACE_USES)for(const b of G1_SPACE_USES)if(a!==b&&a.id<b.id&&aptOver(a,b))issues.push('space-use-overlap '+a.id+'/'+b.id);
+ const env=aptFullWingEnvelope({W:[-80,80,-6,6]},7950,(APT_Y.RS+APT_Y.TN)/2,0,'qa');if(!env)issues.push('wing-envelope-not-in-G1');
+ const edges=APT_LIGHTS.filter(l=>l.chunk==='G1'&&l.kind==='rwy-edge');
+ return{ok:!issues.length,issues,scope:'G1',gate:'GATE-68',runwayEastLength:R.x1-r.x,blastPad:90,thresholdLights:12,runwayEndLights:12,centreLineLights:G1_FIXTURES.filter(l=>l.role==='runway-inset').length,
+  taxiCentreLights:G1_FIXTURES.filter(l=>l.role==='taxi-inset').length,stopBarLights:9,guardLights:2,leadOffLights:G1_LEADOFF.length,signs:G1_SIGNS.length,runwayEdgeLights:edges.length,cautionAmberEdge:edges.filter(l=>l.v===3).length,
+  taxiEdgeLights:APT_LIGHTS.filter(l=>l.chunk==='G1'&&l.kind==='twy-edge').length+2,papi:'27 · '+G1_PAPI.x,windsock:1,loc09Elements:G1_LOC.n,arffAccess:road.h,afl:G1_AFL.asset,fences:G1_FENCES.length,spaceUses:G1_SPACE_USES.length,
+  fullWingReservation:'EW · full span touching E1, F1 or G1',aircraftStandIds:aptReady().stands.filter(s=>s.ngx>=7200&&s.ngy<850).map(s=>s.id),next:'G2'};
+}
+// sandbox check: lead-off lights follow the planned exits; the A3 stop bar never opens; no token conflicts at the east end
+function g1OpsQa(minutes=15,seed=777){
+ if(!APTT_SPEC){APTT_SPEC=aptBuildSpec();APTT_C=aptBuildC()}
+ return aoSandbox(()=>{AO.keep=true;aoInit(0,seed);const T=minutes*60;let lead=0,stopOpen=0,conflicts=0,mismatch=0,maxInG1=0;const vac=new Set(),exits={};
+  for(let t=0;t<=T;t+=.5){aoStep(t);G1_MONITOR.cache=null;const s=g1Snapshot(t);if(s.leadOff){lead++;vac.add(s.vacating.key)}if(!s.stopBarRed)stopOpen++;if(s.conflict)conflicts++;maxInG1=Math.max(maxInG1,s.aircraft.length);
+   // every lit lead-off belongs to an aircraft that really is on the runway or the A3 link
+   if(s.leadOff){const p=s.vacating.pos;if(!p||p[2]>.01||p[1]<APT_Y.RN||p[1]>APT_TWY.cy+8||p[0]>8000)mismatch++}}
+  const turns={};for(const f of AO.hist.concat(AO.flights)){const e=g1ExitInfo(f);if(e){exits[e.exit]=(exits[e.exit]||0)+1;if(e.exit==='A3')turns[e.turn]=(turns[e.turn]||0)+1}}
+  G1_MONITOR.cache=null;
+  return{ok:conflicts===0&&mismatch===0&&stopOpen===0&&vac.size>0,seed,minutes,a3Vacates:vac.size,leadOffSeconds:lead/2,stopBarOpenSeconds:stopOpen/2,conflicts,mismatch,maxAircraftInG1:maxInG1,exits,a3Turns:turns};
+ });
+}
+window.__TC_G1_QA=()=>({geometry:g1GeometryAudit(),runway:(()=>{const s=g1Snapshot();return{...s,aircraft:s.aircraft.length}})(),monitor:{changes:G1_MONITOR.changes,conflicts:G1_MONITOR.conflicts,a3Vacates:G1_MONITOR.a3Vacates,lastVacate:G1_MONITOR.lastVacate},next:'G2'});
+
+
+
+// E2 airport-east finish. Western hotels and the Rail–Air corridor remain reserved.
+const E2_SCOPE={chunk:'E2',x:5400,y:850,w:600,h:850,westHotels:{x:4800,y:850,w:600,h:850},rail:{x:5750,y:1380,w:200,h:320},next:'F1'};
+const E2_BUILDINGS=[d2Place('APT-CARGO-GATEHOUSE','בקרת שער המטען','IL-10',1,0,5716,1146,'airport-security')];   // S3b: in the truck yard at the AIR-C entrance (S3a: 5830,1010 — inside the future rail corridor)
+//   // S3a: beside the cargo gate lane at the new fence (S2: 5950,1150 — now the J1→J2 sidewalk)
+APT_BUILDINGS.push(...E2_BUILDINGS);C4_BUILDINGS.push(...E2_BUILDINGS);
+const E2_PATHS=[
+ {id:'E2-P-NORTH',pts:[[5420,1172],[5742,1172]],w:20},   // GATE-76 S2: ends at the terminal fence
+ {id:'E2-P-SOUTH',pts:[[5420,1327],[5708,1327]],w:18},
+ {id:'E2-P-RENT',pts:[[5435,1327],[5435,1680]],w:18},
+ {id:'E2-P-PAX',pts:[[5708,1327],[5708,1680]],w:18},
+ {id:'E2-P-CROSS-N',pts:[[5685,1172],[5685,1196]],w:20},
+ {id:'E2-P-CROSS-S',pts:[[5685,1304],[5685,1327]],w:20},
+ {id:'E2-P-CARGO-W',pts:[[5418,1172],[5418,970]],w:20},      // S3b: walkway along the truck yard to the cargo office door
+ {id:'E2-P-CARGO-DOOR',pts:[[5418,970],[5466,970]],w:20}
+];
+const E2_NAV_PATHS=[...E2_PATHS,{pts:[[5685,1196],[5685,1304]]},{pts:[[5565,1327],[5565,1678]]}];
+// Move this existing curb lamp out of the shared lot entrance; retain its identity.
+for(const l of STREET_LIGHTS)if(l.x>=5530&&l.x<=5600&&l.y>=1296&&l.y<=1336)l.x=5518;
+// S3b · the cargo truck yard (AP-05 landside face → R-AIR): 4 truck docks, 3 reception/sorting bays, the gatehouse and the lane to the cargo gate.
+// Everything stays west of x 5750: the rail corridor x 5750–5950 is empty north of R-AIR (RAIL-04 / GATE-76).
+const E2_TRUCK_YARD={id:'E2-TRUCK-YARD',x:5436,y:944,w:310,h:206,label:'חצר משאיות · מסוף המטען',skin:true,surface:'asphalt',custom:true};
+const E2_CARGO_WALK={id:'E2-CARGO-WALK',x:5400,y:944,w:36,h:220,label:'מעבר הולכי רגל למשרד המטען',skin:true,surface:'concrete',custom:true};
+const E2_CARGO_FORE={id:'E2-CARGO-FORE',x:5436,y:944,w:50,h:46,label:'כניסה למשרד המטען',skin:true,surface:'concrete',custom:true};
+const E2_TRUCK_DOCKS=Array.from({length:4},(_,i)=>({id:'E2-DOCK-'+(i+1),x:5488+i*44,y:946,w:44,h:98,label:'רציף '+(i+1)}));
+const E2_GATE_LANE={id:'E2-CARGO-GATE-LANE',x:5682,y:944,w:64,h:86,label:'נתיב שער המטען'};
+const E2_AIR_C={id:'E2-AIR-C',x:5600,y:1150,w:60,h:56,label:'AIR-C · כניסה לחצר המשאיות',custom:true};   // driveway from R-AIR (≈5630,1250); the AIR-1 signal stays for the crossing at x 5685
+const E2_GATE_APRON={x:5672,y:840,w:78,h:104};   // airside, north of the cargo gate (joins the cargo apron at y 845)
+const E2_CARGO_YARD=E2_TRUCK_YARD;   // S3a: with the cargo terminal (S2: 1020)
+const E2_CARGO_GATE_ACCESS=E2_AIR_C;   // S3a: from the gate at the new fence line down to the R-AIR sidewalk (the S3b truck yard replaces it)
+const E2_CARGO_BAYS=Array.from({length:3},(_,i)=>({id:'E2-CARGO-BAY-'+(i+1),x:5442+i*48,y:1104,w:46,h:44,label:'מיון '+(i+1)}));   // S3b: reception/sorting moved from the airside strip (x 5810…) into the truck yard
+C4_YARDS.push(E2_TRUCK_YARD,E2_CARGO_WALK,E2_CARGO_FORE);C4_ACCESS.push(E2_AIR_C);
+PARKED_CARS.push(parkInRect('PC-E2-DOCK-1','VH-TR-01','Truck',{x:5490,y:948,w:40,h:94},Math.PI/2,2),parkInRect('PC-E2-DOCK-3','VH-TR-01','Truck',{x:5578,y:948,w:40,h:94},Math.PI/2,7),parkInRect('PC-E2-DOCK-2','VH-TR-01','Truck',{x:5534,y:948,w:40,h:94},Math.PI/2,4),parkInRect('PC-E2-DOCK-4','VH-TR-01','Truck',{x:5622,y:948,w:40,h:94},Math.PI/2,5));
+const E2_PROPS=[
+ {id:'E2-RENT-KIOSK',asset:'PR-20',x:5414,y:1351,scale:.7,solid:true},
+ {id:'E2-RENT-BIN',asset:'PR-17',x:5410,y:1382,scale:.45,solid:true},
+ {id:'E2-PAX-KIOSK',asset:'PR-20',x:5730,y:1351,scale:.6,solid:true},
+ {id:'E2-PAX-BIN',asset:'PR-17',x:5730,y:1382,scale:.45,solid:true},
+ {id:'E2-RENT-BENCH',asset:'PR-15',x:5407,y:1482,scale:.45,solid:true},
+ {id:'E2-PAX-BENCH',asset:'PR-15',x:5730,y:1510,scale:.45,solid:true},
+ {id:'E2-PAX-WATER',asset:'PR-28',x:5730,y:1544,scale:.4,solid:true},
+ {id:'E2-NORTH-BIN',asset:'PR-16',x:5490,y:1157,scale:.45,solid:true},
+ {id:'E2-NORTH-BENCH',asset:'PR-15',x:5456,y:1158,scale:.5,solid:true},
+ ...[5414,5688].flatMap((x,i)=>[1452,1618].map((y,j)=>({id:'E2-LOT-LAMP-'+i+'-'+j,asset:'PR-04',x,y,scale:.5,solid:true}))),
+ ...E2_CARGO_BAYS.flatMap((s,i)=>[
+  {id:s.id+'-PALLET',asset:'PR-31',x:s.x+15,y:s.y+24,scale:.65,solid:true},
+  {id:s.id+'-CRATE',asset:'PR-30',x:s.x+34,y:s.y+26,scale:.55,solid:true}
+ ]),
+ {id:'E2-DOCK-HYDRANT',asset:'PR-03',x:5452,y:1044,scale:.55,solid:true},
+ {id:'E2-GATE-BOLLARD-W',asset:'RF-BOL',x:5678,y:952,scale:.35,solid:true},
+ {id:'E2-GATE-BOLLARD-E',asset:'RF-BOL',x:5740,y:952,scale:.35,solid:true},
+ {id:'E2-GATE-BAR',asset:'RF-BAR',x:5706,y:1022,rot:1,scale:.45,solid:false}
+];
+const E2_GARDENS=[{x:5400,y:1418,w:12,h:248},{x:5722,y:1420,w:16,h:260}];
+const E2_TREES=[{id:'E2-TREE-W1',asset:'TP-UR-03',x:5408,y:1572,scale:.35},{id:'E2-TREE-E1',asset:'TP-UR-02',x:5730,y:1464,scale:.35},{id:'E2-TREE-E2',asset:'TP-UR-03',x:5730,y:1610,scale:.35}];
+// Existing trees in E2 are moved out of the new pedestrian approach; F2/G2 are untouched.
+for(let i=APT_TREES.length-1;i>=0;i--)if(APT_TREES[i].x<6000)APT_TREES.splice(i,1);
+const E2_VISITORS=[
+ ...Array.from({length:4},(_,i)=>({id:'E2-CARGO-VISITOR-'+i,asset:i%2?'PE-01':'PE-02',pts:[[5450,1173],[5634,1173]],phase:i*.42})),
+ ...Array.from({length:2},(_,i)=>({id:'E2-CARGO-OFFICE-'+i,asset:i?'PE-43':'PE-02',pts:[[5418,1160],[5418,976]],phase:i*.55})),
+ ...Array.from({length:2},(_,i)=>({id:'E2-RENT-VISITOR-'+i,asset:'PE-05',pts:[[5435,1408],[5435,1668]],phase:i*.63})),
+ ...Array.from({length:3},(_,i)=>({id:'E2-PAX-VISITOR-'+i,asset:i%2?'PE-43':'PE-44',pts:[[5708,1408],[5708,1668]],phase:i*.47}))
+];
+Object.assign(APT_INTERACTIONS,{
+ 'APT-RENT':{...APT_INTERACTIONS['APT-RENT'],x:5422,y:1331,label:'השכרת רכב והחזרה',kind:'דלפק רכבים · חניון P-RENT'},
+ 'APT-PAX':{...APT_INTERACTIONS['APT-PAX'],x:5708,y:1331,label:'חניון נוסעים לטווח ארוך',kind:'חניה נגישה · איתור הרכב'},
+ 'APT-CARGO-GATE':{id:'APT-CARGO-GATE',chunk:'E2',label:'בקרת שער המטען',kind:'חצר משאיות · שער שירות לאיירסייד',app:'business',x:5716,y:1172,navNode:'D2E',navVia:[{x:4840,y:1274},{x:5630,y:1274},{x:5630,y:1180}]}
+});
+APT_INFO['APT-CARGO']=[['מסוף','משרד בפינה הדרום-מערבית; רחבת מטען ועמדות C1–C3 בצד האווירי'],['שירות','חצר משאיות: 4 רציפים, 3 עמדות מיון ובית בקרת שער · כניסה AIR-C'],['רכבת','המסדרון שמור למסוף Rail–Air Cargo בשלב v1.95']];
+APT_INFO['APT-RENT']=[['חניון','9 מקומות חניה ובהם מקום נגיש; מפרץ החזרה נפרד'],['גישה','כניסה ויציאה דרך המעבר המרכזי משדרת השדה'],['רכב','E ליד רכב פנוי לכניסה; ההחזרה בדלפק אחרי עצירה במפרץ המסומן']];
+APT_INFO['APT-PAX']=[['חניון','10 חניות ובהן מקום נגיש'],['הליכה','מדרכה מזרחית אל מעבר החציה המרומזר ולמסוף המטען'],['איתור','ניתן לשמור את מקום הרכב ולנווט אליו בהמשך']];
+APT_INFO['APT-CARGO-GATE']=[['גישה','כניסה AIR-C מנתיב השירות (הכביש הישן) לחצר המשאיות; השער לאיירסייד (x 5684–5744) סגור לשחקן'],['תנועה','4 רציפי משאיות + 3 עמדות מיון; מסדרון הרכבת x 5750–5950 פנוי']];
+GRAPHICS_RUNTIME_INFO.required.push(...new Set([...E2_BUILDINGS,...E2_PROPS,...E2_TREES,...E2_VISITORS].map(o=>o.asset)));
+var __E2B;
+function e2SpriteBox(o){const k=o.asset+'|'+o.scale+'|'+(o.rot||0)+'|'+o.x+'|'+o.y;let m=(__E2B||(__E2B=new WeakMap())).get(o);if(m&&m.k===k)return{x:m.x,y:m.y,w:m.w,h:m.h};const I=TurboCity.info(o.asset,{scale:o.scale,rot:o.rot||0});m={k,x:o.x-I.w/2+I.fp[0],y:o.y-I.h/2+I.fp[1],w:I.fp[2],h:I.fp[3]};(__E2B||(__E2B=new WeakMap())).set(o,m);return{x:m.x,y:m.y,w:m.w,h:m.h}}
+function e2SolidAt(x,y,r){for(const o of E2_PROPS)if(o.solid&&circleRectHit(x,y,r,e2SpriteBox(o)))return o.id;for(const o of E2_TREES)if(Math.hypot(x-o.x,y-o.y)<r+3)return o.id;return null}
+function e2DrawSprite(o,now){const I=TurboCity.info(o.asset,{scale:o.scale,rot:o.rot||0});ctx.save();ctx.lineWidth=1;TurboCity.draw(ctx,o.asset,o.x-I.w/2,o.y-I.h/2,{mode:'runtime',scale:o.scale,rot:o.rot||0,time:now/1000});ctx.restore()}
+function e2DrawGround(now){
+ if(!e3InView(5400,850,600,850,80))return;
+ ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+ for(const r of E2_GARDENS){ctx.fillStyle='#759968';ctx.fillRect(r.x,r.y,r.w,r.h)}
+ e2PaintTruckYard(ctx);
+ for(const p of E2_PATHS){ctx.beginPath();p.pts.forEach((q,i)=>i?ctx.lineTo(...q):ctx.moveTo(...q));ctx.strokeStyle='#969e91';ctx.lineWidth=p.w+2;ctx.stroke();ctx.strokeStyle='#d8d8cd';ctx.lineWidth=p.w;ctx.stroke()}
+ ctx.restore()
+}
+function e2PaintTruckYard(g){   // S3b · truck yard south of AP-05 (landside) + the airside gate apron; the rail corridor north of R-AIR stays clear
+ const Y=E2_TRUCK_YARD,A=E2_GATE_APRON;
+ g.fillStyle=portPattern('concrete');g.fillRect(A.x,A.y,A.w,A.h);g.fillStyle='rgba(224,185,58,.75)';for(let x=A.x+4;x<A.x+A.w-6;x+=14)g.fillRect(x,APT_FENCE_Y-14,8,4);
+ aptTxt(g,'CARGO GATE',A.x+A.w/2,A.y+40,7,'rgba(246,244,236,.75)',700);
+ 
+ g.fillStyle=portPattern('asphalt');g.fillRect(Y.x,Y.y,Y.w,Y.h);g.fillRect(E2_AIR_C.x,E2_AIR_C.y,E2_AIR_C.w,E2_AIR_C.h);
+ g.fillStyle=portPattern('concrete');for(const r of[E2_CARGO_WALK,E2_CARGO_FORE])g.fillRect(r.x,r.y,r.w,r.h);
+ g.fillStyle='rgba(60,56,48,.45)';g.fillRect(Y.x,Y.y,1.5,Y.h);g.fillRect(Y.x,Y.y+Y.h-1.5,Y.w,1.5);g.fillRect(Y.x+Y.w-1.5,Y.y,1.5,Y.h);
+ for(const d of E2_TRUCK_DOCKS){g.fillStyle='#2f363b';g.fillRect(d.x+8,d.y-2,d.w-16,5);g.strokeStyle='#e7c957';g.lineWidth=1.4;g.beginPath();g.moveTo(d.x,d.y+2);g.lineTo(d.x,d.y+d.h);g.moveTo(d.x+d.w,d.y+2);g.lineTo(d.x+d.w,d.y+d.h);g.stroke();g.fillStyle='rgba(231,201,87,.7)';g.fillRect(d.x+6,d.y+d.h-4,d.w-12,3);aptTxt(g,d.id.slice(-1),d.x+d.w/2,d.y+d.h-12,7,'#e9d98e',700)}
+ for(const b of E2_CARGO_BAYS){g.strokeStyle='rgba(239,217,120,.85)';g.lineWidth=1.4;g.strokeRect(b.x,b.y,b.w,b.h);aptTxt(g,b.label,b.x+b.w/2,b.y+8,7,'#d9c980')}
+ {const L=E2_GATE_LANE;g.strokeStyle='#e7c957';g.lineWidth=1.4;g.setLineDash([7,6]);g.beginPath();g.moveTo(L.x+L.w/2,L.y+6);g.lineTo(L.x+L.w/2,L.y+L.h);g.stroke();g.setLineDash([]);g.strokeStyle='rgba(246,244,236,.8)';g.beginPath();g.moveTo(L.x,L.y);g.lineTo(L.x,L.y+L.h);g.stroke()}
+ {const C=E2_AIR_C,cx=C.x+C.w/2;g.fillStyle='#ded9c5';for(const [x,dir] of[[cx-12,-1],[cx+12,1]]){g.beginPath();g.moveTo(x-4,1132-dir*6);g.lineTo(x,1132+dir*6);g.lineTo(x+4,1132-dir*6);g.closePath();g.fill()}g.strokeStyle='rgba(236,230,206,.55)';g.lineWidth=1;g.setLineDash([6,8]);g.beginPath();g.moveTo(cx,1060);g.lineTo(cx,1150);g.stroke();g.setLineDash([]);}
+ aptTxt(g,'חצר משאיות',5640,1080,9,'rgba(236,230,206,.7)',700);
+}
+function e2PaintLot(g,L){
+ g.fillStyle=portPattern('asphalt');g.fillRect(L.x,L.y,L.w,L.h);g.strokeStyle='#73796b';g.lineWidth=1.5;g.strokeRect(L.x,L.y,L.w,L.h);
+ const sts=APT_STALLS.filter(s=>s.lot===L.id);
+ for(const st of sts){g.fillStyle=st.returnBay?'rgba(215,172,69,.2)':'rgba(255,255,255,.02)';g.fillRect(st.x+1,st.y+1,st.w-2,st.h-2);g.strokeStyle=st.returnBay?'#e6c85b':'#e8e2c8';g.lineWidth=1.2;g.beginPath();g.moveTo(st.x,st.y);g.lineTo(st.x+st.w,st.y);g.moveTo(st.col==='L'?st.x:st.x+st.w,st.y);g.lineTo(st.col==='L'?st.x:st.x+st.w,st.y+st.h);g.moveTo(st.x,st.y+st.h);g.lineTo(st.x+st.w,st.y+st.h);g.stroke();if(st.returnBay){aptTxt(g,'החזרה',st.x+st.w/2,st.y+st.h/2,10,'#f1d578')}}
+ // Two directions share an 82 px aisle; no parking or barriers obstruct it.
+ for(let y=1370;y<1680;y+=90){g.fillStyle='#ded9c5';for(const [x,dir]of[[5546,1],[5582,-1]]){g.beginPath();g.moveTo(x-4,y-dir*5);g.lineTo(x,y+dir*6);g.lineTo(x+4,y-dir*5);g.closePath();g.fill()}}
+ g.strokeStyle='rgba(239,230,193,.3)';g.lineWidth=1;g.setLineDash([6,12]);g.beginPath();g.moveTo(5565,1350);g.lineTo(5565,1682);g.stroke();g.setLineDash([]);
+ aptTxt(g,'השכרה',5486,1698,9,'#ece6ce');aptTxt(g,'נוסעים',5644,1698,9,'#ece6ce')
+}
+function e2DrawProps(now){if(WTC_LP===1)return;if(!e3InView(5400,850,600,850,80))return;ctx.save();for(const o of E2_PROPS)e2DrawSprite(o,now);for(const [t,x,y,w]of[['מסוף מטען',5510,1164,92],['בקרת שער',5716,1162,64]])e4Plate(t,x,y,w);ctx.restore()}
+function e2DrawOverhead(now){if(WTC_LP===1)return;if(!e3InView(5400,850,600,850,80))return;for(const o of E2_TREES)e2DrawSprite(o,now)}
+function e2DrawVisitors(now){
+ if(!e3InView(5400,850,600,850,80))return;
+ for(const o of E2_VISITORS){const u=(now/1000*.025+o.phase)%2,k=u<1?u:2-u,a=o.pts[0],b=o.pts[1],x=a[0]+(b[0]-a[0])*k,y=a[1]+(b[1]-a[1])*k,dir=a[0]===b[0]?(u<1?4:0):(u<1?2:6),I=TurboCity.info(o.asset,{scale:1,direction:dir,pose:'walking'}),f=I.an.find(q=>q[0]==='Feet');ctx.save();ctx.lineWidth=1;P34G.k=o.id;TurboCity.draw(ctx,o.asset,x-f[1],y-f[2],{mode:'runtime',scale:1,direction:dir,pose:'walking',time:now/1000});ctx.restore()}
+}
+function e2Persistent(){PlayerProfile.worldPersistent||={};const p=PlayerProfile.worldPersistent.airportLandside||={rentalReturns:0,parkingLocation:null};if(!Number.isFinite(p.rentalReturns))p.rentalReturns=0;return p}
+function e2MyParkingPoi(){const p=PlayerProfile.worldPersistent?.airportLandside?.parkingLocation;if(!p||!Number.isFinite(p.x)||!Number.isFinite(p.y))return{};if(p.zone==='E2-WEST')return{'APT-MY-PARK':{id:'APT-MY-PARK',chunk:'E2',label:'הרכב שלי בחניון מערב',kind:'מקום חניה שנשמר · '+p.slot,x:p.x,y:1422,carX:p.x,carY:p.y,app:'nav',navNode:'AIR-1',navVia:[{x:5346,y:1576},{x:5346,y:1422}]}};if(p.zone==='E2-WEST-N')return{'APT-MY-PARK':{id:'APT-MY-PARK',chunk:'E2',label:'הרכב שלי ב-P-WEST-N',kind:'מקום חניה שנשמר · '+p.slot,x:p.x,y:962,carX:p.x,carY:p.y,app:'nav',navNode:'D2E',navVia:[{x:4840,y:1274},{x:5347,y:1274},{x:5347,y:962}]}};if(p.zone==='G2'){const row=String(p.slot||'').split('-')[1];return{'APT-MY-PARK':{id:'APT-MY-PARK',chunk:'G2',label:'הרכב שלי בחניון הארוך',kind:'מקום חניה שנשמר · '+p.slot,x:p.x,y:row==='R3'?1664:1472,carX:p.x,carY:p.y,app:'nav'}}}if(p.zone==='F2'){const row=String(p.slot||'').split('-')[1];return{'APT-MY-PARK':{id:'APT-MY-PARK',chunk:'F2',label:'הרכב שלי בחניה הקצרה',kind:'מקום חניה שנשמר · '+p.slot,x:p.x,y:row==='R3'?1664:/^P[WE]$/.test(row)?1238:1472,carX:p.x,carY:p.y,app:'nav'}}}if(/^P-PAX/.test(String(p.slot||'')))return{};return{'APT-MY-PARK':{id:'APT-MY-PARK',chunk:'E2',label:'הרכב שלי בחניון השדה',kind:'מקום חניה שנשמר',x:p.x,y:p.y,carX:p.x,carY:p.y,app:'nav'}}}
+function e2PedRoute(a,b){return b5PedRoute(a,b,E2_NAV_PATHS)}
+function e2InsideBay(car,bay){if(!car||!bay)return false;const g=vehicleCollisionShape(car.asset,car.ref||'Sedan',car.x,car.y,car.heading||0),spine=g.halfLength-g.radius,ex=g.radius+Math.abs(Math.cos(g.heading))*spine,ey=g.radius+Math.abs(Math.sin(g.heading))*spine;return Math.abs(car.x-(bay.x+bay.w/2))+ex<=bay.w/2-1&&Math.abs(car.y-(bay.y+bay.h/2))+ey<=bay.h/2-1}
+function e2RentalCandidate(){const bay=APT_STALLS.find(s=>s.returnBay),isRental=o=>o?.type==='parked'&&/^PC-P-RENT-/.test(o.sourceId||'');if(PlayerProfile.mode==='walk'&&isRental(State.borrowedVehicleOrigin)&&carKmh()<1&&e2InsideBay(PlayerCar,bay))return{current:true,origin:State.borrowedVehicleOrigin};const extra=VehicleWorld.extra.find(o=>isRental(o.loanOrigin)&&e2InsideBay(o,bay));return extra?{extra,origin:extra.loanOrigin}:null}
+function e2Action(action){
+ const id=State.interactionId,p=APT_INTERACTIONS[id];if(!p||PlayerProfile.mode!=='walk'||Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y)>80)return false;
+ if(action==='return'&&id==='APT-RENT'){const q=e2RentalCandidate();if(!q)return toast('עצור את רכב ההשכרה במפרץ החזרה, צא ממנו וגש לדלפק');const origin=cloneJson(q.origin);if(q.extra)VehicleWorld.extra.splice(VehicleWorld.extra.indexOf(q.extra),1);restoreBorrowedVehicleOrigin(origin);if(q.current){clearCurrentBorrowedVehicle();promoteOwnedParkedCarToPlayer()}e2Persistent().rentalReturns++;SaveManager.log('airport-rental-return',{source:origin.sourceId});SaveManager.save('airport-rental-return',{backup:false,silent:true});toast('הרכב הוחזר למקומו בחניון ההשכרה');renderPhone();return true}
+ if(action==='remember'&&id==='APT-PAX'){const bay=APT_STALLS.find(s=>s.group==='P-PAX'&&e2InsideBay(PlayerCar,s));if(!bay||carKmh()>1)return toast('כדי לשמור מיקום, עצור את הרכב באחת מחניות הנוסעים');e2Persistent().parkingLocation={x:PlayerCar.x,y:PlayerCar.y,asset:PlayerCar.asset,slot:bay.id,at:iso()};SaveManager.save('airport-parking-location',{backup:false,silent:true});toast('מקום החניה נשמר');renderPhone();return true}
+ if(action==='forget'&&id==='APT-PAX'){e2Persistent().parkingLocation=null;if(State.navigation?.targetId==='APT-MY-PARK')clearNavigation();SaveManager.save('airport-parking-clear',{backup:false,silent:true});renderPhone();return true}
+ if(action==='save'){SaveManager.save('airport-landside');renderPhone();return true}return false
+}
+function e2CargoSnapshot(){
+ const time=APT_OPS.clk,flights=AO.flights||[];
+ return{time:+time.toFixed(1),rail:raStatus().label,stands:['C1','C2','C3'].map(id=>{const f=flights.filter(f=>f.stand===id&&f.t0<=time&&f.t1>=time).sort((a,b)=>b.t0-a.t0)[0];return{id,flight:f?.code||null,state:f?aoStateOf(f,time):'ON_BLOCK'}}),railLive:true}
+}
+const E2_STATE_LABELS={ON_BLOCK:'חונה',TURNAROUND_READY:'מוכן',PUSHBACK_RESERVED:'ממתין לדחיפה',PUSHBACK:'נדחף מהעמדה',TAXI_OUT:'הסעה להמראה',HOLD_SHORT:'ממתין לאישור',RUNWAY_RESERVED:'אישור מסלול',LINE_UP:'כניסה למסלול',TAKEOFF_ROLL:'המראה',DEPARTED:'יצא מהשדה',INBOUND:'ממתין לנחיתה',APPROACH:'בגישה לנחיתה',LANDING_RESERVED:'אישור נחיתה',LANDING_ROLL:'נחיתה',VACATE_RUNWAY:'פינוי מסלול',TAXI_IN:'הסעה לעמדה',STAND_RESERVED:'העמדה שמורה',GO_AROUND:'גישה חוזרת'};
+function e2PhoneCard(id){
+ const held=PlayerProfile.mode==='walk'&&Math.hypot(PlayerPed.x-APT_INTERACTIONS[id].x,PlayerPed.y-APT_INTERACTIONS[id].y)<=80;
+ const btn=(label,action,disabled=false)=>`<button data-e2-action="${action}" ${disabled?'disabled':''}>${label}</button>`;
+ if(id==='APT-RENT')return pcard('החזרת רכב',pnote('כניסה לרכב פנוי באמצעות E. להחזרה: חונים במפרץ הצהוב, יוצאים באמצעות E וניגשים לדלפק.')+`<div class="phoneActions">${btn('החזר רכב', 'return',!held||!e2RentalCandidate())}</div>`,'garage');
+ if(id==='APT-PAX'){const p=PlayerProfile.worldPersistent?.airportLandside?.parkingLocation;return pcard('איתור הרכב שלי',pnote(p?'מקום החניה נשמר: '+p.slot:'עצור בחניית נוסעים ושמור את המיקום לפני היציאה.')+`<div class="phoneActions">${btn('שמור את מקום הרכב','remember',!held)}${p?'<button data-nav-target="APT-MY-PARK">נווט לרכב</button>'+btn('נקה מקום שמור','forget',!held):''}</div>`,'nav')}
+ if(id==='APT-CARGO'){const s=e2CargoSnapshot();return pcard('לוח עמדות המטען',pkv(s.stands.map(q=>[q.id,q.flight?q.flight+' · '+(E2_STATE_LABELS[q.state]||'בהמתנה'):'ללא טיסה בתהליך']))+pnote('הלוח מציג את בקר השדה החי. חיבור הרכבת ועבודות השחקן נפתחים בשלבים הבאים.'),'career')}
+ return raPhoneCard(id)
+}
+function e2GeometryAudit(){
+ const issues=[],over=aptOver,inside=q=>q.x>=5400&&q.y>=850&&q.x+q.w<=6000&&q.y+q.h<=1700,road={x:5400,y:1182,w:348,h:136};   // GATE-74: the private service lane (ends at x 5748)   // S3a: the cargo reception yard east of AP-05 moved north with the cargo terminal (y 814…944)
+ for(const q of [...E2_BUILDINGS.map(aptFp),...E2_PROPS.map(e2SpriteBox)]){if(!inside(q))issues.push('outside-scope');if(over(q,road))issues.push('public-road')}
+ for(const p of Object.values(APT_INTERACTIONS).filter(p=>p.chunk==='E2'&&!p.phoneOnly))if(personBlockedAt(p.x,p.y,5))issues.push(p.id+':blocked-poi');
+ for(const p of E2_PATHS){const a=p.pts[0],b=p.pts[1],n=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/8);for(let i=0;i<=n;i++){const x=a[0]+(b[0]-a[0])*i/n,y=a[1]+(b[1]-a[1])*i/n;if(staticPersonBlockedAt(x,y,7))issues.push(p.id+':blocked-path');}}
+ const cross=CROSSWALKS.filter(c=>c.signalNode==='AIR-1');if(cross.length||!CROSSWALKS.some(c=>c.signalized&&Math.hypot(c.x-5180,c.y-1600)<900))issues.push('crosswalk');   /* p521x (R-76): no crossing in the middle of the airport road (AIR-1) — the walkers of P-WEST cross at a junction */
+ if(APT_STALLS.some(s=>s.x+s.w>5400))issues.push('parking-left-east');
+ const ra=raAudit();if(!ra.ok)issues.push(...ra.issues.map(s=>'rail-air:'+s));
+ // S3b · truck yard + reception out of the future rail corridor (x 5750–5950, north of R-AIR)
+ {const cor={x:5750,y:580,w:200,h:620},fps=[...E2_BUILDINGS.map(aptFp),...E2_PROPS.map(e2SpriteBox),E2_TRUCK_YARD,E2_GATE_LANE,E2_AIR_C,...E2_TRUCK_DOCKS,...E2_CARGO_BAYS,...PARKED_CARS.filter(c=>/^PC-E2-DOCK/.test(c.id)).map(c=>c.slotRect)];for(const q of fps)if(over(q,cor))issues.push('rail-corridor:'+(q.id||'?'));
+  for(const [x1,y1,x2,y2] of APT_FENCE_SEGS)if(y1===y2&&y1>=845&&y1<=1250&&Math.max(x1,x2)>5750&&Math.min(x1,x2)<5950&&!(y1===APT_FENCE_Y))issues.push('fence-in-corridor');
+  const yd=E2_TRUCK_YARD;for(const q of [...E2_TRUCK_DOCKS,...E2_CARGO_BAYS,E2_GATE_LANE])if(!(q.x>=yd.x-1&&q.x+q.w<=yd.x+yd.w+1&&q.y>=yd.y-2&&q.y+q.h<=yd.y+yd.h+1))issues.push('outside-yard:'+q.id);
+  for(let i=0;i<E2_TRUCK_DOCKS.length;i++)for(let j=0;j<E2_CARGO_BAYS.length;j++)if(over(E2_TRUCK_DOCKS[i],E2_CARGO_BAYS[j]))issues.push('dock-bay');
+  if(!APT_FENCE_SEGS.some(f=>f[1]===APT_FENCE_Y&&f[2]===5684)||!APT_FENCE_SEGS.some(f=>f[1]===APT_FENCE_Y&&f[0]===5744))issues.push('cargo-gate');
+  if(over(aptFp(aptB('APT-CARGO-GATEHOUSE')),E2_AIR_C)||over(aptFp(aptB('APT-CARGO-GATEHOUSE')),E2_GATE_LANE))issues.push('gatehouse-in-lane');
+  const ac=E2_AIR_C;if(ac.y+ac.h<1204)issues.push('air-c-not-at-road');for(const l of STREET_LIGHTS)if(Math.abs(l.y-1192)<3&&l.x>ac.x-6&&l.x<ac.x+ac.w+6)issues.push('air-c-lamp:'+l.id);
+  for(const c of PARKED_CARS.filter(c=>/^PC-E2-DOCK/.test(c.id)))if(!e2InsideBay(c,c.slotRect))issues.push('truck-outside-dock:'+c.id)}
+ return{ok:!issues.length,issues:[...new Set(issues)],scope:'E2 east · Rail–Air work site + air cargo · private lane',wholeChunkDone:false,rentalMovedTo:'P-WEST-N (GATE-74)',railAir:ra.ok,cargoSortingBays:E2_CARGO_BAYS.length,truckDocks:E2_TRUCK_DOCKS.length,truckYard:[E2_TRUCK_YARD.x,E2_TRUCK_YARD.y,E2_TRUCK_YARD.x+E2_TRUCK_YARD.w,E2_TRUCK_YARD.y+E2_TRUCK_YARD.h],cargoGate:[5684,5744],entrance:'AIR-C',paths:E2_PATHS.length,props:E2_PROPS.length,visitors:E2_VISITORS.length,next:'RAIL-AIR stage 2'}
+}
+window.__TC_E2_QA=()=>({...e2GeometryAudit(),cargo:e2CargoSnapshot(),build:BUILD,gate:ACTIVE_GATE});
+
+function currentActorChunk(){const a=playerActor();return currentChunkId(a.x,a.y)||'—'}
+function phoneHome(){return `<div class="phero"><div><small>יתרה</small><strong>${money(PlayerProfile.money)}</strong></div><div class="phs"><span>${PlayerProfile.mode==='walk'?'ברגל':'ברכב'}</span><span>אזור ${currentActorChunk()}</span></div></div>${(()=>{try{return wldPhoneCard()}catch(e){return''}})()}<div class="phoneGrid">${PHONE_APPS.map(a=>`<button class="phoneApp${a.live?'':' soon'}" data-phone-app="${a.id}" style="--c:${a.c}"><i class="phoneIcon">${ic(a.icon,26)}${a.live?'':`<u>${ic('lock',11)}</u>`}</i><span>${a.name}</span></button>`).join('')}</div>${pnote('אפליקציות עם מנעול ייפתחו יחד עם המערכת שלהן, לפי תוכנית־האב.')}`}
+
+const C4_JOBS=['M-C4-01','M-C4-02','M-C4-03'];
+const D4_JOBS=['M-D4-01','M-D4-02','M-D4-03'];
+const E5_JOBS=['M-E5-01','M-E5-02'];
+const D5_JOBS=['M-D5-01','M-D5-02','M-D5-03'];
+/* p520a (הבעלים 10:13): המשימות של D5 — כבויות ומוסתרות עד הביקורת והאישור; הדגל היחיד מחזיר אותן */
+var TC_D5_MISSIONS_ON=false;
+const D5_HIDDEN_MISSIONS=['M-D5-01','M-D5-02','M-D5-03','M-D5-FK-01'];
+function d5MissionHidden(id){return !TC_D5_MISSIONS_ON&&D5_HIDDEN_MISSIONS.includes(id)}
+function d5GreenSquares(){const m=PlayerProfile&&PlayerProfile.activeMission;return m&&D5_HIDDEN_MISSIONS.includes(m.id)&&!d5MissionHidden(m.id)?1:0}
+
+function forkliftJobCard(){const d=MISSION_DEFS['M-D5-FK-01'],done=PlayerProfile.progression.completedMissions.includes(d.id),near=PlayerProfile.mode==='walk'&&nearbyD5Poi(130)?.id==='D5-WH';return pcard((done?'✓ ':'')+d.name,pkv([['פעולה','3 משטחים · איסוף והנחה ידנית עם F'],['כלי','מלגזה LV-FK-01'],['תגמול',money(d.reward)],['זמן',d.timeLimit+' שניות'],['רישיון','B · הדרכת מחסן מקומית']])+`<div class="phoneActions"><button class="primary" data-mission-start="${d.id}" ${!near||PlayerProfile.activeMission?'disabled':''}>${done?'בצע שוב':'התחל משמרת מלגזה'}</button></div>`+pnote(near?'המלגזה תחכה ברחבת המחסן. סע למשטח הצהוב, עצור ולחץ F; אחר כך הנח אותו בריבוע הירוק.':'כדי להתחיל: להגיע ברגל למחסן D5 ולפתוח אותו עם F.'),'missions')}
+function c4JobCards(ids){return ids.map(id=>{const d=MISSION_DEFS[id],done=PlayerProfile.progression.completedMissions.includes(id),owned=licenseOwned(d.license);return pcard((done?'✓ ':'')+d.name,pkv([['איסוף',navPoiRegistry()[d.pickup].label],['מסירה',navPoiRegistry()[d.dropoff].label],['תגמול',money(d.reward)],['זמן',d.timeLimit+' שניות'],['רכב',d.vehicle?.ref||'הרכב שלך']])+`<div class="phoneActions"><button data-mission-start="${id}" ${!owned||PlayerProfile.activeMission?'disabled':''}>${done?'בצע שוב':'קבל עבודה'}</button><button data-nav-target="${d.pickup}">נווט לאיסוף</button></div>`+pnote(!owned?'נדרש רישיון C1. אפשר לפתוח אותו במסך הרישיונות.':PlayerProfile.mode==='walk'?(d.vehicle?'עבודת המשאית מתחילה מתוך רכב, דרך מסך העבודות בטלפון.':'אפשר לקבל את השליחות ברגל; האיסוף והמסירה מתבצעים מתוך הרכב.'):'עצור את הרכב בנקודת האיסוף והמסירה.'),'missions')}).join('')}
+function d4JobCards(ids){return ids.map(id=>{const d=MISSION_DEFS[id],done=PlayerProfile.progression.completedMissions.includes(id),owned=licenseOwned(d.license),ready=owned&&PlayerProfile.mode==='vehicle'&&carKmh()<=2&&!PlayerProfile.activeMission;return pcard((done?'✓ ':'')+d.name,pkv([['איסוף',navPoiRegistry()[d.pickup].label],['מסירה',navPoiRegistry()[d.dropoff].label],['תגמול',money(d.reward)],['זמן',d.timeLimit+' שניות'],['רישיון','C1']])+`<div class="phoneActions"><button data-mission-start="${id}" ${ready?'':'disabled'}>${done?'בצע שוב':'קבל עבודת משא'}</button><button data-nav-target="${d.pickup}">נווט לאיסוף</button></div>`+pnote(!owned?'נדרש רישיון C1.':PlayerProfile.mode!=='vehicle'?'את עבודת המשא מקבלים מתוך רכב. חזור לשער D4 עם רכב ועצור.':carKmh()>2?'עצור את הרכב כדי לקבל עבודה.':'הרכב יוחלף זמנית למשאית C1; בסיום תחזור לרכב שלך.'),'missions')}).join('')}
+function phoneE3Business(id){const p=E3_INTERACTIONS[id],C=E3_CAPACITY,info={'E3-STATION':[['רציפים','2 רציפים · גג זכוכית ופלדה מעל המסילה'],['רכבת','המסילה ממשיכה דרך E4 ו-E5; שירות נוסעים יופעל בשלב רכבות נעות'],['אוטובוס','תחנת קו 2 בכניסה לתחנה · מסוף האוטובוסים בטבעת התחנה']],'E3-PARCELS':[['מסוף','חצר טעינה עם '+C.docks+' רציפי פריקה'],['לוגיסטיקה','משאיות המשלוחים מגיעות מ-D4; חניון משאיות מיועד ל-C5']],'E3-TERMINAL':[['אוטובוסים','מסוף אוטובוסים · '+C.buses+' עמדות ממוספרות'],['תנועה','שער אחד בדרום, מרחוב המסוף · חצר חד-סטרית ושטח תמרון בקצה המזרחי'],['מתקנים','בניין מסוף · רציף אי עם סככות']],'E3-TAXI':[['מוניות','רחבת המתנה · '+C.taxi+' עמדות מוניות'],['מיקום','ליד כניסת התחנה']],'E3-PARKING':[['חניות',''+C.cars+' חניות רכב בשני חניונים'],['מיוחדים','נגישות '+C.accessible+' · טעינה חשמלית '+C.ev]]}[id]||[],jobs=['E3-STATION','E3-PARCELS','E3-TAXI','E3-TERMINAL'].includes(id);return pcard(p.label,pkv([['אזור','E3 · תחנה מרכזית ומסוף תחבורה'],...info])+pnote('המסילות מגודרות ונפרדות מכבישי הגישה. רציפי E3 מקורים בגג זכוכית; המסילה ממשיכה ברצף דרך E4 ו-E5.'),'business')+(id==='E3-KIOSK'?exclusiveShopCard('E3-KIOSK'):'')+(jobs?['M-E3-TAXI','M-E3-PARCEL'].map(mid=>{const d=MISSION_DEFS[mid];return pcard(d.name,pkv([['תגמול',money(d.reward)],['רישיון',d.license==='LIC-02'?'TAXI':'B — רכב פרטי']])+`<div class="phoneActions"><button data-nav-target="${d.pickup}">נווט לאיסוף</button><button data-open-app="missions">פתח עבודות</button></div>`+pnote('מתחילים את העבודה מתוך הרכב דרך הטלפון.'),'missions')}).join(''):'')}
+function phoneE4Business(id){const p=E4_INTERACTIONS[id],info=E4_INFO[id]||[];return(typeof S9STORY!=='undefined'?S9STORY.card(id):'')+pcard(p.label,pkv([['אזור','E4 · מסדרון הרכבת ותחנת הכוח'],['סוג',p.kind],...info,['רכבת','שני הפסים הראשיים, מסילת העקיפה (רכבות המשא) ותחנת החוף']])+pnote('E4 — תחנת הכוח, תחנת המשנה, מתקן המים, מרכז הבקרה של העיר, סדנת הצי, בקרת המסילה ומוסך המסילה, ותחנת החוף עם רציף של 86 מ׳ וגג שקוף לכל אורכו.'),'business')+`<div class="phoneActions"><button data-nav-target="${id}">נווט לכאן</button><button data-open-app="missions">פתח עבודות וסיורים</button></div>`}   /* S9 · S7F268 */
+function phoneE5Business(id){const p=E5_INTERACTIONS[id],info=E5_INFO[id]||[],done=E5_JOBS.filter(mid=>PlayerProfile.progression.completedMissions.includes(mid)).length;return(typeof S9STORY!=='undefined'?S9STORY.card(id):'')+pcard(p.label,pkv([['אזור','E5 · חצר הרכבות ולוגיסטיקת הנמל'],['סוג',p.kind],...info,['מסילות','2 ראשיות + 3 פסי חצר + מסילת הנמל (אל E6)'],['כניסה','משדרת המזרח (DW-E5-01 / DW-E5-04) — חצר המשאיות ורחוב המטען הפנימי'],['עבודות E5',done+' / '+E5_JOBS.length]])+pnote('E5 — מחסן הנמל, משרד השילוח, מחסן החבילות עם 12 טנדרים חשמליים, חדר עובדי החצר, מגדל האיתות, מוסך הרכבות, מסוף המטען ומחסן המטען של הרכבת, וקטר התמרון של החצר.')+`<div class="phoneActions"><button data-nav-target="${id}">נווט לכאן</button><button data-open-app="missions">עבודות E5</button></div>`+d4JobCards(E5_JOBS),'business')}
+function phoneD5Business(id){const p=D5_INTERACTIONS[id],done=D5_JOBS.filter(mid=>PlayerProfile.progression.completedMissions.includes(mid)).length,imports=D5_IMPORT_CAR_IDS.length;return pcard(p.label,pkv([['אזור','D5 · שער הנמל וחניון יבוא'],['סוג',p.kind],['כבישי נמל','11 קטעים · D4↔E5↔D6'],['חניון יבוא','9 מקומות · '+imports+' רכבים מוצגים'],['מסלולי מכס','3 נתיבי בדיקה'],['עבודות משאית D5',done+' / '+D5_JOBS.length],['משמרת מחסן',PlayerProfile.progression.completedMissions.includes('M-D5-FK-01')?'הושלמה לפחות פעם אחת':'זמינה במחסן']])+pnote('D5 הוא שער היבשה של הנמל: משאיות מגיעות מ-D4/E5, עוברות מכס והמתנה. מחסן D5 פעיל כעבודת מלגזה ידנית עם שלושה משטחים; ב-v1.69 נוסף סימון עבודה ברור וניווט ישיר למחסן; v1.70 משפרת כניסה לרכבי תנועה, אורות ו-HUD; v1.71 מוסיפה שירות מונית כנוסע עם הזמנה, עצירה ברחוב, צפייה בנסיעה או דילוג ליעד; v1.72 מגבילה המתנה למונית ל-30 שניות לכל היותר וממשיכה את התקרבות המונית גם כשהטלפון פתוח; v1.73 מעלה את מהירות ההליכה והריצה של השחקן; v1.74 גורמת לאוטובוסים להיצמד בהדרגה למדרכה בתחנה ולחזור לנתיב בצורה חלקה.')+`<div class="phoneActions"><button data-nav-target="${id}">נווט לכאן</button><button data-open-app="missions">עבודות נמל D5</button></div>`+(id==='D5-WH'&&!d5MissionHidden('M-D5-FK-01')?forkliftJobCard():'')+d4JobCards(D5_JOBS.filter(i=>!d5MissionHidden(i))),'business')}
+function phoneBusiness(){return phoneBusinessBase()+actJobCardsFor(State.interactionId)}
+function phoneBusinessBase(){const id=State.interactionId;if(A6_POIS[id]||id==='G8-FERRY')return phoneA6Business();if(B2_INTERACTIONS[id])return phoneB2Business(id);if(E3_INTERACTIONS[id])return phoneE3Business(id);if(E4_INTERACTIONS[id])return phoneE4Business(id);if(E5_INTERACTIONS[id])return phoneE5Business(id);if(PORT_INTERACTIONS[id])return phonePortBusiness(id);if(APT_INTERACTIONS[id])return phoneAptBusiness(id);if(D5_INTERACTIONS[id])return phoneD5Business(id);const d2=D2_INTERACTIONS[id],d4=D4_INTERACTIONS[id],p=d2||d4||C4_INTERACTIONS[id];if(!p||p.app!=='business')return pnote('גש לכניסה לעסק ולחץ F.');if(d2){return pcard(G7_SHOP_BRAND[id]?'פרטי העסק':p.label,pkv([['אזור','D2 · עסקים ומלונות'],['סוג',p.kind],...(D2_FACTS[id]||[])])+pnote(id==='D2-HOTEL-1'?'הקבלה פתוחה כל היום — המונית, השאטל והעבודות של השדה בכרטיסים כאן.':UNIQUE_SHOP_STOCK[id]?'העסק פעיל לקנייה במקום, ולמוצרים שלו יש מלאי ייחודי שלא נמכר בשום חנות אחרת.':'דף מידע על העסק; פעילויות נוספות יתווספו על התשתית הקיימת.'),'business')+exclusiveShopCard(id)+(id==='D2-HOTEL-1'?d2HotelCards():'')}if(d4){const ids=id==='D4-DC'?['M-D4-01']:id==='D4-WH'?['M-D4-02']:id==='D4-RAIL'?['M-D4-03']:id==='D4-DOCKS'?['M-D4-03']:D4_JOBS,desc=id==='D4-GATE'?'מרכז בקרת הכניסה של D4. עצור כאן עם רכב כדי לקבל חוזי משא מקומיים.':id==='D4-DC'?'מרכז הפצה: העמסת סחורה והעברה למחסן הגדול.':id==='D4-WH'?'מחסן מרכזי: העברת מטען למסוף הרכבת.':id==='D4-RAIL'?'מחסן רכבת: מטען נכנס/יוצא למסוף המשא.':'מסוף מוגדל עם ארבעה רציפי משא וארבע חניות טריילרים. סמיטריילרים יוצאים דרך השער למסלול כבישים D4→C4→D4 וחוזרים לרציף.';return pcard(p.label,pnote(desc)+pkv([['חוזי D4 שהושלמו',D4_JOBS.filter(mid=>PlayerProfile.progression.completedMissions.includes(mid)).length+' / 3'],['רמת לוגיסטיקה',PlayerProfile.progression.jobLevels.logistics||0],['יתרה',money(PlayerProfile.money)]])+`<div class="phoneActions"><button data-open-app="missions">כל העבודות / המשימה הפעילה</button></div>`,'missions')+d4JobCards(ids)}const ids=id==='C4-FAB'?['M-C4-02']:id==='C4-DEPOT'?['M-C4-03','M-DELIVERY-C4','M-C4-DOCK']:id==='C4-DOCKS'?['M-C4-DOCK']:C4_JOBS;const desc=id==='C4-FAB'?'איסוף חלקי ייצור והעברתם למחסן.':id==='C4-DEPOT'?'קבלת מטענים, שילוח לרציפים ושליחת מסמכים.':id==='C4-DOCKS'?'ארבעה רציפי משא פעילים. עבודות C1 נפרקות כאן.':'שלוש שליחויות היכרות עם אזור התעשייה, לפי הסדר המומלץ.';return pcard(p.label,pnote(desc)+pkv([['שליחויות C4 שהושלמו',C4_JOBS.filter(id=>PlayerProfile.progression.completedMissions.includes(id)).length+' / 3'],['יתרה',money(PlayerProfile.money)]])+`<div class="phoneActions"><button data-open-app="missions">כל העבודות / המשימה הפעילה</button></div>`,'missions')+c4JobCards(ids)}
+function phoneHardware(){const p=C4_INTERACTIONS['C4-HARDWARE'],near=activeRetailPurchaseShop(110)?.id===p.id;return pcard(g7BrandName('C4-HARDWARE')||'כלי עבודה',pnote('ציוד לתחזוקת הרכב ומשלוחים למפעל המקומי.')+pkv([['יתרה',money(PlayerProfile.money)],['מיקום','C4 · כניסה לחנות']]),'shop')+['repair-kit','fuel-can'].map(id=>{const it=SHOP_CATALOG[id],n=PlayerProfile.inventory[id]||0;return pcard(it.name,pkv([['מחיר',money(it.price)],['בתיק',n],['שימוש',id==='repair-kit'?'הפחתת 25% נזק לרכב':'הוספת 15% דלק לרכב']])+`<div class="phoneActions"><button data-shop-buy="${id}" ${!near||PlayerProfile.money<it.price?'disabled':''}>קנה</button><button data-item-use="${id}" ${!n?'disabled':''}>השתמש</button></div>`,'shop')}).join('')+exclusiveShopCard('C4-HARDWARE')+c4JobCards(['M-C4-01'])}
+
+// A6 farm economy and ferry controller share the existing save/economy/phone system.
+const A6_MARKET_ITEMS=[['a6-seeds','זרעים מעורבים',35],['a6-basket','סל קטיף',65],['a6-gloves','כפפות עבודה',48],['a6-jam','ריבת תפוחים מהחווה',42]];
+const A6_CAFE_ITEMS=[['a6-tea','תה כפרי',18],['a6-juice','מיץ תפוחים',24],['a6-sandwich','כריך ירקות',36],['a6-picnic','מארז פיקניק',72]];
+for(const [id,name,price]of[...A6_MARKET_ITEMS,...A6_CAFE_ITEMS])SHOP_CATALOG[id]={name,price,store:'a6',exclusive:true,shops:[A6_CAFE_ITEMS.some(q=>q[0]===id)?'A6-CAFE':'A6-MARKET']};
+for(const f of A6_FIELDS)SHOP_CATALOG[f.item]={name:{'A6-WHEAT':'שק חיטה','A6-CORN':'ארגז תירס','A6-VEG':'ארגז ירקות','A6-APPLE':'סל תפוחים'}[f.id],price:f.price,store:'a6-produce',exclusive:true,shops:['A6-MARKET']};
+Object.assign(MISSION_DEFS,{
+ 'M-A6-CHECK':{id:'M-A6-CHECK',name:'A6 · סבב בדיקה במשק',type:'route',walk:true,start:'A6-BARN',chunk:'A6',jobKey:'route',license:'LIC-01',reward:260,timeLimit:260,stops:['A6-WHEAT','A6-CORN','A6-GREEN-1','A6-BARN'],vehicle:null,failOnCollision:false},
+ 'M-A6-PRODUCE':{id:'M-A6-PRODUCE',name:'תוצרת החווה · משלוח לקניון',type:'delivery',jobKey:'delivery',license:'LIC-03',reward:1050,timeLimit:420,pickup:'A6-CARGO',dropoff:'C2-SUPER',pickupLabel:'איסוף תוצרת A6',dropoffLabel:'מסירה בשיבולת',vehicle:{asset:'VH-TR-01',ref:'Truck'}}
+});
+function a6FarmPersistent(){const w=PlayerProfile.worldPersistent||(PlayerProfile.worldPersistent={});const p=w.farmA6||(w.farmA6={clock:0,harvested:0,sold:0,crops:{}});if(!Number.isFinite(p.clock))p.clock=0;p.crops||={};return p}
+function a6FerryPersistent(){const w=PlayerProfile.worldPersistent||(PlayerProfile.worldPersistent={});const p=w.islandFerry||(w.islandFerry={clock:0,ride:null,trips:0,paid:0,lastTrip:null});if(!Number.isFinite(p.clock))p.clock=0;return p}
+function a6FieldReady(id){const p=a6FarmPersistent();return(p.crops[id]?.readyAt||0)<=p.clock}
+function a6Held(id){const p=A6_POIS[id]||G8_FERRY_POI;return PlayerProfile.mode==='walk'&&Math.hypot(PlayerPed.x-p.x,PlayerPed.y-p.y)<=(p.r||32)}
+const A6_FERRY={id:'A6-G8-FERRY',asset:'SH-FY-01',fare:40,dwell:30,travel:92,length:300,width:60,pts:[[800,5154],[1040,5154],[1320,5340],[2820,5650],[5000,5900],[5600,6500],[5950,7150],[6060,7368],[6519,7368]],flipB:470};   /* S13: אל מעגן המעבורת בנמל האי (IS-FERRY, ‏F9) — המסלול נגמר במרכז המעגן. 10.11 (S13 — המשך): flipB — בצד של האי המעבורת יוצאת לאחור מהאגן (47 מ׳) ומסתובבת בים הפתוח; באגן (23 מ׳) אין מקום לסיבוב של 30 מ׳; y 7368 — 0.2 מ׳ (פגושים) מהרציף הצף, לא נוגעת בו */
+A6_FERRY.path=apttPath(A6_FERRY.pts,[80,100,180,180,80,70,120]);   /* 10.11: רדיוס לפינה השביעית (6060, 7366) — בלעדיו הפינה נפלה, והמעבורת חתכה באלכסון את היבשה שבין האגנים ואת המדרך של המעגן */
+A6_FERRY.cycle=(A6_FERRY.dwell+A6_FERRY.travel)*2;
+function a6FerryPose(time=a6FerryPersistent().clock){
+ const F=A6_FERRY,z=((time%F.cycle)+F.cycle)%F.cycle,di=F.dwell+F.travel;
+ let phase,u,remaining;if(z<F.dwell){phase='A6';u=0;remaining=F.dwell-z}else if(z<di){phase='outbound';u=(z-F.dwell)/F.travel;remaining=di-z}else if(z<di+F.dwell){phase='G8';u=1;remaining=di+F.dwell-z}else{phase='inbound';u=1-(z-di-F.dwell)/F.travel;remaining=F.cycle-z}
+ const p=apttAt(F.path,F.path.len*u);return{x:p[0],y:p[1],heading:p[2]+(phase==='inbound'?Math.PI*apttSm(clamp(Math.min((F.path.len*(1-u)-(F.flipB||260))/180,(F.path.len*u-260)/180),0,1)):0),phase,u,remaining,time};
+}
+function a6FerryWait(from,time=a6FerryPersistent().clock){const F=A6_FERRY,z=((time%F.cycle)+F.cycle)%F.cycle;if(from==='A6')retur

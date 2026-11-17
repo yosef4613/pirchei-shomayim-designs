@@ -1,0 +1,1272 @@
+(crew): out of / back into the post, never inside a moving aircraft (fuselage / wing + 4 px), never on a taxiway or the runway;
+// chocks after on-block and away before the push; no service vehicle at the aircraft before the main chocks (QA-54 sequence)
+let G77_VTC=null;function g77VT(v){let L=G77_VTC&&G77_VTC.get(v);if(!L){L=(v.hist||[]).concat(v.tasks);if(G77_VTC)G77_VTC.set(v,L)}return L}
+
+// ==== GATE-77 S6b · p146: the passengers × the vehicle bodies (QA-90) and no aircraft appearing / vanishing in the world (AIR-69) ======
+let G77_LR=null;
+function g77LiveRects(){if(G77_LR&&G77_LR.length)return G77_LR;const all=MAP_CHUNKS.concat(typeof g72NorthRow==='function'?g72NorthRow():[]);   // the live zones, from the registry (WORLD-03: no fixed numbers)
+ return G77_LR=WORLD_LIVE.map(z=>all.find(q=>q.id===z)).filter(Boolean).map(q=>({id:q.id,x0:q.x,y0:q.y,x1:q.x+q.w,y1:q.y+q.h}))}
+function g77DrawBox(kind,id,p,noSh){const s=aptSpr(id),x=p[0],y=p[1],th=p[2],z=p[3]||0,c=Math.cos(th),n=Math.sin(th);let k,cs,sh;
+ if(kind==='heli'){k=1+z/300;cs=[[-s.w/2,-s.h/2],[s.w/2,-s.h/2],[s.w/2,s.h/2],[-s.w/2,s.h/2]];sh=z>3?[x+z*.4,y+z*.5,s.w*.32]:null}
+ else{k=1+z/420;cs=[[-s.ax,-s.ay],[s.w-s.ax,-s.ay],[s.w-s.ax,s.h-s.ay],[-s.ax,s.h-s.ay]];sh=z>3?[x+z*.32-s.w*.1*c,y+z*.42-s.w*.1*n,s.w*.36]:null}
+ let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;for(const [u,v] of cs){const X=x+(u*c-v*n)*k,Y=y+(u*n+v*c)*k;if(X<x0)x0=X;if(X>x1)x1=X;if(Y<y0)y0=Y;if(Y>y1)y1=Y}
+ if(sh&&!noSh){x0=Math.min(x0,sh[0]-sh[2]);x1=Math.max(x1,sh[0]+sh[2]);y0=Math.min(y0,sh[1]-sh[2]);y1=Math.max(y1,sh[1]+sh[2])}return[x0,y0,x1,y1]}
+function g77EdgeAudit(fl,t0,t1){const R=[g77ViewR()],   /* GATE-77 S6b-c · p153 · K-113: all the camera can show, not the live zones */hit=b=>R.some(r=>b[0]<r.x1&&b[2]>r.x0&&b[1]<r.y1&&b[3]>r.y0),r={flights:0,samples:0,fade:0,appear:0,vanish:0,issues:[]},ev=[];
+ for(const f of fl){if(f.never||!f.tracks||!f.tracks.length)continue;let first=null,last=null,n=0;
+  for(const q of f.tracks){const tr=q.tr;if(!tr||!tr.seq||(tr.kind!=='ac'&&tr.kind!=='heli'))continue;n++;const kind=tr.kind==='heli'?'heli':'ac',e=q.t0+tr.seq.dur;
+   if(!first||q.t0<first.t)first={t:q.t0,q,kind};if(!last||e>last.t)last={t:e,q,kind};
+   for(let t=Math.max(t0,q.t0);t<=Math.min(t1,e);t+=.5){const p=tr.seq.at(t-q.t0);if(!p)continue;r.samples++;if(p[4]>=.999)continue;
+    if(hit(g77DrawBox(kind,tr.id,p))){r.fade++;if(r.issues.length<8)r.issues.push('FADE '+f.code+' al '+p[4].toFixed(2)+' @'+t.toFixed(1)+' x '+Math.round(p[0]))}}}
+  if(!n)continue;r.flights++;
+  const at=(o,t)=>o.q.tr.seq.at(Math.min(o.q.tr.seq.dur-1e-3,Math.max(0,t-o.q.t0)));   // seq.at(dur) is null
+  if(first&&first.t>t0+1e-6&&first.t<=t1){const p=at(first,first.t);if(p&&p[4]>.001&&hit(g77DrawBox(first.kind,first.q.tr.id,p)))ev.push({k:'appear',f,t:first.t,p})}
+  if(last&&last.t<=t1-1){const p=at(last,last.t);if(p&&p[4]>.001&&hit(g77DrawBox(last.kind,last.q.tr.id,p)))ev.push({k:'vanish',f,t:last.t,p})}}
+ for(const e of ev){const o=e.k==='appear'?'vanish':'appear';
+  const chain=fl.some(g=>g!==e.f&&g.stand===e.f.stand&&g.tracks&&g.tracks.some(q=>{const tr=q.tr;if(!tr||!tr.seq)return false;const lt=e.t-q.t0;if(lt<-1||lt>tr.seq.dur+1)return false;const p=tr.seq.at(Math.min(tr.seq.dur-1e-3,Math.max(0,lt)));return p&&Math.hypot(p[0]-e.p[0],p[1]-e.p[1])<3}));
+  if(chain||(e.k==='appear'&&e.f.init&&e.t<=t0+1))continue;r[e.k]++;if(r.issues.length<8)r.issues.push(e.k.toUpperCase()+' '+e.f.code+' @'+e.t.toFixed(1)+' ('+Math.round(e.p[0])+','+Math.round(e.p[1])+')')}
+ {const V=g77ViewR();let lastI=-1e9;r.overlap=0;r.heliOverlap=0;r.airPairs=0;   // GATE-77 S6b-c · p153 · K-112: no two aircraft in the air overlap at one altitude in view
+  for(let t=t0;t<=t1;t+=.5){const A=[];
+   for(const f of fl){if(f.never||!f.tracks||t<(f.tDraw??f.t0)||t>=f.t1)continue;for(const q of f.tracks){const tr=q.tr;if(!tr||!tr.seq||(tr.kind!=='ac'&&tr.kind!=='heli'))continue;const p=tr.seq.at(t-q.t0);if(!p||!((p[3]||0)>8))continue;
+    const kind=tr.kind==='heli'?'heli':'ac',b=g77DrawBox(kind,tr.id,p,1);if(b[2]<V.x0||b[0]>V.x1||b[3]<V.y0||b[1]>V.y1)continue;A.push({f,z:p[3],b})}}
+   for(let i=0;i<A.length;i++)for(let j=i+1;j<A.length;j++){const a=A[i],c=A[j];if(a.f===c.f)continue;r.airPairs++;if(Math.abs(a.z-c.z)>=20)continue;
+    if(a.b[0]<c.b[2]-2&&a.b[2]>c.b[0]+2&&a.b[1]<c.b[3]-2&&a.b[3]>c.b[1]+2){const hh=a.f.heli&&c.f.heli;if(hh)r.heliOverlap++;else r.overlap++;   // two helicopters: K-114 (their lanes and the pads, S6b-c part 3)
+     if(t-lastI>3&&r.issues.length<12){r.issues.push((hh?'HELI-OVERLAP ':'OVERLAP ')+a.f.code+' × '+c.f.code+' @'+t.toFixed(1)+' ('+Math.round((a.b[0]+a.b[2])/2)+','+Math.round((a.b[1]+a.b[3])/2)+') z '+Math.round(a.z)+' / '+Math.round(c.z));lastI=t}}}}}
+ r.view=g77ViewR();
+ r.ok=!r.fade&&!r.appear&&!r.vanish&&!r.overlap;return r}
+function g77PaxVehAudit(fl,t0,t1){const keep=G77_VTC;G77_VTC=new Map();const r={samples:0,pax:0,hits:0,issues:[]};
+ try{for(let t=t0;t<=t1;t+=.5){const P=(typeof s6rNbPassengers==='function'?s6rNbPassengers(t,fl):[]).concat(g2RemotePassengers(t,fl));if(!P.length)continue;r.samples++;
+  const sh=[];for(const v of AO.fleet){if(v.type==='MS')continue;let k=null;for(const q of g77VT(v))if(t>=q.t0&&t<q.t1){k=q;break}const o=[];
+   if(k){const a=k.tr.seq.at(t-k.t0);if(a)apttShapes(k.tr,a,o,t-k.t0)}else if(v.tr0&&v.home)apttShapes(v.tr0,v.home,o,null);for(const s of o)if(s.L==='V'){s.vid=v.id;sh.push(s)}}
+  for(const p of P){if(p.alpha<.99)continue;r.pax++;for(const s of sh){if(p.x<s.x0||p.x>s.x1||p.y<s.y0||p.y>s.y1)continue;const dx=p.x-s.x,dy=p.y-s.y,u=dx*s.c+dy*s.s,w=-dx*s.s+dy*s.c;
+    if(Math.abs(u)<s.hx-1&&Math.abs(w)<s.hy-1){r.hits++;if(r.issues.length<8)r.issues.push('PAX '+p.flight+' '+p.phase+' ✕ '+s.vid+' @'+t.toFixed(1)+' ('+Math.round(p.x)+','+Math.round(p.y)+')');break}}}}}
+ finally{G77_VTC=keep}r.ok=!r.hits;return r}
+
+// ==== GATE-77 S6b-c · p151 · K-104: the vehicle bodies × the fences and the buildings, every 0.2 s ==================================
+let G77_FO=null;
+function g77FenceObbs(){if(G77_FO&&G77_FO.n===APT_FENCE_SEGS.length)return G77_FO;G77_FO=APT_FENCE_SEGS.map((f,i)=>{const [x1,y1,x2,y2]=f,L=Math.hypot(x2-x1,y2-y1)/2,o=apttObb((x1+x2)/2,(y1+y2)/2,Math.atan2(y2-y1,x2-x1),[-L,L,-1,1],'FN','F'+i);o.seg=f;return o});G77_FO.n=APT_FENCE_SEGS.length;return G77_FO}
+function g77FenceAudit(t0,t1){const FO=g77FenceObbs(),B=apttBldShapes(),r={samples:0,fence:0,bld:0,issues:[],byVeh:{}};
+ for(const v of AO.fleet){const T=(v.hist||[]).concat(v.tasks);let last=-1e9;
+  for(const k of T){if(k.t1<t0||k.t0>t1)continue;for(let t=Math.max(t0,k.t0);t<Math.min(t1,k.t1);t+=.2){const p=k.tr.seq.at(t-k.t0);if(!p)continue;const sh=[];apttShapes(k.tr,p,sh,t-k.t0);r.samples++;
+   for(const s of sh){if(s.L!=='V')continue;let hit=null;for(const f of FO){if(s.x0>f.x1||s.x1<f.x0||s.y0>f.y1||s.y1<f.y0)continue;if(apttObbHit(s,f,0)){hit=['fence',f];break}}
+    if(!hit)for(const b of B){if(s.x0>b.x1||s.x1<b.x0||s.y0>b.y1||s.y1<b.y0)continue;if(apttObbHit(s,b,0)){hit=['bld',b];break}}
+    if(hit){r[hit[0]]++;r.byVeh[v.id]=(r.byVeh[v.id]||0)+1;if(t-last>3&&r.issues.length<16){const q=k.tr.seq.legAt(t-k.t0);r.issues.push((hit[0]==='fence'?'FENCE ['+hit[1].seg.join(',')+']':'BLD '+hit[1].t)+' ✕ '+v.id+' @'+t.toFixed(1)+' ('+Math.round(p[0])+','+Math.round(p[1])+') '+(q&&q.leg.kind||''));last=t}break}}}}}
+ r.ok=!r.fence&&!r.bld;return r}
+function g77CrewAudit(fl,t0,t1){G77_VTC=new Map();
+ fl=fl||AO.hist.concat(AO.flights);const r={flights:0,walkers:0,issues:[],samples:0,items:0};
+ const moving=(f,t)=>{const q=f.tracks.find(q=>q.main);if(!q)return null;const a=q.tr.seq.at(t-q.t0),b=q.tr.seq.at(t-q.t0+.25);if(!a||!b)return null;return Math.hypot(a[0]-b[0],a[1]-b[1])>.01||Math.abs(a[2]-b[2])>.001?a:null};
+ const act=fl.filter(f=>!f.heli&&f.tracks&&f.tracks.length);
+ for(const f of fl){const C=f.crew;if(!C)continue;r.flights++;
+  for(const w of C.walkers){r.walkers++;const L=w.legs;if(!L.length)continue;const a=L[0].a,b=L[L.length-1].follow?null:L[L.length-1].b;
+   if(Math.hypot(a[0]-C.post[0],a[1]-C.post[1])>1)r.issues.push('POST-OUT '+f.code);if(b&&Math.hypot(b[0]-C.post[0],b[1]-C.post[1])>1)r.issues.push('POST-IN '+f.code);
+   for(let t=Math.max(t0,L[0].t0);t<=Math.min(t1,L[L.length-1].t1);t+=.5){const p=g77WalkerAt(w,t);if(!p)continue;r.samples++;
+    if(p.y<APT_Y.TS+4&&p.x>4800&&p.x<8400){r.issues.push('TAXIWAY '+f.code+' @'+t.toFixed(1));break}
+    if(p.y>APT_Y.LN-2&&p.y<APT_Y.LS+2&&p.x>G73_L.x0-10&&p.x<G73_L.x1+10){r.issues.push('TAXILANE '+f.code+' crew#'+C.walkers.indexOf(w)+' @'+t.toFixed(1));break}
+    const me={x0:p.x-1.5,x1:p.x+1.5,y0:p.y-1.5,y1:p.y+1.5},box=apttObb(p.x,p.y,0,[-1.5,1.5,-1.5,1.5],'P','crew');
+    let hit=null;for(const g of act){if(t<g.t0||t>=g.t1)continue;const pose=moving(g,t);if(!pose)continue;const sh=[];apttShapes(g.tracks.find(q=>q.main).tr,pose,sh);for(const s of sh){if(s.L!=='F'&&s.L!=='W')continue;if(me.x0<=s.x1+4&&me.x1>=s.x0-4&&me.y0<=s.y1+4&&me.y1>=s.y0-4&&apttObbHit(box,s,4)){hit=g.code;break}}if(hit)break}
+    if(hit){r.issues.push('SWEEP '+f.code+' crew#'+C.walkers.indexOf(w)+' ✕ '+hit+' @'+t.toFixed(1));break}
+    for(const h of APL.helis){if(Math.hypot(p.x-h.x,p.y-h.y)<h.r+4){hit=h.id;break}}if(hit){r.issues.push('PAD '+f.code+' @'+hit+' '+t.toFixed(1));break}
+    for(const v of AO.fleet){let k=null;for(const q of g77VT(v))if(t>=q.t0&&t<q.t1){k=q;break}if(!k)continue;const a=k.tr.seq.at(t-k.t0);if(!a||Math.abs(a[0]-p.x)>60||Math.abs(a[1]-p.y)>60)continue;
+     const b=k.tr.seq.at(t-k.t0+.25);if(!b||(Math.hypot(a[0]-b[0],a[1]-b[1])<.01&&Math.abs(a[2]-b[2])<.001))continue;const sh=[];apttShapes(k.tr,a,sh,t-k.t0);
+     for(const s of sh){if(s.L!=='V')continue;if(me.x0<=s.x1+2&&me.x1>=s.x0-2&&me.y0<=s.y1+2&&me.y1>=s.y0-2&&apttObbHit(box,s,2)){hit=v.id;break}}if(hit)break}
+    if(hit){r.veh=(r.veh||0)+1;r.issues.push('VEH '+f.code+' crew#'+C.walkers.indexOf(w)+' ✕ '+hit+' @'+t.toFixed(1));break}}}
+  if(!C.heli&&!f.parked){const m=C.walkers[0],h=m&&m.legs.find(q=>q.hold&&q.face==='ac');if(!h||h.t0>C.tOB-5)r.issues.push('MARSHAL-LATE '+f.code)}
+  if(C.chockMain!=null&&f.bridgeAt&&f.bridgeAt[0]<C.chockMain)r.issues.push('BRIDGE-BEFORE-CHOCKS '+f.code);
+  for(const it of C.items){if(it.t1==null)continue;let run=null;for(let t=Math.max(t0,it.t0);t<=Math.min(t1,it.t1)&&!run;t+=1){const box=apttObb(it.p[0],it.p[1],0,[-1.5,1.5,-1.5,1.5],'P','i');
+    for(const v of AO.fleet){let k=null;for(const q of g77VT(v))if(t>=q.t0&&t<q.t1){k=q;break}if(!k)continue;const a=k.tr.seq.at(t-k.t0);if(!a||Math.abs(a[0]-it.p[0])>60||Math.abs(a[1]-it.p[1])>60)continue;const sh=[];apttShapes(k.tr,a,sh,t-k.t0);for(const q of sh)if(q.L==='V'&&apttObbHit(box,q,1)){run=v.id+' @'+t;break}if(run)break}}
+   if(run)r.issues.push('ITEM-RUN '+f.code+' '+it.k+' ✕ '+run)}
+  for(const it of C.items){r.items++;if(!f.parked&&it.t0<C.tOB-1e-6)r.issues.push('CHOCK-EARLY '+f.code);if(it.t1==null||it.t1>C.tPush+1e-6)r.issues.push('ITEM-LATE '+f.code+' '+it.k)}
+  if(C.chockMain!=null)for(const x of f.vt||[]){if(x.at==null)continue;const at=x.at;if(x.role==='tug'||(x.task&&(x.task.role==='tug'||x.task.role==='fm')))continue;if(at<C.chockMain-.5){r.issues.push('BEFORE-CHOCKS '+f.code+' '+(x.role||(x.task&&x.task.role)));break}}}
+ r.ok=!r.issues.length;r.issues=r.issues.slice(0,12);return r}
+function aoFinish(P,mark,t0w){
+ if(P.sd?.bridge&&P.bridgeAt)P.pax=f2PaxPlan(P);
+ if(G77_STAGE>=3)P.crew=g77CrewPlan(P);   // GATE-77 S3: the ground crew of this visit
+ // heli/ga/cargo continue
+ AO.flights.push(P);AO.stats.planned++;AO.stats.planMs+=((typeof performance!=='undefined'?performance.now():Date.now())-t0w);
+ aoDbg('plan',{code:P.code,stand:P.stand,kind:P.kind,t0:+P.t0.toFixed(1),t1:+P.t1.toFixed(1)});
+ return P;
+}
+
+// ====================================================================================================================================
+// helicopters: pad flights (visual: nothing else flies over the pads); chained so that the pad is never empty by accident
+// ====================================================================================================================================
+function aoHeliLegs(sd){
+ const X=APTT_X,pad=sd.pad,pk=[pad.x,pad.y,0,0,1],ZC=65+25*g77HeliK(sd);   // GATE-77 S6b-c · p155 · K-114: the pad's cruise height
+ const lift={kind:'lift',dur:4,pose:t=>[pad.x,pad.y,0,45*apttSm(t/4),1]};
+ const XH=g77EdgeE()+110,extra=2*(XH-(X.END+40))/105;   // GATE-77 S6b · p144 · K-106: the helicopters leave / come in out of sight (D-147, WORLD-03); the extra flight comes out of the time away
+ const outP=apttPath([[pad.x,pad.y],[Math.min(pad.x+120,XH-60),pad.y-30],[XH,pad.y-80]],[60]);
+ const out=apttMove({kind:'heli',path:outP,prof:apttProf(outP.len,apttVfn(outP.len,{vmax:110,v0:12,v1:110,acc:30,dec:30})),mode:'tan',th0:0,blend:30,z:s=>45+(ZC-45)*apttSm(Math.min(1,s/300)),al:()=>1});out.t300=apttTof(out.prof,Math.min(300,outP.len));
+ const inP=apttPath([[XH,pad.y-60],[Math.min(pad.x+140,XH-60),pad.y-18],[pad.x,pad.y]],[60]);
+ const inn=apttMove({kind:'heli',path:inP,prof:apttProf(inP.len,apttVfn(inP.len,{vmax:100,v0:100,v1:8,acc:30,dec:30})),mode:'tan',th0:Math.PI,z:s=>45+(ZC-45)*(1-apttSm(Math.max(0,(s-(inP.len-300))/300))),al:()=>1});inn.t300=inn.dur-apttTof(inn.prof,Math.max(0,inP.len-300));
+ const ie=inn.endPose();
+ const yaw={kind:'yaw',dur:3,pose:t=>[pad.x,pad.y,apttAng(ie[2],0,apttSm(t/3)),45,1]};
+ const land={kind:'land',dur:4,pose:t=>[pad.x,pad.y,0,45*(1-apttSm(t/4)),1]};
+ return{pk,lift,out,inn,yaw,land,extra};
+}
+
+// ==== GATE-77 S6b-c · part 3 · p155 · K-114: the helicopters — a cruise height per pad, one at a time near the pads ======================
+function g77HeliK(sd){const i=(typeof APL!=='undefined'&&APL.helis)?APL.helis.findIndex(h=>h.id===sd.id):-1;return Math.max(0,i)}
+function g77HeliWins(t0,dwell,away,L){const tl=t0+dwell,wo=[tl-1,tl+L.lift.dur+(L.out.t300||4.5)+1],ti=tl+L.lift.dur+L.out.dur+Math.max(5,away-(L.extra||0)),te=ti+L.inn.dur,wi=[te-(L.inn.t300||4.5)-1,te+L.yaw.dur+L.land.dur+1];return[wo,wi]}
+function aoPlanHeli(sd,t0,dwell,away){
+ const L=aoHeliLegs(sd),code=aoCode(sd);AO.nid++;
+ for(let it=0;it<60;it++){const w=g77HeliWins(t0,dwell,away,L);let c=0;   // GATE-77 S6b-c · p155 · K-114: one helicopter at a time near the pads
+  for(const f of AO.flights){if(!f.heli||!f.hw||f.stand===sd.id)continue;for(const a of f.hw){if(a[0]<w[0][1]&&w[0][0]<a[1]){dwell+=a[1]-w[0][0]+.5;c=1;break}if(a[0]<w[1][1]&&w[1][0]<a[1]){away+=a[1]-w[1][0]+.5;c=1;break}}if(c)break}
+  if(!c)break}
+ const legs=[{kind:'hold',dur:dwell,pose:()=>L.pk},L.lift,L.out,apttGap(Math.max(5,away-(L.extra||0))),L.inn,L.yaw,L.land];   // GATE-77 S6b · p144: the visit keeps its length
+ const seq=apttSeq(legs),tr={kind:'heli',id:sd.first,nm:code,seq};
+ const P={code,ac:sd.first,sd,kind:'heli',stand:sd.id,tracks:[{t0,tr,main:true}],t0,t1:t0+seq.dur,states:[[t0,'ON_BLOCK'],[t0+dwell,'TAXI_OUT'],[t0+dwell+L.lift.dur,'DEPARTED']],tFree:t0+seq.dur,heli:true,init:true,hw:g77HeliWins(t0,dwell,away,L)};
+ if(G77_STAGE>=3)P.crew=g77HeliCrew(P);AO.flights.push(P);AO.stats.planned++;aoDbg('plan',{code,stand:sd.id,kind:'heli',t0:+t0.toFixed(1),t1:+P.t1.toFixed(1)});return P;
+}
+
+// ====================================================================================================================================
+// the runtime: demand, admission, pruning, queries
+// ====================================================================================================================================
+function aoInit(now,seed){
+ AO.seed=seed||1;AO.rng=aoRng(AO.seed);AO.t0i=now;AO.pt=null;AO.stepDone=null;AO.mlv=null;/* GATE-77 S7-b · p196 */AO.job=null;AO.chJob=null;AO.workLimit=Infinity;AO.B.clear();AO.ST.length=0;AO.LOG.length=0;AO.flights.length=0;AO.dbg.length=0;AO.nid=1;AO.codeBump=0;G77_SH.ok=G77_SH.skip=G77_SH.noWin=0;G77_FM.ok=G77_FM.skip=G77_FM.noRoom=G77_FM.late=0;G77_FM.why={};G77_AMB.ok=G77_AMB.skip=G77_AMB.noWin=0;AO.t=now;AO.last=now;
+ AO.stats={planned:0,failed:0,recovered:0,queued:0,maxQueue:0,pruned:0,planMs:0,why:{}};AO.g77Deck=[];AO.g77DeckR=[];AO.g77PoolOfs=0;AO.hist.length=0;
+ AO.stands=aoMakeStands();AO.TK=null;AO.RBX=null;afInit();
+ // static occupants first (long-term parking): everything else is planned around them
+ for(const sd of AO.stands){
+  sd.next=null;sd.busy=false;
+  if(sd.indoor||sd.live||sd.empty)continue;                       // indoor maintenance bays: the aircraft stand inside the hangar (not drawn, not a reservation)
+  if(sd.kind==='heli'){aoStaticHeli(sd,now);continue}
+  aoPlanVisit(sd,now,{parked:true,tPark:now,ac:sd.first,never:true});
+ }
+ for(const sd of AO.stands){
+  if(!sd.live||sd.indoor)continue;
+  if(sd.kind==='heli'){const dw=aoR(...AO.cfg.heliDwell);const P=aoPlanHeli(sd,now,dw,aoR(...AO.cfg.heliAway));sd.next=P.t1;continue}
+  if(AO.rng()<(sd.kind==='pax'?.92:.6)*Math.min(1,(sd.rate||1)+.1)){
+   const dwell=sd.kind==='pax'?aoR(25,190):sd.kind==='cargo'?aoR(20,120):aoR(40,260);
+   sd.init={dwell};sd.next=now;                      // planned as the first job of aoStep (sliced in the game, so loading never stalls)
+  }else sd.next=now+aoR(10,70);
+ }
+}
+const aoGap=sd=>aoR(...(sd.kind==='ga'||sd.kind==='ovf'?AO.cfg.gaGap:sd.kind==='cargo'?AO.cfg.cgGap:AO.cfg.gap))/((sd.rate||1)*AO.cfg.demand);
+function aoStaticHeli(sd,now){
+ const pk=[sd.pad.x,sd.pad.y,0,0,1],tr={kind:'heli',id:sd.first,nm:aoCode(sd),seq:apttSeq([{kind:'hold',dur:1e7,pose:()=>pk}])};AO.nid++;
+ AO.flights.push({code:tr.nm,ac:sd.first,sd,kind:'heli',stand:sd.id,tracks:[{t0:now,tr,main:true}],t0:now,t1:Infinity,states:[[now,'ON_BLOCK']],never:true,init:true,heli:true});
+}
+function aoPrune(now){
+ const cut=aoSl(now)-12;for(const k of AO.B.keys())if(k<cut)AO.B.delete(k);
+ for(let i=AO.flights.length-1;i>=0;i--)if(AO.flights[i].t1<now-2){if(AO.keep)AO.hist.push(AO.flights[i]);AO.flights.splice(i,1);AO.stats.pruned++}
+ afPrune(now);
+}
+function aoStep(now){
+ if(!AO.rng)aoInit(now,1);
+ if(now-AO.last>40||now<AO.last-1){aoDbg('time-jump',{from:AO.last,to:now});aoInit(now,AO.seed+1);return}  // tab slept / clock restarted: rebuild a safe state
+ g76XSync();
+ AO.t=now;AO.last=now;
+ if(!AO.job)AO.LOG.length=0;
+ aoPrune(now);if(typeof G77_MLV!=='undefined'&&G77_MLV.on&&!AO.job)g77MlvStep(now);   // GATE-77 S7-b · p196
+ // work budget of this call (sliced mode: the game; tests run unsliced, with an infinite budget)
+ AO.workLimit=AO.sliced?AO.work+AO.budget:Infinity;
+ if(AO.useClock&&typeof performance!=='undefined')AO.deadline=performance.now()+AO.cfg.ms;
+ if(AO.sliced&&typeof SIM_LOOP!=='undefined'&&SIM_LOOP.aoEnd!=null){if(SIM_LOOP.aoWork==null)SIM_LOOP.aoWork=AO.workLimit;else AO.workLimit=SIM_LOOP.aoWork;if(AO.useClock&&SIM_LOOP.aoEnd<AO.deadline)AO.deadline=SIM_LOOP.aoEnd;if(AO.useClock&&SIM_LOOP.sysT0){const c=SIM_LOOP.sysT0+AO.stepCapMs;if(c<AO.deadline)AO.deadline=c}}if(AO.sliced&&AO.useClock&&typeof g77AoFloor==='function')g77AoFloor();   /* GATE-77P · p241 */
+ if(AO.chJob){if(AO.sliced&&aoOver())return;if(!AO.chJob.next().done)return;AO.chJob=null;AO.LOG.length=0}   // chores of an earlier call finish before a new plan (unsliced order)
+ for(let guard=0;guard<40;guard++){
+  if(AO.sliced&&aoOver())return;                        // nothing left of this step's budget
+  if(!AO.job){
+   const sd=aoDue(now);if(!sd)break;
+   if(sd.kind==='heli'){const P=aoPlanHeli(sd,sd.next,aoR(...AO.cfg.heliDwell),aoR(...AO.cfg.heliAway));sd.next=P.t1;continue}
+   const ini=sd.init;
+   let acB=null;if(!ini){acB=sd.bring&&sd.accepts.includes(sd.bring)?sd.bring:sd.lgWant?g77LgPick(sd,now):sd.wideWant?'AC-MW-01':g77Choose(sd,now);if(acB==='AC-LG-01')sd.lgWant=true;if(acB==='AC-MW-01')sd.wideWant=true;if(acB&&sd.large&&g77MarsHas(sd.id,acB))sd.marsWant=acB;   /* p407 */if(!acB){sd.next=now+aoR(18,55);AO.stats.bfSkip=(AO.stats.bfSkip||0)+1;continue}}
+   AO.job={sd,tReq:Math.max(sd.next,now+AO.lead),g:null};AO.job.g=ini?aoPlanG(sd,now,{parked:true,tPark:now,ac:sd.first,dwell:ini.dwell}):aoPlanG(sd,AO.job.tReq,{ac:acB,bfC:AO.bfLast&&AO.bfLast.c,bfAt:now});sd.busy=true;sd.init=null;AO.job.ini=!!ini;
+  }
+  const r=AO.job.g.next();
+  if(!r.done)return;                                  // out of budget: continue in the next call (afChores waits)
+  const {sd}=AO.job,P=r.value;AO.job0=AO.job;AO.job=null;sd.busy=false;
+  if(P&&P.ac==='AC-LG-01'){sd.lgWant=false;sd.lgUntil=P.tFree+2}
+  if(sd.bring&&P&&P.ac===sd.bring)sd.bring=null;   // GATE-77 S5c · D-94: the visit asked for in F9 is planned
+  if(sd.wideWant&&P){sd.wideWant=false;if(P.ac==='AC-MW-01')sd.wideUntil=P.tFree+2}if(P&&sd.large){const H=sd.held||(sd.held={});H[P.ac]=Math.max(H[P.ac]||-1,P.tFree+2)}if(P)sd.marsWant=null;   /* p407 · R-29: every visit of the large stand (the opening's parked one too) holds its locks until free */   // GATE-77 S5c: its tail on lane L
+  if(P)sd.next=P.tFree+aoGap(sd)-20;
+  else if(AO.job0&&AO.job0.ini)sd.next=now+10;
+  else{sd.next=now+AO.H+12;AO.stats.recovered++;aoDbg('recovery',{stand:sd.id,action:'retry-later'})}
+  AO.LOG.length=0;
+  if(AO.sliced&&aoOver())return;
+ }
+ if(AO.sliced){if(!AO.chJob)AO.chJob=afChoresG(now);if(!AO.chJob.next().done)return;AO.chJob=null}else afChores(now);AO.LOG.length=0;AO.stepDone=now;   /* GATE-77P-b · p206 */
+}
+// the stand whose next visit has been waiting the longest and is due for planning
+function aoDue(now){
+ let best=null;
+ for(const sd of AO.stands){
+  if(!sd.live||sd.next==null||sd.busy)continue;
+  if(sd.id==='P2'&&g77P2Blocked(now))continue;   // AIR-20 SAFETY BLOCK
+  if(g77MarsBy(sd,now))continue;   /* p407 · R-29: any stand a large stand's held type closes (today P3) */   // GATE-77 S5b · D-65: the large stand's SAFETY BLOCK
+  if(now+AO.H<sd.next)continue;
+  if(!best||sd.next<best.next)best=sd;
+ }
+ return best;
+}
+// poses of everything that exists at time `now`:  [{kind:'ac'|'veh'|'heli', id, nm, pose:[x,y,th,z,alpha], tr, f}]
+function aoActors(now,out=[]){
+ for(const f of AO.flights){
+  if(now<(f.tDraw??f.t0)||now>=f.t1)continue;   /* GATE-77 S6b-c · p153 · K-113: the inbound is drawn */
+  for(const q of f.tracks){
+   const p=q.tr.seq.at(now-q.t0);if(!p)continue;
+   out.push({kind:q.tr.kind==='heli'?'heli':'ac',id:q.tr.id,nm:q.tr.nm,pose:p,tr:q.tr,f});
+  }
+ }
+ return afActors(now,out);
+}
+function aoBridge(standId,now){
+ for(const f of AO.flights){if(f.stand===standId&&f.bridge&&now>=f.t0&&now<f.t1+1)return f.bridge(now)}
+ return 0;
+}
+function aoStateOf(f,now){let s=null;for(const q of f.states){if(q[0]<=now)s=q[1];else break}return s}
+
+// ====================================================================================================================================
+// independent verification: re-samples the final tracks (not the reservation table) and checks everything the contract promises
+// ====================================================================================================================================
+function aoVerify(t0,t1,o={}){
+ const dt=AO.DT,issues=[],bld=apttBldShapes(),seen=new Set(),add=(m,t)=>{if(!seen.has(m)){seen.add(m);issues.push(m+' @'+t.toFixed(1))}};
+ const fl=AO.hist.concat(AO.flights).filter(f=>f.t1>=t0&&f.t0<=t1);
+ let nSlices=0,maxSimul=0;
+ // the fleet at rest in its bays: static, checked once against buildings and against each other
+ {const idle=[];for(const v of AO.fleet){apttShapes(v.tr0,v.home,idle)}
+  for(let i=0;i<idle.length;i++){for(const b of bld)if(apttConflict(idle[i],b))add('IDLE '+idle[i].t+' ✕ '+b.t,t0);for(let j=i+1;j<idle.length;j++)if(aoC(idle[i],idle[j]))add('IDLE '+idle[i].t+' ✕ '+idle[j].t,t0)}}
+ for(let t=t0;t<=t1;t+=dt){
+  const sh=[],idl=[];let simul=0;
+  for(const f of fl){
+   if(t<f.t0||t>=f.t1)continue;
+   for(const q of f.tracks){
+    const p=q.tr.seq.at(t-q.t0);if(!p)continue;
+    if(q.tr.kind==='ac'){const la=q.tr.seq.legAt(t-q.t0);if(la&&(la.leg.kind==='inbound'||la.leg.kind==='outbound'))continue}   /* GATE-77 S6b-c · p153: drawn, not reserved */
+    const out=[];apttShapes(q.tr,p,out);
+    if(q.tr.kind==='ac'){
+     simul++;
+     const ks=new Set();let onR=false;
+     for(const s of out){if(s.L==='F'){for(const k of aoTokensOf(s))ks.add(k);if(s.y0<APT_Y.RS+12&&s.y1>APT_Y.RN-12&&s.x1>4000&&s.x0<8500)onR=true}else if(s.L==='A')onR=true}
+     for(const k of ks)out.push({L:'S',k,t:q.tr.nm});
+     if(onR)out.push(Object.assign({},aoRB(),{t:q.tr.nm+'-R',rwy:q.tr.nm}));
+    }
+    for(const s of out)sh.push(s);
+   }
+  }
+  afShapes(t,sh,idl);
+  for(const s of AO.ST)sh.push(s);
+  maxSimul=Math.max(maxSimul,simul);
+  for(let i=0;i<sh.length;i++){
+   const a=sh[i];
+   if(a.L==='F'||a.L==='V')for(const b of bld)if(apttConflict(a,b)&&!g77MlvBldOk(a,b,t))add(a.t+' ✕ '+b.t,t);   /* GATE-77 S7-b · p196: the maintenance tug in its hangar's doorway */
+   for(let j=i+1;j<sh.length;j++){const b=sh[j];
+    if(a.L==='R'&&b.L==='R'&&a.t!==b.t){add('RUNWAY: '+a.t+' ✕ '+b.t,t);continue}
+    if(aoC(a,b)){if(a.L==='S')add('TOKEN '+a.k+': '+a.t+' ✕ '+b.t,t);else add(a.t+'['+a.L+'] ✕ '+b.t+'['+b.L+']',t)}}
+  }
+  for(const a of idl)for(const b of sh)if(b.L!=='S'&&b.L!=='R'&&b.L!=='A'&&aoC(a,b))add('IDLE '+a.t+' ✕ '+b.t+'['+b.L+'] ('+Math.round(a.x)+','+Math.round(a.y)+')/('+Math.round(b.x)+','+Math.round(b.y)+')',t);
+  nSlices++;
+ }
+ // continuity (no teleport) + state-machine legality
+ for(const f of fl){
+  for(const q of f.tracks){
+   const L=q.tr.seq.legs;
+   for(let i=0;i+1<L.length;i++){
+    const a=L[i].pose(L[i].dur),b=L[i+1].pose(0);
+    if(!a||!b)continue;
+    if(Math.hypot(a[0]-b[0],a[1]-b[1])>1.5||Math.abs(Math.atan2(Math.sin(a[2]-b[2]),Math.cos(a[2]-b[2])))>.05)add('TELEPORT '+q.tr.nm+' leg '+i+'→'+(i+1)+' ('+L[i].kind+'→'+L[i+1].kind+')',f.t0);
+   }
+   // speed sanity
+   if(q.tr.kind==='ac'&&!f.never){let prev=null;const T0=q.t0;for(let t=Math.max(t0,f.t0);t<Math.min(t1,f.t1);t+=dt){const p=q.tr.seq.at(t-T0);if(p&&prev){const sp=Math.hypot(p[0]-prev[0],p[1]-prev[1])/dt;if(sp>600)add('SPEED '+q.tr.nm+' '+sp.toFixed(0)+'px/s',t)}prev=p}}
+  }
+  if(!f.init){for(let i=1;i<f.states.length;i++){const a=f.states[i-1][1],b=f.states[i][1];if(!(AO_STATES[a]||[]).includes(b))add('STATE '+f.code+' '+a+'→'+b,f.states[i][0]);if(f.states[i][0]<f.states[i-1][0]-1e-6)add('STATE-TIME '+f.code,f.states[i][0])}}
+ }
+ afCheck(add,t0,t1);
+ return{ok:issues.length===0,issues,slices:nSlices,flights:fl.length,maxSimul};
+}
+function aoHoldWhy(sh,from,cap){
+ for(const a of sh)for(const b of AO.ST)if(aoC(a,b))return{s:from,a:a.t+a.L,b:b.t+b.L+(b.k||'')};
+ for(let s=from;s<cap;s++){const bk=AO.B.get(s);if(!bk)continue;for(const a of sh)for(const b of bk)if(aoC(a,b))return{s,a:a.t+a.L+(a.k||''),b:b.t+b.L+(b.k||''),bx:+b.x?.toFixed(0),by:+b.y?.toFixed(0)}}
+ return null}
+
+// ====================================================================================================================================
+// v1.94 · AIRPORT B — game glue: builds the spec from the library, runs the ops core on the game clock (sliced: never stalls a frame),
+// paints the new airside surfaces (west apron, east block, perimeter road, G2 Ground Ops Yard, south heliport, stand markings) and draws
+// aircraft / helicopters / the PERSISTENT ground-ops fleet / jet bridges.
+// ====================================================================================================================================
+var APTT_SPEC=null, APTT_C=null;
+const APT_OPS={on:true,clk:0,last:null,ready:false,seed:19400,err:null,spr:{},frames:0,qa:null};
+const APT_VS={'VS-GS-01':.5,'VS-TW-01':.5,'VS-FR-02':.62,'VS-AM-02':.44,'VS-PL-02':.37};   // S4: ambulance ≈7.5 m, police SUV ≈5 m at the airport scale                    // city vehicles reused as airside service vehicles (scale on top of the library game scale)
+const aptVehGs=id=>TurboCity.gameScale(id)*(APT_VS[id]||1);
+function aptBuildSpec(){
+ const ac={},veh={};
+ for(const id of['AC-NB-01','AC-RJ-01','AC-TP-01','AC-CG-01','AC-PR-01','AC-BJ-01','AC-HL-01','AC-HL-02','AC-LG-01','AC-QJ-01','AC-MW-01','AC-HL-04','AC-HL-05','AC-HL-06','AC-LT-01','AC-CN-01','AC-AM-01','AC-TB-01']){
+  const a=TurboCity.get(id),sc=APT_GS/(a.res||1),I=TurboCity.info(id,{scale:sc,rot:0}),an={};
+  for(const q of I.an)if(an[q[0]]===undefined)an[q[0]]=[q[1],q[2]];
+  ac[id]={sc,w:I.w,h:I.h,fp:I.fp,an};
+ }
+ for(const id of['LV-PT-01','LV-BT-01','LV-FT-01','LV-SH-01','VS-GS-01','VS-TW-01','VS-FR-02','VS-AM-02','VS-PL-02']){
+  const gs=aptVehGs(id),I=TurboCity.info(id,{scale:gs,rot:0}),an={};
+  for(const q of I.an)if(an[q[0]]===undefined)an[q[0]]=[q[1],q[2]];
+  veh[id]={gs,w:I.w,h:I.h,fp:I.fp,an};
+ }
+ veh['F2-MS']={gs:1,w:F2_MS.len,h:F2_MS.wid,fp:[0,0,F2_MS.len,F2_MS.wid],an:{}};
+ {const G=g77GseDim();for(const id in G){const d=G[id];veh[id]={gs:1,w:d[0],h:d[1],fp:[0,0,d[0],d[1]],an:{}}}}   // GATE-77 S2: procedural service vehicles   // mobile stairs: procedural (no library asset)
+ s6aRealize(veh);   // GATE-77 S6a M2: the library service vehicles at their real sizes
+ const J=TurboCity.info('AP-JB-01',{scale:1,rot:3});
+ return{ac,veh,jb:{w:J.w,h:J.h,fp:J.fp,an:J.an.map(q=>[q[0],q[1],q[2]])}};
+}
+function aptBuildC(){
+ return{RWY:APT_RWY,TWY:APT_TWY,GA:APT_PARKED_GA,HELI:APT_HELIPADS,BRIDGE_Y:APT_BRIDGE_Y,
+  stands:APT_STANDS.map(s=>({id:s.id,term:s.term,cx:s.cx,ng:s.ng,cy:s.cy,aircraft:s.aircraft,cargo:!!s.cargo,door:s.door,svcSide:s.svcSide})),
+  bld:APT_BUILDINGS.map(b=>({id:b.id,x:b.x+b.info.fp[0],y:b.y+b.info.fp[1],w:b.info.fp[2],h:b.info.fp[3]}))};
+}
+function aptReady(){if(!APTT_SPEC){APTT_SPEC=aptBuildSpec();APTT_C=aptBuildC()}if(!APL)APL=aplBuild();return APL}
+function aptOpsInit(){
+ APTT_SPEC=aptBuildSpec();APTT_C=aptBuildC();APT_OPS.spr={};
+ AO.sliced=true;AO.useClock=true;AO.budget=70;                      // the game plans in slices of ~70 reservation checks (a few ms) per frame
+ aoInit(APT_OPS.clk,APT_OPS.seed);APT_OPS.ready=true;
+}
+// called once per rendered frame (idempotent for the same frame time); the airport clock stops while the game is paused
+function aptOpsTick(now){
+ if(!APT_OPS.on||APT_OPS.last===now)return;if(typeof G77_LDS!=='undefined'&&G77_LDS.job)return;   /* D-220 · p283: not while the airport loads */
+ const dt=APT_OPS.last==null?0:Math.min(.1,Math.max(0,(now-APT_OPS.last)/1000));APT_OPS.last=now;
+ if(typeof State!=='undefined'&&State.paused)return;
+ APT_OPS.clk+=dt;APT_OPS.frames++;G76X.ofs=(now+(typeof SIM_BENCH_OFS!=='undefined'?SIM_BENCH_OFS:0))/1000-APT_OPS.clk;
+ try{if(!APT_OPS.ready)aptOpsInit();{const t=performance.now();g77DetTick(APT_OPS.clk);const d=performance.now()-t;FS.used+=d;FS.stats.aoMs+=d}e1Watch(APT_OPS.clk);f1Watch(APT_OPS.clk);g1Watch(APT_OPS.clk)}catch(e){g77AoFail(e,'tick')}   /* p241 */
+}
+
+// ====================================================================================================================================
+// paint: new airside surfaces (cached canvases)
+// ====================================================================================================================================
+const aptTxt=(g,t,x,y,px,col,w=700)=>{g.fillStyle=col;g.font=w+' '+px+'px Arial,Helvetica,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(g77Heb(t),x,y)};   /* GATE-77P · p228 · D-196 */
+function aptStandBox(s){ // bounding box of the largest accepted aircraft (full wing span)
+ let m={x0:1e9,x1:-1e9,y0:1e9,y1:-1e9};
+ for(const ac of s.accepts)for(const b of aplEnv(ac,s.ngx,s.ngy,s.th).map(aplBox)){m.x0=Math.min(m.x0,b.x0);m.x1=Math.max(m.x1,b.x1);m.y0=Math.min(m.y0,b.y0);m.y1=Math.max(m.y1,b.y1)}
+ return m;
+}
+function aptPaintStand(g,s){
+ if(s.indoor||s.tpl==='bridge'||s.tpl==='cargo')return;
+ const b=aptStandBox(s),south=Math.abs(Math.sin(s.th))>.5;
+ if(s.live===false&&Math.sin(s.th)<-.5){g.save();g.strokeStyle='rgba(244,242,232,.45)';g.lineWidth=1.2;g.setLineDash([5,6]);g.strokeRect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0);g.setLineDash([]);aptTxt(g,g77Show(s.id),s.ngx,b.y1+10,12,'rgba(244,242,232,.85)');aptTxt(g,'STATIC',s.ngx,b.y1+23,7,'rgba(244,242,232,.65)',600);g.restore();return}   // S3b: static row, nose north
+ g.save();
+ g.strokeStyle='rgba(244,242,232,.5)';g.lineWidth=1.3;g.setLineDash([9,7]);g.strokeRect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0);g.setLineDash([]);
+ g.strokeStyle='#e0b93a';g.lineWidth=1.8;g.beginPath();
+ if(south){g.moveTo(s.ngx,Math.min(b.y0,s.ngy-70));g.lineTo(s.ngx,s.ngy);g.moveTo(s.ngx-9,s.ngy+3);g.lineTo(s.ngx+9,s.ngy+3)}
+ else{g.moveTo(s.ngx+80,s.ngy);g.lineTo(s.ngx,s.ngy);g.moveTo(s.ngx-3,s.ngy-9);g.lineTo(s.ngx-3,s.ngy+9)}
+ g.stroke();
+ if(south)aptTxt(g,g77Show(s.id),s.ngx,Math.min(b.y1+12,s.ngy+30),13,'rgba(244,242,232,.9)');
+ else aptTxt(g,g77Show(s.id),s.ngx-22,s.ngy,12,'rgba(244,242,232,.9)');
+ if(s.remote)aptTxt(g,'REMOTE',s.ngx,Math.min(b.y1+25,s.ngy+43),8,'rgba(244,242,232,.7)',600);
+ g.restore();
+}
+function aptPaintRspE(g){
+// S2 GROUND OPS · Ramp Services Park East (RSP-E): the chore bays of the crew shuttle (E1, nose north) and the ops / tow vehicles (E2, nose south)
+ if(RSP_E.bays.length){const R=RSP_E;g.fillStyle='rgba(0,0,0,.07)';g.fillRect(R.x0-4,R.zone.y0-4,R.x1-R.x0+8,R.zone.y1-R.zone.y0+8);
+  for(const b of R.bays){const r=rspBayRect(b);g.strokeStyle='rgba(244,211,94,.85)';g.lineWidth=1.3;g.setLineDash([6,4]);g.strokeRect(r.x0,r.y0,r.x1-r.x0,r.y1-r.y0);g.setLineDash([]);g.fillStyle='rgba(244,211,94,.10)';g.fillRect(r.x0,r.y0,r.x1-r.x0,r.y1-r.y0);
+   g.save();g.translate(b.x??R.x,b.yc);g.rotate(-Math.PI/2);aptTxt(g,b.label,0,0,7,'rgba(244,211,94,.95)',700);g.restore();
+   // nose arrow (which way the vehicle stands)
+   const dy=b.th<0?-1:1,ay=b.yc+dy*(b.len/2-6),bx=b.x??R.x;g.fillStyle='rgba(244,211,94,.9)';g.beginPath();g.moveTo(bx,ay+dy*4);g.lineTo(bx-4,ay-dy*3);g.lineTo(bx+4,ay-dy*3);g.closePath();g.fill()}
+  // entry / exit guidance: E1 in from GLN (south), out north; E2 in from GLS (north), out south onto the service road
+  g.strokeStyle='rgba(244,211,94,.5)';g.lineWidth=1;g.setLineDash([4,4]);g.beginPath();g.moveTo(AF.GLS,R.lane);g.lineTo(R.x0+2,R.lane);for(const b of R.bays){g.moveTo(b.x,R.lane);g.lineTo(b.x,rspBayRect(b).y1)}g.stroke();g.setLineDash([]);   // GATE-77 S5c: the yard lane
+  aptTxt(g,'RSP-E',R.x,R.zone.y1+6,6,'rgba(244,242,232,.8)',700)}
+}
+function aptPaintHeliPad(g,p){
+ g.fillStyle='#53585d';g.beginPath();g.arc(p.x,p.y,p.r,0,Math.PI*2);g.fill();g.strokeStyle='#e9e9e4';g.lineWidth=4;g.beginPath();g.arc(p.x,p.y,p.r-6,0,Math.PI*2);g.stroke();
+ g.fillStyle='#e9e9e4';g.font='700 46px Arial,Helvetica,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('H',p.x,p.y+2);
+ aptTxt(g,p.id,p.x,p.y+p.r+10,11,'rgba(244,242,232,.85)');
+}
+// west apron + the extension of the taxiway (x 4900 -> 5020)
+function aptPaintWest(g){
+ g73PaintWestExt(g);const Z=APL.zones.wApron;
+ g.fillStyle=portPattern('apron');g.fillRect(Z.x,Z.y-4,Z.w,Z.h+4);
+ g.fillStyle='rgba(0,0,0,.10)';g.fillRect(Z.x,Z.y-4,Z.w,3);
+ g.fillStyle='rgba(0,0,0,.07)';g.fillRect(Z.x,Z.y+Z.h-3,Z.w,3);
+ // S3b · cargo service band (y 560–720) south of the cargo noses: one two-way lane at y 700 to the service road L, edge lines + words
+ {const C=CARGO_W;g.fillStyle='rgba(60,64,70,.16)';g.fillRect(C.x0,C.lane-13,C.x1-C.x0,26);
+  g.strokeStyle='rgba(246,244,236,.75)';g.lineWidth=1.3;g.beginPath();g.moveTo(C.x0,C.lane-13);g.lineTo(C.x1,C.lane-13);g.moveTo(C.x0,C.lane+13);g.lineTo(C.x1,C.lane+13);g.stroke();
+  g.strokeStyle='rgba(246,244,236,.5)';g.setLineDash([10,8]);g.beginPath();g.moveTo(C.x0,C.lane);g.lineTo(C.x1,C.lane);g.stroke();g.setLineDash([]);
+  for(const x of[5200,5520,5860])aptTxt(g,'CARGO SERVICE',x,C.lane,7,'rgba(246,244,236,.65)',600)}
+ // S3b · AIR-23 tow hold: the trainer is brought here from the field; the tow gate below opens only in the tow job
+ {const H=EW2_TOW.hold;g.save();g.fillStyle='rgba(84,150,196,.10)';g.fillRect(H.x,H.y,H.w,H.h);g.strokeStyle='rgba(133,187,209,.85)';g.lineWidth=1.4;g.setLineDash([7,5]);g.strokeRect(H.x+.5,H.y+.5,H.w-1,H.h-1);g.setLineDash([]);
+  aptTxt(g,'TOW HOLD',H.x+H.w+48,H.y+14,8,'rgba(170,210,226,.9)',700);aptTxt(g,'מטוס אימון · גרירה לרחבה',H.x+H.w+56,H.y+26,7,'rgba(170,210,226,.8)',600);
+  g.strokeStyle='rgba(133,187,209,.7)';g.lineWidth=1.6;g.beginPath();g.moveTo(EW2_TOW.ac.x,EW2_TOW.ac.y+36);g.lineTo(EW2_TOW.ac.x,EW2_FENCE_Y-2);g.stroke();g.restore()}
+ for(const s of APL.stands)if(s.zone==='cargoW')aptPaintStand(g,s);
+ // C3 · the second large cargo stand (AIR-11) is live since S4 (painted with the row)
+ aptTxt(g,'WEST CARGO ROW · C1 · C2 · C3',Z.x+440,Z.y+40,10,'rgba(244,242,232,.6)',600);
+}
+// east block (behind the hangars), pocket stands, hardstand extension, perimeter service road, hangar-front lanes
+function aptPaintEast(g){
+ g73PaintEastExt(g);const Z=APL.zones,E=Z.eBlock,P=Z.perim,L=APL.lanes;
+ g.fillStyle=portPattern('apron');g.fillRect(E.x,E.y,E.w,E.h);
+ g.fillRect(7236,1130,1099,28);                                     // hardstand front strip down to the yard front (y 1158), fence removed in front of the yard
+ g.fillStyle='rgba(0,0,0,.09)';g.fillRect(E.x,E.y,E.w,3);
+ // service alleys between the hangars (darker asphalt)
+ g.fillStyle=portPattern('asphalt');for(const a of APL.alleys){const y0=a.id==='GLK'?a.y0-181:a.y0;g.fillRect(a.x0,y0,a.x1-a.x0,a.y1-y0)}
+ // perimeter service road (ARFF route to the runway end) x 8335-8395
+ g.fillStyle=portPattern('asphalt');g.fillRect(P.x,P.y,P.w,1500-P.y);
+ g.fillStyle='rgba(0,0,0,.14)';g.fillRect(P.x,P.y,3,1500-P.y);
+ g.strokeStyle='#e0b93a';g.lineWidth=1.6;g.setLineDash([14,12]);g.beginPath();g.moveTo(P.x+P.w/2,P.y);g.lineTo(P.x+P.w/2,1500);g.stroke();g.setLineDash([]);
+ g.fillStyle='rgba(200,40,40,.85)';for(let y=P.y+30;y<1500;y+=120)g.fillRect(P.x+4,y,5,26);
+ // pocket stands
+ for(const s of APL.stands)if(s.tpl==='apronSW'||s.tpl==='hard')aptPaintStand(g,s);
+ // hangar-front lanes: out (west-bound) y 1102, back (east-bound) y 1131
+ g.strokeStyle='rgba(224,185,58,.6)';g.lineWidth=1.3;g.setLineDash([18,14]);
+ for(const y of[L.hardW,L.hardE]){g.beginPath();g.moveTo(7292,y);g.lineTo(L.wOut,y);g.stroke()}g.setLineDash([]);
+ g.fillStyle='rgba(244,242,232,.55)';
+ for(let x=7320;x<L.wOut-20;x+=110){g.beginPath();g.moveTo(x,L.hardW);g.lineTo(x+10,L.hardW-4);g.lineTo(x+10,L.hardW+4);g.closePath();g.fill();g.beginPath();g.moveTo(x+55,L.hardE);g.lineTo(x+45,L.hardE-4);g.lineTo(x+45,L.hardE+4);g.closePath();g.fill()}
+ aptTxt(g,'TAXILANE · SERVICE',7600,1118,8,'rgba(244,242,232,.55)',600);
+ g2PaintRemoteMarks(g);
+ g77PaintMaint(g);   // GATE-77 S5d · D-97
+}
+function g77PaintMaint(g){const M=G77_MAINT,D=APL_DOORS.filter(d=>d.id!=='FUEL'),cs=D.map(d=>(d.x0+d.x1)/2),x0=Math.min(...cs),x1=Math.max(...cs);
+ g.save();g.strokeStyle='#e0b93a';g.lineWidth=2;g.setLineDash([]);g.beginPath();g.moveTo(M.p6x,800);g.lineTo(M.p6x,M.taxiY-12);g.arcTo(M.p6x,M.taxiY,M.p6x-12,M.taxiY,12);g.lineTo(x0,M.taxiY);g.moveTo(M.p6x,M.taxiY-12);g.arcTo(M.p6x,M.taxiY,M.p6x+12,M.taxiY,12);g.lineTo(x1,M.taxiY);
+  for(const c of cs){g.moveTo(c,M.taxiY);g.lineTo(c,M.front)}g.stroke();
+  for(const d of D){for(let x=d.x0,k=0;x<d.x1;x+=8,k++){g.fillStyle=k%2?'rgba(244,242,232,.85)':'rgba(206,62,52,.85)';g.fillRect(x,M.front-3,Math.min(8,d.x1-x),3)}aptTxt(g,{'HGR-L':'HANGAR 2','MAINT':'MAINTENANCE','HGR-S1':'HANGAR S1','HGR-S2':'HANGAR S2'}[d.id]||d.id,(d.x0+d.x1)/2,M.front-9,6,'rgba(244,242,232,.8)',700)}
+  g.fillStyle='#e0b93a';for(const dy of[0,4])g.fillRect(M.p6x-16,806+dy,32,1.6);
+  aptTxt(g,'MAINTENANCE · VIA P6 WHEN FREE',M.p6x-84,818,6.5,'rgba(244,242,232,.75)',700);aptTxt(g,'MAINTENANCE APRON',(x0+M.p6x)/2-60,M.taxiY-14,7,'rgba(244,242,232,.6)',700);g.restore()}
+// G2 Ground Operations Yard + south heliport
+function aptPaintYard(g){
+ const Z=APL.zones,Y=Z.yard,H=Z.heli,L=APL.lanes;
+ g.fillStyle=portPattern('asphalt');g.fillRect(Y.x,Y.y,Y.w,Y.h);
+ g.fillStyle='rgba(0,0,0,.10)';g.fillRect(Y.x,Y.y,Y.w,3);g.fillRect(Y.x,Y.y,3,Y.h);
+ g.fillStyle=portPattern('apron');g.fillRect(H.x,H.y,H.w,H.h);g.fillStyle='rgba(0,0,0,.10)';g.fillRect(H.x,H.y,H.w,3);
+ // service lanes (west spine out / in, lane I, lane O2)
+ g.strokeStyle='rgba(224,185,58,.55)';g.lineWidth=1.4;g.setLineDash([14,11]);
+ const ln=(x1,y1,x2,y2)=>{g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke()};
+ ln(L.wOut,L.hardW,L.wOut,L.O2);ln(L.wIn,L.hardE,L.wIn,L.I);ln(L.wIn,L.I,8332,L.I);ln(8332,L.O2,L.wOut,L.O2);ln(L.wOut,L.xTop,8332,L.xTop);
+ if(G77_EAST.on){ln(L.spineOut,L.O2,L.spineOut,G73_NE.road);ln(L.spineIn,G73_NE.road,L.spineIn,L.I);ln(8332,L.O2,L.spineOut,L.O2);ln(8332,L.I,L.spineIn,L.I)}   // GATE-77 S6b-c · p156: the east spine
+ g.setLineDash([]);
+ // direction chevrons
+ g.fillStyle='rgba(244,242,232,.5)';
+ const chev=(x,y,dx,dy)=>{g.save();g.translate(x,y);g.rotate(Math.atan2(dy,dx));g.beginPath();g.moveTo(7,0);g.lineTo(-5,-5);g.lineTo(-2,0);g.lineTo(-5,5);g.closePath();g.fill();g.restore()};
+ for(let y=1200;y<1440;y+=70)chev(L.wOut,y,0,-1);
+ for(let y=1170;y<1290;y+=60)chev(L.wIn,y,0,1);
+ for(let x=7960;x<8330;x+=90){chev(x,L.I,1,0);chev(x+40,L.O2,-1,0)}
+ // bays
+ for(const b of APL.bays){if(b.zone==='F2'||b.zone==='EMRG')continue;
+  const arff=b.kind==='ARFF',col=arff?'rgba(220,60,50,.9)':'rgba(244,242,232,.78)';
+  g.strokeStyle=col;g.lineWidth=arff?1.8:1.3;g.beginPath();
+  if(b.row==='X'||b.row==='NB'){g.moveTo(b.x0,b.y0);g.lineTo(b.x0,b.y1);g.lineTo(b.x1,b.y1);g.lineTo(b.x1,b.y0)}
+  else{g.moveTo(b.x0,b.y0);g.lineTo(b.x0,b.y1);g.moveTo(b.x1,b.y0);g.lineTo(b.x1,b.y1)}
+  g.stroke();
+  if(arff){g.save();g.beginPath();g.rect(b.x0,b.y0,b.x1-b.x0,b.y1-b.y0);g.clip();g.strokeStyle='rgba(220,60,50,.35)';g.lineWidth=2;for(let k=-120;k<120;k+=11){g.beginPath();g.moveTo(b.x0+k,b.y1);g.lineTo(b.x0+k+90,b.y0);g.stroke()}g.restore()}
+  aptTxt(g,b.id.replace('Y-',''),b.x,b.row==='X'?b.y1+9:b.y1+9,7,arff?'rgba(255,170,160,.95)':'rgba(244,242,232,.8)',700);
+ }
+ aptTxt(g,'G2 · GROUND OPS YARD',8070,1176,11,'rgba(244,242,232,.62)',700);
+ // heliport
+ for(const h of APL.helis)if(h.zone==='G2S')aptPaintHeliPad(g,h);
+ aptTxt(g,'HELIPORT SOUTH',8120,H.y+H.h-12,9,'rgba(244,242,232,.6)',600);
+ g2PaintYardMarks(g);
+}
+// ====================================================================================================================================
+// drawing: aircraft / helicopters / fleet
+// ====================================================================================================================================
+function aptSpr(id){
+ let s=APT_OPS.spr[id];if(s)return s;
+ if(id.startsWith('AC-')){const a=TurboCity.get(id),sc=APT_GS/(a.res||1),I=TurboCity.info(id,{scale:sc,rot:0}),ng=I.an.find(q=>q[0]==='Nose Gear');s=APT_OPS.spr[id]={sc,ax:ng?ng[1]:I.w/2,ay:ng?ng[2]:I.h/2,w:I.w,h:I.h}}
+ else{const gs=aptVehGs(id),I=TurboCity.info(id,{scale:gs,rot:0});s=APT_OPS.spr[id]={gs,cx:I.fp[0]+I.fp[2]/2,cy:I.fp[1]+I.fp[3]/2,w:I.w,h:I.h}}
+ return s;
+}
+function g77Reg(f){if(!f)return'';if(f.reg!=null)return f.reg;const s=String(f.code||f.id||'');if(/^4X-/.test(s))return f.reg=s;
+ let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619)>>>0;const A='ABCDEFGHIJKLMNOPRSTUVWXYZ',k=f.ac==='AC-CG-01'||f.ac==='AC-HC-01'||f.ac==='AC-TB-01'?'C':f.ac==='AC-RJ-01'||f.ac==='AC-TP-01'?'A':'E';
+ return f.reg='4X-'+k+A[h%25]+A[(h/25|0)%25]}   // GATE-77 S5b · D-72: the aircraft's own registration
+function g77Livery(f){if(!f)return 0;if(f.lv==null){let h=0;const s=String(f.code||f.id||'');for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;f.lv=h%997}return f.lv}
+const G77_MV=new WeakMap();function g77Moving(a,x,y){const k=a.f||a.tr;if(!k)return false;let m=G77_MV.get(k);if(!m){m={};G77_MV.set(k,m)}const id=a.id+(a.nm||''),p=m[id],now=APT_OPS.clk;m[id]=[x,y,now,p&&Math.hypot(x-p[0],y-p[1])>.02?now:(p?p[3]:-1e9)];return now-m[id][3]<1.5}
+function aptDrawAc(g,a,now){
+ const [x,y,th,z,al]=a.pose,s=aptSpr(a.id),k=1+z/420;
+ g.save();g.globalAlpha=al;
+ if(z>3){ // ground shadow of an aircraft in the air
+  g.save();g.translate(x+z*.32,y+z*.42);g.rotate(th);g.fillStyle='rgba(8,18,26,'+(.2*Math.max(0,1-z/220))+')';
+  g.beginPath();g.ellipse(-s.w*.1,0,s.w*.36,Math.min(s.h*.1,16),0,0,Math.PI*2);g.fill();g.restore()}
+ g.translate(x,y);g.rotate(th);if(k!==1)g.scale(k,k);
+ TurboCity.draw(g,a.id,-s.ax,-s.ay,{mode:'runtime',scale:s.sc,rot:0,time:now/1000,state:{c:g77Livery(a.f)%16,r:g77Reg(a.f),k:a.f&&/^C[123]$/.test(a.f.stand||'')?1:0,v:z>8?4:g77Moving(a,x,y)?1:0}});
+ g.restore();
+}
+function aptDrawHeli(g,a,now){
+ const [x,y,th,z,al]=a.pose,s=aptSpr(a.id),k=1+z/300;
+ g.save();g.globalAlpha=al;
+ if(z>3){g.save();g.translate(x+z*.4,y+z*.5);g.fillStyle='rgba(8,18,26,'+(.22*Math.max(0,1-z/200))+')';g.beginPath();g.ellipse(0,0,s.w*.32,s.h*.2,0,0,Math.PI*2);g.fill();g.restore()}
+ g.translate(x,y);g.rotate(th);if(k!==1)g.scale(k,k);
+ TurboCity.draw(g,a.id,-s.w/2,-s.h/2,{mode:'runtime',scale:s.sc,rot:0,time:now/1000,state:{v:z>2?4:g77Moving(a,x,y)?1:0,r:g77Reg(a.f)}});
+ g.restore();
+}
+
+// ==== GATE-77 S2 · service vehicles (AIR-10 / 29 / 30 / 42 / 49) ==========================================================================
+// procedural top-view vehicles (front = +x), sizes in px (length × width)
+// (functions, not constants: the yard and the vehicle specs can be built before this part of the script has run)
+function g77GseDim(){return{'G7-BL':[56,15],'G7-CT':[63,19],'G7-GP':[22,12],'G7-LV':[42,16],'G7-WT':[45,17],'G7-GC':[22,12],'G7-HL':[60,22],'G7-CU':[25,11],'G7-SH':[56,17]}}   // GATE-77 S6a M2: real sizes (D-61)
+// the yard bays they live in (built in GATE-73 S4 for the loaders, or reserve bays); ids / x / width unchanged (G73_LOCK)
+// (a 52 px loader cannot turn into the west-end bays Y-BL1 / Y-BL2 between the spine and its neighbours: the water truck and the fifth
+// pushback tug live there; the loaders take the two east tug bays Y-PT5 / Y-PT6)
+function g77GseBayTable(){return{'Y-BL1':['WT','V-WT1','G7-WT'],'Y-BL2':['PT','V-PT5','LV-PT-01'],'Y-PT5':['BL','V-BL1','G7-BL'],'Y-RX1':['CT','V-CT1','G7-CT'],'Y-RX2':['CT','V-CT2','G7-CT'],
+ 'Y-BT1':['GP','V-GP1','G7-GP'],'Y-BT2':['GP','V-GP2','G7-GP'],'Y-BT3':['LV','V-LV1','G7-LV'],'Y-PT6':['MX','V-MX2','VS-TW-01'],'Y-MX2':['BL','V-BL2','G7-BL']}}
+function g77GseBays(A){
+ const T=g77GseBayTable();for(const b of A.bays){const q=T[b.id];if(!q)continue;b.kind=q[0];b.fleetId=q[1];b.asset=q[2];b.scale=1;b.occupied=true;delete b.reserve;
+  if(q[0]==='GP'||q[0]==='LV')b.yc=1390;else if(b.row==='Y')b.yc=1355}
+}
+// ---- drawing ------------------------------------------------------------------------------------------------------------------------------
+
+function g77UldBox(g,x,y,th,al,col){g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);g.fillStyle='rgba(8,18,26,.3)';g.fillRect(-7,-5,15,11);
+ g.fillStyle=col||'#c9ccd0';g.fillRect(-8,-5.5,16,11);g.fillStyle='#9ea4aa';g.fillRect(-8,-5.5,16,2.2);g.strokeStyle='#5d646b';g.lineWidth=.6;g.strokeRect(-8,-5.5,16,11);
+ g.fillStyle='#2f6fb3';g.fillRect(-2,-1.2,6,2.4);g.restore()}
+function g77UldCol(id){const h=g77Hash(id)%4;return['#c9ccd0','#d4c8a8','#b8c4cc','#cfd2c4'][h]}
+// the ULD state of a train at local time lt: per dolly the ULD id or null, and the ULD in flight {k,u (0..1),dir,where}
+function g77TrainUld(tr,lt){const cg=tr&&tr.cg;if(!cg||lt==null)return null;const ul=cg.ulds||[],n=cg.n,load=[];let fly=null;
+ for(let k=0;k<n;k++)load.push(cg.kind==='in'?null:null);
+ for(let k=0;k<n;k++){const evs=cg.ev.filter(e=>e.k===k);let on=false;for(const e of evs){if(lt>=e.t1){on=e.dir==='on'||e.dir==='off'?(e.dir==='on'):on}else if(lt>=e.t0)fly={k,u:(lt-e.t0)/(e.t1-e.t0),dir:e.dir,where:e.where}}
+  load[k]=on?ul[k]:null}
+ return{load,fly}}
+function g77DrawTrain(g,a){
+ const tr=a.tr,[x,y,th,,al]=a.pose,task=tr&&tr.cg||null,st=g77TrainUld(tr,a.lt),D=g77GseDim()['G7-CU'],L=D[0]/2,W=D[1]/2;
+ for(let i=0;i<3;i++){const q=tr.cartAt(a.pose,i,a.lt,tr);g.save();g.globalAlpha=al;g.translate(q[0],q[1]);g.rotate(q[2]);
+  g.fillStyle='rgba(8,18,26,.22)';g.fillRect(-9,-5.5,20,13);g.fillStyle='#3b4249';g.fillRect(-10,-6.5,20,13);if(Camera.zoom>=.55){g.strokeStyle='#6b737a';g.lineWidth=.5;g.beginPath();for(let sx=-8;sx<9;sx+=2.4){g.moveTo(sx,-5.5);g.lineTo(sx,5.5)}g.stroke()}
+  g.fillStyle='#22272d';g.fillRect(10,-1,4,2);g.restore();
+  const u=st&&st.load[i];if(u&&!(st.fly&&st.fly.k===i))g77UldBox(g,q[0],q[1],q[2],al,g77UldCol(u))}
+ g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);g.fillStyle='rgba(8,18,26,.24)';g.fillRect(-L+1.5,-W+2,L*2,W*2);
+ g.fillStyle='#d9a21f';g.fillRect(-L,-W,L*2,W*2);g.fillStyle='#1d2b36';g.fillRect(L-9,-W+1.5,5,W*2-3);g.fillStyle='#22272d';g.beginPath();for(const wx of [-L+3,L-8])for(const wy of [-W-.6,W-2.4])g.rect(wx,wy,5,3);g.fill();g.restore();
+ if(st&&st.fly&&task){const f=st.fly,q=tr.cartAt(a.pose,f.k,a.lt,tr),u=task.ulds[f.k];if(u){const Pp=g77FlyPath(task,f,q),e=f.dir==='on'?1-f.u:f.u,pp=g77PathAt(Pp,e*g77PathLen(Pp));g77UldBox(g,pp[0],pp[1],q[2],al,g77UldCol(u))}}}
+function g77FlyPath(task,f,q){const T=g77FlyTarget(task,f,q);if(f.where==='deck')return[[q[0],q[1]],T];const P=AO.flights.concat(AO.hist).find(z=>z.code===task.code),S=P&&P.cgo&&P.cgo.loop;if(!S||!S.hl)return[[q[0],q[1]],T];
+ return[[q[0],q[1]],T,[T[0]-S.side*1,S.door[1]+4],[S.door[0],S.door[1]]]}   // dolly → the loader's rear deck → its front platform → the door
+// where an in-flight ULD goes: the high loader's rear deck (stand, CG) / the aircraft's door (TP) / the deck slot
+function g77FlyTarget(task,f,q){if(f.where==='deck')return[G77_DK.x,q[1]];const P=AO.flights.concat(AO.hist).find(z=>z.code===task.code),S=P&&P.cgo&&P.cgo.loop;if(!S)return[q[0],q[1]];
+ return S.hl?[q[0]-S.side*24,q[1]]:[S.door[0],q[1]]}
+function g77DrawGse(g,a){
+ if(a.id==='G7-CU')return g77DrawTrain(g,a);
+ const [x,y,th,,al]=a.pose,D=(g77DrawGse.D||(g77DrawGse.D=g77GseDim()))[a.id];if(!D)return;const L=D[0]/2,W=D[1]/2;
+ g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);
+ g.fillStyle='rgba(8,18,26,.24)';g.fillRect(-L+1.5,-W+2,L*2,W*2);                                  // shadow
+ g.fillStyle='#22272d';for(const wx of [-L+5,L-9])for(const wy of [-W-.5,W-2.5])g.fillRect(wx,wy,5,3);   // wheels
+ const cab=(x0,col)=>{g.fillStyle=col;g.fillRect(x0,-W+1,L-x0,W*2-2);g.fillStyle='#1d2b36';g.fillRect(L-4.2,-W+2.2,2.6,W*2-4.4);g.fillStyle='#f7f2df';g.fillRect(L-1.2,-W+1.6,1.2,1.8);g.fillRect(L-1.2,W-3.4,1.2,1.8)};
+ if(a.id==='G7-CT'){        // catering truck: white cab, high box with a red band, scissor lift
+  cab(L-13,'#eef0f0');g.fillStyle='#d9dde0';g.fillRect(-L,-W,L*2-15,W*2);g.fillStyle='#c62f2f';g.fillRect(-L,-1.6,L*2-15,3.2);
+  g.strokeStyle='#8a9399';g.lineWidth=.9;g.strokeRect(-L+.5,-W+.5,L*2-16,W*2-1);g.beginPath();g.moveTo(-L+4,-W+3);g.lineTo(L-19,W-3);g.moveTo(-L+4,W-3);g.lineTo(L-19,-W+3);g.stroke();
+  g.fillStyle='#9aa3a9';g.fillRect(L-15,-W+2,2,W*2-4)}
+ else if(a.id==='G7-BL'){   // belt loader: dark chassis, the belt over its length, yellow rails, operator seat at the back left
+  g.fillStyle='#3a4148';g.fillRect(-L,-W+1,L*2,W*2-2);g.fillStyle='#121519';g.fillRect(-L+2,-W+3,L*2-4,W*2-6);
+  g.strokeStyle='#565e66';g.lineWidth=.7;for(let sx=-L+4;sx<L-3;sx+=3){g.beginPath();g.moveTo(sx,-W+3.4);g.lineTo(sx,W-3.4);g.stroke()}
+  g.fillStyle='#e3bf3e';g.fillRect(-L,-W+1,L*2,1.6);g.fillRect(-L,W-2.6,L*2,1.6);g.fillStyle='#d9a21f';g.fillRect(-L+3,-W-.8,8,4)}
+ else if(a.id==='G7-GP'){   // GPU cart: yellow box, grille, cable reel
+  g.fillStyle='#e0b42a';g.fillRect(-L,-W,L*2,W*2);g.fillStyle='#8e7420';for(let sx=-L+3;sx<L-6;sx+=2.4)g.fillRect(sx,-W+2,1.2,W*2-4);
+  g.fillStyle='#1b1e22';g.beginPath();g.arc(L-4,0,3,0,Math.PI*2);g.fill();g.strokeStyle='#e0b42a';g.lineWidth=.8;g.beginPath();g.arc(L-4,0,1.6,0,Math.PI*2);g.stroke()}
+ else if(a.id==='G7-LV'){   // lavatory truck: white cab, blue tank
+  cab(L-11,'#eef0f0');g.fillStyle='#2d5f9e';g.fillRect(-L,-W+1,L*2-12,W*2-2);g.fillStyle='#4f80bd';g.fillRect(-L+2,-W+2.5,L*2-16,2.2);g.fillStyle='#d8dde2';g.fillRect(-L,-1,3,2)}
+ else if(a.id==='G7-HL'){   // high loader: dark chassis, yellow front platform (at the door) and rear deck, roller lines, cab at the left rear
+  g.fillStyle='#2f353b';g.fillRect(-L,-W+2,L*2,W*2-4);g.fillStyle='#e3bf3e';g.fillRect(L-20,-W,20,W*2);g.fillRect(-L,-W+1,24,W*2-2);
+  g.strokeStyle='#8e7420';g.lineWidth=.6;for(let sx=-L+2;sx<-L+24;sx+=2.6){g.beginPath();g.moveTo(sx,-W+2.5);g.lineTo(sx,W-2.5);g.stroke()}for(let sx=L-18;sx<L;sx+=2.6){g.beginPath();g.moveTo(sx,-W+1.5);g.lineTo(sx,W-1.5);g.stroke()}
+  g.fillStyle='#1d2b36';g.fillRect(-L+26,-W+1,9,6);g.fillStyle='#d9a21f';g.fillRect(L-21,-W-1,1.4,W*2+2)}
+ else if(a.id==='G7-GC'){   // cargo GPU: like the passenger GPU, an orange band
+  g.fillStyle='#e0b42a';g.fillRect(-L,-W,L*2,W*2);g.fillStyle='#d9702a';g.fillRect(-L,-1.4,L*2,2.8);g.fillStyle='#1b1e22';g.beginPath();g.arc(L-4,0,3,0,Math.PI*2);g.fill()}
+ else if(a.id==='G7-WT'){   // potable water truck: white cab, white tank with a blue band
+  cab(L-12,'#eef0f0');g.fillStyle='#e9edf0';g.fillRect(-L,-W+1,L*2-13,W*2-2);g.fillStyle='#2f7fd0';g.fillRect(-L,-1.4,L*2-13,2.8);
+  g.strokeStyle='#9aa4ab';g.lineWidth=.8;g.strokeRect(-L+.4,-W+1.4,L*2-13.8,W*2-2.8)}
+ g.restore();
+}
+// AIR-16 / 17: an amber beacon only while a service vehicle is on a task (dispatched, working, returning); at home / idle every light is off.
+// The emergency fleet (ARFF / EMS / police) shows no lightbar without a response (none in S2).
+function g77BeaconSet(){return g77BeaconSet.s||(g77BeaconSet.s=new Set(['PT','BT','FT','SH','SVC','MX','AB','MS','BL','CT','GP','LV','WT','PW','GC','HL','CU','FW','CS']))}   // GATE-77 S7-a · p185
+
+function g77Lights(g,a,now){
+ const v=a.v;if(!v||a.lt==null||!g77BeaconSet().has(v.type))return;
+ if(Math.floor(now/420+(v.id.charCodeAt(v.id.length-1)%3)*.33)%2)return;
+ const [x,y,th,,al]=a.pose,c=Math.cos(th),s=Math.sin(th),fx=(a.tr&&a.tr.hx?a.tr.hx:10)*.35;
+ g.save();g.globalAlpha=al;g.fillStyle='rgba(255,170,30,.28)';g.beginPath();g.arc(x+c*fx,y+s*fx,3.6,0,Math.PI*2);g.fill();
+ g.fillStyle='#ffb12a';g.beginPath();g.arc(x+c*fx,y+s*fx,1.5,0,Math.PI*2);g.fill();g.restore();
+}
+
+// ---- world audit (cheap): the S2 fleet and its bays, every S2 service works at every live compatible stand (cargo: S4), lights by state ----
+function g77S2Audit(){
+ aptReady();const issues=[],want={BL:4,CT:2,GP:G77_FP.on?3:2,LV:G77_FP.on?2:1,WT:1,SVC:G77_FP.on?3:2},n={};
+ for(const f of APL.fleet){n[f.type]=(n[f.type]||0)+1;const b=APL.bays.find(q=>q.id===f.bay);if(!b)issues.push('FLEET '+f.id+' no bay');else if(b.kind!==f.type&&!(b.cs&&f.type==='CS'))issues.push('FLEET '+f.id+' in a '+b.kind+' bay')}   // GATE-77 S7-a · p185: the van — a guest in EM-EMS2
+
+ for(const k in want)if(n[k]!==want[k])issues.push('FLEET '+k+' '+(n[k]||0)+'/'+want[k]);
+ // the routes need the live fleet (afOf): with the airport not started yet (the audit at load) they are checked by the QA-54 tool
+ const st=AO.fleet&&AO.fleet.length&&AO.stands&&AO.stands.length?AO.stands:[];let rows=0,ok=0;
+ for(const sd of st){if(!sd.live)continue;for(const ac of sd.accepts){const m=g77Match(sd,ac);if(!m.ok)continue;for(const k of ['catering','cleaning','water','lavatory','gpu','belt']){const v=m.svc[k];if(!v)continue;rows++;
+  if(v==='ok')ok++;else if(!(sd.kind==='cargo'&&v==='S4'))issues.push('SVC '+sd.id+'/'+ac.slice(3,5)+' '+k+' '+v)}}}
+ if(g77BeaconSet().has('ARFF')||g77BeaconSet().has('EMS')||g77BeaconSet().has('POL'))issues.push('LIGHTS emergency fleet with a service beacon');
+ return{ok:!issues.length,issues,fleet:n,rows,working:ok,routes:st.length?'checked':'QA-54'}}
+// ====================================================================================================================================
+// GATE-77 S6a · AIR-60 / AIR-62 / D-46 / D-49 / D-50 / D-61 / D-83: the airside service vehicles — each type its own design
+// Seen from above, front = +x. Every type is painted once per (type · look · detail scale) into a cached bitmap (AIR-62 (4)); the parts that
+// move (the belt, the lift, the bus doors, the beacon) are drawn on top per frame. M1: the designs at the vehicles' present footprints;
+// the real sizes (7.47 px per metre, K-56) follow in M2 with the routes and bays re-checked (D-61).
+// ====================================================================================================================================
+const S6A_PXM=7.47;
+// type → [name, real length m, real width m, family]; the asset ids are the fleet's (one asset can serve two types: AB / SH, FT / FW, PT / PW)
+const S6A_TYPES={
+ FT:['מכלית דלק',10.0,2.5,'fuel'],FW:['מכלית דלק — מטען',10.0,2.5,'fuel'],CT:['משאית קייטרינג',8.5,2.5,'cat'],WT:['מים לשתייה',6.0,2.3,'water'],
+ LV:['פינוי שירותים',5.6,2.2,'lav'],GP:['חשמל קרקע (GPU)',3.2,1.8,'gpu'],GC:['חשמל קרקע — מטען',3.2,1.8,'gpu'],PT:['גורר דחיפה',6.0,2.7,'tug'],
+ PW:['גורר — מטען',6.0,2.7,'tug'],BT:['גורר כבודה',3.4,1.5,'btug'],BL:['מסוע מטען',7.5,2.0,'belt'],HL:['מעמיס משטחים',8.0,3.0,'hl'],
+ MS:['משאית מדרגות',8.0,2.5,'stairs'],AB:['אוטובוס רחבה',12.0,2.7,'bus'],SH:['הסעת צוות',7.5,2.3,'shuttle'],SVC:['רכב ניקיון',5.0,2.0,'van'],
+ MX:['רכב תחזוקה',5.5,2.0,'maint'],CU:['גורר מטען',3.4,1.5,'btug']};
+const S6A_ASSET={FT:'LV-FT-01',FW:'LV-FT-01',CT:'G7-CT',WT:'G7-WT',LV:'G7-LV',GP:'G7-GP',GC:'G7-GC',PT:'LV-PT-01',PW:'LV-PT-01',BT:'LV-BT-01',BL:'G7-BL',
+ HL:'G7-HL',MS:'F2-MS',AB:'LV-SH-01',SH:'G7-SH',SVC:'VS-GS-01',MX:'VS-TW-01',CU:'G7-CU'};
+// colours of the airside operator (fictional "TURBO GS"): white bodies, safety yellow, a blue line, hi-vis red / white bars
+const S6A_C={white:'#eef1f3',white2:'#d6dce1',grey:'#9aa3ab',dark:'#2b3138',tyre:'#1c1f23',glass:'#24384a',glass2:'#4f7392',yel:'#e8b92b',yel2:'#b88c16',
+ blue:'#2f6fb6',red:'#c8352e',orange:'#e47a24',chrome:'#c7ced4',lamp:'#fff4d0',tail:'#d23a2a'};
+function s6aRR(g,x,y,w,h,r){r=Math.min(r,w/2,h/2);g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function s6aGrad(g,y0,y1,c0,c1,c2){const q=g.createLinearGradient(0,y0,0,y1);q.addColorStop(0,c0);q.addColorStop(.5,c1);q.addColorStop(1,c2||c0);return q}
+// painting kit (local coordinates: centre 0,0 · L / W half length / width · front at +L)
+function s6aKit(g,L,W){
+ const C=S6A_C;
+ return{
+  shadow(){g.fillStyle='rgba(8,18,26,.26)';s6aRR(g,-L+1.4,-W+1.9,L*2,W*2,Math.min(2.2,W*.4));g.fill()},
+  tyres(xs,o={}){const tw=o.w||Math.max(3,L*.13),th=o.h||Math.max(1.6,W*.17),out=o.out??.35;g.fillStyle=C.tyre;for(const x of xs)for(const s of[-1,1]){s6aRR(g,x-tw/2,s>0?W-th+out:-W-out,tw,th,.6);g.fill()}
+   g.fillStyle='rgba(255,255,255,.12)';for(const x of xs)for(const s of[-1,1])g.fillRect(x-tw/2+.4,s>0?W-th+out+.3:-W-out+.3,tw-.8,.35)},
+  body(x0,x1,col,o={}){const r=o.r??Math.min(1.6,W*.3),y0=-W+(o.inset??.6),h=W*2-(o.inset??.6)*2;g.fillStyle=s6aGrad(g,y0,y0+h,o.c2||col,col,o.c3||o.c2||col);s6aRR(g,x0,y0,x1-x0,h,r);g.fill();
+   g.strokeStyle=o.edge||'rgba(30,38,46,.55)';g.lineWidth=o.lw||.45;s6aRR(g,x0+.2,y0+.2,x1-x0-.4,h-.4,r);g.stroke()},
+  cab(x0,col,o={}){const x1=L,r=Math.min(1.8,W*.35),y0=-W+.4,h=W*2-.8;g.fillStyle=s6aGrad(g,y0,y0+h,o.c2||C.white2,col,o.c2||C.white2);s6aRR(g,x0,y0,x1-x0,h,r);g.fill();
+   g.strokeStyle='rgba(30,38,46,.55)';g.lineWidth=.45;s6aRR(g,x0+.2,y0+.2,x1-x0-.4,h-.4,r);g.stroke();
+   const wx=x1-Math.max(2.4,(x1-x0)*.28),ww=Math.max(1.6,(x1-x0)*.2);g.fillStyle=s6aGrad(g,-W,W,C.glass2,C.glass,C.glass2);s6aRR(g,wx,-W+1.3,ww,W*2-2.6,.6);g.fill();     // windscreen
+   g.fillStyle='rgba(255,255,255,.28)';g.fillRect(wx+ww*.25,-W+1.8,ww*.18,W*2-3.6);
+   g.fillStyle=C.glass;g.fillRect(x0+1,-W+.55,Math.max(1.5,wx-x0-2),.8);g.fillRect(x0+1,W-1.35,Math.max(1.5,wx-x0-2),.8);                                         // side windows
+   g.fillStyle=C.dark;g.fillRect(wx-1.2,-W-1.1,1.2,1.1);g.fillRect(wx-1.2,W,1.2,1.1);                                                                              // mirrors
+   g.fillStyle=C.lamp;g.fillRect(x1-.9,-W+1,.9,1.5);g.fillRect(x1-.9,W-2.5,.9,1.5);                                                                                 // headlights
+   if(o.beacon!==false){g.fillStyle=C.orange;g.beginPath();g.arc((x0+wx)/2,0,Math.max(.9,W*.14),0,Math.PI*2);g.fill();g.fillStyle='rgba(255,255,255,.45)';g.beginPath();g.arc((x0+wx)/2-.3,-.3,Math.max(.35,W*.05),0,Math.PI*2);g.fill()}},
+  tails(x){g.fillStyle=C.tail;g.fillRect(x,-W+1,.8,1.6);g.fillRect(x,W-2.6,.8,1.6)},
+  bars(x0,x1,y,h,a,b){const n=Math.max(2,Math.round((x1-x0)/2.2));for(let i=0;i<n;i++){g.fillStyle=i%2?b:a;g.fillRect(x0+(x1-x0)*i/n,y,(x1-x0)/n+.05,h)}},
+  chevron(x0,x1,y0,y1){g.save();g.beginPath();g.rect(x0,y0,x1-x0,y1-y0);g.clip();g.fillStyle=C.yel;g.fillRect(x0,y0,x1-x0,y1-y0);g.strokeStyle='#1e2124';g.lineWidth=Math.max(.7,(y1-y0)*.18);
+   for(let x=x0-(y1-y0);x<x1+(y1-y0);x+=(y1-y0)*.9){g.beginPath();g.moveTo(x,y1);g.lineTo(x+(y1-y0),y0);g.stroke()}g.restore()},
+  rail(x0,x1,y,col){g.strokeStyle=col||C.chrome;g.lineWidth=.55;g.beginPath();g.moveTo(x0,y);g.lineTo(x1,y);g.stroke();for(let x=x0;x<=x1+.01;x+=Math.max(2.5,(x1-x0)/4)){g.fillStyle=col||C.chrome;g.fillRect(x-.3,y-.3,.6,.6)}},
+  text(t,x,y,px,col){if(px<2.2)return;g.save();g.fillStyle=col;g.font='700 '+px+'px Arial,Helvetica,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(g77Heb(t),x,y);g.restore()}   /* p228 */
+ }
+}
+// one painter per family; st: '' (parked / driving) or 'w' (working at the aircraft)
+const S6A_PAINT={
+ fuel(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.62,-L*.36,L*.62]);K.cab(L*.5,C.white);
+  // the tank: a long cylinder (shaded across), end caps, a walkway on top, the dome lids, the hose reel at the back, the deadman / pump box
+  const x0=-L+2.2,x1=L*.46;g.fillStyle=s6aGrad(g,-W,W,'#c8ced3','#f4f6f7','#b5bcc2');s6aRR(g,x0,-W+.9,x1-x0,W*2-1.8,W*.85);g.fill();g.strokeStyle='rgba(40,48,56,.6)';g.lineWidth=.45;g.stroke();
+  for(const x of[x0+1.2,x1-1.2]){g.strokeStyle='rgba(60,70,80,.55)';g.lineWidth=.5;g.beginPath();g.moveTo(x,-W+1.3);g.lineTo(x,W-1.3);g.stroke()}
+  g.fillStyle='#8f989f';g.fillRect(x0+2,-.7,x1-x0-4,1.4);for(let x=x0+4;x<x1-3;x+=(x1-x0)/4){g.fillStyle='#6f787f';g.beginPath();g.arc(x,0,Math.max(.9,W*.18),0,Math.PI*2);g.fill();g.fillStyle='#c4cacf';g.beginPath();g.arc(x,0,Math.max(.5,W*.1),0,Math.PI*2);g.fill()}
+  K.bars(x0+1,x1-1,W-2.1,.9,C.red,'#f4f4f4');K.bars(x0+1,x1-1,-W+1.2,.9,C.red,'#f4f4f4');
+  g.fillStyle=C.dark;g.fillRect(-L+.4,-W+1.6,2.2,W*2-3.2);g.fillStyle='#1b1b1b';g.beginPath();g.arc(-L+1.5,0,Math.max(1.2,W*.32),0,Math.PI*2);g.fill();g.strokeStyle=C.yel;g.lineWidth=.5;g.beginPath();g.arc(-L+1.5,0,Math.max(.7,W*.2),0,Math.PI*2);g.stroke();
+  K.text('JET A-1',(x0+x1)/2,W*.45,Math.max(2.4,W*.42),'#b8262a');K.tails(-L+.1)},
+ cat(g,L,W,st,K){const C=S6A_C;const up=st==='w';K.shadow();K.tyres([-L*.6,L*.62]);K.cab(L*.6,C.white);
+  // scissor frame on the chassis (visible under the raised box), the box with the red band, the front platform with its rails
+  g.fillStyle=C.dark;g.fillRect(-L+1,-W+1.5,L*1.58,W*2-3);g.strokeStyle='#7d868d';g.lineWidth=.7;g.beginPath();g.moveTo(-L+3,-W+2.2);g.lineTo(L*.5,W-2.2);g.moveTo(-L+3,W-2.2);g.lineTo(L*.5,-W+2.2);g.stroke();
+  const bx0=-L+(up?-.6:.3),bx1=L*.52+(up?.6:0),by=up?-.8:0;if(up){g.fillStyle='rgba(8,18,26,.2)';g.fillRect(bx0+2.6,-W+3.4,bx1-bx0,W*2-.6)}
+  g.fillStyle=s6aGrad(g,-W,W,'#e2e6e9','#fbfcfc','#cfd5da');s6aRR(g,bx0,-W+.4+by,bx1-bx0,W*2-.8,.8);g.fill();g.strokeStyle='rgba(40,48,56,.6)';g.lineWidth=.45;g.stroke();
+  g.fillStyle=C.red;g.fillRect(bx0,-1.1+by,bx1-bx0,2.2);g.fillStyle='rgba(255,255,255,.65)';g.fillRect(bx0+1,-.3+by,bx1-bx0-2,.6);
+  g.fillStyle=C.grey;g.fillRect(bx1-1.2,-W+.8+by,1.2,W*2-1.6);K.rail(bx1-.6,bx1+(up?3:1.2),-W+1+by);K.rail(bx1-.6,bx1+(up?3:1.2),W-1+by);
+  for(const x of[bx0+1.5,bx1-2.5]){g.fillStyle='#b9c0c6';g.fillRect(x,-W+.4+by,.6,W*2-.8)}K.text('TURBO GS',(bx0+bx1)/2,-W*.55+by,Math.max(2.2,W*.36),C.blue);K.tails(-L+.1)},
+ water(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.55,L*.6]);K.cab(L*.42,C.white);
+  const x0=-L+1.6,x1=L*.38;g.fillStyle=s6aGrad(g,-W,W,'#cfd6dc','#f6f8f9','#bcc4ca');s6aRR(g,x0,-W+1,x1-x0,W*2-2,W*.8);g.fill();g.strokeStyle='rgba(40,48,56,.55)';g.lineWidth=.45;g.stroke();
+  g.fillStyle=C.blue;g.fillRect(x0+1,-1,x1-x0-2,2);g.fillStyle='#8fbbe6';g.fillRect(x0+1,-.25,x1-x0-2,.5);
+  g.fillStyle=C.dark;g.fillRect(-L+.3,-W+1.5,2.4,W*2-3);g.fillStyle='#3f6e9d';g.beginPath();g.arc(-L+1.5,0,Math.max(1,W*.3),0,Math.PI*2);g.fill();     // hose reel
+  K.rail(x0+1,x1-2,-W+1.4);K.text('H₂O',(x0+x1)/2,W*.5,Math.max(2.2,W*.4),C.blue);K.tails(-L+.1)},
+ lav(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.55,L*.6]);K.cab(L*.42,C.white);
+  const x0=-L+1.6,x1=L*.38;g.fillStyle=s6aGrad(g,-W,W,'#24518a','#3b72b3','#1f4677');s6aRR(g,x0,-W+1,x1-x0,W*2-2,W*.8);g.fill();g.strokeStyle='rgba(15,25,40,.7)';g.lineWidth=.45;g.stroke();
+  for(let x=x0+2.5;x<x1-1;x+=(x1-x0)/3){g.fillStyle='rgba(255,255,255,.18)';g.fillRect(x,-W+1.3,.6,W*2-2.6)}
+  g.fillStyle='#8a929a';g.fillRect(-L+.3,-W+1.8,2.2,W*2-3.6);g.strokeStyle='#2a2f33';g.lineWidth=.8;g.beginPath();g.moveTo(-L+1.3,-W+2.2);g.quadraticCurveTo(-L-1.2,0,-L+1.3,W-2.2);g.stroke();   // waste hose
+  K.text('WC',(x0+x1)/2,0,Math.max(2.2,W*.5),'#e9f1fa');K.tails(-L+.1)},
+ gpu(g,L,W,st,K){const C=S6A_C;const cargo=K.type==='GC';K.shadow();
+  // a towed unit: the A-frame drawbar at the front, a yellow engine box with vents, the cable reel at the back
+  g.strokeStyle=C.dark;g.lineWidth=.9;g.beginPath();g.moveTo(L*.45,-W*.55);g.lineTo(L,0);g.lineTo(L*.45,W*.55);g.stroke();g.fillStyle=C.dark;g.beginPath();g.arc(L-.4,0,.8,0,Math.PI*2);g.fill();
+  K.tyres([-L*.1],{w:Math.max(3,L*.32)});K.body(-L+.2,L*.5,cargo?'#e8a23a':C.yel,{c2:cargo?'#b8771c':C.yel2});
+  g.fillStyle='rgba(40,30,0,.45)';for(let x=-L+2;x<L*.1;x+=1.6)g.fillRect(x,-W+1.6,.7,W*2-3.2);                                                                   // vents
+  if(cargo){g.fillStyle=C.orange;g.fillRect(-L+.6,-1,L*1.4,2)}
+  g.fillStyle='#202326';g.beginPath();g.arc(L*.3,0,Math.max(1.3,W*.48),0,Math.PI*2);g.fill();g.strokeStyle=C.yel;g.lineWidth=.6;g.beginPath();g.arc(L*.3,0,Math.max(.8,W*.3),0,Math.PI*2);g.stroke();   // reel
+  g.fillStyle=C.red;g.fillRect(-L+.3,-W+.9,.8,1);g.fillRect(-L+.3,W-1.9,.8,1)},
+ tug(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.55,L*.55],{w:Math.max(4,L*.2),h:Math.max(2,W*.22),out:.2});
+  // a low, heavy pushback tractor: yellow body, the ballast deck, the offset raised cab, the front push plate and the tow bar coupling
+  K.body(-L+.4,L-.6,C.yel,{c2:C.yel2,r:1.4});g.fillStyle='#46505a';g.fillRect(-L+2,-W+2,L*.9,W*2-4);for(let x=-L+3;x<-L+2+L*.9-1;x+=2){g.fillStyle='#5b6670';g.fillRect(x,-W+2.4,1.1,W*2-4.8)}
+  g.fillStyle=C.dark;g.fillRect(L-1.4,-W+1.2,1.4,W*2-2.4);K.chevron(L-1.3,L,-W+1.2,W-1.2);
+  g.fillStyle=s6aGrad(g,-W,0,'#ffffff','#e9edf0','#cfd6dc');s6aRR(g,-L*.05,-W+.6,L*.42,W*.95,.8);g.fill();g.strokeStyle='rgba(30,38,46,.6)';g.lineWidth=.4;g.stroke();
+  g.fillStyle=s6aGrad(g,-W,0,C.glass2,C.glass,C.glass2);g.fillRect(L*.12,-W+1.2,L*.2,W*.6);g.fillStyle=C.orange;g.beginPath();g.arc(L*.05,-W*.55,Math.max(.8,W*.12),0,Math.PI*2);g.fill();
+  g.fillStyle=C.lamp;g.fillRect(L-1.9,-W+.9,.7,1.2);g.fillRect(L-1.9,W-2.1,.7,1.2);K.tails(-L+.3);K.text('TURBO GS',-L*.35,W*.5,Math.max(2.2,W*.3),'#3a3000')},
+ btug(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.45,L*.5],{w:Math.max(3,L*.24),h:Math.max(1.6,W*.28),out:.2});
+  K.body(-L+.4,L-.3,C.yel,{c2:C.yel2,r:1.2});g.fillStyle=s6aGrad(g,-W,W,'#2e3640','#4a5562','#2e3640');s6aRR(g,-L*.55,-W+1,L*1.05,W*2-2,.7);g.fill();   // canopy
+  g.fillStyle='rgba(255,255,255,.15)';g.fillRect(-L*.5,-W+1.4,L*.95,.6);g.fillStyle='#1b1e22';g.fillRect(L*.55,-W*.45,L*.35,W*.9);g.fillStyle=C.lamp;g.fillRect(L-.8,-W+.9,.6,1);g.fillRect(L-.8,W-1.9,.6,1);
+  g.fillStyle=C.dark;g.fillRect(-L-1.6,-.5,1.8,1);K.tails(-L+.3)},
+ belt(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.55,L*.45]);
+  // chassis, the conveyor along its length (rollers; it runs when working — the stripes move per frame), side rails, the driver's seat at the
+  // back left, the front bumper pads that touch the hold sill
+  g.fillStyle=C.dark;g.fillRect(-L,-W+1,L*2,W*2-2);g.fillStyle='#14171a';g.fillRect(-L+1.4,-W+2.2,L*2-2.8,W*2-4.4);
+  g.strokeStyle='#4d555c';g.lineWidth=.55;for(let x=-L+2.6;x<L-1.5;x+=2.6){g.beginPath();g.moveTo(x,-W+2.4);g.lineTo(x,W-2.4);g.stroke()}
+  g.fillStyle=C.yel;g.fillRect(-L,-W+.8,L*2,1.2);g.fillRect(-L,W-2,L*2,1.2);g.fillStyle=C.yel2;for(let x=-L+3;x<L;x+=5)g.fillRect(x,-W+.8,.5,1.2);
+  g.fillStyle='#22272d';g.fillRect(L-.9,-W+1.6,1.5,W*2-3.2);g.fillStyle='#e7e9eb';g.fillRect(-L+2,-W-.9,4,2.4);g.fillStyle=C.glass;g.fillRect(-L+2.6,-W-.6,2.6,1.4);K.tails(-L+.1)},
+ hl(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.62,-L*.3,L*.3,L*.62],{w:Math.max(3,L*.09)});
+  g.fillStyle='#2b3036';g.fillRect(-L,-W+1.2,L*2,W*2-2.4);
+  // the rear (transfer) deck and the front (aircraft) platform with roller lines, the scissor between them, the cab at the left rear
+  const deck=(x0,x1)=>{g.fillStyle=s6aGrad(g,-W,W,C.yel2,C.yel,C.yel2);g.fillRect(x0,-W+.6,x1-x0,W*2-1.2);g.strokeStyle='#8e7420';g.lineWidth=.45;for(let x=x0+1.2;x<x1-.6;x+=2){g.beginPath();g.moveTo(x,-W+1.4);g.lineTo(x,W-1.4);g.stroke()}
+   g.fillStyle='#6b5410';g.fillRect(x0,-W+.6,x1-x0,.7);g.fillRect(x0,W-1.3,x1-x0,.7)};
+  deck(-L+.3,-L*.25);deck(L*.35,L-.3);g.strokeStyle='#7d868d';g.lineWidth=.8;g.beginPath();g.moveTo(-L*.22,-W+2);g.lineTo(L*.32,W-2);g.moveTo(-L*.22,W-2);g.lineTo(L*.32,-W+2);g.stroke();
+  g.fillStyle=s6aGrad(g,-W,-W*.3,'#ffffff','#e5e9ec','#cdd4d9');s6aRR(g,-L*.22,-W-.8,L*.36,W*.75,.8);g.fill();g.fillStyle=C.glass;g.fillRect(-L*.05,-W-.3,L*.15,W*.45);
+  K.bars(L-1.2,L-.2,-W+.6,W*2-1.2,C.yel,'#1e2124');g.fillStyle=C.orange;g.beginPath();g.arc(-L*.1,-W*.7,Math.max(.8,W*.1),0,Math.PI*2);g.fill()},
+ stairs(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.6,L*.55]);K.cab(L*.62,C.white);
+  // the chassis, the stair flight rising to the front (treads, handrails both sides), the platform with its canopy, the stabiliser legs
+  g.fillStyle=C.dark;g.fillRect(-L+.4,-W+1.3,L*1.62,W*2-2.6);const s0=-L+1.2,s1=L*.42;
+  g.fillStyle='#c5ccd2';g.fillRect(s0,-W+2,s1-s0,W*2-4);g.strokeStyle='#7c858c';g.lineWidth=.5;for(let x=s0+1;x<s1;x+=1.6){g.beginPath();g.moveTo(x,-W+2.2);g.lineTo(x,W-2.2);g.stroke()}
+  g.strokeStyle=C.yel;g.lineWidth=.9;g.beginPath();g.moveTo(s0,-W+1.6);g.lineTo(s1+2.2,-W+1.6);g.moveTo(s0,W-1.6);g.lineTo(s1+2.2,W-1.6);g.stroke();
+  g.fillStyle='#e9edf0';g.fillRect(s1,-W+1.2,3.4,W*2-2.4);g.fillStyle='rgba(47,111,182,.55)';s6aRR(g,s1-.4,-W+.6,4.2,W*2-1.2,.8);g.fill();g.strokeStyle='#2f6fb6';g.lineWidth=.4;g.stroke();
+  for(const x of[-L+1.5,L*.4])for(const s of[-1,1]){g.fillStyle=C.yel2;g.fillRect(x,s>0?W-.5:-W-.4,1.4,.9)}K.tails(-L+.1)},
+ bus(g,L,W,st,K){const C=S6A_C;const open=st==='w';K.shadow();K.tyres([-L*.6,L*.62],{w:Math.max(4,L*.08)});
+  // a low-floor apron bus: the long white body with the blue line, windows all along, two double doors on each side (open when boarding),
+  // roof hatches and the air-conditioning boxes, front and rear screens
+  K.body(-L+.2,L-.2,C.white,{c2:'#d3dade',r:2});g.fillStyle=s6aGrad(g,-W,W,'#c2cbd2','#e8edf0','#c2cbd2');s6aRR(g,-L+2,-W+1.6,L*2-4,W*2-3.2,1.2);g.fill();   // roof
+  for(const x of[-L*.55,-L*.05,L*.42]){g.fillStyle='#aab3ba';s6aRR(g,x,-W*.45,L*.18,W*.9,.6);g.fill();g.strokeStyle='#7d878f';g.lineWidth=.35;g.stroke();g.fillStyle='#8c969e';for(let i=0;i<3;i++)g.fillRect(x+.8+i*L*.05,-W*.3,L*.03,W*.6)}
+  g.fillStyle=C.glass;g.fillRect(-L+2,-W+.55,L*2-4,.9);g.fillRect(-L+2,W-1.45,L*2-4,.9);g.fillStyle=C.blue;g.fillRect(-L+1,-W+.2,L*2-2,.35);g.fillRect(-L+1,W-.55,L*2-2,.35);
+  for(const dx of[-L*.32,L*.32])for(const s of[-1,1]){const y=s>0?W-1.6:-W+.4;g.fillStyle=open?'#1b2a36':'#5f7f9a';g.fillRect(dx-2.4,y,4.8,1.2);if(open){g.fillStyle='#d8dde2';g.fillRect(dx-3.6,y,1.1,1.2);g.fillRect(dx+2.5,y,1.1,1.2)}}
+  g.fillStyle=s6aGrad(g,-W,W,C.glass2,C.glass,C.glass2);g.fillRect(L-1.6,-W+1.4,1.4,W*2-2.8);g.fillRect(-L+.3,-W+2,1,W*2-4);g.fillStyle=C.lamp;g.fillRect(L-.6,-W+.9,.6,1.4);g.fillRect(L-.6,W-2.3,.6,1.4);
+  K.tails(-L+.05);K.text('APRON',0,0,Math.max(2.4,W*.42),'#6a7680')},
+ shuttle(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.55,L*.6]);K.body(-L+.3,L-.3,'#f2f4f5',{c2:'#ced6db',r:1.8});
+  g.fillStyle=s6aGrad(g,-W,W,'#d7dde2','#f6f8f9','#d7dde2');s6aRR(g,-L+2,-W+1.4,L*1.55,W*2-2.8,1.2);g.fill();g.fillStyle=C.glass;g.fillRect(-L+1.8,-W+.5,L*1.5,.8);g.fillRect(-L+1.8,W-1.3,L*1.5,.8);
+  g.fillStyle=s6aGrad(g,-W,W,C.glass2,C.glass,C.glass2);s6aRR(g,L*.62,-W+1,L*.3,W*2-2,.8);g.fill();g.fillStyle=C.orange;g.fillRect(-L+1,-W+.15,L*2-2,.4);g.fillRect(-L+1,W-.55,L*2-2,.4);
+  g.fillStyle=C.lamp;g.fillRect(L-.7,-W+.9,.7,1.3);g.fillRect(L-.7,W-2.2,.7,1.3);K.tails(-L+.1);K.text('CREW',-L*.2,0,Math.max(2.2,W*.42),'#8a6a40')},
+ van(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.55,L*.55]);K.body(-L+.3,L-.3,'#f3f5f6',{c2:'#ccd3d8',r:1.6});
+  g.fillStyle=s6aGrad(g,-W,W,C.glass2,C.glass,C.glass2);s6aRR(g,L*.48,-W+1,L*.32,W*2-2,.8);g.fill();g.fillStyle='#2e9f6b';g.fillRect(-L+1,-1,L*1.4,2);g.fillStyle='#e9f6ef';g.fillRect(-L+1,-.25,L*1.4,.5);
+  g.fillStyle='#b4bcc3';g.fillRect(-L+2,-W*.5,L*.9,W);g.strokeStyle='#8a939b';g.lineWidth=.35;for(let x=-L+3;x<-L+2+L*.9;x+=2){g.beginPath();g.moveTo(x,-W*.5);g.lineTo(x,W*.5);g.stroke()}
+  g.fillStyle=C.lamp;g.fillRect(L-.7,-W+.9,.7,1.2);g.fillRect(L-.7,W-2.1,.7,1.2);K.tails(-L+.1);g.fillStyle=C.orange;g.beginPath();g.arc(L*.2,0,Math.max(.8,W*.13),0,Math.PI*2);g.fill()},
+ maint(g,L,W,st,K){const C=S6A_C;K.shadow();K.tyres([-L*.55,L*.55]);K.body(-L+.3,L-.3,'#f3f5f6',{c2:'#ccd3d8',r:1.6});
+  g.fillStyle=s6aGrad(g,-W,W,C.glass2,C.glass,C.glass2);s6aRR(g,L*.48,-W+1,L*.32,W*2-2,.8);g.fill();K.bars(-L+.5,L*.45,-1,2,C.yel,'#22262a');
+  g.strokeStyle='#8a939b';g.lineWidth=.6;g.beginPath();g.moveTo(-L+2,-W*.55);g.lineTo(L*.4,-W*.55);g.moveTo(-L+2,W*.55);g.lineTo(L*.4,W*.55);g.stroke();for(let x=-L+2.5;x<L*.4;x+=2){g.beginPath();g.moveTo(x,-W*.55);g.lineTo(x,W*.55);g.stroke()}   // roof ladder
+  g.fillStyle=C.lamp;g.fillRect(L-.7,-W+.9,.7,1.2);g.fillRect(L-.7,W-2.1,.7,1.2);K.tails(-L+.1);g.fillStyle=C.orange;g.fillRect(L*.15,-W*.45,1.1,W*.9)}
+};
+const S6A_CACHE=new Map();
+function s6aDimOf(type){const a=S6A_ASSET[type];if(a==='F2-MS')return[F2_MS.len,F2_MS.wid];if(a&&a.startsWith('G7-')){const d=g77GseDim()[a];return d?[d[0],d[1]]:null}
+ const v=APTT_SPEC&&APTT_SPEC.veh[a];return v?[v.fp[2],v.fp[3]]:null}
+// the bitmap of a type in a look at a detail scale k (1 · 2 · 4 px per world px), with a pad for the shadow and the parts that stick out
+function s6aSprite(type,st,k){const key=type+'|'+st+'|'+k;let s=S6A_CACHE.get(key);if(s)return s;const D=s6aDimOf(type),fam=S6A_TYPES[type][3];if(!D)return null;
+ const L=D[0]/2,W=D[1]/2,pad=4,cv=window.document.createElement('canvas');cv.width=Math.ceil((L*2+pad*2)*k);cv.height=Math.ceil((W*2+pad*2)*k);const g=cv.getContext('2d');g.scale(k,k);g.translate(L+pad,W+pad);
+ const K=s6aKit(g,L,W);K.type=type;try{S6A_PAINT[fam](g,L,W,st,K)}catch(e){S6A_STATS.err=String(e)}
+ s={cv,L,W,pad,k};S6A_CACHE.set(key,s);S6A_STATS.bitmaps++;S6A_STATS.bytes+=cv.width*cv.height*4;return s}
+const S6A_STATS={bitmaps:0,bytes:0,drawn:0,err:null};
+function s6aK(){const z=(typeof Camera!=='undefined'?Camera.zoom:1)*(typeof dpr!=='undefined'?dpr:1);return z>2.2?4:z>1.1?2:1}
+function s6aWorking(a){const tr=a.tr;if(!tr||a.lt==null||!tr.seq||!tr.seq.legAt)return false;const q=tr.seq.legAt(a.lt);return!!(q&&q.leg&&(q.leg.kind==='svc'||(q.leg.kind==='hold'&&(q.leg.label==='svc'||q.leg.at==='ac'||(q.leg.g2&&q.leg.g2.at==='ac')))))}
+// the per-frame draw: the cached bitmap, then the parts that move
+function s6aDraw(g,type,a,now){const [x,y,th,,al]=a.pose,w=s6aWorking(a),fam=S6A_TYPES[type][3],st=fam==='cat'?(w&&s6aJob(a)?'w':''):(w&&fam==='bus'?'w':''),s=s6aSprite(type,st,s6aK());if(!s)return false;
+ g.save();g.globalAlpha=al;g.translate(x,y);g.rotate(th);g.drawImage(s.cv,-s.L-s.pad,-s.W-s.pad,(s.L+s.pad)*2,(s.W+s.pad)*2);
+ if(fam==='tug'){const q=a.tr&&a.lt!=null&&a.tr.seq&&a.tr.seq.legAt?a.tr.seq.legAt(a.lt):null,off=q&&q.leg&&q.leg.towOff;
+  if(off>s.L+1){const x0=s.L-.4,x1=off;g.fillStyle='rgba(8,18,26,.25)';g.fillRect(x0+1,-.4,x1-x0,1.8);g.fillStyle='#2a2f35';g.fillRect(x0,-.9,x1-x0,1.8);   // D-83: the tow bar on the nose gear
+   for(let x=x0+1;x<x1-2;x+=2.4){g.fillStyle=S6A_C.yel;g.fillRect(x,-.9,1.2,1.8)}g.fillStyle='#16191c';g.beginPath();g.arc(x1,0,1.5,0,Math.PI*2);g.fill();g.strokeStyle='#8a939b';g.lineWidth=.5;g.stroke();
+   g.fillStyle='#16191c';g.fillRect(x0-.5,-1.6,1.6,3.2)}}
+ if(fam==='belt'&&w&&s6aBeltRun(a)&&(typeof Camera==='undefined'||Camera.zoom>=.8)){const L=s.L,W=s.W,o=(now/90)%2.6;g.strokeStyle='rgba(120,130,140,.85)';g.lineWidth=.55;for(let xx=-L+2.6-o;xx<L-1.5;xx+=2.6){if(xx<-L+1.6)continue;g.beginPath();g.moveTo(xx,-W+2.4);g.lineTo(xx,W-2.4);g.stroke()}}
+ g.restore();s6aAct(g,type,a,now);S6A_STATS.drawn++;return true}
+// GATE-77 S6a M2: the library assets resized to the real sizes — the body, the footprint and the anchors scale together (x along, y across)
+const S6A_REAL={'LV-FT-01':[75,19],'LV-SH-01':[90,20],'VS-GS-01':[37,15],'VS-TW-01':[41,15],'VS-AM-02':[56.32,24.9],'VS-PL-02':[37,18.32],'VS-FR-02':[81.84,29.14]};   // p440: the last three — today's field footprint (R-32)
+function s6aRealize(veh){for(const id in S6A_REAL){const v=veh[id];if(!v||v.real)continue;const [L,W]=S6A_REAL[id],sx=L/v.fp[2],sy=W/v.fp[3];
+ v.fp=[v.fp[0]*sx,v.fp[1]*sy,L,W];v.w*=sx;v.h*=sy;for(const k in v.an)v.an[k]=[v.an[k][0]*sx,v.an[k][1]*sy];v.real=[+sx.toFixed(3),+sy.toFixed(3)]}}
+// ==== GATE-77 S6a · M3 (D-104 · §6.6 · D-57): what each service vehicle does at the aircraft — the part that moves between the vehicle and
+// the aircraft, drawn per frame in world space on top of the vehicle's cached bitmap. "A timer or a 'working' status is not an action": the
+// hose, the cable, the box, the cart and the bag are drawn and move. The vehicle itself keeps ≥ AO.M (6 px) from the fuselage (the conflict
+// rules); the moving part bridges that gap, as a real hose, cable or catering platform does.
+// The job of a vehicle now: its task, the flight it serves (task.code), the aircraft's pose, and the phase u — 0 → 1 while connecting (the
+// first 4 s of the first service leg), 1 while working, 1 → 0 while disconnecting (the short service leg after it, or the last 4 s).
+const S6A_ACT={on:true,drawn:0,ramp:4};
+function s6aFlightOf(code){for(const f of AO.flights)if(f.code===code)return f;return null}
+function s6aJob(a){const v=a.v;if(!v||a.lt==null||!a.tr||!a.tr.seq)return null;const t=APT_OPS.clk;let k=null;for(const q of v.tasks)if(t>=q.t0&&t<q.t1){k=q;break}
+ if(!k||k.code==null)return null;const S=k.tr.seq,L=S.legs,q=S.legAt(t-k.t0);if(!q||L[q.i].kind!=='svc')return null;let i0=-1;for(let i=0;i<L.length;i++)if(L[i].kind==='svc'){i0=i;break}
+ const f=s6aFlightOf(String(k.code).split('/')[0]);if(!f||!f.sd)return null;let ap=null;for(const r of f.tracks)if(r.tr.kind==='ac'){ap=r.tr.seq.at(t-r.t0);if(ap)break}if(!ap)return null;
+ const R=S6A_ACT.ramp,next=L[i0+1]&&L[i0+1].kind==='svc',last=q.i>i0,d=q.leg.dur;
+ const u=last?Math.max(0,1-q.t/Math.max(.5,d)):Math.min(1,q.t/R,next?1:(d-q.t)/R);
+ return{f,ac:f.ac,sd:f.sd,ap,role:k.role,u:Math.max(0,u),work:!last&&q.t>=R&&(next||d-q.t>R),t:q.t,dur:d,prog:last?1:Math.min(1,q.t/Math.max(1,d)),last,next}}
+// a point on the aircraft in its own frame: a = along from the nose gear (+ towards the nose), d = across (+ the side given)
+function s6aAcPt(ap,a,d){const c=Math.cos(ap[2]),s=Math.sin(ap[2]);return[ap[0]+c*a-s*d,ap[1]+s*a+c*d]}
+// the service points of each type, from the drawings of AIR-56 (fractions of the fuselage from the nose; the fuel coupling under the wing)
+function s6aPortAD(ac,kind){const g=apttAcGeom(ac),L=g.nose-g.tail,hw=g.F[3];
+ switch(kind){case'water':return[g.nose-.80*L,hw*.78];case'lav':return[g.nose-.86*L,hw*.78];case'gpu':return[g.nose-.09*L,hw*.3];
+  case'fuel':{const W=g.W;return W?[W[1]-.42*(W[1]-W[0]),Math.min(W[3]*.36,hw+46)]:[g.nose-.45*L,hw+20]}
+  case'door':return[g.nose-(({'AC-NB-01':.116,'AC-RJ-01':.109,'AC-TP-01':.123,'AC-MW-01':.109,'AC-LG-01':.121,'AC-CG-01':.16,'AC-TB-01':.6})[ac]??.22)*L,hw];   /* p406: the door at its station (p404) */case'aft':return[g.nose-.88*L,hw];default:return null}}
+// the nearer side of the aircraft to a world point (+1 / -1 in the aircraft's frame)
+function s6aSide(ap,x,y){const c=Math.cos(ap[2]),s=Math.sin(ap[2]);return(-(x-ap[0])*s+(y-ap[1])*c)>=0?1:-1}
+function s6aPort(j,kind,x,y){const ad=s6aPortAD(j.ac,kind);if(!ad)return null;const sd=s6aSide(j.ap,x,y);return s6aAcPt(j.ap,ad[0],ad[1]*sd)}
+// a point of the vehicle in world space from its local frame (front at +x)
+function s6aLoc(p,lx,ly){const c=Math.cos(p[2]),s=Math.sin(p[2]);return[p[0]+c*lx-s*ly,p[1]+s*lx+c*ly]}
+function s6aLocal(p,x,y){const c=Math.cos(p[2]),s=Math.sin(p[2]),dx=x-p[0],dy=y-p[1];return[dx*c+dy*s,-dx*s+dy*c]}
+// a hose / cable on the ground from p0 to p1, laid out to u, a gentle sag; flow dashes running towards dir (+1: to p1)
+function s6aHose(g,p0,p1,u,col,w,flow,dir,now,ring){const dx=p1[0]-p0[0],dy=p1[1]-p0[1],len=Math.hypot(dx,dy);if(len<.5||u<=0)return;
+ const nx=-dy/len,ny=dx/len,sg=Math.min(9,len*.16),cx=(p0[0]+p1[0])/2+nx*sg,cy=(p0[1]+p1[1])/2+ny*sg,N=Math.max(6,Math.ceil(len/3)),P=[];
+ for(let i=0;i<=N;i++){const t=i/N*u,a=(1-t)*(1-t),b=2*(1-t)*t,c=t*t;P.push(a*p0[0]+b*cx+c*p1[0],a*p0[1]+b*cy+c*p1[1])}
+ const path=(ox,oy)=>{g.beginPath();g.moveTo(P[0]+ox,P[1]+oy);for(let i=2;i<P.length;i+=2)g.lineTo(P[i]+ox,P[i+1]+oy)};
+ g.save();g.lineCap='round';g.lineJoin='round';g.strokeStyle='rgba(8,18,26,.3)';g.lineWidth=w+.5;path(.5,.8);g.stroke();g.strokeStyle=col;g.lineWidth=w;path(0,0);g.stroke();
+ g.strokeStyle='rgba(255,255,255,.22)';g.lineWidth=w*.35;path(-w*.15,-w*.15);g.stroke();
+ if(flow){g.strokeStyle=flow;g.lineWidth=w*.5;g.setLineDash([1.1,2.9]);g.lineDashOffset=-dir*((now/55)%4);path(0,0);g.stroke();g.setLineDash([])}
+ const e=[P[P.length-2],P[P.length-1]];if(u>=1&&ring){g.fillStyle=ring;g.beginPath();g.arc(e[0],e[1],w*.95,0,Math.PI*2);g.fill();g.strokeStyle='#1a1d20';g.lineWidth=.35;g.stroke()}
+ else{g.fillStyle='#2a2f35';g.beginPath();g.arc(e[0],e[1],w*.75,0,Math.PI*2);g.fill()}
+ g.restore()}
+// the open service panel on the fuselage (its lid swung out), drawn while connected
+function s6aPanel(g,p,th,u,col){if(u<=0)return;g.save();g.translate(p[0],p[1]);g.rotate(th);g.fillStyle='#1d252d';g.fillRect(-1.6,-1.1,3.2,2.2);g.fillStyle=col||'#d9dee2';
+ g.fillRect(-1.6,-1.1-2.2*u,3.2,2.1*u);g.strokeStyle='rgba(20,24,28,.7)';g.lineWidth=.3;g.strokeRect(-1.6,-1.1-2.2*u,3.2,2.1*u);g.restore()}
+// the per-family moving parts at the aircraft; called from s6aDraw after the bitmap (world space)
+
+// ==== GATE-77 S6r · M6 · D-115 — the people at the services ============================================================================
+const S6R_PPL={n:0};
+function s6rHoseEnd(p0,p1,u){const dx=p1[0]-p0[0],dy=p1[1]-p0[1],len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len,sg=Math.min(9,len*.16),cx=(p0[0]+p1[0])/2+nx*sg,cy=(p0[1]+p1[1])/2+ny*sg,a=(1-u)*(1-u),b=2*(1-u)*u,c=u*u;return[a*p0[0]+b*cx+c*p1[0],a*p0[1]+b*cy+c*p1[1]]}
+// the operator of a hose / cable: the hose end while it is laid out or taken in, beside the panel while it runs (K-84)
+
+// ==== GATE-77 S6c · p168 · D-167: the operator gets out of the cab, walks to the reel, and back at the end ==============================
+var G77_CAB={on:true,fams:{water:1,lav:1,gpu:1,fuel:1},min:1.2,max:4.5,n:0};
+function g77CabRemap(j,a,type,fam){const p=a.pose,D=s6aDimOf(type);if(!D||!j.ap)return;const kind=fam==='lav'?'lav':fam,port=s6aPort(j,kind,p[0],p[1]);if(!port)return;
+ const R=S6A_ACT.ramp,L=D[0]/2,W=D[1]/2,lp=s6aLocal(p,port[0],port[1]),side=Math.sign(lp[1]||1);
+ const o=fam==='gpu'?s6aLoc(p,Math.sign(lp[0]||1)*(L-1),0):s6aLoc(p,-L+(fam==='fuel'?2:3),side*(W-1)),door=s6aLoc(p,L*.55,side*(W+1.4)),dist=Math.hypot(o[0]-door[0],o[1]-door[1]);
+ let c=Math.max(G77_CAB.min,Math.min(G77_CAB.max,dist/G77_WALK));const t=j.t,d=j.dur;
+ // the main service leg holds all of it — out of the cab, the hose out, the work, the hose in, back into the cab (always at walking pace);
+ // the short service leg after it (the slack before the vehicle leaves) finds the operator already in the cab
+ if(!j.last){c=Math.max(0,Math.min(c,(d-2*R-2)/2));
+  const tt=t-c,u=Math.min(1,Math.max(0,tt/R),Math.max(0,(d-c-t)/R));j.u=Math.max(0,u);j.work=tt>=R&&d-c-t>R;
+  j.cab={k:c>0?Math.min(1,t/c):1,b:c>0?Math.max(0,Math.min(1,(t-(d-c))/c)):0,door,o}}
+ else{j.u=0;j.work=false;j.cab={k:1,b:1,door,o}}
+ G77_CAB.n++}
+// the operator on the way between the cab door and the reel (k: out, b: back); fades only at the door (getting in / out of the cab)
+function g77CabWalker(g,j,now){const C=j.cab;if(!C)return false;let f=null,out=true;if(C.k<1){f=C.k;out=true}else if(C.b>0){f=C.b;out=false}if(f==null)return false;
+ const a=out?C.door:C.o,b=out?C.o:C.door,x=a[0]+(b[0]-a[0])*f,y=a[1]+(b[1]-a[1])*f,th=Math.atan2(b[1]-a[1],b[0]-a[0]),al=out?Math.min(1,f/.12):Math.min(1,(1-f)/.12);
+ if(al>0){g.save();g.globalAlpha*=al;G77_PE.w=true;s6aDrawLoader(g,x,y,th,now/1000);g.restore();S6R_PPL.n++}return true}
+function s6rOp(g,o,port,j,now){if(j.cab&&g77CabWalker(g,j,now))return;   // GATE-77 S6c · p168
+ const u=Math.max(.02,Math.min(1,j.u)),dx=port[0]-o[0],dy=port[1]-o[1],L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;let x,y,th,walk;
+ if(j.work){x=port[0]-ux*3.2-uy*2.4;y=port[1]-uy*3.2+ux*2.4;th=Math.atan2(uy,ux);walk=false}
+ else{const e=s6rHoseEnd(o,port,u);x=e[0]-uy*1.5;y=e[1]+ux*1.5;th=Math.atan2(uy,ux)+(j.last?Math.PI:0);walk=true}
+ G77_PE.w=!!walk;s6aDrawLoader(g,x,y,th,walk?now/1000:now/5000);S6R_PPL.n++}
+function s6rCone(g,x,y){g.save();g.fillStyle='rgba(8,18,26,.3)';g.beginPath();g.arc(x+.4,y+.5,1.1,0,Math.PI*2);g.fill();g.fillStyle='#f26a1b';g.beginPath();g.arc(x,y,1,0,Math.PI*2);g.fill();g.fillStyle='#f4f4f0';g.beginPath();g.arc(x,y,.42,0,Math.PI*2);g.fill();g.restore()}
+// fuel: the cones at the tanker's ends on the aircraft side and the grounding wire to its stake
+function s6rFuelSafety(g,p,D,side){const L=D[0]/2,W=D[1]/2;for(const ax of[L+2.6,-L-2.6]){const c=s6aLoc(p,ax,side*(W-1));s6rCone(g,c[0],c[1])}
+ const a=s6aLoc(p,-L*.3,side*(W+.3)),b=s6aLoc(p,-L*.3,side*(W+3.6));g.save();g.strokeStyle='#3aa35a';g.lineWidth=.35;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();g.fillStyle='#c9cdd1';g.beginPath();g.arc(b[0],b[1],.6,0,Math.PI*2);g.fill();g.restore()}
+// a cleaner (light-blue tunic, navy trousers), walking towards +x; with a bag in the hand on the way back
+function s6rCleaner(g,x,y,th,t,bag){if(G77_PE.on){g77PeDraw(g,G77_PE.role.cleaner,x,y,th,t,true);if(bag){g.save();g.translate(x,y);g.rotate(th);g.fillStyle='#16191c';g.beginPath();g.ellipse(-.6,4.4,1.9,1.5,0,0,Math.PI*2);g.fill();g.restore()}return}   // GATE-77 S6d-a · p178
+ g.save();g.translate(x,y);g.rotate(th);g.fillStyle='rgba(8,18,26,.3)';g.beginPath();g.ellipse(.8,.9,2.2,1.7,0,0,Math.PI*2);g.fill();
+ const s=Math.sin(t*7)*.5;g.fillStyle='#24324a';g.fillRect(-1.6+s,-.95,1.3,.75);g.fillRect(-1.6-s,.2,1.3,.75);
+ g.fillStyle='#86bfe0';g.beginPath();g.ellipse(0,0,1.6,1.9,0,0,Math.PI*2);g.fill();g.fillStyle='#3a2a20';g.beginPath();g.arc(.15,0,.95,0,Math.PI*2);g.fill();
+ if(bag){g.fillStyle='#16191c';g.beginPath();g.ellipse(-.3,2.4,1.15,.95,0,0,Math.PI*2);g.fill()}g.restore()}
+// P5 / P6 — the hand loading: the hold door across from the cart (the aircraft's own frame), the loader half-way
+function s6rRemLay(fl,px,py){if(!fl||!fl.sd||(fl.sd.id!=='P5'&&fl.sd.id!=='P6')||S6A_BELT[fl.ac])return null;let ap=null;for(const r of fl.tracks||[])if(r.tr.kind==='ac'){ap=r.tr.seq.at(APT_OPS.clk-r.t0);if(ap)break}if(!ap)return null;
+ const g=apttAcGeom(fl.ac),hw=g.F[3],lp=s6aLocal(ap,px,py),sd=Math.sign(lp[1]||1),door=s6aAcPt(ap,lp[0],sd*(hw+.5)),man=[(px+door[0])/2,(py+door[1])/2];return{door,man,th:Math.atan2(door[1]-py,door[0]-px)}}
+function s6aAct(g,type,a,now){if(!S6A_ACT.on)return;const fam=S6A_TYPES[type][3];if(!(fam in S6A_ACTS))return;if(type==='FT'&&s6bFillAct(g,a,now))return;if((type==='WT'||type==='LV')&&s6bWsAct(g,a,now))return;const j=s6aJob(a);if(!j)return;if(G77_CAB.on&&G77_CAB.fams[fam])g77CabRemap(j,a,type,fam);   // GATE-77 S6c · p168 · D-167
+ 
+ if(typeof Camera!=='undefined'&&fam!=='cat'&&(G77_LOD.on?Camera.zoom<G77_LOD.z0:Camera.zoom<.5))return;const lodA=fam==='cat'?1:g77LodAlpha();if(lodA<1){g.save();g.globalAlpha*=lodA}S6A_ACTS[fam](g,a,j,now,type);if(lodA<1)g.restore();S6A_ACT.drawn++}   // GATE-77 S6d-b · p180 · AIR-50: a fade, not a pop
+const S6A_ACTS={
+ // water / lavatory: a hose from the reel at the back to the panel on the lower fuselage; the lid opens, the water (blue) or the waste
+ // (brown, back into the truck) runs, the hose comes back and the lid closes
+ water(g,a,j,now){const p=a.pose,D=s6aDimOf('WT'),port=s6aPort(j,'water',p[0],p[1]);if(!port)return;const lp=s6aLocal(p,port[0],port[1]),o=s6aLoc(p,-D[0]/2+3,Math.sign(lp[1]||1)*(D[1]/2-1));
+  s6aPanel(g,port,j.ap[2],j.u);s6aHose(g,o,port,j.u,'#2d5f9a',1.5,j.work?'rgba(150,215,255,.9)':null,1,now,'#e8b92b');s6rOp(g,o,port,j,now)},   // GATE-77 S6r · M6 · K-84
+ lav(g,a,j,now){const p=a.pose,D=s6aDimOf('LV'),port=s6aPort(j,'lav',p[0],p[1]);if(!port)return;const lp=s6aLocal(p,port[0],port[1]),o=s6aLoc(p,-D[0]/2+3,Math.sign(lp[1]||1)*(D[1]/2-1));
+  s6aPanel(g,port,j.ap[2],j.u,'#c9cfb4');s6aHose(g,o,port,j.u,'#4f5a35',1.7,j.work?'rgba(196,160,92,.9)':null,-1,now,'#e8b92b');s6rOp(g,o,port,j,now)},   // GATE-77 S6r · M6 · K-84
+ // ground power: the cable from the unit to the socket under the nose; a green lamp on the unit while it feeds (amber while connecting)
+ gpu(g,a,j,now,type){const p=a.pose,D=s6aDimOf(type),port=s6aPort(j,'gpu',p[0],p[1]);if(!port)return;const lp=s6aLocal(p,port[0],port[1]),ex=Math.sign(lp[0]||1)*(D[0]/2-1),o=s6aLoc(p,ex,0);
+  s6aPanel(g,port,j.ap[2],j.u,'#e2e5e8');s6aHose(g,o,port,j.u,'#16191c',1.2,null,1,now,'#d6dadf');
+  const lmp=s6aLoc(p,-ex*.55,0),on=j.u>=1;g.save();g.fillStyle=on?'#3fdc6a':'#f0a020';g.beginPath();g.arc(lmp[0],lmp[1],1.2,0,Math.PI*2);g.fill();
+  if(on){g.fillStyle='rgba(63,220,106,.25)';g.beginPath();g.arc(lmp[0],lmp[1],2.6+Math.sin(now/300)*.4,0,Math.PI*2);g.fill()}g.restore();s6rOp(g,o,port,j,now)},   // GATE-77 S6r · M6 · K-84
+ // fuel: the hose from the reel to the coupling under the wing (the nearer wing), the fuel running, a gauge on the tank filling up
+ fuel(g,a,j,now,type){const p=a.pose,D=s6aDimOf(type),port=s6aPort(j,'fuel',p[0],p[1]);if(!port)return;const lp=s6aLocal(p,port[0],port[1]),o=s6aLoc(p,-D[0]/2+2,Math.sign(lp[1]||1)*(D[1]/2-1));
+  s6aHose(g,o,port,j.u,'#1b1e21',1.8,j.work?'rgba(240,200,80,.85)':null,1,now,'#e8b92b');
+  const L=D[0]/2,W=D[1]/2;g.save();g.translate(p[0],p[1]);g.rotate(p[2]);const x0=-L+5,x1=L*.4;g.fillStyle='rgba(20,24,28,.75)';g.fillRect(x0,-W-3.2,x1-x0,1.8);
+  g.fillStyle=j.prog>=1?'#3fdc6a':'#e8b92b';g.fillRect(x0+.3,-W-2.9,(x1-x0-.6)*j.prog,1.2);g.restore();s6rFuelSafety(g,p,D,Math.sign(lp[1]||1));s6rOp(g,o,port,j,now)},   // GATE-77 S6r · M6 · K-84
+ // catering: the box goes up on its scissors (the shadow moves out as it rises), the platform swings out to the door and the trolleys go
+ // across it; at the end the box comes down. The box is the truck's rear body (local −L … +0.52 L)
+ cat(g,a,j,now){const p=a.pose,D=s6aDimOf('CT'),L=D[0]/2,W=D[1]/2,lift=j.u,door=s6aPort(j,j.sd&&(j.sd.id==='P5'||j.sd.id==='P6')?'aft':'door',p[0],p[1]);if(!door)return;
+  const lp=s6aLocal(p,door[0],door[1]),sd=Math.sign(lp[1]||1),gap=Math.max(0,Math.abs(lp[1])-W),bx0=-L+.3,bx1=L*.52,bc=(bx0+bx1)/2;
+  g.save();g.translate(p[0],p[1]);g.rotate(p[2]);
+  g.fillStyle='rgba(8,18,26,'+(.12+.1*lift)+')';g.fillRect(bx0+1+lift*3,-W+1.5+lift*3.5,bx1-bx0,W*2-1);   // the raised box's shadow
+  if(lift>.05){g.strokeStyle='#5b636a';g.lineWidth=.6;g.beginPath();for(const yy of[-W+2,W-2]){g.moveTo(bx0+3,yy);g.lineTo(bx1-3,yy*.2);g.moveTo(bx0+3,yy*.2);g.lineTo(bx1-3,yy)}g.stroke()}   // the scissors
+  if(gap<26){const pl=Math.min(gap+1.5,(gap+1.5)*Math.max(0,(lift-.5)*2)),pw=Math.min(9,(bx1-bx0)*.32),px=Math.max(bx0+pw/2,Math.min(bx1-pw/2,lp[0]));
+   if(pl>.3){g.fillStyle='#8f989f';g.fillRect(px-pw/2,sd>0?W:-W-pl,pw,pl);g.strokeStyle=S6A_C.yel;g.lineWidth=.5;g.beginPath();g.moveTo(px-pw/2,sd>0?W:-W);g.lineTo(px-pw/2,sd*(W+pl));g.moveTo(px+pw/2,sd>0?W:-W);g.lineTo(px+pw/2,sd*(W+pl));g.stroke();
+    if(j.work&&pl>=gap){const T=7,ph=(j.t%T)/T,k=ph<.5?ph*2:2-ph*2,cy=sd*(W-2+(pl+3)*k);g.fillStyle='#c9ced3';g.fillRect(px-1.4,cy-1.1,2.8,2.2);g.strokeStyle='#59616a';g.lineWidth=.35;g.strokeRect(px-1.4,cy-1.1,2.8,2.2);g.fillStyle='#7c858d';g.fillRect(px-1.4,cy-1.1,2.8,.5)}}}
+  g.restore()},
+ // the high loader at the cargo door: the platform goes up (lighter, its shadow moves out)
+ hl(g,a,j,now){const p=a.pose,D=s6aDimOf('HL'),L=D[0]/2,W=D[1]/2,lift=j.u;if(lift<=0)return;g.save();g.translate(p[0],p[1]);g.rotate(p[2]);
+  g.fillStyle='rgba(8,18,26,'+(.1*lift)+')';g.fillRect(L*.05+lift*3,-W+1+lift*3.5,L*.9,W*2-2);g.fillStyle='rgba(240,200,60,'+(.35*lift)+')';g.fillRect(L*.05,-W+1,L*.9,W*2-2);g.restore()}
+};
+// the belt loader at the hold: the top of the belt reaches over the last metre to the door sill (the vehicle keeps its 6 px)
+S6A_ACTS.belt=function(g,a,j,now){if(!j.sd||typeof s6aBagLay!=='function')return;const LY=s6aBagLay(j.sd,j.ac);if(!LY||!LY.belt)return;const p=a.pose,D=s6aDimOf('BL'),fr=s6aLoc(p,D[0]/2-.5,0),to=LY.F;
+ const dx=to[0]-fr[0],dy=to[1]-fr[1],len=Math.hypot(dx,dy)*j.u;if(len<.3||len>20)return;const th=Math.atan2(dy,dx);g.save();g.translate(fr[0],fr[1]);g.rotate(th);
+ g.fillStyle='rgba(8,18,26,.25)';g.fillRect(.6,-3.2,len,7);g.fillStyle='#2b3036';g.fillRect(0,-3.6,len,7.2);g.fillStyle='#e8b92b';g.fillRect(0,-3.6,len,.7);g.fillRect(0,2.9,len,.7);
+ g.strokeStyle='#5d656c';g.lineWidth=.5;g.beginPath();for(let x=1;x<len;x+=1.6){g.moveTo(x,-2.8);g.lineTo(x,2.8)}g.stroke();g.restore();
+ if(j.u>=1&&G77_BW.on){if(!g77BwTrainOn(j.f&&j.f.code)){const ux=dx/(Math.hypot(dx,dy)||1),uy=dy/(Math.hypot(dx,dy)||1);s6aDrawLoader(g,to[0]-ux*1.2+uy*3.4,to[1]-uy*1.2-ux*3.4,th+Math.PI,0);S6R_PPL.n++}}   // GATE-77 S7-a · p187: the operator at the top; with a train — in the train's scene
+ else if(j.u>=1){const ux=dx/(Math.hypot(dx,dy)||1),uy=dy/(Math.hypot(dx,dy)||1);s6aDrawLoader(g,fr[0]-uy*4.2,fr[1]+ux*4.2,th+Math.PI/2,now/1400);s6aDrawLoader(g,to[0]-ux*1.2+uy*3.4,to[1]-uy*1.2-ux*3.4,th+Math.PI,now/1700);S6R_PPL.n+=2}};   // GATE-77 S6r · M6: two belt workers (§6.7 · 5)
+
+// cleaning (K-83): the cleaners out of the van, to the door and in; at the end out with the bags, one by one, into the van
+S6A_ACTS.van=function(g,a,j,now){if(j.last)return;const p=a.pose,D=s6aDimOf('SVC');if(!D)return;const door=s6aPort(j,'door',p[0],p[1]);if(!door)return;
+ const lp=s6aLocal(p,door[0],door[1]),side=Math.sign(lp[1]||1),sd0=s6aLoc(p,0,side*(D[1]/2+1.2)),P=g77Prof(j.sd,j.ac),N=Math.max(2,Math.min(4,Math.round(((P&&P.seats)||90)/60))),d=j.dur,wi=Math.min(9,d*.18),wo=Math.min(9,d*.18),gp=1.4;
+ let back=0;const ang=Math.atan2(door[1]-sd0[1],door[0]-sd0[0]);
+ const CB_=typeof g77ClbPath==='function'?g77ClbPath(j,sd0):null,SG=CB_?CB_.SG:(G77_UP.on?g77StairOf(j.f):null),R=CB_?CB_.R:SG?[sd0,SG[0],SG[1]]:null   /* GATE-77P · p238: through the bridge */,rl=R?g77ShLen(R):0,wR=R?Math.min(d*.3,Math.max(wi,rl/G77_WALK)):0;   // GATE-77 S7-a · p183: by the stairs
+ for(let i=0;i<N;i++){const t1=j.t-i*gp,t2=j.t-(d-(R?wR:wo)-(N-1-i)*gp);if(t1<0)continue;let pos=null,bag=false,th=ang;
+  if(R){if(t1<wR){const q=g77ShAt(R,t1/wR);pos=[q[0],q[1]];th=q[2]}else if(t2>=0&&t2<wR){const q=g77ShAt(R,1-t2/wR);pos=[q[0],q[1]];th=q[2]+Math.PI;bag=true}else if(t2>=wR)back++}
+  else if(t1<wi){const k=t1/wi;pos=[sd0[0]+(door[0]-sd0[0])*k,sd0[1]+(door[1]-sd0[1])*k]}
+  else if(t2>=0&&t2<wo){const k=t2/wo;pos=[door[0]+(sd0[0]-door[0])*k,door[1]+(sd0[1]-door[1])*k];th=ang+Math.PI;bag=true}
+  else if(t2>=wo)back++;
+  if(pos){const x=pos[0],y=pos[1],h=th,b=bag,st=!!SG&&g77UpSegD(x,y,SG[0],SG[1])<G77_UP.w;g77UpPush(g,x,y,()=>s6rCleaner(g,x,y,h,now/1000,b),st);S6R_PPL.n++}}
+ if(back){const r=s6aLoc(p,-D[0]/2-1.4,0);g.save();g.fillStyle='#16191c';for(let i=0;i<back*2;i++){g.beginPath();g.ellipse(r[0]+((i%3)-1)*1.3,r[1]+((i/3|0)-.5)*1.2,.9,.75,0,0,Math.PI*2);g.fill()}g.restore()}};
+
+
+// ==== GATE-77 S6a · M3b — the baggage work at the bridge stands, really (K-74 · D-49 (3) · owner 19:39 / 19:48) =========================
+// "מסוע כבודה רק למטוס גבוה": the belt loader works only the high aircraft (the narrow-body, the wide-body, the large jet). It comes before
+// the first train, stands at an angle with its top end at the forward hold door, the train stops with its first cart beside the belt's
+// low end, and the bags ride the belt. The lower aircraft (regional jet, turboprop, the small quad-jet) are loaded by hand: the train stops
+// beside the forward hold, outside the engines, and a loader carries the bags between the cart and the hold door.
+// In the aircraft's frame: a = along from the nose gear (+ towards the nose), d = across, + to the service side. At the bridge stands the
+// aircraft stands nose-south (th = π/2): world = (cx + svcSide·d, ngy + a).
+const S6A_BELT={'AC-NB-01':.28,'AC-MW-01':.30,'AC-LG-01':.30};          // the forward hold door, as a fraction of the fuselage from the nose
+const S6A_HAND={'AC-RJ-01':.28,'AC-QJ-01':.28,'AC-TP-01':.24};
+// the engines that stand in the way (nacelles / propeller discs) — the anchor gives the inner pair; the quad-jets' outer pair is further out
+function s6aEngines(ac){const S=APTT_SPEC.ac[ac],ng=S.an['Nose Gear'],e=S.an['Engine R']||S.an['Engine L'],g=apttAcGeom(ac),L=g.nose-g.tail;if(!e)return[];
+ const a=e[0]-ng[0],d=Math.abs(e[1]-ng[1]),prop=ac==='AC-TP-01',hl=prop?12:L*.06,r=prop?15:Math.max(7,g.F[3]*.62),E=[{a,d,hl,r}];
+ if(ac==='AC-QJ-01')E.push({a:a-8,d:d*1.6,hl,r});if(ac==='AC-LG-01')E.push({a:a-44,d:d*1.62,hl,r});return E}
+const S6A_LAY={old:0,cache:new Map()};
+function s6aBagLay(sd,ac){if(sd&&ac)sd=g77StandView(sd,ac);   /* GATE-77P · p213 · K-144: the aircraft as it stands */if(!sd||sd.tpl!=='bridge'||Math.abs(sd.th-Math.PI/2)>.01||!(S6A_BELT[ac]||S6A_HAND[ac]))return null;
+ const key=sd.id+'|'+ac+'|'+sd.cx+'|'+sd.ngy;if(S6A_LAY.cache.has(key))return S6A_LAY.cache.get(key);
+ const g=apttAcGeom(ac),L=g.nose-g.tail,hw=g.F[3],sv=sd.svcSide||-1,W=(a,d)=>[sd.cx+sv*d,sd.ngy+a],E=s6aEngines(ac),eOut=Math.max(0,...E.map(e=>e.d+e.r));
+ let R;
+ if(S6A_BELT[ac]){const k7=G77_BR.on?G77_BR.dBelt:0,kc=G77_BR.on?G77_BR.dCol:0;   /* GATE-77P · p214 · D-194 */const H=g.nose-S6A_BELT[ac]*L,F=[H,hw+10.25-k7],C=[H+14,hw+34.5-k7],B=[H+28,hw+58.75-k7],dT=hw+76-kc,GLN=AF.GLN,GLS=AF.GLS,LL=AF.L,w=p=>W(p[0],p[1]);
+  const th=Math.atan2(-.5,-.866*sv),Po=[H+29,hw+60.5-k7],blC=w(C),ap=w(Po);
+  // the belt loader: up its column from the road, into the 60° line; out: straight back along it, back down the column, the rear swung
+  // onto the road (so it leaves facing the way out)
+  R={belt:true,H,hw,sv,F:w(F),B:w(B),blC,blTh:th,c1:sd.cx+sv*dT,c3:sd.cx+sv*(dT+30),
+   blRoute:{node:afNodeGL(),inn:[[GLN,LL,26],[ap[0],LL,16],[ap[0],ap[1],14],[blC[0],blC[1],0]],mode:'rev',revPath:[[ap[0]-22*sv*sv,LL],[ap[0],LL-18],ap,blC],revRad:[14,12],back:[[ap[0]-22,LL,0],[GLS,LL,26]]}};
+  if(sd.large){   // P4: the pocket D trains beside the stand's east edge — the train comes down from the north edge of the pocket (between the
+   // belt and the engines), stops with its first cart at the belt's low end, and leaves straight south to the road
+   const yA=Math.min(sd.ngy+H-39,g77DyE()),cT=R.c1,ws=sd.ngy+H+28+19;R.ws=ws;R.yA=yA;R.toStand=[[GLN,LL,16],[GLN,yA,18],[cT,yA,16],[cT,ws,0]];R.hairpin=[[cT,ws,0],[cT,LL,14]];R.south=true}
+  else R.ws=sd.ngy+H+28-19}
+ else{const H=g.nose-S6A_HAND[ac]*L,dH=Math.max(36+Math.max(0,hw-14.94),eOut+6.5+4),aT=H-19;
+  R={belt:false,H,hw,sv,door:W(H,hw),man:W(H,hw+(dH-6.5-hw)/2),c1:sd.cx+sv*dH,c3:sd.cx+sv*(dH+24),ws:sd.ngy+aT}}
+ S6A_LAY.cache.set(key,R);return R}
+// the forward / aft service door for catering (the box at the door): along of the truck centre, given the way it arrives (+1: towards the nose)
+function s6aCatAlong(g,head){const L=g.nose-g.tail;return g.nose-.88*L+7.6*head}
+// is a belt loader of this flight at the hold right now (and a train of the same flight working at it)?
+function s6aBeltOf(code){const t=APT_OPS.clk;for(const v of AO.fleet){if(v.type!=='BL')continue;for(const k of v.tasks){if(t<k.t0||t>=k.t1||String(k.code).split('/')[0]!==code)continue;const q=k.tr.seq.legAt(t-k.t0);if(q&&q.leg.kind==='svc')return{v,k,p:k.tr.seq.at(t-k.t0)}}}return null}
+function s6aBeltRun(a){const v=a.v;if(!v)return false;const t=APT_OPS.clk;let code=null;for(const k of v.tasks)if(t>=k.t0&&t<k.t1){code=String(k.code).split('/')[0];break}if(!code)return false;
+ for(const w of AO.fleet){if(w.type!=='BT')continue;for(const k of w.tasks){if(t<k.t0||t>=k.t1||String(k.code).split('/')[0]!==code)continue;const st=f2BagState(k.tr,t-k.t0);if(st&&st.f.at==='ac'&&st.fly)return st.f.fill==='in'?-1:1}}return false}
+// the bags and the loaders drawn on top of the vehicles (after the vehicle pass)
+const S6A_BAGQ=[];
+function s6aFlushBags(g){if(!S6A_BAGQ.length)return;for(const q of S6A_BAGQ){if(q.k==='bag')f2DrawFlyBag(g,q.x,q.y,q.u,q.c);else s6aDrawLoader(g,q.x,q.y,q.th,q.t)}S6A_BAGQ.length=0}
+// a ramp loader (hi-vis vest, ear defenders), seen from above, turning between the cart and the hold
+function s6aDrawLoader(g,x,y,th,t){if(G77_PE.on){const w=G77_PE.w;G77_PE.w=false;g77PeDraw(g,G77_PE.role.loader,x,y,th,t,w);return}   // GATE-77 S6d-a · p178
+ g.save();g.translate(x,y);g.rotate(th);g.fillStyle='rgba(8,18,26,.3)';g.beginPath();g.ellipse(.8,.9,2.4,1.9,0,0,Math.PI*2);g.fill();
+ g.fillStyle='#f06a1f';g.beginPath();g.ellipse(0,0,2.1,1.7,0,0,Math.PI*2);g.fill();g.fillStyle='#e8e23a';g.fillRect(-1.7,-.35,3.4,.7);g.fillStyle='#2b241e';g.beginPath();g.arc(.2,0,1.05,0,Math.PI*2);g.fill();
+ g.fillStyle='#1e2124';g.fillRect(-.2,-1.25,.8,.5);g.fillRect(-.2,.75,.8,.5);const s=Math.sin(t*6)*.6;g.fillStyle='#f06a1f';g.fillRect(.8,-1.9+s*.3,1.4,.7);g.fillRect(.8,1.2-s*.3,1.4,.7);g.restore()}
+// where a bag in flight goes at the aircraft: the belt (low end → top, riding) or the loader (cart → hands → hold); null: the old way
+function s6aBagFly(st,px,py,col){const f=st.f;if(f.at!=='ac'||!f.code)return false;const fl=s6aFlightOf(String(f.code).split('/')[0]);if(!fl||!fl.sd)return false;
+ const LY=s6aBagLay(fl.sd,fl.ac);if(!LY){const R=s6rRemLay(fl,px,py);if(!R)return false;const u=st.fly.u,k=f.fill==='in'?1-u:u,p=k<.5?[px+(R.man[0]-px)*k*2,py+(R.man[1]-py)*k*2]:[R.man[0]+(R.door[0]-R.man[0])*(k-.5)*2,R.man[1]+(R.door[1]-R.man[1])*(k-.5)*2];S6A_BAGQ.push({k:'bag',x:p[0],y:p[1],u:k<.5?k*2:(k-.5)*2,c:col});return true}/* GATE-77 S6r · M6: P5 / P6 by hand */const u=st.fly.u,inn=f.fill==='in',lerp=(A,B,k)=>[A[0]+(B[0]-A[0])*k,A[1]+(B[1]-A[1])*k];
+ if(LY.belt){const bl=s6aBeltOf(fl.code);if(bl){const lo=LY.B,top=LY.F,k=inn?1-u:u;let p,h;   // load: cart → low end (a hop) → top (riding); unload: the other way
+   if(k<.3){const s=k/.3;p=lerp([px,py],lo,s);h=s}else{p=lerp(lo,top,(k-.3)/.7);h=0}
+   S6A_BAGQ.push({k:'bag',x:p[0],y:p[1],u:h>0&&h<1?h:0,c:col});return true}}
+ const door=LY.belt?LY.F:LY.door,man=LY.belt?lerp([px,py],door,.5):LY.man,k=inn?1-u:u,p=k<.5?lerp([px,py],man,k*2):lerp(man,door,(k-.5)*2),h=k<.5?k*2:(k-.5)*2;
+ S6A_BAGQ.push({k:'bag',x:p[0],y:p[1],u:h,c:col});return true}
+// the loader stands beside the cart while the train works at the aircraft (the lower aircraft; or the high ones when no belt is there)
+function s6aBagCrew(st,a){const f=st.f;if(f.at!=='ac'||f.fill==null||!f.code)return false;const fl=s6aFlightOf(String(f.code).split('/')[0]);if(!fl||!fl.sd)return false;
+ const LY=s6aBagLay(fl.sd,fl.ac);if(!LY){const R=s6rRemLay(fl,a.pose[0],a.pose[1]);if(!R)return false;S6A_BAGQ.push({k:'man',x:R.man[0],y:R.man[1],th:R.th,t:APT_OPS.clk});S6R_PPL.n++;return true}/* GATE-77 S6r · M6: P5 / P6 — the loader between the cart and the hold */if(LY.belt&&s6aBeltOf(fl.code))return true;
+ const m=LY.belt?[(a.pose[0]+LY.F[0])/2,(a.pose[1]+LY.F[1])/2]:LY.man,th=LY.sv>0?Math.PI:0;S6A_BAGQ.push({k:'man',x:m[0],y:m[1],th,t:APT_OPS.clk});return true}
+// P4 (the wide-body / the large jet): the fuel truck comes from the north along the service path and stands under the wing, outside the
+// engines, clear of the trains' corridor at the forward hold; it backs out to the path with its rear swung north and leaves south
+function s6aP4Fuel(sd,ac){const T={'AC-MW-01':[-160,100],'AC-LG-01':[-265,125]}[ac];if(!T)return null;const sv=sd.svcSide||1,x=sd.cx+sv*T[1],y=sd.ngy+T[0],GLN=AF.GLN,GLS=AF.GLS,L=AF.L;
+ return{node:afNodeGL(),inn:[[GLN,L,26],[GLN,y,20],[x,y,0]],mode:'rev',revPath:[[GLS,y-30],[GLS,y],[x,y]],revRad:[14],back:[[GLS,y-30,0],[GLS,L,26]]}}
+
+// ==== GATE-77 S6a · D-105 (owner 20:31): the hangars and the maintenance building show what is inside — a see-through roof ==============
+// When an aircraft stands inside (M1–M3), the building's roof is drawn as glass over a steel frame: the floor, the aircraft, and the work on
+// it (a work platform at an engine, the cowling open, two mechanics) are seen through it. An empty hangar keeps its solid roof. The live
+// visit (tow in / out, the repair crew coming and going) is S7 (D-99). Drawn in the overhead pass, above the buildings.
+const S6A_HGR={on:true,drawn:0};
+function s6aHangars(now){if(!S6A_HGR.on||!APTT_C||!APL)return;const v=aptView(200);
+ for(const sd of APL.stands){if(!sd.indoor||!sd.hangar)continue;const B=APTT_C.bld.find(b=>b.id===sd.hangar);if(!B||!portVis(v,B.x-10,B.y-10,B.w+20,B.h+20))continue;s6aHangarXray(ctx,sd,B,now);S6A_HGR.drawn++}}
+function s6aHangarXray(g,sd,B,now){const x0=B.x+3,y0=B.y+3,w=B.w-6,h=B.h-6,ac=sd.accepts[0];
+ g.save();g.beginPath();g.rect(x0,y0,w,h);g.clip();
+ // the floor: sealed concrete, the painted bay, the seams
+ g.fillStyle='#b7bcc0';g.fillRect(x0,y0,w,h);g.strokeStyle='rgba(90,98,106,.35)';g.lineWidth=.5;g.beginPath();for(let x=x0+12;x<x0+w;x+=12){g.moveTo(x,y0);g.lineTo(x,y0+h)}for(let y=y0+12;y<y0+h;y+=12){g.moveTo(x0,y);g.lineTo(x0+w,y)}g.stroke();
+ g.strokeStyle='rgba(232,185,43,.8)';g.lineWidth=1.2;g.setLineDash([5,3]);g.strokeRect(x0+5,y0+5,w-10,h-10);g.setLineDash([]);
+ // the aircraft (parked, the cowling open on the engine side under maintenance)
+ const MV=g77MlvPose(sd),f={code:'MX-'+sd.id,ac,sd},a={kind:'ac',id:ac,nm:'MX-'+sd.id,pose:MV||[sd.ngx,sd.ngy,sd.th,0,1],f,tr:{kind:'ac',id:ac}};a34DrawNow(g,a,now);if(MV)g77MlvXrayTug(g,sd,now);   /* p414: in the hangar's cut-away too, in 3/4 (found by the saves' count: BJ / P.180 inside the GA hangar from above every frame) */   // GATE-77 S7-b · p196
+ const S=APTT_SPEC.ac[ac],ng=S.an['Nose Gear'],e=S.an['Engine R']||S.an['Engine L']||S.an.Nose,c=Math.cos(sd.th),s=Math.sin(sd.th),ea=e[0]-ng[0],ed=e[1]-ng[1],P=(a_,d)=>[sd.ngx+c*a_-s*d,sd.ngy+s*a_+c*d];
+ const E=P(ea,ed),side=Math.sign(ed||1),plat=P(ea,ed+side*9),m1=P(ea+4,ed+side*15),m2=P(ea-10,ed+side*4),t=now/1000;
+ if(!MV){g.save();g.translate(E[0],E[1]);g.rotate(sd.th);g.fillStyle='rgba(20,26,32,.75)';g.fillRect(-4,-2.6,8,5.2);g.strokeStyle='#d9dee2';g.lineWidth=.6;g.strokeRect(-4,-2.6,8,5.2);g.restore()}   // the open cowling
+ g.save();g.translate(plat[0],plat[1]);g.rotate(sd.th);g.fillStyle='rgba(8,18,26,.25)';g.fillRect(-6,-3,14,8);g.fillStyle='#e8b92b';g.fillRect(-7,-4,14,8);g.strokeStyle='#1e2124';g.lineWidth=.5;
+ for(let x=-6;x<7;x+=2.5){g.beginPath();g.moveTo(x,-4);g.lineTo(x+1.5,4);g.stroke()}g.fillStyle='#8f989f';g.fillRect(-7,-4,14,1);g.restore();   // the work platform
+ if(!MV){s6aDrawLoader(g,m1[0],m1[1],sd.th+Math.PI/2+Math.sin(t*.7)*.4,t);s6aDrawLoader(g,m2[0]+Math.sin(t*.5)*1.5,m2[1],sd.th-Math.PI/2,t*1.3)}   // two mechanics
+ // the roof: tinted glass panels over a steel truss (the trusses across the span, purlins along)
+ g.fillStyle='rgba(150,190,220,.16)';g.fillRect(x0,y0,w,h);g.strokeStyle='rgba(40,48,56,.55)';g.lineWidth=1;g.beginPath();for(let x=x0+w/6;x<x0+w-1;x+=w/6){g.moveTo(x,y0);g.lineTo(x,y0+h)}g.stroke();
+ g.strokeStyle='rgba(40,48,56,.3)';g.lineWidth=.5;g.beginPath();for(let y=y0+h/5;y<y0+h-1;y+=h/5){g.moveTo(x0,y);g.lineTo(x0+w,y)}for(let x=x0+w/6;x<x0+w-1;x+=w/6){for(let y=y0;y<y0+h;y+=h/5){g.moveTo(x-w/6,y);g.lineTo(x,y+h/5)}}g.stroke();
+ g.fillStyle='rgba(255,255,255,.08)';for(let x=x0+w/6;x<x0+w;x+=w/3)g.fillRect(x+2,y0,w/12,h);   // the glints
+ g.restore();
+ g.strokeStyle='rgba(52,60,68,.9)';g.lineWidth=3;g.strokeRect(x0+1.5,y0+1.5,w-3,h-3)}   // the walls
+
+// ==== GATE-77 S6r · D-106 (owner, 18.10 — "הליכה מהטרמינל"): the turboprop at the bridge stands P1–P3 without the bridge ===================
+// The bridge swings aside, the aircraft's own airstair folds out of the door, and the passengers walk between the terminal and the stair on a
+// marked walkway beside the fuselage, over the service road on a zebra. While they walk, the walkway is reserved for them (layer 'P'): a
+// vehicle on the road waits at the zebra. The regional jet and the quad-jet keep the bridge (D-92 (2), the QJ part: §0.1).
+const S6R_NB={stands:['P2','P3'],ac:{'AC-TP-01':1,'AC-QJ-01':1},aside:35*Math.PI/180,swing:8,v:22,gap:.95,pre:3,post:2,face:772};
+function s6rNoBridge(sd,ac){return!!(sd&&sd.tpl==='bridge'&&S6R_NB.ac[ac]&&S6R_NB.stands.includes(sd.id))}
+const S6R_WC={};
+// the walk: the door the bridge would serve → the foot of the airstair → beside the fuselage to the road → over the zebra → the terminal door
+function s6rWalk(sd,ac){if(sd&&ac)sd=g77StandView(sd,ac);   /* GATE-77P · p213 · K-144 */const key=sd.id+'|'+ac+'|'+sd.cx+'|'+sd.ngy;if(S6R_WC[key])return S6R_WC[key];
+ const s=APT_STANDS.find(q=>q.id===sd.id),B=f2BridgeGeometry(s,{ac,sd},1),d=B.door,dir=Math.sign(d[0]-sd.cx)||1,foot=[d[0]+dir*17,d[1]],x=foot[0]+dir*4;
+ const path=[d,foot,[x,d[1]+8],[x,718],[x,752],[x,S6R_NB.face]];return S6R_WC[key]={door:d,dir,foot,x,path,len:g2PathLen(path)}}
+function s6rDur(W,n){return S6R_NB.pre+W.len/S6R_NB.v+Math.max(0,n-1)*S6R_NB.gap+S6R_NB.post}
+// the plan of one visit: the arrival group walks in from on-block (chocks + the airstair), the departure group is on board 20 s before ready
+function s6rWalkPlan(sd,ac,code,tOB,tRdy,q){const W=s6rWalk(sd,ac),nA=Math.max(1,q&&q.paxA||g2PaxN(code,'arr',ac)),nD=Math.max(1,q&&q.paxD||g2PaxN(code,'dep',ac));
+ const a0=tOB+G77_CHOCK+8,a1=a0+s6rDur(W,nA),d1=tRdy-20,d0=Math.max(a1+10,d1-s6rDur(W,nD));
+ return{stand:sd.id,ac,code,path:W.path,door:W.door,dir:W.dir,len:W.len,arr:{at:a0,done:a1,n:nA},dep:{at:d0,done:d0+s6rDur(W,nD),n:nD},open:tOB+G77_CHOCK+2,close:d0+s6rDur(W,nD)+4}}
+// the reservation of the walkway for the two windows (every second slice, a box every 6 px along the path)
+function s6rWalkCommit(R,code){if(!R)return;const pts=[];for(let i=1;i<R.path.length;i++){const a=R.path[i-1],b=R.path[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.ceil(L/6));for(let k=0;k<=n;k++)pts.push([a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n])}
+ for(const w of [R.arr,R.dep]){const s0=aoSlUp(w.at),s1=aoSl(w.done);for(let s=s0;s<=s1;s+=2){let bk=AO.B.get(s);if(!bk){bk=[];AO.B.set(s,bk)}for(const p of pts){const o=apttObb(p[0],p[1],0,[-3,3,-3,3],'P','walk-'+code);o.own=code;bk.push(o)}AO.LOG.push(s)}}}
+// the people now (for drawing): arrival from the door to the terminal, departure the other way
+function s6rWalkers(t=APT_OPS.clk){const out=[];for(const f of AO.flights){const R=f.walk;if(!R||t<R.open||t>R.close)continue;
+  for(const [w,inbound] of [[R.arr,true],[R.dep,false]]){if(t<w.at||t>w.done+1)continue;const P=inbound?R.path:R.path.slice().reverse(),travel=R.len/S6R_NB.v;
+   for(let i=0;i<w.n;i++){const lt=t-w.at-S6R_NB.pre-i*S6R_NB.gap;if(lt<0||lt>=travel)continue;let d=lt*S6R_NB.v,k=1;while(k<P.length-1&&d>Math.hypot(P[k][0]-P[k-1][0],P[k][1]-P[k-1][1])){d-=Math.hypot(P[k][0]-P[k-1][0],P[k][1]-P[k-1][1]);k++}
+    const a=P[k-1],b=P[k],L=Math.hypot(b[0]-a[0],b[1]-a[1])||1,u=Math.min(1,d/L),x=a[0]+(b[0]-a[0])*u,y=a[1]+(b[1]-a[1])*u,dx=b[0]-a[0],dy=b[1]-a[1];
+    const face=Math.abs(dx)>Math.abs(dy)?(dx>0?'east':'west'):(dy>0?'south':'north'),edge=Math.min(1,lt/.8,(travel-lt)/.8);out.push({x,y,face,asset:G2_PAX_ASSETS[(g2Hash(f.code)+i*3)%G2_PAX_ASSETS.length],alpha:Math.max(0,edge),walkTime:lt})}}}return out}
+// the bridge swings aside while a walk-out visit is at the stand (0 → 1 over 8 s before on-block, back after the aircraft leaves)
+function s6rAside(sid,t=APT_OPS.clk){let k=0;if(!AO||!AO.flights)return 0;for(const f of AO.flights){const R=f.nb;if(!R||R.stand!==sid)continue;
+  let tOB=null,tOut=null;for(const q of f.states){if(q[1]==='ON_BLOCK'&&tOB==null)tOB=q[0];if((q[1]==='PUSHBACK'||q[1]==='TAXI_OUT')&&tOut==null)tOut=q[0]}if(tOB==null)continue;if(tOut==null)tOut=f.t1;
+  const a=tOB-45,b=tOut+20,sw=S6R_NB.swing;k=Math.max(k,Math.min(apttSm((t-a)/sw),apttSm((b-t)/sw)))}return Math.max(0,Math.min(1,k))}
+// the airstair of the turboprop folded out of the door towards the walkway side (dir +1 east / −1 west)
+function s6rDrawAirstair(g,x,y,dir,al){g.save();g.translate(x,y);g.scale(dir,1);g2DrawAirstair(g,0,0,al);g.restore()}
+function s6rDraw(now,v){s6rNbDraw(now,v);if(WTC_LP===1||!APT_OPS.ready)return;const t=APT_OPS.clk;
+ for(const f of AO.flights){const R=f.walk;if(!R||t<R.open-2||t>R.close+2)continue;const d=R.door;if(!portVis(v,d[0]-40,d[1]-40,80,80))continue;s6rDrawAirstair(ctx,d[0],d[1],R.dir,Math.max(0,Math.min(1,(t-R.open)/2,(R.close-t)/2)))}
+ for(const p of s6rWalkers(t)){if(!portVis(v,p.x-12,p.y-20,24,30))continue;const I=TurboCity.info(p.asset,{scale:G77_PE.sc,direction:p.face,pose:'walking'}),feet=I.an.find(q=>q[0]==='Feet')||['Feet',I.w/2,I.h*.55];
+  ctx.save();ctx.globalAlpha=p.alpha;P34G.k=p.id??null;TurboCity.draw(ctx,p.asset,p.x-feet[1],p.y-feet[2],{mode:'runtime',scale:G77_PE.sc,direction:p.face,pose:'walking',time:p.walkTime});ctx.restore()}}
+// the walkway, painted once: two dashed edge lines beside the fuselage, the zebra over the road, the door in the terminal's facade
+function s6rPaintWalks(g){if(!APTT_SPEC||!APL)return;for(const id of S6R_NB.stands){const sd=APL.stands.find(q=>q.id===id);if(!sd)continue;let W;try{W=s6rWalk(sd,'AC-TP-01')}catch(e){continue}
+  const x=W.x,y0=W.door[1]+10;g.save();g.strokeStyle='rgba(246,244,236,.7)';g.lineWidth=1;g.setLineDash([5,4]);g.beginPath();g.moveTo(x-4,y0);g.lineTo(x-4,721);g.moveTo(x+4,y0);g.lineTo(x+4,721);g.stroke();g.setLineDash([]);
+  g.fillStyle='rgba(246,244,236,.82)';for(let y=724.5;y<746;y+=4)g.fillRect(x-5,y,10,2);   // the zebra
+  g.fillStyle='rgba(246,244,236,.7)';g.fillRect(x-4,748,8,1);aptTxt(g,'WALK',x+W.dir*13,y0+12,5,'rgba(246,244,236,.7)',700);
+  g.fillStyle='#2b3138';g.fillRect(x-5,S6R_NB.face-1,10,3);g.fillStyle='#e8b92b';g.fillRect(x-5,S6R_NB.face-1.6,10,.8);g.restore()}}
+
+// ==== GATE-77 S6r · M2 · K-78 (owner 18.10 23:56): the belt loader stays for the loading too ============================================
+// "מעלית הכבודה רק מורידה מהמטוס לרכב אבל לא מעלה ממנו למטוס — הוא יושב שם המון זמן ושנייה לפני ההעמסה הוא עוזב, והמזוודות נזרקות מרחוק".
+// Before: the belt's hold ended near the end of the dwell, the departure trains were planned after the latest early service (= the belt's
+// own end), and the last train (coupled to the pushback) came 28–110 s before the push — after the belt had gone; its bags flew in from the
+// train's column. Now: (1) the departure trains load from 40 % of the dwell, inside the belt's stay; (2) the belt stays until ~4 s before
+// ready; (3) the last train is accepted only inside the belt's window — earlier befores let it load while the belt is still there; if the
+// push is much later, the belt comes back for it (a late belt task coupled to the push, like the train). The fly fallback is no longer
+// planned for: s6rBeltGapAt counts any bag moving at a belt aircraft without the belt (QA: 0).
+const S6R_BW={w:null};
+function s6rBeltWin(a,b){const w=S6R_BW.w;return!w||(a>=w[0]&&b<=w[1])}
+function s6rBeltWinOf(P){const q=(P.svcQ||[]).find(x=>x.svc==='belt');return q?[q.at+2,q.done-2]:null}
+function s6rBeltAc(sd,ac){return!!(sd&&sd.tpl==='bridge'&&S6A_BELT[ac]&&!s6rNoBridge(sd,ac))}
+// at time t: bags moving at a belt aircraft (its train at the aircraft, bags in flight) while no belt loader of that flight is at the hold
+function s6rBeltGapAt(t){const out=[];
+ for(const v of AO.fleet){if(v.type!=='BT')continue;for(const k of v.tasks){if(t<k.t0||t>=k.t1||k.code==null)continue;const st=f2BagState(k.tr,t-k.t0);if(!st||st.f.at!=='ac'||!st.fly)continue;
+  const code=String(k.code).split('/')[0],f=s6aFlightOf(code);if(!f||!f.sd||!s6rBeltAc(f.sd,f.ac))continue;let ok=false;
+  for(const w of AO.fleet){if(w.type!=='BL')continue;for(const q of w.tasks){if(t<q.t0||t>=q.t1||String(q.code).split('/')[0]!==code)continue;const L=q.tr.seq.legAt(t-q.t0);if(L&&L.leg.kind==='svc'){ok=true;break}}if(ok)break}
+  if(!ok)out.push({code,stand:f.sd.id,ac:f.ac,bt:v.id,t:+t.toFixed(1),dir:st.f.fill})}}
+ return out}
+
+// ==== GATE-77 S6r · M2 · K-79 (owner 18.10 23:56): the catering truck, again — "הרבה יותר אמיתי ומעשי" =====================================
+// "מגיע מהזווית הלא נכונה — מאונך במקום מאוזן; האיקסים של המעלית מוזרים, והמגירות — קובייה אפורה שהולכת מצד לצד".
+// Now: the truck drives straight at the door, square to the fuselage (cab first), and stops with its cab 7 px from the skin. The box goes
+// up on the scissor stack (seen from above: the box grows a little and its shadow moves out; the scissor lattice shows in the gap — no
+// side-view "X"); the stabiliser pads are down; the roller door opens and the platform runs out over the cab to the sill, rails up.
+// Galley trolleys — aluminium, the full ones with the airline's blue band — are pushed one at a time by a caterer from the box over the
+// platform into the door, and the used ones come back the same way; the number follows the seats. The box comes down after the last one.
+const S6R_CAT={aft:.83,sill:{'AC-TP-01':1.4,'AC-RJ-01':1.9,'AC-QJ-01':1.9,'AC-NB-01':3.4,'AC-MW-01':4.8,'AC-LG-01':5.3},hmax:5.6,gap:7,ramp:4,ext:1.6};
+const S6R_CK={box:['#f7f9fa','#e3e8ec','#c9d0d6'],band:'#c8352e',steel:'#59626a',grate:'#6d767e',lat:'#3b4248'};
+// the box (local frame, front at +x): roof panels, the reefer unit at the front top, the red band, the rear doors; s: scale while raised
+function s6rCatBox(g,L,W,h,open){const C=S6A_C,K=S6R_CK,x0=-L+.6,x1=L*.5,bc=(x0+x1)/2,s=1+.07*h;g.save();g.translate(bc,0);g.scale(s,s);g.translate(-bc,0);
+ const y0=-W+.35,hh=W*2-.7;g.fillStyle=s6aGrad(g,y0,y0+hh,K.box[2],K.box[0],K.box[1]);s6aRR(g,x0,y0,x1-x0,hh,.9);g.fill();g.strokeStyle='rgba(36,44,52,.65)';g.lineWidth=.45;g.stroke();
+ g.strokeStyle='rgba(120,130,140,.35)';g.lineWidth=.35;g.beginPath();for(let x=x0+3;x<x1-2;x+=3.2){g.moveTo(x,y0+.6);g.lineTo(x,y0+hh-.6)}g.stroke();              // roof seams
+ g.fillStyle=K.band;g.fillRect(x0+.4,-W+.5,x1-x0-.8,1.1);g.fillRect(x0+.4,W-1.6,x1-x0-.8,1.1);                                                                         // the red band (both sides)
+ g.fillStyle='#b8c0c6';s6aRR(g,x1-6.2,-W*.55,4.6,W*1.1,.7);g.fill();g.fillStyle='#5b636b';g.beginPath();g.arc(x1-3.9,0,Math.min(2,W*.32),0,Math.PI*2);g.fill();   // the reefer unit and its fan
+ g.strokeStyle='#8c949b';g.lineWidth=.3;g.beginPath();g.arc(x1-3.9,0,Math.min(1.3,W*.2),0,Math.PI*2);g.stroke();
+ g.fillStyle='#9aa3ab';g.fillRect(x0,-W*.62,.7,W*1.24);g.fillStyle='#e8b92b';g.fillRect(x0-.2,-W*.62,.5,.6);g.fillRect(x0-.2,W*.62-.6,.5,.6);                    // rear doors, hinges
+ g.fillStyle=open?'#1d2226':'#aeb6bc';g.fillRect(x1-.8,-W*.5,.8,W);                                                                                                // the front roller door
+ s6aKitText(g,'TURBO CATERING',bc-3,0,Math.max(2,W*.3),C.blue);g.restore()}
+function s6aKitText(g,t,x,y,px,col){if(px<2.2)return;g.save();g.fillStyle=col;g.font='700 '+px+'px Arial,Helvetica,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(g77Heb(t),x,y);g.restore()}   /* p228: the vehicles' lettering */
+// the truck itself: chassis with frame rails, two axles, the cab; parked / driving the box is down; at the door ('w') the box is drawn
+// per frame by S6A_ACTS.cat (the bitmap keeps the chassis, the scissor base, the stabiliser pads and the cab)
+S6A_PAINT.cat=function(g,L,W,st,K){const C=S6A_C,K2=S6R_CK,w=st==='w';K.shadow();K.tyres([-L*.56,L*.66]);
+ g.fillStyle='#23282d';g.fillRect(-L+1,-W+1.6,L*1.62,W*2-3.2);g.fillStyle='#3c444b';for(const y of[-W*.42,W*.42-1])g.fillRect(-L+1.4,y,L*1.55,1);                 // frame rails
+ g.fillStyle='#30373d';for(let x=-L+3;x<L*.55;x+=4.2)g.fillRect(x,-W*.42,.8,W*.84);
+ if(w){g.fillStyle='#e8b92b';for(const x of[-L+2.4,L*.42])for(const s of[-1,1])g.fillRect(x-.9,s*(W*.42)-.6,1.8,1.2);                                              // the scissor pivots on the chassis
+  g.fillStyle='#8d959c';for(const x of[-L+2.6,L*.46])for(const s of[-1,1]){g.fillRect(x-.9,s>0?W-.2:-W-1.4,1.8,1.6);g.fillStyle='#1c2024';g.fillRect(x-1.2,s>0?W+1.1:-W-1.9,2.4,.8);g.fillStyle='#8d959c'}}   // stabiliser legs + pads
+ K.cab(L*.58,C.white);
+ if(!w){s6rCatBox(g,L,W,0,false);g.fillStyle=K2.grate;g.fillRect(L*.5-.2,-W*.5,1.2,W);K.rail(L*.5,L*.5+1,-W*.5+.4,C.yel);K.rail(L*.5,L*.5+1,W*.5-.4,C.yel)}   // the folded platform
+ K.tails(-L+.1)};
+// the aft service door (R2 / L2): .83 of the fuselage from the nose — ahead of the tailplane root
+function s6rCatADs(sd,ac){if(sd&&sd.id==='P6'&&typeof g2Rear==='function'&&g2Rear(sd,ac)){const a=s6aPortAD(ac,'door'),g=apttAcGeom(ac);if(a)return[a[0],g.F[3]]}return s6rCatAD(ac)}   // GATE-77 S6r · M5b
+function s6rCatAD(ac){const g=apttAcGeom(ac),L=g.nose-g.tail;{const a=typeof g77GdAft==='function'?g77GdAft(ac):null;if(a!=null)return[a,g.F[3]]}   /* GATE-77P · p220 · D-199: the real aft door */return[g.nose-S6R_CAT.aft*L,g.F[3]]}
+// the trolleys of a visit: about one per 15 seats (a narrow-body ~12, the large jet 20+)
+
+// ==== GATE-77 S6c · p166 · D-172: the caterers go into the aircraft — two workers (the box, the door), one or two trolleys a trip =====
+var G77_CAT={on:true,per:15,max:30,vPush:8.5,vBack:10,vIn:8,pitch:5.6,cache:new Map(),stats:{plans:0}};
+function g77CatRn(key,i){const s=key+'#'+i;let h=2166136261;for(let k=0;k<s.length;k++){h^=s.charCodeAt(k);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,0x5bd1e995);h^=h>>>15;return (h>>>0)/4294967296}
+// the plan of one visit: trips of 1 or 2 trolleys; per trip: P pulled to the door · E in (the worker first) · I inside · X out (the trolleys
+// first, the worker behind) · B back to the box · S the box worker swaps (the used ones into the rows, the next full ones into the aisle)
+function g77CatPlan(sd,ac,code){const key=(sd?sd.id:'')+'|'+ac+'|'+(code==null?'':String(code).split('/')[0]),C=G77_CAT.cache;let P=C.get(key);if(P)return P;if(C.size>4000)C.clear();
+ const N=s6rCatTrolleys(sd,ac),D=s6aDimOf('CT'),Lh=D?D[0]/2:31.5,pt=G77_CAT.pitch,run=Math.max(8,(Lh+S6R_CAT.gap-.1-2.6)-(Lh*.5-2.2)),r=i=>g77CatRn(key,i),cs=[];
+ for(let n=0;n<N;){const c=N-n>=2&&r('c'+cs.length)<.62?2:1;cs.push(c);n+=c}
+ const t0=1.6+.6*cs[0]+.5*r('p'),trips=[];let t=t0,n=0;
+ for(let k=0;k<cs.length;k++){const c=cs[k],cn=cs[k+1]||0,q=i=>r(k+'.'+i);
+  const sp=q(1)<.35?.4+.8*q(2):0,sb=q(3)<.3?.3+.7*q(4):0,dE=.4+.7*c,dX=.5+.7*c;
+  const dP=run/G77_CAT.vPush*(1+.15*(c-1))+sp,dI=1.8+2.6*q(5)+1.1*(c-1),dB=Math.max(.6,run+2.6+pt*(c-1)-G77_CAT.vIn*dX)/G77_CAT.vBack+sb,dS=(cn?.9+.5*(c+cn):.8+.5*c)+.4*q(6);
+  const T=dP+dE+dI+dX+dB+dS;trips.push({c,cn,n0:n,t0:t,dP,sp,spAt:.3+.4*q(7),dE,dI,dX,dB,sb,sbAt:.3+.4*q(8),dS,T});t+=T;n+=c}
+ for(let k=0;k<trips.length;k++){const q=trips[k],pv=trips[k-1],s0=k?pv.t0+pv.T-pv.dS:0,sw=k?pv.dS:t0,a=k?.5:.35,e0=q.t0+q.T-q.dS;q.stg=[];q.bk=[];
+  for(let m=0;m<q.c;m++){q.stg.push(s0+sw*(a+(.95-a)*m/q.c));q.bk.push(e0+q.dS*.4*(m+1)/q.c)}}   // per trolley: out of the row / back in the row
+ P={N,trips,T:t,t0,run,key,c0:cs[0]};C.set(key,P);G77_CAT.stats.plans++;return P}
+function g77CatPerson(g,x,y,th,t,al){if(al<=0)return;g.save();g.globalAlpha*=Math.min(1,al);s6rCaterer(g,x,y,th,t);g.restore();if(typeof S6R_PPL!=='undefined')S6R_PPL.n++}
+// a position along a run with a short stop at the fraction `at` (u: time from the start, dur: the whole leg incl. the stop)
+function g77CatAlong(u,dur,stop,at){const dm=Math.max(.05,dur-stop),a=at*dm;if(u<a)return{f:u/dm,go:true};if(u<a+stop)return{f:at,go:false};return{f:Math.min(1,(u-stop)/dm),go:true}}
+function s6rCatHold(sd,ac,code){if(!G77_CAT.on)return s6rCatHold0(sd,ac);return Math.max(35,2*(S6R_CAT.ramp+S6R_CAT.ext)+4+g77CatPlan(sd,ac,code).T)}
+function s6rCatRows(g,j,L,W,bx1,nFull,nEmpty,init){if(!G77_CAT.on)return s6rCatRows0(g,j,L,W,bx1,nFull,nEmpty,init);
+ const N=s6rCatTrolleys(j.sd,j.ac),f=init?N:nFull,e=init?0:nEmpty,x0=-L+2.4,ys=N>14&&W>=8.5?[-3.2,3.2,-6.3,6.3]:[-3.2,3.2],R=ys.length,pt=G77_CAT.pitch,slots=[];
+ for(let i=0;i<N;i++){const x=bx1-3.6-Math.floor(i/R)*pt;if(x<x0+2.5)break;slots.push([x,ys[i%R]])}
+ g.fillStyle='rgba(30,38,46,.55)';g.fillRect(x0,-W+1.1,bx1-1-x0,W*2-2.2);                                                                     // the open roof hatch
+ const S=slots.length,nf=Math.min(f,S),ne=Math.min(e,S-nf);for(let i=0;i<S;i++){const s=slots[i];if(i<nf)s6rTrolley(g,s[0],s[1],true,1);else if(i>=S-ne)s6rTrolley(g,s[0],s[1],false,1)}}
+// the box up, the platform not yet out (all full) / already in (all empty): both workers in the box, in the aisle
+function s6rCatRowsAt(g,j,L,W,bx1){if(!G77_CAT.on)return s6rCatRowsAt0(g,j,L,W,bx1);s6rCatRowsAt0(g,j,L,W,bx1);const xa=bx1-2.2;
+ g77CatPerson(g,xa-2,0,Math.PI,0,1);g77CatPerson(g,xa-10.5,0,0,0,1)}
+function s6rCatTrolleysDraw(g,j,now,L,W,bx1,xd,yc,R,E){if(!G77_CAT.on)return s6rCatTrolleysDraw0(g,j,now,L,W,bx1,xd,yc,R,E);
+ const P=g77CatPlan(j.sd,j.ac,j.f&&j.f.code),w0=R+E,w1=j.dur-R-E,sc=P.T>0?Math.min(1,Math.max(.2,(w1-w0-.3)/P.T)):1,tau=(j.t-w0)/sc;
+ const pt=G77_CAT.pitch,xa=bx1-2.2,xb=xd-2.6,vIn=G77_CAT.vIn,tw=now/1000,TR=P.trips;
+ let taken=0,back=0;for(const q of TR)for(let m=0;m<q.c;m++){if(tau>=q.stg[m])taken++;if(tau>=q.bk[m])back++}
+ s6rCatRows(g,j,L,W,bx1,P.N-taken,back,false);
+ const tr=[];   // the trolleys on the move: [x, y, full, alpha]
+ let B=null,A=null;   // the workers: [x, y, th, walking, alpha]
+ const slide=(m,u,inn)=>{const side=m%2?1:-1,k=Math.max(0,Math.min(1,u));return inn?[yc+side*3.2*(1-k),k<.15?k/.15:1]:[yc+side*3.2*k,k>.85?(1-k)/.15:1]};
+ const stageIn=(c,u0,u1,u)=>{for(let m=0;m<c;m++){const a=u0+(u1-u0)*m/c,b=u0+(u1-u0)*(m+1)/c;if(u<a)continue;const s=slide(m,(u-a)/(b-a),true);tr.push([xa-pt*m,s[0],true,s[1]])}};
+ if(tau<P.t0){const c=P.c0,u=tau/P.t0;   // before the first trip: the door worker out onto the platform, the box worker brings the first trolleys
+  const k=Math.min(1,u/.3);B=[xa-2+(6.4)*k,yc,Math.PI,k<1,1];stageIn(c,.35,.95,u);A=[xa-pt*(c-1)-4.2,yc,0,u>.3,1]}
+ else if(tau>=P.T){B=[xa-2,yc,Math.PI,false,1];A=[xa-10.5,yc,0,false,1]}
+ else{let k=0;while(k<TR.length-1&&tau>=TR[k+1].t0)k++;const q=TR[k],c=q.c;let u=tau-q.t0;
+  A=[xa-pt*(c-1)-4.2,yc,0,false,1];
+  if(u<q.dP){const a=g77CatAlong(u,q.dP,q.sp,q.spAt),x0=xa+(xb-xa)*a.f;for(let m=0;m<c;m++)tr.push([x0-pt*m,yc,true,1]);
+   const xB=x0+4.4;B=[xB,yc,Math.PI,a.go,Math.max(0,Math.min(1,(xd+1-xB)/2.4))];A[3]=u<.8}   // pulled to the door; the worker goes in first
+  else if((u-=q.dP)<q.dE){for(let m=0;m<c;m++){const x=xb-pt*m+vIn*u;tr.push([Math.min(x,xb+2.6),yc,true,Math.max(0,Math.min(1,1-(x-xb)/2.6))])}}
+  else if((u-=q.dE)<q.dI){}   // inside: the platform empty
+  else if((u-=q.dI)<q.dX){let xl=0;for(let m=0;m<c;m++){const x=xb+2.6+pt*m-vIn*u;xl=x;tr.push([Math.min(x,xb+2.6),yc,false,Math.max(0,Math.min(1,1-(x-xb)/2.6))])}
+   const xB=xl+4.2;B=[Math.min(xB,xd+1),yc,Math.PI,true,Math.max(0,Math.min(1,(xd+1-xB)/2.4))]}   // out: the used trolleys first, the worker behind
+  else if((u-=q.dX)<q.dB){const xs=xb+2.6-vIn*q.dX,xe=xa-pt*(c-1),a=g77CatAlong(u,q.dB,q.sb,q.sbAt),x0=xs+(xe-xs)*a.f;for(let m=0;m<c;m++)tr.push([x0+pt*m,yc,false,1]);
+   B=[x0+pt*(c-1)+4.2,yc,Math.PI,a.go,1];A[3]=u>q.dB-.8}
+  else{u-=q.dB;const d=q.dS,uS=u/d;   // the swap: the used ones into the rows, the next full ones into the aisle
+   for(let m=0;m<c;m++){const a=.4*m/c,b=.4*(m+1)/c;if(uS>=b)continue;const s=uS<a?[yc,1]:slide(m,(uS-a)/(b-a),false);tr.push([xa-pt*(c-1)+pt*m,s[0],false,s[1]])}
+   if(q.cn){stageIn(q.cn,.5,.95,uS);B=[xa+4.4,yc,Math.PI,false,1];const k2=Math.max(0,Math.min(1,(uS-.38)/.15));A=[xa-pt*(c-1)-4.2+(pt*(c-q.cn))*k2,yc,0,true,1]}
+   else{const k2=Math.max(0,Math.min(1,(uS-.45)/.5));B=[xa+4.4-(6.4)*k2,yc,Math.PI,k2>0&&k2<1,1];A=[xa-pt*(c-1)-4.2-(10.5-4.2-pt*(c-1))*k2,yc,0,true,1]}}}
+ for(const t of tr)s6rTrolley(g,t[0],t[1]+.2,t[2],t[3]);
+ if(A)g77CatPerson(g,A[0],A[1]-.1,A[2],A[3]?tw:0,A[4]);if(B)g77CatPerson(g,B[0],B[1]-.1,B[2],B[3]?tw:0,B[4])}
+// QA (D-172): the plan of every catering visit — every trip in and out, the trolleys add up, the hold fits the plan
+function g77CatPlanQa(P,hold,R,E,out){out.trips=(out.trips||0)+P.trips.length;out.trolleys=(out.trolleys||0)+P.N;let s=0,ok=true;
+ for(const q of P.trips){s+=q.c;if(!(q.dI>=1.8&&q.dE>0&&q.dX>0&&q.dP>0&&q.dB>0))ok=false;out.inMin=Math.min(out.inMin==null?1e9:out.inMin,+q.dI.toFixed(2));out.inMax=Math.max(out.inMax||0,+q.dI.toFixed(2))}
+ out.twos=(out.twos||0)+P.trips.filter(q=>q.c===2).length;if(s!==P.N)ok=false;if(hold-2*(R+E)<P.T-.01)out.short++;if(!ok){out.bad=(out.bad||0)+1;if(out.issues.length<6)out.issues.push('plan '+P.key)}}
+function s6rCatTrolleys(sd,ac){const P=g77Prof(sd,ac),n=Math.round(((P&&P.seats)||90)/(G77_CAT.on?G77_CAT.per:30));return Math.max(1,Math.min(G77_CAT.on?G77_CAT.max:12,n))}   // GATE-77 S6c · p166 · D-172: ≈ seats / 15   // GATE-77 S6r · M5 · K-82: ≈ seats / 30
+const S6R_CAT2={T:12};   // K-82: one trolley per ≥ 12 s (walking pace)
+function s6rCatHold0(sd,ac){return Math.max(35,2*(S6R_CAT.ramp+S6R_CAT.ext)+4+S6R_CAT2.T*s6rCatTrolleys(sd,ac))}
+// a galley trolley seen from above (long side along x), full: the blue band and the white tray edges
+function s6rTrolley(g,x,y,full,al){if(al<=0)return;g.save();g.globalAlpha*=al;g.translate(x,y);g.fillStyle='rgba(8,18,26,.3)';g.fillRect(-2.4,-1.0,5.2,2.4);
+ g.fillStyle=s6aGrad(g,-1.2,1.2,'#aab2b9','#e4e8eb','#9ea6ad');g.fillRect(-2.7,-1.25,5.4,2.5);g.strokeStyle='#5b636a';g.lineWidth=.3;g.strokeRect(-2.7,-1.25,5.4,2.5);
+ if(full){g.fillStyle='#2f6fb6';g.fillRect(-2.7,-.35,5.4,.7);g.fillStyle='#f4f6f7';g.fillRect(-2.2,-1.0,4.4,.35)}g.fillStyle='#41494f';g.fillRect(-2.95,-1,.35,2);g.restore()}
+// a caterer (white top, navy trousers — the polo of the catering company), pushing towards +x
+function s6rCaterer(g,x,y,th,t){if(G77_PE.on){g77PeDraw(g,G77_PE.role.caterer,x,y,th,t,true);return}   // GATE-77 S6d-a · p178
+ g.save();g.translate(x,y);g.rotate(th);g.fillStyle='rgba(8,18,26,.3)';g.beginPath();g.ellipse(.8,.9,2.2,1.7,0,0,Math.PI*2);g.fill();
+ const s=Math.sin(t*7)*.5;g.fillStyle='#1f2a44';g.fillRect(-1.6+s,-.95,1.3,.75);g.fillRect(-1.6-s,.2,1.3,.75);                                                      // legs (walking)
+ g.fillStyle='#f2f4f6';g.beginPath();g.ellipse(0,0,1.6,1.9,0,0,Math.PI*2);g.fill();g.fillStyle='#2f6fb6';g.fillRect(-.5,-1.9,.7,3.8);                              // the polo with the company stripe
+ g.fillStyle='#3a2a20';g.beginPath();g.arc(.15,0,.95,0,Math.PI*2);g.fill();g.fillStyle='#f2f4f6';g.fillRect(.9,-1.5,1.3,.6);g.fillRect(.9,.9,1.3,.6);g.restore()}   // head, arms forward
+// at the door: lift → platform out → trolleys → platform in → down (u from s6aJob: 0 → 1 the first 4 s of the stay, 1 → 0 the last 4 s)
+S6A_ACTS.shuttle=function(g,a,j,now){if(G77_SH.on)g77ShAct(g,a,j,now)};   // GATE-77 S6c · p170
+S6A_ACTS.cat=function(g,a,j,now){const p=a.pose,D=s6aDimOf('CT');if(!D)return;const L=D[0]/2,W=D[1]/2,R=S6R_CAT.ramp,E=S6R_CAT.ext;
+ let door=null;const sdd=s6aSide(j.ap,p[0],p[1]);{const ad=s6rCatADs(j.sd,j.ac);if(ad){const q=s6aAcPt(j.ap,ad[0],ad[1]*sdd);door=s6aLocal(p,q[0],q[1])}}   // GATE-77 S6r · M5 · K-82: the aft galley door only
+ const hf=Math.min(1,(S6R_CAT.sill[j.ac]||3)/S6R_CAT.hmax),hl=Math.max(0,Math.min(1,j.u))*hf,bx1=L*.5,c=Math.cos(p[2]),s=Math.sin(p[2]);
+ const ox=1.4+4.6*hl,oy=1.9+5.2*hl,lx=ox*c+oy*s,ly=-ox*s+oy*c;   // the raised box's shadow, in the truck's frame
+ g.save();g.translate(p[0],p[1]);g.rotate(p[2]);
+ if(hl>.02){g.fillStyle='rgba(8,18,26,.24)';g.fillRect(-L+.6+lx,-W+.35+ly,bx1+L-.6,W*2-.7);
+  // the scissor stack in the gap between the box and its shadow: a lattice of arms in shade
+  g.save();g.beginPath();g.rect(-L+1.2+Math.min(0,lx),-W+1+Math.min(0,ly),bx1+L-2+Math.abs(lx),W*2-2+Math.abs(ly));g.clip();g.strokeStyle=S6R_CK.lat;g.lineWidth=.55;g.beginPath();
+  const n=Math.max(2,Math.round(2+4*hl));for(let i=0;i<=n;i++){const x=-L+2+(bx1+L-4)*i/n;g.moveTo(x,-W*.5);g.lineTo(x+lx*.8,-W*.5+ly*.8);g.moveTo(x,W*.5);g.lineTo(x+lx*.8,W*.5+ly*.8)}g.stroke();g.restore()}
+ const plOut=j.last?0:Math.max(0,Math.min(1,(j.t-R)/E,(j.dur-R-j.t)/E)),open=plOut>0;
+ s6rCatBox(g,L,W,hl,open);
+ if(door&&plOut>0){const xd=door[0]-.6,yc=Math.max(-W+4.4,Math.min(W-4.4,door[1])),pw=8,x0=bx1-.4,x1=x0+(xd-x0)*plOut;
+  g.fillStyle='rgba(8,18,26,.22)';g.fillRect(x0+lx*.9,yc-pw/2+ly*.9,x1-x0,pw);g.fillStyle=S6R_CK.grate;g.fillRect(x0,yc-pw/2,x1-x0,pw);
+  g.strokeStyle='#8b949b';g.lineWidth=.3;g.beginPath();for(let x=x0+1;x<x1;x+=1.4){g.moveTo(x,yc-pw/2+.4);g.lineTo(x,yc+pw/2-.4)}g.stroke();
+  for(const sy of[-1,1]){g.strokeStyle='#e8b92b';g.lineWidth=.6;g.beginPath();g.moveTo(x0,yc+sy*(pw/2-.3));g.lineTo(x1,yc+sy*(pw/2-.3));g.stroke();g.fillStyle='#e8b92b';for(let x=x0+1;x<=x1;x+=4)g.fillRect(x-.35,yc+sy*(pw/2-.3)-.35,.7,.7)}
+  g.fillStyle='#2b3036';g.fillRect(x1-.6,yc-pw/2,.6,pw);                                                                                                            // the rubber bumper at the sill
+  // the trolleys: one cycle per trolley — full out to the door, the used one back into the box
+  if(plOut>=1)s6rCatTrolleysDraw(g,j,now,L,W,bx1,xd,yc,R,E);else if(hl>.5)s6rCatRowsAt(g,j,L,W,bx1);}
+ else if(hl>.5)s6rCatRowsAt(g,j,L,W,bx1);   // the box up, the platform not yet out (all full) / already in (all empty)
+ g.restore()};
+// GATE-77 S6r · M5 · K-82: the trolleys of a visit through the roof hatch — two rows inside the raised box (front = the door end): the full
+// ones still to go, the empties already back. nFull / nEmpty from the cycle clock (the inventory: N = full + moving + empty, always)
+function s6rCatRows0(g,j,L,W,bx1,nFull,nEmpty,init){const N=s6rCatTrolleys(j.sd,j.ac),f=init?N:nFull,e=init?0:nEmpty,x0=-L+2.4,slots=[];
+ for(let i=0;i<N;i++)slots.push([bx1-3.6-Math.floor(i/2)*6,(i%2?1:-1)*Math.min(W-1.9,3.2)]);
+ g.fillStyle='rgba(30,38,46,.55)';g.fillRect(x0,-W+1.1,bx1-1-x0,W*2-2.2);                                                                     // the open roof hatch
+ for(let i=0;i<N;i++){const s=slots[i];if(s[0]<x0+2.5)break;if(i<f)s6rTrolley(g,s[0],s[1],true,1);else if(i>=N-e)s6rTrolley(g,s[0],s[1],false,1)}}
+function s6rCatRowsAt0(g,j,L,W,bx1){const N=s6rCatTrolleys(j.sd,j.ac),first=j.t<j.dur/2;s6rCatRows(g,j,L,W,bx1,first?N:0,first?0:N,false)}
+function s6rCatTrolleysDraw0(g,j,now,L,W,bx1,xd,yc,R,E){const t0=R+E,t1=j.dur-R-E,N=s6rCatTrolleys(j.sd,j.ac),T=Math.max(1.5,Math.min(S6R_CAT2.T,(t1-t0)/N));
+ const k=Math.max(0,Math.min(N,Math.floor((j.t-t0)/T))),ph=j.t<t0?0:j.t>=t0+N*T?1:(j.t-t0)/T-k,act=j.t>=t0&&j.t<t0+N*T;
+ // phases of one cycle: .00–.08 out of the box · .08–.40 pushed to the door (walking) · .40–.50 into the galley · .50–.58 the empty one out
+ // · .58–.90 back to the box · .90–1 into the box
+ const movingFull=act&&ph<.5,movingEmpty=act&&ph>=.5;
+ s6rCatRows(g,j,L,W,bx1,N-k-(act?1:0),k+(act&&ph>=.9?1:0),false);
+ if(!act)return;const xa=bx1-2.2,xb=xd-2.6;let x,al=1,dir;
+ if(ph<.08){x=xa;al=ph/.08;dir=1}else if(ph<.4){x=xa+(xb-xa)*((ph-.08)/.32);dir=1}else if(ph<.5){x=xb+2.6*((ph-.4)/.1);al=1-(ph-.4)/.1;dir=1}
+ else if(ph<.58){x=xb+2.6*(1-(ph-.5)/.08);al=(ph-.5)/.08;dir=-1}else if(ph<.9){x=xb-(xb-xa)*((ph-.58)/.32);dir=-1}else{x=xa;al=1-(ph-.9)/.1;dir=-1}
+ s6rTrolley(g,x,yc+.2,movingFull,al);
+ const walking=(ph>=.08&&ph<.4)||(ph>=.58&&ph<.9),wx=Math.max(xa-1,Math.min(xd-1.6,x-dir*4.2));s6rCaterer(g,wx,yc-.1,dir>0?0:Math.PI,walking?now/1000:0)}
+// QA (K-82): every catering job in a run — the platform's end at the chosen door (≤ 2 px), the door is the aft galley door, the cycle ≥ 12 s
+// (M5a: the bridge stands, where the truck stands square to the door; P5 / P6 — square to the door in M5b; the light jets — a van, by hand)
+function s6rCatQa(all){const out={jobs:0,maxMiss:0,short:0,issues:[],later:{}};for(const f of all){const sd0=APL.stands.find(s=>s.id===f.stand);for(const x of f.vt||[]){const r=x.role||(x.task&&x.task.role);if(r!=='cat')continue;const tk=x.task||x;if(!tk.tr)continue;
+  if(!sd0||(sd0.tpl!=='bridge'&&sd0.id!=='P5'&&sd0.id!=='P6')){out.later[f.stand]=(out.later[f.stand]||0)+1;continue}   // GATE-77 S6r · M5b: P5 / P6 too
+  const L=tk.tr.seq.legs;let t=0,hold=null;for(const l of L){if(l.kind==='svc'){hold={t,l};break}t+=l.dur}if(!hold)continue;out.jobs++;
+  const p=hold.l.pose(0),sd=APL.stands.find(s=>s.id===f.stand),ts=tk.t0+hold.t;let ap=null;for(const r of f.tracks||[])if(r.tr.kind==='ac'){ap=r.tr.seq.at(ts-r.t0);if(ap)break}
+  const N=s6rCatTrolleys(sd,f.ac),R=S6R_CAT.ramp,E=S6R_CAT.ext;if(G77_CAT.on)g77CatPlanQa(g77CatPlan(sd,f.ac,f.code),hold.l.dur,R,E,out);else if((hold.l.dur-2*(R+E))/N<S6R_CAT2.T-.01)out.short++;   // GATE-77 S6c · p166 · D-172
+  if(ap){const D=s6aDimOf('CT'),Lh=D[0]/2,W=D[1]/2,ad=s6rCatADs(sd,f.ac),sdd=s6aSide(ap,p[0],p[1]),q=s6aAcPt(ap,ad[0],ad[1]*sdd),lp=s6aLocal(p,q[0],q[1]),yc=Math.max(-W+4.4,Math.min(W-4.4,lp[1])),miss=Math.hypot(.6,lp[1]-yc);
+   out.maxMiss=Math.max(out.maxMiss,+miss.toFixed(2));if(miss>2&&out.issues.length<6)out.issues.push(f.code+'@'+f.stand+':'+f.ac.slice(3,5)+' miss '+miss.toFixed(1))}}}
+ out.ok=out.jobs>0&&out.maxMiss<=2&&out.short===0&&!out.bad;return out}
+
+// ==== GATE-77 S6r · M3 — the fleet (D-103, D-108), the stair park (K-80), the ground power you can see (K-77) ==========================
+// D-108 (owner 23:56): "יש רק 2 מסועים וזה לא מספיק — אולי עוד מקום ליד רכב המדרגות, שגם ממנו יהיו 4". Beside the stair park there is no road
+// to the bridge stands (the east block is P5 / P6 and the hangars); the nearest free apron with a road is west of hangar 2, between the
+// GLINK and the hangar, on the hardstand: two belt bays there (BL3, BL4), nose north, in from the eastbound hardstand lane, out reversing
+// onto the westbound lane — the yard's north row does the same. D-103: a fourth stairs truck in a fourth lane of the stair park.
+const S6R_HS=[{id:'H-BL3',fleetId:'V-BL3',x:7336},{id:'H-BL4',fleetId:'V-BL4',x:7392}],S6R_HSY=1052;
+function s6rHSBays(A){for(const q of S6R_HS){if(A.bays.some(b=>b.id===q.id))continue;
+ A.bays.push({id:q.id,fleetId:q.fleetId,kind:'BL',row:'HS',zone:'hard',x:q.x,w:26,x0:q.x-13,x1:q.x+13,y0:S6R_HSY-34,y1:S6R_HSY+34,yc:S6R_HSY,th:-Math.PI/2,asset:'G7-BL',scale:1,occupied:true})}}
+// the bays painted on the hardstand (white bay lines, the names, an arrow to the lane)
+
+// GATE-77 S6b-a · D-111: the depot — the fill bay, the pump island, the gauge on the tanks, the long tanker's fill point (painted)
+function s6bPaintDepot(g){const D=S6B_DEPOT;if(!D.on)return;g.save();
+ const bx=D.x,by=D.y,hw=13,hl=40;g.strokeStyle='rgba(244,242,232,.85)';g.lineWidth=1.2;g.beginPath();g.moveTo(bx-hw,by-hl);g.lineTo(bx-hw,by+hl);g.moveTo(bx+hw,by-hl);g.lineTo(bx+hw,by+hl);g.moveTo(bx-hw,by-hl);g.lineTo(bx+hw,by-hl);g.stroke();
+ g.fillStyle='rgba(230,180,40,.22)';g.fillRect(bx-hw,by-hl,hw*2,hl*2);
+ const [px,py]=D.pump;g.fillStyle='#d9dee2';g.fillRect(px-4,py-9,8,18);g.fillStyle='#c0392b';g.fillRect(px-3,py-7,6,5);g.fillStyle='#1d252d';g.fillRect(px-2.5,py+1,5,5);g.strokeStyle='#2b2f34';g.lineWidth=.8;g.strokeRect(px-4,py-9,8,18);   // the pump island
+ g.fillStyle='rgba(240,200,60,.9)';g.fillRect(px-6,py+11,12,2.2);g.fillRect(px-6,py-13,12,2.2);   // the bollards' paint
+ aptTxt(g,'FUEL FILL',bx,by+hl+8,6,'rgba(246,244,236,.75)',700);
+ const F=D.fillPt;g.setLineDash([5,4]);g.strokeStyle='rgba(240,200,60,.85)';g.lineWidth=1.2;g.strokeRect(F.x0,F.y0,F.x1-F.x0,F.y1-F.y0);g.setLineDash([]);
+ aptTxt(g,'TANKER 16.5 m · FILL POINT',(F.x0+F.x1)/2,(F.y0+F.y1)/2+2,5.5,'rgba(246,244,236,.7)',700);
+ g.fillStyle='#5c636a';g.fillRect(F.x1-14,F.y1,4,8);g.fillStyle='#e8b92b';g.beginPath();g.arc(F.x1-12,F.y1+9,2,0,Math.PI*2);g.fill();   // the inlet of the depot
+ const [gx,gy,gw,gh]=D.tankGauge,lv=s6bDepotLevel(typeof APT_OPS!=='undefined'?APT_OPS.clk:0);g.fillStyle='#1d252d';g.fillRect(gx-1,gy-1,gw+2,gh+2);g.fillStyle='#3a4248';g.fillRect(gx,gy,gw,gh);
+ g.fillStyle=lv<25?'#d9483b':lv<50?'#e8b92b':'#3bb36a';g.fillRect(gx,gy+gh*(1-lv/100),gw,gh*lv/100);g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=.5;for(let i=1;i<4;i++){g.beginPath();g.moveTo(gx,gy+gh*i/4);g.lineTo(gx+gw,gy+gh*i/4);g.stroke()}
+ aptTxt(g,Math.round(lv)+'%',gx+gw/2,gy+gh+7,5,'rgba(246,244,236,.85)',700);g.restore()}
+// a fuel truck at the depot: the hose from the pump to its fill port, the operator, the truck's gauge rising
+function s6bFillAct(g,a,now){const v=a.v;if(!v||!a.pose)return false;const t=APT_OPS.clk;let k=null;for(const q of v.tasks)if(t>=q.t0&&t<q.t1){k=q;break}if(!k||!k.tr||!k.tr.seq)return false;
+ const q=k.tr.seq.legAt(t-k.t0);if(!q||q.leg.kind!=='fill')return false;const D=s6aDimOf('FT')||[75,19],p=a.pose,port=s6aLoc(p,-D[0]*.12,-D[1]/2-.5),d=q.leg.dur,R=3,u=Math.max(0,Math.min(1,q.t/R,(d-q.t)/R)),work=q.t>=R&&d-q.t>R;
+ s6aHose(g,S6B_DEPOT.pump,port,u,'#2b2f34',1.6,work?'rgba(240,200,60,.9)':null,1,now,'#e8b92b');s6rOp(g,S6B_DEPOT.pump,port,{u,work,last:q.t>d/2},now);
+ const pr=Math.min(1,q.t/Math.max(1,d)),c=s6aLoc(p,D[0]*.05,D[1]/2+2.5);g.save();g.translate(c[0],c[1]);g.rotate(p[2]);g.fillStyle='#1d252d';g.fillRect(-7,-1.6,14,3.2);g.fillStyle='#3bb36a';g.fillRect(-6.5,-1.1,13*(.25+.75*pr),2.2);g.restore();   // the truck's gauge
+ S6B_DEPOT.fills++;return true}
+
+// GATE-77 S6b-b · D-111: the service point — the lay-by, the water cabinet and its hose reel, the lavatory dump drain
+function s6bPaintWS(g){const W=S6B_WS;if(!W.on)return;g.save();const L=W.lay,y0=L.y-11,y1=L.y+11;
+ g.fillStyle='rgba(70,140,200,.13)';g.fillRect(L.x0,y0,L.x1-L.x0,y1-y0);g.strokeStyle='rgba(244,242,232,.8)';g.lineWidth=1.1;g.setLineDash([5,4]);g.strokeRect(L.x0,y0,L.x1-L.x0,y1-y0);g.setLineDash([]);
+ const [wx,wy]=W.water;g.fillStyle='#2f6fa8';g.fillRect(wx-6,wy-4,12,8);g.strokeStyle='#1d3c5a';g.lineWidth=.8;g.strokeRect(wx-6,wy-4,12,8);g.fillStyle='#e9f1f8';g.fillRect(wx-4,wy-2.2,8,1.6);   // the potable-water cabinet
+ g.strokeStyle='#22303a';g.lineWidth=1.2;g.beginPath();g.arc(wx+10,wy,2.6,0,Math.PI*2);g.stroke();   // its hose reel
+ aptTxt(g,'WATER',wx,wy+9,5,'rgba(246,244,236,.8)',700);
+ const [dx,dy]=W.dump;g.fillStyle='#3a3f44';g.fillRect(dx-6,dy-4,12,8);g.strokeStyle='#7b8287';g.lineWidth=.6;for(let i=-4;i<=4;i+=2){g.beginPath();g.moveTo(dx+i,dy-3.5);g.lineTo(dx+i,dy+3.5);g.stroke()}   // the dump drain (grated)
+ g.fillStyle='#6b5a2e';g.beginPath();g.arc(dx+10,dy,2.4,0,Math.PI*2);g.fill();
+ aptTxt(g,'LAV DUMP',dx,dy+9,5,'rgba(246,244,236,.8)',700);
+ aptTxt(g,'SERVICE POINT · WATER / WASTE',(L.x0+L.x1)/2,y0-3,5,'rgba(246,244,236,.6)',700);g.restore()}
+// a truck at the point: the hose from the cabinet / the drain to its port, the operator, its gauge
+function s6bWsAct(g,a,now){const v=a.v;if(!v||!a.pose)return false;const t=APT_OPS.clk;let k=null;for(const q of v.tasks)if(t>=q.t0&&t<q.t1){k=q;break}if(!k||!k.tr||!k.tr.seq)return false;
+ const q=k.tr.seq.legAt(t-k.t0);if(!q||q.leg.kind!=='fill')return false;const wt=v.type==='WT',D=s6aDimOf(v.type)||[44,17],p=a.pose,port=s6aLoc(p,-D[0]*.12,-D[1]/2-.5),src=wt?S6B_WS.water:S6B_WS.dump,d=q.leg.dur,R=3,u=Math.max(0,Math.min(1,q.t/R,(d-q.t)/R)),work=q.t>=R&&d-q.t>R;
+ s6aHose(g,src,port,u,wt?'#2f6fa8':'#4a4030',1.6,work?(wt?'rgba(120,190,240,.9)':'rgba(150,120,60,.9)'):null,wt?1:-1,now,wt?'#9cd0f0':'#8a7a4a');s6rOp(g,src,port,{u,work,last:q.t>d/2},now);
+ const pr=Math.min(1,q.t/Math.max(1,d)),lv=wt?.2+.8*pr:.95-.85*pr,c=s6aLoc(p,D[0]*.05,D[1]/2+2.5);g.save();g.translate(c[0],c[1]);g.rotate(p[2]);g.fillStyle='#1d252d';g.fillRect(-7,-1.6,14,3.2);g.fillStyle=wt?'#4aa3e0':'#a07a3a';g.fillRect(-6.5,-1.1,13*lv,2.2);g.restore();
+ return true}
+function s6rPaintHS(g){const A=aptReady();g.save();for(const b of A.bays.filter(b=>b.row==='HS')){g.strokeStyle='rgba(244,242,232,.8)';g.lineWidth=1.2;g.beginPath();g.moveTo(b.x0,b.y0);g.lineTo(b.x0,b.y1);g.moveTo(b.x1,b.y0);g.lineTo(b.x1,b.y1);g.moveTo(b.x0,b.y0);g.lineTo(b.x1,b.y0);g.stroke();
+  aptTxt(g,b.id.replace('H-',''),b.x,b.y0-7,7,'rgba(244,242,232,.85)',700)}
+ aptTxt(g,'BELT LOADERS',(S6R_HS[0].x+S6R_HS[S6R_HS.length-1].x)/2,S6R_HSY-46,7,'rgba(244,242,232,.65)',700);g.restore()}
+// K-77: the ground power at the bridge stands — a cable from the bridge's 400 Hz unit (under the cab) to the socket under the nose while
+// the bridge is docked; when the bridge is swung aside (D-106 / D-109), from the stand's power pit beside the nose. Connected after the
+// chocks, off 20 s before the push; the green lamp at the socket while on. The pit is painted at every bridge stand.
+const S6R_PW={on:3,off:20,pit:24};
+function s6rPit(s,ac){const sd=APL.stands.find(q=>q.id===s.id);if(!sd)return null;const g=apttAcGeom(ac||'AC-NB-01'),a=g.nose-.09*(g.nose-g.tail),side=(sd.svcSide||s.svcSide||-1);
+ return[sd.cx+side*(g.F[3]+S6R_PW.pit),sd.ngy+a]}
+function s6rPaintPits(g){g.save();for(const sd of APL.stands){if(sd.tpl!=='bridge')continue;const p=s6rPit(sd,null);if(!p)continue;g.fillStyle='#4a5157';g.fillRect(p[0]-3,p[1]-3,6,6);g.strokeStyle='#e8b92b';g.lineWidth=.8;g.strokeRect(p[0]-3,p[1]-3,6,6);g.fillStyle='#2b3036';g.fillRect(p[0]-1.6,p[1]-1.6,3.2,3.2)}g.restore()}
+function s6rPowerDraw(now,v){if(WTC_LP===1||!APT_OPS.ready||typeof Camera!=='undefined'&&Camera.zoom<.5)return;const t=APT_OPS.clk;
+ for(const sd0 of APL.stands){if(sd0.tpl!=='bridge')continue;const s=APT_STANDS.find(q=>q.id===sd0.id);if(!s)continue;let f=null;for(const q of AO.flights)if(q.stand===s.id&&t>=q.t0&&t<q.t1){f=q;break}if(!f)continue;
+  let tOB=null,tP=null;for(const q of f.states){if(q[1]==='ON_BLOCK'&&tOB==null)tOB=q[0];if((q[1]==='PUSHBACK'||q[1]==='TAXI_OUT')&&tP==null)tP=q[0]}if(tOB==null)continue;if(tP==null)tP=f.t1;
+  const a0=tOB+G77_CHOCK+4,a1=tP-S6R_PW.off;if(t<a0||t>a1+S6R_PW.on)continue;
+  let ap=null;for(const r of f.tracks)if(r.tr.kind==='ac'){ap=r.tr.seq.at(t-r.t0);if(ap)break}if(!ap)continue;if(!portVis(v,ap[0]-90,ap[1]-90,180,180))continue;
+  const u=Math.max(0,Math.min(1,(t-a0)/S6R_PW.on,(a1+S6R_PW.on-t)/S6R_PW.on));
+  const ext=f.bridge?aoBridge(s.id,t):0,P=g77BridgePose(s,f.bridge?f:null,ext),g7=apttAcGeom(f.ac),pit=s6rPit(s,null);
+  const src=P.docked&&P.cab?P.cab:pit;if(!src)continue;const sd=s6aSide(ap,src[0],src[1]),sock=s6aAcPt(ap,g7.nose-.12*(g7.nose-g7.tail),g7.F[3]*.92*sd);   // the external power receptacle, low on the nose's side
+  const aS=g7.nose-.12*(g7.nose-g7.tail),mid=s6aAcPt(ap,aS,(g7.F[3]+3)*sd);   // along the skin to the receptacle (visible beside the fuselage)
+  s6aHose(ctx,src,mid,Math.min(1,u*1.6),'#16191c',1.1,null,1,now,null);s6aHose(ctx,mid,sock,Math.max(0,u*1.6-.6),'#16191c',1.1,null,1,now,'#d6dadf');
+  if(u>=1){ctx.save();for(const q of[src,mid]){ctx.fillStyle='#3fdc6a';ctx.beginPath();ctx.arc(q[0],q[1],1.1,0,Math.PI*2);ctx.fill()}ctx.fillStyle='rgba(63,220,106,.25)';ctx.beginPath();ctx.arc(src[0],src[1],2.6+Math.sin(now/300)*.4,0,Math.PI*2);ctx.fill();ctx.restore()}}}
+
+// ==== GATE-77 S6r · M4 · D-112 (owner 20.10 09:07): "מעברי חצייה בשביל השירות — זה לא טוב" — the bus and the airstair at P2 / P3 ===========
+// Between the fuselage and the rotunda there is no room for a 12 m bus to turn in (its ends sweep the rotunda's column — measured), so the
+// bus takes "the place of another service vehicle" (the owner's fallback): the ground-power spot in front of the nose, unused at the bridge
+// stands (K-77 — power from the pit).  The turboprop and the four-engine jet stop 10–20 px further north at P2 / P3 (stopBy) so the bus
+// stands between the nose and lane L, parallel to the lane, heading west, its east end 6 px short of the rotunda.  The bridge swings aside;
+// the aircraft's own airstair at the bridge-side door; the passengers walk on the apron between the airstair and the bus — never on lane L.
+// P2 (rotunda east of the slot): the bus passes on lane L, backs into the slot from the west, leaves forward to the west and turns round in
+// the column between P1 and P2.  P3 (rotunda west): it drives in from the east, backs out east and into the column between P3 and P4, and
+// leaves forward to the east.  P1: the rail corridor west of the stand leaves no room to turn — the bridge (never a crosswalk).
+const S6R_BUS={stands:['P2','P3'],dy:29.5,rS:30,r:18,r2:50,tail:35,col:6,hl:45,doorAlong:10.8,doorLat:10,sw:90,swOut:40,flat:80,busOnly:{'AC-QJ-01':1,'AC-TP-01':1}};   /* p404: the ATR 72 at P2 / P3 by bus only (D-92 (2)); the bridge for it — the owner's option */   // busOnly: at P2 / P3 the four-engine jet stops 18 px north for the bus — the bridge does not reach it there, so without a free bus the visit is not admitted at P2 / P3 (the planner tries another stand or time; counted in s6rNbStats)
+function s6rBusOnly(sid,ac){return!!(S6R_BUS.busOnly[ac]&&S6R_BUS.stands.includes(sid))}   // flat: the bus is level before its end reaches the nose   // sw: the length of the gentle S between lane L and the slot
+function s6rNbLay(sd,ac){const C=s6rNbLay.c||(s6rNbLay.c={}),key=sd.id+'|'+ac+'|'+sd.ngy;if(C[key]!==undefined)return C[key];if(!S6R_BUS.stands.includes(sd.id))return C[key]=null;
+ const s=APT_STANDS.find(q=>q.id===sd.id),K=s&&g77K72Stand(s);if(!s||!K)return C[key]=null;const B=f2BridgeGeometry(s,{ac,sd},1),d=B.door,dir=Math.sign(d[0]-sd.cx)||1,R=K.R;
+ const ys=AF.L-S6R_BUS.dy,xs=R[0]-dir*(G77_K72.rr+S6R_BUS.col+S6R_BUS.hl),foot=[d[0]+dir*17,d[1]],wx=foot[0]+dir*3;
+ const bd=[[xs-S6R_BUS.doorAlong,ys-S6R_BUS.doorLat],[xs+S6R_BUS.doorAlong,ys-S6R_BUS.doorLat]].sort((a,b)=>Math.abs(a[0]-wx)-Math.abs(b[0]-wx))[0];   // apron buses: doors on both sides — the side that faces the aircraft
+ const path=[d,foot,[wx,d[1]+8],[wx,ys-14],bd];
+ return C[key]={door:d

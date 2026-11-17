@@ -1,0 +1,1152 @@
+e0)/runMin).toFixed(1),
+  frozenAvgAfterWarm:{gridlock:+(fb.gridlock/denom).toFixed(2),contact:+(fb.contact/denom).toFixed(2),subsystem:+(fb.subsystem/denom).toFixed(2),unexplained:+(fb.unexplained/denom).toFixed(2),rootUnexplained:+(fb.rootUnexplained/denom).toFixed(2)},frozenMaxAfterWarm:fbMax,maxUnexplainedAnyTime:allUnexplained,
+  limitHistogram:Object.fromEntries(Object.entries(limitHist).sort((a,b)=>b[1]-a[1]).slice(0,20)),unexplainedVehicles:[...unexplainedSeen.values()].slice(0,20),engineStalls:stalls,stalls:CORE2_STATS.stalls.slice(0,20),
+  throughput:{edgeChangesPerMin:+(thr.edge/runMin).toFixed(1),metersPerMin:Math.round(thr.dist*WORLD_METERS_PER_PX/runMin),lateEdgeChangesPerMin:lateMin>0?+(thr.lateEdge/lateMin).toFixed(1):null,lateMetersPerMin:lateMin>0?Math.round(thr.lateDist*WORLD_METERS_PER_PX/lateMin):null},
+  sizes,firstFreeze,firstUnexplained,overEvents,clamped:CORE2_STATS.clamped,reroutes:CORE2_STATS.reroutes,reroutesPerMin:+(CORE2_STATS.reroutes/runMin).toFixed(2)};
+ const res={ok,checks,core:2,port:{publicInsideSamples:portPub,publicIds:portPubIds,truckOverlapSamples:portFlOver,truckOverlapIds:portFlIds,gates:pgQaDiff(pg0,pgQaTotals())},seed,seconds,dt,warmup:warm,actors:trafficRoadActors().length,passThroughNodes:TRAFFIC_PASS_THROUGH.size,avgFrozenAfterWarm:+avgFrozen.toFixed(2),avgFrozenFirstHalf:+avgA.toFixed(2),avgFrozenSecondHalf:+avgB.toFixed(2),maxFrozenAfterWarm:maxFrozen,maxOverlap:maxOver,overlapSamples:overSamples,releasesTotal:samples.length?samples[samples.length-1].rel:0,releasesPerMinLast20:+relPerMin.toFixed(2),stopVisits,lateStops,termEnters,airport4Visits:(typeof AIRPORT4!=='undefined'?AIRPORT4.visits:null),d4Docks,lateD4,c5Cycles:c5Total,lateC5,a4Trips:a4Total,lateA4,clockDrift:+clockDrift.toExponential(2),diag,finalFrozen:samples.length?samples[samples.length-1].frozenIds||[]:[],wallMs:Math.round(performance.now()-start),samplesEvery60:samples.filter(s=>s.t%60===0)};
+ Dbg?.event?.('traffic','traffic01_qa',{ok,seed,seconds,avgFrozen:res.avgFrozenAfterWarm,maxFrozen,maxOver,relPerMin:res.releasesPerMinLast20,unexplained:diag.frozenAvgAfterWarm.unexplained,engineStalls:stalls});
+ return res
+};
+window.__TC_TRAFFIC_HEALTH=()=>trafficHealthSample(performance.now(),60);
+window.__TC_V183_VEHICLE_RETURN_QA=()=>({seconds:BORROWED_VEHICLE_RETURN_SECONDS,chunkRule:'grid distance > 1',currentBorrowed:!!State.borrowedVehicleOrigin,currentArmed:State.borrowedReturnArmed,currentFarSeconds:+(State.borrowedReturnFarSeconds||0).toFixed(1),queuedBorrowed:VehicleWorld.extra.filter(o=>o.loanOrigin).map(o=>({id:o.id,source:o.loanOrigin.sourceId,type:o.loanOrigin.type,farSeconds:+(o.loanFarSeconds||0).toFixed(1)})),parkedOriginsRestoreExact:typeof baseParkedCarById==='function',trafficOriginsRestore:typeof trafficReturnSpot==='function'});
+/* ==== D‑600 · הכיכרות במנוע הכבישים (ענף rb, 10.11.2026) ==================================================================================
+   המקור שהוכח בעקיבה (deliver/2026-11-10/rb/handback.txt, 20 הרצות של 300 שנ׳ על S7F282):
+   א. כיכר הכפר (J25_08): פנייה ימינה מהנתיב החיצוני של שדרת המרכז, או אל הנתיב החיצוני שלה, עשתה סיבוב מלא של הכיכר (77.5 מ׳ במקום 17) —
+      נקודת הכניסה ונקודת היציאה סמוכות, הקשת יצאה שלילית, והמנוע הוסיף לה 360°. כל רכב כזה החזיק את הטבעת 14 שנ׳, והכניסות חיכו לו.
+   ב. כיכר העיר (J12_42): הולך רגל שמחכה על המדרכה במעבר של כיכר עצר את כל הנתיבים של הרחוב (רוח רפאים), גם כשלא יכול היה לרדת לכביש:
+      כי רכב ארוך עמד על המעבר בתור לכניסה, כי רכב של המלון עמד בקו הכניסה והמהירות שלו נרשמה 60 (updateA5Hotel), או כי רכב נסע בטבעת
+      בלי לצאת בזרוע הזו. הרכב שיוצא מהכיכר נעצר מול רוח הרפאים עם הזנב בטבעת, הטבעת נעצרה, ורכב המלון חיכה לטבעת — מעגל סגור של 12 עד 24 שנ׳.
+   ג. כיכר העיר: הקטע שבין הרמזור A6-NF לכיכר הוא 27.6 מ׳ (במפה הצומת הזה הוא J06_42, ‏60 מ׳ מהכיכר — סתירה, בהחזרה). המעבר של הכיכר
+      מתחיל 0.8 מ׳ אחרי התיבה של הרמזור: רכב שנעצר בשביל הולך רגל עמד בתוך הצומת עם הנעילה שלו; ובקטע מערבה יש מקום לרכב אחד בלבד,
+      ורכב של המלון שחיכה שם לרמזור השאיר את הרכב שמאחוריו בתוך הטבעת.
+   הכללים (רק בכיכרות ובמעברים שלהן; רמזורים וצמתים אחרים — בלי שינוי):
+   1. הקשת בכיכר — מהכניסה אל היציאה הראשונה שאחריה; כניסה ויציאה סמוכות מקבלות קשת קצרה (rbArc3), לא סיבוב מלא.
+   2. הולך רגל במעבר של כיכר: יורד לכביש כשאין רכב על המעבר, וכל רכב שמתקרב אליו יכול עוד לעצור (rbZebraGap3). מי שעומד — לא מעכב אותו;
+      מי שנוסע בטבעת ולא יוצא בזרוע הזו — לא מעכב אותו. בזמן שהוא מחכה על המדרכה הוא לא עוצר אף נתיב; מהרגע שירד — כל הרכבים עוצרים לו.
+   3. מעבר של כיכר שצמוד ליציאה של צומת אחר: רכב לא נכנס לצומת כשהולך רגל חוצה שם (rbZebraAhead3) — מחכה בקו העצירה, לא בתוך הצומת.
+   4. רכב שמגיע לקו הכניסה עם הזמנה מקושרת (קטע קצר לפני הכיכר) נותן זכות קדימה למי שנמצא בטבעת מול הכניסה (rbNear3).
+   5. יציאה שמחזיקה רכב אחד: רכב לא נכנס לכיכר אחרי רכב של המלון או של החירום שיוצא באותה יציאה (rbFleetAhead3); ורכב כזה מחכה
+      בקו הכניסה כשהרמזור שאחרי היציאה אדום או כשמישהו עומד בקטע (rbFleetExitWait3) — אותו כלל כמו לכל רכב.
+   ============================================================================================================================================ */
+var RB3={on:true,err:null,loopFix:0,
+ /* המעבר בזרוע הדרומית של כיכר הספורט (המפה: x 1200, ‏y 2755; הביקורת R-86: מעבר בכל ארבע הזרועות) נוחת במערב על רחבת היציאה של הכבאיות,
+    שתופסת את כל הזרוע (y 2670–2950) — אין בזרוע הזו מקום למעבר שלא נוגע בה. המדרכה ממשיכה על הרחבה, והמעבר מגיע אליה. לאישורך. */
+ cutOk:{'ZX-RB-J12_25-B4-CLW-N|A4-FIRE-CUT':'המפה (x 1200, y 2755) ו-R-86 — מעבר בכל ארבע הזרועות של כיכר הספורט'},
+ sibD:34,sibPairs:0,
+ n:{onZebra:0,close:0,fleet:0,walk:0,pedYield:0,nearYield:0,fleetAhead:0,fleetExit:0,sib:0}};
+/* 1 · the arc of a movement: from the entry point round to the exit point, the way the ring turns (θ decreasing). An entry and an exit next to
+   each other (a right turn from / into an outer lane) leave less than the two lead angles between them: the leads shrink and the arc is short. */
+function rbArc3(R,pin,pout,same){const TAU=Math.PI*2;let dA=R.dA;
+ if(RB3.on&&!same){const span=rbMod2(pin-pout);if(span<2*dA+.12){dA=Math.max(.06,(span-.12)/2);RB3.loopFix++}}
+ const a0=pin-dA;let D=(a0-(pout+dA))%TAU;if(D<0)D+=TAU;
+ if(!RB3.on||same){if(D<.12)D+=TAU}else if(D>TAU-.6)D=.06;
+ return{a0,D,dA}}
+/* a hotel / emergency vehicle on its own path that is held (a hold, a gate, a contact) stands, whatever its cruise speed field says */
+function rbActorSpeed3(v){if(v&&v.route&&v.d!=null&&((v.holdT||0)>0||(v.blocked||0)>0||(v.waitFleet||0)>0||(v.stopLeft||0)>0))return 0;return Math.abs(v.speed||0)}
+/* 2 · the walker at a crossing of a roundabout steps down when no body is on the crossing and every vehicle coming to it can still stop */
+function rbZebraGap3(z){const e=byEdge[z.roadId];if(!e)return true;const hw=(TYPES[e.cls]||TYPES.local).width/2,hor=z.stripeAxis==='horizontal',hd=17;
+ for(const v of signalTrafficActors()){if(!v||v.hidden)continue;try{if(VehicleWorld.hidden&&VehicleWorld.hidden.has(v.id))continue}catch(e2){}
+  const al=hor?v.x-z.x:v.y-z.y,lat=hor?v.y-z.y:v.x-z.x;if(Math.abs(lat)>hw+12)continue;
+  const hl=trafficVehicleHalfLength(v),sp=rbActorSpeed3(v),c=v.c2,A=Math.abs(al);
+  if(A<hl+(sp<1?3:18)){RB3.n.onZebra++;return false}                       // a body on the crossing
+  if(sp<1)continue;                                                         // standing clear of it
+  const ring=!!(c&&c.mv&&c.mv.rb&&c.mv.node===z.node);
+  if(ring&&c.mv.to.edge!==z.arm&&c.mv.to.edge!==z.roadId)continue;          // on the ring, not leaving by this arm
+  let dist=A-hl-hd;
+  if(ring){const to=c.mv.to,zs=(z.x-to.ax)*to.ux+(z.y-to.ay)*to.uy;dist=(c.mv.len-c.ms)+(zs-c.mv.sEnd)-hl-hd}
+  else{const h=v.heading||0;if(al*(hor?Math.cos(h):Math.sin(h))>0)continue}  // driving away from it
+  if(!c){if(sp>8&&A<60+hl+sp*.9){RB3.n.fleet++;return false}continue}      // not a vehicle of the road core (its own path, the player): the old margin
+  if(dist<sp*sp/(2*TRAFFIC_DECEL)+sp*.5+30){RB3.n.close++;return false}}   // too close to stop before the crossing: it passes first
+ RB3.n.walk++;return true}
+/* 3 · the crossings of the roundabouts on every lane (lane.rbz), for the gate of the junction a crossing lies right behind */
+function rb3Init(){for(const l of LANE_LIST2)l.rbz=null;
+ for(const z of ZEBRA_XW){if(!z.rb)continue;for(const l of LANE_LIST2){if(l.edge!==(z.ghostRoad||z.roadId))continue;const s=(z.x-l.ax)*l.ux+(z.y-l.ay)*l.uy;if(s<=0||s>=l.len)continue;(l.rbz||(l.rbz=[])).push({z,s})}}}
+function rbZebraAhead3(v,mv){const to=mv.to,Z=to.rbz;if(!Z||!RB3.on)return false;
+ for(const q of Z){if(q.s-17-(to.boxFrom+CORE2.BOX_CLEAR)>=v.c2.len+CORE2.GAP)continue;   // room to wait between the box and the crossing
+  for(const n of NPC_PEDESTRIANS)if(n.inCrosswalk===q.z.id){RB3.n.pedYield++;return true}}
+ return false}
+/* 4 · at the line with a linked reservation: give way to whoever is on the ring in front of the entry (or just past it) */
+function rbNear3(v,mv,node){const R=mv.rb,cfg=node.rb;if(!R||!cfg||!RB3.on)return null;const c0=v.c2;{const sb=rbSibYield3(v,mv,node);if(sb)return sb}
+ try{for(const I of a4FleetRingInfo(node.id)){if(I.pre>1)continue;const up=rbMod2(I.th-R.a0);if(up<=I.rem+.02&&up*R.Rc<I.hl+c0.hl+40+(I.speed||0)*.5){RB3.n.nearYield++;return'rb-yield'}
+   const dn=rbMod2(R.a0-I.th)*R.Rc;if(dn<I.hl+c0.hl+14-I.post){RB3.n.nearYield++;return'rb-yield'}}}catch(e){}
+ for(const o of node.inside){if(o.v===v||o.remote||o.ghost||o.standing)continue;const c=o.v&&o.v.c2;if(!c||!c.mv||!c.mv.rb||c.mv.node!==node.id)continue;
+  const q=rbTheta2(c);if(q.pre>1)continue;const rem=q.phase===1?q.th-c.mv.rb.a1:0,up=rbMod2(q.th-R.a0);
+  if(up<=rem+.02&&up*R.Rc<c.hl+c0.hl+40+(o.v.speed||0)*.5){RB3.n.nearYield++;return'rb-yield'}
+  const dn=rbMod2(R.a0-q.th)*R.Rc;if(dn<c.hl+c0.hl+14-q.post){RB3.n.nearYield++;return'rb-yield'}}
+ return null}
+/* 5 · an exit that holds one vehicle: nobody enters the roundabout behind a hotel / emergency vehicle that leaves by that exit */
+function rbFleetOnWay3(m,to){   // the path of this vehicle runs along the lane `to` (between the ring and its stop line) within the next 44 m
+ for(let s=0;s<=440;s+=10){const p=a4FleetPose(m.route,Math.min(m.route.total,m.d+s)),t=(p.x-to.ax)*to.ux+(p.y-to.ay)*to.uy,l=Math.abs(-(p.x-to.ax)*to.uy+(p.y-to.ay)*to.ux);
+  if(t>to.boxFrom&&t<Math.min(to.stopS,to.len)&&l<14)return true;if(m.d+s>=m.route.total)break}
+ return false}
+function rbFleetAhead3(v,mv,node){if(!RB3.on)return null;const to=mv.to,R=node.rb;if(corridorCapacity2(to)>=2*(v.c2.len+CORE2.GAP)+30)return null;
+ let A;try{A=a4FleetActors()}catch(e){return null}
+ for(const m of A){if(!m||!m.route||m.d==null||m.offsite)continue;if(Math.hypot(m.x-R.x,m.y-R.y)>R.Ro+70)continue;
+  if(rbFleetOnWay3(m,to)){RB3.n.fleetAhead++;return'space'}}
+ return null}
+/* … and that vehicle waits at the line of the ring while the light right behind its exit is red, or somebody stands on the short link */
+function rbFleetExitWait3(m,h){if(!RB3.on)return null;try{const H=m.route.holds,i=H.indexOf(h),nx=i>=0?H[i+1]:null;if(!nx||nx.kind!=='signal'||!nx.mv||!nx.node)return null;
+  a4FleetRbGeom(m.route,h);if(nx.d-h.rbOut>260)return null;                    // a long link: it waits there, clear of the ring
+  const n=NODES2.get(nx.node),mv=n&&n.movements.find(q=>q.id===nx.mv);if(!mv)return null;
+  if(!SignalCore2.movementAllowed(mv,SignalCore2.phaseOf(nx.node))){RB3.n.fleetExit++;return'signal'}
+  const to=mv.from,R=RB2[h.node],node=NODES2.get(h.node);
+  for(const o of to.vs){if(o.id===m.id||o.id===m.id+'+')continue;if((o.speed||0)<10){RB3.n.fleetExit++;return'space'}}                 // somebody stands on the short link
+  if(node)for(const o of node.inside){if(o.remote||o.ghost||o.standing||!o.mv)continue;if(o.mv.to===to){RB3.n.fleetExit++;return'space'}}   // a vehicle in the roundabout on its way out by that exit
+  for(const F of a4FleetActors()){if(F===m||!F.route||F.d==null||F.offsite)continue;const dd=Math.hypot(F.x-R.x,F.y-R.y),t=(F.x-to.ax)*to.ux+(F.y-to.ay)*to.uy,l=Math.abs(-(F.x-to.ax)*to.uy+(F.y-to.ay)*to.ux);
+   if((dd<R.Ro+8&&rbFleetOnWay3(F,to))||(t>to.boxFrom-8&&t<Math.min(to.stopS,to.len)+30&&l<16)){RB3.n.fleetExit++;return'space'}}                // another hotel / emergency vehicle ahead of it, in the roundabout or on the link
+  return null}catch(e){return null}}
+/* 6 · שני נתיבי כניסה של אותה זרוע (שדרת המרכז בכיכר הכפר, 2+2) נכנסים לנתיב סיבוב אחד. המקור שהוכח (rb/tools/q_rb_merge.js, ‏72 תזמונים): רכב בנתיב
+   הפנימי לא נתן זכות קדימה לרכב מהנתיב החיצוני שכבר קיבל כניסה ועוד לא הגיע לטבעת, ועקומות הכניסה של שני הנתיבים עוברות 2.6 עד 3.3 מ׳ זו מזו —
+   שני הרכבים נגעו זה בזה ועמדו 12 שנ׳, עד הנסיעה לאחור של המנוע (בבסיס: 4 מתוך 72, עד 41 שנ׳ עם 3–4 נסיעות לאחור; עם הקשת הקצרה: 16 מתוך 72).
+   הכלל: רכב לא מקבל כניסה כל עוד רכב מהנתיב השני של אותה זרוע, שכבר קיבל, לא עבר את הקטע שבו שני המסלולים צמודים (עד סוף התנועה, אם שניהם
+   יוצאים לאותו נתיב). at init: for every pair of movements from two lanes of one arm — the stretch of the other one that runs beside mine */
+function rb3Sib(){RB3.sibPairs=0;for(const id in RB2){const node=NODES2.get(id);if(!node)continue;for(const m of node.movements)m.sib=null;
+  for(const a of node.movements)for(const b of node.movements){if(a===b||a.from===b.from||a.from.edge!==b.from.edge||a.from.dir!==b.from.dir)continue;
+   const A=[];for(let s=0;s<=a.len;s+=4)A.push(polyPose2(a.pts,s));let lo=Infinity,hi=-1;
+   for(let t=0;t<=b.len+3.9;t+=4){const q=polyPose2(b.pts,Math.min(t,b.len));for(const p of A)if(Math.abs(p.x-q.x)<RB3.sibD&&Math.hypot(p.x-q.x,p.y-q.y)<RB3.sibD){if(t<lo)lo=t;if(t>hi)hi=Math.min(t,b.len);break}}
+   if(hi>=0){(a.sib||(a.sib=new Map())).set(b.id,{lo,hi});RB3.sibPairs++}}}}
+function rbSibYield3(v,mv,node){if(!RB3.on||!mv.sib)return null;
+ for(const o of node.inside){if(o.v===v||o.remote||o.ghost||o.standing||!o.mv)continue;const z=mv.sib.get(o.mv.id);if(!z)continue;const c=o.v.c2;if(!c)continue;
+  if(c.mv===o.mv){if(c.ms-c.hl<z.hi+6){RB3.n.sib++;return'rb-yield'}continue}                              // on its movement, not yet past the stretch beside mine
+  if(c.lane===o.mv.from){RB3.n.sib++;return'rb-yield'}                                                     // granted, on its way to the line
+  if(c.lane===o.mv.to&&mv.to===o.mv.to&&z.hi>=o.mv.len-8&&c.s-c.hl<o.mv.sEnd+6){RB3.n.sib++;return'rb-yield'}}   // just out by my own exit, its tail still at the merge
+ return null}
+/* QA: no movement of a roundabout that is not a U-turn goes all the way round; the counters of the rules */
+function rb3Audit(){const out={ok:true,on:RB3.on,err:RB3.err,loopFix:RB3.loopFix,sibPairs:RB3.sibPairs,full:[],moves:0,zebraLanes:0,n:{...RB3.n}};
+ try{for(const id in RB2){const n=NODES2.get(id);if(!n)continue;for(const m of n.movements){if(!m.rb)continue;out.moves++;if(m.from.edge!==m.to.edge&&m.rb.D>Math.PI*2-.6)out.full.push(m.id)}}
+  out.zebraLanes=LANE_LIST2.filter(l=>l.rbz).length}catch(e){out.err=String(e&&e.message||e)}
+ out.ok=!out.full.length&&!out.err;return out}
+window.rb3Audit=rb3Audit;window.__TC_RB3=RB3;
+function separateInitialTraffic(){const placed=[...BUS_VEHICLES,...D4_YARD_SEMIS],player=vehicleCollisionShape(PlayerCar.asset,PlayerCar.ref||'Sedan',PlayerCar.x,PlayerCar.y,PlayerCar.heading),parked=allParkedCars().map(o=>vehicleCollisionShape(o.asset,o.ref||'Sedan',o.x,o.y,o.heading||0));for(const v of TRAFFIC_CARS){const clear=q=>{const b=trafficVehicleShape(q);return !vehicleBodiesOverlap(b,player,8)&&!placed.some(o=>vehicleBodiesOverlap(b,trafficVehicleShape(o),8))&&!parked.some(o=>vehicleBodiesOverlap(b,o,5))};if(!clear(v)){let found=null;search:for(const edgeId of [v.edgeId,...TRAFFIC_SEED_EDGES])for(const t of [.15,.3,.45,.6,.75,.85]){const lane=byEdge[edgeId]?.cls==='main'?Math.min(2,v.lane||0):byEdge[edgeId]?.cls==='arterial'?(v.lane||v.lanePref||0):0,p=trafficEdgePoint(edgeId,v.dirSign,t,lane),q={...v,...p,edgeId,t,lane,laneTarget:lane};if(clear(q)){found=q;break search}}if(found)Object.assign(v,found,{speed:0})}placed.push(v)}}
+
+// =====================================================================================================================================
+// GATE-71 · RAIL–AIR TERMINAL (E2 east, south of R-AIR) + E2 RE-PLAN
+// The rental row moved to row 1 of P-WEST (E2 west); the old E2-east lot is gone and its strip x 5400-6000 / y 1318-1700 is the
+// Rail–Air terminal:  landside strip x 5400-5540 (terminal office, staff parking) + bonded area x 5540-6000 (two loading tracks with
+// buffer stops, the crane runway, the container stack and the tractor loop with the ramp of the cargo tunnel under R-AIR to the air
+// cargo terminal). The two mains continue from E3; freight train FRT-1 now runs to the airport every second loop (rail graph patch).
+// =====================================================================================================================================
+const RA_SCOPE={id:'RAIL-AIR',x:5400,y:1318,w:600,h:382,gate:'GATE-71'};
+const RA_SUSPENDED=false;   // GATE-76 S2: the terminal works — airside, in the rail corridor (x 5752–5948 × y 790–1516)   // GATE-74 (owner decision): the terminal is closed until GATE-76 rebuilds it north of the bridge; no crane / stack / tractors / FRT-1 stop
+const RA_BOND={id:'RA-TERMINAL-AIRSIDE',x:5752,y:790,w:196,h:632};   /* s16b: עד y 1422 — הגישה הצפונית של הגשר AX-1 (דרך הנוסעים של המפה מ-y 1458); היה 726 (עד 1516) — המכשול שלו חסם את הנתיבים הצפוניים מתחת לגשר */   // GATE-76 S2: the airside terminal pad (closed to the player)   // GATE-74: fenced work site north of the bridge (was 5540–5996 × 1326–1700)
+const RA_TRACK_END=580,RA_STUB_OLD=1496,RA_TRACKS=[{id:'T1',seg:'T1',x:5800,label:'פס העמסה 1'},{id:'T2',seg:'T2',x:5900,label:'פס העמסה 2'}];
+const RA_CRANE={rails:[5756,5944],y0:806,y1:1410};   /* s16b: המסילות של העגורן נגמרות במסוף (y 1418), לא מעל הכביש; היה 1500 */   // GATE-76 S2: RMG over T1, the IN / OUT lanes and T2
+const RA_STACK={x:5600,y:1470,w:118,h:152,rows:[5614,5644,5674,5704]};
+const RA_RAMP={x:5733,y:1336,w:34,h:84};                                          // up-ramp: tunnel mouth at y 1336, grade at y 1420
+const RA_RAMP2={x:5733,y:1628,w:34,h:68};                                         // down-ramp: grade at y 1628, tunnel mouth at y 1696
+const RA_LANE={x:5750,w:24,y0:RA_RAMP.y,y1:RA_RAMP2.y+RA_RAMP2.h,tp:1516};        // one-way drive-through lane under the crane (north -> south)
+const RA_STAFF_LANE={id:'RA-STAFF-LANE',x:5484,y:1326,w:52,h:206};   // GATE-74: service lane ↔ new road
+const RA_STAFF_STALLS=Array.from({length:2},(_,i)=>({id:'RA-ST-'+(i+1),lot:'RA-STAFF',x:5410,y:1436+i*38,w:68,h:38,th:Math.PI}));
+const RA_OFFICE=d2Place('RA-OFFICE','משרדי מסוף רכבת–אוויר','PB-01',1,0,5445,1418,'rail-terminal');
+const RA_RENT_KIOSK=d2Place('E2W-RENT','דלפק השכרת רכב','W2SP-17',1,0,5298,931,'airport-rental');   // GATE-74: P-WEST-N kiosk slot, beside the return bay
+APT_BUILDINGS.push(RA_OFFICE,RA_RENT_KIOSK);C4_BUILDINGS.push(RA_OFFICE,RA_RENT_KIOSK);
+C4_YARDS.push({id:'RA-STAFF-LANE',x:RA_STAFF_LANE.x,y:1326,w:RA_STAFF_LANE.w,h:RA_STAFF_LANE.h,label:'חניית עובדי המסוף',skin:true,surface:'asphalt',custom:true},
+ {id:'RA-STAFF-PARK',x:5410,y:1430,w:74,h:84,label:'חניית עובדי המסוף',skin:true,surface:'asphalt',custom:true});
+const RA_CUTS=[{id:'RA-CUT-STAFF',x:RA_STAFF_LANE.x,y:1296,w:RA_STAFF_LANE.w,h:34,custom:true},{id:'RA-CUT-STAFF-S',x:RA_STAFF_LANE.x,y:1528,w:RA_STAFF_LANE.w,h:26,custom:true}];
+C4_ACCESS.push(...RA_CUTS);
+APT_SOLIDS.push({...RA_BOND});                                                     // bonded: closed to the player like the airside
+APT_FENCE_SEGS.push([5400,1326,5484,1326],[5400,1326,5400,1516],[5400,1516,5484,1516],   // the office / staff strip (GATE-74)
+ [5750,APT_FENCE_Y,5750,1422],[5950,APT_FENCE_Y,5950,1422],[5750,1422,5756,1422],[5944,1422,5950,1422]);   /* s16b: עד y 1422 (G76_GATE_Y) — לא על דרך הנוסעים */   // GATE-76 S2: the airport boundary down both sides of the corridor and across it at y 1516 (rail gate between the posts)   // GATE-74: north of the new road
+for(const [x,y] of[[5548,1420],[5966,1180],[5966,1420]])APT_POLES.push({id:'RA-FL-'+x+'-'+y,x,y,kind:'apron-flood'});
+// street lights of R-AIR south: the E2-east ones stand on the sidewalk again (the lot platform is gone) and clear of the staff driveway
+// GATE-74: (the R-AIR south lights of the old road are gone)
+// ---- E2 east: the rental / passenger lot, its gardens, trees, props, visitors and footpaths are removed ------------------------------
+for(let i=E2_PROPS.length-1;i>=0;i--)if(/^E2-(RENT|PAX|LOT-LAMP)-/.test(E2_PROPS[i].id))E2_PROPS.splice(i,1);
+E2_GARDENS.length=0;E2_TREES.length=0;
+for(let i=E2_VISITORS.length-1;i>=0;i--)if(/^E2-(RENT|PAX)-/.test(E2_VISITORS[i].id))E2_VISITORS.splice(i,1);
+for(let i=E2_PATHS.length-1;i>=0;i--)if(['E2-P-SOUTH','E2-P-RENT','E2-P-PAX','E2-P-CROSS-S'].includes(E2_PATHS[i].id))E2_PATHS.splice(i,1);
+for(let i=E2_NAV_PATHS.length-1;i>=0;i--){const p=E2_NAV_PATHS[i];if(p.pts.every(q=>q[0]>=5400&&q[0]<=6000&&q[1]>1318)||['E2-P-SOUTH','E2-P-RENT','E2-P-PAX','E2-P-CROSS-S'].includes(p.id))E2_NAV_PATHS.splice(i,1)}
+E2_NAV_PATHS.push({pts:[[5510,1318],[5510,1426],[5445,1426]]});
+delete APT_INTERACTIONS['APT-PAX'];delete APT_INFO['APT-PAX'];
+Object.assign(APT_INTERACTIONS,{
+ 'APT-RENT':{...APT_INTERACTIONS['APT-RENT'],x:5298,y:948,label:'השכרת רכב והחזרה · P-WEST-N',kind:'דלפק השכרה · ליד גדר השדה',navNode:'D2E',navVia:[{x:4840,y:1274},{x:5347,y:1274},{x:5347,y:962}]},
+ 'RA-OFFICE':{id:'RA-OFFICE',chunk:'E2',label:'מסוף רכבת–אוויר',kind:'לוח הרכבת · פסי העמסה · מנהרת המטען',app:'business',x:5445,y:1426}
+});
+APT_INFO['APT-RENT']=[['חניון','P-WEST-N (שורה N1, ליד גדר השדה) · 8 רכבי השכרה, מקום נגיש ומפרץ החזרה ליד הדלפק'],['גישה','מנתיב השירות (הכביש הישן) דרך נתיב רחבת ההכשרה · קו 4 בתחנת P-WEST'],['רכב','E ליד רכב פנוי לכניסה; ההחזרה בדלפק אחרי עצירה במפרץ הצהוב']];
+APT_INFO['RA-OFFICE']=[['מסוף','מושבת עד GATE-76 · אתר עבודה מצפון לגשר הרכבת'],['רכבת','FRT-1 אינה נכנסת למסוף; שני קטעי מסילה (T1/T2) עולים מ-E3 על הגשר ונגמרים בפגושים מצפון לו'],['בהמשך','GATE-76 מאריך את T1/T2 צפונה ובונה את מסוף רכבת–אוויר החדש']];
+APT_INFO['APT-CARGO']=[['מסוף','משרד בפינה הדרום-מערבית; רחבת מטען ועמדות C1–C3 בצד האווירי'],['שירות','חצר משאיות: 4 רציפים, 3 עמדות מיון ובית בקרת שער · כניסה AIR-C'],['רכבת','מסוף רכבת–אוויר מדרום לשדרה · מנהרת מטען אל רציף הפריקה']];
+GRAPHICS_RUNTIME_INFO.required.push('PB-01','W2SP-17');
+RailOps.services.push({id:'RAIL-AIR',kind:'freight',suspended:'GATE-74 → GATE-76',route:['RB-B-N','SW-N-B','SW-S-B','SW-S-A','RB-A-NN','RB-A-E2','RA-END-1'],note:'רכבת המשא FRT-1: בכל סיבוב שני מהאי צפונה במסילה B, מעבר XS ב-E4 למסילה A, דרך תחנת E3 אל פס העמסה 1 במסוף רכבת–אוויר, ודרומה במסילה A אל הנמל'});
+RailOps.prerequisites.push({id:'RAIL-AIR',done:false,note:'GATE-74: מסוף רכבת–אוויר מושבת · גשר הרכבת מעל כביש השדה נבנה · T1/T2 נגמרים מצפון לגשר · GATE-76 מאריך ומפעיל'});
+
+// ---- P-WEST rental row (row 1): painted with the west lot -----------------------------------------------------------------------------
+function ew2PaintRent(g){
+ g.fillStyle=portPattern('concrete');g.fillRect(4862,1330,38,64);
+ for(const s of APT_STALLS){
+  if(false){}else if(s.returnBay){g.fillStyle='rgba(215,172,69,.28)';g.fillRect(s.x+2,s.y+2,s.w-4,s.h-4)}else{g.fillStyle='rgba(224,150,60,.10)';g.fillRect(s.x+2,s.y+2,s.w-4,s.h-4)}
+  g.strokeStyle=s.returnBay?'#e6c85b':'#e3e0c9';g.lineWidth=1.3;g.strokeRect(s.x+1,s.y+1,s.w-2,s.h-2);
+  if(s.returnBay)aptTxt(g,'החזרה',s.x+s.w/2,s.y+s.h/2,9,'#f1d578')}
+}
+// ---- ground of the terminal (cached) ---------------------------------------------------------------------------------------------------
+function raPaintGround(g){   // GATE-76 S2: landside strip (office + 2 staff stalls) · the former work site landscaped · the airside terminal pad
+ g.fillStyle='#6f9460';g.fillRect(5400,1326,350,190);
+ g.fillStyle=portPattern('concrete');g.fillRect(5404,1330,82,96);
+ g.fillStyle=portPattern('asphalt');g.fillRect(RA_STAFF_LANE.x,1326,RA_STAFF_LANE.w,RA_STAFF_LANE.h);g.fillRect(5410,1430,74,84);
+ g.strokeStyle='#e3e0c9';g.lineWidth=1.3;for(const s of RA_STAFF_STALLS)g.strokeRect(s.x+1,s.y+1,s.w-2,s.h-2);
+ aptTxt(g,'עובדים',5444,1506,7,'rgba(236,232,214,.8)');
+ g.fillStyle='rgba(60,96,52,.35)';for(let i=0;i<40;i++){const x=5552+((i*67)%190),y=1336+((i*41)%170);g.beginPath();g.arc(x,y,3+(i%3),0,Math.PI*2);g.fill()}
+ // the terminal pad (airside concrete) — the flush rails, the slots' boxes, the tractors and the crane are drawn over it
+ const B=RA_BOND;g.fillStyle=portPattern('concrete');g.fillRect(B.x,B.y,B.w,B.h);g.fillStyle='rgba(40,44,46,.06)';for(let y=B.y+40;y<B.y+B.h;y+=40)g.fillRect(B.x,y,B.w,1);
+ g.strokeStyle='#5d6266';g.lineWidth=3;for(const x of RA_CRANE.rails){g.beginPath();g.moveTo(x,RA_CRANE.y0-8);g.lineTo(x,RA_CRANE.y1+8);g.stroke()}
+ g.fillStyle='#c84a3a';for(const x of RA_CRANE.rails)for(const y of[RA_CRANE.y0-10,RA_CRANE.y1+6])g.fillRect(x-5,y,10,4);
+ // IN / OUT slots beside the wagons, the transfer point on the T1 bed
+ g.strokeStyle='rgba(246,244,236,.75)';g.lineWidth=1.2;for(const q of[...RA_IN,...RA_OUT])g.strokeRect(q.x-11,q.y-49,22,98);
+ for(const [q,t] of[[RA_IN[3],'IN'],[RA_OUT[3],'OUT']])aptTxt(g,t,q.x,q.y+62,7,'rgba(246,244,236,.8)',800);
+ g.strokeStyle='rgba(224,185,58,.9)';g.lineWidth=1.4;g.setLineDash([6,4]);g.strokeRect(RA_TP.x-14,RA_TP.y-78,28,156);g.setLineDash([]);   // GATE-76 S3: the transfer point on the gate apron
+ {const P=RA_TPATHS[0];g.strokeStyle='rgba(246,244,236,.45)';g.lineWidth=1;g.setLineDash([10,8]);g.beginPath();g.moveTo(5560,RA_TURN.y);for(const q of P.pts)if(q[0]>=5560&&q[1]<=RA_TP_FRONT)g.lineTo(q[0],q[1]);g.lineTo(RA_TP.x,RA_TP_FRONT);g.stroke();g.setLineDash([])}
+ aptTxt(g,'העברה',RA_TP.x,RA_TP.y+92,7,'rgba(224,185,58,.9)',800);
+ aptTxt(g,'RAIL–AIR',5850,1404,9,'rgba(60,58,52,.7)',800);
+}
+function raDrawGround(now){if(!e3InView(5400,740,600,784,80))return;const v=aptView(120);if(portVis(v,5400,740,600,784))portCached('ra-ground-g76s3',5400,740,600,784,raPaintGround,1.5)}
+function raDrawAccess(now){if(!e3InView(5400,1290,600,60,40))return;ctx.save();ctx.fillStyle=portPattern('asphalt');ctx.strokeStyle='#e0b85d';ctx.lineWidth=1.6;for(const c of RA_CUTS){ctx.fillRect(c.x,c.y,c.w,c.h);ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.x,c.y+c.h);ctx.moveTo(c.x+c.w,c.y);ctx.lineTo(c.x+c.w,c.y+c.h);ctx.stroke()}ctx.restore()}
+// rail layer: the two loading tracks (joined to the E3 tracks at y 1722), buffer stops, and the new northbound crossover XS in E4
+// GATE-76 S1: ballast from the bridge to the edge of the cargo apron (y 848), flush rails in the apron concrete from there to the buffers
+const G76_APRON_Y=848,G76_XING={y:700,x0:5752,x1:5948,band:[686,714]};
+const RA_DRAW_SEGS=RA_TRACKS.flatMap(t=>[{id:'RA-DRAW-'+t.id+'-N',pts:[[t.x,1422],[t.x,1452]]},{id:'RA-DRAW-'+t.id+'-S',pts:[[t.x,1700],[t.x,1724]]}]);   /* s16b: חלקי הקרקע — על הגישות של הגשר (1422–1450, ‏1702–1726), לא על הכביש */   // GATE-74: ground parts only; the deck span is drawn over the traffic (g74DrawBridge)
+const RA_FLUSH_SEGS=RA_TRACKS.map(t=>({id:'RA-FLUSH-'+t.id,pts:[[t.x,RA_TRACK_END],[t.x,1422]]}));   /* s16b: עד קצה המסוף */
+function g76FlushTrack(g){ctx.lineCap='butt';ctx.strokeStyle='rgba(60,64,66,.22)';ctx.lineWidth=34;rlPath(g.pts);ctx.stroke();ctx.strokeStyle='#9a9c98';ctx.lineWidth=30;ctx.stroke();
+ ctx.lineCap='round';for(const r of rlRails(g)){ctx.strokeStyle='#4a4d4f';ctx.lineWidth=5;rlPath(r);ctx.stroke();ctx.strokeStyle='#c6cbd0';ctx.lineWidth=2.2;ctx.stroke()}}
+function raDrawRail(now,v){
+ for(const g of RA_DRAW_SEGS)if(rlVisible(g,v,60)){ctx.save();rlTrack(g);ctx.restore()}
+ for(const g of RA_FLUSH_SEGS)if(rlVisible(g,v,60)){ctx.save();g76FlushTrack(g);ctx.restore()}
+ // the protected crossing of the cargo service lane: yellow-black boards between the tracks, stop bars both sides (RAIL-05)
+ const X=G76_XING;if(X.x1+60>v.x0&&X.x0-60<v.x1&&X.y+40>v.y0&&X.y-40<v.y1){ctx.save();
+  ctx.fillStyle='rgba(20,22,24,.18)';ctx.fillRect(X.x0,X.band[0]-2,X.x1-X.x0,X.band[1]-X.band[0]+4);
+  for(let x=X.x0+4,i=0;x<X.x1-4;x+=12,i++){ctx.fillStyle=i%2?'#2a2d2f':'#e0b93a';ctx.fillRect(x,X.band[0],8,3);ctx.fillRect(x,X.band[1]-3,8,3)}
+  ctx.fillStyle='#f1efe6';for(const x of[X.x0-14,X.x1+10])ctx.fillRect(x,X.band[0]-8,4,X.band[1]-X.band[0]+16);
+  e3Text('RAIL',X.x0-30,X.y+.5,7,'rgba(241,239,230,.85)',0,800);e3Text('RAIL',X.x1+28,X.y+.5,7,'rgba(241,239,230,.85)',0,800);ctx.restore()}
+ for(const t of RA_TRACKS)if(t.x+40>v.x0&&t.x-40<v.x1&&RA_TRACK_END+30>v.y0&&RA_TRACK_END-30<v.y1){e5Buffer(t.x,RA_TRACK_END-9);e4Plate(t.id+' · רכבת–אוויר',t.x,RA_TRACK_END-34,70)}   // GATE-76 S1: the buffers
+ /* s16c · D‑674 (הבעלים 23:10, צילום 35): XS ו-X-BA צוירו בשלמותם אחרי הפסים הראשיים של E4 — המצע והאדנים שלהם כיסו את הפסים של פס א׳ ופס ב׳ ("פסים שחוצים זה את זה").
+    עכשיו בשכבות: המצע והאדנים של שני המעברים, אחר כך האדנים והפסים של פס א׳ ופס ב׳ באותו קטע מחדש (באותו מקצב של s9TrackStraight), ובסוף הפסים של המעברים */
+ {const L=[RAIL_SEG_BY_ID.XS,RAIL_SEG_BY_ID['X-BA']].filter(g=>g&&rlVisible(g,v,200));if(L.length){let y0=1e9,y1=-1e9;for(const g of L)for(const p of g.pts){y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1])}y0-=12;y1+=12;
+  for(const k of [0,1])for(const g of L){ctx.save();rlTrackLayer(g,k);ctx.restore()}
+  ctx.save();ctx.fillStyle='#413d37';for(const tx of [5800,5900])for(let y=2558;y<3396;y+=16)if(y+5>y0&&y<y1)ctx.fillRect(tx-20,y,40,5);ctx.strokeStyle='#c6cbd0';ctx.lineWidth=3;ctx.lineCap='butt';for(const tx of [5800,5900])for(const dx of [-13,13]){ctx.beginPath();ctx.moveTo(tx+dx,y0);ctx.lineTo(tx+dx,y1);ctx.stroke()}ctx.restore();
+  for(const g of L){ctx.save();rlTrackLayer(g,2);ctx.restore()}
+  if(L.includes(RAIL_SEG_BY_ID.XS)){e5SwitchStand(5880,3039,'#e0b93a');e5SwitchStand(5820,2839,'#6bd36b')}}}   /* D‑536: XS 3 m south; ‏X-BA — its turnouts (TCT_J) */
+}
+function raDrawProps(now){if(WTC_LP===1)return;
+ g76DrawLive(now);
+ if(!e3InView(5400,760,600,960,80))return;const v=aptView(80);
+ if(portVis(v,5400,1300,600,140)){for(const [t,x,y,w]of[['משרדי מסוף רכבת–אוויר',5445,1334,110]])e4Plate(t,x,y,w)}
+ if(portVis(v,5752,790,196,60))e4Plate('מסוף רכבת–אוויר · RMG',5850,800,108);
+ if(portVis(v,5200,880,140,120))e4Plate('השכרת רכב',5232,962,64);
+ if(!RA_SUSPENDED&&typeof raDrawYard==='function')raDrawYard(now,v);
+ Targets.add({id:'RA-TERMINAL',label:'מסוף רכבת–אוויר · צד אווירי · FRT‑1 בפס 1 · FRT‑4 בפס 2 · 4 IN + 4 OUT · עגורן גשר · 2 טרקטורים',category:'airport',x:RA_BOND.x+RA_BOND.w/2,y:RA_BOND.y+RA_BOND.h/2,w:RA_BOND.w,h:RA_BOND.h});
+ Targets.add({id:'E2W-RENT-ROW',label:'השכרת רכב · P-WEST-N · 8 רכבים · מפרץ החזרה',category:'airport',x:5120,y:904,w:320,h:60});
+}
+// ---- live train status for the phone / HUD ------------------------------------------------------------------------------------------
+function raTrain(){return rlTrain('FRT-1')}
+function raAirRunIndex(){const T=raTrain();return T&&!T.err?T.runs.findIndex(r=>r.stop==='airport'):-1}
+function raStatus(now=performance.now()){   // GATE-76 S3: the train at the terminal, or the next one (FRT-1 on T1, FRT-4 on T2)
+ if(RA_SUSPENDED)return{ok:false,state:'suspended',label:'מסוף מושבת'};let best=null;
+ for(const D of RA_TRAINS){const T=rlTrain(D.id);if(!T||T.err)continue;const k=T.runs.findIndex(r=>r.stop==='airport');if(k<0)continue;
+  const S=rlState(T,now),R=T.runs[k],tt=now/1000+T.off,cyc=Math.floor(tt/T.cycle),tin=tt-cyc*T.cycle,arr=R.t0+R.tm,dep=R.tEnd,pas='פס '+D.lane;let s;
+  if(S.k===k&&!S.moving)s={ok:true,state:'at-terminal',train:D.id,label:D.id+' ב'+pas+' · פריקה וטעינה · יציאה בעוד '+Math.ceil(dep-tin)+' שנ׳',left:dep-tin,cyc,rank:0};
+  else if(S.k===k)s={ok:true,state:'arriving',train:D.id,label:D.id+' בדרך ל'+pas+' · הגעה בעוד '+Math.ceil(arr-tin)+' שנ׳',eta:arr-tin,cyc,rank:1+(arr-tin)/1e4};
+  else{const eta=(tin<arr?arr-tin:T.cycle-tin+arr);s={ok:true,state:'away',train:D.id,label:'הרכבת הבאה ('+D.id+', '+pas+') בעוד '+Math.floor(eta/60)+':'+String(Math.floor(eta%60)).padStart(2,'0')+' דק׳',eta,cyc,rank:2+eta/1e4}}
+  if(!best||s.rank<best.rank)best=s}
+ return best||{ok:false,state:'suspended',label:'אין רכבת שדה'}
+}
+function raTrainLine(){const s=raStatus();return s.ok?s.label:'—'}
+function raPhoneCard(id){
+ if(id!=='RA-OFFICE')return '';const T=raTrain(),k=raAirRunIndex(),s=raStatus();
+ if(RA_SUSPENDED||k<0)return pcard('מסוף רכבת–אוויר',pkv([['מצב','מושבת · אתר עבודה מצפון לגשר הרכבת'],['רכבת','FRT-1 (קטר + W1–W4) · נמל ← אי ← היפוך בחצר E5 (בלי עצירה בשדה)'],['גשר','גשר רכבת מעל כביש השדה · גובה חופשי '+G74_BRIDGE.clearH+' מ׳'],['GATE‑76','הארכת T1/T2 צפונה · מסוף חדש · קטר + W1–W4']]),'business');
+ return pcard('מסוף רכבת–אוויר',pkv([['רכבות','FRT-1 (קטר + W1–W4) בפס 1 · FRT-4 (קטר + W5–W8) בפס 2'],['מצב',s.label],['תדירות','רכבת כל כ-'+Math.round(T.cycle/120)+' דקות (שתי רכבות בהפרש של חצי מחזור) · עמידה של '+T.runs[k].dwell+' שנ׳'],['פסים','פס 1 ל-FRT‑1 · פס 2 ל-FRT‑4 · עגורן אחד לשני הפסים'],['קשר לשדה','2 טרקטורי מסוף: נקודת העברה על רחבת השער, מתחת לזרוע העגורן, אל מסוף המטען האווירי (AP‑05)']])+(typeof raYardHtml==='function'?raYardHtml():''),'business')
+}
+// ---- QA ---------------------------------------------------------------------------------------------------------------------------------
+// ---- GATE-76 S1 · RAIL-05 / QA-47: the cargo service lane crosses T1/T2 at y 700 ------------------------------------------------------
+// The airport ground vehicles are planned in the space-time reservation table (AO); a vehicle shape inside the crossing box blocks its
+// slice whenever an airport train touches the crossing at that moment (+3 s either side). The trains are a pure function of the rail clock
+// (simNow + SIM_BENCH_OFS); the airport clock advances with it in every fixed step, so rail time = airport time + one offset. The offset
+// is taken in aptOpsTick; the plans use G76X.ofs0 (re-taken if it ever jumps: bench scenarios, load). perfAirportForward plans with the
+// offset that holds after the forward. Busy intervals: one cycle of every airport train sampled every 0.25 s.
+var G76X={zone:{x0:5746,x1:5954,y0:648,y1:752},m:3,ofs:null,ofs0:null,ovr:null,iv:null,trains:['FRT-1','FRT-4'],stats:{remap:0,blocked:0}};
+function g76CarsInXing(cars){for(const c of cars){if(c.x<5740||c.x>5960)continue;if(Math.abs(c.x-5800)>40&&Math.abs(c.x-5900)>40)continue;const hl=(c.car?c.car.len:30)/2+40;if(Math.abs(c.y-G76_XING.y)<hl)return true}return false}
+function g76XBuild(){G76X.iv=[];for(const id of G76X.trains){const T=rlTrain(id);if(!T||T.err)continue;const L=[],dt=.25;let on=-1;
+  for(let t=0;t<=T.cycle+dt;t+=dt){const S=rlState(T,(t-T.off)*1000),b=!!S&&g76CarsInXing(rlCars(S));if(b&&on<0)on=t;if(!b&&on>=0){L.push([on-G76X.m,t+G76X.m]);on=-1}}
+  if(on>=0)L.push([on-G76X.m,T.cycle+G76X.m]);G76X.iv.push({T,L})}return G76X.iv}
+function g76XBusyRail(tR){const I=G76X.iv||g76XBuild();for(const q of I){const C=q.T.cycle,ph=((tR+q.T.off)%C+C)%C;for(const [a,b] of q.L)if((ph>=a&&ph<=b)||(ph+C>=a&&ph+C<=b)||(ph-C>=a&&ph-C<=b))return true}return false}
+function g76XBusyApt(tA){return G76X.ofs0!=null&&g76XBusyRail(tA+G76X.ofs0)}
+function g76XHit(a){const Z=G76X.zone;return a.L==='V'&&a.x1>Z.x0&&a.x0<Z.x1&&a.y1>Z.y0&&a.y0<Z.y1}
+function g76XMark(sm){let gx=null,ga=null;for(let k=0;k<sm.K;k++){const A=sm.S[k];for(let i=0;i<A.length;i++)if(g76XHit(A[i])){if(!gx){gx=[];ga=[]}gx.push(k);ga.push(A[i]);break}}if(gx){sm.gx=gx;sm.ga=ga}return sm}
+function g76XSync(){const o=G76X.ovr!=null?G76X.ovr:G76X.ofs;if(o==null)return;if(G76X.ofs0==null)G76X.ofs0=o;else if(Math.abs(o-G76X.ofs0)>.5){G76X.ofs0=o;G76X.stats.remap++}}
+// the rail gate in the airport fence (posts x 5752 / 5948): open while any part of a train is within 150 px of the fence line on T1/T2
+const G76_GATE_Y=1422;   /* s16b: הגדר חוצה את המסדרון בקצה המסוף, מצפון לגישה של הגשר (y 1422–1450); ב-1516 השער היה באמצע דרך הנוסעים */   // GATE-76 S2: the airport boundary crosses the corridor north of the RB-74 approach
+// the rail gate: open while a car is on the gate line (+12 px), or while a train is moving and within 220 px of it; FRT-1 standing at T1
+// (tail y 1493) leaves it closed
+function g76GateOpen(items){for(const q of items){const mv=q.S?q.S.moving:true;for(const c of q.cars){if(c.x<5740||c.x>5960)continue;const hl=(c.car?c.car.len:30)/2,d=Math.abs(c.y-G76_GATE_Y);if(d<hl+12||(mv&&d<hl+220))return true}}return false}
+function g76DrawLive(now){
+ const X=G76_XING;if(!e3InView(X.x0-80,560,X.x1-X.x0+160,1000,40))return;
+ let cars=[];const items=[];for(const q of rlSnap(now))if(G76X.trains.includes(q.S.T.id)){cars=cars.concat(q.cars);items.push(q)}
+ const open=g76GateOpen(items),busy=g76CarsInXing(cars)||g76XBusyRail(now/1000),blink=Math.floor(now/450)%2;
+ ctx.save();
+ // the rail gate: two leaves of 96 px, swung north (airside) when open
+ const F=G76_GATE_Y;ctx.fillStyle='#2c3338';ctx.fillRect(5753,F-5,6,10);ctx.fillRect(5941,F-5,6,10);ctx.fillRect(5847,F-3,6,6);
+ ctx.strokeStyle='#d8d4c4';ctx.lineWidth=2.4;ctx.beginPath();
+ if(open){ctx.moveTo(5756,F);ctx.lineTo(5756,F-92);ctx.moveTo(5944,F);ctx.lineTo(5944,F-92)}else{ctx.moveTo(5756,F);ctx.lineTo(5848,F);ctx.moveTo(5852,F);ctx.lineTo(5944,F)}
+ ctx.stroke();ctx.strokeStyle='#d94a3b';ctx.lineWidth=1.2;ctx.setLineDash([6,6]);ctx.stroke();ctx.setLineDash([]);
+ // the crossing lights: two posts at the stop bars, red flashing while the crossing is closed
+ for(const [x,y] of[[X.x0-22,X.band[0]-14],[X.x1+22,X.band[1]+14]]){ctx.fillStyle='#2c3338';ctx.fillRect(x-2,y-2,4,4);
+  ctx.fillStyle=busy?(blink?'#ff3b2f':'#5a1d18'):'#3b1a17';ctx.beginPath();ctx.arc(x-4,y,2.6,0,Math.PI*2);ctx.arc(x+4,y,2.6,0,Math.PI*2);ctx.fill()}
+ ctx.restore();
+ Targets.add({id:'G76-RAIL-GATE',label:'שער רכבת בגדר השדה (y '+G76_GATE_Y+') · '+(open?'פתוח לרכבת':'סגור'),category:'airport',x:5850,y:F,w:196,h:16});
+ Targets.add({id:'G76-XING',label:'מעבר מוגן · נתיב המטען y 700 × T1/T2 · '+(busy?'סגור — רכבת':'פתוח'),category:'airport',x:5850,y:X.y,w:X.x1-X.x0,h:40});
+}
+function raAudit(){   // GATE-76 S1: T1/T2 to y 580, FRT-1 at T1 (the whole train north of the deck), the terminal itself in S2; landside strip at the new road
+ const issues=[],over=aptOver,roads=aptRoadRects(),T=raTrain(),B=G74_BRIDGE;
+ for(const t of RA_TRACKS){const g=RAIL_SEG_BY_ID[t.seg];if(!g){issues.push('no-seg:'+t.seg);continue}const ys=g.pts.map(p=>p[1]);if(g.pts.some(p=>p[0]!==t.x))issues.push(t.seg+':not-straight');if(Math.min(...ys)!==RA_TRACK_END||Math.max(...ys)!==1700)issues.push(t.seg+':extent');
+  if(!E3_TRACKS.some(q=>q.x===t.x))issues.push(t.seg+':not-on-E3-track');if(t.x-20<B.x0+8||t.x+20>B.x1-8)issues.push(t.seg+':off-deck');
+  const bed={x:t.x-20,y:RA_TRACK_END,w:40,h:1700-RA_TRACK_END};for(const r of roads)if(over(bed,r)&&!(r.y>=B.y0&&r.y+r.h<=B.y1))issues.push(t.seg+':road '+r.id);for(const f of APT_BUILDINGS.map(aptFp))if(over(bed,f))issues.push(t.seg+':building '+f.id)}
+ for(const [a,b] of[['RB-B-S','RA-END-1'],['RB-B-S','RA-END-2'],['N-B-END','Q-E']])if(!railRoute(a,b))issues.push('no-route:'+a+'>'+b);
+ {const g=RAIL_SEG_BY_ID.XS;if(!g)issues.push('no-XS');else{const a=rlMaxAngle(g.pts)*57.3;if(a>46)issues.push('XS-too-steep:'+a.toFixed(0))}}
+ let frt=null;if(!T||T.err)issues.push('FRT-1:'+(T&&T.err));else{if(T.runs.length!==2)issues.push('FRT-1-runs:'+T.runs.length);const ai=raAirRunIndex();if(ai<0)issues.push('no-airport-run');
+  let minY=1e9;for(const R of T.runs)for(const p of R.P.pts)minY=Math.min(minY,p[1]);if(minY<RA_TRACK_END)issues.push('FRT-1-north-of-buffer:'+Math.round(minY));
+  if(ai>=0){const R=T.runs[ai],e=rlAt(R.P,R.P.len),tail=rlAt(R.P,R.P.len-T.L);if(Math.abs(e.x-5800)>.5||e.y<RA_TRACK_END+5||e.y>RA_TRACK_END+40)issues.push('ra-stop-head:'+Math.round(e.y));if(tail.y>B.y0-8)issues.push('train-body-on-bridge:'+Math.round(tail.y))}
+  const qi=flQuayRun(T);if(qi<0)issues.push('no-quay-run');else{const e=rlAt(T.runs[qi].P,T.runs[qi].P.len);if(e.x<4400||e.x>4560||Math.abs(e.y-PORT_SIDING_Y)>.5)issues.push('quay-stop')}
+  frt={runs:T.runs.map(r=>r.stop),cycle:Math.round(T.cycle),northmostY:Math.round(minY)}}
+ // GATE-76 S3: FRT-4 — runs airport (T2) / quay, the head 12 px short of the T2 buffer, the whole train north of the deck, same cycle as FRT-1
+ {const F=rlTrain('FRT-4');if(!F||F.err)issues.push('FRT-4:'+(F&&F.err));else{const ai=F.runs.findIndex(r=>r.stop==='airport');if(ai<0||F.runs.length!==2)issues.push('FRT-4-runs');
+  else{const R=F.runs[ai],e=rlAt(R.P,R.P.len),tail=rlAt(R.P,R.P.len-F.L);if(Math.abs(e.x-5900)>.5||e.y<RA_TRACK_END+5||e.y>RA_TRACK_END+40)issues.push('FRT-4-stop-head:'+Math.round(e.x)+','+Math.round(e.y));if(tail.y>B.y0-8)issues.push('FRT-4-body-on-bridge:'+Math.round(tail.y))}
+  if(T&&!T.err&&Math.abs(F.cycle-T.cycle)>.01)issues.push('FRT-4-cycle:'+F.cycle.toFixed(2));if(frt)frt.frt4={runs:F.runs.map(r=>r.stop),dwell:F.runs.map(r=>+r.dwell.toFixed(1)),lag:F.sync?F.sync.lag:null}}}
+ const off=aptFp(RA_OFFICE),lane={x:RA_STAFF_LANE.x,y:RA_STAFF_LANE.y,w:RA_STAFF_LANE.w,h:RA_STAFF_LANE.h};
+ if(over(off,RA_BOND)||over(lane,RA_BOND))issues.push('landside-in-work-site');for(const s of RA_STAFF_STALLS){if(over(s,RA_BOND)||over(s,off)||over(s,lane))issues.push(s.id+':overlap');if(s.x+s.w!==lane.x&&s.x+s.w+6!==lane.x)issues.push(s.id+':access')}
+ for(const r of roads){if(over(off,r))issues.push('office-on-road');for(const s of RA_STAFF_STALLS)if(over(s,r))issues.push(s.id+':road');if(over(RA_BOND,r))issues.push('work-site-on-road:'+r.id)}
+ if(lane.y+lane.h!==1532)issues.push('staff-lane-not-at-new-road');if(RA_BOND.x+RA_BOND.w>B.x1||RA_BOND.y+RA_BOND.h>B.y0)issues.push('work-site-on-bridge');
+ for(const id of['RA-OFFICE']){const p=APT_INTERACTIONS[id];if(!p||personBlockedAt(p.x,p.y,5))issues.push(id+':blocked-poi')}
+ if(PARKED_CARS.some(c=>c.x>RA_BOND.x&&c.x<RA_BOND.x+RA_BOND.w&&c.y>RA_BOND.y&&c.y<RA_BOND.y+RA_BOND.h))issues.push('car-in-work-site');
+ const total=ew2ParkingTotal();if(total<160)issues.push('airport-parking<160:'+total);
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,24),scope:'RAIL-AIR',gate:'GATE-76 S1',suspended:RA_SUSPENDED,until:'GATE-76 S2 (terminal)',stubs:RA_TRACKS.map(t=>[t.id,t.x,RA_TRACK_END,1700]),frt,parking:{airport:total,staff:RA_STAFF_STALLS.length},workSite:[RA_BOND.x,RA_BOND.y,RA_BOND.x+RA_BOND.w,RA_BOND.y+RA_BOND.h]}
+}
+// GATE-76 S1 world audit: the connection itself (RAIL-01 / 04 / 05 / 06 · QA-48 static part)
+function g76RailAudit(){
+ const issues=[],B=G74_BRIDGE,nd=id=>RAIL_NODE_BY_ID[id];
+ for(const id of['RA-END-1','RA-END-2']){const n=nd(id);if(!n||n.y!==580)issues.push(id+':not-at-580')}
+ for(const t of RA_TRACKS){const g=RAIL_SEG_BY_ID[t.seg];if(!g||g.len<1110)issues.push(t.seg+':short');if(g&&g.vmax!=='curve')issues.push(t.seg+':no-speed-limit')}
+ // the fence: a gate (no fence segment) across the corridor at y 944, fence on both sides; nothing else of the fence crosses the tracks
+ for(const s of APT_FENCE_SEGS){const [x0,y0,x1,y1]=s,minX=Math.min(x0,x1),maxX=Math.max(x0,x1),minY=Math.min(y0,y1),maxY=Math.max(y0,y1);
+  for(const x of[5800,5900])if(minX<=x+20&&maxX>=x-20&&minY<=1524&&maxY>=580)issues.push('fence-across-track:'+s.join(','))}
+ if(!APT_FENCE_SEGS.some(s=>s[1]===G76_GATE_Y&&s[3]===G76_GATE_Y&&Math.max(s[0],s[2])===5756))issues.push('no-gate-post-west');
+ if(!APT_FENCE_SEGS.some(s=>s[1]===G76_GATE_Y&&s[3]===G76_GATE_Y&&Math.min(s[0],s[2])===5944))issues.push('no-gate-post-east');
+ // GATE-76 S2: the boundary runs down both sides of the corridor (x 5750 / 5950) from the fence y 944 to the gate line
+ for(const x of[5750,5950])if(!APT_FENCE_SEGS.some(s=>s[0]===x&&s[2]===x&&Math.min(s[1],s[3])<=APT_FENCE_Y&&Math.max(s[1],s[3])>=G76_GATE_Y))issues.push('no-side-fence-'+x);
+ // the crossing lies on the lane, between the buffers and the fence
+ if(!(G76_XING.y===CARGO_W.lane&&G76_XING.y>RA_TRACK_END+40&&G76_XING.y<APT_FENCE_Y))issues.push('crossing-not-on-lane');
+ // trains: no freight in the island branch; the long trains (more than 4 wagons) never north of the guard (RAIL-06); FRT-1 at T1 clear of the deck
+ for(const T of RL_TRAINS){if(T.err){issues.push(T.id+':'+T.err);continue}const nW=T.cars.filter(c=>/^W\d$/.test(c.id)).length;
+  for(const R of T.runs){for(const [id] of R.legs)if(/^ISL-/.test(id)&&!T.passenger)issues.push(T.id+':island-branch');   /* s16c · D‑674: רכבת הנוסעים לאי (RL-PS-02) — כן; רכבות משא — לא (D‑23) */
+   if(nW>4){let mn=1e9;for(const p of R.P.pts)mn=Math.min(mn,p[1]);if(mn<PORT_TURNBACK_GUARD_Y)issues.push(T.id+':north-of-guard:'+Math.round(mn))}}}
+ const I=g76XBuild(),busy=I.map(q=>({id:q.T.id,closed:Math.round(q.L.reduce((s,[a,b])=>s+(b-a),0)),cycle:Math.round(q.T.cycle)}));
+ if(!I.length||!I[0].L.length)issues.push('crossing-never-closed');
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,16),crossing:busy,remap:G76X.stats.remap}
+}
+window.__TC_G76_QA=(o={})=>({rail:g76RailAudit(),ra:raAudit(),rl:rlAudit()});
+// ==== GATE-76 S3 · RAIL-08 / QA-67 / D-16: block control ======================================================================================
+// Blocks = track sections between turnouts. Single-track blocks are used in both directions (one train at a time); the double sections
+// (main A southbound / main B northbound, T1 / T2) are where trains meet. A train holds every block its body touches (+30 px for the
+// turnouts' fouling points). The timetable is a pure function of the clock, so the rule holds by construction; the audit proves it.
+const G76_BLOCKS={'W2-E':['Q2-D2','Q2-E','Q2-LINK','Q-BASE-E'],'W2-W':['Q2-C','Q2-D1'],'EAST-AB':['EAST-A','EAST-B','EAST-B2','EAST-B3','EAST-B4'],'EAST-C':['EAST-C'],'X-Q2':['X-Q2','Q-SID-XQ'],'X-P1':['X-P1'],'QUAY-W1':['Q-SID-D','Q-SID-E'],'A-ARC':['A-ARC2','A-ARC'],'A-5':['A-5'],'XOVER':['XOVER','B-2'],'B-MAIN':['B-1','B-0'],'A-MAIN':['A-0','A-1','A-2','A-3','A-4'],
+ 'N-STUB':['B-STUB'],'A-00':['A-00'],'XN':['XN'],'XS-A0N':['XS','A-0N'],'A-E3':['A-E3'],'T1':['T1'],'B-STUB-N':['B-STUB-N'],'B-E3':['B-E3'],'T2':['T2'],'BYPASS':['BYP-SC','BYP','BYP-NC'],'X-BA':['X-BA'],
+  'YARD-1':['LEAD-N','Y1-DOOR','Y1-A','Y1-B','SPUR','SP-1']};
+/* D‑536 (the passenger train RL-PS-01): the blocks are split at their signals — the quay track W1 / the R400 arc / A-5 (signals at Q-E and END-A); T1 / A-E3 / XS+A-0N
+   (the E2/E3 boundary y 1700 and RB-A-NN y 2550); T2 / B-E3 / B-STUB-N. B-E3 is two blocks: platform 2 (y 2590–1790) and the bypass junction (y 1790–1700,
+   the fouling point of BYP-N). The passenger train stands at platform 2 (head y 1830) clear of FRT-4 on the junction; FRT-1 at T1 and FRT-4 at T2 hold only their terminal. */
+const G76_SPLIT={'B-E3':[[0,800,'B-E3'],[800,1e9,'B-NJ']]};   /* S9 · S7F268: the bypass — one block, FRT-4 only */
+const G76_DOUBLE=[['A-MAIN','B-MAIN'],['T1','T2'],['A-E3','B-E3'],['A-00','N-STUB']];
+const G76_SEG_BLOCK={};for(const [b,L] of Object.entries(G76_BLOCKS))for(const id of L)G76_SEG_BLOCK[id]=b;
+function g76RunLegs(R){if(R._iv)return R._iv;let s=0;const iv=[];for(const [id,A,B] of R.legs){const g=RAIL_SEG_BY_ID[id],a=A==='S'?0:A==='E'?g.len:A,b=B==='S'?0:B==='E'?g.len:B,d=Math.abs(b-a);iv.push([s,s+d,id,a,b]);s+=d}
+ const k=R.P.len/Math.max(1e-6,s);for(const q of iv){q[0]*=k;q[1]*=k}return R._iv=iv}
+// GATE-76 S4: beyond the drawn end of the east bridge (x 8760) trains are not drawn and hold no block (FRT-3 waits there, FRT-2 turns there)
+const G76_VIS_X=(()=>{try{return Math.ceil(g77ViewR().x1)+15}catch(e){return 12460}})();   /* p335 · World‑b: the east edge of all the camera can show (was 8760) */
+function g76Blocks(S,m=30){const T=S.T,R=S.R,a=S.u-T.L-m,b=S.u+m,out=new Set();for(const [s0,s1,id] of g76RunLegs(R))if(s1>a&&s0<b){
+  if(id==='EAST-C'){const p=rlAt(R.P,Math.max(s0,a+m)),q=rlAt(R.P,Math.min(s1,b-m));if(Math.min(p.x,q.x)>=G76_VIS_X)continue}
+  const sp=G76_SPLIT[id];if(sp){const q=g76RunLegs(R).find(z=>z[2]===id&&z[0]===s0),f=v=>q[3]+(q[4]-q[3])*((v-s0)/Math.max(1e-9,s1-s0)),u0=f(Math.max(s0,a)),u1=f(Math.min(s1,b)),lo=Math.min(u0,u1),hi=Math.max(u0,u1);for(const [x0,x1,bk] of sp)if(hi>x0&&lo<x1)out.add(bk);continue}   /* D‑536: a block split by a signal inside one segment */
+  out.add(G76_SEG_BLOCK[id]||id)}return out}
+function g76BlockAudit(cycles=3,step=.25){
+ const issues=[],ids=RL_TRAINS.filter(T=>!T.err).map(T=>T.id),A=rlTrain('FRT-1'),F=rlTrain('FRT-4');if(!A||!F||A.err||F.err)return{ok:false,issues:['no FRT-1 / FRT-4'],cycles,trains:ids,meets:[],arrGap:[0,0],splitPct:0};
+ const span=A.cycle*cycles,t0=Math.ceil(Math.max(A.off,F.off)+60),prev={},meets=[],use={},stops=[];let shared=0,maxIn=1,samples=0,termA=0,termSplit=0,openStop={};
+ for(let t=t0;t<=t0+span;t+=step){samples++;const occ={},st={};
+  for(const T of RL_TRAINS){if(T.err)continue;const S=rlState(T,t*1000);if(!S)continue;st[T.id]=S;
+   for(const b of g76Blocks(S)){(occ[b]=occ[b]||[]).push(T.id);use[b]=use[b]||new Set();use[b].add(T.id)}
+   // no teleport: every car moves at most v·dt (+2 px) between samples
+   const cars=rlCars(S);if(prev[T.id])for(let i=0;i<cars.length;i++){const p=prev[T.id][i];if(Math.hypot(cars[i].x-p.x,cars[i].y-p.y)>RL_V*step+2)issues.push('teleport:'+cars[i].id+'@'+t.toFixed(1))}prev[T.id]=cars.map(c=>({x:c.x,y:c.y}));
+   // D-16: a train stands still only at its stop (dwell); record every stop longer than 30 s and where
+   const key=T.id;if(!S.moving){if(!openStop[key])openStop[key]={t,stop:S.R.stop,blocks:[...g76Blocks(S,0)]}}else if(openStop[key]){const o=openStop[key];if(t-o.t>30)stops.push({id:key,stop:o.stop,dur:+(t-o.t).toFixed(0),blocks:o.blocks});openStop[key]=null}
+   // QA-67 (4): a standing train never has a car on the RB-74 deck
+   if(!S.moving&&/^FRT-[14]$/.test(T.id))for(const c of cars)if(c.x>G74_BRIDGE.x0&&c.x<G74_BRIDGE.x1&&c.y>G74_BRIDGE.y0-4&&c.y<G74_BRIDGE.y1+4)issues.push('standing-on-deck:'+c.id)}
+  for(const [b,L] of Object.entries(occ))if(L.length>1){shared++;maxIn=Math.max(maxIn,L.length);issues.push('two-trains-in-block:'+b+':'+L.join('+')+'@'+t.toFixed(1))}
+  // meets: the two airport trains moving in opposite directions at the same y band, each in its own block of a double section
+  const a=st['FRT-1'],f=st['FRT-4'];if(a&&f&&a.moving&&f.moving){const ba=g76Blocks(a,0),bf=g76Blocks(f,0);for(const [p,q] of G76_DOUBLE)if((ba.has(p)&&bf.has(q))||(ba.has(q)&&bf.has(p))){const ha=rlAt(a.R.P,a.u),hf=rlAt(f.R.P,f.u);if(!meets.length||t-meets[meets.length-1].t>30)meets.push({t:+t.toFixed(1),where:p+'/'+q,y:Math.round((ha.y+hf.y)/2)})}}
+  // QA-67 (1): while one airport train stands at the terminal, where is the other one?
+  for(const [x,y] of[[a,f],[f,a]])if(x&&y&&!x.moving&&x.R.stop==='airport'){termA++;if(y.R.stop==='quay'&&!y.moving)termSplit++}
+  if(issues.length>12)break}
+ // D-16: stops longer than 30 s only at a working stop (terminal, quay, C6 work stop, parking, the world's edge)
+ for(const s of stops)if(!['airport','quay','work','park','border','beyond','port','station'].includes(s.stop))issues.push('long-stop:'+s.id+':'+s.stop+':'+s.dur+'s');
+ // QA-67 (1): arrivals at the terminal, both trains, in time order — the gap is about half a cycle
+ const arr=[];for(const T of[A,F]){const k=T.runs.findIndex(r=>r.stop==='airport'),R=T.runs[k];for(let c=-1;c<=cycles+2;c++){const ta=c*T.cycle-T.off+R.t0+R.tm;if(ta>=t0&&ta<=t0+span)arr.push(ta)}}
+ arr.sort((p,q)=>p-q);const gaps=arr.slice(1).map((v,i)=>v-arr[i]),gmin=Math.min(...gaps),gmax=Math.max(...gaps);if(gaps.length&&(gmin<A.cycle*.4||gmax>A.cycle*.6))issues.push('terminal-gap:'+gmin.toFixed(0)+'-'+gmax.toFixed(0));
+ const splitPct=termA?Math.round(termSplit/termA*100):0;if(splitPct<60)issues.push('other-train-at-quay:'+splitPct+'%');
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,12),cycles,step,samples,trains:ids,shared,meets,arrGap:[Math.round(gmin),Math.round(gmax)],splitPct,
+  stops:stops.reduce((m,s)=>{const k=s.id+':'+s.stop;m[k]=Math.max(m[k]||0,s.dur);return m},{}),blocks:Object.fromEntries(Object.entries(use).filter(([b])=>G76_BLOCKS[b]).map(([b,s])=>[b,[...s]])),lag:F.sync?F.sync.lag:null}}
+// the timing of the two airport trains on the shared blocks (S3 tuning / QA): for every block, the intervals each train holds it in one cycle
+window.__TC_G76_BLOCKS=(step=.25,ids=['FRT-1','FRT-4'],refId='FRT-1')=>{const A=rlTrain(refId),out={cycle:A.cycle,off:{},iv:{}};for(const id of ids){const T=rlTrain(id);if(!T||T.err)continue;out.off[id]=T.off;
+  const on={};for(let t=0;t<=A.cycle+step;t+=step){const S=rlState(T,t*1000),bs=g76Blocks(S);for(const b of Object.keys(G76_BLOCKS)){const k=id+'|'+b;if(bs.has(b)){if(on[k]==null)on[k]=t}else if(on[k]!=null){(out.iv[k]=out.iv[k]||[]).push([+on[k].toFixed(2),+t.toFixed(2)]);on[k]=null}}}
+  for(const [k,v] of Object.entries(on))if(v!=null)(out.iv[k]=out.iv[k]||[]).push([+v.toFixed(2),+A.cycle.toFixed(2)])}
+ out.runs=Object.fromEntries(ids.map(id=>{const T=rlTrain(id);return[id,T&&!T.err?T.runs.map(r=>({stop:r.stop,tm:+r.tm.toFixed(2),dwell:+r.dwell.toFixed(2),t0:+r.t0.toFixed(2)})):T&&T.err]}));return out};
+
+// ==== GATE-76 S4 · RAIL-06 / QA-48 / D-23 / RAIL-11: FRT-3 and the FRT-7 route ===============================================================
+function g76Frt3Audit(){
+ const issues=[],T=rlTrain('FRT-3');if(!T||T.err)return{ok:false,issues:['FRT-3:'+(T&&T.err)]};
+ const nW=T.cars.filter(c=>/^W\d$/.test(c.id)).length;if(nW!==7)issues.push('FRT-3-wagons:'+nW);
+ if(Math.abs(T.L-PORT_FRT3_LEN)>2)issues.push('FRT-3-length:'+T.L.toFixed(0)+' vs '+PORT_FRT3_LEN.toFixed(0));
+ const ri=T.runs.findIndex(r=>r.stop==='work'),bi=T.runs.findIndex(r=>r.stop==='beyond');if(ri<0||bi<0||T.runs.length!==2)issues.push('FRT-3-runs');
+ let minY=1e9;for(const R of T.runs){for(const p of R.P.pts)minY=Math.min(minY,p[1]);for(const [id] of R.legs){if(/^ISL-|^T[12]$|^RA-|^A-E3$|^B-E3$|^Q-SID|^A-ARC/.test(id))issues.push('FRT-3-forbidden:'+id)}}
+ if(minY<PORT_TURNBACK_GUARD_Y)issues.push('FRT-3-north-of-guard:'+Math.round(minY));
+ if(ri>=0){const R=T.runs[ri],h=rlAt(R.P,R.P.len),tl=rlAt(R.P,R.P.len-T.L),nd=id=>RAIL_NODE_BY_ID[id];
+  if(Math.abs(h.y-PORT_W2_Y)>.5||Math.abs(tl.y-PORT_W2_Y)>.5)issues.push('FRT-3-stop-off-W2');
+  if(Math.min(h.x,tl.x)<nd('Q2-X').x+PORT_FIT_M-1||Math.max(h.x,tl.x)>nd('Q2-EE').x-PORT_FIT_M+1)issues.push('FRT-3-stop-fouls-turnout:'+Math.round(Math.min(h.x,tl.x))+'-'+Math.round(Math.max(h.x,tl.x)))}
+ // enters and leaves beyond the edge: at the 'beyond' stop every car is past the drawn end of the bridge (0 appear / disappear in the world)
+ if(bi>=0){const S=rlState(T,(T.runs[bi].t1+1-T.off)*1000),cars=rlCars(S);const mn=Math.min(...cars.map(c=>c.x));if(mn<G76_VIS_X+20)issues.push('FRT-3-visible-at-beyond-stop:'+Math.round(mn))}
+ // cycles in step: FRT-3 and SHT-C6 740 s, FRT-2 148 s
+ const S6=rlTrain('SHT-C6'),F2=rlTrain('FRT-2');if(S6&&Math.abs(S6.cycle-740)>.01)issues.push('SHT-C6-cycle:'+S6.cycle.toFixed(2));if(Math.abs(T.cycle-740)>.01)issues.push('FRT-3-cycle:'+T.cycle.toFixed(2));const d2=F2&&F2.sync&&F2.sync.div||4;if(F2&&(d2!==2||Math.abs(F2.cycle*d2-740)>.01))issues.push('FRT-2-cycle:'+F2.cycle.toFixed(2)+'×'+d2);   /* p335: ×2 (World‑b) */
+ // FRT-7 (RAIL-11): the route exists both ways and the 4-wagon train fits the terminal stop (FRT-1's length)
+ const inb=railRoute('EAST-END','RA-END-2'),outb=railRoute('RA-END-2','EAST-END'),viaBL=inb&&inb.some(q=>q.seg==='B-LINK');if(!inb)issues.push('FRT-7-no-inbound-route');if(!outb)issues.push('FRT-7-no-outbound-route');if(inb&&!viaBL)issues.push('FRT-7-inbound-not-via-B-LINK');
+ const f7={inbound:inb?inb.map(q=>q.seg):null,outbound:outb?outb.map(q=>q.seg):null,len:Math.round(rlTrain('FRT-1').L)};
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,12),len:Math.round(T.L),cycle:+T.cycle.toFixed(2),runs:T.runs.map(r=>({stop:r.stop,tm:+r.tm.toFixed(1),dwell:+r.dwell.toFixed(1)})),lag:T.sync?T.sync.lag:null,frt2:F2?{cycle:+F2.cycle.toFixed(2),lag:F2.sync?F2.sync.lag:null,div:F2.sync?F2.sync.div:null}:null,sht:S6?{cycle:+S6.cycle.toFixed(2)}:null,frt7:f7}}
+window.__TC_G76_S4_QA=()=>({frt3:g76Frt3Audit(),block:g76BlockAudit(1,.5)});
+
+// GATE-76 S5 · QA-67 (6): what a player sees of the rail system at rail time t (ms): every train's run / standing / position of every car,
+// the box on every wagon, the terminal crane, slots and tractors. Pure functions of t plus the port ledger (planned from the start).
+window.__TC_G76_RAIL_SNAP=(t)=>{const r=v=>Math.round(v*10)/10,out={t,clock:(SIM_LOOP&&SIM_LOOP.simNow!=null?SIM_LOOP.simNow:0)+SIM_BENCH_OFS,base:SIM_RAIL_BASE,trains:{}};
+ for(const T of RL_TRAINS){if(T.err)continue;const S=rlState(T,t);out.trains[T.id]={k:S.k,cyc:S.cyc,moving:S.moving,u:r(S.u),cars:rlCars(S).map(c=>{const ld=typeof flWagonLoad==='function'?flWagonLoad(S,c.car,t):c.car.load;return[c.car.id,r(c.x),r(c.y),ld?JSON.stringify(ld):'-']})}}
+ const ts=t/1000;if(typeof raSlotsAt==='function'){const S=raSlotsAt(ts),cr=raCraneAt(ts);const J=b=>b?JSON.stringify(b):0;out.terminal={IN:S.IN.map(J),OUT:S.OUT.map(J),crane:[r(cr.x),r(cr.y),cr.op?cr.op.kind:null,J(cr.box)],rigs:raRigsAt(ts).map(g=>[g.k,r(g.s),J(g.box)])}}
+ return out};
+window.__TC_G76_QA67=(cycles=3,step=.25)=>({block:g76BlockAudit(cycles,step),yard:raYardAudit(Array.from({length:cycles*2},(_,i)=>i+2)),sweep:rlSweepAudit(.5,2)});
+
+// QA-47 (dynamic, harness): the airport clock and the rail clock run together for `sec` seconds (fixed 1/60 steps, the offset constant);
+// every 0.25 s: every apron vehicle inside the crossing box while a train touches the crossing is a conflict; the gate is open only when a
+// train is at the fence; the tug crossings are counted.
+window.__TC_G76_XING_QA=(sec=1800)=>{
+ if(!APT_OPS.ready)aptOpsInit();const h=1/60,sv={ofs:G76X.ofs,ofs0:G76X.ofs0,ovr:G76X.ovr};
+ let rail=((typeof SIM_LOOP!=='undefined'&&SIM_LOOP.simNow!=null?SIM_LOOP.simNow:0)+(typeof SIM_BENCH_OFS!=='undefined'?SIM_BENCH_OFS:0));G76X.ovr=null;G76X.ofs=G76X.ofs0=rail/1000-APT_OPS.clk;
+ const Z=G76X.zone,out={sec,samples:0,conflicts:0,closedSamples:0,passes:0,gateOpenNoTrain:0,gateClosedTrain:0,ev:[]};const inside=new Map();
+ try{for(let n=1;n<=Math.round(sec/h);n++){APT_OPS.clk+=h;rail+=h*1000;G76X.ofs=rail/1000-APT_OPS.clk;aoStep(APT_OPS.clk);
+  if(n%15===0){out.samples++;const t=APT_OPS.clk,cars=[];for(const id of G76X.trains){const T=rlTrain(id);if(T&&!T.err){const S=rlState(T,rail);if(S)cars.push(...rlCars(S))}}
+   const xb=g76CarsInXing(cars);if(xb)out.closedSamples++;
+   for(const v of AO.fleet){const p=afPose(v,t).pose;if(!p)continue;const ins=p[0]>Z.x0&&p[0]<Z.x1&&p[1]>Z.y0&&p[1]<Z.y1;if(ins&&!inside.get(v.id))out.passes++;inside.set(v.id,ins);
+    if(ins&&xb){out.conflicts++;if(out.ev.length<10)out.ev.push([+t.toFixed(1),v.id,Math.round(p[0]),Math.round(p[1])])}}
+   const items=[];for(const id of G76X.trains){const T=rlTrain(id);if(T&&!T.err){const S=rlState(T,rail);if(S)items.push({S,cars:rlCars(S)})}}const near=cars.some(c=>c.x>5740&&c.x<5960&&Math.abs(c.y-G76_GATE_Y)<(c.car?c.car.len:30)/2+4),gate=g76GateOpen(items);if(gate&&!cars.some(c=>c.x>5740&&c.x<5960&&Math.abs(c.y-G76_GATE_Y)<(c.car?c.car.len:30)/2+220))out.gateOpenNoTrain++;if(near&&!gate)out.gateClosedTrain++}}}
+ finally{G76X.ofs=sv.ofs;G76X.ofs0=sv.ofs0;G76X.ovr=sv.ovr}
+ out.ok=out.conflicts===0&&out.gateOpenNoTrain===0&&out.gateClosedTrain===0&&out.closedSamples>0;out.fails=AF.stats.fail;out.tasks=AF.stats.tasks;out.blockedChecks=G76X.stats.blocked;return out};
+window.__TC_RA_QA=()=>({audit:raAudit(),status:raStatus(),build:BUILD,gate:ACTIVE_GATE});
+
+
+// =====================================================================================================================================
+// GATE-71 · RAIL–AIR stage 2: rail-mounted gantry crane (RMG), container stack and two terminal tractors through the cargo tunnel.
+// Everything is a pure function of the clock tied to the FRT-1 timetable (the same rule as the v1.92 port flow): nothing is saved and
+// nothing can drift. In cycle c of FRT-1:
+//  · the train stands at track 1, wagons first. The crane lifts the boxes the train brought from the port (final state of quay visit
+//    2c-1) onto the IN slots of the stack and loads the boxes for the next quay visit (initial state of visit 2c) from the OUT slots;
+//  · after the train has left, tractor j comes up the north ramp of the cargo tunnel with the box wagon j will take on the next visit
+//    (crane -> OUT slot j), takes the box wagon j brought this time (IN slot j -> crane -> trailer) and leaves down the south ramp; the
+//    one-way tunnel runs back under the slab to the air-cargo terminal's dock. The lane is straight, so the 40 ft trailer never turns.
+// =====================================================================================================================================
+const RA_V={G:75,X:100};   // gantry / trolley speed (px/s) — GATE-76 S3: faster (two trains per cycle)
+// GATE-76 S2/S3: where the wagons stand at the terminal stop (FRT-1 W1–W4 on T1, FRT-4 W5–W8 on T2: the same y), the slot pairs beside them
+const RA_WY=(()=>{const T=rlTrain('FRT-1');if(!T||T.err)return[880,1057,1234,1411];const k=T.runs.findIndex(r=>r.stop==='airport'),R=T.runs[k],cars=rlCars(rlState(T,(R.t0+R.tm+1-T.off)*1000));return['W1','W2','W3','W4'].map(id=>+cars.find(c=>c.car.id===id).y.toFixed(2))})();
+const RA_HOME={x:5850,y:1390,h:.6};   /* s16b: המנוחה בתוך המסוף (הגלגלים עד y 1418); ב-1470 העגורן חנה 78% מהזמן מעל המדרכה והנתיב הצפוני — "המחסומים" בצילום של הבעלים */
+const RA_IN=RA_WY.map(y=>({x:5835,y})),RA_OUT=RA_WY.map(y=>({x:5865,y}));
+// GATE-76 S3 (K2): the transfer point — the trailer centre on the airside gate apron west of the corridor (north–south, beside the crane's
+// west leg x 5756, under its west cantilever). The tractors never enter a track bed.
+const RA_TP={x:5724,y:832};
+const RA_H={wagon:.18,tier1:.38,tractor:.16};                    // hoist level of a box resting on a wagon / on the stack / on a trailer
+const RA_RIG={cab:34,kingpin:30,trailer:152,w:24};
+const RA_TV=60,RA_TA=30;   // GATE-76 S3: tractor speed / acceleration on the apron
+const RA_TRAINS=[{id:'FRT-1',x:5800,track:'T1',lane:1},{id:'FRT-4',x:5900,track:'T2',lane:2}];
+// the two tractors' paths: home on the cargo apron at AP-05's airside face (tractor 1 row y 760, tractor 2 row y 795, both facing east;
+// tractor 2 joins row 760 with an S-bend east of tractor 1's home), east to x 5699, a 25 px turn south onto the gate apron, south past the
+// transfer point (front at y 938, 6 px short of the fence line). 220 px of straight behind each home so the rig's rear always lies on the path.
+function raPathOf(pts){const cum=[0];for(let i=1;i<pts.length;i++)cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));return{pts,cum,len:cum[cum.length-1]}}
+const RA_HOMES=[{x:5560,y:760},{x:5600,y:795}],RA_TURN={x:5699,y:760,R:25},RA_TP_FRONT=938;
+const RA_TPATHS=RA_HOMES.map(H=>{const pts=[[H.x-220,H.y]];for(let x=H.x-200;x<=H.x;x+=20)pts.push([x,H.y]);let x=H.x;
+  if(H.y!==RA_TURN.y){const x0=H.x+10,x1=H.x+80;pts.push([x0,H.y]);for(let i=1;i<=14;i++){const u=i/14,e=u*u*(3-2*u);pts.push([x0+(x1-x0)*u,H.y+(RA_TURN.y-H.y)*e])}x=x1}
+  for(x=Math.floor(x/10)*10+10;x<RA_TURN.x;x+=10)pts.push([x,RA_TURN.y]);pts.push([RA_TURN.x,RA_TURN.y]);
+  const R=RA_TURN.R;for(let i=1;i<=12;i++){const a=-Math.PI/2+i/12*Math.PI/2;pts.push([RA_TURN.x+R*Math.cos(a),RA_TURN.y+R+R*Math.sin(a)])}pts.push([RA_TP.x,1010]);return raPathOf(pts)});
+const RA_S_HOME=220;
+const RA_STOP_S=RA_TPATHS.map(P=>{let i=P.pts.length-2;return P.cum[i]+(RA_TP_FRONT-P.pts[i][1])});   // front at y 938 on the straight
+// ---- crane moves --------------------------------------------------------------------------------------------------------------------
+const raTrv=(a,b)=>Math.max(1.4,.5+Math.max(Math.abs(b.y-a.y)/RA_V.G,Math.abs(b.x-a.x)/RA_V.X));
+function raOp(from,to,box,t0,p0,hFrom,hTo){
+ const K=[];let t=t0;const add=(x,y,h,ld,dt)=>{K.push({t,x,y,h,ld});t+=dt};
+ add(p0.x,p0.y,.6,null,raTrv(p0,from));                 // travel (gantry + trolley together)
+ add(from.x,from.y,.6,null,1.3);                         // lower
+ add(from.x,from.y,hFrom,null,.7);                       // twist-locks
+ const tLock=t;add(from.x,from.y,hFrom,box,1.2);         // hoist
+ add(from.x,from.y,1,box,raTrv(from,to));                // travel with the box
+ add(to.x,to.y,1,box,1.4);                               // lower
+ const tSet=t;add(to.x,to.y,hTo,box,.7);                 // release
+ const tRel=t;add(to.x,to.y,hTo,null,.8);                // spreader up
+ add(to.x,to.y,.6,null,0);
+ return{K,t0,t1:t,tLock,tSet,tRel,from,to,box,end:{x:to.x,y:to.y,h:.6}}}
+function raHomeOp(t0,p0){const dt=raTrv(p0,RA_HOME);return{kind:'H',K:[{t:t0,x:p0.x,y:p0.y,h:.6,ld:null},{t:t0+dt,x:RA_HOME.x,y:RA_HOME.y,h:.6,ld:null}],t0,t1:t0+dt,end:RA_HOME}}
+function raOpPose(o,t){const K=o.K;let k=0;while(k<K.length-2&&t>=K[k+1].t)k++;const a=K[k],b=K[k+1]||a,d=b.t-a.t,u=d>0?Math.max(0,Math.min(1,(t-a.t)/d)):1,e=u*u*(3-2*u);return{x:a.x+(b.x-a.x)*e,y:a.y+(b.y-a.y)*e,h:a.h+(b.h-a.h)*e,box:a.ld}}
+// ---- the terminal visits: g even = FRT-1 (cycle g/2) on T1, g odd = FRT-4 on T2 (its arrival lies between FRT-1's arrivals) ----------
+let RA_D4=null;
+function raArr(T,c){const k=T.runs.findIndex(r=>r.stop==='airport'),R=T.runs[k],b=c*T.cycle-T.off;return{k,tArr:b+R.t0+R.tm,tDep:b+R.tEnd}}
+function raD4(){if(RA_D4==null){const A=rlTrain('FRT-1'),B=rlTrain('FRT-4');RA_D4=0;if(A&&B&&!A.err&&!B.err)RA_D4=-Math.floor((raArr(B,0).tArr-raArr(A,0).tArr)/A.cycle)}return RA_D4}
+function raVisit(g){const j=((g%2)+2)%2,c1=(g-j)/2,D=RA_TRAINS[j],T=rlTrain(D.id);if(!T||T.err)return null;const c=j?c1+raD4():c1,q=raArr(T,c);return{g,j,T,c,x:D.x,track:D.track,lane:D.lane,tArr:q.tArr,tDep:q.tDep}}
+function raGOf(id,c){return id==='FRT-4'?2*(c-raD4())+1:2*c}
+function raVisitAt(t){const A=rlTrain('FRT-1');if(!A||A.err)return 0;const q=raArr(A,0),c=Math.floor((t-q.tArr)/A.cycle),g=2*c,V=raVisit(g+1);return V&&V.tArr<=t?g+1:g}
+// ---- the plan of one visit (cached) -------------------------------------------------------------------------------------------------
+const RA_PLANS=new Map();
+// the boxes the wagons bring are the final state of the train's quay visit before; the port planner fills it call by call: plan every ship
+// call that overlaps that visit first (deterministic: calls are always planned in order), and re-plan if the visit still changes.
+function raEnsureVisit(v){const b=FL_CONT.find(q=>q.id==='E6');if(!v||!b)return;for(let k=Math.max(0,(FL_K.E6||0)-6),n=0;n<240;k++,n++){const cl=flCall(b,k);if(cl.t0>v.td)break}}
+// one visit: the crane unloads wagon j into IN j and loads OUT j onto it; one slot later a tractor brings the box for the NEXT visit (the
+// other train) into OUT j and takes the box from IN j to AP-05. Tractors one at a time on the shared approach, the two in turn; a trip
+// leaves home so the trailer is under the cantilever when the crane gets there. If the interleaved order would keep the train past its
+// departure, the plan falls back to all wagon moves first.
+function raPlanBuild(V,Vn,inB,outB,outNext,interleave,t0){
+ const N=RA_IN.length,ix=[...Array(N).keys()],W=i=>({x:V.x,y:RA_WY[i]});
+ const ops=[],unl=ix.map(()=>null),lod=ix.map(()=>null),trips=[];let t=t0,p=RA_HOME,tFree=t0;
+ const put=(o,kind,idx)=>{o.kind=kind;o.idx=idx;ops.push(o);t=o.t1+.3;p=o.end;return o};
+ const wag=j=>{if(inB[j])unl[j]=put(raOp(W(j),RA_IN[j],inB[j],t,p,RA_H.wagon,RA_H.tier1),'U',j);if(outB[j])lod[j]=put(raOp(RA_OUT[j],W(j),outB[j],t,p,RA_H.tier1,RA_H.wagon),'L',j)};
+ const trip=j=>{const carryIn=outNext[j],carryOut=inB[j];if(!carryIn&&!carryOut)return;
+  const kT=trips.length%2,run=rlRunTime(RA_STOP_S[kT]-RA_S_HOME,RA_TV,RA_TA),tS=Math.max(tFree,t+raTrv(p,RA_TP)-run),tAt=tS+run;let op1=null,op2=null;
+  t=Math.max(t,tAt-raTrv(p,RA_TP));
+  if(carryIn)op1=put(raOp(RA_TP,RA_OUT[j],carryIn,t,p,RA_H.tractor,RA_H.tier1),'D',j);
+  if(carryOut){t=Math.max(t,tAt-raTrv(p,RA_IN[j]));op2=put(raOp(RA_IN[j],RA_TP,carryOut,t,p,RA_H.tier1,RA_H.tractor),'P',j)}
+  const tGo=op2?op2.tRel+1.2:op1.tLock+1.8,tEnd=tGo+run;trips.push({j,k:kT,tS,tAt,tGo,tEnd,carryIn,carryOut,op1,op2});tFree=tEnd+1};
+ if(interleave){for(const j of ix){wag(j);if(j>0)trip(j-1)}trip(N-1)}else{for(const j of ix)wag(j);for(const j of ix)trip(j)}
+ if(ops.length){const h=raHomeOp(t,p);ops.push(h);t=h.t1;p=RA_HOME}
+ const lastW=Math.max(0,...ops.filter(o=>o.kind==='U'||o.kind==='L').map(o=>o.t1));
+ return{ops,unl,lod,trips,tEnd:Math.max(t,...trips.map(q=>q.tEnd)),lastW,interleave}}
+function raPlan(g){
+ const V=raVisit(g),Vn=raVisit(g+1);if(!V||!Vn)return null;const vq=flVisitT(V.T,V.c-1);
+ let P=RA_PLANS.get(g);if(P&&P.sig===(vq?vq.ops.length:0))return P;
+ raEnsureVisit(vq);
+ const N=RA_IN.length,ix=[...Array(N).keys()];
+ const inB=ix.map(i=>flWagState(vq,i,1e9)),outB=ix.map(i=>flVisitT(V.T,V.c).init[i]),outNext=ix.map(i=>flVisitT(Vn.T,Vn.c).init[i]);
+ // FRT-1's window to the next arrival is the shorter one: its plan may run into FRT-4's visit, whose plan then starts when it has ended
+ // (crane and tractors home); FRT-4's plan always ends before FRT-1's next visit (audited), so FRT-1's plans start clean
+ let t0=V.tArr+5,chain=0;if(V.j===1){const Pp=raPlan(g-1);if(Pp&&Pp.tEnd+.5>t0){chain=Pp.tEnd+.5-t0;t0=Pp.tEnd+.5}}
+ let B=raPlanBuild(V,Vn,inB,outB,outNext,true,t0);if(B.lastW>V.tDep-2)B=raPlanBuild(V,Vn,inB,outB,outNext,false,t0);
+ P={g,c:V.c,V,chain,t0,sig:vq?vq.ops.length:0,tArr:V.tArr,tDep:V.tDep,tNext:Vn.tArr,inB,outB,outNext,wy:RA_WY,...B};RA_PLANS.set(g,P);if(RA_PLANS.size>24)RA_PLANS.delete(RA_PLANS.keys().next().value);return P}
+function raCycleAt(t){return raVisitAt(t)}
+function raPlansNear(t){const g=raVisitAt(t);return[g-1,g].map(raPlan).filter(Boolean)}
+// wagon loads at the terminal (used by flWagonLoad for the airport run of FRT-1 and FRT-4)
+function raAirLoad(S,idx,t){if(RA_SUSPENDED)return null;const P=raPlan(raGOf(S.T.id,S.cyc));if(!P)return null;let st=P.inB[idx];const u=P.unl[idx],l=P.lod[idx];if(u&&t>=u.tLock)st=null;if(l&&t>=l.tSet)st=P.outB[idx];return{load:flBoxLoad(st)}}
+function raCraneAt(t){for(const P of raPlansNear(t))for(const o of P.ops)if(t>=o.t0&&t<=o.t1)return{...raOpPose(o,t),op:o};return{...RA_HOME,box:null,op:null}}
+function raSlotsAt(t){
+ const N=RA_IN.length,out={IN:Array(N).fill(null),OUT:Array(N).fill(null)};
+ for(const P of raPlansNear(t))for(let j=0;j<N;j++){
+  const u=P.unl[j],tr=P.trips.find(q=>q.j===j);
+  if(u&&t>=u.tSet&&!(tr&&tr.op2&&t>=tr.op2.tLock))out.IN[j]=P.inB[j];
+  if(tr&&tr.op1&&t>=tr.op1.tSet){const N2=raPlan(P.g+1),l=N2&&N2.lod[j];if(!(l&&t>=l.tLock))out.OUT[j]=tr.carryIn}}
+ return out}
+// a tractor's pose at head distance s on its path (reversing = the same poses, s going down)
+function raRigPose(k,s){const P=RA_TPATHS[k],f=rlAt(P,s),r=rlAt(P,s-RA_RIG.cab),kp=rlAt(P,s-RA_RIG.kingpin),b=rlAt(P,s-RA_RIG.kingpin-RA_RIG.trailer);
+ return{cab:{x:(f.x+r.x)/2,y:(f.y+r.y)/2,h:Math.atan2(f.y-r.y,f.x-r.x)},trailer:{x:(kp.x+b.x)/2,y:(kp.y+b.y)/2,h:Math.atan2(kp.y-b.y,kp.x-b.x)},front:f,rear:b}}
+function raRigAt(tr,t){
+ if(t<tr.tS||t>tr.tEnd)return null;
+ const D=RA_STOP_S[tr.k]-RA_S_HOME,s=t<tr.tAt?RA_S_HOME+rlProfile(D,RA_TV,RA_TA,t-tr.tS):t<tr.tGo?RA_STOP_S[tr.k]:RA_STOP_S[tr.k]-rlProfile(D,RA_TV,RA_TA,t-tr.tGo);
+ let box=null;if(tr.carryIn&&!(tr.op1&&t>=tr.op1.tLock))box=tr.carryIn;if(tr.carryOut&&tr.op2&&t>=tr.op2.tSet)box=tr.carryOut;
+ return{k:tr.k,j:tr.k,s,moving:t<tr.tAt||t>tr.tGo,rev:t>tr.tGo,box,trip:tr,...raRigPose(tr.k,s)}}
+// both tractors, always: on a trip, or at home (a box brought out stays on the trailer 25 s while AP-05 takes it in)
+function raRigsAt(t){const out=[];for(const k of[0,1]){let g=null,last=null;for(const P of raPlansNear(t))for(const tr of P.trips){if(tr.k!==k)continue;const r=raRigAt(tr,t);if(r)g=r;else if(tr.tEnd<t&&(!last||tr.tEnd>last.tEnd))last=tr}
+  if(!g)g={k,j:k,s:RA_S_HOME,moving:false,rev:false,box:last&&last.carryOut&&t-last.tEnd<25?last.carryOut:null,trip:null,...raRigPose(k,RA_S_HOME)};out.push(g)}return out}
+function raRampShade(g,R,mouthTop){const gr=g.createLinearGradient(0,mouthTop?R.y:R.y+R.h,0,mouthTop?R.y+R.h:R.y);gr.addColorStop(0,'rgba(8,10,12,.78)');gr.addColorStop(1,'rgba(8,10,12,0)');g.fillStyle=gr;g.fillRect(R.x-1,R.y,R.w+2,R.h);g.fillStyle='#c9c6bb';g.fillRect(R.x-6,mouthTop?R.y-4:R.y+R.h-1,R.w+12,5)}
+// ---- drawing ------------------------------------------------------------------------------------------------------------------------
+// p448: the rail–air yard belongs to the field — frozen until stage 8 (R-32): its boxes keep today's measures (146 × 28.8 px) and picture
+const RA_CT={L:146,W:FREIGHT_W0,k:FREIGHT_CT_SCALE0/FREIGHT_CT_SCALE};function raBoxF(g,box){g.save();g.scale(RA_CT.k,RA_CT.k);flDrawBox(g,box,0,0,38.5/RA_CT.k);g.restore()}
+function raBoxAlongY(g,box,x,y,k=1,shadowOff=0){
+ if(!box)return;const L=box.type==='40'?RA_CT.L:RA_CT.L+4;
+ if(shadowOff){g.fillStyle='rgba(8,18,26,'+(.20+shadowOff*.25)+')';g.fillRect(x-RA_CT.W/2+shadowOff*14,y-L/2+shadowOff*20,RA_CT.W,L)}
+ g.save();g.translate(x,y);g.scale(k,k);g.rotate(Math.PI/2);raBoxF(g,box);g.restore()}
+function raDrawRig(g,R,now){
+ // trailer: chassis, axles at the rear, twist-lock corners, then the box
+ g.save();g.translate(R.trailer.x,R.trailer.y);g.rotate(R.trailer.h);
+ const L=RA_RIG.trailer,W=RA_RIG.w;g.fillStyle='rgba(8,18,26,.24)';g.fillRect(-L/2+3,-W/2+4,L,W);
+ g.fillStyle='#1d2227';for(const ax of[-L/2+10,-L/2+24])for(const sy of[-1,1])g.fillRect(ax-5,sy*(W/2)-(sy>0?0:4),10,4);
+ g.fillStyle='#3d4348';g.fillRect(-L/2,-W/2+3,L,W-6);g.fillStyle='#596066';g.fillRect(-L/2,-3,L,6);
+ g.fillStyle='#e0b93a';for(const sx of[-1,1])for(const sy of[-1,1])g.fillRect(sx*(L/2-4)-2,sy*(W/2-5)-2,4,4);
+ g.restore();
+ if(R.box){g.save();g.translate(R.trailer.x,R.trailer.y);g.rotate(R.trailer.h);g.fillStyle='rgba(8,18,26,.26)';g.fillRect(-72+4,-RA_CT.W/2+5,144,RA_CT.W);raBoxF(g,R.box);g.restore()}
+ // terminal tractor (cab unit)
+ g.save();g.translate(R.cab.x,R.cab.y);g.rotate(R.cab.h);const C=RA_RIG.cab;
+ g.fillStyle='rgba(8,18,26,.26)';g.fillRect(-C/2+3,-W/2+4,C,W);g.fillStyle='#1d2227';for(const ax of[-C/2+6,C/2-7])for(const sy of[-1,1])g.fillRect(ax-4,sy*(W/2)-(sy>0?0:4),8,4);
+ g.fillStyle='#2d3338';g.fillRect(-C/2,-W/2+2,C,W-4);g.fillStyle='#e0b93a';g.fillRect(C/2-16,-W/2+1,15,W-2);g.fillStyle='#9fd4ee';g.fillRect(C/2-4,-W/2+4,3,W-8);
+ g.fillStyle='#3a4045';g.beginPath();g.arc(-C/2+9,0,5,0,Math.PI*2);g.fill();
+ g.fillStyle=(Math.floor(now/400)+R.j)%2?'#ff9b2e':'#a45a12';g.fillRect(C/2-11,-2,4,4);
+ g.restore()}
+function raDrawYard(now,v){
+ const t=now/1000;if(!portVis(v,5440,740,520,780))return;
+ const S=raSlotsAt(t);for(let j=0;j<RA_IN.length;j++){raBoxAlongY(ctx,S.IN[j],RA_IN[j].x,RA_IN[j].y,1+.1*RA_H.tier1,RA_H.tier1*.5);raBoxAlongY(ctx,S.OUT[j],RA_OUT[j].x,RA_OUT[j].y,1+.1*RA_H.tier1,RA_H.tier1*.5)}
+ for(const R of raRigsAt(t)){raDrawRig(ctx,R,now);Targets.add({id:'RA-TRACTOR-'+(R.k+1),label:'טרקטור מסוף '+(R.k+1)+(R.box?' · נושא מכולה':' · ריק')+(R.trip?(R.rev?' · חוזר ל-AP‑05':R.moving?' · בדרך לנקודת ההעברה':' · מתחת לזרוע העגורן'):' · ב-AP‑05'),category:'airport',x:R.trailer.x,y:R.trailer.y,shape:'circle',r:24/Camera.zoom})}
+}
+function raDrawCrane(P,now){__tcDrawn('raDrawCrane');
+ const x0=RA_CRANE.rails[0],x1=RA_CRANE.rails[1],G=P.y,X=P.x,h=P.h;
+ ctx.save();
+ // shadows (tall structure: shifted south-east)
+ ctx.fillStyle='rgba(8,18,26,.18)';ctx.fillRect(x0-30,G-18+13,x1-x0+40,36);ctx.fillRect(x0-9+10,G-26+13,18,52);ctx.fillRect(x1-9+10,G-26+13,18,52);
+ // the box in the air and the spreader (below the girders)
+ if(P.box)raBoxAlongY(ctx,P.box,X,G,1+.1*h,h*.6);
+ {ctx.save();ctx.translate(X,G);const k=1+.1*h;ctx.scale(k,k);ctx.strokeStyle='#2a2f33';ctx.lineWidth=2;const L=RA_CT.L;ctx.strokeRect(-RA_CT.W/2,-L/2,RA_CT.W,L);ctx.fillStyle='#e0b93a';for(const sx of[-1,1])for(const sy of[-1,1])ctx.fillRect(sx*(RA_CT.W/2-4)-3,sy*(L/2-4)-3,6,6);ctx.restore()}
+ // end carriages on the crane rails (bogies + legs)
+ for(const x of[x0,x1]){ctx.fillStyle='#1d2227';ctx.fillRect(x-10,G-28,20,8);ctx.fillRect(x-10,G+20,20,8);ctx.fillStyle='#244f83';ctx.fillRect(x-8,G-24,16,48);ctx.fillStyle='#4f87c4';ctx.fillRect(x-8,G-24,16,3);ctx.strokeStyle='rgba(10,24,40,.7)';ctx.lineWidth=1;ctx.strokeRect(x-7.5,G-23.5,15,47)}
+ // two main girders spanning the runway, with lattice
+ for(const gy of[G-15,G+15]){ctx.fillStyle='#e0731d';ctx.fillRect(x0-44,gy-4,x1-x0+48,8);ctx.fillStyle='#f19a4b';ctx.fillRect(x0-44,gy-4,x1-x0+48,2);ctx.strokeStyle='rgba(90,36,6,.55)';ctx.lineWidth=1;ctx.beginPath();for(let x=x0-42;x<x1-8;x+=14){ctx.moveTo(x,gy-4);ctx.lineTo(x+14,gy+4)}ctx.stroke()}
+ // GATE-76 S3: the cantilever's end beam and tie-backs to the west leg
+ ctx.fillStyle='#b65a14';ctx.fillRect(x0-46,G-19,4,38);ctx.strokeStyle='rgba(90,36,6,.7)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x0-44,G-15);ctx.lineTo(x0,G-26);ctx.moveTo(x0-44,G+15);ctx.lineTo(x0,G+26);ctx.stroke();
+ // operator cabin on the east carriage, trolley on the girders
+ ctx.fillStyle='#d9dde0';ctx.fillRect(x1-34,G+18,24,14);ctx.fillStyle='#26343c';ctx.fillRect(x1-30,G+21,16,5);
+ ctx.fillStyle='#c7ccd1';ctx.fillRect(X-15,G-19,30,38);ctx.strokeStyle='#454c52';ctx.lineWidth=1.2;ctx.strokeRect(X-14.5,G-18.5,29,37);ctx.fillStyle='#eef2f4';ctx.fillRect(X-6,G+4,12,10);ctx.fillStyle='#d94a3b';ctx.fillRect(X-12,G-15,3,10);
+ ctx.restore()}
+function raDrawOverhead(now){if(WTC_LP===1)return;
+ g74DrawBridge(now);if(RA_SUSPENDED)return;
+ if(!e3InView(5700,790,260,730,80))return;const v=aptView(80);if(!portVis(v,5700,790,260,730))return;
+ const P=raCraneAt(now/1000);raDrawCrane(P,now);
+ Targets.add({id:'RA-RMG',label:'עגורן גשר · מסוף רכבת–אוויר'+(P.box?' · מרים מכולה':''),category:'airport',x:(RA_CRANE.rails[0]+RA_CRANE.rails[1])/2,y:P.y,w:RA_CRANE.rails[1]-RA_CRANE.rails[0],h:40})}
+// ---- phone lines ----------------------------------------------------------------------------------------------------------------------
+function raYardHtml(){
+ const t=performance.now()/1000,P=raPlan(raVisitAt(t)),S=raSlotsAt(t),rigs=raRigsAt(t),cr=raCraneAt(t);
+ const nIn=P?P.inB.filter(Boolean).length:0,nOut=P?P.outB.filter(Boolean).length:0,stack=S.IN.filter(Boolean).length+S.OUT.filter(Boolean).length;
+ const kind={U:'פורק מכולה מהרכבת',L:'מעמיס מכולה על הרכבת',D:'מוריד מכולה מטרקטור',P:'מעמיס מכולה על טרקטור',H:'חוזר למנוחה'};
+ return pkv([['בביקור הנוכחי',(P?P.V.T.id+' · פס '+P.V.lane+' · ':'')+nIn+' מכולות נכנסות · '+nOut+' יוצאות לנמל'],['עגורן',cr.op?kind[cr.op.kind]:'ממתין'],['ערימה',stack+' מכולות בתאי IN / OUT'],['טרקטורים',rigs.map(r=>'טרקטור '+(r.k+1)+(!r.trip?' ב-AP‑05':r.rev?' חוזר ל-AP‑05':r.moving?' בדרך לנקודת ההעברה':' מתחת לזרוע העגורן')).join(' · ')]])}
+// ---- QA ----------------------------------------------------------------------------------------------------------------------------------
+function raYardAudit(visits=[2,3,4,5,6,7,8,9,10,11,12,13]){   // GATE-76 S3: crane, slots, tractors and the ledger, visits of FRT-1 and FRT-4
+ const issues=[],N=RA_IN.length;let moves=0,trips=0,samples=0,boxesIn=0,boxesOut=0,maxLen=0,minSlack=1e9,fallback=0,chained=0,maxChain=0;const byTrain={};
+ const x0=RA_TP.x-12,xr=RA_CRANE.rails[1]-10;
+ for(const g of visits){const P=raPlan(g);if(!P){issues.push('no-plan:'+g);continue}const id=P.V.T.id;byTrain[id]=(byTrain[id]||0)+1;if(!P.interleave)fallback++;
+  maxLen=Math.max(maxLen,P.tEnd-P.tArr);if(P.V.j===1)minSlack=Math.min(minSlack,P.tNext+5-P.tEnd);if(P.chain>0)chained++;maxChain=Math.max(maxChain,P.chain||0);
+  const ops=P.ops.slice().sort((a,b)=>a.t0-b.t0);for(let i=1;i<ops.length;i++)if(ops[i].t0<ops[i-1].t1-1e-6)issues.push('g'+g+':crane-overlap');
+  for(const o of ops){if(o.kind!=='H')moves++;for(const q of o.K){if(q.y<RA_CRANE.y0+12||q.y>RA_CRANE.y1-12||q.x<x0||q.x>xr)issues.push('g'+g+':crane-range')}
+   if((o.kind==='U'||o.kind==='L')&&(o.t0<P.tArr||o.t1>P.tDep-2))issues.push('g'+g+':train-op-outside-stop:'+o.kind+o.idx);
+   if((o.kind==='U'||o.kind==='L')&&Math.abs(o.kind==='U'?o.from.x-P.V.x:o.to.x-P.V.x)>.5)issues.push('g'+g+':wrong-track');}
+  // the plan ends (crane home, tractors home) before the next visit starts
+  if(P.V.j===1&&P.tEnd>P.tNext+5)issues.push('g'+g+':runs-into-next-visit:'+(P.tEnd-P.tNext-5).toFixed(1));
+  if(P.V.j===0){const Nx2=raPlan(g+1);if(Nx2&&Nx2.t0<P.tEnd)issues.push('g'+g+':next-plan-overlaps')}
+  // ledger: every box a wagon brings leaves on a tractor; every box a tractor brings is the box the next train (the other one) takes
+  const Nx=raPlan(g+1);
+  for(let j=0;j<N;j++){const tr=P.trips.find(q=>q.j===j);if(!!P.inB[j]!==!!(tr&&tr.carryOut))issues.push('g'+g+':in-balance-'+j);if(!!P.outNext[j]!==!!(tr&&tr.carryIn))issues.push('g'+g+':out-balance-'+j);
+   if(tr&&tr.carryIn&&Nx&&Nx.outB[j]!==tr.carryIn)issues.push('g'+g+':out-identity-'+j);if(P.inB[j])boxesIn++;if(tr&&tr.carryIn)boxesOut++;
+   // a slot is used in order: OUT j emptied (load) before the tractor fills it, IN j filled (unload) before the tractor empties it
+   const u=P.unl[j],l=P.lod[j];if(tr&&tr.op1&&l&&tr.op1.t0<l.t1)issues.push('g'+g+':out-'+j+'-filled-before-load');if(tr&&tr.op2&&u&&tr.op2.t0<u.t1)issues.push('g'+g+':in-'+j+'-picked-before-unload')}
+  for(const tr of P.trips){trips++;if(tr.op1&&tr.op1.K[1].t<tr.tAt-.05)issues.push('g'+g+':op1-before-tractor');if(tr.op2&&tr.op2.K[1].t<tr.tAt-.05)issues.push('g'+g+':op2-before-tractor')}
+  for(let i=1;i<P.trips.length;i++)if(P.trips[i].tS<P.trips[i-1].tEnd)issues.push('g'+g+':two-tractors-on-the-approach');
+  // sweep: the rigs stay west of T1 (x ≤ 5775, 12 px from a wagon) and north of the fence line, never touch each other or a crane leg
+  const t0=P.tArr,t1=P.tEnd;
+  for(let t=t0;t<=t1;t+=.25){const rigs=raRigsAt(t),cr=raCraneAt(t);
+   const parts=rigs.map(R=>[{x:R.cab.x,y:R.cab.y,h:R.cab.h,l:RA_RIG.cab,w:RA_RIG.w},{x:R.trailer.x,y:R.trailer.y,h:R.trailer.h,l:RA_RIG.trailer,w:RA_RIG.w}]);
+   for(let a=0;a<parts.length;a++){samples++;for(const q of parts[a]){
+     const cs=Math.abs(Math.cos(q.h)),sn=Math.abs(Math.sin(q.h)),ex=cs*q.l/2+sn*q.w/2,ey=sn*q.l/2+cs*q.w/2;if(q.x+ex>5775)issues.push('g'+g+':rig-near-T1@'+t.toFixed(1));if(q.y+ey>APT_FENCE_Y-2)issues.push('g'+g+':rig-past-fence@'+t.toFixed(1));
+     for(const x of RA_CRANE.rails)if(rlObbHit(q,{x,y:cr.y,h:Math.PI/2,l:52,w:18},1))issues.push('g'+g+':rig-crane-leg@'+t.toFixed(1));
+     for(let b=a+1;b<parts.length;b++)for(const q2 of parts[b])if(rlObbHit(q,q2,2))issues.push('g'+g+':rigs-touch@'+t.toFixed(1))}}
+   if(issues.length>12)break}}
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,12),visits:visits.length,byTrain,moves,trips,samples,boxesIn,boxesOut,maxPlan:+maxLen.toFixed(1),minSlack:+minSlack.toFixed(1),fallback,chained,maxChain:+maxChain.toFixed(1)}}
+
+
+// =====================================================================================================================================
+// GATE-74 · LANDSIDE ROAD + PARKING + PHYSICAL RAIL BRIDGE (plan v4.26 · RAIL-04 working lock: rail end y 580 / road centre y 1600)
+// New public road y 1600: R-EAST (AIR-W0, signal) → D2-AIR-L → P-WEST (AIR-1 ped signal) → under the rail bridge → K (6020,1600) → north
+// on the K column to J1 / J2 → frontage.  The old y 1250 road in E2 is a PRIVATE service lane (outside the road graph, no AI traffic) from
+// D2E to x 5748, ending west of the rail corridor.  Rail–Air is suspended until GATE-76; the deck carries two stubs aligned with T1/T2.
+// =====================================================================================================================================
+const G74={gate:'GATE-74',roadY:1600,railEnd76:580,owner:['Rail–Air מושבת עד GATE-76','הכביש הישן ב-E2 = נתיב שירות פרטי']};
+/* S16: דרך הנוסעים של המפה (AIR-PAX, עורק 2+2 על y 1576 — אספלט 1478–1674 ומדרכות עד 1458 / 1694; סתירה ס2) — הגשר AX-1 מעל כל הרוחב */
+const G74_BRIDGE={id:'RB-74',x0:5752,x1:5948,y0:1450,y1:1702,road:{y0:1458,y1:1694},clearH:5.4,tracks:[5800,5900],
+ supports:[{id:'RB74-SUP-N',x:5752,y:1450,w:196,h:8},{id:'RB74-SUP-S',x:5752,y:1694,w:196,h:8}],
+ approaches:[{id:'RB74-APP-N',x:5752,y:1422,w:196,h:28},{id:'RB74-APP-S',x:5752,y:1702,w:196,h:24}]};
+const G74_VEH=[['VH-SD-02','Sedan',1.5],['VS-TX-01','Taxi',1.6],['VH-VN-01','Van',2.5],['LV-SH-01','Bus',2.9],['LV-BS-01','Bus',3.3],['LV-CH-01','Bus',3.6],['VH-TR-01','Truck',4.0]];   // road classes · nominal height (m)
+APT_SOLIDS.push(...G74_BRIDGE.supports,...G74_BRIDGE.approaches);
+const G74_DECK_SEGS=G74_BRIDGE.tracks.map((x,i)=>({id:'RB74-T'+(i+1),pts:[[x,G74_BRIDGE.y0-6],[x,G74_BRIDGE.y1+6]]}));
+const E2_SVC_LANE={id:'E2-SVC-LANE',x0:4800,x1:5748,y:1250,half:48,sw:20,label:'נתיב שירות פרטי E2 (הכביש הישן)'};
+APT_SOLIDS.push({id:'E2-SVC-END',x:5748,y:1186,w:6,h:128});APT_FENCE_SEGS.push([5751,1186,5751,1326]);   // the lane ends at the rail corridor (GATE-76 tracks go north here)
+// lamps of the private lane (the graph's street-light generator does not see it)
+[[4980,1194],[5470,1194],[5050,1306],[5260,1306],[5640,1306]].forEach(([x,y],i)=>STREET_LIGHTS.push({id:'L-E2-SVC-'+i,roadId:'E2-SVC-LANE',asset:'SL-RES',x,y,rot:y<1250?2:0,scale:1}));
+// nav: the cargo terminal and the RA office by car
+Object.assign(APT_INTERACTIONS['APT-CARGO'],{navNode:'D2E',navVia:[{x:4840,y:1274},{x:5630,y:1274},{x:5630,y:1120},{x:5466,y:1080}]});
+Object.assign(APT_INTERACTIONS['RA-OFFICE'],{navNode:'AIR-GATE',navVia:[{x:5510,y:1576},{x:5510,y:1440}]});
+E2_NAV_PATHS.push({pts:[[5510,1426],[5510,1532]]},{pts:[[5105,1532],[5105,1552]]},{pts:[[5105,1183],[5105,1324]]});   // + the zebra over the private lane on the P-WEST centre path
+// ---- street lights of the new road: clear of the bridge deck, the lot cuts, the line-4 stop pads, crossings and each other --------
+function g74StopPads(){return ALL_BUS_STOPS.filter(o=>!o.terminal&&o.line===4).map(o=>{const pts=[];for(const s of[-(o.shortPad?30:busSiteBack(o.roadX,o.roadY)),(o.shortPad?46:busSiteFwd(o.roadX,o.roadY))])for(const d of[-3,o.roadHalf+22])pts.push([o.roadX+o.ux*s+o.nx*d,o.roadY+o.uy*s+o.ny*d]);const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);return{id:o.id,x:Math.min(...xs),y:Math.min(...ys),w:Math.max(...xs)-Math.min(...xs),h:Math.max(...ys)-Math.min(...ys)}})}
+function g74LightBad(x,y,self){const B=G74_BRIDGE,inR=(q,m)=>x>q.x-m&&x<q.x+q.w+m&&y>q.y-m&&y<q.y+q.h+m;
+ if(x>B.x0-40&&x<B.x1+40&&y>B.y0-8&&y<B.y1+8)return 'bridge';
+ for(const q of [...C4_ACCESS,...(typeof F2_CUTS!=='undefined'?F2_CUTS:[])])if(inR(q,9))return 'cut:'+q.id;
+ for(const q of g74StopPads())if(inR(q,6))return 'stop:'+q.id;
+ for(const c of CROSSWALKS)if(Math.hypot(c.x-x,c.y-y)<26)return 'crossing';
+ for(const q of SIGNAL_POLES)if(Math.hypot(q.x-x,q.y-y)<24)return 'signal';
+ for(const q of STREET_LIGHTS)if(q!==self&&Math.hypot(q.x-x,q.y-y)<(self&&q.roadId===self.roadId?70:34))return 'light:'+q.id;
+ if(!poleStopClear(x,y)||!poleRoadClear(x,y))return 'pole';return null}
+function g74FixLights(){const ids=new Set(['D2-RE-S','D2-RE-S2','D2-AIR-L','AIR-PAX3','AIR-PAX','AIR-ACC-S','AIR-ACC-N','AIR-FRONT','AIR-CONN','AIR-SOUTH','CL-F2','CL-F3','AIR-CARGO-RD','AIR-CARGO-N'])   /* S16 */,out={moved:0,removed:0};
+ for(let i=STREET_LIGHTS.length-1;i>=0;i--){const l=STREET_LIGHTS[i],why=ids.has(l.roadId)&&g74LightBad(l.x,l.y,l);if(!why)continue;if(why==='bridge'){STREET_LIGHTS.splice(i,1);out.removed++;continue}   // the deck is lit by its own fittings
+  const e=byEdge[l.roadId],a=byNode[e.a],b=byNode[e.b],len=Math.hypot(b.x-a.x,b.y-a.y),ux=(b.x-a.x)/len,uy=(b.y-a.y)/len,along=(l.x-a.x)*ux+(l.y-a.y)*uy;let ok=false;
+  for(let d=8;d<=200&&!ok;d+=8)for(const sg of[1,-1]){const at=along+sg*d;if(at<12||at>len-12)continue;const x=l.x+ux*sg*d,y=l.y+uy*sg*d;if(!g74LightBad(x,y,l)){l.x=x;l.y=y;l.g74Moved=true;out.moved++;ok=true;break}}
+  if(!ok){STREET_LIGHTS.splice(i,1);out.removed++}}
+ return out}
+const G74_LIGHT_FIX=g74FixLights();
+{const L=STREET_LIGHTS.find(q=>q.id==='L-B4-CLW-C-2-L');if(L&&Math.abs(L.y-3203.3)<2)L.y=3245}   /* p625: its pole was drawn over the opening of DW-B4-PK */
+/* p631: the tower's service loop — the data (after the cars of A5 are parked) */
+(function(){try{const rm=(L,f)=>{for(let i=L.length-1;i>=0;i--)if(f(L[i]))L.splice(i,1)};
+ rm(C4_STALLS,s=>s.id==='A5-P-01'||s.id==='A5-P-02');
+ const car=PARKED_CARS.find(c=>c.id==='PC-A5-P-2');if(car&&car.slotRect&&car.slotRect.x<100){const used=new Set(PARKED_CARS.filter(c=>c.slotRect).map(c=>c.slotRect.x+','+c.slotRect.y));
+  const t=C4_STALLS.filter(s=>s.a5==='A5-P'&&s.y===3992&&!used.has(s.x+','+s.y)).sort((a,b)=>b.x-a.x)[0];if(t){car.x+=t.x-car.slotRect.x;car.y+=t.y-car.slotRect.y;car.slotRect={x:t.x,y:t.y,w:t.w,h:t.h};P631.carTo=t.id}}
+ rm(A5ND.hedges,h=>(h[0]===58||h[0]===94)&&h[1]===3978);   /* p631b: 94 too */
+ for(const L of [A5ND.props,(typeof A34_BASE!=='undefined'&&A34_BASE.props)||[]])for(const p of L)if(p[0]==='PR-17'&&p[1]===480&&p[2]===3700){p[1]=462;p[2]=3726}
+ for(const [id,x,y,w,h,label] of [['A5-SVC-W',40,3668,56,380,'דרך השירות של מגדל הכיכר (מערב, צפונה)'],['A5-SVC-N',46,3668,482,46,'דרך השירות של מגדל הכיכר (צפון, מזרחה)'],['A5-SVC-E',486,3668,42,122,'דרך השירות של מגדל הכיכר (מזרח, דרומה)']])C4_YARDS.push({id,x,y,w,h,label,skin:true,a5:true,p631:1});
+ const mv=(id,y0,y1)=>{const L=STREET_LIGHTS.find(q=>q.id===id);if(L&&Math.abs(L.y-y0)<2){L.y=y1;P631.lamps.push(id+':'+y0+'>'+y1)}};
+ mv('L-A5-DTW-4122',4122,4154);mv('L-LC-A5-S-6-R',4189,4220);mv('L-LC-A5-S-3-R',3857,3881);
+ try{K187.list=null;K187.grid=null}catch(e){}}catch(e){P631.err=String(e&&e.message||e)}})();
+
+// ==== p365 · K‑187: the settle — every access list is declared now and every lamp move of the zones is done ============================
+function k187Settle(){
+ K187.list=null;k187Acc();const RNG={arterial:150,avenue:100,local:70};
+ const LISTS=[['STREET_LIGHTS',STREET_LIGHTS],['PARKING_LIGHTS',PARKING_LIGHTS],['B3_PARKING_LIGHTS',B3_PARKING_LIGHTS],['C2_LIGHTS',C2_LIGHTS],['E3_LIGHTS',E3_LIGHTS],['E4_LIGHTS',E4_LIGHTS],['E5_LIGHTS',E5_LIGHTS],['PORT_LIGHTS',PORT_LIGHTS],['D4_LIGHTS',D4_LIGHTS],['B2_LIGHTS',B2_LIGHTS],['D2_LIGHTS',D2_LIGHTS]];
+ let LC=null;const lamps=()=>{if(LC)return LC;const r=[];for(const [,v] of LISTS)for(const o of v)if(o.asset!=='SL-PKL')r.push(o);return LC=r};   /* p374: one array until a lamp leaves its list */   // SL-PKL: poleFit places them (clearCurbPoint(...,true))
+ const GEO=new Map(),geo=e=>{let r=GEO.get(e);if(r)return r;const a=_NODE_BY_ID[e.a],b=_NODE_BY_ID[e.b],L=Math.hypot(b.x-a.x,b.y-a.y);r={a,L,ux:(b.x-a.x)/L,uy:(b.y-a.y)/L};GEO.set(e,r);return r};   /* p374: one per street */
+ const pos=(e,o)=>{const g=geo(e),vx=o.x-g.a.x,vy=o.y-g.a.y;return{g,t:vx*g.ux+vy*g.uy,p:-vx*g.uy+vy*g.ux}};
+ const sees=(e,x,y)=>{const g=geo(e),vx=x-g.a.x,vy=y-g.a.y,t=vx*g.ux+vy*g.uy;return t>=-60&&t<=g.L+60&&Math.abs(vx*g.uy-vy*g.ux)<=(RNG[e.cls]||70)};
+ const gap=(e,self,mx,my)=>{const g=geo(e),R=RNG[e.cls]||70,ts=[];for(const o of lamps()){let x=o.x,y=o.y;if(o===self){if(mx==null)continue;x=mx;y=my}
+   const vx=x-g.a.x,vy=y-g.a.y,t=vx*g.ux+vy*g.uy;if(t>0&&t<g.L&&Math.abs(vx*g.uy-vy*g.ux)<=R)ts.push(t)}ts.sort((p,q)=>p-q);let w=0,last=0;for(const t of ts){w=Math.max(w,t-last);last=t}return Math.max(w,g.L-last)};
+ const darkOk=(o,x,y)=>{for(const e of EDGES){if(!(sees(e,o.x,o.y)||(x!=null&&sees(e,x,y))))continue;const g0=K187.gap0[e.id]??(K187.gap0[e.id]=gap(e,null));if(gap(e,o,x,y)>Math.max(200,g0)+.5)return false}return true};   // part ה
+ const c4=(x,y)=>C4_ACCESS.some(q=>x>q.x-7&&x<q.x+q.w+7&&y>q.y-7&&y<q.y+q.h+7);
+ const near=(self,x,y)=>{for(const q of lamps())if(q!==self&&Math.abs(q.x-x)<36&&Math.abs(q.y-y)<36&&Math.hypot(q.x-x,q.y-y)<36)return q.id;const RP=K372.on?K372.pole:24;for(const q of SIGNAL_POLES)if(Math.abs(q.x-x)<RP&&Math.abs(q.y-y)<RP&&Math.hypot(q.x-x,q.y-y)<RP)return q.id;return null};   /* p372: 30 px */
+ const spot=(o,x,y)=>poleRoadClear(x,y)&&poleStopClear(x,y)&&!k187At(x,y)&&!c4(x,y)&&!CROSSWALKS.some(c=>k187OnZebra(c,x,y))&&!near(o,x,y)&&!k372Sign(x,y);   /* p372: off the signs */
+ const nearG=(self,x,y,G,e)=>lamps().some(q=>q!==self&&Math.abs(q.x-x)<G&&Math.abs(q.y-y)<G&&Math.hypot(q.x-x,q.y-y)<G&&k367Same(e,q,x,y));   // p367: on the same curb
+ // 1. signal poles: a pedestrian head stays on its zebra (moved at most half the zebra depth); a vehicle head goes to the other side of
+ //    the zebra, or to the other curb of the same stop line (turned to face the road); none free → listed: the access or the zebra must move
+ const pfree=(o,x,y)=>poleRoadClear(x,y)&&poleStopClear(x,y)&&!k187At(x,y)&&!c4(x,y)&&!SIGNAL_POLES.some(q=>q!==o&&Math.hypot(q.x-x,q.y-y)<20);
+ const lampNear=(x,y)=>lamps().some(q=>Math.hypot(q.x-x,q.y-y)<24);
+ for(const o of SIGNAL_POLES){const acc=k187At(o.x,o.y);if(!acc||K187_WAIVE.has(o.id))continue;
+  const cw=o.ped?CROSSWALKS.find(c=>o.id.startsWith(c.id+'-PED-')):CROSSWALKS.find(c=>c.signalNode===o.node&&o.id==='SIG-'+o.node+'-'+c.roadId),e=cw&&k187E(cw.roadId);
+  let e2=e;if(!e2&&o.p368&&!o.ped)e2=k187E(o.id.slice(('SIG-'+o.node+'-').length));   /* p369: a head p368 made — its arm has no crossing */
+  if(!e2){o.k187Stuck=1;K187.poles.push({id:o.id,access:acc,fix:null});continue}
+  const {g,t,p}=pos(e2,o),tc=cw?pos(e2,cw).t:t,P=(tt,pp)=>({x:g.a.x+g.ux*tt-g.uy*pp,y:g.a.y+g.uy*tt+g.ux*pp,flip:pp!==p});
+  let c=[];if(!cw){c.push(P(t,-p));for(let k=8;k<=64;k+=8)c.push(P(t+k,-p),P(t-k,-p),P(t+k,p),P(t-k,p))}else if(o.ped){const hd=((e.cls==='arterial'||e.cls==='main')?34:30)/2;for(let k=1;k<=hd;k++)c.push(P(tc-k,p),P(tc+k,p))}else c=[P(2*tc-t,p),P(t,-p),P(2*tc-t,-p)];
+  c=c.filter(q=>pfree(o,q.x,q.y)).sort((a,b)=>(lampNear(a.x,a.y)?1:0)-(lampNear(b.x,b.y)?1:0));   // a spot that pushes no lamp first (stable)
+  if(!c.length){o.k187Stuck=1;K187.poles.push({id:o.id,access:acc,fix:null});continue}
+  const q=c[0];K187.poles.push({id:o.id,access:acc,from:[Math.round(o.x),Math.round(o.y)],to:[Math.round(q.x),Math.round(q.y)],fix:o.ped?'zebra':q.flip?'other curb':'other side of the zebra'});
+  o.x=q.x;o.y=q.y;if(q.flip)o.rot=((o.rot||0)+2)%4;o.k187=1}
+ // 2. lamps in a band — and a lamp moved at generation, or next to a moved pole, that stands within 24 px of a signal pole
+ for(const [n,v] of LISTS)for(let i=v.length-1;i>=0;i--){const o=v[i];if(o.asset==='SL-PKL'||K187_WAIVE.has(o.id))continue;
+  let why=k187At(o.x,o.y);if(!why&&SIGNAL_POLES.some(q=>(q.k187||o.k187)&&Math.hypot(q.x-o.x,q.y-o.y)<24))why='pole<24';
+  if(!why&&K372.on){const s=k372Sign(o.x,o.y);if(s)why='sign · '+s;else{const q=SIGNAL_POLES.find(q=>Math.hypot(q.x-o.x,q.y-o.y)<K372.pole);if(q)why='pole<'+K372.pole+' · '+q.id}}   /* p372 */
+  if(!why)continue;
+  const e=k187E(o.roadId);let to=null;
+  if(e){const {g,t,p}=pos(e,o),H=k367Half(e,n);for(const G of[H,36]){if(to)break;if(G===36&&darkOk(o,null,null)&&!(K372.on&&/^pole<30/.test(why)))break;for(let d=4;d<=(K372.on&&/^pole<30/.test(why)?48:200)&&!to;d+=4)for(const s of[-1,1]){const tt=t+s*d;if(tt<8||tt>g.L-8)continue;const x=g.a.x+g.ux*tt-g.uy*p,y=g.a.y+g.uy*tt+g.ux*p;if(spot(o,x,y)&&!nearG(o,x,y,G,e)&&darkOk(o,x,y)){to={x,y};break}}}}   /* p372: 48 px for a lamp next to a signal pole */   /* p367: half the spacing first, then the lamp goes, then 36 */
+  else{const a=K187.list.find(q=>q.id===why)||{dir:'v'};for(let d=4;d<=80&&!to;d+=4)for(const s of[-1,1]){const x=a.dir==='v'?o.x+s*d:o.x,y=a.dir==='v'?o.y:o.y+s*d;if(spot(o,x,y)){to={x,y};break}}}   // a yard lamp: along the mouth line
+  if(to){K187.moved.push({list:n,id:o.id,access:why,from:[Math.round(o.x),Math.round(o.y)],to:[Math.round(to.x),Math.round(to.y)]});o.x=to.x;o.y=to.y;o.k187=1;continue}
+  if(K372.on&&/^pole<30/.test(why)){o.k372Kept=1;K372.kept.push({list:n,id:o.id,why,at:[Math.round(o.x),Math.round(o.y)]});continue}   /* p372: it stays */
+  if(!e||darkOk(o,null,null)){v.splice(i,1);LC=null;K187.removed.push({list:n,id:o.id,access:why,at:[Math.round(o.x),Math.round(o.y)]})}   // no free place: it goes, no street gets darker
+  else{o.k187Stuck=1;K187.stuck.push({list:n,id:o.id,access:why,at:[Math.round(o.x),Math.round(o.y)]})}}
+ // 2b. p367: a lamp K-187 moved or added that stands within half the spacing of another lamp — it goes if no street gets darker, else it
+ //     slides out to half the spacing (out of every opening), else it stays and is listed
+ for(const [n,v] of LISTS)for(let i=v.length-1;i>=0;i--){const o=v[i];if(!o.k187||o.asset==='SL-PKL'||o.k187Stuck)continue;const e=k187E(o.roadId),H=k367Half(e,n),q=lamps().find(r=>r!==o&&Math.abs(r.x-o.x)<H&&Math.abs(r.y-o.y)<H&&Math.hypot(r.x-o.x,r.y-o.y)<H&&k367Same(e,r,o.x,o.y));if(!q)continue;
+  if(darkOk(o,null,null)){v.splice(i,1);LC=null;K187.removed.push({list:n,id:o.id,access:'close '+Math.round(Math.hypot(q.x-o.x,q.y-o.y))+' < '+Math.round(H)+' · '+q.id,at:[Math.round(o.x),Math.round(o.y)]});continue}
+  let to=null;if(e){const {g,t,p}=pos(e,o);for(let d=4;d<=120&&!to;d+=4)for(const s of[-1,1]){const tt=t+s*d;if(tt<8||tt>g.L-8)continue;const x=g.a.x+g.ux*tt-g.uy*p,y=g.a.y+g.uy*tt+g.ux*p;if(spot(o,x,y)&&!nearG(o,x,y,H,e)&&darkOk(o,x,y)){to={x,y};break}}}
+  if(to){K187.moved.push({list:n,id:o.id,access:'close · '+q.id,from:[Math.round(o.x),Math.round(o.y)],to:[Math.round(to.x),Math.round(to.y)]});o.x=to.x;o.y=to.y}else{o.k187Close=1;(K187.close||(K187.close=[])).push({list:n,id:o.id,near:q.id,d:Math.round(Math.hypot(q.x-o.x,q.y-o.y)),half:Math.round(H)})}}
+ // 3. every pole is placed again with the moved ones
+ POLE_FIT_CACHE.clear();g77PoleWarm.done=false;K187.done=true;K373.moved=[];   /* p373: the fits after the settle are the ones drawn */
+ return{accesses:K187.list.length,moved:K187.moved.length,removed:K187.removed.length,poles:K187.poles.length,stuck:K187.stuck.length}}
+const __k187t=performance.now();const K187_SETTLE=k187Settle();K187.ms=Math.round(performance.now()-__k187t);
+{let n=0;for(const [id,op,lid,x,y,X,Y,ex] of [["F-010","move","L-B3-LCB-S-3-L",1858,2125,1858,2104,null],["F-011","move","L-B3-LCB-S-5-L",1858,2367.9,1858,2351,null],["F-012","move","L-B4-LCB-2-L",1858,2837.6,1858,2821,null],["F-013","move","L-B4-LCB-3-L",1858,2975,1858,2950,null],["F-014","add","L-B3-LCB-S-P486-014-L",null,null,1858,2422,{"roadId":"B3-LCB-S","asset":"SL-RES","rot":2}],["F-015","add","L-B4-LCB-P486-015-L",null,null,1858,3030,{"roadId":"B4-LCB","asset":"SL-RES","rot":2}],["F-016","move","L-B3-LCB-S-3-R",1742,2125,1742,2104,null],["F-017","move","L-B3-LCB-S-5-R",1742,2367.9,1742,2351,null],["F-018","add","L-B3-LCB-S-P486-018-R",null,null,1742,2422,{"roadId":"B3-LCB-S","asset":"SL-RES","rot":0}],["F-019","move","L-A3-RD-6-L",376.7,2608,366,2608,null],["F-021","add","L-B3-LCSCH-P486-021-R",null,null,1648,2608,{"roadId":"B3-LCSCH","asset":"SL-RES","rot":3}],["F-023","add","L-B3-LCSCH-P486-023-L",null,null,1448,2492,{"roadId":"B3-LCSCH","asset":"SL-RES","rot":1}],["F-024","move","L-LC-D3-1-R",4405,2492,4402,2492,null],["F-025","remove","L-C2-RC-S2-0-L",2618,1736,null,null,null],["F-032","add","L-D2-ARN-P486-R",null,null,3954,1737,{"roadId":"D2-ARN","asset":"SL-AV2","rot":3}],["F-033","add","L-D2-ARN-P486-033-R",null,null,4214,1737,{"roadId":"D2-ARN","asset":"SL-AV2","rot":3}],["F-034","move","L-LC-C3-3-R",3052,2099.7,3052,2081,null],["F-035","move","L-LC-C3-4-R",3052,2213.9,3052,2191,null],["F-036","move","L-LC-C4-2-R",3168,3100,3168,3069,null],["F-038","move","L-CL-T1-3-L",3035,3328,3000,3328,null],["F-039","move","L-LC-D3V-4-L",3841,2028,3841,2051,null],["F-040","remove","L-LC-D3V-0-L",3841,2492,null,null,null]]){if(op==='add'){STREET_LIGHTS.push(Object.assign({id:lid,x:X,y:Y,scale:1,p486:1},ex));n++;P486.ids.push(id);continue}
+ const i=STREET_LIGHTS.findIndex(l=>l.id===lid),l=STREET_LIGHTS[i];if(!l||Math.abs(l.x-x)>.6||Math.abs(l.y-y)>.6){P486.miss.push(id+' STREET_LIGHTS: '+lid+(l?' @ '+l.x+','+l.y:' לא נמצא'));continue}
+ if(op==='move'){l.x=X;l.y=Y;l.p486=1}else STREET_LIGHTS.splice(i,1);n++;P486.ids.push(id)}P486.applied.STREET_LIGHTS=n}   /* p486: מדריך הסגנון — פנסי המחולל לפי ה-id */
+/* p555 (the coordinator 3.11, the style guide): A3 · the west avenue's west side — two lamps for the gap of the ST-04 bay (p550): one north
+   of the bay on the avenue's sidewalk, one behind the bay at the back of its 2 m sidewalk (south of the shelter); D3 · the field avenue's
+   south side — the generator lamp 48.75 px from F-033 (p486) out */
+var P555={added:[],removed:[],miss:[]};
+(function p555Lamps(){for(const [id,x,y,road,asset,rot] of [['L-B3-CLW-N-P555-N',1128,1936,'B3-CLW-N','SL-AVE',0],['L-B3-CLW-N-P555-B',1091,2090,'B3-CLW-N','SL-AVE',0]]){
+  if(STREET_LIGHTS.some(l=>l.id===id)){P555.miss.push(id+' כבר קיים');continue}STREET_LIGHTS.push({id,x,y,roadId:road,asset,rot,scale:1,p555:1});P555.added.push(id)}
+ {const i=STREET_LIGHTS.findIndex(l=>l.roadId==='D2-ARN'&&/^L-D2-ARN-\d+-R$/.test(l.id)&&Math.abs(l.y-1737)<.6&&Math.abs(l.x-4214)<56&&Math.abs(l.x-4214)>2);if(i<0)P555.removed.push('אין פנס צפוף ליד F-033');else{P555.removed.push(STREET_LIGHTS[i].id);STREET_LIGHTS.splice(i,1)}   /* p659: שדרת השדה מתחילה ב-J37_16 — לפי המקום, לא לפי המספר */}})();
+/* p575: the lamps of the streets that got a roundabout, a zebra, a crossing or a new end tonight — repaired after every other lamp pass:
+   on each side no two lamps closer than the style guide's minimum (avenue 77, street 65), no gap over its maximum (avenue 155, street 130)
+   where a lamp can stand (not in a crossing, an access, a bus bay, a roundabout or its sidewalk ring, not on a road) */
+(function(){const out={removed:[],added:[]};window.__P575_REPAIR=out;const g=n=>{try{return eval(n)}catch(e){return undefined}};
+ const C=[['B3-CLW-N','B3-CLW-S'],['B4-CLW-N'],['A3-RD'],['B3-LCSCH'],['B3-LCB-S'],['B4-LCB'],['CL-W4'],['LC-SQ-E'],['CL-SW1-W','CL-SW2'],['CL-W5'],['LC-A6-1'],['LC-A6-2'],['LC-B6']]   /* S11: A6 / B6 לפי המפה */;
+ const XW=[...CROSSWALKS,...ZEBRA_XW],stops=[...(g('S6_MAP_STOPS')||[])].concat((g('BUS_PHYS')||[]).filter(p=>p.bay));
+ const bad=(x,y,skip)=>{for(const c of XW){const e=EDGES.find(q=>q.id===c.roadId);if(!e)continue;const t=TYPES[e.cls],hw=t.width/2+t.sidewalk+10,dep=((e.cls==='arterial'||e.cls==='main')?34:30)/2+12;if(c.stripeAxis==='horizontal'?(Math.abs(x-c.x)<dep&&Math.abs(y-c.y)<hw):(Math.abs(y-c.y)<dep&&Math.abs(x-c.x)<hw))return'xw'}
+  if(C4_ACCESS.some(q=>x>q.x-9&&x<q.x+q.w+9&&y>q.y-9&&y<q.y+q.h+9))return'acc';if(typeof k187At==='function'&&k187At(x,y))return'k187';if(!poleRoadClear(x,y))return'road';
+  for(const id in RB2){const R=RB2[id];if(Math.hypot(x-R.x,y-R.y)<R.Ro+R.sw+8)return'rb'}if(typeof P576!=='undefined'&&P576.c&&Math.hypot(x-P576.c[0],y-P576.c[1])<P576.r+P576.sw+6)return'cul';
+  for(const m of stops){const F=m.F;if(!F)continue;const dx=x-F.rx,dy=y-F.ry,al=dx*F.ux+dy*F.uy,lat=dx*F.nx+dy*F.ny,half=F.roadW/2;if(Math.abs(al)<=BUS_BAY.stop/2+BUS_BAY.entry+14&&lat>half-8&&lat<half+BUS_BAY.depth+26)return'bay'}
+  if(STREET_LIGHTS.some(q=>q!==skip&&Math.hypot(q.x-x,q.y-y)<34))return'near';return null};
+ for(const ids of C){const E=ids.map(id=>EDGES.find(q=>q.id===id)).filter(Boolean);if(!E.length)continue;const a=_NODE_BY_ID[E[0].a],b=_NODE_BY_ID[E[E.length-1].b];if(!a||!b)continue;const L=Math.hypot(b.x-a.x,b.y-a.y),ux=(b.x-a.x)/L,uy=(b.y-a.y)/L,px=-uy,py=ux;
+  const cls=E[0].cls,av=cls!=='local',mn=av?77:65,mx=av?155:130,lat=_ROAD_HALF(E[0])+10,asset=cls==='avenue'?'SL-AVE':cls==='local'?'SL-RES':'SL-AV2';
+  for(const sg of [-1,1]){const al=l=>(l.x-a.x)*ux+(l.y-a.y)*uy,lt=l=>((l.x-a.x)*px+(l.y-a.y)*py)*sg;
+   const side=()=>STREET_LIGHTS.filter(l=>Math.abs(lt(l)-lat)<12&&al(l)>-30&&al(l)<L+30).sort((p,q)=>al(p)-al(q));
+   // 1 · too close: the generated one of the pair goes (never a corner lamp of a roundabout)
+   let S=side();for(let i=1;i<S.length;i++){if(al(S[i])-al(S[i-1])>=mn)continue;const v=(S[i].rb||S[i].p486||S[i].a5||S[i].b5)?S[i-1]:S[i];if(v.rb)continue;STREET_LIGHTS.splice(STREET_LIGHTS.indexOf(v),1);out.removed.push(v.id);S=side();i=0}
+   // 2 · too far: a lamp where it can stand, keeping the minimum to both
+   S=side();for(let i=1;i<S.length&&i<60;i++){const g0=al(S[i-1]),g1=al(S[i]);if(g1-g0<=mx)continue;let put=null;const mid=(g0+g1)/2;
+    for(let d=0;d<=(g1-g0)/2-mn&&!put;d+=6)for(const q of d?[mid-d,mid+d]:[mid]){if(q-g0<mn||g1-q<mn)continue;const x=a.x+ux*q+px*lat*sg,y=a.y+uy*q+py*lat*sg;if(!bad(x,y)){put={x,y,q};break}}
+    if(!put)continue;const e=E.find(q=>{const A=_NODE_BY_ID[q.a],B=_NODE_BY_ID[q.b];const t=(put.x-A.x)*(B.x-A.x)+(put.y-A.y)*(B.y-A.y);return t>=0&&t<=(B.x-A.x)**2+(B.y-A.y)**2})||E[0];
+    const l={id:'L-P575R-'+e.id+'-'+(sg>0?'R':'L')+'-'+Math.round(put.q),roadId:e.id,asset,x:put.x,y:put.y,rot:(Math.round(Math.atan2(-py*sg,-px*sg)/(Math.PI/2))+4)%4,scale:1,p575r:1};STREET_LIGHTS.push(l);out.added.push(l.id);S=side();i=0}}}
+ // the short south arm of AIR-W0 (D2-RE-S2) lies inside the airport road: its lamp stands on the sidewalk past its crossing (after the lamp pass of GATE-74)
+ if(!STREET_LIGHTS.some(l=>l.roadId==='D2-RE-S2')){const x=4611-137,y=1792;if(!STREET_LIGHTS.some(q=>Math.hypot(q.x-x,q.y-y)<40)){STREET_LIGHTS.push({id:'L-P575-D2-RE-S2',roadId:'D2-RE-S2',asset:'SL-AV2',x,y,rot:0,scale:1,p575r:1});out.added.push('L-P575-D2-RE-S2')}}})();
+/* p571b: after the lamp repair of p575 — a repair lamp of A3-RD, CL-W4 or CL-SW2 that stands under 90 px from another lamp of its road or a roundabout's (75 from A4's own lamp) goes: the rows are whole without it */
+(function(){const L=STREET_LIGHTS,A=(()=>{try{return A34_BASE.lamps.map(a=>({x:a[1],y:a[2]}))}catch(e){return[]}})(),out=[];
+ for(let i=L.length-1;i>=0;i--){const q=L[i];if(!q.p575r||!/^(A3-RD|CL-W4|CL-SW2)$/.test(q.roadId||''))continue;const near=L.some(o=>o!==q&&o.roadId===q.roadId&&Math.hypot(o.x-q.x,o.y-q.y)<90)||A.some(o=>Math.hypot(o.x-q.x,o.y-q.y)<75)||L.some(o=>o!==q&&/^L-RB-/.test(o.id)&&Math.hypot(o.x-q.x,o.y-q.y)<90);if(near){out.push(q.id);L.splice(i,1)}}
+ window.__P571B_AFTER_REPAIR=out})();
+
+
+function p555Audit(){const out={ok:true,hits:[]},hit=k=>{out.ok=false;out.hits.push(k)};if(P555.miss.length)hit(P555.miss.join(', '));
+ for(const id of ['L-B3-CLW-N-P555-N','L-B3-CLW-N-P555-B'])if(!STREET_LIGHTS.some(l=>l.id===id))hit('אין '+id);
+ if(STREET_LIGHTS.some(l=>l.id==='L-D2-ARN-5-R'))hit('L-D2-ARN-5-R עוד קיים');
+ const ph=BUS_PHYS.find(p=>p.id==='PH-4');if(ph&&ph.bay){const F=ph.F,h=F.roadW/2,S=BUS_BAY.stop/2,E=S+BUS_BAY.entry;for(const l of STREET_LIGHTS.filter(q=>q.p555)){const dx=l.x-F.rx,dy=l.y-F.ry,al=Math.abs(dx*F.ux+dy*F.uy),d=dx*F.nx+dy*F.ny;
+  const inBay=al<=E&&d>=h&&d<=h+BUS_BAY.depth&&(al<=S||d<=h+BUS_BAY.depth*(E-al)/BUS_BAY.entry);if(inBay)hit(l.id+' במפרץ');if(al<34&&d>h+BUS_BAY.depth-2&&d<h+BUS_BAY.depth+20)hit(l.id+' בסוכך')}}
+ return out}
+window.__TC_P555=p555Audit;
+/* p521x (R-76): a lamp that stands in the mouth of a crossing (the crossing moved to the stop line) — just out of it, on the corner side when
+   the gap to the next lamp of the block stays within the street's spacing, else on the block side; half the spacing from every other lamp (C-03).
+   Every other lamp stays where the generator put it */
+(function r76Lamps(){const moved=[],stuck=[];R76.lamps=moved;R76.lampsStuck=stuck;const XW=[...CROSSWALKS.map(c=>[c,c.signalNode]),...ZEBRA_XW.map(z=>[z,z.node])];
+ for(const [c,node] of XW){const e=byEdge[c.roadId],j=_NODE_BY_ID[node];if(!e||!j)continue;const o=_NODE_BY_ID[e.a===j.id?e.b:e.a],L=Math.hypot(o.x-j.x,o.y-j.y);if(L<1)continue;
+  const ux=(o.x-j.x)/L,uy=(o.y-j.y)/L,dc=(c.x-j.x)*ux+(c.y-j.y)*uy,dep=(e.cls==='arterial'||e.cls==='main')?34:30,fromA=e.a===j.id,inc=EDGES.filter(q=>q.a===j.id||q.b===j.id),ch=r76CrossHalf(j,e,inc);
+  const sp=/^TC-(E6|D6|C6)-R0/.test(e.globalRoadId)?320:(e.cls==='arterial'||e.cls==='main')?185:e.cls==='avenue'?155:130,gap=Math.ceil(sp/2)+1,m0=dc-dep/2-6,m1=dc+dep/2+6;
+  for(const l of STREET_LIGHTS){if(l.roadId!==e.id)continue;const d=(l.x-j.x)*ux+(l.y-j.y)*uy;if(d<m0||d>m1)continue;
+   const at=fromA?d:L-d,sg=[-1,1].map(q=>{const p=curbPoint(e,at,q);return[q,Math.hypot(p.x-l.x,p.y-l.y)]}).sort((a,b)=>a[1]-b[1])[0][0];
+   const lat=q=>(q.x-j.x)*-uy+(q.y-j.y)*ux,blk=STREET_LIGHTS.filter(q=>q!==l&&q.roadId===e.id&&Math.sign(lat(q))===Math.sign(lat(l))).map(q=>(q.x-j.x)*ux+(q.y-j.y)*uy).filter(v=>v>m1).sort((a,b)=>a-b)[0];
+   const c1=m0-2,c2=m1+2,cand=(c1>=ch+6&&(blk==null||blk-c1<=sp))?[c1,c2]:[c2,c1],others=STREET_LIGHTS.filter(q=>q!==l);let done=false;
+   for(const w of cand){if(w<ch+6||w>L*.5)continue;const p=clearCurbPoint(e,fromA?w:L-w,sg,others,true,gap);if(!p)continue;const pa=(p.x-j.x)*ux+(p.y-j.y)*uy;if(Math.abs(pa-w)>6||(pa>m0&&pa<m1))continue;
+    moved.push({id:l.id,road:e.id,from:[Math.round(l.x),Math.round(l.y)],to:[Math.round(p.x),Math.round(p.y)],crossing:c.id,side:w===c1?'פינה':'בלוק'});l.x=p.x;l.y=p.y;if(p.rot!=null)l.rot=p.rot;l.r76=1;try{POLE_FIT_CACHE.delete(l)}catch(x){}done=true;break}
+   if(!done)stuck.push({id:l.id,crossing:c.id})}}})();
+/* p522r_fix (3.11): מדריך הסגנון ב-C5 / D5 / C4 / D4 — אחרי ההסדר של K‑187 ושל R‑76, כך שהפנסים נשארים במקום */
+(function p522rFix(){const F=window.P522FIX={moved:[],added:[],trees:[],racks:0,miss:[]};
+ const mv=(id,x,y)=>{const l=STREET_LIGHTS.find(q=>q.id===id);if(!l){F.miss.push(id);return}F.moved.push([id,Math.round(l.x),Math.round(l.y),x,y]);l.x=x;l.y=y;l.p522fix=1;try{POLE_FIT_CACHE.delete(l)}catch(e){}};
+ const add=(id,road,x,y,like)=>{const r=STREET_LIGHTS.find(q=>q.id===like);if(!r)F.miss.push(like);STREET_LIGHTS.push({id,roadId:road,asset:r?r.asset:'SL-AV2',x,y,rot:r?r.rot:0,scale:1,p522fix:1});F.added.push(id)};
+ /* 1 · the lamps */
+ mv('L-AR-S1W-2-L',2912,4142);mv('L-AR-S2-0-L',3209,4142);
+ add('L-AR-S3-P522F-L','AR-S3',3960,4142,'L-AR-S3-1-L');
+ add('L-AR-E3N-P522F-R','AR-E3N',4474,3534,'L-AR-E3N-1-R');mv('L-AR-E3N-1-R',4474,3628);
+ /* 2 · the trees */
+ const TL=[C4ND.trees,C5ND.trees,D5ND.trees,C5V6.trees];
+ const mt=(x0,y0,x1,y1)=>{let n=0;for(const A of TL)for(const t of A||[])if(Array.isArray(t)&&Math.abs(t[1]-x0)<1.5&&Math.abs(t[2]-y0)<1.5){t[1]=x1;t[2]=y1;n++}F.trees.push(['mv',x0,y0,x1,y1,n]);if(!n)F.miss.push('tree '+x0+','+y0)};
+ const at=(Z,x,y,a)=>{const q=[a,x,y,26];if(Z)Z.trees.push(q);C4ND.trees.push(q);F.trees.push(['add',x,y])};
+ [[3595.8,3593.7],[3649.6,3645.4],[3703.4,3697.1],[3757.2,3748.8],[3811,3804],[3864.8,3859.2],[3918.6,3914.4],[3972.4,3969.6],[4026.2,4024.8]].forEach(([a,b])=>mt(2623,a,2623,b));
+ mt(3418,4137,3398,4137);mt(3478,4137,3448,4137);mt(3538,4137,3498,4137);at(C5ND,3548,4137,'TP-UR-02');
+ at(D5ND,3648,4137,'TP-UR-02');at(D5ND,3698,4137,'TP-UR-03');at(D5ND,3748,4137,'TP-UR-01');
+ at(null,2705,3328,'TP-UR-01');at(null,2760,3328,'TP-UR-02');at(null,2990,3328,'TP-UR-03');
+ /* 3 · the bike rack of D5-01 */
+ C4ND.props.push(['PR-29',3745,3505,0.8]);F.racks++;
+})();
+/* p523s (3.11): כלל צומת ה-T ב-C4S — עץ במקום הפה של המעבר הצפוני שיצא */
+try{C4ND.trees.push(['TP-UR-01',2384,3296,30])}catch(e){}
+
+   /* p374: the time of the settle */
+// QA: every lamp and signal pole at its drawn base (poleFit) — none in an access band; the streets K-187 touched — no stretch > 200 px
+function g7LampAccessQa(){k187Acc();const names=['STREET_LIGHTS','PARKING_LIGHTS','B3_PARKING_LIGHTS','C2_LIGHTS','E3_LIGHTS','E4_LIGHTS','E5_LIGHTS','PORT_LIGHTS','D4_LIGHTS','B2_LIGHTS','D2_LIGHTS','SIGNAL_POLES'],bad=[],pts=[],RNG={arterial:150,avenue:100,local:70};
+ for(const n of names){const v=k187Src(n);if(!Array.isArray(v))continue;for(const o of v){let q=o;try{q=poleFit(o)}catch(e){}if(n!=='SIGNAL_POLES')pts.push(q);const a=k187At(q.x,q.y);if(a&&!K187_WAIVE.has(o.id))bad.push({list:n,id:o.id,x:Math.round(q.x),y:Math.round(q.y),access:a})}}
+ const touched=new Set([...Object.keys(K187.gap0),...STREET_LIGHTS.filter(o=>o.k187).map(o=>o.roadId)]),dark=[];
+ for(const id of touched){const e=k187E(id);if(!e)continue;const a=_NODE_BY_ID[e.a],b=_NODE_BY_ID[e.b],L=Math.hypot(b.x-a.x,b.y-a.y),ux=(b.x-a.x)/L,uy=(b.y-a.y)/L,R=Math.max(RNG[e.cls]||70,(()=>{try{const T=roadType(e);return T.width/2+(T.sidewalk||0)+12}catch(x){return 0}})()),ts=[];   /* p653: to the end of the sidewalk */
+  for(const q of pts){const vx=q.x-a.x,vy=q.y-a.y,t=vx*ux+vy*uy;if(t>0&&t<L&&Math.abs(vx*uy-vy*ux)<=R)ts.push(t)}ts.sort((p,q)=>p-q);let w=0,last=0;for(const t of ts){w=Math.max(w,t-last);last=t}w=Math.max(w,L-last);
+  const g0=K187.gap0[id]??200;if(w>Math.max(200,g0)+.5)dark.push({edge:id,gap:Math.round(w),before:Math.round(g0)})}
+ const LL=[['STREET_LIGHTS',STREET_LIGHTS],['PARKING_LIGHTS',PARKING_LIGHTS],['B3_PARKING_LIGHTS',B3_PARKING_LIGHTS],['C2_LIGHTS',C2_LIGHTS],['E3_LIGHTS',E3_LIGHTS],['E4_LIGHTS',E4_LIGHTS],['E5_LIGHTS',E5_LIGHTS],['PORT_LIGHTS',PORT_LIGHTS],['D4_LIGHTS',D4_LIGHTS],['B2_LIGHTS',B2_LIGHTS],['D2_LIGHTS',D2_LIGHTS]],ALL=[];for(const [,v] of LL)for(const o of v)if(o.asset!=='SL-PKL')ALL.push(o);
+ const close=[];for(const [n,v] of LL)for(const o of v){if(!o.k187||o.asset==='SL-PKL'||o.k187Close)continue;const e=k187E(o.roadId),H=k367Half(e,n),q=ALL.find(r=>r!==o&&Math.hypot(r.x-o.x,r.y-o.y)<H&&k367Same(e,r,o.x,o.y));if(q)close.push({list:n,id:o.id,near:q.id,d:Math.round(Math.hypot(q.x-o.x,q.y-o.y)),half:Math.round(H)})}   /* p367 */
+ const onSign=[],nearSignal=[];const SP=SIGNAL_POLES.map(o=>{let q=o;try{q=poleFit(o)}catch(e){}return{id:o.id,x:q.x,y:q.y}});   /* p372 */
+ for(const o of LANDSCAPE)if(/^SL-/.test(o.asset)){let q=o;try{q=poleFit(o)}catch(e){}const s=k372Sign(q.x,q.y);if(s)onSign.push({list:'LANDSCAPE',id:o.id,x:Math.round(q.x),y:Math.round(q.y),sign:s,pkl:o.asset==='SL-PKL'?1:0})}   /* p373 */
+ for(const [n,v] of LL)for(const o of v){if(K187_WAIVE.has(o.id))continue;let q=o;try{q=poleFit(o)}catch(e){}const s=k372Sign(q.x,q.y);if(s)onSign.push({list:n,id:o.id,x:Math.round(q.x),y:Math.round(q.y),sign:s,pkl:o.asset==='SL-PKL'?1:0});if(o.asset==='SL-PKL')continue;   /* p373: the parking-lot lamps too */
+  const p=SP.find(r=>Math.abs(r.x-q.x)<K372.pole&&Math.abs(r.y-q.y)<K372.pole&&Math.hypot(r.x-q.x,r.y-q.y)<K372.pole);if(p)nearSignal.push({list:n,id:o.id,pole:p.id,d:+Math.hypot(p.x-q.x,p.y-q.y).toFixed(1),kept:o.k372Kept?1:0})}
+ return{ok:bad.length===0&&dark.length===0&&close.length===0&&onSign.length===0&&!nearSignal.some(r=>!r.kept),accesses:K187.list.length,inOpening:bad,dark,close,onSign,nearSignal,nearKept:nearSignal.filter(r=>r.kept).length,pklMoved:K373.moved,kept:K187.close||[],moved:K187.moved,removed:K187.removed,poles:K187.poles,stuck:K187.stuck}}
+
+// ---- drawing ------------------------------------------------------------------------------------------------------------------------
+function g74DrawServiceLane(now){const L=E2_SVC_LANE,top=L.y-L.half-L.sw,h=2*(L.half+L.sw),len=L.x1-L.x0;if(!e3InView(L.x0,top-40,len+240,h+80,40))return;
+ ctx.save();
+ // where the old road crossed the rail corridor (x 5750–5950): the reserve for the GATE-76 tracks
+ 
+ // the lane itself: shadow, sidewalks, asphalt — the same palette as the graph roads
+ ctx.fillStyle='rgba(0,0,0,.32)';ctx.fillRect(L.x0,top-4,len+4,h+8);ctx.fillStyle=P.walk;ctx.fillRect(L.x0,top,len,h);ctx.fillStyle=P.asph;ctx.fillRect(L.x0,L.y-L.half,len-10,2*L.half);
+ // markings: thin dashed centre line, SERVICE stencils, give-way bar at the D2 entrance, hatched end box + kerb
+ ctx.strokeStyle='rgba(240,240,232,.55)';ctx.lineWidth=2;ctx.setLineDash([14,18]);ctx.beginPath();ctx.moveTo(L.x0+36,L.y);ctx.lineTo(L.x1-70,L.y);ctx.stroke();ctx.setLineDash([]);
+ for(const x of[4990,5560])aptTxt(ctx,'SERVICE · שירות',x,L.y+24,9,'rgba(240,236,214,.5)',800);
+ ctx.fillStyle='rgba(240,240,232,.75)';ctx.fillRect(L.x0+16,L.y-L.half+4,3,2*L.half-8);
+ ctx.fillStyle='rgba(246,244,236,.85)';for(let y=L.y-L.half+6;y<L.y+L.half-4;y+=10)ctx.fillRect(5092,y,26,5);   // zebra on the P-WEST centre path
+ ctx.save();ctx.beginPath();ctx.rect(L.x1-60,L.y-L.half,50,2*L.half);ctx.clip();ctx.strokeStyle='rgba(236,200,90,.7)';ctx.lineWidth=4;for(let k=-110;k<110;k+=14){ctx.beginPath();ctx.moveTo(L.x1-60+k,L.y-L.half);ctx.lineTo(L.x1-60+k+96,L.y+L.half);ctx.stroke()}ctx.restore();
+ ctx.fillStyle='#a3a39a';ctx.fillRect(L.x1-10,top,10,h);ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(L.x1-10,top,2,h);
+ ctx.restore();
+ e4Plate('נתיב שירות פרטי · אין מעבר',4930,L.y+L.half+10,126);e4Plate('סוף הנתיב',5700,L.y+L.half+10,56)}
+function g74DeckTrains(now,B){if(typeof rlSnap!=='function')return 0;const L=[],o34=r53Open();   // GATE-77 S6r · K-91: the cars on the RB-74 deck, drawn again over the deck (clipped to it)
+ try{const pad=o34?28:4;   // p468 (R-53): in 3/4 the queue's window is open again (c34Flush closed it before this overhead pass); a car just off the deck lifts its 3/4 roof over it
+ for(const q of rlSnap(now))for(const c of q.cars){const hl=((c.car&&c.car.len)||24)/2+pad;if(c.x<B.x0-hl||c.x>B.x1+hl||c.y<B.y0-hl||c.y>B.y1+hl)continue;L.push([q,c])}
+ if(!L.length)return 0;L.sort((a,b)=>a[1].y-b[1].y);ctx.save();ctx.beginPath();ctx.rect(B.x0-6,B.y0-2,B.x1-B.x0+12,B.y1-B.y0+4);ctx.clip();
+ try{for(const [q,c] of L){const k=r53Car(c,1);portDrawStock(ctx,{now34:1,id:c.id,asset:c.car.asset,variant:c.car.variant||0,load:flWagonLoad(q.S,c.car,now),post34:k&&k.paint},{x:c.x,y:c.y,heading:c.heading},now/1000);if(k)k.after()}}
+ finally{ctx.restore()}return L.length}finally{r53Close(o34)}}
+
+/* p683 (S9a): UX-1 — the short rail bridge over the island road (two tracks; room for the map's third) */
+const UX1={id:'UX-1',x0:5752,x1:6046,y0:2530,y1:2710,clearH:4.6,tracks:[5800,5900,5978]};   /* S7F266: the bypass on the deck at x 5978 — the same line as in E3 (D‑503) */   /* p684: שלוש מסילות כמו במפה (MAIN-A, ‏MAIN-B ומסילת העקיפה) */
+function p683DrawUx(now){const B=UX1,w=B.x1-B.x0,h=B.y1-B.y0;if(typeof e3InView==='function'&&!e3InView(B.x0-30,B.y0-40,w+60,h+80,40))return;
+ ctx.save();
+ ctx.fillStyle='rgba(6,12,18,.30)';ctx.fillRect(B.x0+12,B.y0+10,w,h-4);
+ ctx.fillStyle='#777b7d';ctx.fillRect(B.x0-6,B.y0-2,w+12,10);ctx.fillRect(B.x0-6,B.y1-8,w+12,10);
+ ctx.fillStyle='#9b9fa1';ctx.fillRect(B.x0,B.y0,w,h);
+ ctx.fillStyle='#5f6467';ctx.fillRect(B.x0,B.y0,6,h);ctx.fillRect(B.x1-6,B.y0,6,h);
+ ctx.fillStyle='#d0d3d4';for(let y=B.y0+6;y<B.y1-4;y+=14){ctx.fillRect(B.x0+1,y,4,3);ctx.fillRect(B.x1-5,y,4,3)}
+ ctx.fillStyle='rgba(40,42,44,.55)';ctx.fillRect(B.x0,B.y0+9,w,1.4);ctx.fillRect(B.x0,B.y1-10,w,1.4);
+ for(const wx of[5838,5938]){ctx.fillStyle='#b5b8b9';ctx.fillRect(wx,B.y0+10,24,h-20);ctx.strokeStyle='rgba(60,62,64,.5)';ctx.lineWidth=1;ctx.strokeRect(wx+.5,B.y0+10.5,23,h-21)}
+ /* S9 · S7F268: the bypass's buffers on the south approach are out — it runs on to main B at y 2900 (drawE4Rail) */
+ for(const tx of B.tracks){ctx.fillStyle='#666b6d';ctx.fillRect(tx-24,B.y0+2,48,h-4);ctx.fillStyle='#413d37';for(let y=B.y0+6;y<B.y1-4;y+=16)ctx.fillRect(tx-20,y,40,5);ctx.strokeStyle='#c6cbd0';ctx.lineWidth=3;for(const dx of[-13,13]){ctx.beginPath();ctx.moveTo(tx+dx,B.y0+2);ctx.lineTo(tx+dx,B.y1-2);ctx.stroke()}}
+ try{g74DeckTrains(now,B)}catch(e){}
+ ctx.restore();
+ e4Plate('גשר רכבת · 3 מסילות · '+B.clearH+' מ׳',5900,B.y1+12,150);
+ Targets.add({id:'UX-1',label:'גשר רכבת מעל דרך האי · 3 מסילות (פס א׳, פס ב׳, מסילת העקיפה) · גובה חופשי '+B.clearH+' מ׳',category:'rail',x:(B.x0+B.x1)/2,y:(B.y0+B.y1)/2,w,h})}
+function g74DrawBridge(now){const B=G74_BRIDGE,w=B.x1-B.x0,h=B.y1-B.y0;if(!e3InView(B.x0-30,B.y0-40,w+60,h+80,40))return;
+ ctx.save();
+ ctx.fillStyle='rgba(6,12,18,.30)';ctx.fillRect(B.x0+12,B.y0+10,w,h-4);                       // the deck stands ~6 m above the road: cast shadow
+ ctx.fillStyle='#777b7d';ctx.fillRect(B.x0-6,B.y0-2,w+12,10);ctx.fillRect(B.x0-6,B.y1-8,w+12,10); // abutment caps over the two support walls
+ ctx.fillStyle='#9b9fa1';ctx.fillRect(B.x0,B.y0,w,h);                                            // deck slab
+ ctx.fillStyle='#5f6467';ctx.fillRect(B.x0,B.y0,6,h);ctx.fillRect(B.x1-6,B.y0,6,h);              // edge girders
+ ctx.fillStyle='#d0d3d4';for(let y=B.y0+6;y<B.y1-4;y+=14){ctx.fillRect(B.x0+1,y,4,3);ctx.fillRect(B.x1-5,y,4,3)}   // parapet posts
+ ctx.fillStyle='rgba(40,42,44,.55)';ctx.fillRect(B.x0,B.y0+9,w,1.4);ctx.fillRect(B.x0,B.y1-10,w,1.4);              // expansion joints
+ ctx.fillStyle='#b5b8b9';ctx.fillRect(5838,B.y0+10,24,h-20);ctx.strokeStyle='rgba(60,62,64,.5)';ctx.lineWidth=1;ctx.strokeRect(5838.5,B.y0+10.5,23,h-21);   // walkway / cable trough
+ for(const g of G74_DECK_SEGS){ctx.save();rlTrack(g);ctx.restore()}                              // the two stubs on the deck, aligned with T1/T2
+ g74DeckTrains(now,B);                                                                          // GATE-77 S6r · K-91: the train on the deck, over it
+ ctx.restore();
+ e4Plate('גשר רכבת · '+B.clearH+' מ׳',5850,B.y1+12,100);
+ Targets.add({id:'RB-74',label:'גשר רכבת מעל כביש השדה · גובה חופשי '+B.clearH+' מ׳ · T1/T2 → GATE‑76',category:'airport',x:(B.x0+B.x1)/2,y:(B.y0+B.y1)/2,w,h})}
+// ---- QA -----------------------------------------------------------------------------------------------------------------------------
+function g74Crossings(){   // every road (roadway + sidewalks) × every rail centreline: where do they meet, and is it grade-separated?
+ const out=[];for(const e of EDGES){const a=byNode[e.a],b=byNode[e.b],h=_ROAD_HALF(e)+20,R={x:Math.min(a.x,b.x)-h,y:Math.min(a.y,b.y)-h,w:Math.abs(a.x-b.x)+2*h,h:Math.abs(a.y-b.y)+2*h};
+  for(const g of RAIL_SEGS){for(let k=1;k<g.pts.length;k++){const p=g.pts[k-1],q=g.pts[k],n=Math.max(1,Math.ceil(Math.hypot(q[0]-p[0],q[1]-p[1])/6));let hit=null;for(let i=0;i<=n;i++){const x=p[0]+(q[0]-p[0])*i/n,y=p[1]+(q[1]-p[1])*i/n;if(x>R.x&&x<R.x+R.w&&y>R.y&&y<R.y+R.h){hit=[x,y];break}}
+    if(hit){const B=G74_BRIDGE,onDeck=hit[0]>=B.x0&&hit[0]<=B.x1&&R.y>=B.y0&&R.y+R.h<=B.y1,overWater=g.kind==='bridge';out.push({road:e.id,rail:g.id,x:Math.round(hit[0]),y:Math.round(hit[1]),grade:onDeck?'bridge RB-74':e.id==='CL-I4'?'bridge UX-1':e.id==='CL-I7'?'level '+(g.id==='B-LINK'?'LX-1':'LX-2'):overWater?'rail viaduct':'LEVEL'});break}}}}
+ return out}
+function g74ClearanceQa(){const B=G74_BRIDGE,e=byEdge['AIR-PAX'],issues=[];let samples=0,maxH=0;
+ for(const [asset,ref,hgt] of G74_VEH){maxH=Math.max(maxH,hgt);if(hgt>B.clearH-.5)issues.push('height:'+asset);
+  for(const dir of[1,-1])for(let t=0;t<=1;t+=.004){const p=trafficEdgePoint('AIR-PAX',dir,t);if(p.x<B.x0-80||p.x>B.x1+80)continue;samples++;const g=vehicleCollisionShape(asset,ref,p.x,p.y,p.heading);
+   for(const S of B.supports){const cx=clamp(g.x,S.x,S.x+S.w),cy=clamp(g.y,S.y,S.y+S.h);if(pointSegmentDistanceSq(cx,cy,g.ax,g.ay,g.bx,g.by)<g.radius*g.radius){issues.push('support:'+asset+'@'+Math.round(p.x));break}}
+   if(g.y-g.radius<B.road.y0+20||g.y+g.radius>B.road.y1-20)issues.push('off-roadway:'+asset);
+   {const hit=playerStaticBodyBlockedAtFor({asset,ref},{x:p.x,y:p.y,heading:p.heading});if(hit)issues.push('static:'+asset+':'+hit)}}}   // the player's own collision test (a bus/truck driven by the player)
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,10),samples,maxVehicleH:maxH,clearH:B.clearH,span:[B.road.y0,B.road.y1],supports:B.supports.map(q=>[q.y,q.y+q.h])}}
+function g74Audit(){const issues=[],B=G74_BRIDGE,over=aptOver;
+ // 1 · the new road is THE public route to the terminal; the old y 1250 road in E2 is out of the graph
+ const path=shortestNodePath('D3A2','AIR-K1');for(const id of['AIR-W0','D2E-AIR','AIR-GATE','AIR-K'])if(!path.includes(id))issues.push('route-missing:'+id);   /* S16: אל חזית הטרמינל של המפה */
+ const oldEdges=EDGES.filter(e=>{const a=byNode[e.a],b=byNode[e.b];return Math.abs(a.y-1250)<.5&&Math.abs(b.y-1250)<.5&&Math.max(a.x,b.x)>4800&&Math.min(a.x,b.x)<6020});if(oldEdges.length)issues.push('old-road-in-graph:'+oldEdges.map(e=>e.id).join('/'));
+ const used=new Set(Object.values(BUS_ROUTES).flat().map(q=>q.edgeId));for(const id of used)if(!byEdge[id])issues.push('bus-route-dead-edge:'+id);
+ if(BUS_LINE_4_ROUTE.some(q=>{const e=byEdge[q.edgeId],a=byNode[e.a],b=byNode[e.b];return fleetFieldAt((a.x+b.x)/2,(a.y+b.y)/2)}))issues.push('line4-in-field');   // p454: line 4 ends at the field's gate (was: under the bridge)
+ if(TRAFFIC_SEED_EDGES.some(id=>!byEdge[id]))issues.push('traffic-seed-dead-edge');
+ {const n=NODES.find(q=>q.id==='D2E');if(!n||incident('D2E').length!==1||n.type!=='boundary')issues.push('d2e-lane-end')}
+ // 2 · 0 level crossings on the airport landside: every road × rail meeting is on the RB-74 deck (or a rail viaduct over water)
+ const X=g74Crossings(),level=X.filter(q=>q.grade==='LEVEL'),air=X.filter(q=>/^(T1|T2|A-E3|B-E3)$/.test(q.rail)&&q.road!=='CL-I4');if(level.some(q=>/^(T1|T2|A-E3|B-E3)$/.test(q.rail)||/^(D2-AIR-L|E2-|F2-)/.test(q.road)))issues.push('level-crossing:'+level.map(q=>q.road+'×'+q.rail).join('/'));
+ if(air.length!==2||!air.every(q=>q.road==='AIR-PAX'&&q.grade==='bridge RB-74'))issues.push('bridge-crossings:'+JSON.stringify(air));
+ // 3 · bridge structure: the road corridor (roadway + sidewalks) fits the span, supports outside it, deck over both tracks, stubs aligned for GATE-76
+ const e=byEdge['AIR-PAX'],ry=byNode[e.a].y,half=_ROAD_HALF(e)+20;if(ry-half!==B.road.y0||ry+half!==B.road.y1)issues.push('corridor-not-span');
+ for(const S of B.supports){if(S.y+S.h>B.road.y0&&S.y<B.road.y1)issues.push('support-in-corridor:'+S.id);if(S.x>B.x0||S.x+S.w<B.x1)issues.push('support-short:'+S.id)}
+ if(B.supports[0].y+B.supports[0].h!==B.road.y0||B.supports[1].y!==B.road.y1)issues.push('support-not-at-sidewalk-edge');
+ for(const t of RA_TRACKS){const g=RAIL_SEG_BY_ID[t.seg];if(!g){issues.push('no-stub:'+t.id);continue}const ys=g.pts.map(p=>p[1]);if(Math.min(...ys)>B.y0-20)issues.push('stub-not-past-deck:'+t.id);if(!G74_DECK_SEGS.some(d=>d.pts[0][0]===t.x))issues.push('deck-track-misaligned:'+t.id);if(t.x-22<B.x0+6||t.x+22>B.x1-6)issues.push('track-off-deck:'+t.id);if(!E3_TRACKS.some(q=>q.x===t.x))issues.push('stub-not-on-E3-track:'+t.id)}
+ if(RA_TRACK_END!==G74.railEnd76)issues.push('gate76-target');{const tail=G74.railEnd76+907;if(tail>=B.y0)issues.push('gate76-train-on-deck:'+tail)}
+ for(const l of STREET_LIGHTS)if(l.x>B.x0-10&&l.x<B.x1+10&&l.y>B.y0&&l.y<B.y1)issues.push('lamp-under-deck:'+l.id);
+ for(const o of ALL_BUS_STOPS)if(o.x>B.x0-50&&o.x<B.x1+50&&o.y>B.y0-10&&o.y<B.y1+10)issues.push('stop-under-deck:'+o.id);
+ for(const c of CROSSWALKS)if(c.x>B.x0-30&&c.x<B.x1+30&&c.y>B.y0&&c.y<B.y1)issues.push('crossing-under-deck:'+c.id);
+ for(const r of [RA_BOND,...APT_BUILDINGS.map(aptFp)])if(over(r,{x:B.x0,y:B.road.y0,w:B.x1-B.x0,h:B.road.y1-B.road.y0}))issues.push('object-in-underpass:'+(r.id||'?'));
+ const C=g74ClearanceQa();if(!C.ok)issues.push(...C.issues.map(q=>'clearance:'+q));
+ // 4 · parking ≥ 160, every lot reached from a road or the lane
+ const total=ew2ParkingTotal();if(total<160)issues.push('parking<160:'+total);
+ const lots={'P-WEST':EW2_STALLS.length,'P-WEST-N':PWN_STALLS.length+APT_STALLS.filter(s=>!s.returnBay).length,'RA staff':RA_STAFF_STALLS.length,'P-TERM':F2_STALLS.filter(q=>!q.plaza).length,'P-PLAZA':F2_STALLS.filter(q=>q.plaza).length,'G2 P-LONG':G2_STALLS.length};
+ // 5 · the private lane: not a road edge, reaches D2E, ends west of the rail corridor, joined to the new road by the P-WEST drives / RA staff lane
+ const L=E2_SVC_LANE;if(L.x1>5750)issues.push('lane-into-rail-corridor');if(!EW2_DRIVES.every(d=>d.y<=L.y+L.half&&d.y+d.h>=B.road.y0+20))issues.push('lane-not-joined-to-road');if(RA_STAFF_LANE.y+RA_STAFF_LANE.h!==B.road.y0)issues.push('staff-lane-not-joined');
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,24),gate:'GATE-74',graph:[NODES.length,EDGES.length],route:path,crossings:X.length,levelCrossings:level.length,airportCrossings:air,clearance:C,parking:{total,lots},lights:G74_LIGHT_FIX,bridge:{x:[B.x0,B.x1],y:[B.y0,B.y1],clearH:B.clearH,stubs:RA_TRACKS.map(t=>[t.id,t.x,RA_TRACK_END])},lane:[L.x0,L.x1,L.y]}}
+window.__TC_G74_QA=()=>({audit:g74Audit(),build:BUILD,gate:ACTIVE_GATE});
+
+// =====================================================================================================================================
+// GATE-72 · WORLD 59 CHUNKS (plan v4.13 · AIR-01). The planned airport north row E0/F0/G0 (x 4800–8400, y −850…0) joins the runtime
+// chunk registry without renumbering the 56 existing chunks. World bounds become x 0…8400 / y −850…6900; the camera, the minimap, the
+// full map, the phone map, currentChunkId, save validation and the debug report all use them. The row stays PLANNED: no content, not
+// walkable, no airport actor moves — GATE-73 brings the runway, taxiway and safety areas north into it.
+// =====================================================================================================================================
+const G72_SCOPE={id:'WORLD-59',gate:'GATE-72',north:{x:4800,y:MAP_NORTH_Y,w:3600,h:-MAP_NORTH_Y},next:'GATE-73'};
+const G72_PLAN={E0:[4800,-850,1200,850],F0:[6000,-850,1200,850],G0:[7200,-850,1200,850]};   // canonical table (plan v4.13 §coordinates)
+let G72_NORTH_CACHE=null;
+function g72NorthRow(){return G72_NORTH_CACHE||(G72_NORTH_CACHE=MAP_CHUNKS.filter(q=>q.row===-1&&G72_PLAN[q.id]))}   /* p333: the airport row E0 / F0 / G0 (A0–D0 and H0 are in row 0 too) */
+function g72InNorthRow(x,y){return g72NorthRow().some(q=>x>=q.x&&x<q.x+q.w&&y>=q.y&&y<q.y+q.h)}
+function worldClampX(x){return clamp(x,WORLD.x,WORLD.x+WORLD.w)}
+function worldClampY(y){return clamp(y,WORLD.y,WORLD.y+WORLD.h)}
+function worldContains(x,y){return Number.isFinite(x)&&Number.isFinite(y)&&x>=WORLD.x&&x<=WORLD.x+WORLD.w&&y>=WORLD.y&&y<=WORLD.y+WORLD.h}
+// ---- world view: the row sits on the same dark backdrop as every other planned chunk, with its planned purpose written on it ----------
+function g72Backdrop(){const n=G72_SCOPE.north;ctx.fillRect(n.x,n.y,n.w,n.h)}          // called inside the shadowed backdrop pass of render()
+function g72DrawNorthRow(now){
+ const v=portView(80);if(v.y0>2)return;const rows=g72NorthRow();
+ ctx.save();
+ for(const q of rows){
+  if(!portVis(v,q.x,q.y,q.w,q.h))continue;
+  // planned-purpose tint and a light hatch, clipped to the chunk
+  ctx.save();ctx.beginPath();ctx.rect(q.x,q.y,q.w,q.h);ctx.clip();
+  ctx.fillStyle='rgba(81,72,95,.30)';ctx.fillRect(q.x,q.y,q.w,q.h);
+  ctx.strokeStyle='rgba(176,160,214,.10)';ctx.lineWidth=3;ctx.beginPath();for(let k=-q.h;k<q.w;k+=64){ctx.moveTo(q.x+k,q.y+q.h);ctx.lineTo(q.x+k+q.h,q.y)}ctx.stroke();
+  ctx.restore();
+  // chunk border (dashed) and the label block in the middle of the chunk
+  ctx.strokeStyle='rgba(206,196,236,.42)';ctx.lineWidth=3;ctx.setLineDash([26,18]);ctx.strokeRect(q.x+1.5,q.y+1.5,q.w-3,q.h-3);ctx.setLineDash([]);
+  const cx=q.x+q.w/2,cy=q.y+q.h/2;
+  aptTxt(ctx,q.id,cx,cy-84,110,'rgba(230,224,248,.55)',800);
+  aptTxt(ctx,q.name,cx,cy+18,44,'rgba(230,224,248,.66)',700);
+  aptTxt(ctx,'אזור מתוכנן · '+G72_SCOPE.next+' · המסלול והאזור הבטיחותי עוברים לכאן',cx,cy+78,28,'rgba(214,206,236,.58)',600);
+ }
+ // the shared edge with E1–G1: the airport grows north from here
+ if(v.y0<6&&v.y1>-6){ctx.strokeStyle='rgba(255,224,138,.35)';ctx.lineWidth=2;ctx.setLineDash([14,10]);ctx.beginPath();ctx.moveTo(Math.max(4800,v.x0),0);ctx.lineTo(Math.min(8400,v.x1),0);ctx.stroke();ctx.setLineDash([])}
+ ctx.restore()}
+// ---- save: positions are checked against the new bounds; a save that would leave the player in a chunk that cannot be entered yet
+// (E0/F0/G0 or any other planned chunk) is moved back to the default spawn instead of stranding the player
+function g72AfterLoad(){
+ const out=[];const P=PlayerProfile.progression;
+ if(P&&Array.isArray(P.discoveredChunks)){const ids=new Set(MAP_CHUNKS.map(q=>q.id)),n=P.discoveredChunks.length;P.discoveredChunks=[...new Set(P.discoveredChunks.filter(id=>ids.has(id)))];if(P.discoveredChunks.length!==n)out.push('discovered:'+(n-P.discoveredChunks.length))}
+ if(!worldContains(PlayerCar.x,PlayerCar.y)||['WORLD','APT-AIRFIELD'].includes(blockedAt(PlayerCar.x,PlayerCar.y,1))){out.push('vehicle@'+Math.round(PlayerCar.x)+','+Math.round(PlayerCar.y));PlayerCar.x=2958;PlayerCar.y=2484;PlayerCar.heading=-Math.PI/2;PlayerCar.speed=0;PlayerCar.steer=0}
+ if(PlayerProfile.mode==='walk'&&(!worldContains(PlayerPed.x,PlayerPed.y)||['WORLD','APT-AIRFIELD'].includes(personBlockedAt(PlayerPed.x,PlayerPed.y,1)))){out.push('walker@'+Math.round(PlayerPed.x)+','+Math.round(PlayerPed.y));PlayerProfile.mode='vehicle';PlayerPed.x=PlayerCar.x;PlayerPed.y=PlayerCar.y}
+ if(out.length)try{SaveManager.log('load_relocated',{gate:'GATE-72',fixes:out})}catch{}
+ return out}
+// ---- maps: the transform used by the minimap and the full map covers the whole world, north row included
+function g72MapBoundsOk(){
+ for(const [w,h] of[[220,180],[900,700],[340,310]]){const T=mapTf(w,h,WORLD,5);const x0=T.x(WORLD.x),x1=T.x(WORLD.x+WORLD.w),y0=T.y(WORLD.y),y1=T.y(WORLD.y+WORLD.h);if(x0<-.5||y0<-.5||x1>w+.5||y1>h+.5)return false;if(T.y(-850)<-.5||T.y(0)<=T.y(-850))return false}
+ return true}
+// ---- QA ------------------------------------------------------------------------------------------------------------------------------
+function g72WorldAudit(){
+ const issues=[],ids=MAP_CHUNKS.map(q=>q.id),north=g72NorthRow();
+ if(MAP_CHUNKS.length!==80||new Set(ids).size!==80)issues.push('registry:'+MAP_CHUNKS.length);   /* p333 · QA‑01 (D‑164): 80 zones */
+ if(MAP_CHUNKS.slice(0,56).some(q=>q.row<0)||ids.slice(56,59).join()!=='E0,F0,G0')issues.push('registry-order');
+ {const want=[];for(const c of 'ABCDEFGH')for(let r=0;r<10;r++)want.push(c+r);const have=new Set(ids);for(const z of want)if(!have.has(z))issues.push('missing:'+z)}
+ for(const [id,[x,y,w,h]] of Object.entries(G72_PLAN)){const q=MAP_CHUNKS.find(c=>c.id===id);if(!q||q.x!==x||q.y!==y||q.w!==w||q.h!==h||q.cat!=='airport'||q.runtime!=='live')issues.push(id+':geometry')}
+ if(WORLD.x!==0||WORLD.y!==-850||WORLD.w!==9600||WORLD.y+WORLD.h!==7750||WORLD.minY!==WORLD.y||WORLD.maxY!==7750)issues.push('world-bounds');   /* p335 · QA‑01 */
+ // registry tiles the world: no overlaps, inside the bounds, area = the 8400×6900 city + the 3600×850 north row
+ let area=0;for(let i=0;i<MAP_CHUNKS.length;i++){const a=MAP_CHUNKS[i],B=WORLD80;area+=a.w*a.h;if(a.x<B.x||a.y<B.y||a.x+a.w>B.x+B.w||a.y+a.h>B.y+B.h)issues.push(a.id+':outside');for(let j=i+1;j<MAP_CHUNKS.length;j++){const b=MAP_CHUNKS[j];if(a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h)issues.push('overlap:'+a.id+'/'+b.id)}}
+ if(area!==9600*8600)issues.push('area:'+area);   /* p333 · QA‑01: 82,560,000, no holes (the area with no overlaps) */
+ // chunk lookup at the new row, across its south edge and outside the registry
+ for(const [x,y,want] of[[5400,-425,'E0'],[6600,-425,'F0'],[7800,-425,'G0'],[4800,-850,'E0'],[8399,-1,'G0'],[5400,1,'E1'],[6600,0,'F1'],[2000,-400,'B0'],[9000,4000,'H5'],[3000,7300,'C9'],[9599,7749,'H9'],[5400,-851,null],[9600,100,null]])if(currentChunkId(x,y)!==want)issues.push('chunkId@'+x+','+y+'='+currentChunkId(x,y));
+ // still planned: no live content, not walkable or driveable, not in the baked map picture
+ // GATE-73: live airside (part of the airfield solid: closed to the player like E1–G1)
+ for(const q of north){if(!MAP_ACTIVE_IDS.has(q.id))issues.push(q.id+':not-live');if(!inActiveRegion(q.x+q.w/2,q.y+q.h/2))issues.push(q.id+':no-region');if(blockedAt(q.x+q.w/2,q.y+q.h/2)!=='APT-AIRFIELD')issues.push(q.id+':airside-open')}
+ if(MAP_ACTIVE_IDS.size!==51+(typeof TC_LIVE_ADD!=='undefined'?TC_LIVE_ADD.zones.length:0))   /* fieldfix 17.11: + tcLiveAdd (028z) */   /* int290: + S13 (6) */issues.push('live:'+MAP_ACTIVE_IDS.size)   /* S12: + 7 */   /* S9 · S7F269: + F3, F4 · S7F270: + F5, F6 */;   /* p476: A3 */
+ // camera / phone-map clamps reach the north row but not beyond the world
+ if(worldClampY(-800)!==-800||worldClampY(-2000)!==-850||worldClampY(9000)!==7750||worldClampX(20000)!==9600||worldClampX(-5)!==0)issues.push('camera-clamp');
+ {const P=PHONEMAP,cx=P.cx,cy=P.cy;P.cx=6600;P.cy=-700;pmClamp();const okp=P.cy===-700;P.cy=-3000;pmClamp();const okq=P.cy===-850;P.cx=cx;P.cy=cy;if(!okp||!okq)issues.push('phone-map-clamp')}
+ if(!g72MapBoundsOk())issues.push('map-transform');
+ // save validation: a position in F0 is inside the world, one above it is not
+ try{const d=collectSaveState(null);d.currentVehicle.position={x:6600,y:-425};if(validateSave(d).errors.includes('vehicle.position.bounds'))issues.push('save-accepts-north-row');d.currentVehicle.position={x:6600,y:-900};if(!validateSave(d).errors.includes('vehicle.position.bounds'))issues.push('save-rejects-outside');d.currentVehicle.position={x:6600,y:-425};d.player.position={x:6600,y:-2000};if(!validateSave(d).errors.includes('player.position.bounds'))issues.push('save-player-bounds')}catch(e){issues.push('save-check:'+e.message)}
+ return{ok:!issues.length,issues:[...new Set(issues)].slice(0,16),chunks:MAP_CHUNKS.length,live:MAP_ACTIVE_IDS.size,northRow:north.map(q=>q.id),world:{x:WORLD.x,y:WORLD.y,w:WORLD.w,h:WORLD.h}}}
+window.__TC_G72_QA=()=>({...g72WorldAudit(),build:BUILD,gate:ACTIVE_GATE});
+
+
+// =====================================================================================================================================
+// GATE-73 · AIRPORT SHIFT NORTH (plan v4.13 · AIR-02/03/04 …). Stage 1: the runway system moves north.
+//  · runway 09/27 centre y 290 → −270 (E0/F0/G0), graded strip −450…−90, fence + patrol road at y −600/−585…−555;
+//  · taxiway A centre y 548 → 92, 104 → 120 wide: a code-E aircraft (AC-CG-01, span 356) taxiing on A stays out of the runway strip;
+//  · links A1/A2/A3 80 → 110 wide, 182 px long, hold-short at the strip edge;
+//  · taxilane L (y 428…508) in front of the stands: pushbacks end on L, not on taxiway A; connectors B1 · A2S · GL · A3S join A and L;
+//  · the band between A and the old apron edge is paved where aircraft move (west/cargo band, connectors, L + apron edges), grass elsewhere.
+// Every finish pass (E1/F1/G1) is written against APT_Y, so lights, signs, PAPI, LOC, ARFF access and monitors moved with the runway.
+// Stage 2 (AIR-04 · AIR-08): four jet-bridge stands P1 · P2 · P3 · P4 (gate 4), 302 px apart, each bridge from a measured gate of the
+// terminal sprite to the aircraft door (angled where the door is not in front of a gate); baggage pockets A/B/C between the stands;
+// O2 moves to the new NE small-aircraft apron (taxiway A east stub, service road y 590, service column, tug lane);
+// S2 FINAL (plan v4.18 / AIR-22): Door L/R — P1 · P2 dock at door L, P3 · P4 at door R (ground service mirrored east); P2 + P3 belong to
+// Terminal 2; every bridge leaves the terminal straight, its rotunda in line with the door, the cab beside the door;
+// full stand × aircraft clearance audit (largest aircraft, full wing span) with arrival and pushback sweeps.
+// S2 GROUND OPS (plan v4.21): AIR-25 support-vehicle chores stop only in the marked bays of the Ramp Services Park East (RSP_E, x 7194);
+// AIR-26 baggage trains from belt C unload / load the remote stands P6 · P5 (F2_REMOTE_BAG); AIR-27 the apron buses unload and load
+// visible passengers at the T3 bus gate (G2_GATE) — a hold leg at the home bay at the end of every arrival bus task and the start of every
+// departure bus task.
+// =====================================================================================================================================
+const G73_SCOPE={id:'AIRPORT-SHIFT-NORTH',gate:'GATE-73',stage:4,sub:'4',westRow:'s3b',locked:true,shift:{runway:-720,taxiway:-616,taxilane:-194,row:-206}};   // S3a: AIR-19 applied (from v1.93: runway 290→−430, A 548→−68; from S2: L 468→274, stands/terminals −206)
+const G73_CONNECTORS=[{id:'B1',x:5990,w:80},{id:'A2S',x:6600,w:110},{id:'B2',x:7276,w:80},{id:'A3S',x:7950,w:110}];   // S5b · D-68: GLN → B2
+const G73_L={id:'L',x0:5950,x1:8345};   // S3b: extended east to the NE apron
+const G73_WEST_EXT={id:'E1-WEST-EXT',x:4805,y:APT_Y.TS,w:1185,h:604-APT_Y.TS};          // west GA apron + cargo band (paved), x 4805–5990
+const G73_PAX_EXT={id:'F1-APRON-EXT',x:5990,y:APT_Y.LN,w:1310,h:394-APT_Y.LN};          // taxilane L + the apron edge in front of the stands (S3a: apron head 394)
+const G77_STRIP={id:'G77-GA-STRIP',x:7505,y:APT_Y.TS,w:195,h:APT_Y.LN-APT_Y.TS};   // GATE-77 S5b · D-71: the light-aircraft pad between B2 and A3S
+const G77_LG_EXT={id:'G77-LARGE-EXT',x:6890,y:184,w:170,h:APT_Y.LN-184};   /* p401: the 747's tail at its real length (y 187) */   // GATE-77 S5c: under the huge jet's tail at x 6972   // GATE-77 S5b · D-65: the large stand widens north — its jet's tail
+const G73_EAST_EXT={id:'G1-EAST-EXT',x:7300,y:APT_Y.LN,w:1045,h:600-APT_Y.LN};          // taxilane L east part + the east block edge — S3b: to x 8345 (L6 + NE apron)
+// ---- stage 2: NE small-aircraft apron (G1, east of A3S) ----------------------------------------------------------------------------------
+// row A (live, nose south): in from the taxiway A east stub, pushed back onto it, out along A to A2.  Vehicles: service road y 590 from
+// the GLINK, service column x 8012 north to the tug lane in front of the noses.  Slot 2 (GA3) and the south row (GA4 / O1) follow in stage 2b.
+const G73_AEXT={id:'A-EXT',x0:8030,x1:8340};
+const G73_NE={...APL_ZONES.ne,rowTail:345,col:8012,road:484,slots:[8130,8270],tug:484};   // GATE-77 S5b · D-68: the straight service road IS the tug lane   // S3b: live tails 345 · tug lane 484 · static noses 507
+const G73_SPACE_USES=(()=>{const Y=APT_Y,o=[];for(const [c,x] of [['E0',4800],['F0',6000],['G0',7200]]){
+ o.push({id:c+'-BUFFER',x,y:-850,w:1200,h:Y.FN+850,use:'שטח חיץ מחוץ לגדר — פתוח, ללא מכשולים'},{id:c+'-PERIMETER',x,y:Y.FN,w:1200,h:Y.SN-Y.FN,use:'גדר, דרך סיור, כיסוח וניקוז'},
+  {id:c+'-STRIP',x,y:Y.SN,w:1200,h:Y.SS-Y.SN,use:'מסלול 09/27 ורצועת הבטיחות'},{id:c+'-LINKS',x,y:Y.SS,w:1200,h:-Y.SS,use:'חיבורים רחבים, קווי המתנה ושלטים'})}return o})();
+
+// ---- taxi tokens of the new pieces (a plane holds every token its fuselage touches) -------------------------------------------------------
+function g73Tokens(mk,out){
+ const Y=APT_Y;
+ for(const [k,x0,x1] of [['L1',5950,6420],['L2',6420,6780],['L3',6780,7215],['LG',7215,7305],['L4',7305,7700],['L5',7700,8045],['L6',8045,8345]])out.push(mk(k,x0,x1,Y.LN,Y.LS));   // S3b: L6 to the NE apron
+ for(const c of G73_CONNECTORS)out.push(mk(c.id,c.x-c.w/2,c.x+c.w/2,Y.TS,Y.LN));
+}
+// ---- routes on the new network ------------------------------------------------------------------------------------------------------------------
+// arrivals vacate at A2 (passenger / west / cargo / hardstand) or A3 (east block), cross taxiway A and come down a connector onto L
+const G77_B2=7276;   // GATE-77 S5b · D-68: the link between A2S and A3S, now the taxiway B2 (lit, named)
+function g73ArrLeg(sd,ac){
+ const X=APTT_X,A2=X.A2,A3=X.A3,cx=sd.cx,ng=sd.ngy,tpl=sd.tpl,LY=X.LY;let pts,rad;
+ if(tpl==='bridge'&&(ac==='AC-LG-01'||ac==='AC-MW-01')){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[G77_B2,X.TY],[G77_B2,LY],[cx,LY],[cx,ng]];rad=[110,90,90,90,90,90]}   // S5b · D-71: by A2
+ else if(tpl==='bridge'){
+  if(Math.abs(cx-A2)<40){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,ng-260],[cx,ng-130],[cx,ng]];rad=[110,400,400]}
+  else{pts=[[X.APP0,X.RY],[A2,X.RY],[A2,LY],[cx,LY],[cx,ng]];rad=[110,90,90]}
+ }else if(tpl==='cargo'){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[5800,X.TY],[5800,sd.ngy],[sd.ngx,sd.ngy]];rad=[110,110,100,100]}   // S2: down the cargo band (x 5800), clear of P1's wing (B1 is 18 px too close since P1 moved west)
+ else if(tpl==='hard'){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[X.GLX,X.TY],[X.GLX,1116],[sd.ngx+50,1116],[sd.ngx+50,sd.ngy],[sd.ngx,sd.ngy]];rad=[60,60,60,40,16,16]}
+ else if(tpl==='cargoS'){pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[cx,X.TY],[cx,ng]];rad=[110,90,90]}
+ else if(tpl==='strip'){pts=[[X.APP0,X.RY],[A3,X.RY],[A3,X.TY],[cx,X.TY],[cx,ng]];rad=[110,60,40]}   // GATE-77 S5b · D-71: west on A, left turn in   // S3b: west cargo row, west on A, straight in
+ else if(tpl==='apronSW'&&sd.zone==='ne'){pts=[[X.APP0,X.RY],[A3,X.RY],[A3,LY],[cx,LY],[cx,ng]];rad=[110,90,60]}   // S3b: NE apron, east on L, tight turn-in
+ else if(tpl==='apronSW'){
+  if(sd.id==='P6'){pts=[[X.APP0,X.RY],[A3,X.RY],[A3,X.TY+40],[cx,X.TY+200],[cx,ng]];rad=[110,150,150]}   // GATE-77 S5b: the S-bend on A3S, straight on L — its wing passes O2's row in line
+  else if(Math.abs(cx-A3)<40){pts=[[X.APP0,X.RY],[A3,X.RY],[A3,ng-260],[cx,ng-130],[cx,ng]];rad=[110,400,400]}
+  else{pts=[[X.APP0,X.RY],[A3,X.RY],[A3,LY],[cx,LY],[cx,ng]];rad=[110,90,90]}
+ }else{pts=[[X.APP0,X.RY],[A2,X.RY],[A2,X.TY],[cx,X.TY],[cx,ng]];rad=[110,90,90]}   // apronSE: west apron, exit at A2, taxi west on A, straight in
+ const leg=apttArrive(ac,pts,rad,sd.th);leg.park=leg.endPose();leg.park[2]=sd.th;leg.park[3]=0;leg.park[4]=1;return leg;
+}
+// departures: bridge stands push onto L facing west, taxi to B1, north to A, full length from A1; the east block and O2 push onto L, taxi west to A2S
+// and line up at A2 (intersection departure, as before); west stands push east into their band and line up at A2 from taxiway A
+function g73DepLegs(sd,ac){
+ const X=APTT_X,K=APTT_CLS[ac],D={},tpl=sd.tpl,cx=sd.cx,ng=sd.ngy,LY=X.LY;
+ if(tpl==='bridge'&&cx-80>X.A2+40&&g77L1Closed()){   // GATE-77 S5 · AIR-20: L1 closed → north on A2
+  const yh=APT_Y.RS+48;D.push=apttPush(ac,cx,ng,{dir:-1,yE:LY});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[cx-80,LY],[X.A2,LY],[X.A2,yh]],[90],Math.PI);D.hold=D.taxi.endPose();D.viaA2=true;
+  D.takeoff=apttTakeoff(ac,[[X.A2,yh],[X.A2,X.RY],[X.END,X.RY]],[80],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }else if(tpl==='bridge'&&(ac==='AC-LG-01'||ac==='AC-MW-01')){   // GATE-77 S5b · D-68 · S5c: the wide-body too: pushed facing east, east on L, north on B2, west on A to A1
+  const hx=X.A1+170;D.push=apttPush(ac,cx,ng,{dir:1,yE:LY,dx:90});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[D.pe[0],LY],[G77_B2,LY],[G77_B2,X.TY],[hx,X.TY]],[90,90],0);D.viaB2=true;D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A1,X.TY],[X.A1,X.RY],[X.END,X.RY]],[85,90],D.hold[2]);
+ }else if(tpl==='bridge'){
+  const hx=X.A1+170;
+  D.push=apttPush(ac,cx,ng,Object.assign({dir:-1,yE:LY},sd.pushOpt||{}));D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[cx-80,LY],[X.B1,LY],[X.B1,X.TY],[hx,X.TY]],[90,90],Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A1,X.TY],[X.A1,X.RY],[X.END,X.RY]],[85,90],D.hold[2]);
+ }else if(tpl==='strip'){             // GATE-77 S5b · D-71: forward onto L, west to B2, north, west on A, the A2 hold
+  const yh=APT_Y.RS+48;D.taxi=apttTaxi(ac,[[cx,ng],[cx,LY],[G77_B2,LY],[G77_B2,X.TY],[X.A2,X.TY],[X.A2,yh]],[40,50,50,60,60],Math.PI/2);D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[X.A2,yh],[X.A2,X.RY],[X.END,X.RY]],[80],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }else if(tpl==='cargoS'){            // S3b: pushed back onto taxiway A facing A1 (C1 east, C2 west), short roll to the hold, line up at A1
+  const pu=sd.push||{dir:1,dx:80};
+  D.push=apttPush(ac,cx,ng,{dir:pu.dir,yE:X.TY,dx:pu.dx});D.pe=D.push.endPose();
+  const hx=D.pe[0]+pu.dir*16;
+  D.taxi=apttTaxi(ac,[[D.pe[0],X.TY],[hx,X.TY]],[],pu.dir>0?0:Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A1,X.TY],[X.A1,X.RY],[X.END,X.RY]],[56,90],D.hold[2]);
+ }else if(tpl==='cargo'){
+  D.taxi=apttTaxi(ac,[[sd.ngx,sd.ngy],[5460,sd.ngy],[5460,X.TY],[5385,X.TY]],[60,70],Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[5385,X.TY],[X.A1,X.TY],[X.A1,X.RY],[X.END,X.RY]],[70,90],D.hold[2],7250);
+ }else if(tpl==='hard'){
+  const hx=X.A2+160;
+  D.taxi=apttTaxi(ac,[[sd.ngx,sd.ngy],[X.GLX,sd.ngy],[X.GLX,X.TY],[hx,X.TY]],[50,60],Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A2,X.TY],[X.A2,X.RY],[X.END,X.RY]],[70,80],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }else if(tpl==='apronSW'&&(g77LEastClosed()||sd.id==='P6')){   // GATE-77 S5b · owner 05:19: L closed at the large stand → out by A3; P6 (just west of A3S) always: pushed facing east, its tail swings away from O2
+  const yh=APT_Y.RS+48,yP=LY,near=cx>X.A3-100&&cx<X.A3,e=cx<X.A3-100||near?1:-1;D.push=apttPush(ac,cx,ng,near?{dir:1,yE:yP,dx:-(cx-(X.A3-95))}:{dir:e,yE:yP});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[D.pe[0],yP],[X.A3,yP],[X.A3,X.TY],[X.A2,X.TY],[X.A2,yh]],[90,90,90,90],e>0?0:Math.PI);D.viaA3=true;D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[X.A2,yh],[X.A2,X.RY],[X.END,X.RY]],[80],D.hold[2],Math.max(APTT_CLS[ac].xLo,X.A2+AO_ROLL[ac]));
+ }else if(tpl==='apronSW'){
+  const yh=APT_Y.RS+48,yP=LY;   // holding on A2 just south of the hold-short line, nose north; S3b: the NE apron pushes onto L as well (A east stub removed)
+  D.push=apttPush(ac,cx,ng,{dir:-1,yE:yP});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[cx-80,yP],[X.A2,yP],[X.A2,yh]],[90],Math.PI);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[X.A2,yh],[X.A2,X.RY],[X.END,X.RY]],[80],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }else{                                // apronSE: west apron, push / power-back east, taxi north in the west band, east on A, line up from A2
+  const hx=X.A2-160,yE=540;
+  D.push=apttPush(ac,cx,ng,{dir:1,yE});D.pe=D.push.endPose();
+  D.taxi=apttTaxi(ac,[[cx+80,yE],[cx+140,yE],[cx+140,X.TY],[hx,X.TY]],[50,90],0);
+  D.hold=D.taxi.endPose();
+  D.takeoff=apttTakeoff(ac,[[hx,X.TY],[X.A2,X.TY],[X.A2,X.RY],[X.END,X.RY]],[85,90],D.hold[2],Math.max(K.xLo,X.A2+AO_ROLL[ac]));
+ }
+ return D;
+}
+
+// S2 · NE apron services (called from afDest): vehicles leave the G2 yard up the GLINK (x GLN), run east on the service road y 590,
+// north on the service column and along the tug lane in front of the noses.  The tug pushes the aircraft back onto the A east stub and
+// returns straight south to the service road; the fuel truck stops beside the wing (cx + 60) and turns on the spot.
+function g73NeDest(role,sd,ac,TL,fy){
+ const N=G73_NE,GLN=AF.GLN,GLS=AF.GLS,cx=sd.cx,c=N.col,R=N.road;
+ if(R<N.y+N.h-60){   // GATE-77 S5b · D-68: the straight road y 484 in front of the noses
+  const SO=APL.lanes.spineOut,SI=APL.lanes.spineIn;   // GATE-77 S6b-c · p156 · K-95: from / to the east spine (the yard rows X / Y)
+  if(role==='tug')return{node:afNodeGL(),inn:[[GLN,R,26],[cx,TL,0]],crab:true,mode:'tug',backFrom:t=>t[0]<c+30?[[t[0],t[1],0],[t[0],R,30],[GLS,R,26]]:[[t[0],t[1],0],[c,t[1],24],[c,R,26],[GLS,R,26]],
+   east:{node:afNodeEast(),inn:[[SO,R,24],[cx,TL,0]],backFrom:t=>[[t[0],t[1],0],[t[0],R,30],[SI,R,24]]}};
+  if(role==='fuel'){const colF=cx+60;return{node:afNodeGL(),inn:[[GLN,R,26],[colF,R,22],[colF,fy,0]],mode:'pivot',

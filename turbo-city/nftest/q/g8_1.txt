@@ -1,0 +1,1181 @@
+אוטובוס', ['RF-BUS'], .45, .55, (g, back, b, w, h) => { shp.rect(g, w, h, .04); if (back) return; g.fillStyle = B(b, '#f4f6f8'); g.fill(); g.fillStyle = B(b, '#1f5aa6'); g.fillRect(-w / 2 + .03, .03, w - .06, h * .3);
+  g.fillStyle = B(b, '#1f5aa6'); g.beginPath(); g.roundRect ? g.roundRect(-.15, h * .45, .3, .2, .03) : g.rect(-.15, h * .45, .3, .2); g.fill(); g.fillStyle = B(b, '#cfe3f1'); g.fillRect(-.12, h * .55, .24, .07); label(g, 'אוטובוס', 0, h * .17, .07, B(b, '#ffffff')) }));
+def('sign_dir', sign('שלט כיוון', ['RF-DIR'], 1.2, .45, (g, back, b, w, h) => { shp.rect(g, w, h, .04); if (back) return; g.fillStyle = B(b, '#1d6b3a'); g.fill(); g.lineWidth = .02; g.strokeStyle = B(b, '#ffffff'); g.stroke(); label(g, 'מרכז העיר ←', 0, h * .66, .11, B(b, '#ffffff'), 700); label(g, 'הנמל →', 0, h * .3, .11, B(b, '#ffffff'), 700) }));
+def('sign_street', sign('שלט שם רחוב', ['RF-STR', 'Street Name Sign'], .9, .22, (g, back, b, w, h) => { shp.rect(g, w, h, .02); if (back) return; g.fillStyle = B(b, '#1f5aa6'); g.fill(); g.lineWidth = .015; g.strokeStyle = B(b, '#ffffff'); g.stroke(); label(g, 'רח׳ הנמל', 0, h / 2, .11, B(b, '#ffffff'), 700) }));
+// --- bins, benches, lamps, the bus shelter, bollards, the hydrant, the mailbox, a bike rack, a fountain, a planter, a cone
+const S_ = (o) => Object.assign({ group: 'street', street: 1, v: 3 }, o);
+def('bin_city', S_({ he: 'פח עירוני', today: ['PR (Bin)'], w: .55, d: .55, h: 1.0,
+  body(c, v) { const col = ['#2f6b4f', '#3a4047', '#6b4a2e'][v % 3]; cyl(c, 0, 0, .27, 0, .92, col, { mat: 'paint' }); for (let i = 0; i < 6; i++) { const z = .12 + i * .13; c.fillStyle = 'rgba(0,0,0,.18)'; const a = P(-.27, .25, z); c.fillRect(a[0], a[1], .54, .025) } cone(c, 0, 0, .29, .2, .92, 1.02, sh(col, -.2), { mat: 'paint' }); const s = P(-.1, .26, .7); c.fillStyle = '#16181c'; c.fillRect(s[0], s[1], .2, .06) },
+  shadow(c) { contact(c, .32, .2, .5); shadowBlob(c, 0, 0, .5, .28, .2, .22) } }));
+def('bin_recycle', S_({ he: 'פחי מחזור (זוג)', today: ['PR (Recycling Bin)'], w: 1.3, d: .6, h: 1.1, v: 2,
+  body(c, v) { const cols = v ? ['#1f5aa6', '#f2a33a'] : ['#2f8a3a', '#1f5aa6']; [[-.33, cols[0]], [.33, cols[1]]].forEach(([x, col]) => { box(c, x - .3, x + .3, -.28, .28, 0, 1.0, col, { mat: 'paint', top: sh(col, -.15) }); const a = P(x - .12, .28, .82); c.fillStyle = '#16181c'; c.fillRect(a[0], a[1], .24, .05); const r = P(x, .28, .5); c.fillStyle = 'rgba(255,255,255,.85)'; c.beginPath(); c.arc(r[0], r[1], .07, 0, TAU); c.fill() }) },
+  shadow(c) { contact(c, .75, .32, .45); shadowPoly(c, [[-.63, .28, 0], [.63, .28, 0], [.63, .28, 1], [-.63, .28, 1]], .2) } }));
+def('bin_park', S_({ he: 'פח פארק (עץ)', today: ['PR (Park Bin)'], w: .6, d: .6, h: .95, v: 2,
+  body(c, v) { cyl(c, 0, 0, .29, 0, .9, v ? '#7a5230' : '#9a6a3e', { mat: 'wood', top: '#2b2b2b' }); for (let i = 0; i < 9; i++) { const x = -.27 + i * .067, a = P(x, .25, .9), b = P(x, .25, 0); c.fillStyle = 'rgba(0,0,0,.2)'; c.fillRect(a[0], a[1], .01, b[1] - a[1]) } for (const z of [.15, .75]) { const a = P(-.29, .29, z); c.fillStyle = '#3a3f45'; c.fillRect(a[0], a[1], .58, .04) } },
+  shadow(c) { contact(c, .34, .22, .5) } }));
+def('dumpster', S_({ he: 'מכולת אשפה', today: ['PR (Dumpster)'], w: 1.9, d: 1.1, h: 1.3, v: 2,
+  body(c, v) { const col = v ? '#2f6b4f' : '#3a5a8a'; box(c, -.95, .95, -.55, .55, .15, 1.15, col, { mat: 'paint' }); box(c, -.98, .98, -.6, .5, 1.15, 1.25, sh(col, -.25), { mat: 'paint' }); for (const x of [-.75, .75]) { const a = P(x, .5, .15); c.fillStyle = '#1b1e22'; c.fillRect(a[0] - .08, a[1] - .05, .16, .12) } const s = P(-.5, .55, .8); c.fillStyle = 'rgba(255,255,255,.75)'; c.fillRect(s[0], s[1], 1, .06) },
+  shadow(c) { contact(c, 1.1, .45, .45); shadowPoly(c, [[-.95, .55, 0], [.95, .55, 0], [.95, .55, 1.25], [-.95, .55, 1.25]], .22) } }));
+def('bench_park', S_({ he: 'ספסל פארק', today: ['PR (Bench)', 'PR (Park Bench)'], w: 1.8, d: .65, h: .85, v: 2,
+  body(c, v) { const wood = v ? '#8a5f38' : '#a8774a', iron = '#2b3036';
+    for (const x of [-.75, .75]) { box(c, x - .04, x + .04, -.28, .28, 0, .44, iron, { mat: 'metal' }); box(c, x - .04, x + .04, -.3, -.24, .44, .85, iron, { mat: 'metal' }) }
+    for (let i = 0; i < 3; i++) { const z = .52 + i * .11; box(c, -.9, .9, -.31, -.26, z, z + .08, wood, { mat: 'wood' }) }
+    for (let i = 0; i < 4; i++) { const y = -.24 + i * .13; box(c, -.9, .9, y, y + .1, .42, .46, wood, { mat: 'wood', side: sh(wood, -.15) }) } },
+  shadow(c) { contact(c, 1.0, .35, .35); shadowPoly(c, [[-.9, -.3, .45], [.9, -.3, .45], [.9, .28, .45], [-.9, .28, .45]], .22) } }));
+def('bench_modern', S_({ he: 'ספסל מודרני (בטון ועץ)', today: ['PR (Modern Bench)'], w: 2.0, d: .6, h: .45, v: 2,
+  body(c, v) { box(c, -1.0, -.7, -.3, .3, 0, .4, '#b8b4ac', { mat: 'stone' }); box(c, .7, 1.0, -.3, .3, 0, .4, '#b8b4ac', { mat: 'stone' }); for (let i = 0; i < 5; i++) { const y = -.3 + i * .12; box(c, -1.0, 1.0, y, y + .1, .4, .45, v ? '#6b4a2e' : '#a8774a', { mat: 'wood' }) } },
+  shadow(c) { contact(c, 1.1, .35, .4) } }));
+function lamp(p) { const A = Math.max(.4, (p.arm || 0) * 2); return S_({ he: p.he, today: p.today, w: A, d: A, h: p.h + .4, v: 8,   // p416: v = lit + 2 · direction of the arm (0 E, 1 S, 2 W, 3 N)
+  body(c, v) { const lt = v & 1, dr = v >> 1, ux = [1, 0, -1, 0][dr], uy = [0, 1, 0, -1][dr], ew = ux !== 0;
+    cyl(c, 0, 0, p.base, 0, .5, p.col, { mat: 'metal' }); pole(c, 0, 0, .5, p.h, p.r, p.col);
+    const heads = p.arm ? (p.two ? [-1, 1] : [1]).map(s => [s * p.arm * ux, s * p.arm * uy, p.h + .25]) : [[0, 0, p.h]];
+    for (const [hx, hy, hz] of heads) { if (p.arm) bar(c, [0, 0, p.h - .1], [hx, hy, hz], p.r * 1.3, p.col);
+      if (p.head === 'lantern') { box(c, hx - .16, hx + .16, hy - .16, hy + .16, hz - .5, hz - .05, '#1d2733', { mat: 'glass', top: '#2b3036' }); const a = P(hx - .12, hy + .16, hz - .1), b = P(hx + .12, hy + .16, hz - .45); c.fillStyle = lt ? 'rgba(255,243,196,.92)' : 'rgba(250,240,210,.85)'; c.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]); cone(c, hx, hy, .22, .05, hz - .05, hz + .18, '#2b3036', { mat: 'metal' }) }
+      else if (p.head === 'globe') { ball(c, hx, hy, hz - .15, .2, .2, .2, '#f4f1e6', { mat: 'glass' }); cyl(c, hx, hy, .08, hz - .35, hz - .28, '#2b3036', { mat: 'metal' }) }
+      else { const a = .32 * (p.arm ? 1 : .6), ax = ew ? a : .12, ay = ew ? .12 : a; box(c, hx - ax, hx + ax, hy - ay, hy + ay, hz - .12, hz, p.col, { mat: 'metal', top: sh(p.col, .1) }); const q = P(hx - ax * .8, hy + ay, hz - .12); c.fillStyle = lt ? 'rgba(255,243,196,.92)' : 'rgba(236,240,244,.9)'; c.fillRect(q[0], q[1], ax * 1.6, .05) } } },
+  shadow(c, v) { const dr = (v | 0) >> 1, ux = [1, 0, -1, 0][dr], uy = [0, 1, 0, -1][dr], ew = ux !== 0;
+    contact(c, p.base * 1.6, p.base, .45); shadowLine(c, 0, 0, 0, .5, p.base * 2, .28); shadowLine(c, 0, 0, .5, p.h, p.r * 2.2, .28);
+    const heads = p.arm ? (p.two ? [-1, 1] : [1]).map(s => [s * p.arm * ux, s * p.arm * uy, p.h + .25]) : [[0, 0, p.h]];
+    for (const [hx, hy, hz] of heads) { if (p.arm) shadowSeg(c, [0, 0, p.h - .1], [hx, hy, hz], p.r * 1.3, .28);
+      if (p.head === 'lantern') { shadowLine(c, hx, hy, hz - .5, hz + .1, .34, .28) } else if (p.head === 'globe') shadowBlob(c, hx, hy, hz - .15, .2, .2, .28);
+      else { const a = .32 * (p.arm ? 1 : .6), ax = ew ? a : .12, ay = ew ? .12 : a; shadowPoly(c, [[hx - ax, hy - ay, hz], [hx + ax, hy - ay, hz], [hx + ax, hy + ay, hz], [hx - ax, hy + ay, hz]], .28) } } } }) }
+def('lamp_res', lamp({ he: 'פנס שכונה', today: ['SL-RES'], h: 4.5, r: .05, base: .1, col: '#4a5259', head: 'lantern' }));
+def('lamp_avenue', lamp({ he: 'פנס שדרה (זרוע אחת)', today: ['SL-AVE', 'SL-COM'], h: 8, r: .07, base: .14, col: '#7d858d', arm: 1.4 }));
+def('lamp_double', lamp({ he: 'פנס שדרה (שתי זרועות)', today: ['SL-AV2'], h: 9, r: .08, base: .16, col: '#7d858d', arm: 1.5, two: 1 }));
+def('lamp_park', lamp({ he: 'פנס פארק', today: ['SL-PRK', 'SL-PRM', 'SL-DEC', 'PR (Lamp)'], h: 3.6, r: .05, base: .12, col: '#1f2a24', head: 'globe' }));
+def('lamp_modern', lamp({ he: 'פנס מרכז העיר (מודרני)', today: ['SL-DWN'], h: 6, r: .06, base: .12, col: '#3a3f45', arm: .6 }));
+def('lamp_highway', lamp({ he: 'פנס כביש מהיר', today: ['SL-HWY', 'SL-IND', 'SL-PKL', 'SL-PRT', 'SL-APT'], h: 11, r: .1, base: .2, col: '#9aa1a8', arm: 2.2 }));
+def('bus_shelter', S_({ he: 'תחנת אוטובוס', today: ['PR-35'], w: 4.2, d: 1.7, h: 2.7, v: 2,
+  body(c, v) { const fr = '#4a5259';
+    box(c, -2.1, 2.1, -.85, .85, 0, .08, '#c9c3b6', { mat: 'stone' });
+    for (const x of [-2.0, 2.0]) box(c, x - .05, x + .05, -.75, -.65, .08, 2.5, fr, { mat: 'metal' });
+    // the back glass (north), the bench, the side glass, the front posts
+    c.fillStyle = 'rgba(160,200,225,.35)'; { const a = P(-2, -.7, 2.4), b = P(2, -.7, .3); c.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]) }
+    box(c, -1.6, 1.6, -.6, -.25, .42, .48, '#a8774a', { mat: 'wood' }); for (const x of [-1.3, 1.3]) box(c, x - .03, x + .03, -.5, -.4, .08, .42, fr, { mat: 'metal' });
+    box(c, 1.7, 2.05, -.7, -.1, .1, .1, fr); c.fillStyle = 'rgba(160,200,225,.32)'; { const a = P(1.9, -.1, 2.3), b = P(1.9, -.7, .3); c.fillRect(a[0] - .03, a[1], .06, b[1] - a[1]) }
+    // the ad panel on the east side, the roof, the route board
+    box(c, 2.0, 2.06, -.7, .1, .3, 2.2, '#2b3036', { mat: 'metal' }); { const a = P(2.0, .1, 2.15), b = P(2.06, .1, .35); c.fillStyle = v ? '#e9c46a' : '#9fd3e6'; c.fillRect(a[0] - .9, a[1], .9, b[1] - a[1]) }
+    // the roof: a metal frame with four tinted glass panels (the bench and the back glass still show a little), its front edge, the route board
+    { const a = P(-2.2, -.9, 2.62); c.fillStyle = litC(fr, lit(N_UP, 'metal')); c.fillRect(a[0], a[1], 4.4, 1.6);
+      for (let i = 0; i < 4; i++) { const q = P(-2.12 + i * 1.085, -.84, 2.62); c.fillStyle = 'rgba(214,232,242,.78)'; c.fillRect(q[0], q[1], 1.0, 1.48); c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(q[0] + .08, q[1] + .1, .1, 1.2) }
+      const f = P(-2.2, .7, 2.62); c.fillStyle = litC(fr, lit(N_S, 'metal')); c.fillRect(f[0], f[1], 4.4, .12 * K + .04) }
+    const s = P(-1.8, .7, 2.6); c.fillStyle = '#1f5aa6'; c.fillRect(s[0], s[1], .8, .07) },
+  shadow(c) { contact(c, 2.3, .9, .2); shadowPoly(c, [[-2.2, -.9, 2.6], [2.2, -.9, 2.6], [2.2, .7, 2.6], [-2.2, .7, 2.6]], .22) } }));
+def('bollard', S_({ he: 'עמודון', today: ['RF-BOL'], w: .2, d: .2, h: .95, v: 3,
+  body(c, v) { if (v === 2) { cyl(c, 0, 0, .08, 0, .85, '#3a3f45', { mat: 'metal' }); ball(c, 0, 0, .87, .1, .1, .1, '#3a3f45', { mat: 'metal' }); const a = P(-.09, .09, .62); c.fillStyle = '#e9c46a'; c.fillRect(a[0], a[1], .18, .04); return }
+    cyl(c, 0, 0, .08, 0, .9, v ? '#c62828' : '#9aa1a8', { mat: 'metal' }); if (v) for (const z of [.55, .75]) { const a = P(-.08, .08, z); c.fillStyle = '#f4f6f8'; c.fillRect(a[0], a[1], .16, .06) } else { const a = P(-.08, .08, .78); c.fillStyle = 'rgba(255,255,255,.8)'; c.fillRect(a[0], a[1], .16, .04) } },
+  shadow(c) { contact(c, .12, .08, .5); shadowLine(c, 0, 0, 0, .9, .16, .22) } }));
+def('hydrant', S_({ he: 'ברז כיבוי', today: ['PR (Hydrant)'], w: .4, d: .3, h: .85, v: 2,
+  body(c, v) { const col = v ? '#f2c230' : '#c62828'; cyl(c, 0, 0, .14, 0, .1, sh(col, -.2), { mat: 'paint' }); cyl(c, 0, 0, .1, .1, .62, col, { mat: 'paint' }); for (const s of [-1, 1]) { cyl(c, s * .14, .02, .05, .38, .46, sh(col, -.1), { mat: 'paint' }) } cone(c, 0, 0, .12, .05, .62, .78, col, { mat: 'paint' }); cyl(c, 0, 0, .03, .78, .84, '#3a3f45', { mat: 'metal' }) },
+  shadow(c) { contact(c, .18, .12, .5) } }));
+def('mailbox', S_({ he: 'תיבת דואר', today: ['PR (Mailbox)'], w: .5, d: .4, h: 1.25, v: 1,
+  body(c) { pole(c, 0, 0, 0, .7, .05, '#3a3f45'); box(c, -.24, .24, -.18, .18, .7, 1.15, '#c62828', { mat: 'paint' }); ball(c, 0, 0, 1.15, .24, .18, .1, '#c62828', { mat: 'paint' }); const a = P(-.14, .18, 1.02); c.fillStyle = '#16181c'; c.fillRect(a[0], a[1], .28, .05); const s = P(-.08, .18, .88); c.fillStyle = '#f2c230'; c.fillRect(s[0], s[1], .16, .1) },
+  shadow(c) { contact(c, .2, .12, .45); shadowBlob(c, 0, 0, .95, .26, .2, .22) } }));
+def('bike_rack', S_({ he: 'מתקן אופניים', today: ['PR (Bike Rack)'], w: 2.2, d: .5, h: .85, v: 1,
+  body(c) { for (let i = 0; i < 5; i++) { const x = -.9 + i * .45, a = P(x - .17, 0, 0), b = P(x - .17, 0, .7), d = P(x + .17, 0, .7), e = P(x + .17, 0, 0); c.strokeStyle = litC('#9aa1a8', 1.05); c.lineWidth = .05; c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.quadraticCurveTo((b[0] + d[0]) / 2, b[1] - .12, d[0], d[1]); c.lineTo(e[0], e[1]); c.stroke() } },
+  shadow(c) { contact(c, 1.2, .2, .25) } }));
+def('fountain', S_({ he: 'ברזיית שתייה', today: ['PR (Drinking Fountain)'], w: .5, d: .5, h: 1.0, v: 1,
+  body(c) { cyl(c, 0, 0, .15, 0, .85, '#8a9198', { mat: 'stone' }); cyl(c, 0, 0, .24, .85, .95, '#b8bec4', { mat: 'metal' }); const a = P(0, 0, .95); c.fillStyle = 'rgba(120,180,220,.8)'; c.beginPath(); c.ellipse(a[0], a[1], .16, .16, 0, 0, TAU); c.fill() },
+  shadow(c) { contact(c, .3, .18, .45) } }));
+def('planter', S_({ he: 'אדנית', today: ['PR (Planter Box)', 'PR (Round Planter)'], w: 1.4, d: .7, h: 1.1, v: 2,
+  body(c, v, R) { if (v) { cyl(c, 0, 0, .45, 0, .5, '#b8b4ac', { mat: 'stone', top: '#5a3d26' }); crown(c, { cz: .75, rx: .4, ry: .4, rz: .3, n: 16, leaf: .16, cols: GR.summer, flowers: { n: 14, r: .045, cols: ['#ff6f91', '#ffd43b'] } }, R); return }
+    box(c, -.7, .7, -.35, .35, 0, .5, '#9a7a52', { mat: 'wood', top: '#5a3d26' }); crown(c, { cz: .75, rx: .62, ry: .3, rz: .28, n: 22, leaf: .16, cols: GR.summer, flowers: { n: 16, r: .045, cols: ['#ff6f91', '#ffffff'] } }, R) },
+  shadow(c) { contact(c, .8, .4, .4) } }));
+def('cone', S_({ he: 'קונוס תנועה', today: ['RF-CON', 'PR (Cone)'], w: .4, d: .4, h: .7, v: 1,
+  body(c) { box(c, -.2, .2, -.2, .2, 0, .04, '#2b2b2b'); cone(c, 0, 0, .15, .03, .04, .7, '#f07a22', { mat: 'paint' }); for (const z of [.3, .5]) { const r = .15 - (z - .04) / .66 * .12, a = P(-r, 0, z); c.fillStyle = 'rgba(255,255,255,.9)'; c.fillRect(a[0], a[1] - .03, r * 2, .05) } },
+  shadow(c) { contact(c, .22, .14, .45) } }));
+// --- the beach, a charging post, the playground (in the game today as props PR-14, PR-23, PR-12, PR-21, PR-22)
+def('beach_umbrella', S_({ he: 'שמשיית חוף', today: ['PR (Beach Umbrella)'], w: 2.2, d: 2.2, h: 2.4,
+  body(c, v) { const cols = [['#e63946', '#f4f1e6'], ['#1f7fb8', '#f4f1e6'], ['#f2a33a', '#2a9d8f']][v % 3], R0 = 1.1, zr = 1.9, zt = 2.35, n = 12;
+    pole(c, 0, 0, 0, zt, .025, '#e9e6dc', 'paint');
+    const sg = []; for (let i = 0; i < n; i++) { const a0 = i / n * TAU, a1 = (i + 1) / n * TAU, am = (a0 + a1) / 2; sg.push({ i, a0, a1, am, s: Math.sin(am) }) } sg.sort((p, q) => p.s - q.s);
+    for (const g of sg) { const col = cols[g.i % 2], nn = nrm([Math.cos(g.am) * .45, Math.sin(g.am) * .45, 1]);
+      fillPoly3(c, [[0, 0, zt], [Math.cos(g.a0) * R0, Math.sin(g.a0) * R0, zr], [Math.cos(g.a1) * R0, Math.sin(g.a1) * R0, zr]], col, 'paint', nn);
+      if (g.s > .05) fillPoly3(c, [[Math.cos(g.a0) * R0, Math.sin(g.a0) * R0, zr], [Math.cos(g.a1) * R0, Math.sin(g.a1) * R0, zr], [Math.cos(g.a1) * R0, Math.sin(g.a1) * R0, zr - .13], [Math.cos(g.a0) * R0, Math.sin(g.a0) * R0, zr - .13]], col, 'paint', nrm([Math.cos(g.am), Math.sin(g.am), 0])) }
+    ball(c, 0, 0, zt + .03, .04, .04, .04, '#e9e6dc', { mat: 'paint' }) },
+  shadow(c) { contact(c, .1, .06, .4); shadowLine(c, 0, 0, 0, 1.9, .05, .28); const q = []; for (let i = 0; i < 16; i++) { const a = i / 16 * TAU; q.push([Math.cos(a) * 1.1, Math.sin(a) * 1.1, 1.9]) } shadowPoly(c, q, .28) } }));
+def('sun_lounger', S_({ he: 'כיסא נוח לחוף', today: ['PR (Sun Lounger)'], w: 1.9, d: .7, h: .85, v: 2,
+  body(c, v) { const fr = v ? '#8a5f38' : '#e9e6dc', pad = v ? '#d9c7a0' : '#2a8fbf';
+    for (const x of [-.85, .85]) for (const y of [-.3, .3]) box(c, x - .03, x + .03, y - .03, y + .03, 0, .3, fr, { mat: 'wood' });
+    box(c, -.35, .95, -.33, .33, .3, .36, fr, { mat: 'wood' }); box(c, -.33, .93, -.3, .3, .36, .42, pad, { top: sh(pad, .08) });
+    fillPoly3(c, [[-.35, -.33, .36], [-.35, .33, .36], [-.92, .33, .82], [-.92, -.33, .82]], fr, 'wood');
+    fillPoly3(c, [[-.33, -.3, .42], [-.33, .3, .42], [-.87, .3, .86], [-.87, -.3, .86]], pad, 'matte') },
+  shadow(c) { contact(c, 1.0, .38, .3); shadowPoly(c, [[-.35, -.33, .4], [.95, -.33, .4], [.95, .33, .4], [-.35, .33, .4]], .26); shadowPoly(c, [[-.35, -.33, .4], [-.35, .33, .4], [-.92, .33, .84], [-.92, -.33, .84]], .26) } }));
+def('ev_charger', S_({ he: 'עמדת טעינה לרכב חשמלי', today: ['PR (EV Charger)'], w: .6, d: .4, h: 1.6, v: 2,
+  body(c, v) { const col = v ? '#2b3036' : '#eef1f4', acc = v ? '#3ad07a' : '#1f7fb8';
+    box(c, -.3, .3, -.2, .2, 0, .08, '#9aa1a8', { mat: 'stone' }); box(c, -.18, .18, -.12, .12, .08, 1.55, col, { mat: 'paint', top: sh(col, -.1) });
+    { const a = P(-.12, .12, 1.36), b = P(.12, .12, 1.08); c.fillStyle = '#16202a'; c.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]); c.fillStyle = acc; c.globalAlpha = .7; c.fillRect(a[0] + .03, a[1] + .03, .1, .04); c.globalAlpha = 1 }
+    { const l = P(-.18, .12, 1.5); c.fillStyle = acc; c.fillRect(l[0], l[1], .36, .035); const s2 = P(-.18, .12, .95); c.fillRect(s2[0], s2[1], .045, .45 * K) }
+    { const a = P(.1, .12, .92), b = P(.34, .2, .25), d = P(.16, .13, .7); c.strokeStyle = '#16181c'; c.lineWidth = .035; c.beginPath(); c.moveTo(a[0], a[1]); c.quadraticCurveTo(b[0], b[1], d[0], d[1]); c.stroke(); c.fillStyle = '#16181c'; c.fillRect(d[0] - .03, d[1] - .04, .07, .08) } },
+  shadow(c) { contact(c, .34, .22, .45); shadowBox(c, -.18, .18, -.12, .12, 0, 1.55, .28) } }));
+def('swing', S_({ he: 'נדנדה (גן משחקים)', today: ['PR (Swing Set)'], w: 3.4, d: 1.8, h: 2.3, v: 2,
+  body(c, v) { const col = v ? '#1f7fb8' : '#c62828';
+    for (const x of [-1.6, 1.6]) bar(c, [x, -.85, 0], [x, 0, 2.25], .08, col, { mat: 'paint' });
+    for (const x of [-.7, .7]) { for (const dx of [-.22, .22]) bar(c, [x + dx, 0, 2.2], [x + dx, 0, .5], .015, '#8d949b', { mat: 'metal' }); box(c, x - .25, x + .25, -.1, .1, .45, .5, '#2b3036', { mat: 'paint' }) }
+    bar(c, [-1.65, 0, 2.25], [1.65, 0, 2.25], .1, col, { mat: 'paint' });
+    for (const x of [-1.6, 1.6]) bar(c, [x, .85, 0], [x, 0, 2.25], .08, col, { mat: 'paint' }) },
+  shadow(c) { contact(c, 1.8, .7, .18); for (const x of [-1.6, 1.6]) for (const y of [-.85, .85]) shadowSeg(c, [x, y, 0], [x, 0, 2.25], .08, .26); shadowSeg(c, [-1.65, 0, 2.25], [1.65, 0, 2.25], .1, .26);
+    for (const x of [-.7, .7]) { shadowPoly(c, [[x - .25, -.1, .5], [x + .25, -.1, .5], [x + .25, .1, .5], [x - .25, .1, .5]], .26); for (const dx of [-.22, .22]) shadowSeg(c, [x + dx, 0, 2.2], [x + dx, 0, .5], .02, .26) } } }));
+def('slide', S_({ he: 'מגלשה (גן משחקים)', today: ['PR (Slide)'], w: 3.6, d: .9, h: 2.0, v: 2,
+  body(c, v) { const col = v ? '#f2a33a' : '#2a9d8f', fr = '#8d949b';
+    for (const y of [-.3, .3]) bar(c, [-1.75, y, 0], [-1.35, y, 1.5], .05, fr, { mat: 'metal' });
+    for (let i = 1; i < 6; i++) { const t = i / 6; bar(c, [-1.75 + .4 * t, -.3, 1.5 * t], [-1.75 + .4 * t, .3, 1.5 * t], .03, fr, { mat: 'metal' }) }
+    for (const x of [-1.33, -.87]) for (const y of [-.33, .33]) pole(c, x, y, 0, 1.42, .03, fr); pole(c, .4, 0, 0, .85, .04, fr);
+    box(c, -1.35, -.85, -.35, .35, 1.42, 1.5, fr, { mat: 'metal' });
+    fillPoly3(c, [[-.85, -.3, 1.45], [1.6, -.3, .25], [1.6, .3, .25], [-.85, .3, 1.45]], col, 'paint'); box(c, 1.6, 1.8, -.3, .3, .2, .27, col, { mat: 'paint' });
+    fillPoly3(c, [[-.85, .3, 1.45], [1.6, .3, .25], [1.6, .3, .45], [-.85, .3, 1.68]], sh(col, -.12), 'paint', N_S);
+    for (const y of [-.35, .35]) { bar(c, [-1.35, y, 1.5], [-1.35, y, 2.0], .035, fr, { mat: 'metal' }); bar(c, [-1.35, y, 2.0], [-.85, y, 1.92], .035, fr, { mat: 'metal' }) } },
+  shadow(c) { contact(c, 1.9, .5, .2); shadowPoly(c, [[-.85, -.3, 1.6], [1.6, -.3, .4], [1.6, .3, .4], [-.85, .3, 1.6]], .26); shadowPoly(c, [[-1.35, -.35, 1.5], [-.85, -.35, 1.5], [-.85, .35, 1.5], [-1.35, .35, 1.5]], .26);
+    for (const y of [-.3, .3]) shadowSeg(c, [-1.75, y, 0], [-1.35, y, 1.5], .05, .26); for (const y of [-.35, .35]) shadowSeg(c, [-1.35, y, 1.5], [-1.35, y, 2.0], .035, .26) } }));
+// --- fences and rails: one 2.5 m section (the game repeats it); along x
+function fence(p) { return S_({ he: p.he, today: p.today, w: p.L, d: .1, h: p.h, v: p.v || 2, body: p.body, shadow(c) { contact(c, p.L * .55, .12, .25); shadowPoly(c, [[-p.L / 2, 0, 0], [p.L / 2, 0, 0], [p.L / 2, 0, p.h], [-p.L / 2, 0, p.h]], p.sa || .14) } }) }
+def('fence_picket', fence({ he: 'גדר כלונסאות', today: ['PR (Picket Fence)'], L: 2.5, h: 1.0, body(c, v) { const col = v ? '#d8c9a8' : '#f4f2ea'; box(c, -1.25, 1.25, -.03, .03, .35, .43, col, { mat: 'wood' }); box(c, -1.25, 1.25, -.03, .03, .75, .83, col, { mat: 'wood' });
+  for (let i = 0; i < 13; i++) { const x = -1.2 + i * .2; box(c, x - .04, x + .04, .02, .06, 0, .92, col, { mat: 'wood' }); fillPoly3(c, [[x - .04, .06, .92], [x + .04, .06, .92], [x, .06, 1.0]], col, 'wood', [0, 1, 0]) } } }));
+def('fence_chain', fence({ he: 'גדר רשת', today: ['PR (Chain Fence)'], L: 2.5, h: 1.8, sa: .08, body(c) { for (const x of [-1.25, 1.25]) pole(c, x, 0, 0, 1.8, .03, '#8d949b'); bar(c, [-1.25, 0, 1.78], [1.25, 0, 1.78], .04, '#8d949b');
+  c.strokeStyle = 'rgba(150,158,166,.55)'; c.lineWidth = .012; c.beginPath(); for (let x = -1.25; x < 1.25; x += .1) { const a = P(x, 0, 0), b = P(Math.min(1.25, x + 1.08), 0, 1.78); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); const d = P(Math.max(-1.25, x - 1.08), 0, 1.78); c.moveTo(a[0], a[1]); c.lineTo(d[0], d[1]) } c.stroke() } }));
+def('fence_iron', fence({ he: 'גדר ברזל', today: ['PR (Iron Gate)'], L: 2.5, h: 1.6, body(c) { const col = '#22282e'; for (const z of [.15, 1.35]) bar(c, [-1.25, 0, z], [1.25, 0, z], .05, col);
+  for (let i = 0; i < 17; i++) { const x = -1.2 + i * .15; bar(c, [x, 0, 0], [x, 0, 1.5], .028, col); const t = P(x, 0, 1.55); c.fillStyle = litC('#c9a227', 1.05); c.beginPath(); c.moveTo(t[0] - .03, t[1] + .04); c.lineTo(t[0], t[1] - .05); c.lineTo(t[0] + .03, t[1] + .04); c.fill() }
+  for (const x of [-1.25, 1.25]) box(c, x - .05, x + .05, -.05, .05, 0, 1.6, col, { mat: 'metal' }) } }));
+def('rail_ped', fence({ he: 'מעקה הולכי רגל', today: [], L: 2.5, h: 1.0, body(c, v) { const col = v ? '#c62828' : '#9aa1a8'; for (const x of [-1.2, 0, 1.2]) pole(c, x, 0, 0, 1.0, .03, col, 'metal'); for (const z of [.5, .98]) bar(c, [-1.25, 0, z], [1.25, 0, z], .045, col);
+  if (v) for (let i = 0; i < 5; i++) { const x = -1.0 + i * .5; bar(c, [x, 0, .5], [x, 0, .98], .02, '#f4f6f8') } } }));
+def('guardrail', fence({ he: 'מעקה בטיחות', today: ['RF-GRD'], L: 4, h: .8, sa: .18, v: 1, body(c) { for (const x of [-1.9, 0, 1.9]) box(c, x - .06, x + .06, -.06, .06, 0, .72, '#7d858d', { mat: 'metal' });
+  box(c, -2, 2, .06, .14, .5, .78, '#b8bec4', { mat: 'metal' }); const a = P(-2, .14, .66); c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(a[0], a[1], 4, .05); const s = P(-2, .14, .76); c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(s[0], s[1], 4, .03) } }));
+def('jersey', fence({ he: 'מחסום בטון', today: ['RF-JER', 'RF-BAR'], L: 3, h: .82, sa: .25, body(c, v) { const col = v ? '#d9d4c8' : '#c4c0b6'; boxR(c, [[-1.5, -.3], [1.5, -.3], [1.5, .3], [-1.5, .3]], 0, .3, col, { mat: 'stone' }); boxR(c, [[-1.5, -.12], [1.5, -.12], [1.5, .12], [-1.5, .12]], .3, .82, col, { mat: 'stone' });
+  fillPoly3(c, [[-1.5, .3, .3], [1.5, .3, .3], [1.5, .12, .55], [-1.5, .12, .55]], col, 'stone'); if (v) for (let i = 0; i < 4; i++) { const a = P(-1.4 + i * .8, .12, .78); c.fillStyle = i % 2 ? '#c62828' : '#f4f6f8'; c.fillRect(a[0], a[1], .7, .08) } } }));
+
+// ===================================== the pictures and the cache =====================================
+const KIT34 = G.KIT34 = { K, PXM, budgetMB: 24, rimPx: 30, small: 1, dpr: typeof devicePixelRatio !== 'undefined' ? Math.min(2, devicePixelRatio || 1) : 1 };
+const mk = (w, h) => { if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h); const c = document.createElement('canvas'); c.width = w; c.height = h; return c };
+const CACHE = new Map(); let BYTES = 0, MADE = 0, MADE_MS = 0, EVICT = 0;
+function put(key, e) { CACHE.set(key, e); BYTES += e.bytes; if (KIT34.budgetMB > 0) while (BYTES > KIT34.budgetMB * 1048576 && CACHE.size > 1) { const [k0, e0] = CACHE.entries().next().value; if (k0 === key) break; CACHE.delete(k0); BYTES -= e0.bytes; EVICT++ } }
+const varKey = (t, v) => t.sign ? (typeof v === 'string' ? v : FACES[(v | 0) % 4]) : ((v | 0) % (typeof t.v === 'number' ? t.v : 1));
+// one picture (body or shadow) of a type at pxm device px per metre; rim when the item is tall enough on the screen
+// The picture is drawn on a roomy canvas (the box of the item and a margin of a third of its size, so nothing that leans or hangs
+// out is cut) and then trimmed to what was really drawn — the cache keeps only the trimmed picture.
+function render(t, v, pxm, which, rim, sc, q) { const q0 = QR; QR = (q | 0) & 3; try { return render0(t, v, pxm, which, rim, sc) } finally { QR = q0 } }   // p417
+function render0(t, v, pxm, which, rim, sc) {
+  const w = (QR & 1 ? t.d : t.w) * sc, d = (QR & 1 ? t.w : t.d) * sc, h = t.h * sc, isS = which === 'shadow', m = .6 + .35 * Math.max(w, d, h * .5);
+  const x0 = -w / 2 - m, x1 = w / 2 + m + (isS ? h * SX : 0), y0 = isS ? -d / 2 - m : -d / 2 - K * h - m, y1 = d / 2 + m + (isS ? h * SY : 0);
+  const pad = 3, W = Math.max(2, Math.ceil((x1 - x0) * pxm) + pad * 2), H = Math.max(2, Math.ceil((y1 - y0) * pxm) + pad * 2), ox = -x0 * pxm + pad, oy = -y0 * pxm + pad;
+  const cv = mk(W, H), c = cv.getContext('2d'); c.setTransform(pxm * sc, 0, 0, pxm * sc, ox, oy); c.lineJoin = 'round'; c.lineCap = 'round';
+  const R = rng(1009 + (typeof v === 'string' ? v.charCodeAt(0) : v) * 97 + t.he.length * 13);
+  let out = cv;
+  if (isS) { const cc = mk(W, H), g2 = cc.getContext('2d'); g2.setTransform(pxm * sc, 0, 0, pxm * sc, ox, oy); SH.a = 0; SH.contact = g2;
+    try { t.shadow.call(t, c, v, R) } finally { SH.contact = null }
+    const oc = mk(W, H), g = oc.getContext('2d'); g.globalAlpha = SH.a || .28; g.drawImage(cv, 0, 0); g.globalAlpha = 1; g.drawImage(cc, 0, 0); out = oc }
+  else t.body.call(t, c, v, R);
+  // trim first (leaving room for the rim), then the rim on the small picture
+  const ww = Math.max(1, Math.round(pxm * .012)), e = trim(out, ox, oy, rim && !isS ? ww + 1 : 1);
+  if (rim && !isS) { const w2 = e.cv.width, h2 = e.cv.height, tc = mk(w2, h2), g = tc.getContext('2d');
+    for (const [dx, dy] of [[ww, 0], [-ww, 0], [0, ww], [0, -ww], [ww * .7, ww * .7], [-ww * .7, ww * .7], [ww * .7, -ww * .7], [-ww * .7, -ww * .7]]) g.drawImage(e.cv, dx, dy);
+    g.globalCompositeOperation = 'source-in'; g.fillStyle = 'rgba(18,22,28,.55)'; g.fillRect(0, 0, w2, h2); g.globalCompositeOperation = 'source-over'; g.drawImage(e.cv, 0, 0); e.cv = tc }
+  return e;
+}
+// the bounds of what was drawn, read from a copy 4 times smaller: two halvings, each an exact 2 × 2 average, so a block with any
+// ink keeps some alpha; the bounds are then widened by a block
+const half = cv => { const w = Math.ceil(cv.width / 2), h = Math.ceil(cv.height / 2), e = mk(w, h), g = e.getContext('2d'); g.imageSmoothingEnabled = true; g.drawImage(cv, 0, 0, cv.width / 2, cv.height / 2); return e };
+function trim(cv, ox, oy, mg) {
+  const W = cv.width, H = cv.height, q = W * H > 30000 ? 4 : 1;
+  const src = q > 1 ? half(half(cv)) : cv, sw = src.width, shh = src.height;
+  const a = src.getContext('2d').getImageData(0, 0, sw, shh).data; let x0 = sw, x1 = -1, y0 = -1, y1 = -1;
+  for (let y = 0; y < shh; y++) { const r = y * sw * 4; let f = -1, l = -1; for (let x = 0; x < sw; x++) if (a[r + x * 4 + 3]) { f = x; break } if (f < 0) continue;
+    for (let x = sw - 1; x >= f; x--) if (a[r + x * 4 + 3]) { l = x; break } if (y0 < 0) y0 = y; y1 = y; if (f < x0) x0 = f; if (l > x1) x1 = l }
+  if (y0 < 0) { const e = mk(1, 1); return { cv: e, ox: 0, oy: 0, bytes: 4 } }
+  const X0 = Math.max(0, x0 * q - q - mg), Y0 = Math.max(0, y0 * q - q - mg), X1 = Math.min(W - 1, x1 * q + 2 * q + mg), Y1 = Math.min(H - 1, y1 * q + 2 * q + mg);
+  const w = X1 - X0 + 1, h = Y1 - Y0 + 1, e = mk(w, h); e.getContext('2d').drawImage(cv, -X0, -Y0);
+  return { cv: e, ox: ox - X0, oy: oy - Y0, bytes: w * h * 4 };
+}
+KIT34.sprite = function (type, variant, res, o) {
+  const t = T[type]; if (!t) throw new Error('KIT34: unknown type ' + type); o = o || {};
+  const v = varKey(t, variant), r = res || 1, sc = t.street ? KIT34.small : 1, which = o.which || 'body', q = (o.q | 0) & 3;
+  const zoom = o.zoom != null ? o.zoom : r / KIT34.dpr, hpx = (t.h * sc * K + t.d * sc) * PXM * zoom, rim = which === 'body' && hpx >= KIT34.rimPx;
+  const key = type + '|' + v + '|' + r + '|' + sc + '|' + which + '|' + (rim ? 1 : 0) + (q ? '|q' + q : '');
+  let e = CACHE.get(key); if (e) return e;
+  // the shadow of a plant is soft all over: it is kept at half the density (a quarter of the memory) and drawn back at full size
+  const k = which === 'shadow' && t.group !== 'street' && r >= 1.5 ? .5 : 1;
+  const t0 = performance.now(); e = render(t, v, PXM * r * k, which, rim, sc, q); e.k = k; MADE_MS += performance.now() - t0; MADE++; put(key, e); return e;
+};
+KIT34.drawShadow = function (ctx, x, y, type, variant, res, o) { const s = KIT34.sprite(type, variant, res, { which: 'shadow', q: o && o.q }), r = res * s.k; ctx.drawImage(s.cv, x - s.ox / r, y - s.oy / r, s.cv.width / r, s.cv.height / r) };
+KIT34.drawBody = function (ctx, x, y, type, variant, res, o) { const s = KIT34.sprite(type, variant, res, o); ctx.drawImage(s.cv, x - s.ox / res, y - s.oy / res, s.cv.width / res, s.cv.height / res) };
+KIT34.draw = function (ctx, x, y, type, variant, res, o) { o = o || {}; if (o.shadow !== false) KIT34.drawShadow(ctx, x, y, type, variant, res, o); KIT34.drawBody(ctx, x, y, type, variant, res, o) };
+KIT34.list = () => Object.keys(T).map(type => { const t = T[type]; return { type, he: t.he, group: t.group, w: t.w, d: t.d, h: t.h, variants: t.sign ? FACES.slice() : t.v, today: t.today || [] } });
+KIT34.types = T;
+KIT34.has = (type, variant, res, which, q) => { const t = T[type]; if (!t) return false; const r = res || 1, sc = t.street ? KIT34.small : 1, w = which || 'body', zoom = r / KIT34.dpr, hpx = (t.h * sc * K + t.d * sc) * PXM * zoom, rim = w === 'body' && hpx >= KIT34.rimPx; q = (q | 0) & 3; return CACHE.has(type + '|' + varKey(t, variant) + '|' + r + '|' + sc + '|' + w + '|' + (rim ? 1 : 0) + (q ? '|q' + q : '')) };   // p416: is the picture made (the game makes a few a frame)
+KIT34.stats = () => ({ pictures: CACHE.size, MB: +(BYTES / 1048576).toFixed(2), made: MADE, makeMs: +MADE_MS.toFixed(1), makeAvg: MADE ? +(MADE_MS / MADE).toFixed(2) : 0, evicted: EVICT, budgetMB: KIT34.budgetMB });
+KIT34.clear = () => { CACHE.clear(); BYTES = 0; MADE = 0; MADE_MS = 0; EVICT = 0 };
+KIT34.drop = f => { let n = 0; for (const [k, e] of CACHE) if (f(k)) { CACHE.delete(k); BYTES -= e.bytes; n++ } return n };   // ui7a · 11.11: זריקה של חלק מהתמונות השמורות (העונות: גופי הצמחים)
+void LS; void sh;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+ }KIT34.small=K34C.small;KIT34.budgetMB=32;k34Wrap();try{k34Scan()}catch(e){K34C.err='scan '+String(e).slice(0,120)}k34Make(K34C.initMs);if(typeof wtcInvalidate==='function'&&typeof WTC!=='undefined'&&WTC.tiles)wtcInvalidate();K34C.ready=true}catch(e){K34C.err=String(e&&e.stack||e).slice(0,200);K34C.on=false}return K34C.ready}
+function k34Wrap(){if(K34C.d0)return;const d0=K34C.d0=TurboCity.draw;TurboCity.draw=function(c,id,x,y,o){if(K34C.on&&typeof id==='string'&&K34C_MAP[id]){try{if(k34Take(c,id,x,y,o||{}))return}catch(e){K34C.n.err++;K34C.err=String(e).slice(0,160)}}return d0.call(this,c,id,x,y,o)}}
+function k34Res(s){s/=1.08;return s<=1?1:s<=1.5?1.5:s<=2?2:3}
+function k34Have(t,v,q,r){const B=KIT34;if(B.has(t,v,r,'body',q)&&B.has(t,v,r,'shadow',q))return r;for(const r2 of K34C.resAll)if(r2!==r&&B.has(t,v,r2,'body',q)&&B.has(t,v,r2,'shadow',q))return r2;return 0}
+function k34Need(t,v,q,r){const k=t+'|'+v+'|'+q+'|'+r;if(!K34C.need.has(k))K34C.need.set(k,[t,v,q,r])}
+function k34Make(ms){const B=KIT34,t0=performance.now();let n=0;for(const [k,a] of K34C.need){if(performance.now()-t0>=ms)break;K34C.need.delete(k);try{B.sprite(a[0],a[1],a[3],{which:'shadow',q:a[2]});B.sprite(a[0],a[1],a[3],{q:a[2]});K34C.n.made++;n++}catch(e){K34C.n.err++;K34C.err=String(e).slice(0,160)}}if(n)K34C.gen++;K34C.n.makeMs+=performance.now()-t0;return K34C.need.size}
+function k34Pic(g,S,E,F,wx,wy,f,t,v,q,r,body,shadow){g.save();g.setTransform(S,0,0,S,E,F);g.translate(wx,wy);if(f!==1)g.scale(f,f);if(shadow)KIT34.drawShadow(g,0,0,t,v,r,{q});if(body)KIT34.drawBody(g,0,0,t,v,r,{q});g.restore()}
+// a picture to draw in one drawImage: the body alone, or the shadow and the body joined (made once per type · variant · turn · density)
+function k34Join(t,v,q,r,withShadow){const B=KIT34.sprite(t,v,r,{q}),rb=r;if(!withShadow)return {cv:B.cv,dx:-B.ox/rb,dy:-B.oy/rb,dw:B.cv.width/rb,dh:B.cv.height/rb};
+ const key=t+'|'+v+'|'+q+'|'+r;let J=K34C.join.get(key);if(J)return J;const S=KIT34.sprite(t,v,r,{which:'shadow',q}),rs=r*(S.k||1);
+ const sx=-S.ox/rs,sy=-S.oy/rs,sw=S.cv.width/rs,sh=S.cv.height/rs,bx=-B.ox/rb,by=-B.oy/rb,bw=B.cv.width/rb,bh=B.cv.height/rb,x0=Math.min(sx,bx),y0=Math.min(sy,by),x1=Math.max(sx+sw,bx+bw),y1=Math.max(sy+sh,by+bh);
+ const cv=window.document.createElement('canvas');cv.width=Math.max(1,Math.ceil((x1-x0)*r));cv.height=Math.max(1,Math.ceil((y1-y0)*r));const g=cv.getContext('2d');g.drawImage(S.cv,(sx-x0)*r,(sy-y0)*r,sw*r,sh*r);g.drawImage(B.cv,(bx-x0)*r,(by-y0)*r,bw*r,bh*r);
+ J={cv,dx:x0,dy:y0,dw:cv.width/r,dh:cv.height/r};K34C.join.set(key,J);K34C.n.joined++;return J}
+function k34Take(c,id,x,y,o){
+ let S,E,F,mode;
+ if(c===GAME_CTX){if(K34C.far)return false;const q=c34CamM();S=q[0];E=q[1];F=q[2];mode='game'}
+ else if(typeof WTC!=='undefined'&&c===WTC.ctxBuilding){const cw=c.canvas.width,V=VIEW_OVR;if(cw<=2||!V){S=1;E=0;F=0;mode='pass'}else{const hw=V.hw-WTC.margin,hh=V.hh-WTC.margin;S=cw/(2*hw);if(S<K34C.minS)return false;E=-(V.cx-hw)*S;F=-(V.cy-hh)*S;mode='tile'}}
+ else return false;   // a far tile / a far view / another canvas: today's picture
+ const M=K34C_MAP[id];let type=M[0];if(Array.isArray(type)){type=type[(o.state&&o.state.v)|0];if(!type)return false}
+ const T=KIT34.types[type];if(!T)return false;
+ const ik=id+'|'+(o.scale??'')+'|'+(o.targetWidth??'')+'|'+(o.rot??'')+'|'+(o.state&&o.state.v);let A=K34C.info.get(ik);
+ if(!A){const I=TurboCity.info(id,o),an=I.an||[],b=an.find(a=>a[0]==='Pole Base'||a[0]==='Base'),fc=M[2]==='F'&&I.fp;let bx=fc?I.fp[0]+I.fp[2]/2:I.w/2,by=fc?I.fp[1]+I.fp[3]/2:I.h/2,dir=(o.rot|0)&3;
+  if(M[1]&&b){bx=b[1];by=b[2]}if(M[2]==='L'){const I0=TurboCity.info(id,{scale:o.scale}),a0=I0.an||[],b0=a0.find(a=>a[0]==='Pole Base'||a[0]==='Base'),l0=a0.find(a=>a[0]==='Light');let d0=0;if(b0&&l0){const dx=l0[1]-b0[1],dy=l0[2]-b0[2];if(Math.hypot(dx,dy)>1)d0=Math.abs(dx)>=Math.abs(dy)?(dx>0?0:2):(dy>0?1:3)}dir=(d0+(o.rot|0))&3}
+  const gw=o.targetWidth||I.w,f=M[2]==='T'?Math.min(1,gw/(T.w*10)):1;let an2=false;try{an2=typeof wtcAnimated==='function'&&!!wtcAnimated(id,o)}catch(e){}
+  A={bx,by,dir,f,tall:T.h*(T.street?K34C.small:1)*f>=K34C.tallM||an2};K34C.info.set(ik,A)}
+ const m=c.getTransform(),px=x+A.bx,py=y+A.by,wx=(m.a*px+m.c*py+m.e-E)/S,wy=(m.b*px+m.d*py+m.f-F)/S,ap=K34C.airport;
+ if(wx>ap[0]&&wx<ap[2]&&wy>ap[1]&&wy<ap[3]){K34C.n.skipApt++;return false}
+ let it=null;const gx=Math.floor(wx/8),gy=Math.floor(wy/8);
+ if(A.tall){for(let i=-1;i<=1&&!it;i++)for(let j=-1;j<=1&&!it;j++){const a=K34C.grid.get((gx+i)+','+(gy+j));if(a)for(const z of a)if(z.id===id&&Math.abs(z.x-wx)<4&&Math.abs(z.y-wy)<4){it=z;break}}
+  if(it&&mode!=='tile')return true}   // known: the frame draws it
+ let v,q;if(it){v=it.v;q=it.q}else{const h=(Math.imul(Math.round(wx)*73856093^Math.round(wy)*19349663,2654435761)>>>0);v=M[2]==='L'?(k34IsPort(wx,wy)?k34RoadDir(wx,wy,A.dir):A.dir)*2:M[2]==='S'?['s','w','n','e'][(o.rot|0)&3]:h%(typeof T.v==='number'?T.v:1);q=M[3]?((((o.rot|0)+Math.round(Math.atan2(m.b,m.a)/(Math.PI/2)))%4)+4)%4:0}
+ const r=k34Res(mode==='pass'?Camera.zoom*dpr:S),have=k34Have(type,v,q,r);if(have!==r)k34Need(type,v,q,r);
+ if(!A.tall){if(mode==='pass'||!have)return false;if(mode==='tile'){if(K34C.used>=K34C.budMs){k34Defer(id,type,v,q,A.f,wx,wy,have,S);return true}const t1=performance.now();k34Pic(c,S,E,F,wx,wy,A.f,type,v,q,have,true,true);K34C.used+=performance.now()-t1;k34Undefer(id,wx,wy);K34C.n.bake++;return true}k34Pic(c,S,E,F,wx,wy,A.f,type,v,q,have,true,true);K34C.n.low++;return true}   /* p428: the tile's baking inside the frame's budget */   // low: where the game draws it, once into a tile or each frame
+ if(!it){it={id,type,v,q,f:A.f,x:wx,y:wy,sh:'frame',h:T.h*(T.street?K34C.small:1)*A.f,o:Object.assign({},o),x0:(m.a*x+m.c*y+m.e-E)/S,y0:(m.b*x+m.d*y+m.f-F)/S,pr:0,ph:0,pg:-1,pc:null};const gk=gx+','+gy;(K34C.grid.get(gk)||K34C.grid.set(gk,[]).get(gk)).push(it);K34C.list.push(it);K34C.n.reg++;if(mode!=='game')K34C.n.tile++}
+ if(mode==='tile'&&have){if(K34C.used<K34C.budMs){const t1=performance.now();k34Pic(c,S,E,F,wx,wy,A.f,type,v,q,have,false,true);K34C.used+=performance.now()-t1;if(it.sh!=='tile'){it.sh='tile';it.pr=0}K34C.n.bakeSh++}else if(it.sh==='tile'){it.sh='frame';it.pr=0}}   /* p428 */   // tall: the shadow into the tile, the body into the queue
+ return true}
+function k34Scan(){if(typeof WTC==='undefined')return;const cv=window.document.createElement('canvas');cv.width=2;cv.height=2;const g=cv.getContext('2d'),now=performance.now();
+ const L=[typeof wtcPaintL1==='function'?wtcPaintL1:null,typeof wtcPaintL2==='function'?wtcPaintL2:null,typeof wtcPaintLP==='function'?wtcPaintLP:null,typeof wtcPaintLO==='function'?wtcPaintLO:null].filter(Boolean);
+ const pc=ctx,pv=VIEW_OVR,pm=WTC_MODE,pmu=Targets.mute,pr=WTC.recording,pb=WTC.ctxBuilding;ctx=g;VIEW_OVR={cx:4200,cy:3000,hw:5600,hh:5000};WTC_MODE=1;Targets.mute=true;WTC.ctxBuilding=g;WTC.recording=null;window.__k34Scanning=1;   /* p445 */
+ try{for(const f of L){try{f(now)}catch(e){}}}finally{window.__k34Scanning=0;ctx=pc;VIEW_OVR=pv;WTC_MODE=pm;Targets.mute=pmu;WTC.ctxBuilding=pb;WTC.recording=pr}K34C.n.scan=K34C.list.length}
+
+// p417: the port lamps (the game sets them with rot 0): the arm toward the nearest road — the port's road rectangles and the city's edges
+function k34IsPort(x,y){if(!K34C.portSet){K34C.portSet=new Set();try{for(const o of PORT_LIGHTS){const q=poleFit(o);K34C.portSet.add(Math.round(q.x)+','+Math.round(q.y))}}catch(e){}}return K34C.portSet.has(Math.round(x)+','+Math.round(y))}
+function k34RoadDir(x,y,d0){if(!K34C.roads){const R=[];try{R.push(...portRoadRects())}catch(e){}try{for(const e of EDGES){const a=_NODE_BY_ID[e.a],b=_NODE_BY_ID[e.b],h=_ROAD_HALF(e);R.push({x:Math.min(a.x,b.x)-h,y:Math.min(a.y,b.y)-h,w:Math.abs(a.x-b.x)+2*h,h:Math.abs(a.y-b.y)+2*h})}}catch(e){}K34C.roads=R}
+ let best=null;for(const r of K34C.roads){const nx=Math.max(r.x,Math.min(x,r.x+r.w)),ny=Math.max(r.y,Math.min(y,r.y+r.h)),d=Math.hypot(nx-x,ny-y);if(d>0&&(!best||d<best.d))best={d,dx:nx-x,dy:ny-y}}
+ return best?(Math.abs(best.dx)>=Math.abs(best.dy)?(best.dx>0?0:2):(best.dy>0?1:3)):d0}
+// the item's picture for this density: resolved once (and again when a better one was made since — K34C.gen)
+function k34Pics(it,res){if(it.pr===res&&(it.ph===res||it.pg===K34C.gen))return it.pc;const have=k34Have(it.type,it.v,it.q,res);if(have!==res)k34Need(it.type,it.v,it.q,res);if(have&&it.sh!=='tile'&&K34C.used>=K34C.budMs&&!K34C.join.has(it.type+'|'+it.v+'|'+it.q+'|'+have)){it.raw=have;K34C.n.raw++;return K34C.RAW}it.raw=0;const t1=performance.now();   /* p428 */
+ it.pr=res;it.ph=have;it.pg=K34C.gen;it.pc=have?k34Join(it.type,it.v,it.q,have,it.sh!=='tile'):null;K34C.used+=performance.now()-t1;return it.pc}
+function k34Put(it,r,body){ctx.save();ctx.translate(it.x,it.y);if(it.f!==1)ctx.scale(it.f,it.f);if(body)KIT34.drawBody(ctx,0,0,it.type,it.v,r,{q:it.q});else KIT34.drawShadow(ctx,0,0,it.type,it.v,r,{q:it.q});ctx.restore()}   // p447
+function k34Body(){const it=this.it;if(it.raw){k34Put(it,it.raw,false);k34Put(it,it.raw,true);return}const P=it.pc,f=it.f;ctx.drawImage(P.cv,it.x+P.dx*f,it.y+P.dy*f,P.dw*f,P.dh*f)}
+// p428: the low items not baked (past the frame's budget) — drawn each frame at their tile density until a tile takes them
+function k34Defer(id,t,v,q,f,x,y,r,S){const k=id+'|'+Math.round(x)+'|'+Math.round(y);if(!K34C.defer.has(k))K34C.defer.set(k,{t,v,q,f,x,y,r,S});K34C.n.defer++}
+function k34Undefer(id,x,y){if(K34C.defer.size)K34C.defer.delete(id+'|'+Math.round(x)+'|'+Math.round(y))}
+function k34Frame(now){K34C.far=(typeof wtcZq==='function'?wtcZq(Camera.zoom*dpr):Camera.zoom*dpr)<K34C.minS;if(!K34C.on||!k34Lib()||K34C.far)return;const t0=performance.now();
+ const cm=K34C.cam,mv=!cm||Math.abs(cm[0]-Camera.x)>.3||Math.abs(cm[1]-Camera.y)>.3||cm[2]!==Camera.zoom;K34C.cam=[Camera.x,Camera.y,Camera.zoom];K34C.still=mv?0:K34C.still+1;
+ if(K34C.still>=K34C.idleFrames&&K34C.need.size)k34Make(K34C.makeMs);   // the pictures: only while the view stands still
+ if(K34C.defer.size){const tS=typeof wtcZq==='function'?wtcZq(Camera.zoom*dpr):0,q=c34CamM(),hw=viewHW()+40,hh=viewHH()+40,cx=viewCX(),cy=viewCY();for(const d of K34C.defer.values()){if(d.S!==tS||d.x<cx-hw||d.x>cx+hw||d.y<cy-hh||d.y>cy+hh+40)continue;k34Pic(ctx,q[0],q[1],q[2],d.x,d.y,d.f,d.t,d.v,d.q,d.r,true,true)}}   /* p428 */
+ const L=K34C.list;if(L.length){const res=k34Res(Camera.zoom*dpr),hw=viewHW()+40,hh=viewHH()+40,cx=viewCX(),cy=viewCY(),x0=cx-hw,x1=cx+hw,y0=cy-hh,y1=cy+hh,Q=C34G.q;
+  for(let i=0;i<L.length;i++){const it=L[i];if(it.x<x0||it.x>x1||it.y<y0||it.y-it.h*6>y1)continue;
+   if(!k34Pics(it,res)){K34C.d0.call(TurboCity,ctx,it.id,it.x0,it.y0,it.o);K34C.n.fall++;continue}
+   Q.push({y:it.y,f:k34Body,it});K34C.n.drawn++}}
+ K34C.n.frames++;K34C.n.ms+=performance.now()-t0;K34C.used=0}   /* p428: the next frame's budget */
+
+window.__TC_K34={prep:ms=>k34Make(ms||2000),stats:()=>({on:K34C.on,ready:K34C.ready,reg:K34C.n.reg,tile:K34C.n.tile,drawn:K34C.n.drawn,need:K34C.need.size,made:K34C.n.made,makeMs:+K34C.n.makeMs.toFixed(0),bake:K34C.n.bake,bakeSh:K34C.n.bakeSh,low:K34C.n.low,scan:K34C.n.scan,joined:K34C.n.joined,defer:K34C.n.defer,deferNow:K34C.defer.size,raw:K34C.n.raw,fall:K34C.n.fall,frames:K34C.n.frames,msAvg:K34C.n.frames?+(K34C.n.ms/K34C.n.frames).toFixed(2):0,err:K34C.n.err,lastErr:K34C.err,skipApt:K34C.n.skipApt,kit:window.KIT34?KIT34.stats():null,
+  byId:K34C.list.reduce((a,it)=>(a[it.id]=(a[it.id]||0)+1,a),{})}),on:v=>{K34C.on=!!v;if(typeof wtcInvalidate==='function')wtcInvalidate();return K34C.on},list:()=>K34C.list};
+function c34ForkProp(r){if(!c34Live())return false;try{const m=ctx.getTransform(),I=TurboCity.info(r.id,r.o);if(!I||!I.fp)return false;
+  const lx=r.x+I.fp[0]+I.fp[2]/2,ly=r.y+I.fp[1]+I.fp[3]/2,[S,e,f]=c34CamM(),X=m.a*lx+m.c*ly+m.e,Y=m.b*lx+m.d*ly+m.f,wx=(X-e)/S,wy=(Y-f)/S,h=Math.atan2(m.b,m.a),k=Math.hypot(m.a,m.b)/S;
+  const Lw=I.fp[2]*k,Ww=I.fp[3]*k,rs=r.id==='LV-RS-01',id=C34.kit(rs?'reach':'fork',Lw,Ww);let ok=false;ctx.save();ctx.setTransform(S,0,0,S,e,f);try{ok=c34Now(id,c34Col({c:rs?8:9}),wx,wy,h,{alpha:r.alpha<1?r.alpha:null,r:Lw*.6+12})}finally{ctx.restore()}
+  if(ok){const K=rs?'rsProp':'forkProp';C34G.n[K]=(C34G.n[K]||0)+1}return ok}   /* p386: the reach stacker too */catch(e){c34Err(e);return false}}
+// an airport ground vehicle with a model: true — drawn (the caller skips the top-down body, its roof driver and its ground beacon)
+function c34Apt(g,a,t,now){if(g!==ctx||!c34Live())return false;try{const asset=t?S6A_ASSET[t]:a.id;if(!C34_APT[asset]||(t&&!C34_APT_T[t]))return false;
+  const [x,y,th,,al]=a.pose;if(!(al>0))return true;const gs=aptVehGs(asset),[Lw,Ww]=c34Dims(asset,gs),id=c34Frz(c34Id(asset,Lw,Ww));if(!id)return false;
+  const v=a.v,bar=!!(v&&a.lt!=null&&g77BeaconSet().has(v.type)),ok=c34Now(id,c34Col({c:0}),x,y,th,{q:c34Ratio(id,asset,Lw),alpha:al<1?al:null,st:c34St(false,false,0,true,bar),key:v&&v.id?'APT|'+v.id:null,r:Lw*.6+12});
+  if(ok){const N=C34G.n;N.apt=(N.apt||0)+1;(N.aptBy||(N.aptBy={}))[asset]=(N.aptBy[asset]||0)+1}return ok}catch(e){c34Err(e);return false}}
+
+/* ---- C34 · p386: the containers on the ground (D4, E5, the port's blocks) in 3/4 — live, not in the tiles ---- */
+const C34Y={n:{stacks:0,flat:0,frames:0}};
+function c34YardLive(){return c34Live()}
+// the textures of a stack: tier 0 the lowest (the top one shows its picture), variants as the blocks draw them (t odd → v2)
+function c34StackPrep(asset,vs,L,W){const n=vs.length,id=C34.kit('cstack',L,W,{tag:String(n),n}),tex=vs.map(v=>c34BoxTex(asset,v));return{id,col:c34Col({c:2}),opt:{cargo:{key:asset+':'+vs.join(','),tex,col:tex.map(q=>q.col)}},n}}
+function c34Stack(asset,vs,x,y,h,L,W){const q=c34StackPrep(asset,vs,L,W);return c34Push(q.id,q.col,x,y,h,{opt:q.opt,r:Math.max(L,W)*.6+q.n*W})}
+function c34CtDims(asset){const I=TurboCity.info(asset,{scale:FREIGHT_CT_SCALE});return I&&I.fp?[I.fp[2],I.fp[3]]:[PORT_CT_LEN[asset]||PORT_CT_LEN['CT-20-01'],PORT_CT_W]}
+// the live stock of the C6 yard: item → its highest extra tier (flDrawYardTiers' list)
+function c34YardExtra(now){const m=new Map();try{const B=portBerth('C6'),cnt=flClamp(flStock(B,'yard',now/1000)-FL_C6_BASE,0,200),ex=flYardExtras();for(let i=0;i<Math.min(cnt,ex.length);i++){const e=ex[i];if((m.get(e.o)||0)<e.t)m.set(e.o,e.t)}}catch(e){}return m}
+function c34YardPaint(b){return g=>{for(const o of b.items){const I=TurboCity.info(o.asset,{scale:PORT_CT_SCALE});
+  const one=(dx,dy,vv)=>{g.save();g.translate(o.cx+dx,o.cy+dy);if(o.orient==='v')g.rotate(Math.PI/2);TurboCity.draw(g,o.asset,-I.w/2,-I.h/2,{mode:'runtime',scale:PORT_CT_SCALE,variant:vv,time:0});g.restore()};
+  one(0,0,o.v);if(o.tiers>1){for(let t=1;t<o.tiers;t++)one(-1.6*t,-2.8*t,t%2?o.v2:o.v)}else if(o.stack)one(-1.6,-2.8,o.v2)}}}
+function c34Yard(now){if(MAPBASE.pass||ctx.canvas!==cv||WTC_MODE===1)return;C34Y.n.frames++;const live=c34YardLive();
+ // D4 (20 ft, some turned) and E5 (all turned)
+ if(e3InView(D4_BOX.x,D4_BOX.y,D4_BOX.w,D4_BOX.h,60))for(const o of D4_CONTAINERS){if(!c34In(o.x-10,o.y-40,o.w+20,o.h+50))continue;
+  if(live){const [L,W]=c34CtDims(o.asset);if(c34Stack(o.asset,[o.v],o.cx,o.cy,o.vert?Math.PI/2:0,L,W)){C34Y.n.stacks++;continue}}
+  const I=TurboCity.info('CT-20-01',{scale:D4_CT_SCALE});ctx.save();ctx.translate(o.cx,o.cy);if(o.vert)ctx.rotate(Math.PI/2);TurboCity.draw(ctx,o.asset,-I.w/2,-I.h/2,{mode:'runtime',scale:D4_CT_SCALE,variant:o.v,time:now/1000});ctx.restore();C34Y.n.flat++}
+ if(e5InView())for(const o of E5_CONTAINERS){const [L,W]=c34CtDims(o.asset);if(!c34In(o.cx-W,o.cy-L,2*W,2*L))continue;
+  if(live&&c34Stack(o.asset,[o.v],o.cx,o.cy,Math.PI/2,L,W)){C34Y.n.stacks++;continue}
+  const I=TurboCity.info(o.asset,{scale:E5_CT_SCALE});ctx.save();ctx.translate(o.cx,o.cy);ctx.rotate(Math.PI/2);TurboCity.draw(ctx,o.asset,-I.w/2,-I.h/2,{mode:'runtime',scale:E5_CT_SCALE,variant:o.v,time:now/1000});ctx.restore();C34Y.n.flat++}
+ // the port's blocks: one stack per item (its fixed tiers, the live stock of C6), or today's bitmap of the block and the tiers on top
+ if(portInView()){const v=portView(120),ex=live?c34YardExtra(now):null;
+  for(const b of PORT_BLOCKS){if(!portVis(v,b.x-6,b.y-8,b.w+12,b.h+16))continue;
+   if(live){const S=[];let all=true;for(const o of b.items){const base=o.tiers>1?o.tiers:(o.stack?2:1),n=Math.max(base,1+(ex.get(o)||0)),vs=[];for(let t=0;t<n;t++)vs.push(t===0?o.v:(t%2?o.v2:o.v));
+     const [L,W]=c34CtDims(o.asset),h=o.orient==='v'?Math.PI/2:0,q=c34StackPrep(o.asset,vs,L,W);if(!c34Pick(q.id,q.col,h,q.opt,C34G.dirs,false))all=false;S.push([o,vs,h,L,W])}
+    if(all){for(const [o,vs,h,L,W] of S)if(c34Stack(o.asset,vs,o.cx,o.cy,h,L,W))C34Y.n.stacks++;continue}}   // the whole block in 3/4, or (its pictures still being made) today's bitmap
+   portCached(b.id,b.x-4,b.y-6,b.w+8,b.h+10,c34YardPaint(b));C34Y.n.flat++}
+  if(!live)flDrawYardTiers(now,v)}}
+// after the 3/4 pass opens (the queue is open; without it — right after the ground, before the vehicles)
+{const b0=c34Begin;c34Begin=function(now){b0(now);try{c34Yard(now)}catch(e){c34Err(e)}}}
+
+/* ---- C34 · p389: the vehicles on the screen first, 1 ms at least; the ring around the view asked for ahead ---- */
+Object.assign(C34G,{minMs:1,fresh:15,preOn:true,preMargin:.25,preMs:2,preEvery:10});
+function c34InPre(x,y){const V=C34G.vb,w=(V.x1-V.x0)*C34G.preMargin,h=(V.y1-V.y0)*C34G.preMargin;return x>V.x0-w&&x<V.x1+w&&y>V.y0-h&&y<V.y1+h}
+function c34Pre(id,col,h,N,opt){C34.peek(id,col,h,c34Res(),N,opt,true);C34G.n.pre=(C34G.n.pre||0)+1}
+// the stacks of a port block (as c34Yard: its fixed tiers, the live stock of C6)
+function c34BlockStacks(b,ex){const L0=[];for(const o of b.items){const base=o.tiers>1?o.tiers:(o.stack?2:1),n=Math.max(base,1+(ex.get(o)||0)),vs=[];for(let t=0;t<n;t++)vs.push(t===0?o.v:(t%2?o.v2:o.v));
+  const [L,W]=c34CtDims(o.asset);L0.push([o,vs,o.orient==='v'?Math.PI/2:0,L,W])}return L0}
+// every C34G.preEvery frames: the airport's vehicles, the yards' forklifts / reach stackers, the port's stacks in the ring (not on the screen)
+function c34PreScan(now){const G=C34G;if(!G.preOn||!c34Live()||C34.frame%G.preEvery)return;const N=G.dirs;
+ try{for(const a of APT_ACT){const p=a.pose;if(!p||!(p[4]>0))continue;const x=p[0],y=p[1];if(!c34InPre(x,y)||c34In(x-40,y-40,80,80))continue;
+  let t=null;try{t=s6aTypeOf(a)}catch(e){}const asset=t?S6A_ASSET[t]:a.id;if(!C34_APT[asset]||(t&&!C34_APT_T[t]))continue;
+  const [Lw,Ww]=c34Dims(asset,aptVehGs(asset)),id=c34Frz(c34Id(asset,Lw,Ww));if(id)c34Pre(id,c34Col({c:0}),p[2],N)}}catch(e){c34Err(e)}
+ try{for(const q of (WTC.sprites||[])){if(q.id!=='LV-FK-01'&&q.id!=='LV-RS-01')continue;const b=q.box,x=(b[0]+b[2])/2,y=(b[1]+b[3])/2;if(!c34InPre(x,y)||c34In(b[0],b[1],b[2]-b[0],b[3]-b[1]))continue;
+  const I=TurboCity.info(q.id,q.o);if(!I||!I.fp)continue;const k=Math.hypot(q.a,q.b),rs=q.id==='LV-RS-01';c34Pre(C34.kit(rs?'reach':'fork',I.fp[2]*k,I.fp[3]*k),c34Col({c:rs?8:9}),Math.atan2(q.b,q.a),N)}}catch(e){c34Err(e)}
+ try{let ex=null;for(const b of PORT_BLOCKS){if(!c34InPre(b.x+b.w/2,b.y+b.h/2)||c34In(b.x,b.y,b.w,b.h))continue;if(!ex)ex=c34YardExtra(now);
+  for(const [o,vs,h,L,W] of c34BlockStacks(b,ex)){const q=c34StackPrep(o.asset,vs,L,W);c34Pre(q.id,q.col,h,N,q.opt)}}}catch(e){c34Err(e)}}
+// the frame of the requests (the library drops those not renewed for C34G.fresh frames), the ring's scan
+{const b1=c34Begin;c34Begin=function(now){if(typeof C34!=='undefined'&&C34.peek){C34.frame++;C34.fresh=C34G.fresh}b1(now);try{if(typeof C34!=='undefined'&&C34.peek)c34PreScan(now)}catch(e){c34Err(e)}}}
+
+/* ---- C34 · p387: the quay cranes in 3/4 (R-12) — the legs in the 3/4 queue, the shadows on the ground, the rest overhead ---- */
+const C34STS={on:true,Hp:170,Hb:195,n:{frames:0,cranes:0,legs:0,tops:0,flat:0},
+ col:{leg:'#2f6aa6',legS:'#25588f',legT:'#4f87c4',sill:'#244f83',sillT:'#3c74b4',bogie:'#1d2227',boom:'#e0731d',boomS:'#b85a12',boomT:'#f19a4b',
+  back:'#3b3f44',house:'#d9dde0',houseS:'#b3b9be',houseT:'#eef1f3',trol:'#c7ccd1',trolS:'#959ca2',trolT:'#e3e7ea',cab:'#26343c',grab:'#2a2f33'}};
+function stsK(){return typeof C34!=='undefined'&&C34.K?C34.K:.6}
+function stsSh(h,f){const n=parseInt(String(h).slice(1),16);if(!(n>=0))return h;const m=f<0?0:255,k=Math.abs(f);return'#'+[n>>16,n>>8&255,n&255].map(v=>Math.round(v+(m-v)*k).toString(16).padStart(2,'0')).join('')}
+function stsSun(){return typeof C34!=='undefined'&&C34.SUN?C34.SUN:{x:.25,y:.32}}
+// a box seen from the south: the south face (z0 … z1 on y1), then the top (the plan lifted by K·z1)
+function stsBox(g,x0,x1,y0,y1,z0,z1,top,south,line){const K=stsK();if(south&&z1>z0){g.fillStyle=south;g.fillRect(x0,y1-K*z1,x1-x0,K*(z1-z0))}if(top){g.fillStyle=top;g.fillRect(x0,y0-K*z1,x1-x0,y1-y0)}
+ if(line){g.strokeStyle=line;g.lineWidth=.6;g.strokeRect(x0+.3,y0-K*z1+.3,x1-x0-.6,y1-y0+K*(z1-z0)-.6)}}
+// p387 (the draw operations, PERF_BUDGET D-216 (c): no scenario may get more): the faces are batched — one path per colour, the south faces
+// of a layer first, then its tops, then its flat marks, one stroke for its outlines
+function stsB(){return{s:new Map(),t:new Map(),m:new Map(),l:null,lc:null}}
+function stsP(M,c){let p=M.get(c);if(!p){p=new Path2D();M.set(c,p)}return p}
+function stsAdd(B,x0,x1,y0,y1,z0,z1,top,south,line){const K=stsK();if(south&&z1>z0)stsP(B.s,south).rect(x0,y1-K*z1,x1-x0,K*(z1-z0));if(top)stsP(B.t,top).rect(x0,y0-K*z1,x1-x0,y1-y0);
+ if(line){(B.l||(B.l=new Path2D())).rect(x0+.3,y0-K*z1+.3,x1-x0-.6,y1-y0+K*(z1-z0)-.6);B.lc=line}}
+function stsMark(B,c,x,y,w,h){stsP(B.m,c).rect(x,y,w,h)}
+function stsDraw(g,B){for(const M of [B.s,B.t,B.m])for(const [c,p] of M){g.fillStyle=c;g.fill(p)}if(B.l){g.strokeStyle=B.lc;g.lineWidth=.6;g.stroke(B.l)}}
+// the ground shadow of a box: the hull of its foot and its top, both moved by the sun — added to the current path (one fill for all)
+function stsHull(P){P.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
+ for(const p of P){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}
+ for(let i=P.length-1;i>=0;i--){const p=P[i];while(up.length>=2&&cr(up[up.length-2],up[up.length-1],P[i])<=0)up.pop();up.push(p)}
+ up.pop();lo.pop();return lo.concat(up)}
+function stsShadow(g,x0,x1,y0,y1,z0,z1){const S=stsSun(),P=[];for(const z of [z0,z1])for(const [x,y] of [[x0,y0],[x1,y0],[x1,y1],[x0,y1]])P.push([x+S.x*z,y+S.y*z]);
+ const H=stsHull(P);g.moveTo(H[0][0],H[0][1]);for(let i=1;i<H.length;i++)g.lineTo(H[i][0],H[i][1]);g.closePath()}
+// the parts of a crane (world px): [x0,x1,y0,y1,z0,z1]
+function stsParts(c,P){const x=P.x,hw=PORT_HW,yL=PORT_RAIL_L,yW=PORT_RAIL_W,Hp=C34STS.Hp,Hb=C34STS.Hb,sp=c.kind==='spreader',bt=sp?PORT_BOOM_BACK:yL-46,tip=Math.max(P.tipY,yW+40);
+ const o={x,yL,yW,Hp,Hb,bt,tip,sp,legs:[],beams:[],boom:[x-11,x+11,bt,tip+4,Hb-14,Hb],house:[x-24,x+24,yL-42,yL-4,Hb,Hb+26],trol:[x-17,x+17,P.ty-13,P.ty+13,Hb-6,Hb+6],cab:[x+3,x+17,P.ty+4,P.ty+15,Hb-30,Hb-8]};
+ for(const y of [yL,yW]){o.legs.push({y,sill:[x-hw-12,x+hw+12,y-8,y+8,0,12],posts:[[x-hw-5,x-hw+5,y-5,y+5,12,Hp-14],[x+hw-5,x+hw+5,y-5,y+5,12,Hp-14]]});
+  o.beams.push([x-hw-6,x+hw+6,y-6,y+6,Hp-16,Hp])}
+ o.side=[[x-hw-6,x-hw+6,yL-6,yW+6,Hp-12,Hp],[x+hw-6,x+hw+6,yL-6,yW+6,Hp-12,Hp]];
+ // what hangs: a box (its size and the height of its foot) or the grab
+ const ld=P.load;let L=PORT_CT_LEN['CT-40-01'],W=PORT_CT_W;if(sp){const zMax=Hb-46,Hc=W;o.Hc=Hc;o.zl=16+Math.max(0,Math.min(1,P.h||0))*(zMax-Hc-16);o.L=ld&&ld.type!=='40'?L+4:L;o.W=W}
+ else{const hh=P.hh!=null?P.hh:(P.h||0);o.zl=18+Math.max(0,Math.min(1,hh))*(Hb-80);o.L=22;o.W=22}
+ return o}
+function stsVis(v,P){return portVis(v,P.x-130,PORT_BOOM_BACK-60-stsK()*(C34STS.Hb+30),260,PORT_QY+360-PORT_BOOM_BACK+60+stsK()*(C34STS.Hb+30))}
+// in the 3/4 pass (after c34Begin): the shadows on the ground, the legs into the queue
+function c34StsBegin(now){const G=C34STS;if(!G.on||MAPBASE.pass||ctx.canvas!==cv||WTC_MODE===1||!c34Live()||!portInView())return;G.n.frames++;
+ const ops=portOps(now),v=portView(200),K=stsK(),C=G.col;
+ for(const c of PORT_CRANES){const S=ops[c.berth];if(!S)continue;const P=portCranePose(c,S,now);if(!stsVis(v,P))continue;const o=stsParts(c,P);G.n.cranes++;
+  // the shadows (one path): sills, posts, portal beams, boom, house, trolley, what hangs
+  ctx.save();ctx.beginPath();for(const l of o.legs){stsShadow(ctx,...l.sill);for(const q of l.posts)stsShadow(ctx,...q)}for(const q of o.beams)stsShadow(ctx,...q);for(const q of o.side)stsShadow(ctx,...q);
+  stsShadow(ctx,...o.boom);if(o.sp)stsShadow(ctx,o.x-16,o.x+16,o.bt-4,o.bt+8,o.Hb-22,o.Hb+2);stsShadow(ctx,...o.house);stsShadow(ctx,...o.trol);
+  if(o.sp&&P.load)stsShadow(ctx,o.x-o.L/2,o.x+o.L/2,P.ty-o.W/2,P.ty+o.W/2,o.zl,o.zl+o.Hc);else if(!o.sp&&P.grab)stsShadow(ctx,o.x-11,o.x+11,P.ty-11,P.ty+11,o.zl,o.zl+16);
+  ctx.fillStyle='rgba(8,18,26,.20)';ctx.fill('nonzero');ctx.restore();
+  // the legs: one queue entry per rail (the sill on the rail, its two posts, the knee braces of the portal frame in that plane)
+  for(const l of o.legs){G.n.legs++;C34G.q.push({y:l.y+8,f:()=>{const g=ctx,B=stsB();stsAdd(B,...l.sill,C.legT,C.leg,'rgba(10,24,40,.55)');for(const q of l.posts)stsAdd(B,...q,C.legT,C.leg,'rgba(10,24,40,.55)');
+   stsMark(B,C.bogie,l.sill[0],l.y-10-K*12,16,20);stsMark(B,C.bogie,l.sill[1]-16,l.y-10-K*12,16,20);g.save();stsDraw(g,B);
+   g.strokeStyle=C.legS;g.lineWidth=3;g.beginPath();for(const s of [-1,1]){g.moveTo(o.x+s*(PORT_HW-4),l.y+5-K*(o.Hp-62));g.lineTo(o.x+s*(PORT_HW-52),l.y+5-K*(o.Hp-15))}g.stroke();g.restore()}})}}}
+// in the overhead pass, instead of today's crane: the portal beams, what hangs, the boom, the house, the trolley
+function c34Sts(c,P,S,now){const G=C34STS;if(!G.on||MAPBASE.pass||ctx.canvas!==cv||WTC_MODE===1||!C34G.on||!C34G.armed)return false;
+ try{const o=stsParts(c,P),g=ctx,K=stsK(),C=G.col;g.save();
+  // the portal's beams (the waterside one after the box when the box is between the rails, before it when it is over the ship)
+  const south=o.sp&&P.ty-o.W/2>o.yW+6,B1=stsB();for(const q of o.side)stsAdd(B1,...q,C.legT,C.legS,'rgba(10,24,40,.5)');stsAdd(B1,...o.beams[0],C.legT,C.legS,'rgba(10,24,40,.5)');
+  if(south)stsAdd(B1,...o.beams[1],C.legT,C.legS,'rgba(10,24,40,.5)');stsDraw(g,B1);
+  // what hangs under the trolley: the box (its top picture, its corrugated south face) with the spreader and the ropes, or the grab
+  const zr=o.Hb-14;g.strokeStyle='rgba(30,34,38,.85)';g.lineWidth=.8;
+  if(o.sp){const zs=o.zl+o.Hc+2,ty=P.ty;g.beginPath();for(const sx of [-1,1])for(const sy of [-5,5]){g.moveTo(o.x+sx*14,ty+sy-K*zr);g.lineTo(o.x+sx*Math.min(o.L/2-8,30),ty+sy-K*zs)}g.stroke();   // the ropes beside the boom (between them — hidden by it)
+   if(P.load){const s=P.load,parts=s.type==='40'?[[s.asset,0,s.v,o.L]]:[['CT-20-01',-38.5,s.v,73],['CT-20-01',38.5,s.v2,73]];
+    for(const [a,dx,vv,LL] of parts){const t=c34BoxTex(a,vv),x0=o.x+dx-LL/2,x1=x0+LL,y0=ty-o.W/2,y1=ty+o.W/2,z0=o.zl,z1=o.zl+o.Hc;
+     g.fillStyle=stsSh(t.col||'#8a6a4a',-.22);g.fillRect(x0,y1-K*z1,LL,K*(z1-z0));g.strokeStyle='rgba(0,0,0,.18)';g.lineWidth=.5;g.beginPath();for(let xx=x0+2;xx<x1-1;xx+=3){g.moveTo(xx,y1-K*z1);g.lineTo(xx,y1-K*z0)}g.stroke();
+     if(t.cv){if(t.sw)g.drawImage(t.cv,t.sx,t.sy,t.sw,t.sh,x0,y0-K*z1,LL,o.W);else g.drawImage(t.cv,x0,y0-K*z1,LL,o.W)}else{g.fillStyle=t.col||'#8a6a4a';g.fillRect(x0,y0-K*z1,LL,o.W)}
+     g.strokeStyle='rgba(20,24,28,.55)';g.lineWidth=.6;g.strokeRect(x0+.3,y0-K*z1+.3,LL-.6,o.W+K*(z1-z0)-.6)}}
+   // the spreader: a frame on the box's top, the yellow twist-lock corners (one path)
+   const L=o.L,W=o.W,ys=ty-K*zs,Y=new Path2D();g.strokeStyle='#2a2f33';g.lineWidth=2;g.strokeRect(o.x-L/2,ys-W/2,L,W);for(const sx of [-1,1])for(const sy of [-1,1])Y.rect(o.x+sx*(L/2-4)-3,ys+sy*(W/2-4)-3,6,6);g.fillStyle='#e0b93a';g.fill(Y)}
+  else if(P.grab){const gb=P.grab,r=11,zs=o.zl+16,ty=P.ty;g.beginPath();for(const sx of [-1,1]){g.moveTo(o.x+sx*14,ty-K*zr);g.lineTo(o.x+sx*6,ty-K*zs)}g.stroke();
+   const BG=stsB();for(const s of [-1,1]){const x0=s<0?o.x-r-gb.open*4:o.x+r-6+gb.open*4;stsAdd(BG,x0,x0+6,ty-r,ty+r,o.zl,zs,'#3a4046',C.grab,null)}
+   if(gb.fill>0)stsMark(BG,c.id==='D6-CR1'?'#c9b27a':'#8d8a84',o.x-r+3,ty-r+2-K*zs,2*r-6,2*r-4);stsDraw(g,BG)}
+  // the waterside beam (box between the rails), the boom (its top, its edges, its end; the back's counterweight) — one layer
+  const B2=stsB();if(!south)stsAdd(B2,...o.beams[1],C.legT,C.legS,'rgba(10,24,40,.5)');
+  const [bx0,bx1,by0,by1,bz0,bz1]=o.boom;stsAdd(B2,bx0,bx1,by0,by1,bz0,bz1,C.boomT,C.boomS,null);if(o.sp)stsAdd(B2,o.x-16,o.x+16,o.bt-4,o.bt+8,o.Hb-22,o.Hb+2,'#5a6067',C.back,null);
+  stsMark(B2,C.boomS,bx0,by0-K*bz1,2.4,by1-by0);stsMark(B2,C.boomS,bx1-2.4,by0-K*bz1,2.4,by1-by0);stsMark(B2,'#e0b93a',bx0-3,by1-K*bz1-1,bx1-bx0+6,2);stsDraw(g,B2);
+  g.strokeStyle='rgba(120,48,8,.55)';g.lineWidth=1;g.beginPath();for(let y=by0+4;y<by1-10;y+=14){g.moveTo(bx0+2.4,y-K*bz1);g.lineTo(bx1-2.4,y+14-K*bz1)}g.stroke();
+  // the machinery house, the trolley and the operator's cabin — one layer
+  const B3=stsB(),[hx0,hx1,hy0,hy1,hz0,hz1]=o.house;stsAdd(B3,hx0,hx1,hy0,hy1,hz0,hz1,C.houseT,C.houseS,'rgba(40,50,56,.6)');stsMark(B3,'#e0731d',hx0,hy0-K*hz1,hx1-hx0,4);stsMark(B3,C.cab,hx0+10,hy1-K*(hz1-8),hx1-hx0-20,4);
+  stsAdd(B3,...o.cab,'#3c4a52',C.cab,null);stsMark(B3,'rgba(170,215,240,.75)',o.cab[0]+1.5,o.cab[3]-K*(o.cab[5]-4),o.cab[1]-o.cab[0]-3,K*12);
+  stsAdd(B3,...o.trol,C.trolT,C.trolS,'rgba(40,50,56,.6)');stsMark(B3,'#d94a3b',o.x-14,P.ty-9-K*o.trol[5],10,3);stsDraw(g,B3);
+  g.restore();G.n.tops++;return true}catch(e){c34Err(e);G.n.flat++;return false}}
+{const b2=c34Begin;c34Begin=function(now){b2(now);try{c34StsBegin(now)}catch(e){c34Err(e)}}}
+
+/* ---- A34M (p390: the aircraft library a34g.js, run after the 3/4 view is armed) ---- */
+function a34LibInit(){if(window.A34)return true;if(!C34G.armed)return false;
+/* a34.js — Turbo City · D‑268 · the aircraft in the 3/4 view (oblique, K = 0.6): the sample before the whole fleet (step 4).
+   Plain script, defines window.A34.  No dependence on the game's globals.
+   World: x east, y south, z up, in METRES; the page turns metres into its field scale s (7.47 px/m today, 10 px/m in the new field):
+   screen = ((x)·s, (y − K·z)·s).  The ground plan is not foreshortened; a surface at height z moves up (north on the screen) by K·z.
+   The sun, the ambient and the colour ramp are the vehicles' (c34m.js: LD, AMB .62, DIF .38, litC), the materials' gloss the people's.
+   The geometry follows the game's aircraft table (AC: length, span, fuselage width, wing chords, sweep, engines) and the details of
+   air_({...}) (nose / tail-cone lengths, doors, windows, engines, tailplane span, the tri-jet's third engine, the upper deck); the
+   heights are the class's real ones (A34.TYPES[id].src says which).
+   An aircraft is a set of PIECES — the body (fuselage, fin, upper tail, tail engine), each wing, each engine, each low tailplane, the
+   gear legs — and every piece carries the sort key of the scene: y of its south edge + (height of its lowest point) / K. */
+(function (G) {
+'use strict';
+const K = 0.6, TAU = Math.PI * 2, D2R = Math.PI / 180;
+const nrm = v => { const n = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / n, v[1] / n, v[2] / n] };
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const crs = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const lerp = (a, b, t) => a + (b - a) * t, cl = (v, a, b) => Math.max(a, Math.min(b, v));
+const sm = x => { x = cl(x, 0, 1); return x * x * (3 - 2 * x) };
+// ---- the sun (c34m.js) and the view ----
+const LD = nrm([-0.42, -0.55, 0.72]), VW = nrm([0, K, 1]), HV = nrm([LD[0] + VW[0], LD[1] + VW[1], LD[2] + VW[2]]);
+const AMB = .62, DIF = .38, TOPB = AMB + DIF * LD[2];
+const MAT = { paint: [.2, 9], metal: [.34, 14], glass: [.75, 30], rubber: [.03, 6], matte: [0, 1] };
+function lit(n, mat) { let b = (AMB + DIF * Math.max(0, dot(n, LD))) / TOPB; if (n[2] < 0) b *= 1 + .3 * n[2]; const m = MAT[mat] || MAT.paint; if (m[0]) b += m[0] * Math.pow(Math.max(0, dot(n, HV)), m[1]); return b }
+const hexRGB = h => { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255] };
+const litC = (hex, b) => { const c = hexRGB(hex); if (b <= 1) return `rgb(${c[0] * b + 14 * (1 - b) | 0},${c[1] * b + 17 * (1 - b) | 0},${c[2] * b + 22 * (1 - b) | 0})`; const k = Math.min(1, (b - 1) * .6); return `rgb(${c[0] + (255 - c[0]) * k | 0},${c[1] + (255 - c[1]) * k | 0},${c[2] + (255 - c[2]) * k | 0})` };
+const mixC = (a, b, f) => { const p = hexRGB(a), q = hexRGB(b); return '#' + p.map((v, i) => Math.round(v + (q[i] - v) * f).toString(16).padStart(2, '0')).join('') };
+const sh = (h, f) => { const c = hexRGB(h), m = f < 0 ? 0 : 255, k = Math.abs(f); return '#' + c.map(v => Math.round(v + (m - v) * k).toString(16).padStart(2, '0')).join('') };   // the game's sh()
+const lum = h => { const c = hexRGB(h); return (c[0] * .299 + c[1] * .587 + c[2] * .114) / 255 };
+// the shadow on the ground (D‑277, one sun for the whole game): a point at height z falls z·(C34.SUN.x, C34.SUN.y) = z·(0.25, 0.32) to the
+// south-east — 0.41 of its height, as every vehicle's (it was z·(0.583, 0.764), its own sun)
+const SUN0 = { x: .25, y: .32 }, SUN = () => (G.C34 && G.C34.SUN) || SUN0;
+
+// ---- the liveries (the game's LIV, the 4 airlines of the sample) and the Hebrew titles (MK_HE) ----
+const LIV = {
+  aurelia: { n: 'אורליה', w: 'classic', k: 'arc', b: '#f4f6f8', u: '#d9dde2', s: '#1f5aa6', t: '#1f5aa6', m: '#f2c230' },
+  sunbeak: { n: 'מקור השמש', w: 'allover', k: 'bird', b: '#f6c518', u: '#d9a60c', s: '#1d1d1f', t: '#1d1d1f', m: '#f6c518', eng: '#1d1d1f' },
+  mirage: { n: 'מיראז׳', w: 'nose', k: 'chev', b: '#ffffff', u: '#e3e3ea', s: '#e0218a', t: '#e0218a', m: '#ffd400', eng: '#e0218a' },
+  skyline: { n: 'קו הרקיע', w: 'spine', k: 'diamond', b: '#eef2f6', u: '#9fb2c6', s: '#3a3f8f', t: '#3a3f8f', m: '#f2c230', eng: '#3a3f8f' }
+};
+
+// ---- the types (metres).  From the game's AC table: L, WS, fw, wc (root chord), tc (tip chord), sw (tip LE sweep offset), the
+// engines (spanwise fraction of the half span), ts; from air_({...}): nl, tl, doors, windows, en (nacelle length × fw), hs, extras.
+// The heights (zb fuselage bottom, H fin top, wz wing root, dihedral, nacelle diameter) — the real class (src). ----
+// R‑14 (4) · the nose of each type from the real aircraft's proportions (side and plan views of the class): x metres aft of the tip →
+// the crown and the chin (metres from the fuselage's centre line) and the half width; the cockpit's panes on the east side (mirrored):
+// [front-bottom, back-bottom, back-top, front-top] as [a metres aft of the tip, θ degrees round the axis — 90 the crown]
+const NOSE = {
+  'AC-NB-01': { src: 'A320', x: [0, .3, .7, 1.2, 2.0, 2.3, 2.65, 3.4, 4.4, 5.6, 7.2], top: [-.3, .35, .72, .95, 1.18, 1.7, 1.88, 1.95, 1.99, 2.0, 2.0], bot: [-.3, -.85, -1.2, -1.5, -1.75, -1.8, -1.86, -1.94, -1.99, -2.0, -2.0], hw: [0, .62, .95, 1.25, 1.58, 1.66, 1.76, 1.89, 1.97, 2.0, 2.0],
+    cab: { zs: 1.24, h: .36, vd: .2, lean: .15, ls: .32, lr: .21, q: .42, sb: .4 },
+    door: 4.4 },
+  'AC-MW-01': { src: '787-9', x: [0, .4, 1, 2, 2.9, 3.3, 3.75, 4.7, 5.7, 7.2, 9.2], top: [-.3, .55, 1.12, 1.62, 1.85, 2.42, 2.68, 2.86, 2.94, 2.98, 2.985], bot: [-.3, -1.02, -1.6, -2.2, -2.5, -2.6, -2.68, -2.8, -2.9, -2.97, -2.985], hw: [0, .86, 1.38, 1.98, 2.32, 2.42, 2.52, 2.68, 2.8, 2.87, 2.885],
+    cab: { zs: 1.86, h: .55, vd: .3, lean: .2, ls: .46, lr: .31, q: .42, sb: .4 },
+    door: 6.9 },
+  'AC-LG-01': { src: '747', x: [0, .4, 1, 2, 3, 4.5, 6, 7.5, 9.6], top: [-.3, .5, 1.1, 1.8, 2.3, 2.75, 2.95, 2.98, 2.98], bot: [-.3, -1.1, -1.7, -2.3, -2.65, -2.9, -2.97, -2.98, -2.98], hw: [0, .85, 1.4, 2.0, 2.4, 2.75, 2.92, 2.98, 2.98],
+    cab: { zs: 4.25, h: .37, vd: .15, lean: .15, ls: .34, lr: .22, q: .55, sb: .3 }, door: 8.6 },
+  'AC-RJ-01': { src: 'E175', x: [0, .25, .55, .95, 1.6, 1.85, 2.15, 2.8, 3.6, 4.5, 5.6], top: [-.4, .15, .48, .7, .9, 1.27, 1.45, 1.57, 1.63, 1.67, 1.675], bot: [-.4, -.75, -1.02, -1.24, -1.44, -1.5, -1.55, -1.62, -1.66, -1.675, -1.675], hw: [0, .45, .72, .95, 1.2, 1.26, 1.33, 1.42, 1.48, 1.5, 1.505],
+    cab: { zs: 1.03, h: .29, vd: .16, lean: .12, ls: .26, lr: .17, q: .42, sb: .4 },
+    door: 3.5 },
+  'AC-TP-01': { src: 'ATR 72', x: [0, .3, .7, 1.2, 1.8, 2.05, 2.35, 3.3, 4.2, 5.0, 6.3], top: [-.45, -.05, .3, .6, .82, 1.1, 1.24, 1.33, 1.38, 1.4, 1.4], bot: [-.45, -.75, -.95, -1.12, -1.25, -1.28, -1.31, -1.38, -1.4, -1.4, -1.4], hw: [0, .38, .62, .85, 1.05, 1.11, 1.18, 1.33, 1.39, 1.4, 1.4],
+    cab: { zs: .87, h: .25, vd: .14, lean: .1, ls: .24, lr: .15, q: .45, sb: .4 },
+    door: 3.4 },
+  // the small types (the owner's photos 15:49–16:17, D‑282: the real type's measures): the cowling and the cabin, the cabin's glazing
+  'AC-PR-01': { src: 'Cessna 172S', x: [0, .12, .28, .6, 1.1, 1.45, 2.15, 3.3, 3.9], top: [0, .1, .2, .28, .34, .38, .72, .72, .56], bot: [0, -.1, -.36, -.46, -.52, -.56, -.56, -.56, -.56], hw: [0, .1, .3, .45, .52, .56, .56, .56, .56],
+    cab: { zs: .40, h: .28, vd: .45, lean: .04, ls: .9, lr: .75, sb: -.8, pil: .09 }, door: 2.4 },
+  'AC-LT-01': { src: 'Beechcraft Baron 58', x: [0, .25, .7, 1.4, 2.0, 2.6, 5.0, 5.8, 6.3], top: [-.15, .05, .2, .3, .34, .7, .7, .62, .61], bot: [-.15, -.38, -.5, -.58, -.6, -.6, -.6, -.6, -.61], hw: [0, .2, .38, .52, .6, .61, .61, .61, .61],
+    cab: { zs: .36, h: .25, vd: .4, lean: .1, ls: .8, lr: .62, n: 4, sb: -.6, pil: .11 }, door: 4.4 },
+  'AC-BJ-01': { src: 'Citation Mustang', x: [0, .3, .8, 1.5, 2.1, 2.7, 3.4], top: [-.15, .05, .2, .32, .38, .74, .78], bot: [-.15, -.35, -.5, -.62, -.7, -.76, -.78], hw: [0, .22, .42, .6, .7, .77, .78],
+    cab: { zs: .40, h: .28, vd: .25, lean: .15, ls: .5, lr: .35, sb: .2, pil: .08 }, door: 3.0 },
+  'AC-CN-01': { src: 'Piaggio P.180', x: [0, .5, 1.2, 2.0, 2.6, 3.3, 4.2], top: [-.2, .1, .35, .48, .55, .9, .975], bot: [-.2, -.45, -.62, -.75, -.82, -.9, -.975], hw: [0, .3, .55, .74, .82, .92, .975],
+    cab: { zs: .55, h: .3, vd: .3, lean: .18, ls: .55, lr: .4, sb: .25, pil: .08 }, door: 3.8 },
+  'AC-AM-01': { src: 'ICON A5', x: [0, .4, 1.0, 1.5, 2.3, 3.0, 3.6, 4.3, 5.2, 6.1, 6.93], top: [-.25, -.02, .12, .18, .6, .62, .56, .42, .4, .44, .5], bot: [-.25, -.48, -.6, -.62, -.65, -.65, -.6, -.3, -.05, .12, .3], hw: [0, .3, .55, .63, .65, .65, .6, .32, .22, .16, .06],
+    cab: { zs: .16, h: .42, vd: .3, lean: .12, ls: .7, n: 1, sb: -.1, pil: .06 }, door: 2.0 },
+  'AC-TB-01': { src: 'Cessna 408 SkyCourier', x: [0, .4, 1.0, 1.6, 2.4, 3.0], top: [-.3, .1, .4, .55, 1.0, 1.05], bot: [-.3, -.6, -.85, -.98, -1.05, -1.05], hw: [0, .45, .8, .98, 1.05, 1.05],
+    cab: { zs: .55, h: .38, vd: .45, lean: .2, ls: .7, lr: .5, sb: -.2, pil: .1 }, door: 3.4 }
+};
+// a smooth curve through a table (Catmull-Rom on the samples; flat outside them)
+function tab(X, Y, x) { const n = X.length; if (x <= X[0]) return Y[0]; if (x >= X[n - 1]) return Y[n - 1]; let i = 0; while (x > X[i + 1]) i++;
+  const t = (x - X[i]) / (X[i + 1] - X[i]), y0 = Y[Math.max(0, i - 1)], y1 = Y[i], y2 = Y[i + 1], y3 = Y[Math.min(n - 1, i + 2)], m1 = (y2 - y0) / 2, m2 = (y3 - y1) / 2;
+  return (2 * t * t * t - 3 * t * t + 1) * y1 + (t * t * t - 2 * t * t + t) * m1 + (-2 * t * t * t + 3 * t * t) * y2 + (t * t * t - t * t) * m2 }
+const TYPES = {
+  'AC-MW-01': { he: 'רחב-גוף דו-מנועי', model: 'TD-789', fit: [1, 1], L: 62.81, WS: 60.12, fw: 5.77, fh: 5.97, wc: 9.6, tc: 1.9, sw: 14.5, nl: .085, tl: .22, zb: 1.95, H: 17.02, wz: 2.6, dih: 6, wt: [1.35, .28], kink: .34,
+    winglet: 0, eng: [.32], ed: 3.3, elen: 1.3, hs: .33, gear: { main: [[4.9, 2]], tire: [.68, .45] }, doors: [.109, .40, .64, .86], win: [.13, .88, 48, [[.37, .42], [.62, .66]]], liv: 'sunbeak',
+    src: 'Boeing 787-9 במקום התלת-מנועי (הבעלים 16:46, סעיף 3 — ברירת מחדל שממתינה לאישור; אותו תפקיד, בלי מטוס נוסף): אורך 62.81 מ׳, מוטה 60.12, גובה 17.02, גוף 5.77 × 5.97; כנף משוכה 32° עם קצה כנף נטוי (בלי כנפון), שני מנועים גדולים מתחת לכנף, זנב רגיל, 4 דלתות לצד, חלונות גדולים. לא בטוח: מוטת המייצב (≈19.8), קוטר המעטפת של המנוע (3.3)' },
+  'AC-LG-01': { he: 'מטוס נוסעים גדול', model: 'TW-350', fit: [1, 0.9839], L: 70.66, WS: 64.44, fw: 5.96, wc: 10, tc: 2, sw: 16, nl: .075, tl: .2, zb: 2.6, H: 19.41, wz: 3.2, dih: 7, wt: [1.5, .32], kink: .34,
+    winglet: 1.8, eng: [.27, .5], ed: 2.9, elen: 1.1, hump: 1.95, hr: [.85, .7], hs: .33, gear: { main: [[5.6, 2], [1.9, 2]], tire: [.62, .42] }, doors: [.121, .40, .62, .86], win: [.095, .9, 56, [[.38, .42], [.6, .64]]], liv: 'mirage',
+    src: 'Boeing 747-400: אורך 70.66 מ׳, מוטה 64.44 מ׳, גובה 19.41 מ׳ (הבעלים 16:46: היה 66.8); קומה עליונה בחלק הקדמי; 4 מנועים מתחת לכנף, winglets נטויים 1.8 מ׳, זנב רגיל' },
+  'AC-NB-01': { he: 'צר-גוף', model: 'TN-320', fit: [0.9911, 0.9666], L: 37.57, WS: 35.8, fw: 4, wc: 6.4, tc: 1.5, sw: 9, nl: .1, tl: .22, zb: 1.65, H: 11.76, wz: 2.1, dih: 6, wt: [.95, .22], kink: .34,
+    winglet: 2.2, eng: [.34], ed: 2.2, elen: 1.15, hs: .36, gear: { main: [[3.8, 1]], tire: [.58, .38] }, doors: [.116, .88], win: [.17, .84, 28, [[.4, .46]]], liv: 'aurelia',
+    src: 'Airbus A320ceo עם sharklets: אורך 37.57 מ׳, מוטה 35.80 מ׳, גובה 11.76 מ׳' },
+  'AC-TP-01': { he: 'טורבו-פרופ אזורי', model: 'TP-72', fit: [0.9854, 1], L: 27.17, WS: 27.05, fw: 2.8, wc: 2.6, tc: 1.7, sw: .5, nl: .12, tl: .26, zb: .95, H: 7.65, high: true, dih: 1.2, wt: [.5, .25], kink: 0,
+    winglet: 0, prop: [.27], ttail: true, hs: .3, gear: { main: [[2.05, 1]], tire: [.45, .3], sponson: true }, doors: [.123, .86], win: [.22, .8, 18, []], liv: 'skyline',
+    src: 'ATR 72-600: אורך 27.17 מ׳, מוטה 27.05 מ׳, גובה 7.65 מ׳; כנף עליונה, זנב T ומדחפים' },
+  // p390 · the rest of the game's fleet (the AC table: L, WS, fw, wc, tc, sw, the engines; the heights of the real class)
+  'AC-RJ-01': { he: 'סילון אזורי', model: 'TR-75', fit: [0.9848, 0.9706], L: 31.68, WS: 26.0, fw: 3.01, fh: 3.35, wc: 4.7, tc: 1.25, sw: 5.6, nl: .1, tl: .24, zb: 1.15, H: 9.86, wz: 1.55, dih: 5, wt: [.6, .16], kink: .32,
+    winglet: 1.3, eng: [.34], ed: 1.5, elen: 1.05, hs: .38, gear: { main: [[2.6, 1]], tire: [.5, .3] }, doors: [.109, .87], win: [.2, .83, 21, [[.43, .47]]], liv: 'aurelia',
+    src: 'Embraer E175 (הבעלים 16:46, סעיף 2 — דגם אחד, כל הצורה ממנו): אורך 31.68 מ׳, מוטה 26.00 (כנף STD), גובה 9.86, גוף 3.01 × 3.35 (בועה כפולה); כנף נמוכה משוכה 23.5° עם כנפונים, שני CF34-8E מתחת לכנף, זנב רגיל עם מייצב על הגוף, 21 חלונות. לא בטוח: מפשק הגלגלים (5.2), מוטת המייצב (≈9.9)' },
+  'AC-QJ-01': { he: 'ארבע-מנועי אזורי', model: 'TQ-410', fit: [0.9946, 1], L: 31.0, WS: 26.21, fw: 3.56, wc: 5.4, tc: 1.6, sw: 4, nl: .1, tl: .22, zb: 1.0, H: 8.59, high: true, dih: -3, wt: [.6, .2], kink: 0,
+    winglet: 0, eng: [.22, .4], ed: 1.25, elen: 1.1, ttail: true, hs: .4, gear: { main: [[2.4, 1]], tire: [.5, .3], sponson: true }, doors: [.22, .86], win: [.17, .84, 26, [[.4, .46]]], liv: 'aurelia', src: 'BAe 146-300 / Avro RJ100: אורך 31.0 מ׳, מוטה 26.21 מ׳, גובה 8.59 מ׳, גוף 3.56 מ׳ (הבעלים 16:46: היה 35 × 31); כנף עליונה, 4 מנועים, זנב T' },
+  'AC-CG-01': { he: 'מטוס מטען', model: 'TF-76F', fit: [0.9876, 1], L: 54.94, WS: 47.57, fw: 5.03, wc: 8.6, tc: 2.0, sw: 12, nl: .09, tl: .22, zb: 1.6, H: 15.85, wz: 2.4, dih: 6, wt: [1.15, .28], kink: .34,
+    winglet: 0, eng: [.34], ed: 2.9, elen: 1.25, hs: .39, cargo: true, gear: { main: [[4.65, 2]], tire: [.62, .42] }, doors: [.12], liv: 'aurelia', src: 'Boeing 767-300F: אורך 54.94 מ׳, מוטה 47.57 מ׳, גובה 15.85 מ׳; כנף נמוכה משוכה 31.5°, שני מנועים מתחת לכנף, זנב רגיל, בלי חלונות נוסעים (הבעלים 18:21: לא כנף עליונה וזנב T)' },
+  'AC-HC-01': { he: 'מטוס מטען כבד', model: 'TH-40F', fit: [0.9715, 1], L: 69.1, WS: 73.3, fw: 6.4, wc: 10, tc: 3, sw: 10, nl: .07, tl: .2, zb: 1.6, H: 21.08, high: true, dih: -3, wt: [1.5, .4], kink: 0,
+    winglet: 0, eng: [.22, .46], ed: 2.8, elen: 1.1, hs: .36, cargo: true, gear: { main: [[3.4, 5]], tire: [.62, .42], sponson: true }, doors: [.1], liv: 'aurelia', src: 'Antonov An-124-100: אורך 69.1 מ׳, מוטה 73.3 מ׳, גובה 21.08 מ׳; כנף עליונה עם שיפוע כלפי מטה, 4 מנועים מתחת לכנף, זנב רגיל (הבעלים 18:21: לא T)' },
+  'AC-BJ-01': { he: 'סילון עסקים', model: 'TJ-60', fit: [0.9642, 1], L: 12.37, WS: 13.16, fw: 1.55, wc: 2.4, tc: 1.0, sw: .5, nl: .14, tl: .28, zb: .45, H: 4.09, wz: .55, dih: 4, wt: [.32, .11], kink: .25, wingU: .096,
+    winglet: 0, reng: { at: .72, ed: .58, elen: 1.75 }, ttail: true, hs: .36, gear: { main: [[1.6, 1]], tire: [.3, .17] }, doors: [.2], win: [.31, .5, 4, []], liv: 'aurelia',
+    src: 'Cessna Citation Mustang 510 (Textron Aviation): אורך 12.37 מ׳, מוטה 13.16 מ׳, גובה 4.09 מ׳, רוחב התא 1.40 מ׳ מבפנים; שני מנועים על הגוף מאחור' },
+  'AC-PR-01': { he: 'מטוס קל חד-מנועי', model: 'TA-12', fit: [1, 1], L: 8.28, WS: 11.0, fw: 1.12, wc: 1.63, tc: 1.12, sw: 0, nl: .16, tl: .32, zb: .62, H: 2.72, high: true, dih: 1.7, wt: [.2, .13], kink: .5, wingU: .24,
+    winglet: 0, nprop: { r: .965 }, strut: true, hs: .31, gear: { main: [[1.27, 1]], tire: [.24, .14] }, doors: [], win: null, liv: 'aurelia',
+    src: 'Cessna 172S (Textron Aviation): אורך 8.28 מ׳, מוטה 11.00 מ׳, גובה 2.72 מ׳, רוחב התא 1.0 מ׳ מבפנים, מדחף 1.93 מ׳; כנף גבוהה עם תומכות' },
+  'AC-LT-01': { he: 'דו-מנועי קל', model: 'TB-58', fit: [0.9934, 1], L: 9.09, WS: 11.53, fw: 1.22, wc: 2.13, tc: .95, sw: .45, nl: .2, tl: .32, zb: .55, H: 2.97, wz: .62, dih: 6, wt: [.28, .12], kink: 0, wingU: .148,
+    winglet: 0, prop: [.28], pr: .99, pn: .34, hs: .42, gear: { main: [[1.46, 1]], tire: [.3, .17] }, doors: [], win: null, liv: 'aurelia',
+    src: 'Beechcraft Baron 58 (Textron Aviation): אורך 9.09 מ׳, מוטה 11.53 מ׳, גובה 2.97 מ׳, מדחפים 1.98 מ׳, רוחב מסלול 2.92 מ׳; כנף נמוכה, שני מנועים בכנף' },
+  'AC-CN-01': { he: 'מטוס קנרד עם מדחפים דוחפים', model: 'TV-180', fit: [1, 1], L: 14.41, WS: 14.03, fw: 1.95, wc: 1.65, tc: .7, sw: .35, nl: .16, tl: .3, zb: .6, H: 3.97, wz: 1.2, dih: 2, wt: [.22, .1], kink: 0, wingU: -.069,
+    winglet: 0, prop: [.27], pusher: true, pr: 1.08, pn: .34, canard: { u: .36, span: 1.9, chord: .65 }, ttail: true, hs: .3, gear: { main: [[1.4, 1]], tire: [.3, .18] }, doors: [.22], win: [.33, .55, 6, []], liv: 'aurelia',
+    src: 'Piaggio P.180 Avanti II (Piaggio Aerospace): אורך 14.41 מ׳, מוטה 14.03 מ׳, גובה 3.97 מ׳, מדחפים דוחפים 2.16 מ׳; כנף קדמית קטנה (canard), כנף ראשית מאחור וזנב T' },
+  'AC-AM-01': { he: 'מטוס אמפיבי', model: 'TS-12', fit: [0.9714, 1], L: 7.01, WS: 10.61, fw: 1.3, wc: 1.5, tc: 1.05, sw: .1, nl: .2, tl: .35, zb: .42, H: 2.47, high: true, dih: 1, wt: [.2, .12], kink: 0, wingU: .154,
+    winglet: 0, cpush: { r: .84, at: .64, z: .6 }, seawing: { at: .3, span: .85, chord: 1.4, z: -.32 }, hull: true, ttail: true, hs: .31, gear: { main: [[.95, 1]], tire: [.22, .13] }, doors: [], win: null, liv: 'aurelia',
+    src: 'ICON A5 (ICON Aircraft, iconaircraft.com/a5): אורך 7.01 מ׳, מוטה 10.61 מ׳, גובה 2.47 מ׳ (הבעלים 18:21); גוף סירה, כנף גבוהה, מדחף דוחף אחד מאחורי תא הטייס, "כנפי ים" בצדי הגוף וזנב T' },
+  'AC-TB-01': { he: 'מטען קטן דו-מנועי', model: 'TK-20F', fit: [0.952, 1], L: 16.8, WS: 22.02, fw: 2.1, wc: 2.0, tc: 1.3, sw: .2, nl: .1, tl: .3, zb: .9, H: 6.3, high: true, dih: 2, wt: [.3, .18], kink: .4, wingU: .105, box: 4.5,
+    winglet: 0, prop: [.32], pr: 1.4, pn: .45, strut: true, cargo: true, cargoAt: .6, ttail: true, hs: .3, gear: { main: [[1.7, 1]], tire: [.42, .25], sponson: true }, doors: [], win: null, liv: 'aurelia',
+    src: 'Cessna 408 SkyCourier (Textron Aviation) במקום Skyvan (ברירת מחדל של המתאם 16:15, לאישור הבעלים): אורך 16.80 מ׳, מוטה 22.02 מ׳, גובה 6.30 מ׳ (Wikipedia); גוף קופסתי, כנף גבוהה עם תומכות, שני טורבו-פרופ, כן נסע קבוע, זנב אחד עם מייצב בראשו (התמונות של הבעלים 16:36); 3 מכולות LD3. לא בטוח: רוחב הגוף (2.1)' }
+};
+
+// ======================================================================================================================================
+// the fuselage: rings along a (metres aft of the nose tip).  ring(a) → {zm, rv, rs, hump}; the point at angle θ (0 = east side,
+// 90° = crown): (rs·cos θ, yN − a, zm + rv·sin θ + hump·g(sin θ))
+function fusShape(t) {
+  const L = t.L, R = t.fw / 2, Rz = (t.fh || t.fw) / 2, zc = t.zb + Rz, nl = t.nl * L, tlv = t.tl * L * 1.3, zTip = zc - .12 * Rz, NR = NOSE[t.id],   // Rz: the half height (t.fh, the E175's 3.35 on 3.01)
+  xN = NR ? NR.x[NR.x.length - 1] : 0;
+  // D‑278 (the owner 09:21, "the front must be real"): an ogive — the plan narrows over 1.6 nose lengths to a rounder point, the crown
+  // rises over 1.9 (the cockpit's slope), the chin over 1.0
+  const At = 1.9 * nl, Ab = 1.0 * nl, As = 1.6 * nl, aT = L - tlv, ze = zc + .4 * Rz, re = .15 * R;
+  const sq = (x, A, e) => x >= A ? 1 : Math.pow(Math.max(0, 1 - Math.pow(1 - x / A, e || 2.3)), .5);
+  const hr = t.hr || [.2, 2.2], hump = a => !t.hump ? 0 : t.hump * sm((a - hr[0] * nl) / (hr[1] * nl)) * (1 - sm((a - .3 * L) / (.1 * L)));
+  const f = a => {
+    let top, bot, rs;
+    if (NR && a < xN) { top = zc + tab(NR.x, NR.top, a); bot = zc + tab(NR.x, NR.bot, a); rs = tab(NR.x, NR.hw, a); if (a < .02) { rs = Math.max(rs, .0) } }   // R‑14: the real nose
+    else if (a < aT) { top = zTip + (zc + Rz - zTip) * sq(a, At, 2.1); bot = zTip - (zTip - (zc - Rz)) * sq(a, Ab, 2.4); rs = R * sq(a, As, 1.75) }
+    else { const s = (a - aT) / (L - aT); top = zc + Rz + (ze + re - (zc + Rz)) * Math.pow(s, 1.8); bot = zc - Rz + (ze - re - (zc - Rz)) * Math.pow(s, .8); rs = R + (re - R) * Math.pow(s, 1.3) }
+    return { zm: (top + bot) / 2, rv: (top - bot) / 2, rs, hump: hump(a) };
+  };
+  // D‑281 (option 1): round the cockpit the upper half of the section is broader (a superellipse, q < 1), so the sill runs across the
+  // nose in a very shallow V — the crown itself (q⁰ = 1) unchanged; ahead and aft of the cockpit as approved
+  if (t.hump && NR && NR.cab) f.hgW = 1;
+  if (NR && NR.cab && NR.cab.q) { const zs = zc + NR.cab.zs; let aC = 0; while (aC < L * .5) { const r = f(aC); if (r.zm + r.rv + r.hump >= zs) break; aC += .02 }
+    const q0 = NR.cab.q; f.q = a => lerp(1, lerp(q0, 1, sm((a - aC - 2.2) / 2)), sm((a - aC + 1.1) / .9)) }
+  if (t.box) { const n = t.box, nl2 = nl * 1.6; f.box = a => a < nl2 ? 2 + (n - 2) * sm(a / nl2) : a > L - tlv * .7 ? 2 + (n - 2) * (1 - sm((a - (L - tlv * .7)) / (tlv * .7))) : n }   // round at the nose and the tail's end
+  f.R = R; f.Rz = Rz; f.zc = zc; f.nl = nl; f.At = At; f.As = As; f.aT = aT; f.aC = Math.max(At, Ab, As, xN, t.hump ? .42 * L : 0); f.L = L; f.NR = NR;
+  return f;
+}
+const hg = s => sm((s - .4) / .6);   // the upper deck: a ridge on the crown
+const hgW = s => sm((s - .12) / .7);   // D‑281: the 747's upper deck as broad as the real one (its cockpit ~3.5 m wide)
+function fusP(F, yN, a, th) { const r = F(a), q = F.q ? F.q(a) : 1; let s = Math.sin(th), c = Math.cos(th);
+  if (F.box) { const e = 2 / F.box(a); c = Math.sign(c) * Math.pow(Math.abs(c), e); s = Math.sign(s) * Math.pow(Math.abs(s), e) }   // a box-like section (t.box): a superellipse
+  return [r.rs * c, yN - a, r.zm + r.rv * (s > 0 && q !== 1 ? Math.pow(s, q) : s) + (s > 0 ? r.hump * (F.hgW ? hgW(s) : hg(s)) : 0)] }
+function fusN(F, yN, a, th) {   // the outward normal
+  const e = .004, p = fusP(F, yN, a, th), pa = fusP(F, yN, a + .05, th), pt = fusP(F, yN, a, th + e);
+  let n = nrm(crs(sub(pt, p), sub(pa, p))); const r = F(a); if (dot(n, [p[0], 0, p[2] - r.zm]) < 0) n = [-n[0], -n[1], -n[2]]; return n;
+}
+// D‑278: the point of the nose at height z in the direction phi (degrees; 0 ahead, 90 abeam) seen from the axis at the full-width
+// station a = F.As, on the side sd (+1 east) → { p, a, th } (null when the nose does not reach that height there)
+function nosePt(F, yN, phi, z, sd) {
+  const at = a => { const r = F(a); let s = (z - r.zm) / (r.rv || 1e-6); if (s > 1 || s < -1) return null; const th = Math.asin(s), x = r.rs * Math.cos(th); return { a, th, ph: Math.atan2(x, F.As - a) / D2R } };
+  const A1 = F.As * 1.8; let best = null, prev = null;
+  for (let i = 0; i <= 240; i++) { const a = A1 * i / 240, q = at(a); if (!q) { prev = null; continue }
+    if (prev && (prev.ph - phi) * (q.ph - phi) <= 0) { let lo = prev, hi = q; for (let k = 0; k < 24; k++) { const m = at((lo.a + hi.a) / 2); if (!m) break; if ((lo.ph - phi) * (m.ph - phi) <= 0) hi = m; else lo = m } best = lo; break }
+    prev = q }
+  if (!best) return null;
+  const th = sd > 0 ? best.th : Math.PI - best.th;
+  return { p: fusP(F, yN, best.a, th), a: best.a, th };
+}
+// the livery on the body: colour at (a, θ) and the breaks along a for the strip at θ (so a boundary is a smooth curve)
+function liveryFns(t, lv, F) {
+  const L = t.L, nl = F.nl, tl = t.tl * L, tail0 = L - 1.35 * tl;
+  const tailAt = th => tail0 + .14 * tl * Math.max(0, Math.sin(th));   // the tail section's front edge bulges aft on the crown (the game's curve)
+  const w = lv.w, bA0 = 1.1 * nl, bP = (tail0 - bA0) / 8, beak = w === 'allover' ? mixC(lv.s, lv.b, .42) : lv.s;
+  // fieldfix 17.11 (הבעלים 12.11 01:40: "המטוסים ב-3/4 קיבלו את הצבעים הישנים והפחות צבעוניים של חברות התעופה, ולא מה שיש להם במבט הרגיל"):
+  // המקור — הצבעים זהים (LIV של 013, אותו מספר), אבל הצייר של 3/4 צייר ארבעה סגנונות בגרסה הישנה והפשוטה: dots בלי הנקודות, split — רק החצי התחתון,
+  // swoosh — פס דק, spine — פס צר בלי הקווים. עכשיו כמו הצייר מלמעלה (013:wrap): הנקודות הצבעוניות (lv.d), האחורי בצבע הזנב עם התפר, הגל שעולה
+  // מהבטן אל השדרה ונמשך עד הזנב עם הקו בצבע הסמל, הפס הרחב בשדרה עם שני קווי הסמל. FFLIV.on = false — הישן.
+  const FF = (G.FFLIV || (G.FFLIV = { on: true })).on !== false, R = t.fw / 2, D = lv.d || [lv.s, lv.t, lv.m];
+  const DOTS = []; if (FF && w === 'dots') { let i = 0; for (let a = .6 * nl; a < tail0 - .2 * R; a += .9 * R) for (let k = 0; k < 8; k++) { const r = 1.3 * R * (.14 + .08 * ((i * 7) % 3)), da = ((i * 13) % 5 - 2) * R * .06; DOTS.push({ a: a + da, th: (-20 + 32 * k) * D2R, r: Math.max(.22, r), c: D[i % D.length] }); i++ } }
+  const dotsAt = (() => { const M = new Map(); return th => { let q = M.get(th); if (q) return q; q = []; for (const d of DOTS) { let e = th - d.th; e = Math.atan2(Math.sin(e), Math.cos(e)); const v = R * e / d.r; if (Math.abs(v) < 1) q.push({ d, ha: d.r * Math.sqrt(1 - v * v) }) } M.set(th, q); return q } })();
+  const spS = a => -20 + 110 * sm((a - .12 * L) / (.54 * L));   // swoosh: הגבול (מעלות) לאורך הגוף — מהבטן ליד האף אל השדרה ב-0.66 L
+  const spA = d => { if (d <= -20) return .12 * L; if (d >= 90) return .66 * L; let lo = .12 * L, hi = .66 * L; for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (spS(m) < d) lo = m; else hi = m } return (lo + hi) / 2 };
+  const seam = th => .47 * L - .05 * L * Math.cos(th);   // split: התפר המעוקל (האחורי בצבע הזנב)
+  const col = (a, th) => {
+    const s = Math.sin(th), c = Math.abs(Math.cos(th)), deg = Math.asin(cl(s, -1, 1)) / D2R;
+    if (a > tailAt(th)) return lv.t;
+    if (FF) {
+      if (w === 'dots') { for (const q of dotsAt(th)) if (Math.abs(a - q.d.a) < q.ha) return q.d.c; if (s < -.5) return lv.u; return lv.b }
+      if (w === 'split') { const z = seam(th); if (a > z) return lv.t; if (a > z - .28 * R && a < z - .12 * R) return lv.s; if (s < -.5) return lv.u; return lv.b }
+      if (w === 'swoosh') { if (a > .12 * L) { const b = spS(a); if (deg < b) return lv.s; if (deg < b + 7) return lv.m } if (s < -.5) return lv.u; return lv.b }
+      if (w === 'spine') { if (a > .5 * nl && s > 0 && c < .46) return lv.s; if (a > .5 * nl && s > 0 && c < .54) return lv.m; if (deg > 5 && deg < 9) return lv.s; if (s < -.45) return lv.u; return lv.b }
+    }
+    if (w === 'allover') { if (a < .09 * nl) return beak;   // the beak: a small soft tip (the owner 14:39 (4): smaller, softer; it was .16 · nl, black)
+      if (deg > 4 && deg < 8) return lv.s; if (s < -.45) return lv.u; return lv.b }
+    if (w === 'nose') { const nb = 1.15 * nl - .12 * nl * Math.max(0, s); if (a < nb) return lv.s; if (deg > 5 && deg < 8) return lv.s; if (s < -.5) return lv.u; return lv.b }
+    if (w === 'spine') { if (a > .8 * nl && c < .36 && s > 0) return lv.s; if (deg > 5 && deg < 9) return lv.s; if (s < -.45) return lv.u; return lv.b }
+    // p390 · the game's other styles: bands (two stripes along the side), split (the lower half in the second colour), swoosh (a band
+    // that rises from the belly at the nose to the crown at the tail), dots (as classic; the confetti is left out)
+    if (w === 'bands') { const u = a - bA0 - .9 * Math.cos(th) * t.fw / 2; if (a > bA0 && a < tail0 - .2 * bP && u > 0 && (u % bP) < .42 * bP) return lv.s; if (s < -.5) return lv.u; return lv.b }   // the game's: slanted stripes across the body
+    if (w === 'split') { if (a > .9 * nl && s < -.08) return lv.s; return lv.b }
+    if (w === 'swoosh') { const q = a / L, d0 = -35 + 85 * q; if (a > nl && deg > d0 && deg < d0 + 10) return lv.s; if (s < -.5) return lv.u; return lv.b }
+    // classic: the cheat line under the windows, a thin one above
+    if (a > 1.3 * nl && deg > 5 && deg < 13) return lv.s; if (a > 1.6 * nl && deg > 29 && deg < 31.5) return lv.s; if (s < -.5) return lv.u; return lv.b;
+  };
+  const breaks = th => { const s = Math.sin(th), B = [tailAt(th)];
+    if (FF && w === 'dots') { for (const q of dotsAt(th)) B.push(q.d.a - q.ha, q.d.a + q.ha); return B }
+    if (FF && w === 'split') { const z = seam(th); B.push(z, z - .28 * R, z - .12 * R); return B }
+    if (FF && w === 'swoosh') { const d = Math.asin(cl(s, -1, 1)) / D2R; B.push(.12 * L, spA(d), spA(d - 7)); return B }
+    if (FF && w === 'spine') { B.push(.5 * nl); return B }
+    if (w === 'allover') B.push(.09 * nl); if (w === 'nose') B.push(1.15 * nl - .12 * nl * Math.max(0, s)); if (w === 'spine') B.push(.8 * nl); if (w === 'classic') B.push(1.3 * nl, 1.6 * nl);
+    if (w === 'bands') { const o = .9 * Math.cos(th) * t.fw / 2; for (let k = 0; k < 9; k++) B.push(bA0 + o + k * bP, bA0 + o + (k + .42) * bP) }
+    return B };
+  return { col, breaks, tailAt };
+}
+
+// ======================================================================================================================================
+// a face: { P: [[x,y,z] …], c: hex, m: material, n?: normal, g?: [nA, nB] (a gradient across the face from edge 0–3 to edge 1–2),
+//           both?: no back-face test, a?: alpha, line?: stroke only (w metres) }
+function face(P, c, m, o) { return Object.assign({ P, c, m: m || 'paint' }, o || {}) }
+const orient = (f, d) => { if (dot(faceN(f.P), d) < 0) f.P.reverse(); return f };
+const faceN = P => { let n = [0, 0, 0]; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length]; n[0] += (p[1] - q[1]) * (p[2] + q[2]); n[1] += (p[2] - q[2]) * (p[0] + q[0]); n[2] += (p[0] - q[0]) * (p[1] + q[1]) } return nrm(n) };
+
+// the fuselage as strips: per θ facet, along a; merged where the section is constant and the colour does not change
+function buildFuselage(t, lv, yN, F, LF, opt) {
+  const faces = [], N = opt && opt.lod ? 40 : 72, L = t.L, base = [];
+  const nA = 18, step = a => a < F.aC ? Math.max(.12, F.nl / 12) : a > F.aT ? Math.max(.15, (L - F.aT) / 16) : 1.2;
+  for (let a = 0; a < L - 1e-6;) { base.push(a); a = Math.min(L, a + step(a)) } base.push(L);
+  for (let k = 0; k < N; k++) {
+    const t0 = -Math.PI / 2 + k * TAU / N, t1 = t0 + TAU / N, tm = (t0 + t1) / 2;
+    const A = base.concat(LF.breaks(tm).filter(x => x > 0 && x < L)).sort((p, q) => p - q);
+    let run = null;
+    const flush = () => { if (!run) return; const P = [fusP(F, yN, run.a0, t0), fusP(F, yN, run.a0, t1), fusP(F, yN, run.a1, t1), fusP(F, yN, run.a1, t0)], am = (run.a0 + run.a1) / 2;
+      faces.push(face(P, run.c, 'paint', { g: [fusN(F, yN, am, t0), fusN(F, yN, am, t1)], g4: [fusN(F, yN, run.a0, t0), fusN(F, yN, run.a0, t1), fusN(F, yN, run.a1, t1), fusN(F, yN, run.a1, t0)], fus: 1 })); run = null };   // g4: the corners' normals (the owner 14:39 (1): the light smooth along the body too)
+    for (let i = 0; i + 1 < A.length; i++) {
+      const a0 = A[i], a1 = A[i + 1]; if (a1 - a0 < 1e-4) continue;
+      const c = LF.col((a0 + a1) / 2, tm), flat = a0 >= F.aC - 1e-6 && a1 <= F.aT + 1e-6;
+      if (run && run.flat && flat && run.c === c && Math.abs(run.a1 - a0) < 1e-6) { run.a1 = a1; continue }
+      flush(); run = { a0, a1, c, flat };
+    }
+    flush();
+  }
+  return faces;
+}
+
+// a body of revolution along y (a nacelle): rings (y, ρ) around the axis (x0, ·, z0); strips with gradients
+function buildRevolve(x0, z0, rings, col, mat, N) {
+  const faces = []; N = N || 40;
+  for (let k = 0; k < N; k++) {
+    const t0 = k * TAU / N, t1 = t0 + TAU / N;
+    for (let i = 0; i + 1 < rings.length; i++) {
+      const [ya, ra, ca] = rings[i], [yb, rb] = rings[i + 1];
+      const P = [[x0 + ra * Math.cos(t0), ya, z0 + ra * Math.sin(t0)], [x0 + ra * Math.cos(t1), ya, z0 + ra * Math.sin(t1)], [x0 + rb * Math.cos(t1), yb, z0 + rb * Math.sin(t1)], [x0 + rb * Math.cos(t0), yb, z0 + rb * Math.sin(t0)]];
+      const rp = (rb - ra) / ((yb - ya) || 1e-6), nn = th => nrm([Math.cos(th), -rp, Math.sin(th)]);
+      faces.push(face(P, ca || col, mat, { g: [nn(t0), nn(t1)] }));
+    }
+  }
+  return faces;
+}
+// a disc facing +y (south) at y, centre (x0, z0): ellipse on the screen
+function disc(x0, y, z0, r, col, mat, o) { const P = []; for (let i = 0; i < 28; i++) { const t = i / 28 * TAU; P.push([x0 + r * Math.cos(t), y, z0 + r * Math.sin(t)]) } return face(P, col, mat, Object.assign({ n: [0, 1, 0] }, o || {})) }
+
+// a lofted plate along a span (wing, tailplane, winglet): stations [{x, yLE, yTE, z, t}] (x = |span position| × side), chord profile
+const CH = [0, .03, .12, .3, .55, .8, 1], TOP = [0, .3, .44, .5, .42, .27, .05], BOT = [0, .26, .36, .38, .3, .17, .03];
+function buildPlate(st, col, o) {
+  o = o || {}; const faces = [];
+  const pt = (s, i, up) => { const y = lerp(s.yLE, s.yTE, CH[i]); return [s.x, y, s.z + (up ? TOP[i] : -BOT[i]) * s.t] };
+  for (let j = 0; j + 1 < st.length; j++) {
+    const A = st[j], B = st[j + 1];
+    for (let i = 0; i + 1 < CH.length; i++) {
+      faces.push(orient(face([pt(A, i, 1), pt(B, i, 1), pt(B, i + 1, 1), pt(A, i + 1, 1)], col, o.mat || 'paint'), [0, i === 0 ? .5 : 0, 1]));
+      faces.push(orient(face([pt(A, i + 1, 0), pt(B, i + 1, 0), pt(B, i, 0), pt(A, i, 0)], sh(col, -.12), o.mat || 'paint'), [0, i === 0 ? .5 : 0, -1]));
+    }
+  }
+  // the ends (the root is inside the fuselage; the tip cap)
+  const cap = s => { const U = [], D = []; for (let i = 0; i < CH.length; i++) { U.push(pt(s, i, 1)); D.push(pt(s, i, 0)) } return U.concat(D.reverse()) };
+  faces.push(face(cap(st[st.length - 1]), sh(col, -.06), 'paint', { both: false }));
+  return faces;
+}
+// the same plate standing up (fin): stations [{z, yLE, yTE, t}] at x = 0
+function buildFin(st, col) {
+  const faces = [];
+  const pt = (s, i, side) => [side * (side > 0 ? TOP[i] : BOT[i]) * s.t * (BOT[i] > 0 || TOP[i] > 0 ? 1 : 1), lerp(s.yLE, s.yTE, CH[i]), s.z];
+  const half = (s, i, side) => [side * .5 * s.t * (i === 0 ? 0 : [0, .55, .82, .97, 1, .82, .2][i]), lerp(s.yLE, s.yTE, CH[i]), s.z];
+  for (let j = 0; j + 1 < st.length; j++) {
+    const A = st[j], B = st[j + 1];
+    for (let i = 0; i + 1 < CH.length; i++) for (const sd of [1, -1]) {
+      faces.push(orient(face([half(A, i, sd), half(A, i + 1, sd), half(B, i + 1, sd), half(B, i, sd)], col, 'paint'), [sd, i === 0 ? .3 : 0, 0]));
+    }
+  }
+  const T = st[st.length - 1], U = [], D = []; for (let i = 0; i < CH.length; i++) { U.push(half(T, i, 1)); D.push(half(T, i, -1)) }
+  faces.push(orient(face(U.concat(D.reverse()), sh(col, .06), 'paint'), [0, 0, 1]));
+  void pt; return faces;
+}
+// an oriented box: the plan polygon (4 corners, any order around), z bottom / top per corner
+function boxFaces(plan, zb, zt, cols, o) {
+  o = o || {}; const faces = [], n = plan.length, Zb = i => Array.isArray(zb) ? zb[i] : zb, Zt = i => Array.isArray(zt) ? zt[i] : zt;
+  // orientation: make the plan counter-clockwise in (x, y) with y south → use the signed area
+  let ar = 0; for (let i = 0; i < n; i++) { const p = plan[i], q = plan[(i + 1) % n]; ar += p[0] * q[1] - q[0] * p[1] }
+  const pl = ar > 0 ? plan : plan.slice().reverse(), zbb = ar > 0 ? i => Zb(i) : i => Zb(n - 1 - i), ztt = ar > 0 ? i => Zt(i) : i => Zt(n - 1 - i);
+  for (let i = 0; i < n; i++) { const j = (i + 1) % n, p = pl[i], q = pl[j];
+    faces.push(face([[p[0], p[1], zbb(i)], [q[0], q[1], zbb(j)], [q[0], q[1], ztt(j)], [p[0], p[1], ztt(i)]], cols.side || cols.top, o.mat || 'matte', { side: i })) }
+  faces.push(face(pl.map((p, i) => [p[0], p[1], ztt(i)]), cols.top, o.mat || 'matte', { top: 1 }));
+  return faces;
+}
+// a vertical cylinder: centre, radius, z0..z1 (the drum of the bridge, a column)
+function vcyl(cx, cy, r, z0, z1, col, mat, N) {
+  const faces = []; N = N || 24;
+  for (let i = 0; i < N; i++) { const a = i / N * TAU, b = (i + 1) / N * TAU;
+    faces.push(face([[cx + r * Math.cos(a), cy + r * Math.sin(a), z0], [cx + r * Math.cos(b), cy + r * Math.sin(b), z0], [cx + r * Math.cos(b), cy + r * Math.sin(b), z1], [cx + r * Math.cos(a), cy + r * Math.sin(a), z1]], col, mat, { g: [[Math.cos(a), Math.sin(a), 0], [Math.cos(b), Math.sin(b), 0]] })) }
+  const T = []; for (let i = 0; i < N; i++) { const a = i / N * TAU; T.push([cx + r * Math.cos(a), cy + r * Math.sin(a), z1]) }
+  faces.push(face(T, sh(col, .05), mat, { n: [0, 0, 1] }));
+  return faces;
+}
+
+// ======================================================================================================================================
+// the aircraft: pieces in local metres (origin at the nose gear on the ground, nose to the south = +y)
+// ======================================================================================================================================
+// D‑281 (the owner 13:50, a standing rule: every detail where the 3D body and the real type's proportions put it, every direction
+// from the one model in the one projection, no fix for one direction): the cockpit's windows as one fixed shape on the nose's surface — every view comes from the one body in the one projection (x, y − K·z), only what faces the camera drawn.
+//  * the sill: one straight line along the cockpit at the height zs over the axis (a small fall aft, sl, allowed);
+//  * the stations along the body (metres from the nose tip): the windscreen from the centre post (where the crown reaches the sill)
+//    up to aw on the crown; the pillars [bottom, top] between the windscreen and the opening window, between it and the rear one,
+//    and the rear one's end — every pillar leans aft;
+//  * the upper edge of every side window just under the roof line of its station (m below the crown in the profile; the rear one
+//    m3); the windscreen's from the crown at aw down to the first pillar's top;
+//  * per type (NOSE[id].cab) or, for the other types, in fuselage radii from the crown's crossing of the sill.
+function cabOf(t, NR, F) {
+  // the owner 14:39 (3): the row lower (h ×0.8) and its wrap to the sides shorter (ls ×0.75, lr ×0.7) — the NOSE tables.
+  // D‑281 (option 1, the coordinator 14:15 for the owner; agent 3 14:10): one low row (~11 % of the nose's width) on the surface — no
+  // cut, the outline smooth: the sill zs one height for the windscreen and the side windows; the windscreen's two panes from the centre
+  // post to a corner only vd aft of it (a very shallow V), up to zs + h on the steep part of the crown; then on each side a short
+  // opening window and a shorter rear one (ls, lr), their pillars leaning aft (lean); the rear one lower (80 %)
+  const R = F.R, C = NR && NR.cab ? NR.cab : {};
+  return { zs: C.zs != null ? C.zs : .62 * R, h: C.h != null ? C.h : .22 * R, vd: C.vd != null ? C.vd : .075 * R, lean: C.lean != null ? C.lean : .1 * R, ls: C.ls != null ? C.ls : .28 * R, lr: C.lr != null ? C.lr : .2 * R, sb: C.sb != null ? C.sb : .4, n: C.n || 2, pil: C.pil };
+}
+function cockpit3D(F, yN, t, NR, decor) {
+  const R = F.R, zc = F.zc, C = cabOf(t, NR, F), sc = NR && NR.cab ? 1 : R / 2, post = .022 * sc, pil = C.pil || .028 * sc, pad = .02 * sc;   // the owner 14:39 (2): thin frame and posts (a light aircraft's pillars: cab.pil)
+  const crown = a => { const r = F(a); return r.zm + r.rv + r.hump - zc };
+  const cross = z => { let a = 0; while (a < F.L * .5 && crown(a) < z) a += .05; let lo = Math.max(0, a - .05), hi = a; for (let k = 0; k < 20; k++) { const m = (lo + hi) / 2; if (crown(m) < z) lo = m; else hi = m } return hi };
+  const aC = cross(C.zs), aT = cross(C.zs + C.h), zS = C.zs, zH = C.zs + C.h;
+  // the stations: the windscreen's corner, then n side windows (the first ls long, the others lr) — the airliners 2, a light aircraft's cabin more
+  const PB = []; { let b = aC + C.vd; PB.push([b, b + C.lean]); for (let k = 1; k <= C.n; k++) { b += k === 1 ? C.ls : C.lr; PB.push([b, b + C.lean * (1 + .15 * k)]) } }
+  const b1 = PB[0][0], b2 = PB[1][0], b3 = PB[PB.length - 1][0], aw = aT;
+  const zSill = () => zS;
+  const thAt = (a, z) => { const r = F(a), Z = zc + z, zt = r.zm + r.rv + r.hump; if (Z >= zt) return Math.PI / 2; if (Z <= r.zm - r.rv) return -Math.PI / 2;
+    const q = F.q ? F.q(a) : 1; let lo = -1, hi = 1; for (let k = 0; k < 22; k++) { const m = (lo + hi) / 2, zz = r.zm + r.rv * (m > 0 && q !== 1 ? Math.pow(m, q) : m) + (m > 0 ? r.hump * (F.hgW ? hgW(m) : hg(m)) : 0); if (zz < Z) lo = m; else hi = m } return Math.asin((lo + hi) / 2) };
+  const pt = (a, z, sd, xMin) => { let th = thAt(a, z); if (xMin) { const r = F(a), tm = Math.acos(Math.min(1, xMin / Math.max(1e-3, r.rs))); th = Math.min(th, tm) } const T = sd > 0 ? th : Math.PI - th; return { p: fusP(F, yN, a, T), n: fusN(F, yN, a, T) } };
+  // the side windows' lower edge: one horizontal line sb·h above the windscreen's (agent 3 14:30: cut level, on aft, not down); the rear one's top a little lower
+  const pane = k => { const [p0, q0] = k === 0 ? [aC, aT] : PB[k - 1], [p1, q1] = PB[k], zb = k === 0 ? zS : zS + C.sb * C.h, zt = k === C.n ? zH - .12 * C.h : zH;
+    return { B: u => [lerp(p0, p1, u), zb], T: u => [lerp(q0, q1, u), zt], k } };
+  const GL = ['#2a4256', '#57748c', '#c4d9e8'], info = { panes: [], aRef: aC, bend: 0, cab: { aC, aw, PB, zs: C.zs, sl: 0, h: C.h } };
+  for (const sd of [1, -1]) {
+    const frame = [], glass = [], extra = [];
+    for (let k = 0; k <= C.n; k++) {
+      const P = pane(k), len = Math.hypot(P.B(1)[0] - P.B(0)[0], .5 * (P.T(1)[0] - P.T(0)[0])) || 1, n = k === 0 ? 8 : 5;
+      for (const grow of [true, false]) {
+        const du0 = grow ? 0 : (k === 0 ? 0 : pil / len), du1 = grow ? -.01 : pil / len, dwb = grow ? -pad : pil * .8, dwt = grow ? 0 : pil * .8 + pad, xMin = k === 0 && !grow ? post : 0;
+        const at = (u, w) => { const B = P.B(u), T = P.T(u), hb = (T[1] - B[1]) || 1, wb = dwb / hb, wt = 1 - dwt / hb, W = lerp(wb, wt, w), a = lerp(B[0], T[0], W);
+          if (grow && k === 0 && u <= 1e-9) { const p = fusP(F, yN, a, Math.PI / 2); return { p, n: fusN(F, yN, a, Math.PI / 2) } }   // the frame closes on the centre post
+          return pt(a, lerp(B[1], T[1], W), sd, xMin) };
+        const U = i => lerp(du0, 1 - du1, i / n), outl = [];
+        const nm = at(.5, .5).n;
+        for (let i = 0; i < n; i++) { const u0 = U(i), u1 = U(i + 1), um = (u0 + u1) / 2, Q = [at(u0, 0), at(um, 0), at(u1, 0), at(u1, 1), at(um, 1), at(u0, 1)], c = at(um, .5);
+          let PP = Q.map(q => q.p); if (dot(faceN(PP), c.n) < 0) PP = PP.reverse();
+          if (grow) frame.push(face(PP, '#28323b', 'matte', { n: c.n, noSeam: 1 }));
+          else glass.push(face(PP, GL[1], 'glass', { g: [nm, nm], grad: GL, gax: [at(um, 0).p, at(um, 1).p], noSeam: 1 })) }
+        if (!grow) { for (let i = 0; i <= n; i++) outl.push(at(U(i), 0)); for (let j = 1; j <= 4; j++) outl.push(at(U(n), j / 4)); for (let i = n; i >= 0; i--) outl.push(at(U(i), 1)); for (let j = 3; j >= 1; j--) outl.push(at(U(0), j / 4));
+          info.panes.push({ sd, k, far: false, P: outl.map(q => q.p), N: outl.map(q => q.n), AZ: [P.B(0), P.B(1), P.T(1), P.T(0)] }) }
+        if (!grow && k === 0) for (const f of [.3, .72]) { const A = at(f, .02), Bq = at(f - .08, .25); extra.push({ line: 1, P: [A.p, Bq.p], c: '#1b2229', w: .022 * sc, n: A.n }) }
+        // the sky in the glass: a soft slanted streak across the pane (on its surface)
+        if (!grow) { const S = [at(.16, .08), at(.34, .08), at(.56, .94), at(.38, .94)]; let SP = S.map(q => q.p.map((v, i) => v + q.n[i] * .004)); const cn = at(.36, .5).n; if (dot(faceN(SP), cn) < 0) SP = SP.reverse();
+          extra.push(face(SP, '#ffffff', 'matte', { n: cn, a: .2, noSeam: 1 })) }
+      }
+    }
+    decor.push(...frame, ...glass, ...extra);
+  }
+  return info;
+}
+function bandFor(m, h) {
+  const I = m.info, dec = [], BD = cockpit3D(I.F, I.yN, I.t, NOSE[I.id], dec), body = m.pieces.find(p => p.kind === 'body');
+  const pieces = m.pieces.map(p => p !== body ? p : Object.assign({}, p, { decor: p.decor.slice(0, I.bandAt).concat(dec, p.decor.slice(I.bandAt)) }));
+  return { pieces, info: Object.assign({}, I, { band: BD }) };
+}
+// the owner 16:46 (1): the model as drawn takes exactly the real length and span — the fin's and the T-tail's trailing edge past the tail
+// cone and the winglets' cant outward used to add up to 3.6% (HC-01 2.5 m, NB-01 1.2 m of span); the first build of a type measures its plan
+// box and the type is built from then on with L and WS scaled so that the box is L × WS (one factor per type: the row's fit [kL, kW], measured
+// offline so that the game pays nothing; a row without it is measured on its first build and kept in FIT)
+const FIT = {};
+function fitOf(id, livKey, opt, t0) { const m = buildRaw(id, livKey, Object.assign({}, opt, { lod: 1 }), t0); let xa = 1e9, xb = -1e9, ya = 1e9, yb = -1e9;
+  for (const p of m.pieces) { for (const f of p.faces || []) for (const q of f.P) { xa = Math.min(xa, q[0]); xb = Math.max(xb, q[0]); ya = Math.min(ya, q[1]); yb = Math.max(yb, q[1]) } }
+  const kL = t0.L / Math.max(.1, yb - ya), kW = t0.WS / Math.max(.1, xb - xa);
+  return FIT[id] = { kL: Math.abs(kL - 1) < .002 ? 1 : Math.min(1.05, kL), kW: Math.abs(kW - 1) < .002 ? 1 : Math.min(1.05, kW) } }
+function build(id, livKey, opt) {
+  opt = opt || {}; const t0 = TYPES[id]; if (!t0) throw new Error('A34: unknown type ' + id); t0.id = id;
+  const f = opt.raw ? { kL: 1, kW: 1 } : t0.fit ? { kL: t0.fit[0], kW: t0.fit[1] } : FIT[id] || fitOf(id, livKey, opt, t0);   // t0.fit: measured once (dev/fleet_dims.js checks it)
+  return buildRaw(id, livKey, opt, f.kL === 1 && f.kW === 1 ? t0 : Object.assign({}, t0, { L: t0.L * f.kL, WS: t0.WS * f.kW, Lr: t0.L, WSr: t0.WS })) }
+function buildRaw(id, livKey, opt, t) {
+  opt = opt || {};
+  const lv = livKey && typeof livKey === 'object' ? livKey : LIV[livKey || t.liv], L = t.L, R = t.fw / 2, HS = t.WS / 2, yN = .17 * L, yC = -.33 * L, x0 = .06 * L, TF = t.boom ? Object.assign({}, t, { L: t.L * t.boom.pod }) : t, F = fusShape(TF), LF = liveryFns(TF, lv, F), NRV = opt.lod ? 24 : 44;
+  const ofU = u => yC + u * L;   // game frame u (fraction of L from the centre, + forward) → local y
+  const pieces = [];
+  const piece = (kind, faces, extra) => { const p = Object.assign({ kind, faces, decor: [] }, extra || {}); pieces.push(p); return p };
+  const topAt = a => { const r = F(a); return r.zm + r.rv + r.hump };
+  // ---- the body ----
+  const body = buildFuselage(TF, lv, yN, F, LF, opt);
+  const decor = [];
+  // the cockpit's windows (D‑281): one low row fixed on the nose — cockpit3D() below
+  const bandAt = decor.length, BD = opt.noBand ? null : cockpit3D(F, yN, t, NOSE[id], decor);   // p390: noBand — the game adds the band of each direction (bandFor)
+  // the nose's gloss (R‑14 (2)): a soft highlight along the upper curve of the nose
+  { const nl = F.nl, a0 = .12 * nl, a1 = Math.min(F.aC * .55, 1.1 * nl), P = [];
+    for (let i = 0; i <= 8; i++) P.push(fusP(F, yN, lerp(a0, a1, i / 8), 101 * D2R)); for (let i = 8; i >= 0; i--) P.push(fusP(F, yN, lerp(a0, a1, i / 8), 118 * D2R));
+    decor.push(face(P.map(p => [p[0], p[1], p[2] + .01]), '#ffffff', 'matte', { n: [0, 0, 1], a: .16, noSeam: 1 })) }
+  // the front door, the bridge's (R‑14 (3)): the port side's first door — a panel, its outline, its window
+  { const NR = NOSE[id], a = NR ? NR.door : (t.doors && t.doors[0] || .2) * L, P = [], W = [];
+    for (const d of [4, 14, 24, 34]) P.push(fusP(F, yN, a - .5, d * D2R)); for (const d of [34, 24, 14, 4]) P.push(fusP(F, yN, a + .5, d * D2R));
+    decor.push(face(P.map(p => [p[0], p[1], p[2] + .01]), '#000000', 'matte', { n: fusN(F, yN, a, 19 * D2R), a: .07, noSeam: 1 }));
+    decor.push({ line: 1, P: P.concat([P[0]]).map(p => [p[0], p[1], p[2] + .015]), c: 'rgba(20,30,40,.75)', w: .07 });
+    for (const [d, da] of [[24, -.18], [24, .18], [30, .18], [30, -.18]]) W.push(fusP(F, yN, a + da, d * D2R));
+    decor.push(face(W.map(p => [p[0], p[1], p[2] + .02]), '#22384e', 'glass', { n: fusN(F, yN, a, 27 * D2R) })) }
+  // the radome's seam (D‑278): a thin line round the nose cone, ahead of the windscreen
+  { const P = []; for (let d = 8; d <= 172; d += 8) P.push(fusP(F, yN, .40 * F.nl - .05 * F.nl * Math.abs(Math.cos(d * D2R)), d * D2R).map((v, i) => i === 2 ? v + .015 : v)); decor.push({ line: 1, P, c: 'rgba(40,52,64,.24)', w: .03 }) }
+  // the passenger windows (both sides, just above the widest line) and the doors (outlines)
+  if (t.cargo) { const a = (t.cargoAt || .16) * L, P = []; for (const d of [8, 40, 62]) P.push(fusP(F, yN, a - 1.8, d * D2R)); for (const d of [62, 40, 8]) P.push(fusP(F, yN, a + 1.8, d * D2R)); decor.push({ line: 1, P: P.concat([P[0]]), c: 'rgba(28,38,50,.65)', w: .08 }) }   // p390: the cargo door
+  if (t.win) { const [w0, w1, n, skip] = t.win, ww = Math.min(.3, (w1 - w0) * L / n * .5);
+    for (let i = 0; i < n; i++) { const u = w0 + (w1 - w0) * i / (n - 1); if (skip.some(([p, q]) => u > p && u < q)) continue; const a = u * L;
+      for (const [d0, d1] of [[17, 26], [154, 163]]) decor.push(face([fusP(F, yN, a - ww / 2, d0 * D2R), fusP(F, yN, a + ww / 2, d0 * D2R), fusP(F, yN, a + ww / 2, d1 * D2R), fusP(F, yN, a - ww / 2, d1 * D2R)], '#22384e', 'glass', { n: fusN(F, yN, a, (d0 + d1) / 2 * D2R) })) } }
+  // the owner 14:46 (1): the upper deck's windows (the 747) — a row on both sides along the hump, the passenger windows' size and pitch,
+  // from a little aft of the cockpit's side windows to before the hump falls; each on the hump's side wall, its centre 1.1 m under the
+  // hump's top (the upper cabin), found on the section of its station — the model's own surface (D‑281)
+  if (t.hump && t.win && BD) { const [w0, w1, n] = t.win, pitch = (w1 - w0) * L / (n - 1), ww = Math.min(.3, pitch * .5), hh = .47;
+    let aE = BD.cab.PB[2][0]; while (aE < L * .5 && F(aE).hump < .97 * t.hump) aE += .05; while (aE < L * .5 && F(aE).hump >= .97 * t.hump) aE += .05;   // where the hump begins to fall
+    const a0 = BD.cab.PB[2][0] + 1.0, a1 = aE - .7, nU = Math.max(0, Math.floor((a1 - a0) / pitch) + 1);
+    const thAt = (a, z) => { let lo = 0, hi = Math.PI / 2; for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (fusP(F, yN, a, m)[2] < z) lo = m; else hi = m } return (lo + hi) / 2 };
+    for (let i = 0; i < nU; i++) { const a = a0 + i * pitch, zt = topAt(a), tc = thAt(a, zt - 1.1), d = Math.hypot(...sub(fusP(F, yN, a, tc + .01), fusP(F, yN, a, tc))) / .01, dt = hh / 2 / Math.max(.2, d);
+      for (const sd of [1, -1]) { const th = v => sd > 0 ? v : Math.PI - v, Q = [fusP(F, yN, a - ww / 2, th(tc - dt)), fusP(F, yN, a + ww / 2, th(tc - dt)), fusP(F, yN, a + ww / 2, th(tc + dt)), fusP(F, yN, a - ww / 2, th(tc + dt))];
+        const nn = fusN(F, yN, a, th(tc)); let PP = Q.map(p => p.map((v, k) => v + nn[k] * .01)); if (dot(faceN(PP), nn) < 0) PP = PP.reverse();
+        decor.push(face(PP, '#22384e', 'glass', { n: nn, noSeam: 1 })) } } }
+  for (const [di, u] of (t.doors || []).entries()) { const a = u * L; for (const sd of [1, -1]) { if (di === 0 && sd > 0) continue; const P = [], th = d => (sd > 0 ? d : 180 - d) * D2R;
+    for (const d of [3, 12, 22, 33]) P.push(fusP(F, yN, a - .55, th(d))); for (const d of [33, 22, 12, 3]) P.push(fusP(F, yN, a + .55, th(d)));
+    decor.push({ line: 1, P, c: 'rgba(28,38,50,.7)', w: .07 }) } }
+  // the titles on the crown and the model behind the cockpit (the game's mkBody), the airline's mark on the tail section
+  const dark = lum(lv.b) < .45, nameCol = Math.abs(lum(lv.s) - lum(lv.b)) > .3 ? lv.s : Math.abs(lum(lv.t) - lum(lv.b)) > .3 ? lv.t : (dark ? '#f4f6f8' : '#1d2730');
+  const aT = .37 * L, zT = topAt(aT);
+  decor.push({ text: lv.n, at: [0, yN - aT, zT], size: R * .82, maxW: .34 * L, col: nameCol, halo: dark ? 'rgba(0,0,0,.35)' : 'rgba(255,255,255,.55)' });
+  decor.push({ text: t.model, at: [-R * .55, yN - F.nl * 1.9, topAt(F.nl * 1.9) - .3], size: R * .3, maxW: F.nl * 1.4, col: dark ? '#f4f6f8' : '#1d2730', light: 1 });
+  decor.push({ mark: lv.k, at: [0, yN - (L - 1.35 * t.tl * L + .5 * t.tl * L), topAt(L - .8 * t.tl * L)], size: R * .75, col: lv.m });
+  // the tri-jet's third engine at the fin root (the game: fan(-L*.35, 0, L*.17, hw*1.05))
+  const extra = [];
+  let finZ0 = topAt(.8 * L) - .25;
+  if (t.tailEng) {
+    const ec = ofU(-.35), n = .17 * L, r = t.fw * .26, z0 = topAt(.85 * L) + r * .55;
+    const rings = [[ec + n / 2, r * .9], [ec + n / 2 - .25, r], [ec + n * .1, r * 1.04], [ec - n * .3, r * .95], [ec - n / 2, r * .7]];
+    extra.push(...buildRevolve(0, z0, rings, lv.eng || lv.t, 'metal', 40));
+    extra.push(disc(0, ec + n / 2 + .02, z0, r * .9, '#c9ced3', 'metal'), disc(0, ec + n / 2 + .04, z0, r * .74, '#16191c', 'matte'), disc(0, ec + n / 2 + .3, z0, r * .17, '#6f7880', 'metal'));
+    finZ0 = z0 + r * .7;
+  }
+  // the fin (from u −.30 to −.50, the class height, swept ~35°); fin thickness × opt.finThick (the readability option)
+  if (!t.boom) { const ttail = t.ttail, y0 = ofU(-.30), y1 = ofU(-.50), c0 = y0 - y1, span = t.H - finZ0, swp = Math.tan((ttail ? 30 : 36) * D2R), ct = c0 * (ttail ? .62 : .42), th = (opt.finThick || 1) * .115;
+    const st = [0, .5, 1].map(f => { const z = finZ0 + span * f, yLE = y0 - span * f * swp, c = lerp(c0, ct, f); return { z, yLE, yTE: yLE - c, t: c * th } });
+    extra.push(...buildFin(st, lv.t));
+    const T = st[2]; decor.push({ line: 1, P: [[0, lerp(st[0].yLE, st[0].yTE, .68), st[0].z + .3], [0, lerp(T.yLE, T.yTE, .68), T.z - .1]], c: 'rgba(0,0,0,.3)', w: .08, late: 1 });
+    // the T-tail (the turboprop): the tailplane on top of the fin
+    if (ttail) { const zt = t.H - .15, rc = .07 * L, tcc = .04 * L, sw = .05 * L, hs = HS * t.hs, yl = T.yLE + .4;
+      for (const sd of [1, -1]) extra.push(...buildPlate([{ x: sd * .1, yLE: yl, yTE: yl - rc, z: zt, t: .16 }, { x: sd * hs, yLE: yl - sw, yTE: yl - sw - tcc, z: zt + .1, t: .08 }], lv.t)) }
+  }
+  // the high wing's centre box (over the fuselage) belongs to the body
+  let wingSt = null;
+  const yRLE = ofU(t.wingU != null ? t.wingU : .06), yRTE = yRLE - t.wc, yTLE = yRLE - t.sw, yTTE = yTLE - t.tc, yr = .41 * t.fw;
+  const wingLE = x => lerp(yRLE, yTLE, (x - yr) / (HS - yr)), wingTE = x => x <= yr + (HS - yr) * t.kink ? yRTE : lerp(yRTE, yTTE, ((x - yr) / (HS - yr) - t.kink) / (1 - t.kink));
+  const wingZ = x => (t.high ? t.zb + t.fw + .25 : t.wz) + Math.max(0, x - R) * Math.tan(t.dih * D2R);
+  const wingT = x => lerp(t.wt[0], t.wt[1], cl((x - R) / (HS - R), 0, 1));
+  const wingCol = lv.w === 'allover' ? sh(lv.b, -.04) : '#dfe3e7';
+  // (the small types: drawn after the cabin's windows — the wing lies on the roof, over the windows' upper edge)
+  if (t.high) { const s0 = { x: -R, yLE: wingLE(R), yTE: wingTE(R), z: wingZ(R), t: wingT(R) }, s1 = Object.assign({}, s0, { x: R }), B = buildPlate([s0, s1], wingCol);
+    if (NOSE[id] && NOSE[id].cab && t.L < 20) decor.push(...B.map(f => Object.assign(f, { late: 1 }))); else extra.push(...B) }
+  piece('body', body.concat(extra), { decor });
+  // ---- the wings (each side a piece), with the trailing-edge kink, the dihedral and the winglet ----
+  for (const sd of [1, -1]) {
+    const xs = (t.high ? [R, R + (HS - R) * .5, HS] : [R * .72, yr + (HS - yr) * t.kink, HS]).map(x => Math.max(x, 0));
+    const st = xs.map(x => ({ x: sd * x, yLE: wingLE(x), yTE: wingTE(x), z: wingZ(x), t: wingT(x) }));
+    const f = buildPlate(st, wingCol), dec = [];
+    // the flaps, the aileron, the slats (lines on the upper surface)
+    const onTop = (x, c) => { const y = lerp(wingLE(x), wingTE(x), c), i = c < .3 ? 2 : c < .55 ? 3 : c < .8 ? 4 : 5; return [sd * x, y, wingZ(x) + TOP[i] * wingT(x) + .02] };
+    const xa = xs[0] + .3, xk = xs[1], xt = HS - .4;
+    dec.push({ line: 1, P: [onTop(xa, .74), onTop(xk, .72), onTop(xt, .7)], c: 'rgba(30,40,50,.38)', w: .06 });
+    for (const x of [xa + (xk - xa) * .5, xk, xk + (xt - xk) * .45, xk + (xt - xk) * .72]) dec.push({ line: 1, P: [onTop(x, .72), onTop(x, .98)], c: 'rgba(30,40,50,.3)', w: .05 });
+    if (!t.high) dec.push({ line: 1, P: [onTop(xa + 1, .12), onTop(xt - .5, .12)], c: 'rgba(30,40,50,.26)', w: .05, dash: [.9, .6] });
+    if (t.winglet) { const xT = HS, yl = wingLE(HS) - t.tc * .1, zt = wingZ(HS), h = t.winglet, cant = Math.tan(14 * D2R), c0 = t.tc * .85, c1 = t.tc * .38, swp = h * .7;
+      const P0 = [sd * xT, yl, zt], P1 = [sd * (xT + h * cant), yl - swp, zt + h], P2 = [sd * (xT + h * cant), yl - swp - c1, zt + h], P3 = [sd * xT, yl - c0, zt];
+      const off = v => [v[0] - sd * .07, v[1], v[2]], off2 = v => [v[0] + sd * .07, v[1], v[2]];
+      f.push(orient(face([P0, P1, P2, P3].map(off), lv.t, 'paint'), [-sd, 0, .25]), orient(face([P0, P1, P2, P3].map(off2), sh(lv.t, -.1), 'paint'), [sd, 0, -.25]));
+      f.push(orient(face([off(P0), off2(P0), off2(P1), off(P1)], sh(lv.t, .1), 'paint'), [0, 1, .3])) }
+    if (t.strut) { const xs2 = HS * .52; dec.push({ line: 1, P: [[sd * R * .95, wingLE(R) - t.wc * .5, t.zb + .35], [sd * xs2, lerp(wingLE(xs2), wingTE(xs2), .3), wingZ(xs2) - wingT(xs2) * .4]], c: '#8a9198', w: .07 }) }   // p390
+    wingSt = st;
+    piece('wing', f, { decor: dec, side: sd });
+  }
+  // ---- the engines: turbofans under the wing (pylons), or turboprop nacelles with the propeller ----
+  if (t.eng) for (const f0 of t.eng) for (const sd of [1, -1]) {
+    const x = f0 * HS, n = t.fw * t.elen, r = t.ed / 2, yc = (x0 - t.sw * f0 + t.fw * .45) + yC, zw = wingZ(x) - wingT(x) * .3, z0 = zw - r * .62;
+    const rings = [[yc + n / 2, r * .86, '#d4d8dc'], [yc + n / 2 - .12, r * .97], [yc + n / 2 - .45, r], [yc + n * .05, r * .99], [yc - n * .32, r * .88], [yc - n * .44, r * .74, '#8a9198'], [yc - n / 2, r * .66, '#8a9198']];
+    const fc = buildRevolve(sd * x, z0, rings, lv.eng || sh(lv.b, -.03), 'metal', NRV);
+    // the pylon (a thin wall to the wing) and the core cone behind
+    fc.unshift(...boxFaces([[sd * x - .18, yc + n * .1], [sd * x + .18, yc + n * .1], [sd * x + .18, yc - n * .75], [sd * x - .18, yc - n * .75]], z0 + r * .6, zw + .05, { top: sh(lv.eng || lv.b, -.15), side: sh(lv.eng || lv.b, -.2) }, { mat: 'paint' }));
+    fc.unshift(...buildRevolve(sd * x, z0, [[yc - n / 2 + .05, r * .5, '#5c636a'], [yc - n / 2 - n * .2, r * .12]], '#5c636a', 'metal', 24));
+    fc.push(disc(sd * x, yc + n / 2 + .01, z0, r * .86, '#c9ced3', 'metal'), disc(sd * x, yc + n / 2 + .03, z0, r * .72, '#16191c', 'matte'), disc(sd * x, yc + n / 2 + .25, z0, r * .16, '#7a838b', 'metal', { spin: 1 }));
+    piece('engine', fc, { side: sd });
+  }
+  if (t.prop) for (const f0 of t.prop) for (const sd of [1, -1]) {
+    const x = f0 * HS, zw = wingZ(x), r = t.pn || .62, z0 = zw - (t.pn ? t.pn * .4 : .3), sc = (t.pn || .62) / .62, yF = t.pusher ? wingLE(x) + .3 * sc : wingLE(x) + 2.3 * sc, yB = t.pusher ? wingTE(x) - 1.4 * sc : wingTE(x) - 1.6 * sc;
+    const rings = [[yF, r * .55], [yF - .4, r * .9], [yF - 1.2, r], [yB + 1.2, r * .95], [yB, r * .45]];
+    const fc = buildRevolve(sd * x, z0, rings, lv.b, 'paint', 32);
+    // the propeller: six blades in the disc (parked), the spinner
+    const pr = t.pr || 1.96, yP = t.pusher ? yB - .3 * sc : yF + .35 * sc, dn = t.pusher ? -1 : 1;
+    for (let i = 0; i < 6; i++) { const a = (i / 6) * TAU + .3, b = a + .1, c0 = .3;
+      fc.push(face([[sd * x + c0 * Math.cos(a - .25), yP, z0 + c0 * Math.sin(a - .25)], [sd * x + pr * Math.cos(a), yP, z0 + pr * Math.sin(a)], [sd * x + pr * Math.cos(b), yP, z0 + pr * Math.sin(b)], [sd * x + c0 * Math.cos(b + .25), yP, z0 + c0 * Math.sin(b + .25)]], '#2a2e33', 'metal', { n: [0, 1, 0], both: true })) }
+    fc.push(...buildRevolve(sd * x, z0, [[yP + dn * .7 * sc, .02], [yP + dn * .45 * sc, .2 * sc], [yP, .32 * sc]], lv.b, 'paint', 20));
+    piece('engine', fc, { side: sd });
+  }
+  // ---- p390 · the odd ones: rear-mounted jets, the nose propeller, the tandem push-pull pair, the canard, wing floats, the strut, the
+  // twin booms (their fins and the tailplane between them) ----
+  const zcB = t.zb + R;
+  if (t.reng) for (const sd of [1, -1]) { const e = t.reng, r = e.ed / 2, n = e.elen, yc = yN - e.at * L, x = sd * (R + r + .18), z0 = zcB + .25 * R;
+    const fc = buildRevolve(x, z0, [[yc + n / 2, r * .86, '#d4d8dc'], [yc + n / 2 - .12, r * .98], [yc + n * .1, r], [yc - n * .3, r * .9], [yc - n / 2, r * .7, '#8a9198']], lv.eng || sh(lv.b, -.03), 'metal', NRV);
+    fc.unshift(...boxFaces([[sd * R * .7, yc + .3], [x, yc + .3], [x, yc - .6], [sd * R * .7, yc - .6]], z0 - .12, z0 + .12, { top: sh(lv.b, -.08), side: sh(lv.b, -.16) }, { mat: 'paint' }));
+    fc.push(disc(x, yc + n / 2 + .01, z0, r * .86, '#c9ced3', 'metal'), disc(x, yc + n / 2 + .03, z0, r * .7, '#16191c', 'matte'));
+    piece('engine', fc, { side: sd }) }
+  if (t.nprop) { const r0 = F(0.02), z0 = r0.zm, yP = yN + .12, pr = t.nprop.r, fc = [];
+    fc.push(...buildRevolve(0, z0, [[yP + .42, .02], [yP + .22, .15], [yP, .22]], '#d8dce0', 'metal', 20));
+    for (const a of [.4, .4 + Math.PI]) fc.push(face([[.06 * Math.cos(a - 1.4), yP + .05, z0 + .06 * Math.sin(a - 1.4)], [pr * Math.cos(a), yP + .05, z0 + pr * Math.sin(a)], [pr * Math.cos(a + .12), yP + .05, z0 + pr * Math.sin(a + .12)], [.06 * Math.cos(a + 1.6), yP + .05, z0 + .06 * Math.sin(a + 1.6)]], '#2a2e33', 'metal', { n: [0, 1, 0], both: true }));
+    extra.push(...fc) }
+  if (t.tandem) { const yl = wingLE(R), yt = wingTE(R), zw = wingZ(0) + wingT(0) * .5, z0 = zw + 1.0, r = .42, pr = t.tandem.r, yF = yl + .9, yB = yt - .9, fc = [];
+    fc.push(...boxFaces([[-.12, yl - .4], [.12, yl - .4], [.12, yt + .4], [-.12, yt + .4]], zw, z0 - r * .6, { top: sh(lv.b, -.1), side: sh(lv.b, -.2) }, { mat: 'paint' }));
+    fc.push(...buildRevolve(0, z0, [[yF, r * .5], [yF - .3, r * .9], [(yF + yB) / 2, r], [yB + .3, r * .9], [yB, r * .5]], lv.b, 'paint', 24));
+    for (const [yP, dn] of [[yF + .1, 1], [yB - .1, -1]]) { for (const a of [0, 2.09, 4.19]) fc.push(face([[.05 * Math.cos(a - 1.4), yP, z0 + .05 * Math.sin(a - 1.4)], [pr * Math.cos(a), yP, z0 + pr * Math.sin(a)], [pr * Math.cos(a + .12), yP, z0 + pr * Math.sin(a + .12)], [.05 * Math.cos(a + 1.6), yP, z0 + .05 * Math.sin(a + 1.6)]], '#2a2e33', 'metal', { n: [0, dn, 0], both: true }));
+      fc.push(...buildRevolve(0, z0, [[yP + dn * .4, .02], [yP + dn * .2, .14], [yP, .2]], lv.b, 'paint', 16)) }
+    piece('engine', fc, { side: 0 }) }
+  if (t.cpush) { const c = t.cpush, yP = yN - c.at * L, z0 = F.zc + c.z, pr = c.r, fc = [];
+    fc.push(...buildRevolve(0, z0, [[yP + 1.25, .06], [yP + 1.0, .3], [yP + .45, .33], [yP + .12, .2], [yP + .02, .09]], lv.b, 'paint', 20));
+    for (const a of [0, 2.09, 4.19]) fc.push(face([[.05 * Math.cos(a - 1.4), yP, z0 + .05 * Math.sin(a - 1.4)], [pr * Math.cos(a), yP, z0 + pr * Math.sin(a)], [pr * Math.cos(a + .1), yP, z0 + pr * Math.sin(a + .1)], [.05 * Math.cos(a + 1.6), yP, z0 + .05 * Math.sin(a + 1.6)]], '#2a2e33', 'metal', { n: [0, -1, 0], both: true }));
+    piece('engine', fc, { side: 0 }) }
+  if (t.seawing) { const c = t.seawing, yl = yN - c.at * L, z = F.zc + c.z; for (const sd of [1, -1])
+    piece('stab', buildPlate([{ x: sd * R * .85, yLE: yl, yTE: yl - c.chord, z, t: .22 }, { x: sd * (R + c.span), yLE: yl - .35, yTE: yl - c.chord * .8, z: z + .12, t: .1 }], lv.w === 'allover' ? sh(lv.b, -.06) : sh(lv.b, -.03)), { side: sd }) }
+  if (t.canard) { const c = t.canard, yl = ofU(c.u), z = zcB - .15 * R; for (const sd of [1, -1])
+    piece('stab', buildPlate([{ x: sd * R * .8, yLE: yl, yTE: yl - c.chord, z, t: c.chord * .1 }, { x: sd * (R + c.span), yLE: yl - .25, yTE: yl - .25 - c.chord * .6, z: z + .05, t: c.chord * .07 }], lv.w === 'allover' ? sh(lv.b, -.06) : '#e3e6e9'), { side: sd }) }
+  if (t.floats) for (const sd of [1, -1]) { const x = sd * HS * .82, zw = wingZ(Math.abs(x)) - wingT(Math.abs(x)) * .3, z0 = zw - .95, yc = (wingLE(Math.abs(x)) + wingTE(Math.abs(x))) / 2;
+    const fc = buildRevolve(x, z0, [[yc + .8, .05], [yc + .55, .2], [yc, .24], [yc - .7, .12]], sh(lv.b, -.04), 'paint', 16);
+    fc.unshift(...boxFaces([[x - .04, yc + .2], [x + .04, yc + .2], [x + .04, yc - .2], [x - .04, yc - .2]], z0 + .15, zw, { top: '#6c737a', side: '#5a6067' }, { mat: 'metal' }));
+    piece('engine', fc, { side: sd }) }
+  if (t.boom) { const xb = t.boom.x * HS, yW = wingTE(xb), yT = yN - L, r0 = .32, z0 = wingZ(xb) - .25, hs = xb + .6;
+    for (const sd of [1, -1]) { const fc = buildRevolve(sd * xb, z0, [[yW + 1.2, r0 * .9], [yW, r0], [yT + 2.2, r0 * .75], [yT, r0 * .5]], lv.b, 'paint', 16);
+      const y0 = yT + 2.2, y1 = yT + .2, st = [0, 1].map(f => { const z = z0 + r0 + (t.H - z0 - r0) * f, yLE = y0 - f * 1.0, c = lerp(y0 - y1, (y0 - y1) * .6, f); return { z, yLE, yTE: yLE - c, t: c * .12 } });
+      fc.push(...buildFin(st, lv.t).map(f => Object.assign(f, { P: f.P.map(q => [q[0] + sd * xb, q[1], q[2]]) })));
+      piece('body2', fc, { side: sd }) }
+    const zt = t.H - .2, yl = yT + 1.9; piece('stab', buildPlate([{ x: -hs, yLE: yl, yTE: yl - 1.3, z: zt, t: .12 }, { x: hs, yLE: yl, yTE: yl - 1.3, z: zt, t: .12 }], lv.t), { side: 0 }) }
+  // ---- the low tailplanes ----
+  if (!t.ttail && !t.boom) for (const sd of [1, -1]) {
+    const yl = ofU(-.36), rc = .1 * L, tcc = .045 * L, sw = .07 * L, hs = HS * t.hs, a = yN - yl, r = F(a), z = r.zm + r.rv * .15, x0s = Math.max(.2, r.rs * .55);
+    const st = [{ x: sd * x0s, yLE: yl, yTE: yl - rc, z, t: rc * .11 }, { x: sd * hs, yLE: yl - sw, yTE: yl - sw - tcc, z: z + (hs - x0s) * Math.tan(6 * D2R), t: tcc * .09 }];
+    piece('stab', buildPlate(st, lv.w === 'allover' ? sh(lv.b, -.06) : '#e3e6e9'), { side: sd });
+  }
+  // ---- the gear: tyres (dark discs seen edge-on), legs, bogies ----
+  const tyre = (x, y, r, w) => ({ tyre: 1, x, y, r, w });
+  const gearPiece = (list, legs) => piece('gear', [], { tyres: list, legs });
+  { const [tr, tw] = t.gear.tire, ymg = yC + x0 - t.wc * .55;
+    for (const [gx, nAx] of t.gear.main) for (const sd of [1, -1]) {
+      const T = [], X = sd * gx; for (let i = 0; i < nAx; i++) { const y = ymg + (nAx > 1 ? (i - (nAx - 1) / 2) * tr * 2.3 : 0); for (const dx of [-.42, .42]) T.push(tyre(X + dx * (tr * 1.25), y, tr, tw)) }
+      const top = t.high ? t.zb + .6 : Math.min(wingZ(gx) - .2, t.zb + 1.4);
+      gearPiece(T, [{ x: X, y: ymg, z0: tr * .9, z1: top, r: .17 }]);
+    }
+    if (t.gear.centre) { const T = [], y0 = ymg - 1.2; for (let i = 0; i < t.gear.centre; i++) for (const dx of [-.5, .5]) T.push(tyre(dx, y0 + (i - .5) * tr * 2.3, tr, tw)); gearPiece(T, [{ x: 0, y: y0, z0: tr, z1: t.zb + .3, r: .16 }]) }
+    const nr = tr * .72; gearPiece([tyre(-.32, 0, nr, tw * .9), tyre(.32, 0, nr, tw * .9)], [{ x: 0, y: 0, z0: nr, z1: t.zb + .2, r: .1 }]);
+    if (t.gear.sponson) for (const sd of [1, -1]) { const f = boxFaces([[sd * R * .7, ymg + 1.8], [sd * (R + .55), ymg + 1.5], [sd * (R + .55), ymg - 1.9], [sd * R * .7, ymg - 2.2]], t.zb + .1, t.zb + 1.2, { top: sh(lv.b, -.06), side: sh(lv.b, -.12) }, { mat: 'paint' }); piece('body2', f) }
+  }
+  // the piece's bounding values (local metres): yMax (the south edge), zMin (the lowest point), x range; the sort key comes from them
+  for (const p of pieces) bounds(p);
+  const info = { id, t, lv, L, R, HS, yN, yC, yTail: yN - L, wingLE, wingTE, wingZ, wingT, finTop: t.H, F, x0, band: BD, bandAt };
+  return { pieces, info };
+}
+
+// ======================================================================================================================================
+// p390 · the helicopters (the game's AC-HL table: L, the rotor's diameter, the main and accent colours, the style k, the blades; HSP:
+// the body's length / width as fractions of L, its shape, the glass, skids or wheels, a tail rotor, a ducted fan or a four-blade rotor)
+const HELI = {
+  // the real types (the owner's photos 15:49–16:15, D‑282): L the fuselage with its boom (m), D the main rotor (m), nb its blades
+  'AC-HL-01': { he: 'מסוק קל', L: 9.07, D: 10.06, H: 3.28, tr: 1.47, hub: .33, main: '#d9dce0', acc: '#2a6ab0', k: 0, nb: 2, src: 'Robinson R44: רוטור 10.06 מ׳, אורך כולל 11.66 מ׳, 2 להבים, מגלשיים' },
+  'AC-HL-02': { he: 'מסוק משטרה וחילוץ', L: 13.77, D: 13.8, H: 4.98, tr: 2.7, hub: .375, main: '#1c2430', acc: '#e8e8ea', k: 4, nb: 5, src: 'Leonardo AW139: רוטור 13.8 מ׳, אורך כולל 16.66 מ׳, 5 להבים, גלגלים' },
+  'AC-HL-03': { he: 'מסוק תובלה', L: 15.6, Lo: 30.14, D: 18.29, H: 5.68, main: '#4a5a3a', acc: '#d8d8d0', k: 6, nb: 3, src: 'Boeing CH-47F Chinook: שני רוטורים של 18.29 מ׳ (3 להבים), גוף 15.6 מ׳ לציור (הבעלים 18:21), 30.14 מ׳ עם הרוטורים למעטפת ולרחבה, גובה 5.68 מ׳ (RSAF CH-47F fact sheet), 4 גלגלים, בלי רוטור זנב' },
+  'AC-HL-04': { he: 'מסוק רפואי', L: 13.77, D: 13.8, H: 4.98, tr: 2.7, hub: .375, main: '#f4d21f', acc: '#1f8a4c', k: 4, nb: 5, ems: 1, src: 'Leonardo AW139 (רפואי)' },
+  'AC-HL-05': { he: 'מסוק עסקים', L: 13.77, D: 13.8, H: 4.98, tr: 2.7, hub: .375, main: '#1d2b44', acc: '#c9a24a', k: 4, nb: 5, src: 'Leonardo AW139 (עסקים)' },
+  'AC-HL-06': { he: 'מסוק תיירות', L: 10.68, D: 10.69, H: 3.34, hub: .326, main: '#f2f4f6', acc: '#e8682b', k: 5, nb: 3, src: 'Airbus H130 (EC130): רוטור 10.69 מ׳, גוף 10.68 מ׳, 3 להבים, Fenestron, תא זכוכית רחב, מגלשיים' },
+  // the owner 16:46 (4), D‑149: the fire helicopter — the drawing only (its base at the fire station, the call out and the refills come
+  // with the emergency stage): an AW139 in the fire service's red with a white band, a Bambi bucket on its long line — hanging under it
+  // in the air, on the ground beside it when it stands
+  'AC-HL-07': { he: 'מסוק כיבוי', L: 13.77, D: 13.8, H: 4.98, tr: 2.7, hub: .375, main: '#c8261e', acc: '#f4f4f0', k: 4, nb: 5, fire: 1, src: 'Leonardo AW139 בגרסת כיבוי (D‑149): דלי Bambi ‏(≈2 מ׳ קוטר, 1.6 מ׳ גובה) על כבל; ציור בלבד — ההתנהגות בשלב החירום' }
+};
+const HSP = [{ bw: .13, b: .36, body: 'tear', glass: 'bubble', gear: 'skid', tail: 'rotor' }, { bw: .15, b: .38, body: 'tear', glass: 'std', gear: 'skid', tail: 'rotor' },
+  { bw: .17, b: .46, body: 'box', glass: 'std', gear: 'wheels', tail: 'rotor' }, { bw: .16, b: .40, body: 'round', glass: 'std', gear: 'skid', tail: 'fen' },
+  { bw: .16, b: .52, body: 'sleek', glass: 'wide', gear: 'wheels', tail: 'rotor4', boom: [[.62, .8], [.42, .55], [.28, .36], [.22, .3]] }, { bw: .19, b: .42, body: 'round', glass: 'pano', gear: 'skid', tail: 'fen', hzk: .5, front: 'blunt', boom: [[.5, .62], [.34, .44], [.24, .32], [.2, .27]] },
+  { bw: .24, b: 1, body: 'tandem', glass: 'std', gear: 'wheels4', tail: 'none' }];   // 4 AW139 · 5 H130 · 6 CH-47
+// a body of revolution with elliptic sections: rings [y, rx, rz, colour?] round the axis (x0, ·, z0)
+function revolveE(x0, z0, rings, col, mat, N) {
+  const faces = []; N = N || 24;
+  for (let k = 0; k < N; k++) { const t0 = k * TAU / N, t1 = t0 + TAU / N;
+    for (let i = 0; i + 1 < rings.length; i++) { const [ya, xa, za, ca] = rings[i], [yb, xb, zb] = rings[i + 1];
+      const P = [[x0 + xa * Math.cos(t0), ya, z0 + za * Math.sin(t0)], [x0 + xa * Math.cos(t1), ya, z0 + za * Math.sin(t1)], [x0 + xb * Math.cos(t1), yb, z0 + zb * Math.sin(t1)], [x0 + xb * Math.cos(t0), yb, z0 + zb * Math.sin(t0)]];
+      const nn = th => nrm([Math.cos(th) / Math.max(.05, (xa + xb) / 2), -((xb - xa) / ((yb - ya) || 1e-6)) * 0, Math.sin(th) / Math.max(.05, (za + zb) / 2)]);
+      faces.push(face(P, ca || col, mat, { g: [nn(t0), nn(t1)] })) } }
+  return faces;
+}
+// heli(id, { spin }) → { pieces, info } — local metres, the origin at the mast's foot on the ground, the nose to the south (+y)
+// the tandem-rotor transport (CH-47F): a long rounded box, the fuel pods along its lower sides, the low front pylon over the cockpit and
+// the tall rear one with the two engines beside it, two rotors of 3 blades that overlap, four wheels, a blunt end with the ramp
+function buildTandem(id, T, opt) {
+  const L = T.L, pieces = [], piece = (kind, faces, extra) => { const p = Object.assign({ kind, faces, decor: [] }, extra || {}); pieces.push(p); return p };
+  const zs = .55, hw = 1.3, hz = 1.35, zc = zs + hz, nx = L / 2, y1 = -L / 2, N = opt.lod ? 20 : 28, decor = [];
+  const body = revolveE(0, zc, [[nx, .25, .3], [nx - .45, .95, 1.0], [nx - 1.5, 1.24, 1.3], [nx - 3, hw, hz], [y1 + 1.6, hw, hz], [y1 + .35, hw * .96, hz * .9], [y1, hw * .9, hz * .78]], T.main, 'paint', N);
+  for (const sd of [1, -1]) body.push(...revolveE(sd * (hw + .18), zs + .55, [[nx - 4.2, .08, .1], [nx - 4.8, .32, .42], [y1 + 3.2, .34, .44], [y1 + 2.4, .1, .12]], sh(T.main, -.05), 'paint', 14));
+  // the pylons: low in front, tall behind (its fin-like fairing), the engines either side of it
+  body.push(...revolveE(0, zc + hz * .82, [[nx - 1.2, .1, .1], [nx - 1.7, .55, .45], [nx - 2.6, .5, .42], [nx - 3.4, .1, .1]], T.main, 'paint', 14));
+  body.push(...buildFin([{ z: zc + hz * .6, yLE: y1 + 4.4, yTE: y1 + .2, t: 1.4 }, { z: zc + hz + 1.75, yLE: y1 + 2.4, yTE: y1 + .7, t: .8 }], T.main));
+  for (const sd of [1, -1]) body.push(...revolveE(sd * 1.05, zc + hz + .35, [[y1 + 4.6, .1, .1], [y1 + 4.3, .38, .38], [y1 + 2.3, .4, .4], [y1 + 1.9, .22, .22]], sh(T.main, -.08), 'metal', 14));
+  // the cockpit's glass: the windscreen and the side windows on the nose
+  for (const sd of [1, -1]) { const P = [[sd * .1, nx - .55, zc + .55], [sd * .95, nx - 1.0, zc + .45], [sd * 1.2, nx - 1.75, zc + .4], [sd * 1.2, nx - 1.75, zc - .15], [sd * .95, nx - .95, zc - .1], [sd * .1, nx - .45, zc - .05]];
+    decor.push(face(sd > 0 ? P : P.slice().reverse(), '#1d3346', 'glass', { n: [sd * .6, .5, .6], grad: ['#1a2c3d', '#57748c', '#c4d9e8'] })) }
+  piece('body', body, { decor });
+  { const r = .45, T4 = []; for (const y of [nx - 3.2, y1 + 3.6]) for (const sd of [1, -1]) T4.push({ tyre: 1, x: sd * 1.45, y, r, w: .3 }); piece('gear', [], { tyres: T4, legs: [] }) }
+  // the rotors: the front hub over the cockpit, the rear one high on its pylon; parked blades or the discs
+  const f = [], R2 = T.D / 2;
+  for (const [yH, zt, a0] of [[nx - 2.2, zc + hz + .9, .3], [y1 + 1.6, zc + hz + 2.25, .9]]) {
+    f.push(...vcyl(0, yH, .14, zt - .6, zt, '#3a3f45', 'metal', 10), ...vcyl(0, yH, .38, zt - .05, zt + .14, '#2a2e33', 'metal', 14));
+    if (opt.spin) { const P = []; for (let i = 0; i < 36; i++) { const a = i / 36 * TAU; P.push([R2 * Math.cos(a), yH + R2 * Math.sin(a), zt + .06]) } f.push(face(P, '#d2dceb', 'glass', { n: [0, 0, 1], a: .18, ns: 1 })) }
+    else for (let i = 0; i < 3; i++) { const a = a0 + i * TAU / 3, c = Math.cos(a), sn = Math.sin(a), w = .3; f.push(face([[-sn * w, yH + c * w, zt + .06], [R2 * c - sn * w, yH + R2 * sn + c * w, zt + .02], [R2 * c + sn * w, yH + R2 * sn - c * w, zt + .02], [sn * w, yH - c * w, zt + .06]], '#2c3036', 'metal', { n: [0, 0, 1], both: true })) } }
+  piece('rotor', f);
+  for (const p of pieces) bounds(p);
+  return { pieces, info: { id, heli: true, t: Object.assign({ he: T.he, H: zc + hz + 2.4, zb: zs, fw: 2 * hw }, T), L, R: hw, yN: nx, HS: T.D / 2 + 6 } };
+}
+function buildHeli(id, opt) {
+  opt = opt || {}; const T = HELI[id]; if (!T) throw new Error('A34: unknown helicopter ' + id);
+  if ((HSP[T.k] || {}).body === 'tandem') return buildTandem(id, T, opt);
+  const H = HSP[T.k] || HSP[0], L = T.L, b = L * H.b, bw = L * H.bw, hw = bw / 2, hz = bw * (H.hzk || .62), nx = H.body === 'sleek' ? b * .74 : b * .62, zs = H.gear === 'wheels' ? .7 : .55, zc = zs + hz;
+  const yH = T.hub != null ? nx - T.hub * L : .05 * b;   // the rotor's hub: T.hub × L behind the nose (from the real overall length)
+  const pieces = [], piece = (kind, faces, extra) => { const p = Object.assign({ kind, faces, decor: [] }, extra || {}); pieces.push(p); return p };
+  const fb = H.body === 'box' ? [1, 1] : H.body === 'round' ? [1.06, 1] : [1, 1];
+  // D‑281/D‑282 (the coordinator 18:2x): the H130's cabin is broad and glazed to the front (a blunt nose), the others come to a point
+  const rings = H.front === 'blunt' ? [[nx, .36 * hw, .42 * hz], [nx - .04 * b, .8 * hw, .82 * hz], [nx - .15 * b, .97 * hw * fb[0], .98 * hz], [.05 * b, hw * fb[0], hz], [-.25 * b, .92 * hw, .9 * hz], [-.45 * b, .48 * hw, .58 * hz]]
+    : [[nx, .06 * hw, .06 * hz], [nx - .07 * b, .5 * hw, .55 * hz], [nx - .22 * b, .88 * hw * fb[0], .93 * hz], [.05 * b, hw * fb[0], hz], [-.25 * b, .9 * hw, .88 * hz], [-.45 * b, .42 * hw, .5 * hz]];
+  if (H.body === 'box') rings.splice(1, 1, [nx - .05 * b, .7 * hw, .7 * hz]);
+  const body = revolveE(0, zc, rings, T.main, 'paint', opt.lod ? 20 : 28), decor = [];
+  // the boom (its stripe in the accent), the fin with the tail rotor or the ducted fan, the tailplane
+  const yB0 = -.3 * b, yB1 = nx - L, zb = zc + .25 * hz;   // the owner 16:46 (1): nose to tail = the real fuselage length L
+  body.push(...revolveE(0, zb, (BM => [[yB0, BM[0][0] * hw, BM[0][1] * hw], [yB0 + (yB1 - yB0) * .45, BM[1][0] * hw, BM[1][1] * hw], [yB1 + .4, BM[2][0] * hw, BM[2][1] * hw], [yB1, BM[3][0] * hw, BM[3][1] * hw]])(H.boom || [[.42, .42], [.24, .24], [.14, .14], [.1, .1]]), T.main, 'paint', 12));
+  const fin = [{ z: zb, yLE: yB1 + 1.1, yTE: yB1 - .1, t: .12 }, { z: zb + hz * 1.3, yLE: yB1 + .35, yTE: yB1 - .35, t: .08 }];
+  body.push(...buildFin(fin.map(q => ({ z: q.z, yLE: q.yLE, yTE: q.yTE, t: H.tail === 'fen' ? .35 : q.t })), T.acc));
+  const yS = yB1 + 1.4, sp = hw * 1.45; body.push(...buildPlate([{ x: -sp, yLE: yS, yTE: yS - .5, z: zb, t: .06 }, { x: sp, yLE: yS, yTE: yS - .5, z: zb, t: .06 }], T.acc));
+  if (H.tail === 'fen') body.push(disc(-.19, yB1 + .3, zb + hz * .45, .32, '#1b1f24', 'matte', { n: [-1, 0, 0], both: true }));
+  else { const tr = T.tr ? T.tr / 2 : L * .075, tx = -.18, tz = zb + hz * .5, n = H.tail === 'rotor4' ? 4 : 2;
+    if (opt.spin) { const P = []; for (let i = 0; i < 20; i++) { const a = i / 20 * TAU; P.push([tx, yB1 + .2 + tr * Math.cos(a), tz + tr * Math.sin(a)]) } body.push(face(P, '#cfd8e2', 'glass', { n: [-1, 0, 0], both: true, a: .25, ns: 1 })) }
+    else for (let i = 0; i < n; i++) { const a = .5 + i * TAU / n; body.push(face([[tx, yB1 + .2, tz], [tx, yB1 + .2 + tr * Math.cos(a), tz + tr * Math.sin(a)], [tx, yB1 + .2 + tr * Math.cos(a + .14), tz + tr * Math.sin(a + .14)]], '#22262b', 'metal', { n: [-1, 0, 0], both: true })) } }
+  // the glass: the canopy over the front, a streak of sky
+  { const gl = H.glass, y0 = nx - .02 * b, y1 = nx - (gl === 'bubble' ? .42 : gl === 'pano' ? .52 : .3) * b, th0 = gl === 'bubble' ? -25 : gl === 'pano' ? -38 : 5;
+    const ell = (y, th) => { const u = (y - rings[0][0]) / (rings[rings.length - 1][0] - rings[0][0]); let i = 0; while (i + 1 < rings.length - 1 && y < rings[i + 1][0]) i++;
+      const A = rings[i], B = rings[i + 1], f = (y - A[0]) / ((B[0] - A[0]) || 1e-6), rx = lerp(A[1], B[1], f), rz = lerp(A[2], B[2], f); void u; return [rx * Math.cos(th) * 1.01, y, zc + rz * Math.sin(th) * 1.01] };
+    for (const [d0, d1] of [[th0, 88], [92, 180 - th0]]) { const P = []; for (let i = 0; i <= 6; i++) P.push(ell(lerp(y0, y1, i / 6), d0 * D2R)); for (let i = 6; i >= 0; i--) P.push(ell(lerp(y0, y1, i / 6), d1 * D2R));
+      decor.push(face(P, '#1d3346', 'glass', { n: [0, .4, .9], grad: ['#1a2c3d', '#7fa3c1'] })) }
+    // the cabin's side windows (the coordinator 18:2x, D‑282: as the real one): the AW139's five large ones a side, the H130's two panoramic
+    if (gl === 'wide' || gl === 'pano') { const nW = gl === 'wide' ? 5 : 2, ya = y1 - .03 * b, yb = gl === 'wide' ? -.3 * b : -.34 * b, st = (ya - yb) / nW, t0 = (gl === 'wide' ? 8 : 0) * D2R, t1 = (gl === 'wide' ? 42 : 64) * D2R;
+      for (let i = 0; i < nW; i++) { const a0 = ya - i * st - st * .1, a1 = ya - (i + 1) * st + st * .1;
+        for (const sd of [1, -1]) { const th = t => sd > 0 ? t : Math.PI - t, P = [ell(a0, th(t0)), ell(a1, th(t0)), ell(a1, th(t1)), ell(a0, th(t1))];
+          decor.push(face(P, '#22384e', 'glass', { n: [sd, 0, .35], grad: ['#1a2c3d', '#6f93b1'] })) } } } }
+  // the role markings: the EMS checker band, the corporate pin stripe, a light band along the top
+  if (T.ems) for (let i = 0; i < 8; i++) { const y = .3 * b - i * .1 * b; for (const sd of [1, -1]) { const P = [[sd * hw * .97, y, zc - .1 * hz], [sd * hw * .97, y - .1 * b, zc - .1 * hz], [sd * hw * .97, y - .1 * b, zc + .2 * hz], [sd * hw * .97, y, zc + .2 * hz]]; if (i % 2) decor.push(face(P, T.acc, 'paint', { n: [sd, 0, 0] })) } }
+  else decor.push({ line: 1, P: [[hw * .98, .35 * b, zc + .05 * hz], [hw * .98, -.42 * b, zc + .05 * hz]], c: T.acc, w: .12 }, { line: 1, P: [[-hw * .98, .35 * b, zc + .05 * hz], [-hw * .98, -.42 * b, zc + .05 * hz]], c: T.acc, w: .12 });
+  if (T.fire) for (const sd of [1, -1]) decor.push(face([[sd * hw * .975, .38 * b, zc - .42 * hz], [sd * hw * .975, -.45 * b, zc - .42 * hz], [sd * hw * .975, -.45 * b, zc - .08 * hz], [sd * hw * .975, .38 * b, zc - .08 * hz]], T.acc, 'paint', { n: [sd, 0, 0] }));   // D‑149: the fire service's white band
+  piece('body', body, { decor });
+  // the gear: skids with their cross tubes, or wheels
+  if (H.gear === 'skid') { const f = [], xs = bw * .68;
+    for (const sd of [1, -1]) { f.push(...boxFaces([[sd * xs - .05, .5 * b], [sd * xs + .05, .5 * b], [sd * xs + .05, -.42 * b], [sd * xs - .05, -.42 * b]], 0, .1, { top: '#2a2e33', side: '#1b1e22' }, { mat: 'metal' }));
+      for (const y of [.3 * b, -.2 * b]) f.push(...boxFaces([[sd * xs - .04, y - .04], [sd * hw * .5 + .04 * sd, y - .04], [sd * hw * .5 + .04 * sd, y + .04], [sd * xs - .04, y + .04]], .1, zs + .1, { top: '#3a3f45', side: '#2a2e33' }, { mat: 'metal' })) }
+    piece('gear', f) }
+  else { const r = .32; piece('gear', [], { tyres: [{ tyre: 1, x: -hw * .9, y: -.1 * b, r, w: .22 }, { tyre: 1, x: hw * .9, y: -.1 * b, r, w: .22 }, { tyre: 1, x: 0, y: .45 * b, r: r * .8, w: .18 }], legs: [{ x: 0, y: .45 * b, z0: r * .8, z1: zs, r: .08 }] }) }
+  // the main rotor: the mast, the hub, the blades (parked) or the disc (turning) — a piece of its own, high up
+  { const zt = T.H ? Math.max(zc + hz + .25, T.H - .12) : zc + hz + .45, R2 = T.D / 2, f = [];
+    f.push(...vcyl(0, yH, .12, zc + hz * .8, zt, '#3a3f45', 'metal', 10), ...vcyl(0, yH, .32, zt - .05, zt + .12, '#2a2e33', 'metal', 14));
+    if (opt.spin) { const P = []; for (let i = 0; i < 36; i++) { const a = i / 36 * TAU; P.push([R2 * Math.cos(a), yH + R2 * Math.sin(a), zt + .06]) } f.push(face(P, '#d2dceb', 'glass', { n: [0, 0, 1], a: .2, ns: 1 })) }
+    else for (let i = 0; i < T.nb; i++) { const a = .6 + i * TAU / T.nb, c = Math.cos(a), sn = Math.sin(a), w = .16; f.push(face([[-sn * w, yH + c * w, zt + .06], [R2 * c - sn * w, yH + R2 * sn + c * w, zt + .02], [R2 * c + sn * w, yH + R2 * sn - c * w, zt + .02], [sn * w, yH - c * w, zt + .06]], '#2c3036', 'metal', { n: [0, 0, 1], both: true })) }
+    piece('rotor', f) }
+  // D‑149 · the fire bucket (a Bambi bucket: a red-orange drum, a dark rim, open at the top) on its line from the belly hook: in the air
+  // 9 m under the hook; standing, on the ground beside the right door with the line laid to it
+  if (T.fire) { const f = [], d = [], hook = [0, yH, zs + .15], air = !!opt.spin, bx = air ? 0 : hw + 2.6, by = air ? yH : yH - 1.2, bz = air ? -9 : 0, r0 = .95, r1 = .8, hB = 1.6;
+    f.push(...vcyl(bx, by, r1, bz, bz + hB * .45, '#d9441c', 'paint', 16), ...vcyl(bx, by, r0, bz + hB * .45, bz + hB, '#e2531f', 'paint', 16), ...vcyl(bx, by, r0 + .05, bz + hB - .12, bz + hB + .02, '#22201e', 'metal', 16));
+    { const P = []; for (let i = 0; i < 16; i++) { const a = i / 16 * TAU; P.push([bx + r0 * Math.cos(a), by + r0 * Math.sin(a), bz + hB]) } f.push(face(P, '#3a1c12', 'matte', { n: [0, 0, 1] })) }
+    const top = [bx, by, bz + hB + .9];
+    for (const a of [0, 2.1, 4.2]) d.push({ line: 1, P: [[bx + r0 * Math.cos(a), by + r0 * Math.sin(a), bz + hB], top], c: 'rgba(30,30,30,.85)', w: .05 });   // the bucket's own rigging
+    d.push({ line: 1, P: air ? [hook, top] : [hook, [hook[0], hook[1], .05], [bx * .5, (hook[1] + by) / 2 + .6, .05], [bx, by - 1.4, .05], top], c: 'rgba(25,25,25,.9)', w: .06 });
+    piece('bucket', f, { decor: d }) }
+  shiftY(pieces, -yH); for (const p of pieces) bounds(p);   // the hub at the origin: the pose (the pad's centre) under the rotor
+  return { pieces, info: { id, heli: true, t: Object.assign({ he: T.he, H: T.H || zc + hz + .6, zb: zs, fw: bw }, T), L, R: hw, yN: nx - yH, HS: T.D / 2 } };
+}
+function shiftY(pieces, dy) { if (!dy) return; const mv = P => P.map(q => [q[0], q[1] + dy, q[2]]);
+  for (const p of pieces) { for (const f of p.faces || []) f.P = mv(f.P); for (const d of p.decor || []) if (d.P) d.P = mv(d.P); for (const r of p.tyres || []) r.y += dy; for (const l of p.legs || []) l.y += dy }
+}
+function bounds(p) { let yM = -1e9, zm = 1e9, xa = 1e9, xb = -1e9;
+  const acc = q => { yM = Math.max(yM, q[1]); zm = Math.min(zm, q[2]); xa = Math.min(xa, q[0]); xb = Math.max(xb, q[0]) };
+  for (const f of p.faces || []) for (const q of f.P) acc(q);
+  if (p.tyres) for (const r of p.tyres) { acc([r.x - r.w / 2, r.y + r.r, 0]); acc([r.x + r.w / 2, r.y - r.r, 0]) }
+  p.yMax = yM; p.zMin = Math.max(0, zm); p.x0 = xa; p.x1 = xb; return p }
+// ======================================================================================================================================
+// drawing.  M = { X, Y, s } : local metres → world px of the field: (X + x·s, Y + y·s − K·z·s); seam = the stroke width (world px)
+function P2(M, p) { return [M.X + p[0] * M.s, M.Y + (p[1] - K * p[2]) * M.s] }
+// the owner 14:39 (1): no grid of seams on the skin — a face's outline pushed out by d px (a mitre at each corner) and filled once, so
+// that neighbours overlap a little and no background shows between them; no stroke (it drew the grid, and cost a second raster)
+function growS(S, d) {
+  const n = S.length, E = []; let ar = 0;
+  for (let i = 0; i < n; i++) { const p = S[i], q = S[(i + 1) % n]; ar += p[0] * q[1] - q[0] * p[1] }
+  const sg = ar >= 0 ? 1 : -1;
+  for (let i = 0; i < n; i++) { const p = S[i], q = S[(i + 1) % n], ex = q[0] - p[0], ey = q[1] - p[1], l = Math.hypot(ex, ey); E.push(l > 1e-6 ? [sg * ey / l, -sg * ex / l] : null) }
+  for (let i = 0; i < n; i++) if (!E[i]) { let j = i; do { j = (j + n - 1) % n } while (!E[j] && j !== i); E[i] = E[j] || [0, 0] }
+  return S.map((v, i) => { const a = E[(i + n - 1) % n], b = E[i], k = Math.max(.3, 1 + a[0] * b[0] + a[1] * b[1]); return [v[0] + d * (a[0] + b[0]) / k, v[1] + d * (a[1] + b[1]) / k] });
+}
+function drawFaces(c, faces, M, seam, o) {
+  o = o || {};
+  for (const f of faces) {
+    if (f.line || f.text != null || f.mark) continue;
+    const n = f.n || (f.g ? nrm([(f.g[0][0] + f.g[1][0]) / 2, (f.g[0][1] + f.g[1][1]) / 2, (f.g[0][2] + f.g[1][2]) / 2]) : faceN(f.P));
+    if (!f.both) { const vis = f.g ? dot(faceN(f.P), VW) : dot(n, VW); if (vis <= 1e-3) continue }
+    const S = f.P.map(p => P2(M, p)), gw = !f.noSeam && f.a == null && o.grow !== 0, G = gw ? growS(S, o.grow || .5) : S;
+    c.beginPath(); c.moveTo(G[0][0], G[0][1]); for (let i = 1; i < G.length; i++) c.lineTo(G[i][0], G[i][1]); c.closePath();
+    let fill;
+    if (o.solid) fill = o.solid;
+    else if (f.grad) { const h = S.length / 2 | 0, mid = (i0, i1) => { let x = 0, y = 0; for (let i = i0; i < i1; i++) { x += S[i][0]; y += S[i][1] } return [x / (i1 - i0), y / (i1 - i0)] }, A0 = f.gax ? P2(M, f.gax[0]) : mid(0, h), B0 = f.gax ? P2(M, f.gax[1]) : mid(h, S.length);
+      const gr = c.createLinearGradient(A0[0], A0[1], B0[0], B0[1]), b = lit(n, f.m), gn = f.grad.length; f.grad.forEach((q, i) => gr.addColorStop(gn === 3 ? [0, .55, 1][i] : i / (gn - 1), litC(q, b))); fill = gr }
+    else if (f.g4 && S.length === 4) {
+      // the skin (the owner 14:39 (1)): the light at the four corners, a plane fitted to it on the screen, one gradient along that plane's
+      // slope — the light continues from face to face both ways (no steps along the body); the same one fill
+      const B = f.g4.map(q => lit(q, f.m)); let xc = 0, yc = 0, bc = 0; for (let i = 0; i < 4; i++) { xc += S[i][0] / 4; yc += S[i][1] / 4; bc += B[i] / 4 }
+      let xx = 0, xy = 0, yy = 0, xb = 0, yb = 0; for (let i = 0; i < 4; i++) { const dx = S[i][0] - xc, dy = S[i][1] - yc, db = B[i] - bc; xx += dx * dx; xy += dx * dy; yy += dy * dy; xb += dx * db; yb += dy * db }
+      const det = xx * yy - xy * xy; let be = 0, ga = 0; if (det > 1e-9) { be = (xb * yy - yb * xy) / det; ga = (yb * xx - xb * xy) / det }
+      let s0 = 0, s1 = 0; for (let i = 0; i < 4; i++) { const v = (S[i][0] - xc) * be + (S[i][1] - yc) * ga; if (v < s0) s0 = v; if (v > s1) s1 = v }
+      const dd = be * be + ga * ga;
+      if (s1 - s0 < .004 || dd < 1e-12) fill = litC(f.c, bc);
+      else { const gr = c.createLinearGradient(xc + be * s0 / dd, yc + ga * s0 / dd, xc + be * s1 / dd, yc + ga * s1 / dd); gr.addColorStop(0, litC(f.c, bc + s0)); gr.addColorStop(.5, litC(f.c, bc + (s0 + s1) / 2)); gr.addColorStop(1, litC(f.c, bc + s1)); fill = gr }
+    }
+    else if (f.g && S.length === 4) {
+      // the gradient across the strip: from the middle of edge 0–3 to the middle of edge 1–2, perpendicular to the strip
+      const A = [(S[0][0] + S[3][0]) / 2, (S[0][1] + S[3][1]) / 2], B = [(S[1][0] + S[2][0]) / 2, (S[1][1] + S[2][1]) / 2];
+      let dx = S[3][0] - S[0][0], dy = S[3][1] - S[0][1]; const dl = Math.hypot(dx, dy);
+      let bx = B[0] - A[0], by = B[1] - A[1];
+      if (dl > 1e-6) { dx /= dl; dy /= dl; const pr = bx * dx + by * dy; bx -= pr * dx; by -= pr * dy }
+      if (Math.hypot(bx, by) < 1e-4) fill = litC(f.c, lit(n, f.m));
+      else { const gr = c.createLinearGradient(A[0], A[1], A[0] + bx, A[1] + by); gr.addColorStop(0, litC(f.c, lit(f.g[0], f.m))); gr.addColorStop(1, litC(f.c, lit(f.g[1], f.m))); fill = gr }
+    } else fill = litC(f.c, lit(n, f.m));
+    c.globalAlpha = f.a != null ? f.a : 1;
+    c.fillStyle = fill; c.fill(); if (seam && !f.noSeam && !gw) { c.strokeStyle = fill; c.lineWidth = seam; c.lineJoin = 'round'; c.stroke() }
+    c.globalAlpha = 1;
+  }
+}
+function drawDecor(c, list, M, o) {
+  o = o || {}; const oD = Object.assign({}, o, { grow: 0 });   // the decor keeps its exact outline (windows, panels)
+  for (const d of list) {
+    if (o.solid) { if (d.line || d.text || d.mark) continue; drawFaces(c, [d], M, 0, oD); continue }
+    if (d.line) { if (d.n && dot(d.n, VW) <= 1e-3) continue; const S = d.P.map(p => P2(M, p)); c.strokeStyle = d.c; c.lineWidth = Math.max(.5 / (o.zoom || 1), d.w * M.s); c.lineCap = 'round'; if (d.dash) c.setLineDash(d.dash.map(v => v * M.s)); c.beginPath(); c.moveTo(S[0][0], S[0][1]); for

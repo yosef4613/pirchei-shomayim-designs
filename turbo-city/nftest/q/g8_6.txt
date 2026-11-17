@@ -1,0 +1,865 @@
+RF.busy=false}}}
+ finally{PERF.timeOfs=0;if(typeof SIM_BENCH_OFS!=='undefined')SIM_BENCH_OFS=SIM_RAIL_BASE;if(State.mapQa!==saved.mapQa)toggleMapQa();Camera.x=saved.x;Camera.y=saved.y;Camera.zoom=saved.zoom;perfFrameHook(false)}
+ out.totalS=perfR((performance.now()-T0)/1000,0);out.memory={heapMB:perfHeap()!=null?Math.round(perfHeap()):null,canvasMB:perfCanvasMem(),limitMB:500};
+ const prev=perfLastReport();if(prev&&prev.build!==BUILD)out.compare=perfCompare(out,prev);else if(prev&&prev.compareBase&&prev.compareBase.build!==BUILD)out.compare=perfCompare(out,prev.compareBase);
+ try{const keep={...out,compareBase:prev&&prev.build!==BUILD?{build:prev.build,date:prev.date,scenarios:prev.scenarios}:(prev?.compareBase||null)};localStorage.setItem(PERF_LAST_KEY,JSON.stringify(keep))}catch{}
+ PERF.report=out;perfHudStatus('הסתיים — '+Object.entries(out.scenarios).map(([k,v])=>k+' '+v.fps+' FPS').join(' · '));perfHudRender();return out}
+// ---- report text (to paste into the delivery / chat) ----
+function perfReportText(r){
+ if(!r)return'';const L=[];L.push(`Turbo City · Benchmark (PERF-04) · ${PERF_MODE_HE[r.mode||'normal']||r.mode} · ${r.build} · ${r.date}`);
+ L.push(`מסך ${r.viewport} · dpr ${r.dpr} · ${r.gpu.accelerated?'GPU: '+r.gpu.renderer:'GPU: '+r.gpu.note+(r.gpu.renderer?' ('+r.gpu.renderer+')':'')}`);
+ L.push(`${navigator.userAgent.match(/(Chrome|Firefox|Edg|Safari)\/[\d.]+/g)?.join(' ')||navigator.userAgent}`);
+ for(const [k,v] of Object.entries(r.scenarios)){const b=v.kinds?` · ציור ${v.kinds.render} · סימולציה ${v.kinds.sim} · ממשק ${v.kinds.ui} · שונות ${v.kinds.misc} ms`:'';
+  L.push(`${k}: ${v.invalid?'⚠ לא תקפה ('+v.invalid+') · ':''}${v.retried&&!v.invalid?'(נמדד שוב: '+v.retried+') · ':''}${v.fps} FPS (1% low ${v.low1Fps}) · פריים ${v.frameMs.avg}/${v.frameMs.p95}/${v.frameMs.p99} ms (ממוצע/p95/p99) · max ${v.frameMs.max} · >50ms ${v.over50} · >100ms ${v.over100} · JS ${v.jsMs.avg}${b}${v.ops?' · ציור '+v.ops.avg+' פעולות':''}${v.gd?' · לכרטיס המסך: '+(typeof g77GpuText==='function'?g77GpuText(v.gd):v.gd.ops+' פעולות'):''}${v.load?` · לפריים: bitmaps חדשים ${v.load.newBitmapsPerFrame}, ספרייטים חדשים ${v.load.newFamiliesPerFrame}, drawImage ${v.load.drawImagePerFrame??'—'}`:''}${v.heapMB?' · heap '+v.heapMB.max+'MB':''}${v.cold?` · כניסה ראשונה: max ${v.cold.maxMs} ms, >50ms ${v.cold.over50}, >100ms ${v.cold.over100}`:''}`)
+  if(v.stalls&&v.stalls.n)L.push(`  ${k} — פריימים מעל 50ms: ${v.stalls.n} · ${Object.entries(v.stalls.by).map(([a,b])=>(PERF_STALL_HE[a]||a)+' '+b).join(' · ')} · הארוך: ${v.stalls.top[0].dt} ms (JS ${v.stalls.top[0].js}, SIM ${v.stalls.top[0].simMs}/${v.stalls.top[0].steps} צעדים${v.stalls.top[0].simMs>4?` (תנועה ${v.stalls.top[0].simW} · נמל ${v.stalls.top[0].simFl} · שדה ${v.stalls.top[0].simAo})`:''}, אריחים ${v.stalls.top[0].tileMs} ms${v.stalls.top[0].fam?`, ספרייטים חדשים ${v.stalls.top[0].fam} (${v.stalls.top[0].famMs} ms)`:''})`);}
+ if(r.growth)L.push(`גדילה: +${r.growth.added} רכבים מחוץ למסך → פריים ${r.growth.deltaFramePct>0?'+':''}${r.growth.deltaFramePct}% (סף 5%) · JS ${r.growth.deltaJsPct>0?'+':''}${r.growth.deltaJsPct}%`);
+ if(r.density)L.push(`צפיפות ×2 בתוך המסך: +${r.density.added} רכבים → ${r.density.dense.fps} FPS (לפני ${r.density.base.fps}) · פריים ${r.density.deltaFramePct>0?'+':''}${r.density.deltaFramePct}%`);
+ for(const [lab,p] of [['מעבר בין Chunks (cold)',r.panCold],['מעבר בין Chunks (warm)',r.panWarm]])if(p)L.push(`${lab}: ${p.fps} FPS · p95 ${p.frameMs.p95} · max ${p.frameMs.max} ms · >50ms ${p.over50} · >100ms ${p.over100}`);
+ if(r.stress)L.push(`Stress לעתיד (+${r.stress.roadVehiclesAdded} רכבים, +${r.stress.pedestriansAdded} הולכי רגל, +${r.stress.extraFreightConsists} רכבות משא): ${r.stress.stress.fps} FPS (לפני ${r.stress.base.fps}) · p95 ${r.stress.stress.p95} · JS ${r.stress.stress.jsAvg} ms`);
+ if(r.long)L.push(`ריצה ארוכה ${r.long.minutes} דק׳: ${r.long.fps} FPS · p95 ${r.long.frameMs.p95} · heap ${r.long.heapMB?r.long.heapMB.min+'–'+r.long.heapMB.max+'MB':'—'}`);
+ if(r.memory)L.push(`זיכרון: JS ${r.memory.heapMB??'—'}MB · תמונות שמורות ${r.memory.canvasMB?r.memory.canvasMB.mb+'MB ('+r.memory.canvasMB.live+' canvases)':'—'} (סף 500MB)`);
+ if(r.compare)L.push('מול '+r.compare.build+': '+Object.entries(r.compare.scenarios).map(([k,c])=>c.invalid?`${k} לא תקפה — לא הושווה`:`${k} p95 ${c.p95Before}→${c.p95Now} (${c.deltaPct>0?'+':''}${c.deltaPct}%${c.regression?' REGRESSION':''})`).join(' · '));
+ return L.join('\n')}
+function perfReportCopy(){const r=PERF.report||perfLastReport();if(!r){toast('אין עדיין דוח — הרץ Benchmark');return}const slim=JSON.parse(JSON.stringify(r,(k,v)=>k==='compareBase'?undefined:v));copyText(perfReportText(r)+'\n\n'+JSON.stringify(slim),'דוח ה-Benchmark הועתק')}
+// ---- benchmark mode (#bench): the game reloads, runs the route by itself and shows the report ----
+function perfBenchHash(mode,seq){return'bench'+(mode==='webgl'?'&webgl':mode==='pq'?'&pq':'')+(seq?'&seq':'')+(/[#&]quick\b/.test(location.hash)?'&quick':'')}
+function perfBenchStart(mode){mode=mode||'normal';
+ if(PERF.busy)return;const all=mode==='all';
+ if(!confirm(`Benchmark — ${PERF_MODE_HE[mode]}: המשחק נטען מחדש במצב בדיקה ומריץ לבד ${all?'שתי הרצות ברצף (רגיל, WebGL) — כ-14 דקות, ובסוף דוח אחד':'— כ-7 דקות'}.\n\nהמסך לא ייכבה והמחשב לא ייכנס לשינה בזמן הבדיקה (אם הדפדפן מאפשר — זה כתוב בדוח). סגירת המכסה עוצרת את הבדיקה; עדיף מחובר לחשמל.\n\nאל תעבור חלון ואל תגע בעכבר ובמקלדת עד הסוף. מדידה בלי פוקוס, או עם פחות מ-30 פריימים, מסומנת "לא תקפה" ונמדדת שוב פעם אחת.\n\nהמשחק נשמר לפני כן, והשמירה לא משתנה בזמן הבדיקה. להתחיל?`))return;
+ try{SaveManager.save('manual',{silent:true})}catch{}if(all)try{localStorage.setItem(PERF_SEQ_KEY,JSON.stringify({t0:new Date().toISOString(),build:BUILD,runs:{}}))}catch{}
+ try{localStorage.setItem('turbo_city_bench_req',String(Date.now()))}catch{}location.hash=perfBenchHash(all?'normal':mode,all);location.reload()}   /* p244 */
+function perfSeqLoad(){try{return JSON.parse(localStorage.getItem(PERF_SEQ_KEY)||'null')}catch{return null}}
+function perfSeqText(S){const L=[`Turbo City · Benchmark ברצף — רגיל / WebGL / pq · ${S.build} · ${S.t0}`],R=S.runs,modes=PERF_SEQ.filter(m=>R[m]);
+ const scn=[...new Set(modes.flatMap(m=>Object.keys(R[m].scenarios||{})))];
+ for(const k of scn)L.push(k+': '+modes.map(m=>{const v=R[m].scenarios[k];return v?`${PERF_MODE_HE[m]} ${v.invalid?'⚠ לא תקפה':v.fps+' FPS · p95 '+v.frameMs.p95+(v.ops?' · '+v.ops.avg+' פעולות':'')}`:PERF_MODE_HE[m]+' —'}).join(' | '));
+ for(const m of modes){const r=R[m];if(r.wake)L.push(PERF_MODE_HE[m]+' · '+r.wake);if(r.memory)L.push(`זיכרון ${PERF_MODE_HE[m]}: JS ${r.memory.heapMB??'—'}MB · תמונות ${r.memory.canvasMB?r.memory.canvasMB.mb+'MB':'—'}`)}
+ for(const m of modes)L.push('','— '+PERF_MODE_HE[m]+' —',perfReportText(R[m]));return L.join('\n')}
+function perfSeqTable(S){const R=S.runs,modes=PERF_SEQ.filter(m=>R[m]),scn=[...new Set(modes.flatMap(m=>Object.keys(R[m].scenarios||{})))];
+ return'<div style="margin-bottom:6px"><b>הכול ברצף</b> — FPS / p95 (ms) בכל מצב</div><table style="width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums"><tr style="color:#8fb0c6"><th>תרחיש</th>'+modes.map(m=>'<th>'+PERF_MODE_HE[m]+'</th>').join('')+'</tr>'+
+  scn.map(k=>'<tr><td>'+k+'</td>'+modes.map(m=>{const v=R[m].scenarios[k];return'<td>'+(v?(v.invalid?'<span style="color:#ffd38a">⚠ לא תקפה</span>':'<b>'+v.fps+'</b> / '+v.frameMs.p95):'—')+'</td>'}).join('')+'</tr>').join('')+'</table>'}
+function perfSeqStep(r){try{r.wake=g77WakeText()}catch(e){}   /* D-218 */const S=perfSeqLoad()||{t0:new Date().toISOString(),build:BUILD,runs:{}};S.runs[PERF_MODE]=JSON.parse(JSON.stringify(r,(k,v)=>k==='compareBase'?undefined:v));try{localStorage.setItem(PERF_SEQ_KEY,JSON.stringify(S))}catch{}
+ const i=PERF_SEQ.indexOf(PERF_MODE),next=i>=0&&i<PERF_SEQ.length-1?PERF_SEQ[i+1]:null;
+ if(next){let n=5;const tick=()=>{$('perfBenchStep').textContent=`${PERF_MODE_HE[PERF_MODE]} הסתיים (${i+1}/${PERF_SEQ.length}) — ממשיך ל-${PERF_MODE_HE[next]} בעוד ${n} שנ׳ (טעינה מחדש לבד; לא לגעת)`;if(n--<=0){try{localStorage.setItem('turbo_city_bench_req',String(Date.now()))}catch{}location.hash=perfBenchHash(next,true);location.reload()}   /* p244 */else setTimeout(tick,1000)};$('perfBenchCopy').disabled=true;$('perfBenchAgain').disabled=true;tick();return}
+ $('perfBenchStep').textContent='הכול ברצף הסתיים — העתק את הדוח ושלח אותו (שתי ההרצות בדוח אחד)';$('perfBenchBody').innerHTML=perfSeqTable(S)+'<div style="margin-top:8px;color:#8fb0c6">פירוט ההרצה האחרונה (WebGL):</div>'+$('perfBenchBody').innerHTML;
+ $('perfBenchCopy').onclick=()=>{copyText(perfSeqText(S)+'\n\n'+JSON.stringify(S),'הדוח של שתי ההרצות הועתק');focusGame()};$('perfBenchAgain').onclick=()=>{perfBenchStart('all')}}
+function perfBenchExit(){try{history.replaceState(null,'',location.pathname+location.search)}catch{location.hash=''}location.reload()}
+function perfBenchOverlay(){
+ let d=$('perfBench');if(d)return d;d=document.createElement('div');d.id='perfBench';
+ d.style.cssText='position:fixed;left:50%;top:70px;transform:translateX(-50%);z-index:70;width:min(860px,92vw);max-height:80vh;overflow:auto;background:rgba(8,16,24,.95);color:#e6f1f8;border:1px solid #3b5b74;border-radius:12px;padding:14px 16px;font:13px/1.5 "Segoe UI",Arial;direction:rtl;box-shadow:0 10px 30px #000a';
+ d.innerHTML='<b style="font-size:15px">Benchmark — מצב בדיקה (PERF‑04) · '+PERF_MODE_HE[PERF_MODE]+(/[#&]seq\b/.test(location.hash)?' · הכול ברצף ('+(PERF_SEQ.indexOf(PERF_MODE)+1)+'/'+PERF_SEQ.length+')':'')+'</b><div style="margin-top:4px;color:#ffd38a">אל תעבור חלון ואל תגע בעכבר ובמקלדת עד סוף הבדיקה.</div><div id="perfBenchStep" style="margin-top:6px;color:#ffd38a">מתחיל…</div><div id="perfBenchBody" style="margin-top:8px"></div><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button id="perfBenchCopy" disabled>העתק דוח</button><button id="perfBenchAgain" disabled>הרץ שוב</button><button id="perfBenchExit">חזרה למשחק</button></div><div style="margin-top:6px;color:#8fb0c6">השמירה שלך לא נטענת ולא נכתבת במצב הזה.</div>';
+ document.body.appendChild(d);$('perfBenchCopy').onclick=()=>{perfReportCopy();focusGame()};$('perfBenchAgain').onclick=()=>{location.reload()};$('perfBenchExit').onclick=perfBenchExit;return d}
+function perfBenchTable(r){
+ const row=(k,v)=>{const bud=v.kinds?PERF_KINDS.map(x=>`<span style="color:${v.kinds[x]>PERF_BUDGET[x]?'#ff9b8a':'#9fe3b0'}">${v.kinds[x]}</span>`).join(' / '):'—';const c=r.compare&&r.compare.scenarios[k];
+  return`<tr><td>${k}</td><td><b>${v.fps}</b>${v.invalid?' <span title="'+v.invalid+'" style="color:#ffd38a">⚠ לא תקפה</span>':''}</td><td>${v.frameMs.avg}</td><td>${v.frameMs.p95}</td><td>${v.frameMs.p99}</td><td>${v.over50}/${v.over100}</td><td>${v.cold?v.cold.maxMs+' ('+v.cold.over50+'/'+v.cold.over100+')':'—'}</td><td>${v.jsMs.avg}</td><td>${bud}</td><td>${v.ops?v.ops.avg:'—'}</td><td>${c?(c.invalid?'<span style="color:#ffd38a">לא תקפה</span>':`<span style="color:${c.regression?'#ff9b8a':'#9fe3b0'}">${c.deltaPct>0?'+':''}${c.deltaPct}%</span>`):'—'}</td></tr>`};
+ return`<div>${r.gpu.accelerated?'✓ ':'⚠ '}${r.gpu.note}${r.gpu.renderer?' · <span dir="ltr">'+r.gpu.renderer+'</span>':''} · מסך ${r.viewport} · dpr ${r.dpr}</div>`+
+  '<table style="width:100%;border-collapse:collapse;margin-top:6px;font-variant-numeric:tabular-nums"><tr style="color:#8fb0c6"><th>תרחיש</th><th>FPS</th><th>ממוצע</th><th>p95</th><th>p99</th><th>תקיעות >50/>100ms</th><th>כניסה ראשונה: max (>50/>100)</th><th>JS</th><th>ציור / סימולציה / ממשק / שונות (ms)</th><th>פעולות ציור</th><th>p95 מול הקודם</th></tr>'+
+  Object.entries(r.scenarios).map(([k,v])=>row(k,v)).join('')+'</table>'+
+  (r.growth?`<div style="margin-top:6px">מבחן גדילה: +${r.growth.added} רכבים מחוץ למסך → זמן פריים ${r.growth.deltaFramePct>0?'+':''}${r.growth.deltaFramePct}% (סף 5%: ${r.growth.pass?'✓':'✗'})</div>`:'')+
+  (r.density?`<div>צפיפות ×2 בתוך המסך: +${r.density.added} רכבים → ${r.density.dense.fps} FPS (לפני ${r.density.base.fps}; פריים ${r.density.deltaFramePct>0?'+':''}${r.density.deltaFramePct}%)</div>`:'')+
+  [['מעבר בין Chunks — cold',r.panCold],['מעבר בין Chunks — warm',r.panWarm]].filter(x=>x[1]).map(([l,p])=>`<div>${l}: ${p.fps} FPS · p95 ${p.frameMs.p95} · max ${p.frameMs.max} ms · תקיעות ${p.over50}/${p.over100}</div>`).join('')+
+  (r.stress?`<div>Stress לעתיד (חלקי): ${r.stress.stress.fps} FPS (לפני ${r.stress.base.fps}) · p95 ${r.stress.stress.p95} ms</div>`:'')+
+  (r.long?`<div>ריצה ארוכה ${r.long.minutes} דק׳: ${r.long.fps} FPS · p95 ${r.long.frameMs.p95} ms</div>`:'')+
+  `<div>זיכרון: JS ${r.memory.heapMB??'—'}MB · תמונות שמורות ${r.memory.canvasMB?r.memory.canvasMB.mb+'MB':'—'} (סף 500MB) · ${r.totalS} שנ׳</div>`+
+  (r.compare?`<div style="color:#8fb0c6">השוואה ל-Benchmark הקודם במחשב הזה: ${r.compare.build}</div>`:'')}
+async function perfBenchAuto(){
+ try{await g77WakeOn()}catch(e){}   /* D-218 */
+ const d=perfBenchOverlay();if(!PERF.hud)perfHudToggle();
+ const r=await perfBenchmark(Object.assign(/[#&]quick\b/.test(location.hash)?{seconds:2,longMinutes:0,growth:false,pan:false,stress:false,route:['airport','tower']}:{},{onStep:(k,n,t)=>{$('perfBenchStep').textContent=`שלב ${k}/${n}: ${t}`}}));
+ if(!r)return;$('perfBenchStep').textContent='הסתיים — העתק את הדוח ושלח אותו';$('perfBenchBody').innerHTML=perfBenchTable(r);$('perfBenchCopy').disabled=false;$('perfBenchAgain').disabled=false;
+ if(/[#&]seq\b/.test(location.hash))perfSeqStep(r);if(/[#&]owner\b/.test(location.hash))try{g77OtBenchDone(r)}catch(e){}   /* D-218 */}
+// ---- HUD (F9) ----
+function perfHudEnsure(){
+ if(PERF.el)return PERF.el;const d=document.createElement('div');d.id='perfHud';d.addEventListener('wheel',e=>e.stopPropagation(),{passive:true});d.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});   /* GATE-77 S7-b · p202: the panel scrolls, not the game */
+
+ d.style.cssText='position:fixed;left:12px;top:86px;z-index:60;min-width:300px;max-width:460px;max-height:calc(100vh - 100px);overflow-y:auto;overscroll-behavior:contain;background:rgba(8,16,24,.92);color:#e6f1f8;border:1px solid #2b4458;border-radius:10px;padding:10px 12px;font:12px/1.45 "Segoe UI",Arial;direction:rtl;display:none;box-shadow:0 8px 24px #0008';
+ d.innerHTML='<b>ביצועים (F9)</b> <span id="perfHudBuild" style="color:#8fb0c6"></span><div id="perfHudGpu" style="margin-top:4px"></div><div id="perfHudLive" style="margin-top:6px;font-variant-numeric:tabular-nums"></div><div id="perfHudCats" style="margin-top:6px"></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button id="perfHudProf">פירוט לפי מערכת</button><button id="perfHudCopy">העתק דוח</button></div><div style="margin-top:6px;color:#8fb0c6">בדיקות לבעלים (נטען מחדש לבד — לא צריך לשנות כתובת):</div><div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap"><button id="perfHudBench">Benchmark רגיל</button><button id="perfHudBenchGl">עם WebGL</button><button id="perfHudBenchPq">עם pq</button><button id="perfHudBenchAll"><b>הכול ברצף</b></button></div><div id="g77OtRow" style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"></div><div id="perfHudLook" style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap"></div><div id="perfHudDpr" style="margin-top:6px"></div><div id="perfHudStatus" style="margin-top:6px;color:#ffd38a"></div><div id="perfHudReport" style="margin-top:6px"></div>';
+ document.body.appendChild(d);PERF.el=d;$('perfHudBuild').textContent=BUILD;const g=perfGpuInfo();$('perfHudGpu').innerHTML=(g.accelerated?'✓ ':'⚠ ')+g.note+(g.renderer?' · <span dir="ltr" style="color:#8fb0c6">'+g.renderer+'</span>':'');
+ $('perfHudProf').onclick=()=>{PERF.profile=!PERF.profile;if(PERF.profile){perfWrap();perfOpsOn(true);PERF.fnAccRun={};PERF.liveFrames=[]}else{perfUnwrap();perfOpsOn(false)}$('perfHudProf').textContent=PERF.profile?'עצור פירוט':'פירוט לפי מערכת';focusGame()};
+ $('perfHudBench').onclick=()=>{perfBenchStart('normal');focusGame()};$('perfHudBenchGl').onclick=()=>{perfBenchStart('webgl');focusGame()};$('perfHudBenchPq').onclick=()=>{perfBenchStart('pq');focusGame()};$('perfHudBenchAll').onclick=()=>{perfBenchStart('all');focusGame()};
+ try{perfLookUi()}catch{}try{g77OtRowUi()}catch(e){}   /* D-218 */try{g77StF9Row(d)}catch(e){}   /* D-225 (א) · p301 */
+ $('perfHudCopy').onclick=()=>{perfReportCopy();focusGame()};
+ perfDprUi();return d}
+// render resolution (S2 · PERF-05): full (up to 1.5) by default; 1.25 / 1 only for a test on a dense screen
+function perfDprUi(){const el=$('perfHudDpr');if(!el||typeof dprCap!=='function')return;const cur=dprCap();
+ el.innerHTML='רזולוציית ציור: '+[[1.5,'מלאה'],[1.25,'1.25'],[1,'1']].map(([v,l])=>`<button data-dpr="${v}" style="${v===cur?'font-weight:700;outline:1px solid #8fd':''}">${l}</button>`).join(' ')+` · devicePixelRatio ${devicePixelRatio} → ציור ${dpr}`;
+ el.querySelectorAll('button').forEach(b=>b.onclick=()=>{try{localStorage.setItem('turbo_city_dpr_cap',b.dataset.dpr)}catch{}resize();perfDprUi();focusGame()})}
+const PERF_LOOK=[];function perfLookUi(){const el=$('perfHudLook');if(!el)return;if(typeof g77LookButtons==='function'&&!PERF_LOOK.g77){PERF_LOOK.g77=1;PERF_LOOK.push(...g77LookButtons())}el.innerHTML=PERF_LOOK.length?'<span style="color:#8fb0c6">בדיקה בעין:</span> '+PERF_LOOK.map((b,i)=>`<button data-look="${i}">${b.label}</button>`).join(' '):'';
+ el.querySelectorAll('button').forEach(b=>b.onclick=()=>{const L=PERF_LOOK[+b.dataset.look];try{g77WakeHold()}catch(e){}   /* D-218: every F9 test */try{const msg=L.go();if(msg)toast(msg)}catch(e){toast('הבדיקה נכשלה: '+e.message)}focusGame()})}
+function perfHudToggle(){PERF.hud=!PERF.hud;const d=perfHudEnsure();if(window.__TC_BENCH)d.style.display=PERF.hud?'block':'none';else{const P=tcF9Ensure();P.style.display=PERF.hud?'flex':'none';tcF9Chip(false);if(PERF.hud)tcF9Show(TCF9.tab);else tcF9Stop()}if(PERF.hud)perfFrameHook(true);else{if(PERF.profile){PERF.profile=false;perfUnwrap();perfOpsOn(false)}perfFrameHook(false)}}   /* p551: F9 — the big check panel (the benchmark keeps the small old one) */
+function perfHudStatus(t){PERF.status=t;if(PERF.el)$('perfHudStatus').textContent=t}
+function perfHudTick(now){
+ if(now-(PERF.hudLast||0)<500)return;PERF.hudLast=now;const R=PERF.roll.filter(x=>x[1]>0);if(!R.length)return;
+ const win=sec=>R.filter(x=>now-x[0]<=sec*1000),fpsOf=a=>{if(!a.length)return 0;const span=(a[a.length-1][0]-a[0][0]+a[0][1])/1000;return a.length/Math.max(.001,span)};
+ const r1=win(1),r10=win(10),r60=R,d10=r10.map(x=>x[1]),d60=r60.map(x=>x[1]),p99=perfQ(d60,.99),js=r10.map(x=>x[2]),h=perfHeap(),cm=perfCanvasMem(),gcs=r10.reduce((n,x)=>n+x[3],0);
+ const o50=d60.filter(x=>x>50).length,o100=d60.filter(x=>x>100).length,span60=Math.min(60,(now-r60[0][0])/1000);
+ const live=$('perfHudLive');if(live)live.innerHTML=`FPS עכשיו <b>${fpsOf(r1).toFixed(0)}</b> · ממוצע (10 שנ׳) <b>${fpsOf(r10).toFixed(1)}</b> · 1% low ${p99>0?(1000/p99).toFixed(1):'—'}<br>זמן פריים ${perfAvg(d10).toFixed(1)} ms · p95 ${perfQ(d10,.95).toFixed(1)} · p99 ${p99.toFixed(1)} · max ${Math.max(...d10).toFixed(0)}<br>תקיעות (${span60.toFixed(0)} שנ׳ אחרונות): <b style="color:${o100?'#ff9b8a':'inherit'}">${o100}</b> מעל 100ms · <b style="color:${o50>1?'#ffd38a':'inherit'}">${o50}</b> מעל 50ms<br>JS לפריים ${perfAvg(js).toFixed(1)} ms · ${typeof SIM_LOOP!=='undefined'?`SIM ${SIM_LOOP.stepHz} Hz · צעדים/פריים ${SIM_LOOP.lastSteps} · יחס SIM ${(SIM_LOOP.ratio||0).toFixed(2)}`:'SIM: צעד משתנה (צעד לכל פריים)'}<br>זיכרון: JS ${h!=null?h.toFixed(0)+'MB':'— (לא זמין בדפדפן הזה)'} · תמונות שמורות ${cm?cm.mb+'MB ('+cm.live+')':'—'} · GC (הערכה) ${gcs} ב-10 שנ׳`;
+ const cats=$('perfHudCats');if(cats){if(PERF.profile&&PERF.liveFrames&&PERF.liveFrames.length){const f=PERF.liveFrames,k=PERF_KINDS.map(x=>[x,perfAvg(f.map(y=>y.kinds[x]))]),ops=perfAvg(f.map(y=>y.ops));
+   cats.innerHTML='<div style="color:#8fb0c6">תקציב (ms לפריים): '+k.map(([x,v])=>`${PERF_KIND_LABEL[x]} <b style="color:${v>PERF_BUDGET[x]?'#ff9b8a':'#9fe3b0'}">${v.toFixed(2)}</b>/${PERF_BUDGET[x]}`).join(' · ')+` · פעולות ציור ${Math.round(ops)}</div>`+PERF_CATS.map(x=>[x,perfAvg(f.map(y=>y.cats[x]))]).sort((a,b)=>b[1]-a[1]).map(([x,v])=>`<div>${PERF_CAT_LABEL[x]}: <b>${v.toFixed(2)}</b> ms</div>`).join('')}else cats.innerHTML=''}}
+function perfHudRender(){const el=PERF.el&&$('perfHudReport');if(!el||!PERF.report)return;el.innerHTML='<table style="width:100%;border-collapse:collapse">'+'<tr><th>תרחיש</th><th>FPS</th><th>ממוצע</th><th>p95</th><th>p99</th><th>JS</th></tr>'+Object.entries(PERF.report.scenarios).map(([k,v])=>`<tr><td>${k}</td><td>${v.fps}</td><td>${v.frameMs.avg}</td><td>${v.frameMs.p95}</td><td>${v.frameMs.p99}</td><td>${v.jsMs.avg}</td></tr>`).join('')+'</table>'}
+addEventListener('keydown',e=>{if(e.code==='F9'){e.preventDefault();perfHudToggle()}});
+/* ==== p551 · the owner 15:37: the big check panel — F9 in the normal game, and a small button (the phone): performance, zones, checks, events, time,
+   and everything the old F9 had (the old panel lives in the performance tab, its eye-check row in a tab of its own). Closed — nothing of it runs:
+   no frame hook, no wrapper, no timer; it is built on the first open. In the benchmark (window.__TC_BENCH) F9 stays the small old panel. ==== */
+var TCF9 = { el: null, tab: 'perf', sofs: null, ck: {}, timer: 0, busy: false };
+/* f9fix (17.11, הבעלים 12.11 + 16.11: "האירועים והאזורים ב-F9 לא עובדים"): the stories of the zones (TC_STORY of 033 + 038) were read from
+   window.__TC_STORY — and from 11.11 (047c1fa) the story engine 074ze puts its api there, and 074zd a new var TC_STORY (the chapters): .filter /
+   .find / for…of threw, the events tab stayed empty and no zone opened. F9 keeps its own reference to the array, taken here — after 033 / 038
+   and before 074zd / 074ze — and window.__TC_ZSTORY is the stable name of that list. */
+const TCF9_ZST = Array.isArray(window.__TC_STORY) ? window.__TC_STORY : (typeof TC_STORY !== 'undefined' && Array.isArray(TC_STORY) ? TC_STORY : []);
+window.__TC_ZSTORY = TCF9_ZST;
+function tcF9StoryList() { return Array.isArray(window.__TC_STORY) ? window.__TC_STORY : TCF9_ZST }
+const TCF9_TABS = [['perf', 'ביצועים'], ['zones', 'אזורים'], ['checks', 'בדיקות'], ['events', 'אירועים'], ['time', 'זמן'], ['look', 'בדיקה בעין']];
+const TCF9_MOD = { C4: ['C4ANIM', 1], C3: ['C3LOOK', 2], A3: ['A34LOOK', 2], A4: ['A34LOOK', 2], B3: ['B3ANIM', 1], B4: ['B4ANIM', 1], D5: ['P554', 0], D3: ['D3ANIM', 1], D4: ['D4ANIM', 1] };   /* f9fix: + D3 / D4 (D3ANIM / D4ANIM.live(ctx, now, …) — the same as C4ANIM) */   /* p554: D5 reads its offset itself */   // the live layer of each zone's stories, and where its clock is in the call
+function tcF9E(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])) }
+function tcF9Css() { if (document.getElementById('tcF9Css')) return; const s = document.createElement('style'); s.id = 'tcF9Css'; s.textContent =
+  '#tcF9{position:fixed;inset:2.5vh 2vw;z-index:65;display:none;flex-direction:column;background:rgba(8,16,24,.96);color:#e6f1f8;border:1px solid #2b4458;border-radius:14px;box-shadow:0 14px 40px #000c;font:13px/1.5 "Segoe UI",Arial,sans-serif;direction:rtl;overflow:hidden}' +
+  '#tcF9Head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid #ffffff18;background:#0c1620}#tcF9Head>b{font-size:16px;color:#ffe08a}#tcF9Build{color:#8fb0c6;font-size:11px}' +
+  '#tcF9Tabs{display:flex;gap:6px;flex-wrap:wrap;flex:1;justify-content:center}#tcF9Tabs button{padding:7px 14px;background:#ffffff0d;border-color:#ffffff22;color:#9fb0bd}#tcF9Tabs button.on{background:#1d4a6b;color:#fff;border-color:#62c8f4}' +
+  '#tcF9Body{flex:1;overflow:auto;overscroll-behavior:contain;padding:12px 16px}#tcF9Body>section{display:none}#tcF9Body>section.on{display:block}' +
+  '.tcF9Row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0}.tcF9Card{border:1px solid #ffffff18;border-radius:10px;padding:8px 10px;margin:8px 0;background:#ffffff06}.tcF9Card h4,#tcF9 h4{margin:8px 0 6px;font-size:14px;color:#dff7ff}' +
+  '.tcF9Ok{color:#63d99a}.tcF9Bad{color:#ff8a80}.tcF9Mut{color:#8fb0c6}.tcF9Tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}.tcF9Tbl td,.tcF9Tbl th{padding:3px 6px;border-bottom:1px solid #ffffff10;text-align:right;vertical-align:top}.tcF9Tbl th{color:#8fb0c6;font-weight:600}' +
+  '#tcF9 details{border:1px solid #ffffff14;border-radius:10px;margin:6px 0;background:#ffffff05}#tcF9 summary{cursor:pointer;padding:7px 10px;font-weight:700}#tcF9 details>div{padding:4px 10px 10px}' +
+  '#tcF9 button.sm{padding:4px 9px;font-size:11px;border-radius:7px}#tcF9 pre{white-space:pre-wrap;word-break:break-word;background:#0004;border-radius:8px;padding:8px;max-height:40vh;overflow:auto;font:12px/1.45 Consolas,monospace;margin:4px 0}' +
+  '#tcF9 #perfHud{position:static!important;display:block!important;max-width:none!important;max-height:none!important;min-width:0!important;box-shadow:none!important;border:1px solid #ffffff14!important;background:#ffffff05!important;margin-top:8px}' +
+  '#tcF9Btn,#tcF9Chip{position:fixed;left:10px;z-index:64;padding:6px 10px;border-radius:10px;font-size:12px;display:none}#tcF9Btn{top:10px}#tcF9Chip{top:50px}' +
+  '@media (pointer:coarse),(max-width:760px){#tcF9Btn{display:block}#tcF9{inset:0;border-radius:0}}';
+  document.head.appendChild(s) }
+function tcF9P(k) { return TCF9.el.querySelector('section[data-pane="' + k + '"]') }
+function tcF9Ensure() { if (TCF9.el) return TCF9.el; tcF9Css(); const d = document.createElement('div'); d.id = 'tcF9';
+  d.innerHTML = '<div id="tcF9Head"><b>לוח בדיקה (F9)</b><span id="tcF9Build"></span><div id="tcF9Tabs">' + TCF9_TABS.map(([k, l]) => '<button data-tab="' + k + '">' + l + '</button>').join('') +
+    '</div><button id="tcF9Close">סגירה ✕</button></div><div id="tcF9Body">' + TCF9_TABS.map(([k]) => '<section data-pane="' + k + '"></section>').join('') + '</div>';
+  d.addEventListener('wheel', e => e.stopPropagation(), { passive: true }); d.addEventListener('touchmove', e => e.stopPropagation(), { passive: true });
+  document.body.appendChild(d); TCF9.el = d; d.querySelector('#tcF9Build').textContent = BUILD;
+  d.querySelector('#tcF9Close').onclick = () => { if (PERF.hud) perfHudToggle(); focusGame() };
+  d.querySelectorAll('#tcF9Tabs button').forEach(b => b.onclick = () => tcF9Show(b.dataset.tab));
+  d.addEventListener('click', tcF9Click);
+  const pp = tcF9P('perf'); pp.innerHTML = '<div class="tcF9Card"><h4>קריאות לציור</h4><div class="tcF9Row"><button data-act="calls">מדידה של 2 שנ׳ — המסך הנוכחי</button><button data-act="callsZ">בכל אזור שנבנה מחדש (זום 1.1)</button></div><div id="tcF9CallsOut" class="tcF9Mut">עוד לא נמדד.</div></div>' +
+    '<div class="tcF9Mut">פריימים לשנייה, זמן פריים, זמן ה-JS לפריים והזיכרון — בשורות למטה (מתעדכנות כל חצי שנייה כשהלוח פתוח). המדידות הקבועות — בכפתורים למטה; "פירוט לפי מערכת" מוסיף את הפעולות לפריים.</div>';
+  const old = perfHudEnsure(); pp.appendChild(old); old.style.display = 'block';
+  const lp = tcF9P('look'); lp.innerHTML = '<div class="tcF9Mut">כל הכפתורים של "בדיקה בעין" מה-F9 הקודם — כמו שהיו.</div>'; const lk = document.getElementById('perfHudLook'); if (lk) { lp.appendChild(lk); lk.style.marginTop = '8px' }
+  return d }
+function tcF9Show(k) { if (!TCF9.el) return; TCF9.tab = k; TCF9.el.querySelectorAll('#tcF9Tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === k));
+  TCF9.el.querySelectorAll('#tcF9Body>section').forEach(s => s.classList.toggle('on', s.dataset.pane === k));
+  try { if (k === 'zones') tcF9Zones(); else if (k === 'checks') tcF9Checks(); else if (k === 'events') tcF9Events(); else if (k === 'time') tcF9Time() } catch (e) { tcF9P(k).insertAdjacentHTML('afterbegin', '<div class="tcF9Bad">שגיאה: ' + tcF9E(e.message) + '</div>') }
+  tcF9Stop(); if (k === 'time') TCF9.timer = setInterval(() => { if (PERF.hud && TCF9.tab === 'time') tcF9TimeLine(); else tcF9Stop() }, 1000) }
+function tcF9Stop() { if (TCF9.timer) clearInterval(TCF9.timer); TCF9.timer = 0 }
+function tcF9Chip(on) { const c = document.getElementById('tcF9Chip'); if (c) c.style.display = on ? 'block' : 'none' }
+function tcF9Mini() { if (PERF.hud) perfHudToggle(); tcF9Chip(true) }   // a camera / story button: the panel steps aside, a chip brings it back
+function tcF9Open() { try { if (State.phoneOpen) setPhoneOpen(false) } catch (e) {} if (!PERF.hud) perfHudToggle() }
+window.tcF9Open = tcF9Open;
+// ---- the camera and the clock of the live layers ----
+function tcF9Zoom(b) { const w = Math.max(40, b[2] - b[0]), h = Math.max(40, b[3] - b[1]); return Math.max(1.2, Math.min(3, Math.min(innerWidth / (w + 160), innerHeight / (h + 160)))) }
+function tcF9Cam(x, y, z) { try { if (typeof CL !== 'undefined' && CL && CL.follow) CL.follow = null } catch (e) {}   /* f9fix: a follow of the city-live (074i) pulled the camera away from every later jump; its own buttons set it again after this call */
+  try { if (!State.mapQa) toggleMapQa(); Camera.x = x; Camera.y = y; Camera.zoom = z; updateMapQaButton() } catch (e) { toast('המצלמה: ' + e.message) } tcF9Mini(); focusGame() }
+function tcF9Now() { try { return (SIM_LOOP.renderNow != null ? SIM_LOOP.renderNow : performance.now()) + (typeof SIM_BENCH_OFS !== 'undefined' ? SIM_BENCH_OFS : 0) } catch (e) { return performance.now() } }
+function tcF9Wrap() { if (TCF9.sofs) return TCF9.sofs; const S = TCF9.sofs = {};   // installed on the first "from the start" only
+  const w = (o, n, i) => { if (!o || typeof o.live !== 'function' || o.live.__tcF9) return; const f = o.live, g = function () { if (S[n]) { const a = Array.prototype.slice.call(arguments); a[i] -= S[n]; return f.apply(this, a) } return f.apply(this, arguments) }; g.__tcF9 = 1; o.live = g };
+  try { w(typeof C4ANIM !== 'undefined' ? C4ANIM : null, 'C4ANIM', 1) } catch (e) {} try { w(window.C3LOOK || null, 'C3LOOK', 2) } catch (e) {} try { w(window.A34LOOK || null, 'A34LOOK', 2) } catch (e) {}
+  try { w(typeof B3ANIM !== 'undefined' ? B3ANIM : null, 'B3ANIM', 1) } catch (e) {} try { w(typeof B4ANIM !== 'undefined' ? B4ANIM : null, 'B4ANIM', 1) } catch (e) {}
+  try { w(typeof D3ANIM !== 'undefined' ? D3ANIM : null, 'D3ANIM', 1) } catch (e) {} try { w(typeof D4ANIM !== 'undefined' ? D4ANIM : null, 'D4ANIM', 1) } catch (e) {} return S }   /* f9fix */
+function tcF9Story(id) { const s = tcF9StoryList().find(q => q.id === id); if (!s) return; const m = TCF9_MOD[s.zone]; if (!m) { toast('לסיפור הזה אין עדיין "מההתחלה"'); return }
+  const S = tcF9Wrap(), now = tcF9Now(), T = s.T * 1000; S[m[0]] = now - Math.floor(now / T) * T - (s.t0 || 0) * 1000;
+  if (s.day) tcF9Day(); const b = s.box; tcF9Cam((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, tcF9Zoom(b)) }
+/* f9fix: what happens only by day, started from the panel at night — the manual switch to day (like the "day" button of the time tab), and a toast that says so */
+function tcF9Day() { if (!(+window.__TC_NIGHT > .5)) return; try { c34Night(0); toast('עבר ליום כדי לראות — בלשונית "זמן": "אוטומטי" מחזיר את השעון') } catch (e) { toast('ביום בלבד (בלשונית "זמן": יום)') } }
+/* D‑554: הכדורסל ב-A4 — שלוש שורות נפרדות: 5 על 5 (משחק מסודר עם לוח ושופט), 2 על 2 (רחוב, בלי לוח ובלי שופט), ועשרה שחקנים (שני משחקי 2 על 2 ועוד שניים שמחכים) */
+function tcF9Basket(n) { let ok = false; try { ok = SPORT2.dev.basket(n) } catch (e) {} if (!ok) { toast('משחק הכדורסל לא התחיל'); return } tcF9Day(); tcF9Cam(n === 2 ? 268 : 200, 2992, n === 2 ? 2.6 : 1.9) }
+function tcF9Match() { let ok = false; try { if (typeof LEAGUE4 !== 'undefined') { ok = !!LEAGUE4.f9('match'); if (ok) return } } catch (e) {} try { ok = A34PLAY.startMatchNow() } catch (e) {} if (!ok) { toast('אין שעון משחק — אי אפשר להתחיל משחק'); return } const L = (window.__TC_LIVE || { zones: {} }).zones.A3, c = (L && L.center) || [600, 2125]; tcF9Cam(c[0], c[1], 1) }
+// ---- the zones ----
+function tcF9Name(z) { try { return (TC_NAMES.zones || {})[z] || (typeof G7_ZONE !== 'undefined' && G7_ZONE[z]) || '' } catch (e) { return '' } }
+function tcF9ZoneList() { const C = 'ABCDEFGH', Y = [-850, 0, 850, 1700, 2550, 3400, 4250, 5200, 6050, 6900, 7750], out = [], seen = new Set(), L = window.__TC_LIVE || { zones: {}, except: {} };
+  const code = (x, y) => { let r = 0; for (let i = 0; i < Y.length - 1; i++) if (y >= Y[i] && y < Y[i + 1]) r = i; return C[Math.max(0, Math.min(7, Math.floor(x / 1200)))] + r };
+  for (const r of (typeof ACTIVE_REGIONS !== 'undefined' ? ACTIVE_REGIONS : [])) { const x = r.x + r.w / 2, y = r.y + r.h / 2, z = code(x, y); if (seen.has(z)) continue; seen.add(z); out.push({ z, x, y }) }
+  for (const z of [...Object.keys(L.zones || {}), ...Object.keys(L.except || {})]) if (!seen.has(z)) { seen.add(z); const Q = L.zones[z], c = Q && Q.center || [600, 600]; out.push({ z, x: c[0], y: c[1] }) }
+  const rank = z => (L.zones && L.zones[z]) ? 2 : (L.except && L.except[z]) ? 1 : 0; out.sort((a, b) => rank(b.z) - rank(a.z) || a.z.localeCompare(b.z)); for (const o of out) o.rank = rank(o.z); return out }
+function tcF9LiveRow(z, A) { const L = window.__TC_LIVE || { zones: {}, except: {} }; if (L.except && L.except[z]) return '<span class="tcF9Mut">חריג: ' + tcF9E(L.except[z]) + '</span>'; const a = A && A.zones && A.zones[z];
+  if (!a) return '<span class="tcF9Mut">אין שכבה חיה</span>'; if (a.exception) return '<span class="tcF9Mut">חריג: ' + tcF9E(a.exception) + '</span>'; return '<span class="' + (a.ok ? 'tcF9Ok' : 'tcF9Bad') + '">' + a.count + ' פרטים מ-' + a.core + ' סוגים ' + (a.ok ? '✓' : '✗') + '</span>' }
+function tcF9Zones() { const p = tcF9P('zones'); if (p.dataset.built) { tcF9ZoneHeads(); return } p.dataset.built = 1; let A = null; try { A = liveAudit() } catch (e) {} const Z = tcF9ZoneList();
+  p.innerHTML = '<div class="tcF9Mut">' + Z.length + ' אזורים בנויים; ' + Z.filter(o => o.rank === 2).length + ' עם פרטים חיים. לחיצה על אזור פותחת את הפרטים שלו; "מצלמה" ו"מההתחלה" מזיזים את המצלמה (הלוח זז הצידה — F9 או הכפתור למעלה מחזירים).</div>' +
+    '<div class="tcF9Row"><button class="sm" data-act="sofs0">כל הסיפורים בזמן הרגיל</button></div>' +
+    Z.map(o => '<details data-zone="' + o.z + '" data-x="' + o.x + '" data-y="' + o.y + '"><summary>' + o.z + ' · ' + tcF9E(tcF9Name(o.z)) + ' · <span class="tcF9Head">' + tcF9LiveRow(o.z, A) + '</span></summary><div></div></details>').join('');
+  p.querySelectorAll('details').forEach(d => d.addEventListener('toggle', () => { if (d.open && !d.dataset.built) { d.dataset.built = 1; try { d.lastElementChild.innerHTML = tcF9ZoneBody(d.dataset.zone, +d.dataset.x, +d.dataset.y) } catch (e) { d.dataset.built = ''; d.lastElementChild.innerHTML = '<div class="tcF9Bad">שגיאה באזור: ' + tcF9E(e && e.message) + '</div>' } } })) }
+function tcF9ZoneHeads() { let A = null; try { A = liveAudit() } catch (e) {} tcF9P('zones').querySelectorAll('details').forEach(d => { const h = d.querySelector('.tcF9Head'); if (h) h.innerHTML = tcF9LiveRow(d.dataset.zone, A) }) }
+function tcF9ZoneBody(z, x, y) { const L = window.__TC_LIVE || { zones: {}, except: {} }, Q = L.zones[z], c = (Q && Q.center) || [x, y]; let h = '<div class="tcF9Row"><button class="sm" data-cam="' + c[0] + ',' + c[1] + ',1.1">קפיצה לאזור</button></div>';
+  if (Q) { let M = []; try { M = Q.movers(tcF9Now(), true) } catch (e) {} h += '<h4>הפרטים החיים (' + M.length + ')</h4><table class="tcF9Tbl"><tr><th>סוג</th><th>מה זז</th><th>מתי</th><th></th></tr>' +
+      M.map(m => { const b = m.box || [c[0] - 40, c[1] - 40, c[0] + 40, c[1] + 40]; return '<tr><td>' + tcF9E(m.kind) + '</td><td>' + tcF9E(m.act || m.what || m.id) + ' <span class="tcF9Mut">' + tcF9E(m.id) + '</span></td><td>' + tcF9E(m.when || 'תמיד') + '</td><td><button class="sm" data-box="' + b.join(',') + '">מצלמה</button></td></tr>' }).join('') + '</table>' }
+  const S = tcF9StoryList().filter(s => s.zone === z); if (S.length) h += '<h4>הסיפורים (' + S.length + ')</h4>' + S.map(s => '<div class="tcF9Row"><button class="sm" data-story="' + tcF9E(s.id) + '">מההתחלה</button><span>' + tcF9E(s.what) + '</span><span class="tcF9Mut">· כל ' + (Math.round(s.T / 6) / 10) + ' דק׳ · פעיל ' + s.on[1] + ' שנ׳' + (s.day ? ' · ביום' : '') + '</span></div>').join('');
+  h += '<h4>מצב הבדיקות</h4><div class="tcF9Row">' + tcF9ZoneChecks(z) + '<button class="sm" data-act="pixz" data-z="' + z + '">הפרטים החיים — זזים בפועל (האזור הזה)</button></div><div data-out="pixz-' + z + '"></div>'; return h }
+function tcF9ZoneChecks(z) { const r = []; for (const [k, l] of [['live', 'ספירה'], ['pix', 'זזים בפועל'], ['story', 'סיפורים']]) { const R = TCF9.ck[k]; if (!R || !R.zones || !(z in R.zones)) continue; const v = R.zones[z]; r.push('<span class="' + (v ? 'tcF9Ok' : 'tcF9Bad') + '">' + l + ' ' + (v ? '✓' : '✗') + '</span>') }
+  return r.length ? r.join(' · ') + ' ' : '<span class="tcF9Mut">הבדיקות לא הורצו עדיין (לשונית "בדיקות")</span> ' }
+// ---- the clicks ----
+function tcF9Click(e) { const b = e.target.closest('button'); if (!b || !TCF9.el.contains(b)) return; const D = b.dataset;
+  if (D.cam) { const v = D.cam.split(',').map(Number); tcF9Cam(v[0], v[1], v[2]); return }
+  if (D.box) { const v = D.box.split(',').map(Number); tcF9Cam((v[0] + v[2]) / 2, (v[1] + v[3]) / 2, tcF9Zoom(v)); return }
+  if (D.story) { tcF9Story(D.story); return }
+  if (D.night != null) { try { c34Night(+D.night) } catch (e) {} tcF9TimeLine(); return }
+  if (D.wld) { try { wldGo(D.wld) } catch (e) {} tcF9TimeLine(); return }   /* D‑572 */
+  if (D.wx) { try { wxGo(D.wx) } catch (e) {} tcF9TimeLine(); return }   /* D‑573 */
+  if (D.hm) { try { const c = gameClock(); if (D.hm === '+60') gameClockSet(c.hour + 1, c.minute); else { const [h, m] = D.hm.split(':').map(Number); gameClockSet(h, m) } } catch (e) {} tcF9TimeLine(); return }
+  if (D.rate) { try { const C = G84_CLOCK; gameClock(); const w = g84WorldS(), m = C.base + w * C.rate, r = .5 * (+D.rate); C.rate = r; C.base = m - w * r } catch (e) {} tcF9TimeLine(); return }
+  if (D.ck) { tcF9Run(D.ck); return }
+  if (D.show) { const [k, i] = D.show.split(':'); let ok = false; try { ok = TCSHOW.open(k, +i, { place: k === 'film' ? 'קולנוע' : 'תיאטרון', onEnd() {} }) } catch (e) {} if (!ok) toast('ההצגה לא נפתחה (יש כבר הצגה פתוחה?)'); return }   /* S7F271 · D‑539 */
+  if (D.act === 'voicetest') { try { TCVOICETEST.open() } catch (e) { toast('בדיקת הקולות לא נפתחה') } return }
+  if (D.act === 'match') { tcF9Match(); return }
+  if (D.act === 'final' || D.act === 'cup' || D.act === 'goal') { let c = null; try { c = LEAGUE4.f9(D.act) } catch (e) { toast('שגיאה: ' + e.message) } if (!c) toast(D.act === 'goal' ? 'לא נמצא גול בסגנון הזה' : 'המשחק לא התחיל'); return }   /* D‑577 · D‑578 */
+  if (D.act === 'water') { let r = null; try { r = A34LOOK.spr3.force(30) } catch (e) {} if (!r || !r.ok) { toast((r && r.why) || 'ההשקיה לא התחילה'); return } toast('השקיה באצטדיון — 30 דקות משחק (אם אין אימון)'); tcF9Cam(625, 2075, 1.2); return }   /* D‑581 */
+  if (D.act === 'bk2' || D.act === 'bk5' || D.act === 'bk10') { tcF9Basket(+D.act.slice(2)); return }   /* D‑554 */
+  if (D.act === 'sofs0') { if (TCF9.sofs) for (const k in TCF9.sofs) TCF9.sofs[k] = 0; toast('כל הסיפורים — בזמן הרגיל'); return }
+  if (D.act === 'all') { tcF9RunAll(); return }
+  if (D.act === 'calls') { tcF9CallsNow(); return }
+  if (D.act === 'callsZ') { tcF9CallsZones(); return }
+  if (D.act === 'pixz') { const o = TCF9.el.querySelector('[data-out="pixz-' + D.z + '"]'); if (o) o.innerHTML = '<span class="tcF9Mut">מריץ…</span>'; setTimeout(() => { const R = tcF9Hold(() => tcF9Pixels([D.z])); if (o) o.innerHTML = '<pre>' + tcF9E(R.text) + '</pre>' }, 30); return } }
+// ---- performance: the draw calls (every 2D call, as the measurement of the rounds counts them) ----
+function tcF9Count(frames) { return new Promise(res => { const P = CanvasRenderingContext2D.prototype, orig = {}, cnt = {}; let n = 0, fr = 0, done = false;
+  for (const k of Object.getOwnPropertyNames(P)) { if (k === 'constructor') continue; const d = Object.getOwnPropertyDescriptor(P, k); if (!d || typeof d.value !== 'function') continue; const f = d.value; orig[k] = f; P[k] = function () { n++; cnt[k] = (cnt[k] || 0) + 1; return f.apply(this, arguments) } }
+  const end = () => { if (done) return; done = true; for (const k in orig) P[k] = orig[k]; res({ frames: fr, calls: n, perFrame: fr ? Math.round(n / fr) : 0, top: Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 8) }) };
+  const tick = () => { if (done) return; fr++; if (fr >= frames) { end(); return } requestAnimationFrame(tick) }; requestAnimationFrame(tick); setTimeout(end, 4000 + frames * 100) }) }
+function tcF9Frames(n) { return new Promise(res => { let k = 0; const t = () => { if (++k >= n) res(); else requestAnimationFrame(t) }; requestAnimationFrame(t) }) }
+async function tcF9CallsNow() { const o = document.getElementById('tcF9CallsOut'); if (TCF9.busy) return; TCF9.busy = true; o.textContent = 'מודד…';
+  try { const t0 = performance.now(); let fr = 0; await new Promise(r => { const f = () => { fr++; if (performance.now() - t0 < 2000) requestAnimationFrame(f); else r() }; requestAnimationFrame(f) });
+    const R = await tcF9Count(Math.max(10, fr)); o.innerHTML = '<b>' + R.perFrame + '</b> קריאות לפריים (' + R.frames + ' פריימים) · הכי הרבה: ' + R.top.map(([k, v]) => tcF9E(k) + ' ' + Math.round(v / Math.max(1, R.frames))).join(' · ') + ' · מצלמה ' + Math.round(Camera.x) + ', ' + Math.round(Camera.y) + ' · זום ' + (+Camera.zoom).toFixed(2) }
+  catch (e) { o.textContent = 'שגיאה: ' + e.message } TCF9.busy = false }
+async function tcF9CallsZones() { const o = document.getElementById('tcF9CallsOut'); if (TCF9.busy) return; TCF9.busy = true; o.textContent = 'מודד…'; const L = window.__TC_LIVE || { zones: {}, except: {} };
+  const Z = tcF9ZoneList().filter(q => q.rank > 0), cam = { x: Camera.x, y: Camera.y, zoom: Camera.zoom }, mq = State.mapQa, rows = [];
+  try { State.mapQa = true; for (const q of Z) { const c = (L.zones[q.z] && L.zones[q.z].center) || [q.x, q.y]; Camera.x = c[0]; Camera.y = c[1]; Camera.zoom = 1.1; await tcF9Frames(4); const R = await tcF9Count(8); rows.push([q.z, R.perFrame]); o.textContent = 'מודד… ' + q.z } }
+  catch (e) { rows.push(['שגיאה', e.message]) } finally { Camera.x = cam.x; Camera.y = cam.y; Camera.zoom = cam.zoom; State.mapQa = mq; TCF9.busy = false }
+  o.innerHTML = '<table class="tcF9Tbl"><tr><th>אזור</th><th>קריאות לציור לפריים (זום 1.1, מרכז האזור)</th></tr>' + rows.map(r => '<tr><td>' + r[0] + ' ' + tcF9E(tcF9Name(r[0])) + '</td><td>' + r[1] + '</td></tr>').join('') + '</table>' }
+// ---- the checks ----
+const TCF9_CK = [['road', 'הכבישים והצמתים'], ['special', 'חניות נכים וטעינה'], ['r76', 'שבילי ההולכים — לא על נתיב נסיעה'], ['peopleQ', 'אנשים בכביש — מהירה: 20 שנ׳ של מה שקורה עכשיו'],
+  ['peopleF', 'אנשים בכביש — מלאה: העולם רץ 120 שנ׳ קדימה (המשחק נעצר לכמה שניות)'], ['live', 'הפרטים החיים — ספירה (8 לפחות, 4 סוגים)'], ['pix', 'הפרטים החיים — זזים בפועל, ביום ובלילה'], ['story', 'הסיפורים — מתחילים, נגמרים, ממתינים ומתחילים שוב']];
+function tcF9Checks() { const p = tcF9P('checks'); if (!p.dataset.built) { p.dataset.built = 1;
+    p.innerHTML = '<div class="tcF9Row"><button data-act="all">הרץ הכול (בלי הבדיקה המלאה של האנשים)</button><span class="tcF9Mut">כל בדיקה בכפתור שלה; התוצאה נשארת כאן ובלשונית "אזורים".</span></div><table class="tcF9Tbl" id="tcF9CkT"><tr><th>בדיקה</th><th>תוצאה</th><th></th></tr>' +
+      TCF9_CK.map(([k, l]) => '<tr data-row="' + k + '"><td>' + l + '</td><td class="r"><span class="tcF9Mut">לא הורץ</span></td><td><button class="sm" data-ck="' + k + '">הרץ</button></td></tr><tr data-det="' + k + '" style="display:none"><td colspan="3"><pre></pre></td></tr>').join('') + '</table>' }
+  for (const [k] of TCF9_CK) tcF9CkShow(k) }
+function tcF9CkShow(k) { const p = TCF9.el && tcF9P('checks'), R = TCF9.ck[k]; if (!p || !R) return; const row = p.querySelector('tr[data-row="' + k + '"] td.r'), det = p.querySelector('tr[data-det="' + k + '"]');
+  if (R.running) { row.innerHTML = '<span class="tcF9Mut">מריץ…</span>'; return } row.innerHTML = '<span class="' + (R.ok ? 'tcF9Ok' : 'tcF9Bad') + '">' + (R.ok ? '✓ עובר' : '✗ נכשל') + '</span> · ' + tcF9E(R.sum);
+  if (R.text) { det.style.display = ''; det.querySelector('pre').textContent = R.text } else det.style.display = 'none' }
+function tcF9Hold(f) { const S = TCF9.sofs, keep = S ? Object.assign({}, S) : null; if (S) for (const k in S) S[k] = 0; try { return f() } finally { if (S) Object.assign(S, keep) } }   // a check sees the game's own time, not a story started from the panel
+function tcF9Run(k, cb) { const R = TCF9.ck[k] = { running: true }; tcF9CkShow(k); const fin = r => { Object.assign(R, r, { running: false }); tcF9CkShow(k); try { tcF9ZoneHeads() } catch (e) {} if (cb) cb() };
+  setTimeout(() => { try { if (k === 'peopleQ') { tcF9PeopleQ(20).then(fin, e => fin({ ok: false, sum: 'שגיאה: ' + e.message })); return } fin(tcF9CK[k]()) } catch (e) { fin({ ok: false, sum: 'שגיאה: ' + e.message }) } }, 30) }
+function tcF9RunAll() { const L = TCF9_CK.map(c => c[0]).filter(k => k !== 'peopleF'); const next = () => { const k = L.shift(); if (k) tcF9Run(k, next) }; next() }
+const tcF9CK = {
+  road: () => { const r = roadAudit(false); return { ok: !r.issues.length, sum: r.checks.length + ' בדיקות · ' + r.issues.length + ' בעיות', text: r.issues.slice(0, 80).join('\n') } },
+  special: () => { const s = specialAudit(); return { ok: !!s.ok, sum: 'נכים ' + s.acc + ' · טעינה ' + s.ev + ' · ' + s.lots + ' חניונים', text: [...(s.bad || []), ...(s.noHead || []).map(q => 'בלי שלט: ' + q)].slice(0, 60).join('\n') } },
+  r76: () => { const r = r76PedAudit(); return { ok: !!r.ok, sum: r.edges + ' קטעי שביל · ' + r.bad.length + ' על נתיב · ' + r.startBad.length + ' נקודות התחלה על נתיב', text: [...r.bad, ...r.startBad].slice(0, 60).join('\n') } },
+  live: () => { const a = liveAudit(), zones = {}, L = []; for (const z in a.zones) { const v = a.zones[z]; if (v.exception) { L.push(z + ': חריג — ' + v.exception); continue } zones[z] = !!v.ok; L.push(z + ': ' + v.count + ' פרטים מ-' + v.core + ' סוגים ' + (v.ok ? '✓' : '✗') + (v.noAct && v.noAct.length ? ' · בלי פעולה: ' + v.noAct.join(', ') : '')) }
+    return { ok: !!a.ok, zones, sum: Object.keys(zones).length + ' אזורים · ' + (a.fails || []).length + ' כישלונות', text: L.concat(a.fails || []).join('\n') } },
+  pix: () => tcF9Hold(() => tcF9Pixels(null)),
+  story: () => tcF9Hold(() => tcF9Stories()),
+  peopleF: () => { const R = JSON.parse(tcF9PeopleFull(120)); return { ok: !!R.ok, sum: R.samples + ' דגימות מצב ו-' + R.sweeps + ' מעברי ציור (' + R.views + ' תצוגות) · ' + R.drawn + ' אנשים מצוירים · ' + R.hits.length + ' על נתיב נסיעה', text: R.hits.slice(0, 40).map(h => h.who + ' · ' + h.kind + ' · ' + h.x + ', ' + h.y + ' · ' + h.zone + ' · ' + h.roadName + ' · שנ׳ ' + h.t).join('\n') + (R.renderErr ? '\nשגיאת ציור: ' + R.renderErr : '') } } };
+// the pixels of the live layers (as the round's check): every listed item changes in its box over its cycle — by day, and at night what works at night
+function tcF9Pixels(only) { const Z = (window.__TC_LIVE || { zones: {} }).zones, c34 = typeof c34Live === 'function' ? c34Live : null, zones = {}, L = []; let all = true;
+  try { if (c34) c34Live = () => false; for (const z in Z) { if (only && !only.includes(z)) continue; const Q = Z[z], [x0, y0, x1, y1] = Q.box, W = x1 - x0, H = y1 - y0, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d'), t0 = 1000, T = [];
+      for (let k = 0; k < 32; k++) T.push(t0 + Q.cycle * k / 32); T.push(t0 + .3, t0 + .7, t0 + 1.2, t0 + 2.1); let zok = true;
+      for (const nt of [0, 1]) { const st = {};
+        for (const t of T) { g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H); g.setTransform(1, 0, 0, 1, -x0, -y0); try { Q.render(g, t * 1000, nt) } catch (e) {}
+          for (const m of Q.movers(t * 1000, true)) { if (m.when && /^כשיש מכלית/.test(m.when)) continue; if (!nt && m.when === 'לילה') continue; if (nt && /^יום/.test(m.when || '')) continue; const b = m.box, X0 = Math.max(0, b[0] - x0), Y0 = Math.max(0, b[1] - y0), X1 = Math.min(W, b[2] - x0), Y1 = Math.min(H, b[3] - y0); if (X1 <= X0 || Y1 <= Y0) continue;
+            const d = g.getImageData(X0, Y0, X1 - X0, Y1 - Y0).data; let n = 0, h = 0; for (let i = 0; i < d.length; i += 4) { if (d[i + 3] > 8) n++; h = (h * 31 + d[i] + d[i + 1] * 7 + d[i + 2] * 13 + d[i + 3] * 17 + i) >>> 0 }
+            const s = st[m.id] || (st[m.id] = { drawn: 0, H: new Set() }); s.drawn = Math.max(s.drawn, n); if (n > 3) s.H.add(h) } }
+        const rows = Object.entries(st), still = rows.filter(([id, s]) => !(s.drawn > 3 && s.H.size > 1)).map(([id]) => id); if (still.length) zok = false;
+        L.push(z + (nt ? ' לילה' : ' יום') + ': ' + (rows.length - still.length) + '/' + rows.length + ' זזים' + (still.length ? ' · עומדים: ' + still.join(', ') : '')) }
+      zones[z] = zok; if (!zok) all = false } } finally { if (c34) c34Live = c34 }
+  return { ok: all, zones, sum: Object.keys(zones).length + ' אזורים · ' + Object.values(zones).filter(v => !v).length + ' עם פרט שלא זז', text: L.join('\n') } }
+// the stories (as the round's check): in the active window the picture changes, in the wait it does not change at all, and the next cycle starts again
+function tcF9Stories() { const S = tcF9StoryList(), c34 = typeof c34Live === 'function' ? c34Live : null, zones = {}, L = []; let all = true;
+  try { if (c34) c34Live = () => false; for (const q of S) { const [x0, y0, x1, y1] = q.box, W = x1 - x0, H = y1 - y0, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
+      const hashAt = (t, nt) => { g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H); g.setTransform(1, 0, 0, 1, -x0, -y0); try { q.render(g, t * 1000, nt) } catch (e) { return 'err' } const d = g.getImageData(0, 0, W, H).data; let h = 0; for (let i = 0; i < d.length; i += 4) h = (h * 31 + d[i] + d[i + 1] * 7 + d[i + 2] * 13 + d[i + 3] * 17 + i) >>> 0; return h };
+      const base = q.T * 10 + (q.t0 || 0), wait = q.T - q.on[1]; let ok = wait >= 120; const parts = [];
+      for (const nt of (q.day ? [0] : [0, 1])) { const [a, bb] = q.on, A = new Set(), I = new Set(), A2 = new Set(); for (let k = 0; k < 24; k++) A.add(hashAt(base + a + (bb - a) * (k + .5) / 24, nt));
+        const i0 = bb + 2, i1 = q.T - 1; hashAt(base + i0, nt); for (let k = 0; k < 12; k++) I.add(hashAt(base + i0 + (i1 - i0) * k / 11, nt)); for (let k = 0; k < 8; k++) A2.add(hashAt(base + q.T + a + (bb - a) * (k + .5) / 8, nt));
+        const o = A.size >= 4 && I.size === 1 && A2.size >= 2; if (!o) ok = false; parts.push((nt ? 'לילה ' : 'יום ') + A.size + '/' + I.size + '/' + A2.size) }
+      if (q.day) parts.push('לילה — כבוי'); zones[q.zone] = (zones[q.zone] !== false) && ok; if (!ok) all = false;
+      L.push(q.zone + ' ' + q.id + ' · כל ' + q.T + ' שנ׳ · פעיל ' + q.on.join('–') + ' · המתנה ' + wait + ' שנ׳ · ' + parts.join(' · ') + (ok ? ' ✓' : ' ✗')) } } finally { if (c34) c34Live = c34 }
+  return { ok: all && S.length > 0, zones, sum: S.length + ' סיפורים · ' + L.filter(l => / ✗$/.test(l)).length + ' לא תקינים', text: 'מראות: בחלון הפעיל / בהמתנה / במחזור הבא\n' + L.join('\n') } }
+// people on a driving lane — the quick one: 20 s of what happens now (the state every half second, and every person drawn on the screen meanwhile)
+function tcF9OnRoadFn() { const lane = tcF9OnLaneFn(), BB = BUS_BAY, S = BB.stop / 2, E = S + BB.entry, BAYS = BUS_PHYS.filter(p => p.bay && p.F).map(p => ({ id: 'BAY-' + p.id, name: 'מפרץ האוטובוס ' + p.id + ' (' + p.stops.join(', ') + ')', F: p.F, h: p.F.roadW / 2 }));   /* p552: the bus bays too */
+  const bay = (x, y) => { for (const b of BAYS) { const F = b.F, dx = x - F.rx, dy = y - F.ry, s = Math.abs(dx * F.ux + dy * F.uy), d = dx * F.nx + dy * F.ny; if (s > E || d < b.h || d > b.h + BB.depth) continue; if (s <= S || d <= b.h + BB.depth * (E - s) / BB.entry) return b } return null };
+  const door = (x, y) => { try { const a = BUS_ALIGHTERS.find(q => q.id === P34G.k); return !!(a && a.stage === 0 && Math.hypot(a.x - x, a.y - y) < 6) } catch (e) { return false } };   // on the way from the bus door, alighting
+  return (x, y, drawn) => lane(x, y) || ((drawn && door(x, y)) ? null : bay(x, y)) }
+function tcF9OnLaneFn() { const RD = EDGES.filter(e => !e.future).map(e => { const a = _NODE_BY_ID[e.a], b = _NODE_BY_ID[e.b]; if (!a || !b) return null; const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy); if (L < 1) return null; return { id: e.id, name: e.name || e.id, ax: a.x, ay: a.y, ux: dx / L, uy: dy / L, L, h: (TYPES[e.cls] || TYPES.local).width / 2 } }).filter(Boolean);
+  const X = [...CROSSWALKS, ...(typeof ZEBRA_XW !== 'undefined' ? ZEBRA_XW : [])].map(c => { const e = RD.find(r => r.id === c.roadId); return e ? { x: c.x, y: c.y, ux: e.ux, uy: e.uy, h: e.h, dep: 20 } : null }).filter(Boolean);
+  return (x, y) => { for (const r of RD) { const px = x - r.ax, py = y - r.ay, t = px * r.ux + py * r.uy, o = Math.abs(-px * r.uy + py * r.ux); if (t >= 0 && t <= r.L && o < r.h - 1) { for (const c of X) { const qx = x - c.x, qy = y - c.y; if (Math.abs(qx * c.ux + qy * c.uy) <= c.dep && Math.abs(-qx * c.uy + qy * c.ux) <= c.h + 2) return null } return r } } return null } }
+function tcF9PeopleQ(sec) { return new Promise(res => { const onRoad = tcF9OnRoadFn(), hits = {}, MC = ctx, cvs = MC.canvas; let samples = 0, drawn = 0, seen = 0;
+  const toWorld = (c, x, y) => { const m = c.getTransform(), dx = m.a * x + m.c * y + m.e, dy = m.b * x + m.d * y + m.f, dp = cvs.width / (cvs.clientWidth || innerWidth); return { x: Camera.x + (dx / dp - innerWidth / 2) / Camera.zoom, y: Camera.y + (dy / dp - innerHeight / 2) / Camera.zoom } };
+  const hit = (who, x, y, r) => { const k = who + '|' + r.id; if (!hits[k]) hits[k] = { who, x: Math.round(x), y: Math.round(y), road: r.name, n: 0 }; hits[k].n++ };
+  const rec = (c, x, y, tag) => { if (c !== MC) return; drawn++; const w = toWorld(c, x, y), r = onRoad(w.x, w.y, true); if (r) hit('ציור (' + tag + ')', w.x, w.y, r) };
+  const P0 = window.P34 && P34.draw; if (P0) P34.draw = function (c, x, y) { rec(c, x, y, 'P34'); return P0.apply(this, arguments) };
+  const TD = TurboCity.draw; TurboCity.draw = function (c, a, x, y, o) { if (c === MC && typeof a === 'string' && a.startsWith('PE-')) { let fx = x, fy = y; try { const I = TurboCity.info(a, o || {}), f = I.an && I.an.find(q => q[0] === 'Feet'); fx = x + (f ? f[1] : I.w / 2); fy = y + (f ? f[2] : I.h) } catch (e) {} rec(c, fx, fy, a) } return TD.apply(this, arguments) };
+  const state = () => { samples++; const L = []; for (const n of (typeof NPC_PEDESTRIANS !== 'undefined' ? NPC_PEDESTRIANS : [])) if (!(n.ghost > 0) && !n.inCrosswalk) L.push(['הולך רגל ' + n.id, n.x, n.y]);
+    try { if (g77PlayerOnFoot()) L.push(['השחקן ברגל', PlayerPed.x, PlayerPed.y]) } catch (e) {}
+    const Z = (window.__TC_LIVE || { zones: {} }).zones, now = tcF9Now(); for (const z in Z) { let M = []; try { M = Z[z].movers(now, true) } catch (e) {} for (const m of M) if (m.kind === 'אנשים') { const b = m.box; L.push([m.id + ' (' + z + ')', (b[0] + b[2]) / 2, b[3] - 3]) } }
+    seen = Math.max(seen, L.length); for (const [w, x, y] of L) { const r = onRoad(x, y); if (r) hit(w, x, y, r) } };
+  const iv = setInterval(state, 500); state();
+  setTimeout(() => { clearInterval(iv); if (P0) P34.draw = P0; TurboCity.draw = TD; const H = Object.values(hits); res({ ok: !H.length, sum: sec + ' שנ׳ · ' + samples + ' דגימות מצב (עד ' + seen + ' אנשים) · ' + drawn + ' אנשים מצוירים במסך · ' + H.length + ' על נתיב נסיעה', text: H.map(h => h.who + ' · ' + h.x + ', ' + h.y + ' · ' + h.road + ' · ' + h.n + ' פעמים').join('\n') }) }, sec * 1000) }) }
+// people on a driving lane — the full one: the same code as tools/dev/people_on_road.js (copied into the game by p551), the world runs T_ s ahead
+function tcF9PeopleFull(T_) { return (()=>{const T=T_,EVERY=5,DRAW_EVERY=20,out={T,samples:0,sweeps:0,views:0,people:0,drawn:0,tags:{},hits:[],sources:{}};
+ const zone=(x,y)=>{const C='ABCDEFGH'[Math.max(0,Math.min(7,Math.floor(x/1200)))],R=[-850,0,850,1700,2550,3400,4250,5200,6050,6900,7750];let r=0;for(let i=0;i<R.length-1;i++)if(y>=R[i]&&y<R[i+1])r=i;return C+r};
+ const RD=EDGES.filter(e=>!e.future).map(e=>{const a=_NODE_BY_ID[e.a],b=_NODE_BY_ID[e.b];if(!a||!b)return null;const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy);if(L<1)return null;return{id:e.id,name:e.name||e.id,ax:a.x,ay:a.y,ux:dx/L,uy:dy/L,L,h:(TYPES[e.cls]||TYPES.local).width/2}}).filter(Boolean);
+ const X=[...CROSSWALKS,...(typeof ZEBRA_XW!=='undefined'?ZEBRA_XW:[])].map(c=>{const e=RD.find(r=>r.id===c.roadId);return e?{x:c.x,y:c.y,ux:e.ux,uy:e.uy,h:e.h,dep:20}:null}).filter(Boolean);
+ const onRoad=(x,y)=>{for(const r of RD){const px=x-r.ax,py=y-r.ay,t=px*r.ux+py*r.uy,o=Math.abs(-px*r.uy+py*r.ux);if(t>=0&&t<=r.L&&o<r.h-1){for(const c of X){const qx=x-c.x,qy=y-c.y;if(Math.abs(qx*c.ux+qy*c.uy)<=c.dep&&Math.abs(-qx*c.uy+qy*c.ux)<=c.h+2)return null}return r}}return null};
+ const g=n=>{try{return eval(n)}catch(e){return undefined}};
+ /* p552 (the coordinator 3.11): the bus bays too — a person inside a bay fails, unless on the way from the bus door when alighting (BUS_ALIGHTERS, stage 0) */
+ const BB=g('BUS_BAY'),BAYS=BB?(g('BUS_PHYS')||[]).filter(p=>p.bay&&p.F).map(p=>({id:'BAY-'+p.id,name:'מפרץ האוטובוס '+p.id+' ('+p.stops.join(', ')+')',F:p.F,h:p.F.roadW/2})):[];
+ const onBay=(x,y)=>{if(!BB)return null;const S=BB.stop/2,E=S+BB.entry;for(const b of BAYS){const F=b.F,dx=x-F.rx,dy=y-F.ry,s=Math.abs(dx*F.ux+dy*F.uy),d=dx*F.nx+dy*F.ny;if(s>E||d<b.h||d>b.h+BB.depth)continue;if(s<=S||d<=b.h+BB.depth*(E-s)/BB.entry)return b}return null};
+ const atDoor=(x,y)=>{try{const P=g('P34G'),a=(g('BUS_ALIGHTERS')||[]).find(q=>q.id===(P&&P.k));return!!(a&&a.stage===0&&Math.hypot(a.x-x,a.y-y)<6)}catch(e){return false}};
+ const along=(P,d)=>{let per=0;const seg=[];for(let k=0;k<P.length;k++){const a=P[k],b=P[(k+1)%P.length],l=Math.hypot(b[0]-a[0],b[1]-a[1]);seg.push([a,b,l]);per+=l}d=((d%per)+per)%per;let q=0;while(q<seg.length-1&&d>seg[q][2]){d-=seg[q][2];q++}const A=seg[q][0],B=seg[q][1],f=d/(seg[q][2]||1);return[A[0]+(B[0]-A[0])*f,A[1]+(B[1]-A[1])*f]};
+ const seen={};const hit=(q,r,s)=>{const key=q.id+'|'+r.id;if(seen[key]){seen[key].n++;return}seen[key]={n:1};out.hits.push({who:q.id,kind:q.kind,x:Math.round(q.x),y:Math.round(q.y),zone:zone(q.x,q.y),road:r.id,roadName:r.name,t:s})};
+ // (א) by the state
+ const people=(now)=>{const L=[],t=now/1000;
+  for(const n of (g('NPC_PEDESTRIANS')||[]))if(!(n.ghost>0))L.push({id:n.id,kind:'הולך רגל',x:n.x,y:n.y,cw:!!n.inCrosswalk});
+  try{if(g77PlayerOnFoot())L.push({id:'PLAYER',kind:'השחקן ברגל',x:PlayerPed.x,y:PlayerPed.y})}catch(e){}
+  for(const q of (g('F2_PEOPLE')||[]))if(!q.hidden&&Number.isFinite(q.x))L.push({id:q.id,kind:'נוסע בשדה',x:q.x,y:q.y,cw:!!q.crossing});
+  const Z=(g('TC_LIVE')||{zones:{}}).zones;for(const z in Z){let M=[];try{M=Z[z].movers(now,true)}catch(e){}for(const m of M)if(m.kind==='אנשים'){const b=m.box;L.push({id:m.id,kind:'עובד / פרט חי ('+z+')',x:(b[0]+b[2])/2,y:b[3]-3})}}
+  for(const k of ['A34_BASE','C3D','D3ND','C4ND','D4ND','B3LOOKD','B4G']){const D=g(k);if(!D||!D.gardeners)continue;D.gardeners.forEach((q,i)=>{if(!q.path)return;const p=along(q.path,t*q.speed+i*37);L.push({id:k+'-GARDENER-'+(i+1),kind:'גנן',x:p[0],y:p[1]})})}
+  return L};
+ // (ב) by the drawing: every person the game draws on its own canvas, in world coordinates (the feet)
+ const W=window.__POR={on:false,list:[]},MC=ctx,cvs=MC.canvas;
+ const toWorld=(c,x,y)=>{const m=c.getTransform(),dx=m.a*x+m.c*y+m.e,dy=m.b*x+m.d*y+m.f,dpr=cvs.width/(cvs.clientWidth||innerWidth);return{x:Camera.x+(dx/dpr-innerWidth/2)/Camera.zoom,y:Camera.y+(dy/dpr-innerHeight/2)/Camera.zoom}};
+ const who=()=>{const st=(new Error().stack||'').split('\n').slice(3,7).map(l=>{const m=l.match(/at (?:async )?([\w$.<>]+)/);return m?m[1]:'?'}).filter(n=>n!=='?'&&n!=='Object.draw');return st.slice(0,3).join(' < ')};
+ const rec=(c,x,y,tag)=>{if(!W.on||c!==MC)return;const w=toWorld(c,x,y),bay=onBay(w.x,w.y);W.list.push({x:w.x,y:w.y,tag,by:(onRoad(w.x,w.y)||bay)?who():null,door:!!bay&&atDoor(w.x,w.y)})};
+ const P0=window.P34&&P34.draw;if(P0)P34.draw=function(c,x,y,look){rec(c,x,y,'P34');return P0.apply(this,arguments)};
+ const TD=TurboCity.draw;TurboCity.draw=function(c,a,x,y,o){if(W.on&&c===MC&&typeof a==='string'&&a.startsWith('PE-')){let fx=x,fy=y;try{const I=TurboCity.info(a,o||{}),f=I.an&&I.an.find(q=>q[0]==='Feet');fx=x+(f?f[1]:I.w/2);fy=y+(f?f[2]:I.h)}catch(e){}   /* the feet anchor, with the same options as the drawing */rec(c,fx,fy,a)}return TD.apply(this,arguments)};
+ const views=[];for(let y=-400;y<7800;y+=900)for(let x=800;x<9700;x+=1600)views.push([x,y]);
+ const cam0={x:Camera.x,y:Camera.y,zoom:Camera.zoom},mq=State.mapQa;
+ const sweep=(s)=>{out.sweeps++;State.mapQa=true;for(const [x,y] of views){Camera.x=x;Camera.y=y;Camera.zoom=1.2;W.list=[];W.on=true;try{render(SIM_LOOP.simNow)}catch(e){out.renderErr=out.renderErr||String(e).slice(0,200)}W.on=false;out.views++;
+   for(const q of W.list){out.drawn++;out.tags[q.tag]=(out.tags[q.tag]||0)+1;if(!q.by)continue;const r=onRoad(q.x,q.y)||(q.door?null:onBay(q.x,q.y));if(r)hit({id:'ציור: '+q.by+' ('+q.tag+')',kind:'אדם מצויר',x:q.x,y:q.y},r,s)}}
+  Camera.x=cam0.x;Camera.y=cam0.y;Camera.zoom=cam0.zoom;State.mapQa=mq};
+ const S=SIM_LOOP,H=S.h;if(S.simNow==null)S.simNow=performance.now();
+ try{for(let s=0;s<=T;s++){if(s>0){const n=Math.round(1/H);for(let i=0;i<n;i++){simStep(H,S.simNow+H*1000);S.simNow+=H*1000}}
+  if(s%DRAW_EVERY===0)sweep(s);
+  if(s%EVERY)continue;out.samples++;const P=people(S.simNow);out.people=Math.max(out.people,P.length);
+  for(const q of P){out.sources[q.kind]=(out.sources[q.kind]||0)+1;if(q.cw)continue;const r=onRoad(q.x,q.y)||onBay(q.x,q.y);if(r)hit(q,r,s)}}}
+ finally{if(P0)P34.draw=P0;TurboCity.draw=TD}
+ out.sources['אדם מצויר (כל המקורות)']=out.drawn;
+ for(const h of out.hits)h.times=seen[h.who+'|'+h.road].n;out.ok=!out.hits.length;return JSON.stringify(out)})() }
+// ---- the events ----
+/* S7F271 · D‑539 (הבעלים 8.11: "לא ראיתי ב-F9 באירועים את האופציה לבדוק את מה שבנית בתיאטרון וקולנוע"): every film of the cinema and every play of the
+   theatre (029a–029g) — one row each, straight to the full screen of the show; no ticket and no visit are recorded (it is a check) */
+function tcF9Shows() { let F = [], P = []; try { F = TCSHOW.FILMS || []; P = TCSHOW.PLAYS || [] } catch (e) {}
+  const r = (k, i, t, x) => '<div class="tcF9Row"><button class="sm" data-show="' + k + ':' + i + '">' + tcF9E(t) + '</button><span>' + tcF9E(x.name || '') + '</span><span class="tcF9Mut">· ' + tcF9E(x.sub || '') + '</span></div>';
+  return '<div class="tcF9Card"><h4>הקולנוע והתיאטרון</h4>' + F.map((x, i) => r('film', i, 'הקולנוע — סרט ' + (i + 1), x)).join('') + P.map((x, i) => r('play', i, 'התיאטרון — הצגה ' + (i + 1), x)).join('') +
+    '<div class="tcF9Row"><button class="sm" data-act="voicetest">בדיקת קולות</button><span>אילו קולות עבריים יש בדפדפן, והקול של כל דמות</span><span class="tcF9Mut">· עם תוצאה להעתקה</span></div>' +
+    (F.length + P.length ? '<div class="tcF9Row"><span class="tcF9Mut">המסך המלא נפתח מעל הכול; "חזרה" או F — סגירה. בבדיקה הזו לא נרשמים כרטיס או ביקור.</span></div>' : '<div class="tcF9Bad">הנגן של ההצגות לא נטען</div>') + '</div>' }
+/* f9fix: one error in the base (it was .filter of the stories) no longer leaves the tab empty and stops the cards of 074f / 074h / 074i / 074n —
+   the error is written at the top of the tab and the rest is built */
+function tcF9Events() { try { tcF9EventsBase() } catch (e) { try { tcF9P('events').insertAdjacentHTML('afterbegin', '<div class="tcF9Bad">שגיאה בלשונית האירועים: ' + tcF9E(e && e.message) + '</div>') } catch (e2) {} } }
+function tcF9EventsBase() { const p = tcF9P('events'); if (p.dataset.built) return; p.dataset.built = 1; const S = tcF9StoryList(), pick = re => S.filter(s => re.test(s.id));
+  const row = s => '<div class="tcF9Row"><button class="sm" data-story="' + tcF9E(s.id) + '">עכשיו</button><span>' + tcF9E(s.what) + '</span><span class="tcF9Mut">· ' + s.zone + (s.day ? ' · ביום' : '') + '</span></div>';
+  const G = [['תרגיל הכיבוי', pick(/FIRE-DRILL/)], ['הכבאית והשטיפה', pick(/FIRE-WASH/)], ['ההפסקה בבית הספר', pick(/RECESS/)], ['המסוקים', pick(/HELI/)]], used = new Set(G.flatMap(g => g[1].map(s => s.id)));
+  let L4 = 'ליגת העיר'; try { L4 = 'המחזור הבא: ' + LEAGUE4.fxLabel(LEAGUE4.st()) } catch (e) {}
+  let M = null; try { const m = A34PLAY.nextMatch(), d = m && A34PLAY.dateOf(m.day); M = m ? 'המשחק הבא לפי שעון המשחק: ' + (d ? d.lbl : 'יום ' + m.day) + ' · 19:30' : null } catch (e) {}
+  p.innerHTML = '<div class="tcF9Card"><h4>משחק באצטדיון</h4><div class="tcF9Row"><button data-act="match">משחק ליגה עכשיו עם קהל</button><span class="tcF9Mut">' + tcF9E(L4) + ' · הקהל נכנס, הקבוצות יוצאות מהמנהרה; שריקת פתיחה אחרי 26 שנ׳; שתי מחציות של 3 דקות ומופע בהפסקה; התוצאה נכנסת לטבלה' + (M ? ' · ' + tcF9E(M) : '') + '</span></div>' +
+    '<div class="tcF9Row"><button class="sm" data-act="final">משחק גמר</button><span>משחק גמר עכשיו בין שתי הראשונות בטבלה; בתיקו — הארכה עד שער זהב; אחריו טקס הגביע</span><span class="tcF9Mut">· A3 · לבדיקה, אלא אם הליגה בשלב הגמר</span></div>' +
+    '<div class="tcF9Row"><button class="sm" data-act="cup">טקס הגביע</button><span>קפיצה לטקס: הבמה, המדליות, הנפת הגביע, זיקוקים וקונפטי, וסיבוב ניצחון</span><span class="tcF9Mut">· A3 · לבדיקה</span></div>' +
+    '<div class="tcF9Row"><button class="sm" data-act="goal">חגיגת גול</button><span>גול עכשיו — סגנון אחר בכל לחיצה (6 סגנונות, 9–12 שנ׳)</span><span class="tcF9Mut">· A3</span></div>' +
+    '<div class="tcF9Row"><button class="sm" data-act="water">השקיה באצטדיון</button><span>12 הממטרות השקועות קופצות ומשקות 30 דקות משחק; לפי הלוח: 05:00–07:30, 23:00–02:30, וביום משחק 17:00–18:15</span><span class="tcF9Mut">· A3 · לא בזמן משחק או אימון</span></div></div>' +
+    '<div class="tcF9Card"><h4>כדור סל ב-A4</h4>' +
+    '<div class="tcF9Row"><button class="sm" data-act="bk5">כדור סל 5 על 5</button><span>משחק מסודר בכל המגרש: לוח נקודות וזמן, שופט עם משרוקית</span><span class="tcF9Mut">· A4 · ביום</span></div>' +
+    '<div class="tcF9Row"><button class="sm" data-act="bk2">כדור סל 2 על 2</button><span>משחק רחוב בחצי מגרש — בלי לוח ובלי שופט</span><span class="tcF9Mut">· A4 · ביום</span></div>' +
+    '<div class="tcF9Row"><button class="sm" data-act="bk10">כדור סל — 10 שחקנים</button><span>משחק שכונתי: 2 על 2 בכל חצי מגרש, ועוד שניים מחכים בצד ונכנסים כשקבוצה מפסידה</span><span class="tcF9Mut">· A4 · ביום</span></div></div>' +
+    tcF9Shows() +
+    G.filter(g => g[1].length).map(([t, L]) => '<div class="tcF9Card"><h4>' + t + '</h4>' + L.map(row).join('') + '</div>').join('') +
+    '<div class="tcF9Card"><h4>עוד סיפורים</h4>' + S.filter(s => !used.has(s.id)).map(row).join('') + '</div>' +
+    '<div class="tcF9Row"><button class="sm" data-act="sofs0">כל הסיפורים בזמן הרגיל</button><span class="tcF9Mut">"עכשיו" מתחיל את הסיפור מההתחלה ומזיז אליו את המצלמה (F4 — חזרה לשחקן).</span></div>' }
+/* ==== D‑545 · שלב 3 של הדיג — הדיג העמוק בים, מהמרינה (F3) · ענף fish3 =====================================================================
+   במועדון השייט: השכרת סירת דיג (F — מסך המקום, כלל 30). שתי סירות אמיתיות בשני מעגנים פנויים של המרינה (מעגן 10 במזח 1 ומעגן 18 במזח 2):
+   הן תמיד שם — במעגן, בים עם השחקן, או בדרך חזרה עם הסקיפר של המועדון (כללים 25 ו-32) — ואף פעם לא מופיעות ולא נעלמות.
+   הנהיגה: אותם מקשים כמו ברכב (W ו-S מצערת, A ו-D הגה, רווח — עצירה), בפיזיקה של סירה: תאוצה איטית, סחף בפנייה, רוח, זרם וגלים; שובל מאחור.
+   נקודות הדיג במים העמוקים (ציפורים מעל, אדוות, מצוף סימון), התפריט של שלב 3 (חכה וסליל, פיתיון, משקולת, עומק, רשת וגאף; מזג האוויר
+   והגלים משפיעים), דגי הים מתוך 24 הסוגים בגודל אמיתי (אורך, משקל, הציור מהספרייה), הדייג ב-3/4 על הסירה (P34 ו-FISHX — ההטלה, המשיכה,
+   הרמת הדג), הקשירה במעגן, המכירה במועדון (ובחנות הדיג של C2), והסיפור "הדייג הוותיק מהמרינה" (D‑512). */
+/* ==== D‑550 · הצייר של סירת הדיג — פונקציה אחת נפרדת (צייר אחד לסירה, עם הגדרות גודל וצבע) ====================================================
+   כך אפשר להחליף אותו בצייר החדש של כל כלי השיט בעיר (D‑544 / D‑550) בלי לגעת בלוגיקה של הדיג: FISH3.setPainter(fn).
+   הממשק: paint(c, spec, x, y, h, t, o) — c הקנבס בקואורדינטות העולם; spec = {kind:'console'|'cabin', L, B (פיקס׳, 10 = 1 מ׳), fb (גובה הדופן, מ׳),
+   hull, stripe, top, rim, deck (צבעים), ph}; x, y — מרכז הסירה בקו המים; h — הכיוון; t — שניות; o = {u (מהירות), trail (השובל), wave (גלים, מ׳), night (0–1),
+   under (בשיט — אורות ניווט), fishing (פנס עבודה), thumb (תמונה קטנה), people: [{lx, ly, draw(p, o)}] — האנשים מצוירים בסדר העומק בתוך הסירה}. */
+var F3_BOAT_PAINT=(function(){
+ const TAU=Math.PI*2,KZ=S9K*S9HM,cl=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t,ERR={e:null};let NN=0;
+ const HULL={};function hullPts(b){const key=(b.id||b.kind)+'|'+b.L+'|'+b.B;if(HULL[key])return HULL[key];const L=b.L,B=b.B,R=[[L*.5,0],[L*.42,B*.24],[L*.3,B*.4],[L*.12,B*.49],[-L*.3,B*.5],[-L*.5,B*.46],[-L*.5,-B*.46],[-L*.3,-B*.5],[L*.12,-B*.49],[L*.3,-B*.4],[L*.42,-B*.24]];return HULL[key]=R}
+ function mkO(b,x,y,h,t,moving,wv){return{x,y,h,c:Math.cos(h),s:Math.sin(h),bob:Math.sin(t*1.6+b.ph)*(.5+wv*.9),roll:Math.sin(t*1.25+b.ph*1.3)*(.05+wv*.08)*(moving?.6:1),t}}
+ const pj=(o,lx,ly,z)=>[o.x+lx*o.c-ly*o.s+z*KZ*o.roll,o.y+lx*o.s+ly*o.c-z*KZ+o.bob];
+ function poly(c,P){c.beginPath();c.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)c.lineTo(P[i][0],P[i][1]);c.closePath()}
+ function shade(hex,k){const n=parseInt(hex.slice(1),16),f=v=>Math.max(0,Math.min(255,Math.round(v*k)));return 'rgb('+f(n>>16&255)+','+f(n>>8&255)+','+f(n&255)+')'}
+ /* קופסה (קונסולה, תא הגה, מנוע): הקירות שפונים אל הצופה, ואז הגג */
+ function box(c,o,x0,x1,y0,y1,z0,z1,col,opt){opt=opt||{};const C=[[x0,y0],[x1,y0],[x1,y1],[x0,y1]],N=[[0,-1],[1,0],[0,1],[-1,0]],N2=NN;
+  for(let i=0;i<4;i++){const a=C[i],b=C[(i+1)%4],nx=N[i][0]*o.c-N[i][1]*o.s,ny=N[i][0]*o.s+N[i][1]*o.c;if(ny<=.02)continue;const Q=[pj(o,a[0],a[1],z0),pj(o,b[0],b[1],z0),pj(o,b[0],b[1],z1),pj(o,a[0],a[1],z1)];
+   c.fillStyle=shade(col,.78+.2*(-nx)*.5+.12*ny);poly(c,Q);c.fill();
+   if(opt.win){const front=i===1,u0=front?.06:.12,u1=front?.94:.88,zA=z0+(z1-z0)*(front?.32:.42),zB=z0+(z1-z0)*.86,A=[lerp(a[0],b[0],u0),lerp(a[1],b[1],u0)],Bp=[lerp(a[0],b[0],u1),lerp(a[1],b[1],u1)];
+    const W=[pj(o,A[0],A[1],zA),pj(o,Bp[0],Bp[1],zA),pj(o,Bp[0],Bp[1],zB),pj(o,A[0],A[1],zB)];c.fillStyle=N2>.5&&opt.lit?'rgba(255,214,130,.85)':(front?'#2b4b63':'#24394c');poly(c,W);c.fill();
+    if(N2<.5){c.fillStyle='rgba(200,230,255,.22)';poly(c,[W[0],W[1],[lerp(W[1][0],W[2][0],.5),lerp(W[1][1],W[2][1],.5)],[lerp(W[0][0],W[3][0],.25),lerp(W[0][1],W[3][1],.25)]]);c.fill()}}}
+  if(opt.top!==false){c.fillStyle=opt.topCol||shade(col,1.04);poly(c,C.map(p=>pj(o,p[0],p[1],z1)));c.fill()}}
+ function rodUp(c,o,x,y,z,dx,dy,dz,col,tip){const a=pj(o,x,y,z),b=pj(o,x+dx,y+dy,z+dz);c.strokeStyle=col;c.lineWidth=.9;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();c.strokeStyle=tip;c.lineWidth=.6;const m=pj(o,x+dx*.82,y+dy*.82,z+dz*.82);c.beginPath();c.moveTo(m[0],m[1]);c.lineTo(b[0],b[1]);c.stroke();c.fillStyle='#2a2d31';c.beginPath();c.arc(a[0],a[1],.9,0,TAU);c.fill()}
+ function light(c,p,col,r,a){const g=c.createRadialGradient(p[0],p[1],0,p[0],p[1],r);g.addColorStop(0,col.replace('A',a));g.addColorStop(1,col.replace('A','0'));c.fillStyle=g;c.fillRect(p[0]-r,p[1]-r,2*r,2*r);c.fillStyle=col.replace('A','1');c.beginPath();c.arc(p[0],p[1],1.1,0,TAU);c.fill()}
+ function wake(c,b,T){if(!T||T.length<2)return;const now=performance.now();c.save();c.lineCap='round';
+  for(const side of[1,-1]){let prev=null;for(let i=T.length-1;i>=0;i--){const p=T[i],a=(now-p.t)/1000;if(a>7)break;const sp=b.B*.42+a*p.u*.17,sx=-Math.sin(p.h)*side,sy=Math.cos(p.h)*side,q=[p.x+sx*sp,p.y+sy*sp];
+    if(prev){c.strokeStyle='rgba(255,255,255,'+(.55*(1-a/7)*cl(p.u/50,.25,1)).toFixed(3)+')';c.lineWidth=1+a*.45;c.beginPath();c.moveTo(prev[0],prev[1]);c.lineTo(q[0],q[1]);c.stroke()}prev=q}}
+  for(let i=T.length-1;i>=0;i--){const p=T[i],a=(now-p.t)/1000;if(a>1.8)break;c.fillStyle='rgba(255,255,255,'+(.32*(1-a/1.8)*cl(p.u/40,.3,1)).toFixed(3)+')';c.beginPath();c.ellipse(p.x,p.y,b.B*.28+a*7,b.B*.2+a*4,p.h,0,TAU);c.fill()}
+  c.restore()}
+ function paint(c,b,x,y,h,t,o2){o2=o2||{};const u=o2.u!=null?o2.u:(b.u||0),moving=Math.abs(u)>4,o=mkO(b,x,y,h,t,moving,o2.wave==null?.6:o2.wave),N=NN=o2.night!=null?o2.night:(+window.__TC_NIGHT||0),L=b.L,B=b.B,fb=b.fb,H=hullPts(b);
+  if(!o2.thumb)wake(c,b,o2.trail||b.trail);
+  /* הצל והשתקפות */
+  c.fillStyle='rgba(4,18,30,.26)';poly(c,H.map(p=>{const q=pj(o,p[0],p[1],0);return[q[0]+3.5,q[1]+4.5]}));c.fill();
+  c.save();c.globalAlpha=.13;const sup=b.kind==='console'?[-L*.04,L*.12,-B*.2,B*.2,2.1]:[-L*.14,L*.2,-B*.38,B*.38,1.75];
+  {const r=[[sup[0],sup[2]],[sup[1],sup[2]],[sup[1],sup[3]],[sup[0],sup[3]]].map(p=>pj(o,p[0],p[1],-(fb+sup[4])*.8)),r2=[[sup[0],sup[2]],[sup[1],sup[2]],[sup[1],sup[3]],[sup[0],sup[3]]].map(p=>pj(o,p[0],p[1],0));c.fillStyle=b.top;poly(c,[r2[0],r2[1],r[1],r[0]]);c.fill();poly(c,[r2[2],r2[3],r[3],r[2]]);c.fill()}
+  c.fillStyle=b.hull;poly(c,H.map(p=>pj(o,p[0],p[1],-fb*.9)));c.fill();c.restore();
+  /* דפנות הגוף, הפס והקו של המים */
+  for(let i=0;i<H.length;i++){const a=H[i],q=H[(i+1)%H.length];let nx=q[1]-a[1],ny=-(q[0]-a[0]);const mx=(a[0]+q[0])/2,my=(a[1]+q[1])/2;if(nx*mx+ny*my<0){nx=-nx;ny=-ny}const n=Math.hypot(nx,ny)||1;nx/=n;ny/=n;
+   const wx=nx*o.c-ny*o.s,wy=nx*o.s+ny*o.c;if(wy<=-.05)continue;const k=.72+.18*(-wx)+.14*wy;
+   c.fillStyle=shade(b.hull,k);poly(c,[pj(o,a[0],a[1],0),pj(o,q[0],q[1],0),pj(o,q[0],q[1],fb),pj(o,a[0],a[1],fb)]);c.fill();
+   c.fillStyle=shade(b.stripe,k);poly(c,[pj(o,a[0],a[1],fb*.6),pj(o,q[0],q[1],fb*.6),pj(o,q[0],q[1],fb*.78),pj(o,a[0],a[1],fb*.78)]);c.fill();
+   c.fillStyle='rgba(20,30,40,.55)';poly(c,[pj(o,a[0],a[1],0),pj(o,q[0],q[1],0),pj(o,q[0],q[1],.1),pj(o,a[0],a[1],.1)]);c.fill()}
+  /* הסיפון: הדופן העליונה והרצפה */
+  c.fillStyle=b.rim||b.top;poly(c,H.map(p=>pj(o,p[0],p[1],fb)));c.fill();c.fillStyle=b.deck;poly(c,H.map(p=>pj(o,p[0]*.86-L*.02,p[1]*.8,fb)));c.fill();
+  if((typeof Camera!=='undefined'&&Camera.zoom>.7)||o2.thumb){c.strokeStyle='rgba(90,80,60,.22)';c.lineWidth=.4;c.beginPath();for(let k=-2;k<=2;k++){const a=pj(o,-L*.44,k*B*.14,fb),q=pj(o,L*.3,k*B*.14,fb);c.moveTo(a[0],a[1]);c.lineTo(q[0],q[1])}c.stroke()}
+  /* מעקה החרטום */
+  c.strokeStyle='#c9d0d5';c.lineWidth=.7;c.beginPath();H.filter(p=>p[0]>L*.1).sort((a,q)=>a[1]-q[1]).forEach((p,i)=>{const q=pj(o,p[0]*.94,p[1]*.9,fb+.45);i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1])});c.stroke();
+  /* החלקים לפי הסדר במסך (מה שרחוק יותר — קודם) */
+  const items=[];const add=(lx,ly,f)=>{const q=pj(o,lx,ly,0);items.push({y:q[1],f})};
+  const motors=b.kind==='console'?[0]:[-B*.18,B*.18];for(const my of motors)add(-L*.52,my,()=>{box(c,o,-L*.56,-L*.5,my-B*.07,my+B*.07,-.2,fb+.5,'#3a3f45',{top:false});box(c,o,-L*.57,-L*.49,my-B*.09,my+B*.09,fb+.5,fb+.95,'#f2f2f0',{topCol:'#ffffff'})});
+  if(b.kind==='console'){add(L*.04,0,()=>{box(c,o,-L*.04,L*.12,-B*.2,B*.2,fb,fb+1,'#f1f1ed',{win:false,topCol:'#e6e9ea'});const g=[pj(o,L*.12,-B*.2,fb+1),pj(o,L*.12,B*.2,fb+1),pj(o,L*.07,B*.22,fb+1.45),pj(o,L*.07,-B*.22,fb+1.45)];c.fillStyle='rgba(120,170,205,.6)';poly(c,g);c.fill();
+    c.strokeStyle='#aeb6bc';c.lineWidth=.8;c.beginPath();for(const [px,py] of[[-L*.08,-B*.26],[-L*.08,B*.26],[L*.1,-B*.26],[L*.1,B*.26]]){const a=pj(o,px,py,fb),q=pj(o,px,py,fb+2.15);c.moveTo(a[0],a[1]);c.lineTo(q[0],q[1])}c.stroke();
+    for(let k=-1.5;k<=1.5;k++)rodUp(c,o,-L*.13,k*B*.12,fb+2.15,-L*.16,k*B*.1,1.9,'#22303c','#e8c33a');
+    box(c,o,-L*.13,L*.16,-B*.31,B*.31,fb+2.1,fb+2.2,'#eef1f2',{topCol:'#f6f7f8'});c.strokeStyle=b.stripe;c.lineWidth=.9;poly(c,[[-L*.13,-B*.31],[L*.16,-B*.31],[L*.16,B*.31],[-L*.13,B*.31]].map(p=>pj(o,p[0],p[1],fb+2.2)));c.stroke()})}
+  else add(L*.03,0,()=>{box(c,o,-L*.14,L*.2,-B*.38,B*.38,fb,fb+1.75,'#f1efe8',{win:true,lit:true,topCol:'#fbfaf6'});const d=pj(o,L*.04,0,fb+1.75);c.fillStyle='#fdfdfb';c.beginPath();c.ellipse(d[0],d[1]-1.6,3.2,2,0,0,TAU);c.fill();
+    const m0=pj(o,-L*.07,0,fb+1.75),m1=pj(o,-L*.07,0,fb+2.75);c.strokeStyle='#c4c9cc';c.lineWidth=.8;c.beginPath();c.moveTo(m0[0],m0[1]);c.lineTo(m1[0],m1[1]);c.stroke();
+    for(let k=-1.5;k<=1.5;k++)rodUp(c,o,-L*.13,k*B*.13,fb+1.75,-L*.14,k*B*.08,1.7,'#262a2e','#d23a3a')});
+  for(const sd of[1,-1])add(-L*.42,sd*B*.42,()=>rodUp(c,o,-L*.42,sd*B*.4,fb,-L*.2,sd*B*.32,1.7,b.kind==='console'?'#16324a':'#262a2e',b.kind==='console'?'#e8c33a':'#d23a3a'));
+  add(-L*.2,b.kind==='console'?B*.16:-B*.2,()=>box(c,o,-L*.26,-L*.15,(b.kind==='console'?B*.06:-B*.3),(b.kind==='console'?B*.26:-B*.1),fb,fb+.45,'#f4f6f7',{topCol:'#3c87b8'}));
+  for(const pp of(o2.people||[]))add(pp.lx,pp.ly,()=>{try{pp.draw(pj(o,pp.lx,pp.ly,fb),o)}catch(e){ERR.e=ERR.e||'person '+e}});
+  items.sort((a,q)=>a.y-q.y);for(const it of items)it.f();
+  /* אורות הניווט בלילה (אדום משמאל, ירוק מימין, לבן מאחור ובתורן); פנס העבודה בירכתיים כשדגים */
+  if(N>.25&&(o2.under||o2.fishing)){const A=(.55*N).toFixed(2),top=b.kind==='console'?fb+2.25:fb+2.75;light(c,pj(o,L*.36,-B*.36,fb+.4),'rgba(255,40,40,A)',9,A);light(c,pj(o,L*.36,B*.36,fb+.4),'rgba(40,255,90,A)',9,A);
+   light(c,pj(o,-L*.5,0,fb+.6),'rgba(255,255,240,A)',8,A);light(c,pj(o,b.kind==='console'?L*.02:-L*.07,0,top),'rgba(255,255,240,A)',10,A);
+   if(o2.fishing){const p=pj(o,-L*.75,0,0),g=c.createRadialGradient(p[0],p[1],0,p[0],p[1],L*.9);g.addColorStop(0,'rgba(255,240,190,'+(.32*N).toFixed(2)+')');g.addColorStop(1,'rgba(255,240,190,0)');c.fillStyle=g;c.beginPath();c.ellipse(p[0],p[1],L*.9,L*.55,0,0,TAU);c.fill()}}
+  return o}
+ return{paint,light,poly,ERR}})();
+var FISH3=(function(){
+ const TAU=Math.PI*2,KZ=S9K*S9HM,cl=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t,ang=a=>{a=(a+Math.PI)%TAU;if(a<0)a+=TAU;return a-Math.PI},isoNow=()=>new Date().toISOString();
+ const ERR={e:null,n:0},er=(w,e)=>{ERR.n++;if(!ERR.e)ERR.e=w+' '+String(e&&e.stack||e).slice(0,260)};
+ const NOW=()=>performance.now(),night=()=>+window.__TC_NIGHT||0,res=()=>p599Res(Camera.zoom*(window.devicePixelRatio||1));
+ /* ---- המרינה: הנתיבים באגן (בין שורות המעגנים), נתיב היציאה המזרחי, הפתח שליד הפנס הירוק ---- */
+ const LANE_Y=2244,LANES=[1910,2244,2455],FAIR_X=6927,FAIR_S=[6927,2470],GAP_IN=[7050,2505],GAP_OUT=[7050,2650],BASIN_V=26,PERMIT=0,SWIM=[6540,2750,6726,3226];   /* D‑570: ההיתר היומי בוטל — צריך רישיון דיג עמוק (LIC‑12) */
+ const inBasin=(x,y)=>x>6560&&x<7200&&y>1880&&y<2552;
+ function berthOf(i){const b=S9DF.berths[i],cx=b.x+b.w/2,cy=b.y+b.h/2,north=b.y<2062||b.y>=2200,f0=north?b.y+b.h-60:b.y,f1=north?b.y+b.h:b.y+60;
+  return{i,n:i+1,pier:b.pier,cx,cy,h:north?Math.PI/2:-Math.PI/2,board:[b.x,(f0+f1)/2],rect:[b.x,b.y,b.x+b.w,b.y+b.h]}}
+ /* ---- הסירות להשכרה (גודל אמיתי: 10 פיקס׳ = 1 מ׳, כמו המעגנים) ---- */
+ const BOATS=[
+  {id:'F3-RB-A',name:'שחף',kind:'console',berth:17,L:60,B:24,fb:.75,maxV:120,acc:26,turn:1.15,price:70,price0:180,hull:'#f5f5f1',stripe:'#1d6fa5',top:'#ffffff',rim:'#1d6fa5',deck:'#d8d3c4',
+   type:'סירת דיג עם קונסולה מרכזית',len:6.0,engine:'מנוע חיצוני 115 כ״ס',speed:22,seats:3,rods:['SR-JIG'],tools:['net'],weights:['w150','w300'],baits:{'sea-squid':6,'sea-jig':1},
+   gear:['2 תושבות חכה בדופן ו-4 על הגגון','חכת ג׳יגינג 1.9 מ׳ עם סליל ספינינג 8000','רשת הרמה','צידנית 80 ל׳ עם קרח','מד עומק','6 קלמרי וג׳יג מתכת 200 ג׳','משקולות 150 ו-300 ג׳','אפודי הצלה ומכשיר קשר ימי']},
+  {id:'F3-RB-B',name:'אלבטרוס',kind:'cabin',berth:9,L:74,B:28,fb:.9,maxV:150,acc:22,turn:1.0,price:120,price0:320,hull:'#1f3f66',stripe:'#e8e4d8',top:'#f3f1ea',rim:'#24497a',deck:'#e6e0d0',
+   type:'סירת דיג ספורט עם תא הגה',len:7.4,engine:'שני מנועים חיצוניים 2 × 150 כ״ס',speed:28,seats:5,rods:['SR-JIG','SR-TROLL','SR-DEEP'],tools:['net','gaff'],weights:['w0','w150','w300','w600'],
+   baits:{'sea-squid':6,'sea-sardine':6,'sea-live':4,'sea-jig':1,'sea-plug':1},
+   gear:['תא הגה סגור, 2 תושבות בדופן ו-4 על הגג','3 חכות: ג׳יגינג, טרולינג וחכת עומק עם סליל חשמלי','רשת הרמה וגאף לדגים גדולים','בור פיתיון חי וצידנית 200 ל׳','סונאר, מד עומק ומערכת ניווט לווינית','פנסי עבודה לדיג בלילה','קלמרי, סרדין, דגיג חי, ג׳יג ורפלה','משקולות 150, 300 ו-600 ג׳']}];
+ /* D‑570: סירת המבחן של בית הספר לשייט — סירה אמיתית במעגן 4 (שהיה פנוי). השחקן נוהג בה רק במבחן לרישיון סירה (BOAT‑B), בנתיב המבחן בלבד */
+ BOATS.push({id:'F3-SB-X',name:'סירת המבחן',school:true,kind:'console',berth:3,L:58,B:23,fb:.75,maxV:110,acc:26,turn:1.15,price:0,hull:'#ffffff',stripe:'#c43b2f',top:'#ffffff',rim:'#c43b2f',deck:'#d8d3c4',
+  type:'סירת המבחן של בית הספר לשייט',len:5.8,engine:'מנוע חיצוני 90 כ״ס',speed:20,seats:3,rods:[],tools:[],weights:[],baits:{},gear:[]});
+ for(const b of BOATS){b.be=berthOf(b.berth);b.ph=b.berth*.7}
+ /* D‑569 / D‑582: הסירות של השחקן (074g_boatshop.js) נכנסות לאותה רשימה — אותה פיזיקה, אותה התנגשות, אותה עגינה. HOOK — הווים של החלק ההוא:
+    sync / after (טעינה), board / ashore / left (עלייה וירידה), thr (דלק), canFish, hud, decks, keep (מים שלא חוצים), runs (הדרכים לבדיקה), step */
+ const HOOK={};
+ /* D‑586: הנתיב של כל מעגן — הנתיב באגן שאליו יוצאים ישר מהמעגן בלי לחצות מזח (היה: נתיב אחד, y ‏2244, גם למעגן שמעבר למזח) */
+ function laneOf(b){const be=b.be,c=[...LANES].sort((p,q)=>Math.abs(p-be.cy)-Math.abs(q-be.cy));for(const ly of c){let ok=true;for(let k=0;k<=24&&ok;k++){const y=lerp(be.cy,ly,k/24),H=obb(be.cx,y,Math.PI/2,b.L*1.0,b.B*.95);for(const d of F34_DECKS)if(sat(H,rectP(d))){ok=false;break}}
+   if(ok){for(let k=0;k<=30&&ok;k++){const x=lerp(be.cx,FAIR_X,k/30),H=obb(x,ly,0,b.L,b.B*.95);for(const d of F34_DECKS)if(sat(H,rectP(d))){ok=false;break}}}if(ok)return ly}return LANE_Y}
+ /* ---- הציוד של שלב 3 ---- */
+ const RODS3={
+  'SR-JIG':{name:'חכת ג׳יגינג',sub:'קצרה וקשיחה · 1.9 מ׳',cls:1,len:1.9,line:14,reel:'סליל ספינינג 8000 · חוט קלוע 30 ליברות',spd:5.2,cap:260,blank:'#16324a',tip:'#e8c33a',dia:[15,2.4],heavy:false},
+  'SR-TROLL':{name:'חכת טרולינג וסטנד-אפ',sub:'בתושבת בזמן השיט · 2.1 מ׳',cls:2,len:2.1,line:24,reel:'סליל מולטיפלייר 30 · חוט 50 ליברות',spd:4.2,cap:420,blank:'#262a2e',tip:'#d23a3a',dia:[19,3.2],heavy:true},
+  'SR-DEEP':{name:'חכת עומק',sub:'עם סליל חשמלי · 2.4 מ׳',cls:3,len:2.4,line:36,reel:'סליל חשמלי 3000 · חוט 80 ליברות',spd:6.8,cap:800,blank:'#b4521c',tip:'#f4ef4a',dia:[21,3.8],heavy:true}};
+ const BAITS3={
+  'sea-jig':{label:'ג׳יג מתכת 200 ג׳',key:'jig',reuse:true,price:120,pack:1,desc:'מקרל, ברקודה ולוקוס — משחקים בו מהתחתית למעלה'},
+  'sea-plug':{label:'רפלה — דמוי דגיג צולל',key:'plug',reuse:true,price:150,pack:1,desc:'לטרולינג בשיט איטי: ברקודה, לברק וטונה'},
+  'sea-squid':{label:'קלמרי שלם',key:'squid',price:36,pack:6,desc:'לוקוס, מורנה, ובלילה — דג חרב'},
+  'sea-sardine':{label:'סרדין שלם',key:'sardine',price:30,pack:6,desc:'מורנה, לוקוס ומקרל'},
+  'sea-live':{label:'דגיג חי (סקד)',key:'live',price:56,pack:4,desc:'הפיתיון הטוב ביותר לטונה, ללוקוס ולברקודה'},
+  'sea-chunk':{label:'נתחי טונה (צ׳אנק)',key:'chunk',price:48,pack:6,desc:'זורקים נתחים למים — טונה ולוקוס גדולים'}};
+ const WEIGHTS3={w0:{label:'בלי משקולת — טרולינג',max:4,sink:0,desc:'הפיתיון שוחה מאחורי הסירה בשיט איטי (3–6 קשר)'},w150:{label:'משקולת 150 ג׳',max:45,sink:9,desc:'עד 45 מ׳ במים רגועים'},
+  w300:{label:'משקולת 300 ג׳',max:140,sink:14,desc:'עד 140 מ׳; ברוח ובזרם — פחות'},w600:{label:'משקולת 600 ג׳',max:600,sink:20,desc:'לעומק — עם החכה והסליל החשמלי'}};
+ const TOOLS3={net:{label:'רשת הרמה',max:15},gaff:{label:'גאף',max:400}};
+ /* ---- דגי הים מתוך 24 הסוגים (התוכנית: אגם / חוף / ים): האורך מהספרייה (ס״מ), המשקל — k × (אורך במטרים)³ ---- */
+ const SEA=[
+  {id:'FS-SE-02',name:'מקרל',base:35,value:42,k:9.3,d:[0,45],bot:false,rod:1,pow:1.1,tod:'any',hab:{reef:3,shelf:8,open:6,blue:2},b:{jig:8,plug:6,squid:2,sardine:5,live:1,chunk:3}},
+  {id:'FS-SE-04',name:'לברק',base:65,value:86,k:10.9,d:[0,30],bot:false,rod:1,pow:1,tod:'dawn',hab:{reef:6,shelf:5,open:2,blue:.3},b:{jig:5,plug:9,squid:4,sardine:3,live:8,chunk:2}},
+  {id:'FS-SE-05',name:'לוקוס',base:80,value:118,k:14.6,d:[15,160],bot:true,rod:1,pow:1,tod:'day',hab:{reef:10,shelf:4,open:1,blue:.4},b:{jig:6,plug:.5,squid:8,sardine:6,live:9,chunk:4}},
+  {id:'FS-SE-07',name:'ברקודה',base:110,value:130,k:6,d:[0,60],bot:false,rod:1,pow:1.15,tod:'dawn',hab:{reef:3,shelf:6,open:7,blue:3},b:{jig:6,plug:10,squid:2,sardine:3,live:8,chunk:2}},
+  {id:'FS-SE-12',name:'מורנה',base:110,value:92,k:4.5,d:[8,60],bot:true,rod:1,pow:.9,tod:'night',hab:{reef:9,shelf:2,open:.3,blue:0},b:{jig:1,plug:0,squid:8,sardine:9,live:2,chunk:6}},
+  {id:'FS-SE-06',name:'טונה כחולת סנפיר',base:150,value:420,k:16.3,d:[0,200],bot:false,rod:2,pow:1.3,tod:'dawn',hab:{reef:.2,shelf:1,open:6,blue:10},b:{jig:4,plug:8,squid:3,sardine:4,live:10,chunk:9}},
+  {id:'FS-SE-08',name:'דג חרב',base:220,value:650,k:7.5,d:[200,560],dn:[0,120],bot:false,rod:3,rodN:2,pow:1.2,tod:'night',hab:{reef:0,shelf:.2,open:2,blue:8},b:{jig:1,plug:1,squid:10,sardine:3,live:4,chunk:3}}];
+ const SEA_ID=Object.fromEntries(SEA.map(q=>[q.id,q]));
+ /* ---- נקודות הדיג: במים של F4–F5 מחוץ לנתיב השיט (x 6600–6950 מ-y 3450) ולקו המצופים, ואחת במים העמוקים ממזרח ---- */
+ const SPOTS=[
+  {id:'F3-SPOT-1',name:'השונית הסלעית',x:6905,y:3215,hab:'reef',bottom:24,zone:'F4',desc:'שונית סלעים בתחתית — לוקוסים, מורנות ולברקים'},
+  {id:'F3-SPOT-2',name:'מדף החוף',x:7150,y:2905,hab:'shelf',bottom:38,zone:'F4',desc:'שפת המדף — להקות מקרל וברקודות'},
+  {id:'F3-SPOT-3',name:'התעלה העמוקה',x:7105,y:3720,hab:'open',bottom:66,zone:'F5',desc:'מים פתוחים ממזרח לנתיב השיט — טונות וברקודות'},
+  {id:'F3-SPOT-4',name:'המים הכחולים',x:7130,y:4140,hab:'blue',bottom:160,zone:'F5',desc:'קניון תת-ימי — טונה כחולת סנפיר ודג חרב'},
+  {id:'F3-SPOT-5',name:'קצה המדף',x:7660,y:3480,hab:'blue',bottom:320,zone:'G5',desc:'המים העמוקים ביותר — דג חרב בעומק'}];
+ const SPOT_ID=Object.fromEntries(SPOTS.map(s=>[s.id,s]));
+ const HAB_HE={reef:'שונית',shelf:'שפת המדף',open:'מים פתוחים',blue:'מים כחולים',none:'מים פתוחים — בלי להקות'};
+ function depthAt(x,y){if(inBasin(x,y))return 4;let d=4+Math.max(0,x-6560)*.09+Math.max(0,y-2600)*.012;for(const s of SPOTS){const r=Math.hypot(x-s.x,y-s.y);if(r<260){const f=Math.exp(-r*r/(2*95*95));d=lerp(d,s.bottom,f)}}return Math.max(2,Math.round(d))}
+ function nearSpot(x,y,r=150){let best=null,bd=1e9;for(const s of SPOTS){const d=Math.hypot(x-s.x,y-s.y);if(d<r&&d<bd){bd=d;best=s}}return best}
+ /* ---- מזג האוויר והים: תחזית לפי היום והשעה של השעון של המשחק ---- */
+ const hsh=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
+ function clockNow(){try{const g=gameClock();return{day:g.day,h:g.hour+g.minute/60,abs:(g.day-1)*1440+g.min,hhmm:g.hhmm}}catch(e){return{day:1,h:12,abs:720,hhmm:'12:00'}}}
+ /* WEATHER‑01: התחזית קוראת את WeatherState האחד של המשחק (074c) — כשמזג האוויר ייבנה, הדיג כבר מחובר אליו; בלי המודול — התחזית הישנה לפי היום והשעה */
+ function seaAt(day,h){if(typeof WEATHER!=='undefined'){const w=WEATHER.at(day,h),storm=(w.kind==='wind'&&w.wind>24)||(w.kind==='rain'&&w.wind>18),wind=+w.wind.toFixed(1),
+   sky=storm?'סוער':w.kind==='rain'?'גשום':w.kind==='wind'?'רוח חזקה':w.cloud>.55?'מעונן':w.cloud>.3?'מעונן חלקית':'בהיר';
+   return{wind,dir:w.dir,wave:+cl(.15+wind*.075,.1,3.6).toFixed(1),sky,storm,temp:+(22.5+2*Math.sin(day*.3)-(w.season==='winter'?7:0)).toFixed(1),h,weather:w.kind,season:w.season}}
+  return seaAt0(day,h)}
+ function seaAt0(day,h){const r=hsh(day),sk=hsh(day+.37),storm=sk>.94,base=5+r*11+(storm?13:0),dur=Math.sin((h-8)/24*TAU)*.35+1,wind=+(base*dur).toFixed(1),dir=hsh(day+.71)*TAU,
+   wave=+cl(.15+wind*.075,.1,3.6).toFixed(1),sky=storm?'סוער':sk>.8?'מעונן':sk>.55?'מעונן חלקית':'בהיר';return{wind,dir,wave,sky,storm,temp:+(22.5+2*Math.sin(day*.3)).toFixed(1),h}}
+ function seaNow(){const c=clockNow();return seaAt(c.day,c.h)}
+ const tod=h=>(h>=20||h<5)?'night':((h>=5&&h<8)||(h>=17&&h<20))?'dawn':'day',TOD_HE={night:'לילה',dawn:'שחר ובין ערביים',day:'יום'};
+ const dirHe=a=>['מזרחית','דרום-מזרחית','דרומית','דרום-מערבית','מערבית','צפון-מערבית','צפונית','צפון-מזרחית'][((Math.round(ang(a)/(Math.PI/4))%8)+8)%8];
+ function seaEffect(W){const o=[];if(W.storm)o.push('סערה: גלים גבוהים — החוט נקרע בקלות, והמועדון ממליץ להישאר באגן.');else if(W.wave>=1.8)o.push('ים גבוה: הסירה מטלטלת, יותר דגים בורחים במשיכה, והמשקולת צריכה להיות כבדה יותר.');
+  else if(W.wave>=.6)o.push('אדוות וגלים בינוניים — טוב לדיג: הדגים פעילים, הטונות עולות לפני המים.');else o.push('ים שקט — קל לדוג, אבל הדגים הטורפים זהירים יותר.');
+  if(W.wind>=14)o.push('רוח של '+W.wind+' קשר — הסירה נסחפת מהר מעל הנקודה.');return o.join(' ')}
+ /* ---- המצב (נשמר ב-PlayerProfile.worldPersistent.fish3) ---- */
+ const S={aboard:null,pedX:0,pedY:0,f:null,cfg:null,hold:false,auto:false,menu:false,hudT:0,lastP:null,mooring:false,demo:null};
+ function P(){const w=PlayerProfile.worldPersistent||(PlayerProfile.worldPersistent={});return w.fish3||(w.fish3={boats:{},rental:null,aboard:null,trips:0,sold:0,earned:0,caught:0})}
+ const boatById=id=>BOATS.find(b=>b.id===id);
+ function init(){const p=P();if(S.lastP===p)return;S.lastP=p;S.f=null;if(HOOK.sync)try{HOOK.sync(p)}catch(e){er('sync',e)}
+  for(const b of BOATS){const st=p.boats[b.id];b.trail=[];b.u=0;b.vl=0;b.r=0;b.hitT=0;b.legs=[];
+   if(st&&Number.isFinite(st.x)&&Number.isFinite(st.y)){b.x=st.x;b.y=st.y;b.h=st.h||0;b.mode=st.mode==='moored'?'moored':'return'}else{b.x=b.be.cx;b.y=b.be.cy;b.h=b.be.h;b.mode='moored'}}
+  S.aboard=null;const a=p.aboard&&boatById(p.aboard);
+  if(a&&PlayerProfile.mode==='walk'&&Math.hypot(PlayerPed.x-a.x,PlayerPed.y-a.y)<60){S.aboard=a.id;a.mode='player';placePed(a)}else{p.aboard=null;for(const b of BOATS)if(b.mode==='return')b.legs=legsHome(b)}if(HOOK.after)try{HOOK.after(p)}catch(e){er('after',e)}}
+ function save(b){const p=P();p.boats[b.id]={x:+b.x.toFixed(1),y:+b.y.toFixed(1),h:+b.h.toFixed(3),mode:b.mode==='moored'?'moored':'away'}}
+ /* ---- גוף הסירה: מגע עם החוף, הקירות, המזחים, הסירות העוגנות וקו המצופים ---- */
+ /* D‑586: הגוף כמלבן מסובב (לא רק 7 נקודות) — מול כל משטח של המרינה (מזח, אצבע, רציף, קיר) ומול כל סירה אחרת, במבחן של הציר המפריד */
+ const BEAMR={'SH-MB-01':.34,'SH-SP-01':.34,'SH-RB-01':.4,'SH-YT-01':.27,'SH-PB-01':.3,'SH-FB-01':.33};
+ function obb(x,y,h,L,B){const c=Math.cos(h),s=Math.sin(h),l=L/2,w=B/2;return[[x+l*c-w*s,y+l*s+w*c],[x-l*c-w*s,y-l*s+w*c],[x-l*c+w*s,y-l*s-w*c],[x+l*c+w*s,y+l*s-w*c]]}
+ function sat(A,Bp){for(const P of[A,Bp])for(let i=0;i<P.length;i++){const a=P[i],b=P[(i+1)%P.length],nx=b[1]-a[1],ny=a[0]-b[0];let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;for(const q of A){const d=q[0]*nx+q[1]*ny;if(d<a0)a0=d;if(d>a1)a1=d}for(const q of Bp){const d=q[0]*nx+q[1]*ny;if(d<b0)b0=d;if(d>b1)b1=d}if(a1<=b0||b1<=a0)return false}return true}
+ const rectP=d=>[[d[0],d[1]],[d[2],d[1]],[d[2],d[3]],[d[0],d[3]]];
+ const mooredF34=()=>F34_BOATS.filter(o=>!o.fish).map(o=>({id:o.id,P:obb(o.x,o.y,o.h,o.len*.96,o.len*(BEAMR[o.asset]||.33)*.92)}));
+ function hullHit(b,x,y,h){const c=Math.cos(h),s=Math.sin(h),L=b.L,B=b.B,pts=[[L*.5,0],[L*.3,B*.45],[L*.3,-B*.45],[-L*.1,B*.5],[-L*.1,-B*.5],[-L*.5,B*.45],[-L*.5,-B*.45]];
+  for(const [lx,ly] of pts){const px=x+lx*c-ly*s,py=y+lx*s+ly*c;if(!w3IsSea(px,py))return 'החוף';if(px>SWIM[0]&&px<SWIM[2]&&py>SWIM[1]&&py<SWIM[3])return 'קו המצופים של הרחצה'}
+  if(x>6500&&x<8100&&y>1820&&y<2960){const H=obb(x,y,h,L*.97,B*.92),bx0=Math.min(...H.map(q=>q[0])),bx1=Math.max(...H.map(q=>q[0])),by0=Math.min(...H.map(q=>q[1])),by1=Math.max(...H.map(q=>q[1]));
+   for(const d of F34_DECKS){if(d[0]>bx1||d[2]<bx0||d[1]>by1||d[3]<by0)continue;if(sat(H,rectP(d)))return 'המזח'}
+   for(const o of F34_BOATS){if(o.fish)continue;if(Math.abs(o.x-x)>o.len+L||Math.abs(o.y-y)>o.len+L)continue;if(sat(H,obb(o.x,o.y,o.h,o.len*.96,o.len*(BEAMR[o.asset]||.33)*.92)))return 'סירה עוגנת'}
+   for(const o of BOATS){if(o===b||o.id===b.id)continue;if(Math.abs(o.x-x)>o.L+L||Math.abs(o.y-y)>o.L+L)continue;if(sat(H,obb(o.x,o.y,o.h,o.L*.97,o.B*.92)))return 'סירה'}}
+  if(HOOK.hit){try{const r=HOOK.hit(b,x,y,h);if(r)return r}catch(e){er('hit',e)}}   /* S10 ב (D‑596 / D‑586): גשרי המסילה מעל הים — רק במפתח השיט; האסדה, ספינת האספקה והאוניות שבנמל */
+  return null}
+ /* וקטור ההפרדה הקטן ביותר בין שני מצולעים קמורים (מבחן הציר המפריד); null — אין חפיפה. הכיוון — מ-Bp אל A */
+ function mtv(A,Bp){let best=1e9,bx=0,by=0;for(const Q of[A,Bp])for(let i=0;i<Q.length;i++){const a=Q[i],c=Q[(i+1)%Q.length];let nx=c[1]-a[1],ny=a[0]-c[0];const l=Math.hypot(nx,ny)||1;nx/=l;ny/=l;let a0=1e9,a1=-1e9,b0=1e9,b1=-1e9;
+   for(const q of A){const d=q[0]*nx+q[1]*ny;if(d<a0)a0=d;if(d>a1)a1=d}for(const q of Bp){const d=q[0]*nx+q[1]*ny;if(d<b0)b0=d;if(d>b1)b1=d}const o=Math.min(a1,b1)-Math.max(a0,b0);if(o<=0)return null;if(o<best){best=o;const sg=(a0+a1)<(b0+b1)?-1:1;bx=nx*sg*o;by=ny*sg*o}}return[bx,by]}
+ /* כמה להזיז את הגוף כדי לצאת מכל המזחים והסירות שהוא חופף (סכום וקטורי ההפרדה, ועוד 0.4 פיקס׳); null — אין חפיפה כזו */
+ function hullPush(b,x,y,h){const H=obb(x,y,h,b.L*.97,b.B*.92),R=b.L+40;let px=0,py=0,n=0;const add=Q=>{const m=mtv(H,Q);if(m){px+=m[0];py+=m[1];n++}};
+  for(const d of F34_DECKS){if(d[0]>x+R||d[2]<x-R||d[1]>y+R||d[3]<y-R)continue;add(rectP(d))}
+  for(const o of F34_BOATS){if(o.fish||Math.abs(o.x-x)>o.len+R||Math.abs(o.y-y)>o.len+R)continue;add(obb(o.x,o.y,o.h,o.len*.96,o.len*(BEAMR[o.asset]||.33)*.92))}
+  for(const o of BOATS){if(o===b||o.id===b.id||Math.abs(o.x-x)>o.L+R||Math.abs(o.y-y)>o.L+R)continue;add(obb(o.x,o.y,o.h,o.L*.97,o.B*.92))}
+  if(!n)return null;const l=Math.hypot(px,py)||1;return[px+px/l*.4,py+py/l*.4]}
+ /* קצה אצבע מרופד: כמה להזיז את הגוף לרוחב (בציר x בלבד) כדי לצאת מהמזחים שהוא נוגע בהם; null — אם צריך יותר מ-mx פיקס׳ או לשני הכיוונים (אז זו מכה של ממש) */
+ function bandX(H,y0,y1){let c0=1e9,c1=-1e9;const add=x=>{if(x<c0)c0=x;if(x>c1)c1=x};for(let i=0;i<H.length;i++){const a=H[i],q=H[(i+1)%H.length];if(a[1]>=y0&&a[1]<=y1)add(a[0]);
+   for(const yy of[y0,y1])if((a[1]-yy)*(q[1]-yy)<0)add(a[0]+(q[0]-a[0])*(yy-a[1])/(q[1]-a[1]))}return c1>=c0?[c0,c1]:null}   /* הרוחב של הגוף בתוך רצועה אופקית (בדיוק — לא לפי המלבן החוסם) */
+ function hullPushX(b,x,y,h,mx){const H=obb(x,y,h,b.L*.97,b.B*.92),R=b.L+40;let lo=0,hi=0;
+  for(const d of F34_DECKS){if(d[0]>x+R||d[2]<x-R||d[1]>y+R||d[3]<y-R)continue;if(!sat(H,rectP(d)))continue;const c=bandX(H,d[1],d[3]);if(!c)continue;if(x<(d[0]+d[2])/2)lo=Math.min(lo,d[0]-c[1]);else hi=Math.max(hi,d[2]-c[0])}
+  if(lo&&hi)return null;const sx=lo||hi;if(!sx||Math.abs(sx)>mx)return null;return sx+Math.sign(sx)*.4}
+ function trail(b){const t=NOW();if(Math.abs(b.u)<5)return;const T=b.trail;if(T.length&&t-T[T.length-1].t<100)return;T.push({x:b.x-Math.cos(b.h)*b.L*.5,y:b.y-Math.sin(b.h)*b.L*.5,h:b.h,u:Math.abs(b.u),t});if(T.length>80)T.shift()}
+ /* ---- 10.11 (הבעלים: "בזמן דייג הספינה זזה מדי — היא לא נשארת במקום איפה שיש את הדגים") — העוגן ----
+    המקור שנמדד ב-S7F283 (fx_anchor.js, ‏3 דקות דיג בכל נקודה): בזמן דיג המצערת וההגה נעולים, אבל הפיזיקה ממשיכה — הסחף של הרוח והזרם והטלטול של הגלים. בכל 5 הנקודות,
+    בסירה שכורה ובסירה של השחקן: 20 מתוך 20 יצאו מהתחום של הנקודה (150 פיקס׳) — מהמרכז אחרי 30–49 שנ׳, ועד 2.1–3.1 פיקס׳ לשנייה; הטייס לא נוגע בסירה (כל הזמן "player").
+    עכשיו: כשהפיתיון יורד למים הסירה מטילה עוגן — המרכז שלה נשאר בעיגול קטן (12–28 פיקס׳) סביב המקום, והחרטום מסתובב לאט אל העוגן, נגד הרוח; נשאר נדנוד קטן של גלים.
+    ואם הסירה בשוליים של הנקודה — העיגול נמשך פנימה, כדי שלא תצא מהתחום. העוגן עולה כשמרימים את החכה (F בזמן שהפיתיון במים), כשמתחילים לשוט (W או S), או כשיורדים מהסירה;
+    אחרי דג — הוא נשאר למטה, כדי לזרוק שוב באותה נקודה. רואים שרשרת מהחרטום, חבל במים ומצוף כתום מעל העוגן. */
+ function anchorDrop(b,quiet){if(b.anchor&&b.anchor.st!=='up')return false;const W=seaNow(),R=cl(10+b.L*.1,12,28);let ax=b.x,ay=b.y;const sp=(S.f&&S.f.spot)||nearSpot(b.x,b.y);
+  if(sp){const d=Math.hypot(ax-sp.x,ay-sp.y),lim=150-R-6;if(d>lim){ax=sp.x+(ax-sp.x)*lim/d;ay=sp.y+(ay-sp.y)*lim/d}}
+  const up=W.dir+Math.PI,reach=b.L*.5+R+16;b.anchor={x:ax,y:ay,R,px:ax+Math.cos(up)*reach,py:ay+Math.sin(up)*reach,st:'down',t0:NOW()};
+  if(!quiet)toast('העוגן במים — "'+b.name+'" מחזיקה מקום'+(sp?' מעל "'+sp.name+'"':''));try{SaveManager.log('fishing','anchor_down',{boat:b.id,spot:sp&&sp.id})}catch(e){}return true}
+ function anchorUp(b,why){if(!b||!b.anchor||b.anchor.st==='up')return false;b.anchor.st='up';b.anchor.t0=NOW();if(why)toast(why);return true}
+ function anchorHold(b,dt,nx,ny){const A=b.anchor;if(A.st==='up'&&NOW()-A.t0>1500){b.anchor=null;if(S.aboard===b.id)toast('העוגן למעלה — אפשר לשוט');return[nx,ny]}
+  const vx=nx-A.x,vy=ny-A.y,dd=Math.hypot(vx,vy);if(dd>A.R){const k=Math.max(A.R,dd-8*dt)/dd;nx=A.x+vx*k;ny=A.y+vy*k}b.u*=Math.pow(.15,dt);b.vl*=Math.pow(.15,dt);
+  const ht=Math.atan2(A.py-ny,A.px-nx);b.h=ang(b.h+cl(ang(ht-b.h),-.06*dt,.06*dt));return[nx,ny]}
+ function anchorDraw(c,b,now){const A=b.anchor;if(!A)return;const L=b.L||60,B=b.B||22,fb=(b.fb||1)*KZ,c0=Math.cos(b.h),s0=Math.sin(b.h),bx=b.x+c0*L*.47,by=b.y+s0*L*.47;
+  let dx=A.px-bx,dy=A.py-by;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;const k=Math.min(dl,4+L*.05),wx=bx+dx*k,wy=by+dy*k,t=NOW();
+  let u=A.st==='up'?1-cl((t-A.t0)/1500,0,1):cl((t-A.t0)/1000,0,1);const px=lerp(wx,A.px,u),py=lerp(wy,A.py,u);c.save();
+  c.strokeStyle='rgba(16,40,56,.4)';c.lineWidth=.9;c.setLineDash([3,3]);c.beginPath();c.moveTo(wx,wy);c.lineTo(px,py);c.stroke();c.setLineDash([]);
+  c.strokeStyle='#2b3036';c.lineWidth=Math.max(.9,B*.04);c.beginPath();c.moveTo(bx,by-fb*.9);c.lineTo(wx,wy);c.stroke();
+  const r=2.5+Math.sin(t/400)*.8;c.strokeStyle='rgba(255,255,255,.45)';c.lineWidth=.7;c.beginPath();c.ellipse(wx,wy,r,r*.45,0,0,Math.PI*2);c.stroke();
+  if(u>.05){c.strokeStyle='rgba(255,255,255,.35)';c.beginPath();c.ellipse(px,py+1,3.6+Math.sin(t/500),1.5,0,0,Math.PI*2);c.stroke();c.fillStyle='#f25a1a';c.beginPath();c.arc(px,py-1,2.3,0,Math.PI*2);c.fill();c.fillStyle='rgba(255,255,255,.55)';c.beginPath();c.arc(px-.7,py-1.8,.8,0,Math.PI*2);c.fill()}
+  c.restore()}
+ /* ---- הפיזיקה של הסירה: מצערת, הגה, סחף, רוח וגלים (השחקן) ---- */
+ /* 10.11 09:43 (הבעלים: "בלי לעשות כלום הוא נוגע בקיר ונתקע בגלל הסחף"): מים שקטים — האגן, והמעגן של השחקן (HOOK.calm): בלי סחף של רוח וזרם, בלי טלטול של גלים, ועד 5 קשר.
+    נמדד ב-S7F283 בנהיגה במקשים (fx_dockDrive.js): במעגן החדש (מחוץ לאגן) הסחף המלא — כ-4.9 פיקס׳ לשנייה ברוח של 13 קשר — דחף כל סירה אל האצבע תוך 8 שנ׳ בלי מקשים (3–11 פיקס׳, 8–12 מגעים). */
+ const calmAt=(x,y)=>inBasin(x,y)||!!(HOOK.calm&&HOOK.calm(x,y));
+ function physics(b,dt,thr,rud){const inB=calmAt(b.x,b.y),W=seaNow(),acc=b.acc,c1=acc*.4/b.maxV,c2=acc*.6/(b.maxV*b.maxV);
+  b.u+=(thr*acc-c1*b.u-c2*b.u*Math.abs(b.u))*dt;if(inB&&b.u>BASIN_V)b.u=Math.max(BASIN_V,b.u-acc*1.6*dt);if(b.u<-b.maxV*.3)b.u=-b.maxV*.3;
+  const sp=Math.abs(b.u),auth=cl(sp/(b.maxV*.3),0,1),pivot=sp<b.maxV*.12?.45:0,rt=rud*(b.turn*auth*(b.u<0?-1:1)+pivot);b.r+=(rt-b.r)*Math.min(1,dt*2.2);
+  const t=NOW()/1000,h0=b.h;b.h=ang(b.h+b.r*dt+(inB?0:Math.sin(t*.8+b.ph)*.014*W.wave*dt));b.vl+=(-b.u*b.r*.32-b.vl*1.4)*dt;
+  const dr=inB?0:(.32*W.wind+.6)*(1-cl(sp/60,0,.85)),dx=Math.cos(W.dir)*dr,dy=Math.sin(W.dir)*dr,fx=Math.cos(b.h),fy=Math.sin(b.h);
+  let nx=b.x+(fx*b.u-fy*b.vl+dx)*dt,ny=b.y+(fy*b.u+fx*b.vl+dy)*dt;
+  if(b.anchor){const q=anchorHold(b,dt,nx,ny);nx=q[0];ny=q[1]}   /* העוגן מחזיק את הסירה במקום */
+  if(nx>9350||ny>7450||nx<-2600){b.u*=.9;nx=cl(nx,-2600,9350);ny=Math.min(ny,7450);if(!b.edgeT||NOW()-b.edgeT>4000){b.edgeT=NOW();toast('קצה הים של העיר — הסירה מאטה ונעצרת')}}   /* D‑153: הגבול הרך */
+  const hit=hullHit(b,nx,ny,b.h);if(hit){const imp=Math.abs(b.u),soft=hit!=='החוף'&&hit!=='קו המצופים של הרחצה',mx=nx-b.x,my=ny-b.y;let slid=null;
+   /* 10.11 09:43: קודם — כל צעד שנגע במזח בוטל, והסחף (או ההגה) גרם שכל צעד ייגע: הסירה נתקעה ולא יצאה גם אחורה (נמדד ב-S7F283: 3 היתקעויות של 4 שנ׳ ב-S).
+      עכשיו, מול מזח, אצבע או סירה: (א) הסירה נהדפת החוצה לאורך הנורמל של הקיר ומחליקה לאורכו — רק אם ההדיפה נגד כיוון התנועה (לא דרך האצבע הצרה);
+      (ב) או זזה רק בציר אחד (המזחים והאצבעות ישרים); (ג) ואם גם זה נוגע — הצעד מתבטל, והסיבוב של הצעד הזה מתבטל (לא מסתובבים לתוך הקיר) */
+   if(soft&&Math.abs(my)>1.5*Math.abs(mx)){const sx=hullPushX(b,nx,ny,b.h,5);if(sx!=null&&!hullHit(b,nx+sx,ny,b.h))slid=[nx+sx,ny,Math.sign(sx),0,.98]}   /* נכנסים או יוצאים מהמקום ונוגעים קצת בקצה של אצבע — האצבע המרופדת מסיטה את הסירה הצידה, והיא ממשיכה */
+   if(soft&&!slid){const Pp=hullPush(b,nx,ny,b.h);if(Pp&&Pp[0]*mx+Pp[1]*my<=.25*Math.hypot(Pp[0],Pp[1])*Math.hypot(mx,my)&&!hullHit(b,nx+Pp[0],ny+Pp[1],b.h))slid=[nx+Pp[0],ny+Pp[1],Pp[0],Pp[1]];
+    else if(Math.abs(mx)>.02&&!hullHit(b,nx,b.y,b.h))slid=[nx,b.y,0,-Math.sign(my)||1];else if(Math.abs(my)>.02&&!hullHit(b,b.x,ny,b.h))slid=[b.x,ny,-Math.sign(mx)||1,0]}
+   if(slid){b.x=slid[0];b.y=slid[1];const pl=Math.hypot(slid[2],slid[3])||1,ux=slid[2]/pl,uy=slid[3]/pl,vx=fx*b.u-fy*b.vl,vy=fy*b.u+fx*b.vl,vn=vx*ux+vy*uy;
+    if(vn<0){const wx=vx-1.3*vn*ux,wy=vy-1.3*vn*uy;b.u=(wx*fx+wy*fy)*(slid[4]||.85);b.vl=(-wx*fy+wy*fx)*.5}b.r*=.5}
+   else{b.h=h0;b.u*=-.25;b.vl=0;b.r*=.3;const P0=soft?hullPush(b,b.x,b.y,b.h):null;if(P0&&!hullHit(b,b.x+P0[0],b.y+P0[1],b.h)){b.x+=P0[0];b.y+=P0[1]}}
+   const fresh=NOW()-(b.bumpT||0)>700;b.bumpT=NOW();if(fresh){b.hitN=(b.hitN||0)+1;b.lastHit=hit;try{p599Shake&&p599Shake(2)}catch(e){}}if(fresh&&(imp>18||b.school)&&NOW()-b.hitT>1500){b.hitT=NOW();toast('הסירה נגעה ב'+hit+(b.school?' — במבחן זו פגיעה':' — לאט!'))}}else{b.x=nx;b.y=ny}
+  trail(b)}
+ /* ---- הטייס של המועדון: נתיב של קטעים (קדימה, אחורה, סיבוב במקום, המתנה) — תנועה רציפה, בלי קפיצות ---- */
+ function moveBy(b,dt){b.x+=Math.cos(b.h)*b.u*dt;b.y+=Math.sin(b.h)*b.u*dt;b.r=0;b.vl*=.9;trail(b)}
+ function autopilot(b,dt){const L=b.legs[0];if(!L){arrive(b);return}
+  if(L.k==='settle'){if(L.t==null){L.t=0;L.x0=b.x;L.y0=b.y;L.h0=b.h;L.dh=ang(L.h-b.h)}L.t+=dt;const u=cl(L.t/L.T,0,1),e=u*u*(3-2*u);b.x=lerp(L.x0,L.x,e);b.y=lerp(L.y0,L.y,e);b.h=ang(L.h0+L.dh*e);b.u=0;b.r=0;b.vl=0;if(u>=1){b.h=ang(L.h);b.legs.shift()}return}   /* D‑587: נצמדת בעדינות — בלי סיבוב */
+  if(L.k==='pivot'){const d=ang(L.h-b.h),w=cl(d*1.6,-.55,.55);b.h=ang(b.h+w*dt);b.u*=Math.pow(.15,dt);moveBy(b,dt);if(Math.abs(d)<.02&&Math.abs(b.u)<3)b.legs.shift();return}
+  if(L.k==='hold'){L.t-=dt;b.u*=Math.pow(.3,dt);moveBy(b,dt);if(L.t<=0)b.legs.shift();return}
+  const dx=L.x-b.x,dy=L.y-b.y,d=Math.hypot(dx,dy),want=Math.atan2(dy,dx)+(L.rev?Math.PI:0),dh=ang(want-b.h);
+  if(d<(L.tol||5)){b.legs.shift();if(L.end){b.x=L.x;b.y=L.y}return}
+  if(L.end&&d<16){const k=Math.min(1,dt*2.5);b.x+=dx*k;b.y+=dy*k;b.u*=Math.pow(.2,dt);b.r=0;return}   /* D‑587: הסוף של הכניסה למעגן — גלישה ישרה, בלי להסתובב סביב הנקודה */
+  const vmax=Math.min(L.v||b.maxV*.6,inBasin(b.x,b.y)?BASIN_V:1e9),vT=(L.rev?-1:1)*Math.min(vmax,Math.max(5,d*.8))*(Math.abs(dh)>.8?.3:1);
+  b.h=ang(b.h+cl(dh*2.2,-1,1)*(Math.abs(b.u)>4?b.turn*.9:.5)*dt);b.u+=cl(vT-b.u,-b.acc*1.4*dt,b.acc*dt);moveBy(b,dt)}
+ function arrive(b){if(b.onArrive){const f=b.onArrive;b.onArrive=null;return f(b)}if(b.mode==='return'||b.mode==='moor'){const wasMoor=b.mode==='moor';b.mode='moored';b.u=0;b.h=b.moorH!=null?b.moorH:b.be.h;b.moorH=null;save(b);if(wasMoor&&S.aboard===b.id)stepAshore(b,'berth')}else if(b.mode==='auto'){if(b.school&&S.exam&&S.exam.demo){b.mode='moor';b.legs=legsHome(b);return}b.mode='player';S.demo=null}}
+ const go=(x,y,v,o)=>Object.assign({k:'go',x,y,v},o||{}),pivot=h=>({k:'pivot',h});
+ const laneY=b=>b.be.lane!=null?b.be.lane:(b.be.lane=laneOf(b));
+ function legsOut(b,to){if(b.route)return b.route.out(b,to);const be=b.be,ly=laneY(b),fw=Math.abs(ang(Math.atan2(ly-be.cy,0)-(b.h!=null?b.h:be.h)))<Math.PI/2,L=[go(be.cx,ly,9,{rev:!fw,tol:3}),pivot(0),go(FAIR_X,ly,24),pivot(Math.PI/2),go(FAIR_S[0],FAIR_S[1],24),go(GAP_IN[0],GAP_IN[1],24),go(GAP_OUT[0],GAP_OUT[1],40,{tol:10})];if(to)L.push(go(to[0],to[1],b.maxV*.65,{tol:16}));return L}
+ function seaLine(x0,y0,x1,y1){for(let i=1;i<=14;i++){const x=lerp(x0,x1,i/14),y=lerp(y0,y1,i/14);if(!w3IsSea(x,y)||(x>SWIM[0]-20&&x<SWIM[2]+20&&y>SWIM[1]-20&&y<SWIM[3]+20)||(HOOK.keep&&HOOK.keep(x,y)))return false}return true}
+ function legsHome(b){if(b.route)return b.route.home(b);const be=b.be,L=[];
+  if(inBasin(b.x,b.y)){const ly=b.y<2010?LANES[0]:b.y<2350?LANES[1]:LANES[2],rev=Math.abs(ang(Math.atan2(ly-b.y,0)-b.h))>Math.PI/2;if(Math.abs(b.y-ly)>6)L.push(go(b.x,ly,9,{rev,tol:4}));
+   if(ly!==laneY(b)){L.push(go(FAIR_X,ly,20),go(FAIR_X,laneY(b),20))}}
+  else{if(!seaLine(b.x,b.y,GAP_OUT[0],GAP_OUT[1])){if(b.x>7160&&b.y<2960)L.push(go(b.x,2960,b.maxV*.6,{tol:20}));else L.push(go(Math.max(b.x,7120),b.y,b.maxV*.6,{tol:20}));L.push(go(7120,2880,b.maxV*.6,{tol:20}))   /* D‑582: נקודת ההמתנה שלפני הפתח זזה מ-(7300, 2700) אל (7120, 2880) — שם עומד עכשיו המעגן של השחקן */}
+   L.push(go(GAP_OUT[0],GAP_OUT[1],b.maxV*.55,{tol:12}),go(GAP_IN[0],GAP_IN[1],22),go(FAIR_S[0],FAIR_S[1],20),pivot(-Math.PI/2),go(FAIR_X,laneY(b),20))}
+  L.push(pivot(Math.PI),go(be.cx,laneY(b),14,{tol:3}),pivot(be.h),go(be.cx,be.cy,7,{tol:2,end:true}),pivot(be.h));return L}
+ /* D‑587: עגינה — הסירה בתוך המקום של המעגן: נצמדת בעדינות למרכז ולכיוון הקרוב (החרטום פנימה או החוצה — מה שקרוב יותר; לכל היותר ±90°) */
+ function inBerth(b){const r=b.be.rect;return b.x>r[0]-6&&b.x<r[2]+6&&b.y>r[1]-10&&b.y<r[3]+10}
+ function dockH(b){const a=b.be.h,o=ang(a+Math.PI);return Math.abs(ang(a-b.h))<=Math.abs(ang(o-b.h))?a:o}
+ function legsDock(b){const h=dockH(b);b.moorH=h;return[{k:'settle',x:b.be.cx,y:b.be.cy,h,T:cl(.6+Math.hypot(b.x-b.be.cx,b.y-b.be.cy)/25+Math.abs(ang(h-b.h))*.9,.6,2.6)}]}
+ function legsMoor(b){return inBerth(b)?legsDock(b):legsHome(b)}
+ /* ---- השחקן על הסירה ---- */
+ function helmLocal(b){return b.helm||(b.kind==='console'?[-b.L*.1,0]:[-b.L*.22,0])}
+ function aftLocal(b,side){return[-b.L*.33,side*b.B*.16]}
+ function placePed(b){const [lx,ly]=(S.f&&S.f.phase!=='idle')?aftLocal(b,S.f.side||1):helmLocal(b),c=Math.cos(b.h),s=Math.sin(b.h);PlayerPed.x=b.x+lx*c-ly*s;PlayerPed.y=b.y+lx*s+ly*c;PlayerPed.heading=b.h;PlayerPed.pose='idle';PlayerPed.moving=false;
+  try{PlayerPed.dir=personDirection(c,s)}catch(e){}S.pedX=PlayerPed.x;S.pedY=PlayerPed.y}
+ function take(b){const p=P();clearFishState();b.anchor=null;S.aboard=b.id;p.aboard=b.id;b.mode='player';b.u=0;b.r=0;b.legs=[];placePed(b);try{State.navigation=null}catch(e){}return true}   /* D‑569: העלייה עצמה — לסירה של השחקן */
+ function board(b){const p=P();if(b.owned)return HOOK.board?HOOK.board(b):false;if(b.school){if(!S.exam||S.exam.phase!=='board')return toast('סירת המבחן של בית הספר לשייט — עולים עליה רק במבחן לרישיון סירה (במועדון השייט)');if(b.mode!=='moored')return toast('הסירה עוד לא במעגן');
+   clearFishState();S.aboard=b.id;p.aboard=b.id;b.mode='player';b.u=0;b.r=0;placePed(b);S.exam.phase='run';S.exam.t0=NOW();S.exam.hit0=b.hitT||0;S.exam.hitN0=b.hitN||0;S.exam.px=b.x;S.exam.py=b.y;toast('המבחן התחיל! יציאה מהמעגן, 4 שערים בין המצופים — דרומה, וחזרה למעגן '+b.be.n+'. באגן עד 5 קשר, בלי פגיעה, עד 4 דקות');return true}
+  if(!p.rental||p.rental.boat!==b.id)return toast('הסירה "'+b.name+'" להשכרה — שוכרים במועדון השייט (F במועדון)');if(b.mode!=='moored')return toast('הסירה עוד לא במעגן');
+  clearFishState();S.aboard=b.id;p.aboard=b.id;p.rental.boarded=1;b.mode='player';b.u=0;b.r=0;placePed(b);try{State.navigation=null}catch(e){}
+  toast('עלית לסירה "'+b.name+'" · W ו-S מצערת · A ו-D הגה · רווח — עצירה · באגן עד 5 קשר · היציאה לים דרך הפתח שליד הפנס הירוק');SaveManager.log('fishing','boat_board',{boat:b.id});return true}
+ function nearDeck(x,y,r){let best=null,bd=1e9;for(const d of[...S9DF.piers.map(q=>q.rect),S9DF.fuel_pontoon.rect,[6560,1819,7200,1880],...(HOOK.decks?HOOK.decks():[])]){const px=cl(x,d[0],d[2]),py=cl(y,d[1],d[3]),dd=Math.hypot(x-px,y-py);if(dd<bd){bd=dd;best=[px,py]}}return bd<=r?best:null}
+ function tryLeave(){const b=boatById(S.aboard);if(!b)return false;if(S.f&&S.f.phase!=='idle')return toast('קודם מרימים את החכה (F)');const be=b.be,d=Math.hypot(b.x-be.cx,b.y-be.cy);
+  if(Math.abs(b.u)>14)return toast('מאטים לפני הקשירה');
+  if(inBerth(b)){b.mode='moor';b.legs=legsDock(b);S.mooring=true;toast('קושרים את "'+b.name+'" במעגן '+be.n+'…');return true}
+  if(b.owned&&HOOK.dock){const r=HOOK.dock(b);if(r)return true}
+  if(d<90)return toast('התקרב למעגן '+be.n+' — היכנס לתוך המקום, ואז E');
+  if(b.school&&S.exam&&S.exam.phase==='run')return toast('במבחן — חוזרים למעגן '+be.n+' וקושרים (E ליד המעגן)');
+  const dk=nearDeck(b.x,b.y,30);if(dk){clearFishState();S.aboard=null;P().aboard=null;PlayerPed.x=dk[0];PlayerPed.y=dk[1];PlayerPed.pose='idle';b.mode='return';b.legs=legsHome(b);if(b.owned){if(HOOK.left)HOOK.left(b,'deck')}else closeRental('deck');return true}
+  return toast(inBasin(b.x,b.y)?'אי אפשר לרדת כאן — מתקרבים למזח או למעגן '+be.n:'אי אפשר לרדת מהסירה בים — חוזרים למרינה')}
+ /* D‑590: מצב הדיג (הדיג באגם ובחוף, והדיג העמוק) מתנקה בכל עלייה לסירה ובכל ירידה ממנה — כדי שהשחקן לא יישאר "בדיג" על היבשה */
+ function clearFishState(){try{S.f=null;const s=State.fishingSession;if(s){if(s.busy)s.busy=false;s.last=null;s.lastAt=0;s.hooked=null}State.fishingSetup=null}catch(e){}}
+ function stepAshore(b,why){clearFishState();b.anchor=null;S.aboard=null;S.mooring=false;P().aboard=null;const [bx,by]=b.be.board;PlayerPed.x=bx;PlayerPed.y=by;PlayerPed.pose='idle';PlayerPed.moving=false;if(b.school){examFinish(b);return}if(b.owned){if(HOOK.ashore)HOOK.ashore(b,why);return}closeRental(why)}
+ function leaveBoat(b,why){clearFishState();b.anchor=null;S.aboard=null;S.mooring=false;S.f=null;P().aboard=null;b.mode='return';b.legs=legsHome(b);if(b.owned){if(HOOK.left)HOOK.left(b,why);return}if(b.school){examFail('ירדת מהסירה באמצע המבחן');examFinish(b);return}if(P().rental)closeRental(why)}
+ /* ---- ההשכרה ---- */
+ function rentLeft(){const r=P().rental;if(!r)return 0;return r.from+r.hours*60-clockNow().abs}
+ function rent(id,hours){init();const b=boatById(id),p=P();if(!b)return;if(b.school)return toast('סירת המבחן לא להשכרה — היא של בית הספר לשייט');if(!licenseOwned('LIC-12'))return toast('לדיג העמוק צריך רישיון דיג עמוק — '+(typeof LIC570!=='undefined'?LIC570.missingText():'15 תפיסות באגם ו-10 בחוף'));if(S.exam)return toast('קודם מסיימים את מבחן הסירה');if(p.rental)return toast('כבר יש לך סירה שכורה — "'+boatById(p.rental.boat).name+'"');if(b.mode!=='moored')return toast('"'+b.name+'" עוד לא חזרה למעגן');
+  const price=b.price*hours+PERMIT;if(PlayerProfile.money<price)return toast('אין מספיק כסף — צריך '+money(price));PlayerProfile.money-=price;
+  try{recordTransaction('boat-rental',-price,{boat:id,hours})}catch(e){}p.rental={boat:id,from:clockNow().abs,hours,paid:price,baits:{...b.baits},at:isoNow()};
+  try{g77MsgIn('pl-club','"'+b.name+'" מחכה לך במעגן '+b.be.n+' ('+(b.be.pier==='PIER-1'?'המזח הראשון':'המזח השני')+'). עולים ב-F או ב-E ליד הסירה. באגן — לאט, עד 5 קשר.')}catch(e){}
+  try{setNavigationTarget('F3-BOARD-'+b.id,{silent:true})}catch(e){}SaveManager.log('fishing','boat_rent',{boat:id,hours,price});try{SaveManager.save('boat-rent',{backup:false,silent:true})}catch(e){}
+  toast('שכרת את "'+b.name+'" ל-'+hours+' '+(hours===1?'שעה':'שעות')+' · '+money(price));return true}
+ function cancelRental(){const p=P(),r=p.rental;if(!r)return;if(r.boarded)return toast('הסירה כבר יצאה — מחזירים אותה למעגן');const back=boatById(r.boat).price*r.hours;PlayerProfile.money+=back;try{recordTransaction('boat-rental-refund',back,{boat:r.boat})}catch(e){}p.rental=null;toast('ההשכרה בוטלה · הוחזרו '+money(back))}
+ function closeRental(why){const p=P(),r=p.rental;if(!r)return;const b=boatById(r.boat),used=clockNow().abs-r.from,over=Math.max(0,used-r.hours*60),extra=Math.ceil(over/60-1e-6)*b.price,fee=why==='berth'?0:60,tot=extra+fee;
+  if(tot){PlayerProfile.money-=tot;try{recordTransaction('boat-rental-extra',-tot,{boat:b.id,over:Math.round(over),fee})}catch(e){}}p.rental=null;p.trips=(p.trips||0)+1;
+  const txt=why==='berth'?'"'+b.name+'" קשורה במעגן '+b.be.n+' — תודה!':'"'+b.name+'" חוזרת למעגן עם אורי מהמועדון'+(fee?' · שירות החזרה '+g77Coins(fee):'');   /* D‑589: הסכום כאסימון — מוצג עם אייקון המטבע ולא כקוד */
+  try{g77MsgIn('pl-club',txt+(extra?' · שעות נוספות '+g77Coins(extra):''))}catch(e){try{toast(g77CoinsHtml(txt))}catch(e2){}}SaveManager.log('fishing','boat_return',{boat:b.id,why,over:Math.round(over),extra,fee});try{SaveManager.save('boat-return',{backup:false,silent:true})}catch(e){}}
+ function rentalTick(){const p=P(),r=p.rental;if(!r)return;const left=rentLeft();if(left<0&&!r.warned){r.warned=1;try{g77MsgIn('pl-club','הזמן של "'+boatById(r.boat).name+'" נגמר — חוזרים למעגן. כל שעה נוספת במחיר של שעה.')}catch(e){}}
+  if(left<-12*60&&!r.boarded){p.rental=null;try{g77MsgIn('pl-club','לא הגעת לסירה — ההשכרה נסגרה.')}catch(e){}}}
+ /* ======================= D‑570 · המבחן לרישיון סירה (BOAT‑B) — שיט בים מהמרינה ======================= */
+ /* המסלול: יציאה ממעגן 4, דרך הפתח שליד הפנס הירוק, ארבעה שערים בין המצופים של נתיב השיט (אדום ממערב, ירוק ממזרח) — דרומה, וחזרה וקשירה במעגן 4.
+    תנאי המעבר: כל 4 השערים לפי הסדר; עד 4 דקות; בלי פגיעה (בחוף, במזח, בסירה או בקו המצופים); באגן — עד 5 קשר; לא יוצאים מנתיב המבחן יותר מ-3 שניות. */
+ const EXAM={fee:120,limit:240,gates:[3450,3650,3850,4050].map((y,i)=>({n:i+1,y,x0:6600,x1:6950})),box:[6540,2440,7220,4200]};
+ const examClock=()=>{const e=S.exam;if(!e||!e.t0)return '4:00';const l=Math.max(0,EXAM.limit-(NOW()-e.t0)/1000);return Math.floor(l/60)+':'+String(Math.floor(l%60)).padStart(2,'0')};
+ function examRec(){const p=P();return p.exam||(p.exam={tries:0,passes:0,best:null,last:null,log:[]})}
+ function examStart(){init();const sb=BOATS.find(b=>b.school);if(licenseOwned('LIC-10'))return toast('רישיון הסירה כבר בבעלותך');if(S.exam)return toast('המבחן כבר פתוח — סירת המבחן במעגן '+sb.be.n);if(S.aboard||P().rental)return toast('קודם מחזירים את הסירה השכורה');
+  if(sb.mode!=='moored')return toast('סירת המבחן עוד חוזרת למעגן');if(PlayerProfile.money<EXAM.fee)return toast('אגרת המבחן — '+money(EXAM.fee));PlayerProfile.money-=EXAM.fee;try{recordTransaction('license-exam',-EXAM.fee,{id:'LIC-10'})}catch(e){}
+  S.exam={phase:'board',next:0,hits:0,slowT:0,outT:0,why:null};examRec().tries++;examCard('info');try{setNavigationTarget('F3-BOARD-'+sb.id,{silent:true})}catch(e){}
+  try{g77MsgIn('pl-school','המבחן לרישיון סירה: סירת המבחן במעגן '+sb.be.n+'. עולים ב-F או ב-E. יוצאים מהמעגן, עוברים 4 שערים בין המצופים — דרומה, וחוזרים לקשור. באגן — עד 5 קשר. בהצלחה!')}catch(e){}SaveManager.log('license','boat_exam_start',{});return true}
+ function examFail(why){const e=S.exam;if(!e||e.phase==='failed')return;e.phase='failed';e.why=why;const b=BOATS.find(q=>q.school);toast('המבחן נכשל — '+why+' · המדריך מחזיר את הסירה למעגן; אפשר לנסות שוב');
+  if(b&&S.aboard===b.id){b.mode='moor';b.legs=legsHome(b)}}
+ function examStep(b,dt){const e=S.exam;if(!e||e.phase!=='run')return;const t=(NOW()-e.t0)/1000;
+  if(t>EXAM.limit)return examFail('הזמן נגמר (4 דקות)');if((b.hitN||0)>e.hitN0){e.hits=(b.hitN||0)-e.hitN0;e.hitV=1;return examFail('פגיעה ב'+(b.lastHit||'מזח')+' — במבחן אסור לגעת')}
+  if(inBasin(b.x,b.y)&&Math.abs(b.u)>BASIN_V*1.12){e.slowT+=dt;if(e.slowT>1.5){e.speedV=1;return examFail('מהירות באגן מעל 5 קשר')}}else e.slowT=Math.max(0,e.slowT-dt);
+  const X=EXAM.box,inside=inBasin(b.x,b.y)||(b.x>X[0]&&b.x<X[2]&&b.y>X[1]&&b.y<X[3]);if(!inside){e.outT+=dt;if(e.outT>3){e.outV=1;return examFail('יצאת מנתיב המבחן')}}else e.outT=0;
+  const g=EXAM.gates[e.next];if(g&&e.py<g.y&&b.y>=g.y){const f=(g.y-e.py)/Math.max(1e-6,b.y-e.py),x=e.px+(b.x-e.px)*f;if(x>g.x0&&x<g.x1){e.next++;toast(e.next<EXAM.gates.length?'שער '+e.next+' / '+EXAM.gates.length:'כל השערים! חוזרים למעגן '+b.be.n+' וקושרים')}else return examFail('עברת מחוץ לשער '+g.n)}
+  e.px=b.x;e.py=b.y}
+ function examFinish(b){clearFishState();const e=S.exam;if(!e)return;S.exam=null;const R=examRec(),sec=e.t0?Math.round((NOW()-e.t0)/1000):0;let ok=e.phase==='run'&&e.next>=EXAM.gates.length&&sec<=EXAM.limit;
+  const why=ok?null:(e.why||(e.next<EXAM.gates.length?'לא עברת את כל השערים ('+e.next+' / '+EXAM.gates.length+')':'הזמן נגמר'));R.last={ok,why,sec,gates:e.next,at:isoNow()};R.log=(R.log||[]).concat([R.last]).slice(-10);
+  if(ok){R.passes++;R.best=R.best?Math.min(R.best,sec):sec;const cur=PlayerProfile.licenses['LIC-10']||{};PlayerProfile.licenses['LIC-10']={...cur,state:'owned',acquiredAt:isoNow(),bestScore:100,examSec:sec};try{g77MsgIn('pl-school','עברת את המבחן! רישיון סירה (ים פתוח) — בזמן '+Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0')+'. עכשיו מותר לשוט לבד.')}catch(e2){}}
+  else{try{g77MsgIn('pl-school','המבחן לא עבר — '+why+'. אפשר לנסות שוב במועדון.')}catch(e2){}}
+  if(!(e.demo&&/ההדגמה/.test(e.why||'')))examCard('sum',{ok,sec,e});SaveManager.log('license',ok?'boat_exam_passed':'boat_exam_failed',{sec,gates:e.next,why});try{SaveManager.save(ok?'license-pass':'license-fail',{backup:ok,silent:true})}catch(e2){}return R.last}
+ /* בדיקה בתוך המשחק: מבחן שעובר (נסיעה אמיתית בטייס של המדריך דרך כל השערים) ומבחן שנכשל (מדלגים על שער) — הכול בצעדים של 1/30 שנייה */
+ function examRun(skip){init();const sb=BOATS.find(b=>b.school);if(S.aboard||P().rental||sb.mode!=='moored')return{err:'busy'};const had=licenseOwned('LIC-10');if(had)delete PlayerProfile.licenses['LIC-10'];PlayerProfile.money=Math.max(PlayerProfile.money,500);
+  examStart();walkTo(sb.be.board[0],sb.be.board[1]);board(sb);const e=S.exam,T0=NOW();let clk=0;const realNow=NOW;
+  const G=EXAM.gates,route=legsOut(sb).concat(G.filter(g=>!skip||g.n<skip).map(g=>go((g.x0+g.x1)/2,g.y+30,sb.maxV*.6,{tol:12})),skip?[go(7120,G[skip-1].y-80,sb.maxV*.6,{tol:12}),go(7120,G[G.length-1].y+30,sb.maxV*.6,{tol:12})]:[]);sb.mode='auto';sb.legs=route;
+  let n=0;for(;n<30*400;n++){stepAll(1/30);if(S.aboard)stepAboard(1/30);if(sb.mode==='player'&&!sb.legs.length&&S.exam&&S.exam.phase==='run'){sb.mode='moor';sb.legs=legsHome(sb)}if(!S.exam)break}
+  const R=examRec().last,own=licenseOwned('LIC-10');if(had&&!own)PlayerProfile.licenses['LIC-10']={state:'owned',acquiredAt:isoNow(),restored:true};return{steps:n,result:R,licensed:own}}
+ /* ======================= D‑586 · המבחן ברור: כרטיס ההוראות עם מפה של המסלול, המסלול המודגש על המים, שורת ההוראה והסיכום ======================= */
+ function examRoute(){const sb=BOATS.find(q=>q.school),be=sb.be,ly=laneY(sb),G=EXAM.gates,mid=g=>[(g.x0+g.x1)/2,g.y];
+  const out=[[be.cx,be.cy],[be.cx,ly],[FAIR_X,ly],FAIR_S,GAP_IN,GAP_OUT,...G.map(mid),[(G[3].x0+G[3].x1)/2,G[3].y+90]],back=[[(G[3].x0+G[3].x1)/2+120,G[3].y+90],[6900,3300],GAP_OUT,GAP_IN,FAIR_S,[FAIR_X,ly],[be.cx,ly],[be.cx,be.cy]];return{out,back,be,G}}
+ function examMapSvg(){const R=examRoute(),X0=6520,Y0=1840,X1=7240,Y1=4180,W=170,H=Math.round(W*(Y1-Y0)/(X1-X0)),k=W/(X1-X0),P=q=>(((q[0]-X0)*k).toFixed(1))+','+(((q[1]-Y0)*k).toFixed(1));
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="background:#16597d;border-radius:8px;display:block;margin:6px auto" role="img" aria-label="מפת מסלול המבחן">`;
+  s+=`<rect x="${((6560-X0)*k).toFixed(1)}" y="${((1880-Y0)*k).toFixed(1)}" width="${(640*k).toFixed(1)}" height="${(672*k).toFixed(1)}" fill="#2a7aa3" stroke="#d8c9a0" stroke-width="1"/>`;
+  for(const d of F34_DECKS)s+=`<rect x="${((d[0]-X0)*k).toFixed(1)}" y="${((d[1]-Y0)*k).toFixed(1)}" width="${Math.max(.6,(d[2]-d[0])*k).toFixed(1)}" height="${Math.max(.6,(d[3]-d[1])*k).toFixed(1)}" fill="#b98a55"/>`;
+  s+=`<polyline points="${R.out.map(P).join(' ')}" fill="none" stroke="#ffd23f" stroke-width="2.4" stroke-linejoin="round"/><polyline points="${R.back.map(P).join(' ')}" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-dasharray="3 3"/>`;
+  for(const g of R.G){s+=`<line x1="${((g.x0-X0)*k).toFixed(1)}" y1="${((g.y-Y0)*k).toFixed(1)}" x2="${((g.x1-X0)*k).toFixed(1)}" y2="${((g.y-Y0)*k).toFixed(1)}" stroke="#ffffff" stroke-opacity=".5" stroke-dasharray="2 2"/><circle cx="${((g.x0-X0)*k).toFixed(1)}" cy="${((g.y-Y0)*k).toFixed(1)}" r="3" fill="#e0402c"/><circle cx="${((g.x1-X0)*k).toFixed(1)}" cy="${((g.y-Y0)*k).toFixed(1)}" r="3" fill="#2fa64a"/><text x="${(((g.x0+g.x1)/2-X0)*k).toFixed(1)}" y="${((g.y-Y0)*k-3).toFixed(1)}" fill="#fff" font-size="8" text-anchor="middle" font-weight="700">${g.n}</text>`}
+  s+=`<circle cx="${((R.be.cx-X0)*k).toFixed(1)}" cy="${((R.be.cy-Y0)*k).toFixed(1)}" r="4" fill="#ffd23f" stroke="#1d1f22"/><text x="${((R.be.cx-X0)*k+6).toFixed(1)}" y="${((R.be.cy-Y0)*k+3).toFixed(1)}" fill="#fff" font-size="8">מעגן ${R.be.n}</text>`;
+  s+=`<circle cx="${((GAP_IN[0]-X0)*k).toFixed(1)}" cy="${((GAP_IN[1]-Y0)*k).toFixed(1)}" r="2.5" fill="#4dff7a"/><text x="${((GAP_IN[0]-X0)*k+5).toFixed(1)}" y="${((GAP_IN[1]-Y0)*k+3).toFixed(1)}" fill="#fff" font-size="7">הפתח</text></svg>`;return s}
+ const EXAM_RULES=['יציאה ממעגן 4 לאט — באגן עד 5 קשר','דרך הפתח שליד הפנס הירוק, אל נתיב השיט','4 שערים בין המצוף האדום לירוק — לפי הסדר, דרומה','חזרה למרינה וקשירה במעגן 4 (E ליד המעגן)','עד 4 דקות · בלי שום מגע במזח, בסירה או בחוף · לא יוצאים מהמסלול'];
+ function examDom(){let d=document.getElementById('f3ExamBar');if(!d){d=document.createElement('div');d.id='f3ExamBar';d.style.cssText='position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:60;direction:rtl;font:700 15px/1.35 Segoe UI,Arial,sans-serif;background:rgba(10,22,32,.9);color:#fff;border:2px solid #ffd23f;border-radius:12px;padding:8px 16px;display:none;text-align:center;min-width:420px;max-width:80vw;pointer-events:none';document.body.appendChild(d)}
+  let c=document.getElementById('f3ExamCard');if(!c){c=document.createElement('div');c.id='f3ExamCard';c.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147482000;direction:rtl;font:500 14px/1.45 Segoe UI,Arial,sans-serif;background:#0f1d29;color:#eef6fb;border:1px solid #3b6a88;border-radius:14px;padding:14px 18px;display:none;width:min(560px,92vw);box-shadow:0 10px 40px rgba(0,0,0,.5)';document.body.appendChild(c);
+   c.addEventListener('click',ev=>{if(ev.target&&ev.target.closest&&ev.target.closest('[data-exam-close]'))c.style.display='none'})}return{d,c}}
+ function examCard(kind,o){try{const {c}=examDom();const ok=v=>v?'<b style="color:#5fe08f">✓</b>':'<b style="color:#ff6a5a">✗</b>';let h='';
+   if(kind==='info')h=`<div style="font:700 18px Segoe UI,Arial;margin-bottom:4px">המבחן לרישיון סירה — ההוראות</div><div style="display:flex;gap:14px;align-items:flex-start"><div>${examMapSvg()}</div><div><ol style="margin:4px 0;padding-inline-start:18px">${EXAM_RULES.map(r=>'<li style="margin:3px 0">'+r+'</li>').join('')}</ol>
+    <div style="opacity:.8;margin-top:6px">על המים: הקו הצהוב — המסלול, החצים — הכיוון, השער הבא מהבהב עם המספר שלו. השורה למעלה אומרת מה לעשות עכשיו.</div><div style="opacity:.8">נהיגה: W ו-S מצערת · A ו-D הגה · רווח — עצירה · E — קשירה.</div></div></div>`;
+   else{const e=o.e,sec=o.sec,t=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');h=`<div style="font:700 18px Segoe UI,Arial;margin-bottom:6px">${o.ok?'עברת את המבחן! רישיון סירה — בבעלותך':'המבחן לא עבר — אפשר לנסות שוב במועדון'}</div>
+    <table style="width:100%;border-collapse:collapse">${[['4 השערים לפי הסדר',e.next>=EXAM.gates.length,e.next+' / '+EXAM.gates.length],['הזמן — עד 4 דקות',sec<=EXAM.limit&&!(e.why||'').includes('הזמן'),t],['בלי מגע',!e.hitV,e.hitV?(e.hits||1)+' פגיעות':'0 פגיעות'],['באגן עד 5 קשר',!e.speedV,e.speedV?'מעל 5 קשר':'בסדר'],['בתוך המסלול',!e.outV,e.outV?'יצאת מהמסלול':'בסדר'],['חזרה וקשירה במעגן 4',o.ok,o.ok?'נקשרה':'—']].map(r=>`<tr><td style="padding:3px 0">${ok(r[1])} ${r[0]}</td><td style="text-align:left;opacity:.85">${r[2]}</td></tr>`).join('')}</table>${e.why?'<div style="margin-top:6px;color:#ffb3a8">הסיבה: '+e.why+'</div>':''}`}
+   c.innerHTML=h+'<div style="text-align:left;margin-top:10px"><button data-exam-close style="font:inherit;background:#ffd23f;color:#0b1520;border:0;border-radius:8px;padding:6px 16px;cursor:pointer">הבנתי</button></div>';c.style.display='block';if(S.exam&&S.exam.demo)setTimeout(()=>{c.style.display='none'},3500)}catch(err){er('examCard',err)}}
+ function examText(b){const e=S.exam;if(!e)return'';if(e.phase==='board')return 'עלה לסירת המבחן במעגן '+BOATS.find(q=>q.school).be.n+' — F או E ליד הסירה';if(e.phase==='failed')return 'המבחן נכשל — '+e.why+' · המדריך מחזיר את הסירה';
+  const inB=inBasin(b.x,b.y),G=EXAM.gates;if(e.next<G.length)return inB?'צא מהמעגן לאט — עד 5 קשר — אל הפתח שליד הפנס הירוק':'עבור בין המצופים בשער '+(e.next+1)+' — בין האדום לירוק';
+  if(!inB)return 'כל 4 השערים! חזור למרינה דרך הפתח';return Math.hypot(b.x-b.be.cx,b.y-b.be.cy)<60?'לחץ E כדי לקשור במעגן '+b.be.n:'חזור למעגן '+b.be.n+' וקשור — עד 5 קשר'}
+ function examHud(){const {d}=examDom(),e=S.exam,b=BOATS.find(q=>q.school);if(!e){d.style.display='none';return}const t=NOW();if(t-(S.exHudT||0)<150)return;S.exHudT=t;
+  const kn=(Math.abs(b.u)/10*1.944).toFixed(1),hits=Math.max(0,(b.hitN||0)-(e.hitN0||b.hitN||0)),fast=inBasin(b.x,b.y)&&Math.abs(b.u)>BASIN_V*1.05;
+  d.innerHTML=`<div style="font-size:17px">${examText(b)}</div><div style="font:600 12.5px Segoe UI,Arial;opacity:.9;margin-top:3px">שער ${Math.min(e.next+(e.next<EXAM.gates.length?1:0),EXAM.gates.length)} / ${EXAM.gates.length} · זמן ${examClock()} · <span style="color:${fast?'#ff6a5a':'#9fe8b5'}">${kn} קשר</span> · פגיעות ${hits}</div>`;d.style.display='block'}
+ /* המסלול המודגש על המים: הקו הצהוב עם חצים, הדרך חזרה מקווקוות, השערים — הבא מהבהב עם המספר */
+ function examDraw(c,now){const e=S.exam;if(!e)return;const R=examRoute(),z=Camera.zoom||1,lw=Math.max(2.2,3.2/z),t=now/1000;c.save();c.lineJoin='round';c.lineCap='round';
+  const path=(P,col,w,dash)=>{c.setLineDash(dash||[]);c.strokeStyle=col;c.lineWidth=w;c.beginPath();P.forEach((q,i)=>i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]));c.stroke();c.setLineDash([])};
+  path(R.out,'rgba(20,24,28,.55)',lw+2.4);path(R.out,'rgba(255,210,63,.95)',lw);path(R.back,'rgba(255,255,255,.75)',lw*.7,[10/z+6,8/z+5]);
+  c.fillStyle='rgba(255,210,63,.95)';for(const P of[R.out]){let acc=(t*40)%110;for(let i=1;i<P.length;i++){const a=P[i-1],b2=P[i],L=Math.hypot(b2[0]-a[0],b2[1]-a[1]),h=Math.atan2(b2[1]-a[1],b2[0]-a[0]);for(let s=110-acc;s<L;s+=110){const x=a[0]+(b2[0]-a[0])*s/L,y=a[1]+(b2[1]-a[1])*s/L,k=7+3/z;c.beginPath();c.moveTo(x+Math.cos(h)*k,y+Math.sin(h)*k);c.lineTo(x+Math.cos(h+2.5)*k,y+Math.sin(h+2.5)*k);c.lineTo(x+Math.cos(h-2.5)*k,y+Math.sin(h-2.5)*k);c.fill()}acc=(acc+L)%110}}
+  R.G.forEach((g,i)=>{const done=i<e.next,nx=i===e.next&&e.phase==='run',pul=.5+.5*Math.sin(t*6);c.setLineDash(nx?[]:[8,6]);c.strokeStyle=done?'rgba(95,224,143,.9)':nx?'rgba(255,230,90,'+(.55+.45*pul).toFixed(2)+')':'rgba(255,255,255,.45)';c.lineWidth=nx?lw*1.6+pul*2:lw*.7;c.beginPath();c.moveTo(g.x0+10,g.y);c.lineTo(g.x1-10,g.y);c.stroke();c.setLineDash([]);
+   const mx=(g.x0+g.x1)/2;c.fillStyle=done?'rgba(30,110,60,.9)':nx?'rgba(255,210,63,.95)':'rgba(20,30,40,.75)';c.beginPath();c.arc(mx,g.y-18,nx?13+pul*2:10,0,Math.PI*2);c.fill();c.fillStyle=nx?'#0b1520':'#fff';c.font='700 '+(nx?14:11)+'px Segoe UI,Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(done?'✓':String(g.n),mx,g.y-18);c.textBaseline='alphabetic'});
+  const be=R.be,pul2=.5+.5*Math.sin(t*5);if(e.next>=R.G.length||e.phase==='board'){c.strokeStyle='rgba(255,210,63,'+(.5+.5*pul2).toFixed(2)+')';c.lineWidth=lw;c.strokeRect(be.cx-16,be.cy-34,32,68)}c.restore()}
+ try{S9_HOOKS.live.push((c,now)=>{try{examDraw(c,now)}catch(err){er('examDraw',err)}})}catch(err){}
+ /* ======================= D‑570 · הקצב בדיג העמוק: כמה דגים בשעה של משחק (סימולציה לפי אותם סיכויים ואותה משיכה) ======================= */
+ const TUNE={w0:2.2,w1:4.4,react:.8,over:2.0,reel:1.25};   /* היה: 3.5 + עד 7 שנ׳ המתנה לנשיכה, וגלגול רגיל (D‑570 — "גג 3 דגים בשעה") */
+ function simFight(q,row,cfg,W,b){const rod=RODS3[cfg.rod],pow=row.weightKg*q.pow*.32,dt=1/30;let line=(row.depthM||20)+6+Math.random()*6,T=.35,stam=1,runT=0,run=0,tt=0;
+  for(;tt<240;tt+=dt){if(tt>runT){const big=Math.random()<.45;run=big?(.45+Math.random()*.55)*stam:.12*stam;runT=tt+(big?.9+Math.random()*1.9:.7+Math.random()*1.3)}
+   const ratio=cl(pow*run/rod.line,0,2.2),noise=W.wave*.07*Math.sin(tt*1000/140)+(W.storm?.08*Math.sin(tt*1000/57):0),hold=T<.7;let Tt;
+   if(hold){line=Math.max(0,line-rod.spd*TUNE.reel*(1-Math.min(.88,ratio*.75))*dt);Tt=.24+ratio*.62+noise}else{if(run>.3)line+=ratio*4.2*dt;Tt=.1+ratio*.36+noise*.5}
+   T+=(Tt-T)*Math.min(1,dt*4.5);stam=Math.max(.18,stam-dt*(hold?.045:.02)*(run>.3?1.6:1));
+   if(q.id==='FS-SE-05'&&tt<4.5&&!hold&&Math.random()<.035*dt)return{t:tt,ok:false};if(T>=1||line>rod.cap||Math.random()<(.004+W.wave*.004)*dt*(hold?1:.5))return{t:tt,ok:false};
+   if(line<=1.6){const tool=TOOLS3[cfg.tool],ok=b.tools.includes(cfg.tool)&&row.weightKg<=tool.max;if(!ok&&Math.random()<.55)return{t:tt,ok:false};return{t:tt+.9+2.8,ok:true}}}return{t:tt,ok:false}}
+ function rateSim(hours,o){o=o||{};const tune=Object.assign({},TUNE),old=o.old;if(old)Object.assign(TUNE,{w0:3.5,w1:7,reel:1});const secH=60/(G84_CLOCK.rate||.5),out=[];
+  try{for(const b of BOATS.filter(q=>!q.school))for(const s of SPOTS)for(const h of[6,12,22]){const W=seaAt(1+(h%3),h),bottom=s.bottom,cfg=defaultCfg(b,s,bottom);let t=0,n=0,big=0,val=0,lost=0;const bb=Object.assign({},b,{u:0});
+     while(t<hours*secH){const rows=weights(cfg,s,bottom,W,h,bb),sum=rows.reduce((a,r)=>a+r.w,0);t+=TUNE.over+1.1+effDepth(cfg,bottom,W)/((WEIGHTS3[cfg.weight].sink||3)*1.6);if(sum<.05){t+=9;continue}
+      t+=(TUNE.w0+Math.random()*TUNE.w1)/cl(sum/14,.35,1.7)+TUNE.react;let r=Math.random()*sum,q=rows[0].q;for(const x of rows){r-=x.w;if(r<=0){q=x.q;break}}
+      const row=makeRow(q,pickSize(RODS3[cfg.rod].cls,BAITS3[cfg.bait].key),{spot:s,cfg,depth:effDepth(cfg,bottom,W)}),F=simFight(q,row,cfg,W,b);t+=F.t;if(F.ok){if(t>hours*secH)break;n++;val+=row.value;if(row.sizeIndex>=2)big++}else{lost++;t+=1.5}}
+     out.push({boat:b.name,spot:s.name,hour:h,perHour:+(n/hours).toFixed(2),bigPerHour:+(big/hours).toFixed(2),valuePerHour:Math.round(val/hours),avgValue:n?Math.round(val/n):0,lostPerHour:+(lost/hours).toFixed(2)})}}finally{Object.assign(TUNE,tune)}
+  const by=k=>{const g={};for(const r of out){(g[r[k]]=g[r[k]]||[]).push(r)}return Object.fromEntries(Object.entries(g).map(([n,L])=>[n,{perHour:+(L.reduce((a,r)=>a+r.perHour,0)/L.length).toFixed(2),bigPerHour:+(L.reduce((a,r)=>a+r.bigPerHour,0)/L.length).toFixed(2),valuePerHour:Math.round(L.reduce((a,r)=>a+r.valuePerHour,0)/L.length),avgValue:Math.round(L.reduce((a,r)=>a+r.avgValue,0)/L.length)}]))};
+  const common=['FS-SE-02','FS-SE-04','FS-SE-05','FS-SE-07','FS-SE-12'].map(id=>SEA_ID[id].value),two=Math.round(2*common.reduce((a,v)=>a+v,0)/common.length);
+  return{hours,secPerGameHour:secH,byBoat:by('boat'),bySpot:by('spot'),rows:out,twoCommonFish:two,prices:BOATS.filter(q=>!q.school).map(b=>({boat:b.name,before:b.price0,after:b.price}))}}
+ /* ---- הצעד של הסימולציה ---- */
+ function stepAll(dt){try{init();if(S.aboard){const b=boatById(S.aboard);if(PlayerProfile.mode!=='walk'||State.taxiRide||State.ferryRide||Math.hypot(PlayerPed.x-S.pedX,PlayerPed.y-S.pedY)>40){leaveBoat(b,'away');if(!b.owned)try{g77MsgIn('pl-club','השארת את "'+b.name+'" — אני מחזיר אותה למעגן.')}catch(e){}}}
+   for(const b of BOATS){if(b.id===S.aboard&&(b.mode==='player'||b.mode==='moor'||b.mode==='auto'))continue;   /* D‑569: הסירה שהשחקן עליה מתקדמת ב-stepAboard בלבד — קודם הטייס (עגינה, הדגמה) רץ פעמיים בכל פריים, והסירה שטה במהירות כפולה */
+   if(b.mode==='return'||b.mode==='moor'||b.mode==='auto'||b.mode==='yard')autopilot(b,dt);if(b.mode!=='moored'||!b.saved){save(b);b.saved=b.mode==='moored'}}
+   if(HOOK.step)HOOK.step(dt);rentalTick()}catch(e){er('step',e)}}
+ function stepAboard(dt){const b=boatById(S.aboard);if(!b)return;if(b.mode==='player'){const fishing=S.f&&S.f.phase!=='idle',lock=S.menu||fishing,fw=Input.down('KeyW','ArrowUp'),bw=Input.down('KeyS','ArrowDown'),br=Input.down('Space'),lr=(Input.down('KeyD','ArrowRight')?1:0)-(Input.down('KeyA','ArrowLeft')?1:0);
+   if(fishing&&(!b.anchor||b.anchor.st==='up'))anchorDrop(b,true);if(b.anchor&&b.anchor.st==='down'&&!fishing&&!S.menu&&(fw||bw))anchorUp(b,'מרימים את העוגן — עוד רגע שטים');const anc=!!b.anchor;
+  let thr=lock||anc?0:fw?1:bw?-.55:0;if(!lock&&!anc&&br)thr=b.u>4?-1.5:b.u<-4?1.5:0;if(b.owned&&HOOK.thr)thr=HOOK.thr(b,thr,dt);physics(b,dt,thr,lock||anc?0:lr)}
+  else if(b.mode==='moor'||b.mode==='auto')autopilot(b,dt);
+  if(S.aboard===b.id)placePed(b);if(b.school)examStep(b,dt);else fishStep(dt)}
+ /* ======================= הדיג — שלב 3 ======================= */
+ function inv(id){const r=P().rental;return((r&&r.baits&&r.baits[id])||0)+(PlayerProfile.inventory[id]||0)}
+ function useBait(id){const q=BAITS3[id];if(!q||q.reuse)return;const r=P().rental;if(r&&r.baits&&r.baits[id]>0){r.baits[id]--;return}if(PlayerProfile.inventory[id]>0)PlayerProfile.inventory[id]--}
+ function gearOf(b){const r=P().rental;return{rods:b.rods,tools:b.tools,weights:b.weights,baits:Object.keys(BAITS3).filter(id=>inv(id)>0||(b.baits[id]!=null))}}
+ function defaultCfg(b,spot,bottom){const g=gearOf(b),rod=g.rods[g.rods.length-1],bait=g.baits.find(id=>inv(id)>0)||'sea-squid',w=g.weights.includes('w300')?'w300':g.weights[0];return{rod,bait,weight:w,depth:Math.min(bottom,Math.max(10,Math.round(bottom*.85))),bottomMode:true,tool:g.tools.includes('gaff')?'gaff':'net'}}
+ function effDepth(cfg,bottom,W){const w=WEIGHTS3[cfg.weight],drift=1-cl((W.wind-8)*.025+(W.wave-.6)*.12,0,.5),mx=cfg.weight==='w0'?w.max:Math.round(w.max*drift),reel=RODS3[cfg.rod].cap*.9;return Math.max(1,Math.min(cfg.bottomMode?bottom:cfg.depth,bottom,mx,reel))}
+ function weights(cfg,spot,bottom,W,h,b){const hab=spot?spot.hab:'none',T=tod(h),rod=RODS3[cfg.rod],D=effDepth(cfg,bottom,W),bk=BAITS3[cfg.bait].key,moving=b&&Math.abs(b.u)>14&&Math.abs(b.u)<50,rows=[];
+  for(const q of SEA){let w=(hab==='none'?.6:q.hab[hab]||0)*(q.b[bk]||0);if(!w){rows.push({q,w:0,why:'לא בפיתיון הזה או במקום הזה'});continue}
+   const dr=(q.dn&&T==='night')?q.dn:q.d;let why='';
+   if(q.bot){if(!(bottom>=dr[0]&&bottom<=dr[1])){w*=.05;why='התחתית לא בעומק שלו'}else if(D<bottom-8){w*=.08;why='צריך להגיע לתחתית'}}else if(D<dr[0]||D>dr[1]){w*=.07;why='לא בעומק שלו ('+dr[0]+'–'+dr[1]+' מ׳)'}
+   const need=(q.rodN&&T==='night')?q.rodN:q.rod;if(rod.cls<need){w*=.3;why=why||'צריך חכה כבדה יותר'}
+   if(q.tod==='dawn'&&T==='dawn')w*=1.7;else if(q.tod==='night'){w*=T==='night'?1.9:.55}else if(q.tod==='day'&&T==='day')w*=1.3;else if(T==='night'&&q.tod!=='night')w*=.6;
+   if(W.wave<.5&&!q.bot)w*=.8;else if(W.wave<1.6)w*=1.2;else w*=.6;
+   if(cfg.weight==='w0'){if(bk==='plug'&&moving&&!q.bot)w*=2.2;else w*=.25}
+   rows.push({q,w,why})}
+  return rows}
+ function odds(cfg,spot,bottom,W,h,b){const rows=weights(cfg,spot,bottom,W,h,b),sum=rows.reduce((n,r)=>n+r.w,0)||1;return rows.map(r=>({...r,pct:100*r.w/sum})).sort((a,b)=>b.pct-a.pct)}
+ const SIZE_ODDS={1:[40,38,18,4],2:[30,38,25,7],3:[24,36,30,10]};
+ function pickSize(cls,bk){const o=SIZE_ODDS[cls].slice();if(bk==='live'||bk==='chunk'){o[0]-=8;o[2]+=5;o[3]+=3}let r=Math.random()*100;for(let i=0;i<4;i++){r-=o[i];if(r<=0)return i}return 1}
+ function makeRow(q,si,f){const len=Math.max(12,Math.round(q.base*FISH_SIZE_SCALE[si]*(.88+Math.random()*.22))),kg=q.k*Math.pow(len/100,3),value=Math.max(8,Math.round(q.value*FISH_VALUE_MULT[si]*len/q.base));
+  return{catchId:'FISH-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),id:q.id,name:q.name,size:FISH_SIZE_NAMES[si],sizeIndex:si,lengthCm:len,weightKg:+kg.toFixed(kg<10?1:0),value,
+   spot:f.spot?f.spot.id:'F3-SEA',habitat:'sea',bait:f.cfg.bait,rod:f.cfg.rod,depthM:Math.round(f.depth),boat:S.aboard,caughtAt:isoNow()}}
+ const kgTxt=kg=>kg<1?Math.round(kg*1000)+' ג׳':(kg<10?kg.toFixed(1):Math.round(kg))+' ק״ג';
+ function startDrop(){const b=boatById(S.aboard);if(!b)return toast('צריך להיות על הסירה');if(inBasin(b.x,b.y))return toast('באגן המרינה לא דגים — יוצאים לים דרך הפתח');const cfg=S.cfg;if(!cfg)return;
+  if(inv(cfg.bait)<=0)return toast('אין '+BAITS3[cfg.bait].label+' — קונים במועדון השייט');if(!b.rods.includes(cfg.rod))return toast('החכה הזו לא בסירה');
+  const spot=nearSpot(b.x,b.y),bottom=depthAt(b.x,b.y),W=seaNow(),side=(Math.cos(b.h)>=0?1:-1);closeMenu();useBait(cfg.bait);
+  S.f={phase:'drop',t0:NOW(),cfg:{...cfg},spot,bottom,W,depth:0,target:effDepth(cfg,bottom,W),side,line:0,T:0,run:0,runT:0,stam:1,hookT:0,biteAt:0};placePed(b);const anc=anchorDrop(b,true);
+  toast((cfg.weight==='w0'?'הרפלה במים':'הפיתיון יורד — '+S.f.target+' מ׳')+(anc?' · העוגן במים — הסירה מחזיקה מקום'+(spot?' מעל "'+spot.name+'"':''):''));return true}
+ function biteWait(f){const b=boatById(S.aboard),rows=weights(f.cfg,f.spot,f.bottom,f.W,clockNow().h,b),sum=rows.reduce((n,r)=>n+r.w,0);return{rows,sum,ms:(TUNE.w0+Math.random()*TUNE.w1)*1000/cl(sum/14,.35,1.7)*(b&&b.biteK||1)}}
+ function fishStep(dt){const f=S.f;if(!f||f.phase==='idle')return;const t=NOW(),b=boatById(S.aboard);if(!b){S.f=null;return}
+  if(f.phase==='drop'){const k=WEIGHTS3[f.cfg.weight].sink||3;if(t-f.t0>1100){f.depth=Math.min(f.target,f.depth+k*dt*1.6);if(f.depth>=f.target-.01){f.phase='wait';const w=biteWait(f);f.biteAt=t+w.ms;f.sum=w.sum}}return}
+  if(f.phase==='wait'){if(f.cfg.weight==='w0')f.depth=cl(2+Math.abs(b.u)*.04,1,4);if(t>=f.biteAt){const w=biteWait(f);if(w.sum<.05){f.biteAt=t+9000;if(!f.toldNone){f.toldNone=1;toast('אין נשיכות — נסו עומק, פיתיון או נקודה אחרת')}return}
+    let r=Math.random()*w.sum,q=w.rows[0].q;for(const x of w.rows){r-=x.w;if(r<=0){q=x.q;break}}const si=pickSize(RODS3[f.cfg.rod].cls,BAITS3[f.cfg.bait].key);f.row=makeRow(q,si,f);f.q=q;f.phase='bite';f.biteT=t;
+    toast('נשיכה! F — להכות');try{SaveManager.log('fishing','sea_bite',{id:q.id,size:f.row.size,spot:f.spot&&f.spot.id,depth:Math.round(f.depth)})}catch(e){}}return}
+  if(f.phase==='bite'){if(S.auto&&t-f.biteT>500)strike();else if(t-f.biteT>3200){f.phase='wait';f.biteAt=t+biteWait(f).ms;if(!BAITS3[f.cfg.bait].reuse&&Math.random()<.5){useBait(f.cfg.bait);toast('הדג לקח את הפיתיון — שמים פיתיון חדש')}else toast('הדג עזב — ממתינים שוב')}return}
+  if(f.phase==='fight'){const rod=RODS3[f.cfg.rod],pow=f.row.weightKg*f.q.pow*.32,W=f.W;if(t>f.runT){const big=Math.random()<.45;f.run=big?(.45+Math.random()*.55)*f.stam:.12*f.stam;f.runT=t+(big?900+Math.random()*1900:700+Math.random()*1300)}
+   const ratio=cl(pow*f.run/rod.line,0,2.2),noise=W.wave*.07*Math.sin(t/140)+(W.storm?.08*Math.sin(t/57):0),hold=S.auto?(f.T<.7):(S.hold||Input.down('KeyF'));
+   let tt;if(hold){f.line=Math.max(0,f.line-rod.spd*TUNE.reel*(1-Math.min(.88,ratio*.75))*dt);tt=.24+ratio*.62+noise}else{if(f.run>.3)f.line+=ratio*4.2*dt;tt=.1+ratio*.36+noise*.5}
+   f.T+=(tt-f.T)*Math.min(1,dt*4.5);f.stam=Math.max(.18,f.stam-dt*(hold?.045:.02)*(f.run>.3?1.6:1));
+   if(f.q.id==='FS-SE-05'&&t-f.hookT<4500&&!hold&&Math.random()<.035*dt*30/30)return lose('הלוקוס נכנס לסלעים של השונית וקרע את החוט');
+   if(f.T>=1)return lose('החוט נקרע — המתיחה גבוהה מדי');if(f.line>rod.cap)return lose('הסליל התרוקן — הדג לקח את כל החוט');if(Math.random()<(.004+W.wave*.004)*dt*(hold?1:.5))return lose('הקרס השתחרר');
+   if(f.line<=1.6){const tool=TOOLS3[f.cfg.tool],ok=b.tools.includes(f.cfg.tool)&&f.row.weightKg<=tool.max;if(!ok&&Math.random()<.55)return lose(f.row.weightKg>15?'בלי גאף הדג הגדול נפל ליד הסירה':'הדג נפל ליד הסירה');f.phase='land';f.landT=t}return}
+  if(f.phase==='land'){if(t-f.landT>900){f.phase='hold';f.holdT=t;finishCatch(f)}return}
+  if(f.phase==='hold'){if(t-f.holdT>2800){S.f={phase:'idle',last:f.row,cfg:f.cfg};S.auto=false}return}
+  if(f.phase==='lost'){if(t-f.lostT>1500)S.f={phase:'idle',cfg:f.cfg}}}
+ function strike(){const f=S.f;if(!f||f.phase!=='bite')return;f.phase='fight';f.hookT=NOW();f.line=f.depth+6+Math.random()*6;f.T=.35;f.runT=0;f.stam=1;toast('הדג על הקרס! החזק F כדי לגלגל, ושחרר כשהמתיחה באדום')}
+ function lose(msg){const f=S.f;f.phase='lost';S.auto=false;f.lostT=NOW();const fx=ensureFishingSchema();fx.totalEscaped=(fx.totalEscaped||0)+1;toast(msg);try{SaveManager.log('fishing','sea_lost',{id:f.row&&f.row.id,why:msg})}catch(e){}}
+ function finishCatch(f){const fx=ensureFishingSchema(),row=f.row,prev=fx.records[row.id],rec=!prev||row.lengthCm>Number(prev.lengthCm||0);fx.inventory.push(row);if(fx.inventory.length>50)fx.inventory.shift();fx.totalCaught++;
+  if(rec)fx.records[row.id]={...row,recordAt:isoNow()};if(!fx.bestValueCatch||Number(row.value||0)>Number(fx.bestValueCatch.value||0))fx.bestValueCatch={...row,bestValueAt:isoNow()};const p=P();p.caught=(p.caught||0)+1;
+  try{recordTransaction('fish-caught',0,{fish:row.id,size:row.size,lengthCm:row.lengthCm,weightKg:row.weightKg,value:row.value,newRecord:rec,habitat:'sea'})}catch(e){}
+  try{SaveManager.log('fishing','sea_caught',{id:row.id,lengthCm:row.lengthCm,weightKg:row.weightKg,spot:row.spot,depth:row.depthM})}catch(e){}try{syncAchievements(true)}catch(e){}
+  try{fishx7Card(row,rec);const c=document.querySelector('#fishCatchCard .cf');if(c)c.insertAdjacentHTML('afterbegin','<span>'+kgTxt(row.weightKg)+'</span>')}catch(e){}
+  try{if(S9STORY.step('F3-ST-FISH3')===3&&row.spot==='F3-SPOT-1')S9STORY.advance('F3-ST-FISH3')}catch(e){}try{SaveManager.save('fishing-catch',{backup:false,silent:true})}catch(e){}}
+ function seaAction(){const b=boatById(S.aboard),f=S.f;if(S.menu){startDrop();return true}
+  if(f&&f.phase==='bite'){strike();return true}if(f&&(f.phase==='fight'||f.phase==='land'||f.phase==='hold'))return true;
+  if(f&&(f.phase==='drop'||f.phase==='wait')){S.f={phase:'idle',cfg:f.cfg};toast(anchorUp(b)?'מרימים את החכה ואת העוגן':'מרימים את החכה');return true}
+  if(inBasin(b.x,b.y)){const d=Math.hypot(b.x-b.be.cx,b.y-b.be.cy);toast(d<70?'E — קושרים את הסירה במעגן '+b.be.n:'באגן לא דגים · E ליד מזח או מעגן — יורדים מהסירה');return true}
+  if(b.owned&&HOOK.canFish){const w=HOOK.canFish(b);if(w){toast(w);return true}}
+  openMenu();return true}
+ const PAINTER={fn:F3_BOAT_PAINT.paint},light=F3_BOAT_PAINT.light;
+ /* האנשים על הסירה: השחקן בהגה או הדייג בירכתיים (P34 + FISHX, כמו בשלבים 1 ו-2), והסקיפר של המועדון */
+ const LOOK={};function lookOf(k){if(LOOK[k])return LOOK[k];try{if(k==='player'){const pl=p672Pl(),key=P672.k;if(LOOK._pk!==key){LOOK._pk=key;LOOK._pl=p672Fish(pl)}return LOOK._pl}return LOOK[k]=P34U.l('dock',k==='uri'?33:41,{})}catch(e){return null}}
+ const RODOBJ={};function rodObj(id,heavyFight){const k=id+(heavyFight?'|f':'');if(RODOBJ[k])return RODOBJ[k];const r=RODS3[id],base=RODS[heavyFight?4:2];return RODOBJ[k]=Object.assign({},base,{len:r.len,blank:r.blank,tip:r.tip,dia:r.dia,name:r.name,power:r.line})}
+ function personStand(c,p,look,h,t){if(!look||typeof P34==='undefined'){c.fillStyle='#2b3a48';c.beginPath();c.arc(p[0],p[1]-8,3,0,TAU);c.fill();return}P34.draw(c,p[0],p[1],look,{k:'stand'},h,(t*.2)%1,res())}
+ function angler(c,b,p,o,t){const f=S.f,look=lookOf('player');if(!look||typeof P34==='undefined'||typeof FISHX==='undefined'){personStand(c,p,look,b.h,t);return}
+  const side=f.side||1,sx=-Math.sin(b.h)*side,sy=Math.cos(b.h)*side,troll=f.cfg.weight==='w0';
+  let wx,wy;if(troll){wx=b.x-Math.cos(b.h)*(b.L*.5+60);wy=b.y-Math.sin(b.h)*(b.L*.5+60)}else{const sw=Math.sin(t*.7)*3;wx=p[0]+sx*(b.B*.5+12)+Math.cos(b.h)*sw;wy=p[1]+sy*(b.B*.5+12)+Math.sin(b.h)*sw+(o.bob||0)*.3+b.fb*KZ}
+  if(f.phase==='fight'&&f.line<9){const k=f.line/9;wx=lerp(p[0]+sx*(b.B*.5+4),wx,k);wy=lerp(p[1]+sy*(b.B*.5+4)+b.fb*KZ,wy,k)}
+  const h=Math.atan2(wy-p[1],wx-p[0]),ph=f.phase,heavy=RODS3[f.cfg.rod].heavy;let fr=0,heavyFr=false;
+  if(ph==='drop'){const u=(NOW()-f.t0)/1100;fr=u<.5?1:u<1?2:0}else if(ph==='wait')fr=0;else if(ph==='bite')fr=3;else if(ph==='fight'){fr=(S.auto?(f.T<.7):(S.hold||Input.down('KeyF')))?(Math.floor(t*2.6)%2?5:4):4;heavyFr=heavy}else if(ph==='land'){fr=6;heavyFr=heavy}else if(ph==='hold'){fr=7;heavyFr=heavy}else if(ph==='lost')fr=0;
+  const rod=rodObj(f.cfg.rod,heavyFr),R=res(),N=night()>.5;
+  P34.draw(c,p[0],p[1],look,{k:FISHX.kindOf(rod)},h,(fr+.5)/8,R);
+  const line=(fr===7||fr===6)?null:[wx,wy],ti=FISHX.rodWorld(c,rod,p[0],p[1],h,fr,look,{res:R,line,bell:ph==='bite',t,night:N,slack:ph==='lost'?1.4:fr===0?.3:0,bend:ph==='fight'?cl(.3+f.T*.5,.3,.85):undefined});
+  if(line){c.strokeStyle='rgba(255,255,255,'+(.25+.25*Math.sin(t*3))+')';c.lineWidth=.5;c.beginPath();c.ellipse(wx,wy,2.2+Math.sin(t*2)*.6,.9,0,0,TAU);c.stroke();
+   if(ph==='fight'){c.fillStyle='rgba(255,255,255,'+(.35+f.run*.5).toFixed(2)+')';for(let k=0;k<3;k++){const a=t*6+k*2.1;c.beginPath();c.arc(wx+Math.cos(a)*3,wy+Math.sin(a)*1.2,.7+f.run,0,TAU);c.fill()}
+    if(f.line<8){c.save();c.globalAlpha=cl(1-f.line/8,0,.85);FISHX.fishAt(c,f.row.id,f.row.lengthCm,wx,wy+.4,Math.atan2(p[1]-wy,p[0]-wx),P34.SCALE*.1,f.row.sizeIndex,2,t);c.restore()}}}
+  const row=f.row||f.last;if(row&&fr===6&&ti&&ti.tip)FISHX.fishAt(c,row.id,row.lengthCm,ti.tip[0],ti.tip[1]+1.2,-Math.PI/2,P34.SCALE*.1,row.sizeIndex,3,t);
+  if(row&&fr===7){let hand=[Math.cos(h)*.4,Math.sin(h)*.4,1];try{hand=P34.pose(look,{k:FISHX.kindOf(rod)},FISHX.dirOf(h),7).arms.find(a=>a.side>0).hand}catch(e){}const q=FISHX.P(p[0],p[1],hand);FISHX.fishAt(c,row.id,row.lengthCm,q[0]+.2,q[1]+.5,-Math.PI/2+.15,P34.SCALE*.1,row.sizeIndex,3,t)}}
+ function peopleFor(b,t){const L=[];if(S.aboard===b.id){if(S.f&&S.f.phase!=='idle'){const [lx,ly]=aftLocal(b,S.f.side||1);L.push({lx,ly,draw:(p,o)=>angler(ctx,b,p,o,t)})}else{const [lx,ly]=helmLocal(b);L.push({lx,ly,z:b.helmZ,draw:p=>personStand(ctx,p,lookOf('player'),b.h,t)})}}
+  else if(b.mode==='return'||b.mode==='moor'||b.mode==='yard'){const [lx,ly]=helmLocal(b);L.push({lx,ly,z:b.helmZ,draw:p=>personStand(ctx,p,lookOf('uri'),b.h,t)})}return L}
+ function drawBoat(b,now){const t=now/1000,under=b.mode!=='moored';{const R=Math.max(90,b.L);if(!e3InView(b.x-R,b.y-R,2*R,2*R,30))return}PAINTER.fn(ctx,b,b.x,b.y,b.h,t,{u:b.u,trail:b.trail,wave:inBasin(b.x,b.y)?.15:seaNow().wave,night:night(),under,fishing:S.aboard===b.id&&S.f&&S.f.phase!=='idle',people:peopleFor(b,t)});
+  if(b.mode==='moored'&&!b.owned&&!P().rental&&Camera.zoom>.9){try{s9Txt(ctx,'להשכרה · '+b.name,b.x,b.y-b.L*.62,6.5,'rgba(255,236,170,.95)')}catch(e){}}}
+ /* נקודות הדיג: אדוות, דגים שקופצים, מצוף סימון, והציפורים מעל */
+ function spotsWater(c,now){const t=now/1000;for(const s of SPOTS){if(!e3InView(s.x-80,s.y-60,160,120,30))continue;c.save();
+   for(let k=0;k<4;k++){const u=((t*.35+k*.25)%1),r=8+u*46;c.strokeStyle='rgba(255,255,255,'+(.3*(1-u)).toFixed(3)+')';c.lineWidth=.9;c.beginPath();c.ellipse(s.x+Math.sin(k*2.3)*14,s.y+Math.cos(k*1.7)*9,r,r*.42,0,0,TAU);c.stroke()}
+   const bo=Math.floor(t/2.6),bx=s.x+(hsh(bo+s.x)-.5)*70,by=s.y+(hsh(bo*1.3+s.y)-.5)*40,ba=(t%2.6)/2.6;if(ba<.45){c.fillStyle='rgba(255,255,255,'+(.6*(1-ba/.45)).toFixed(2)+')';for(let k=0;k<5;k++){const a=k*1.26+bo;c.beginPath();c.arc(bx+Math.cos(a)*(2+ba*9),by+Math.sin(a)*(1+ba*4)-ba*5,1.1,0,TAU);c.fill()}}
+   for(let i=0;i<5;i++){const a=t*.5*(i%2?1:-1)+i*1.26,gx=s.x+Math.cos(a)*(30+i*9),gy=s.y+Math.sin(a)*(18+i*5);c.fillStyle='rgba(5,20,35,.18)';c.beginPath();c.ellipse(gx+4,gy+6,3,1.2,0,0,TAU);c.fill()}
+   const mx=s.x+34,my=s.y-6+Math.sin(t*1.8)*.8;c.fillStyle='rgba(4,18,30,.25)';c.beginPath();c.ellipse(mx+2,my+2,3.4,1.6,0,0,TAU);c.fill();c.fillStyle='#f07a1e';c.beginPath();c.ellipse(mx,my,3,2,0,0,TAU);c.fill();c.fillStyle='#ffffff';c.fillRect(mx-2.4,my-1.2,4.8,.9);
+   c.strokeStyle='#2b2f33';c.lineWidth=.7;c.beginPath();c.moveTo(mx,my-1);c.lineTo(mx,my-13);c.stroke();c.fillStyle='#ffd23a';c.beginPath();c.moveTo(mx,my-13);c.lineTo(mx+7+Math.sin(t*4)*1.5,my-11);c.lineTo(mx,my-8.5);c.fill();
+   if(night()>.4){const A=(.6*night()).toFixed(2),on=(t%3)<.4;if(on)light(c,[mx,my-13],'rgba(255,220,90,A)',9,A)}
+   if(Camera.zoom>.85)try{s9Txt(c,'נקודת דיג · '+s.name,s.x,s.y+30,6.5,'rgba(255,255,255,.92)')}catch(e){}
+   c.restore()}}
+ function spotsBirds(c,now){const t=now/1000,N=night()>.5;for(const s of SPOTS){if(!e3InView(s.x-80,s.y-90,160,120,30))continue;c.save();c.strokeStyle=N?'rgba(220,220,220,.55)':'rgba(40,40,40,.8)';c.lineWidth=1.1;c.lineCap='round';
+   for(let i=0;i<5;i++){const a=t*.5*(i%2?1:-1)+i*1.26,x=s.x+Math.cos(a)*(30+i*9),y=s.y+Math.sin(a)*(18+i*5)-34-i*3,f=Math.sin(t*6+i)*3;c.beginPath();c.moveTo(x-6,y+f*.4);c.quadraticCurveTo(x-3,y-3+f*.3,x,y);c.quadraticCurveTo(x+3,y-3+f*.3,x+6,y+f*.4);c.stroke()}c.restore()}}
+ /* הדייג הוותיק על הטיילת שליד האגן */
+ function oldMan(c,now){const x=6546,y=2168;if(!e3InView(x-20,y-30,40,40,20))return;const t=now/1000;try{FISHX.tackleBox(c,x+6,y+3,res())}catch(e){}personStand(c,[x,y],lookOf('nissim'),Math.sin(t*.25)*.5,t);
+  if(Camera.zoom>1.1)try{s9Txt(c,'נסים — הדייג הוותיק',x,y-24,6,'rgba(255,240,200,.95)')}catch(e){}}
+ /* ======================= התפריט של שלב 3 (מסך מלא) ======================= */
+ const CSS=`#f3Menu{position:fixed;z-index:61;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,7,11,.62);backdrop-filter:blur(5px);padding:12px}
+#f3Menu.show{display:flex}#f3Panel{width:min(1180px,96vw);height:92vh;overflow:auto;background:linear-gradient(155deg,#142431,#081119);border:1px solid #ffffff2a;border-radius:22px;box-shadow:0 28px 90px #000d;padding:14px;direction:rtl;color:#eef7fb;overscroll-behavior:contain;font-family:Segoe UI,Arial,sans-serif}
+#f3Panel h2{margin:0 0 4px;color:#ffe08a;font-size:20px}#f3Panel .sub{color:#9fb0bd;font-size:12px;margin-bottom:12px}#f3Panel .f3cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:10px}
+#f3Panel .fishChoice canvas{width:100%;height:40px;border-radius:8px;background:#0a1a24;display:block}#f3Panel .fishOdd canvas{width:100%;height:64px;border-radius:8px;display:block;margin-bottom:5px}#f3Panel .f3low{display:inline-block;font-style:normal;font-size:10px;font-weight:600;color:#ffd27a;background:#ffd27a1f;border-radius:6px;padding:0 6px}
+#f3Panel .fishOdd span{display:block}#f3Panel .f3act{display:flex;justify-content:flex-start;margin-top:10px}#f3Panel .f3act button{background:#ffffff14;color:#eef7fb;border:1px solid #ffffff30;border-radius:10px;padding:7px 16px;cursor:pointer;font:inherit}
+#f3Hud{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:40;display:none;direction:rtl;background:#06202ee8;border:1px 

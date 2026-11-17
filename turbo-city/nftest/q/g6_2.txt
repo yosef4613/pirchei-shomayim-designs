@@ -1,0 +1,1414 @@
+tion afNodeEast(){const L=APL.lanes;return{east:true,inX:L.spineOut,outX:L.spineIn}}
+function afBayOutEast(b){const L=APL.lanes;if(b.row==='X')return[[b.x,L.xTop,0],[L.spineOut,L.xTop,16]];
+ const dd=L.spineOut-b.x,r2=Math.min(60,dd-12),r1=Math.min(18,Math.max(6,dd-r2));return[[b.x,b.yc,0],[b.x,L.O2,r1],[L.spineOut,L.O2,r2]]}
+function afBayInEast(b){const L=APL.lanes;return b.row==='X'?[[L.spineIn,AF.HE,20],[b.x,AF.HE,20],[b.x,b.yc,0]]:[[L.spineIn,L.I,24],[b.x,L.I,b.kind==='MX'||b.kind==='BL'?6:16],[b.x,b.yc,0]]}
+function afBuild(v,D,hold,o={}){
+ const b=v.bay,vm=AF.VMAX[v.type];
+ if(D.east&&G77_EAST.on&&(b.row==='X'||b.row==='Y')&&!(o.fi&&o.fi.pre))D=Object.assign({},D,D.east);   // GATE-77 S6b-c · p156 · K-95: the east exit
+ const node=D.node,east=!!(node&&node.east),yx=b.row==='X'&&G77_YX.on&&G77_YX.mode==='curve'&&!east;
+ const nb=b.row==='NB',NB=G77_NB,nbE=nb&&node&&node.inX>b.x+4,nbX=nb?(nbE?b.x-NB.dx:b.x+NB.dx):0;   // GATE-77 S6b-c · p157
+ const outL=nb?[[nbX,NB.yW,0],...(node?[[node.inX,NB.yW,30]]:[]),...D.inn]:east?[...afBayOutEast(b),...D.inn]:[...afBayOutList(b),...(node?[[node.inX,AF.HW,30]]:[]),...D.inn];
+ let out,pre=null;
+ if(nb){pre=apttVehMove([[nbX,NB.yW],[b.x,NB.yW],[b.x,b.yc]],[NB.r],vm*.4,{th0:b.th,rev:true,v0:3,v1:6});pre.kind='out'}   // GATE-77 S6b-c · p157
+ else if(b.row==='X'){pre=yx?apttVehMove([[b.x+G77_YX.dx,AF.HW],[b.x,AF.HW+G77_YX.dy],[b.x,b.yc]],[G77_YX.r],vm*.4,{th0:b.th,rev:true,v0:3,v1:6}):apttVehMove([[b.x,APL.lanes.xTop],[b.x,b.yc]],[],vm*.4,{th0:b.th,rev:true,v0:3,v1:8});pre.kind='out'}   // GATE-77 S6b-c · p156: row X backs straight onto HW
+ else if(b.row==='HS'){pre=apttVehMove([[b.x+22,AF.HW],[b.x,AF.HW-16],[b.x,b.yc]],[12],vm*.4,{th0:b.th,rev:true,v0:3,v1:6});pre.kind='out'}else if(b.row==='EM'){pre=g77AmbPre(b,vm)}   // GATE-77 S6c · p176: the emergency base — forward out of the reserve bay, turn on the spot, nose east   // GATE-77 S6r · D-108
+ else if(b.row==='WR'){const R=g77WLaneR('FW');pre=apttVehMove([[b.x-R-12,CARGO_W.lane],[b.x,CARGO_W.lane],[b.x,b.yc]],[R],vm*.4,{th0:b.th,rev:true,v0:3,v1:4,fullEnds:true});pre.kind='out'}   // GATE-77 S6b-c · p154 · K-111: back out on a curve, the rear to the west   // GATE-77 S4
+ if(D.crab){
+  const {pts,rad}=afPL(outL),P=apttPath(pts,rad),len=P.len,fn=apttVfn(len,{vmax:vm,v0:8,v1:8,acc:18,dec:20,zones:apttArcZones(P,20,0)}),toN=-Math.PI/2;
+  out=apttMove({kind:'veh',path:P,prof:apttProf(len,fn),mode:'fn',hdg:(s,tg)=>apttAng(tg,toN,apttSm((s-(len-36))/36)),al:()=>1});
+ }else out=afMv(outL,vm,{th0:pre&&(b.row==='HS'||b.row==='WR'||b.row==='EM'||yx||nb)?pre.endPose()[2]:b.th,blend:30,v1:5,fullEnds:b.row==='WR'});   // GATE-77 S6r · M4 · K-90
+ out.kind='out';
+ let fiPre=null,xo=0;
+ if(o.fi&&o.fi.pre&&v.type==='FT'&&b.row==='X'&&node&&S6B_DEPOT.on){const P=S6B_DEPOT;   // GATE-77 S6b-d · p160 · D-170: fill up first
+  const d1=afMv([[b.x,APL.lanes.xTop,0],[P.x,APL.lanes.xTop,16],[P.x,P.y,0]],vm,{th0:b.th,blend:30,v1:3});d1.kind='out';
+  const f1=apttHold(d1.endPose(),g77FiFill(o.fi.fillPre),'fill');f1.kind='fill';
+  const r1=apttVehMove([[P.x+22,AF.HW],[P.x,AF.HW-16],[P.x,P.y]],[12],vm*.4,{th0:d1.endPose()[2],rev:true,v0:3,v1:6});r1.kind='out';
+  out=afMv([[P.x+22,AF.HW,0],[node.inX,AF.HW,30],...D.inn],vm,{th0:r1.endPose()[2],blend:20,v1:5});out.kind='out';fiPre=[d1,f1,r1];xo=d1.dur+f1.dur+r1.dur}
+ else if(o.fi&&o.fi.pre&&(v.type==='WT'||v.type==='LV')&&b.row==='Y'&&node&&S6B_WS.on){const W=S6B_WS,L=APL.lanes,D0=s6aDimOf(v.type)||[44,17],sx=(v.type==='WT'?W.water[0]:W.dump[0])-D0[0]*.12;   // GATE-77 S6b-d · p163
+  const ob=afBayOutList(b).slice(0,-1),d1=afMv([...ob,[L.wOut,AF.HE,24],[L.spineIn,AF.HE,24],[L.spineIn,L.O2,20],[W.lay.x1+20,L.O2,14],[W.lay.x1-24,W.lay.y,14],[sx,W.lay.y,0]],vm,{th0:b.th,blend:30,v1:3});d1.kind='out';
+  const f1=apttHold(d1.endPose(),g77FiFill(o.fi.fillPre,v.type),'fill');f1.kind='fill';
+  out=afMv([[sx,W.lay.y,0],[W.lay.x0+10,W.lay.y,14],[W.lay.x0-28,L.O2,14],[L.wOut,L.O2,40],[L.wOut,AF.HW,30],[node.inX,AF.HW,30],...D.inn],vm,{th0:Math.PI,blend:20,v1:5});out.kind='out';fiPre=[d1,f1];xo=d1.dur+f1.dur}
+ else if(g77FwPre(v,b,o)){const P=S6B_DEPOT,CL=CARGO_W.lane,pe=pre?pre.endPose():[b.x,CL,0];   /* K-158: fill up first */
+  const d1=afMv(g77FwToDepot(pe[0],CL),vm,{th0:pe[2],blend:30,v1:3,fullEnds:true});d1.kind='out';
+  const f1=apttHold(d1.endPose(),g77FiFill(o.fi.fillPre,'FW'),'fill');f1.kind='fill';
+  const r1=apttVehMove([[P.x+22,AF.HW],[P.x,AF.HW-16],[P.x,P.y]],[12],vm*.4,{th0:d1.endPose()[2],rev:true,v0:3,v1:6});r1.kind='out';
+  out=afMv([...g77FwFromDepot(CL),...D.inn],vm,{th0:r1.endPose()[2],blend:20,v1:5,fullEnds:true});out.kind='out';fiPre=[d1,f1,r1];xo=d1.dur+f1.dur+r1.dur}
+ const e0=out.endPose(),legs=fiPre?[...(pre?[pre]:[]),...fiPre,out]:pre?[pre,out]:[out];
+ let th0=e0[2],blend=30,hd=null;
+ const retTailF=q=>b.row==='W'||b.row==='WR'?g77WTail(b,q):nb?[...(node?[[node.outX,NB.yE,30]]:[]),[b.x,NB.yE,16],[b.x,b.yc,0]]:east?afBayInEast(b):[...(node?[[node.outX,AF.HE,30]]:[]),...afBayIn(b)];
+ if(D.mode==='lead'){ // GATE-77 S6c · p175 · AIR-65: [out][wait at W, the board lit][ahead of the aircraft down the lead-in][peel off · home]
+  hd=apttHold(e0,hold,'wait');hd.kind='wait';legs.push(hd);const L=o.lead,ld={kind:'lead',dur:L.dur,pose:L.pose};legs.push(ld);const le=L.pose(L.dur);
+  const back=afMv([[le[0],le[1],0],...D.back,...retTailF(D.back)],vm,{th0:le[2],blend:24,v0:Math.min(vm,L.v1)});back.kind='back';legs.push(back);
+ }else if(D.mode==='tug'){ // [out][hold until the aircraft is ready][attached to the pushback][drive back]
+  hd=apttHold(e0,o.hold0,'svc');if(o.off)hd.towOff=o.off;legs.push(hd);
+  const push=o.push,off=o.off;
+  const tp={kind:'push',towOff:off,dur:push.dur,pose:t=>{const p=push.pose(t),c=Math.cos(p[2]),s=Math.sin(p[2]);return[p[0]+c*off,p[1]+s*off,p[2]+Math.PI,0,1]}};
+  legs.push(tp);const tpe=tp.pose(push.dur);
+  th0=tpe[2];blend=40;
+  let bp=tpe;if(D.backRev){const c=Math.cos(tpe[2]),s=Math.sin(tpe[2]),q=[tpe[0]-c*D.backRev,tpe[1]-s*D.backRev],rv=apttVehMove([q,[tpe[0],tpe[1]]],[],vm*.35,{th0:tpe[2],rev:true,v0:2,v1:3});rv.kind='back';legs.push(rv);bp=rv.endPose();th0=bp[2];blend=20}   // GATE-77 S6r · M5b · K-69: the tug backs off the nose first
+  const bq=D.backFrom(bp),back=afMv([...bq,...retTailF(bq)],vm,{th0,blend,v0:6});back.kind='back';legs.push(back);
+ }else{
+  hd=apttHold(e0,hold,'svc');if(o.fi)hd.fiPump=1;legs.push(hd);
+  let from;
+  if(D.mode==='rev'){
+   const A=D.inn[D.inn.length-2],B=D.inn[D.inn.length-1];
+   const RP=D.revPath&&g77FwPost(v,b,o)?g77FwRev(D.revPath):D.revPath,r=RP?apttVehMove(RP,D.revRad||[],vm*.45,{th0:e0[2],rev:true,v0:5,v1:6,fullEnds:!!D.fullEnds}):apttVehMove([[A[0],A[1]],[B[0],B[1]]],[],vm*.45,{th0:e0[2],rev:true,v0:5,v1:6});r.kind='svc';legs.push(r);
+   th0=D.revPath?r.endPose()[2]:e0[2];blend=D.revPath?20:46;
+  }else if(D.mode==='pivot'){
+   const dir=D.dir||1;
+   legs.push({kind:'turn',dur:AF.PIV,pose:t=>[e0[0],e0[1],e0[2]+Math.PI*dir*apttSm(t/AF.PIV),0,1]});
+   th0=e0[2]+Math.PI*dir;blend=24;
+  }else{th0=e0[2];blend=34}
+  if(v.type==='FT'&&S6B_DEPOT.on&&b.row==='X'&&node&&(!o.fi||o.fi.post)){const P=S6B_DEPOT;   // GATE-77 S6b-a · D-111: via the fuel depot
+   const back=afMv([...D.back,[node.outX,AF.HE,30],[P.x,AF.HE,26],[P.x,P.y,0]],vm,{th0,blend,v0:6,v1:3});back.kind='back';legs.push(back);
+   const fl=apttHold(back.endPose(),o.fi?g77FiFill(o.fi.fillPost):s6bFillDur(hold),'fill');fl.kind='fill';legs.push(fl);
+   const rv=apttVehMove([[P.x+22,AF.HW],[P.x,AF.HW-16],[P.x,P.y]],[12],vm*.4,{th0:back.endPose()[2],rev:true,v0:3,v1:6});rv.kind='back';legs.push(rv);
+   const home=afMv([[P.x+22,AF.HW,0],[b.x,AF.HW,20],[b.x,b.yc,0]],vm,{th0:rv.endPose()[2],blend:20,v0:5});home.kind='back';legs.push(home);
+  }else if((v.type==='WT'||v.type==='LV')&&S6B_WS.on&&b.row==='Y'&&node&&(!o.fi||o.fi.post)){const W=S6B_WS,L=APL.lanes,D0=s6aDimOf(v.type)||[44,17],sx=(v.type==='WT'?W.water[0]:W.dump[0])-D0[0]*.12;   // GATE-77 S6b-b · D-111: via the service point
+   const back=afMv([...D.back,[node.outX,AF.HE,30],[L.spineIn,AF.HE,24],[L.spineIn,L.O2,20],[W.lay.x1+20,L.O2,14],[W.lay.x1-24,W.lay.y,14],[sx,W.lay.y,0]],vm,{th0,blend,v0:6,v1:3});back.kind='back';legs.push(back);
+   const fl=apttHold(back.endPose(),o.fi?g77FiFill(o.fi.fillPost,v.type):s6bWsDur(hold),'fill');fl.kind='fill';legs.push(fl);
+   const on=afMv([[sx,W.lay.y,0],[W.lay.x0+10,W.lay.y,14],[W.lay.x0-28,L.O2,14],[b.x-34,L.O2,0]],vm,{th0:Math.PI,blend:20,v0:3,v1:3});on.kind='back';legs.push(on);
+   const rv=apttVehMove([[b.x,b.yc],[b.x,L.O2],[b.x-34,L.O2]],[14],vm*.4,{th0:on.endPose()[2],rev:true,v0:3,v1:3});rv.kind='back';legs.push(rv);
+  }else if(g77FwPost(v,b,o)&&D.revPath){const P=S6B_DEPOT,CL=CARGO_W.lane,s0=g77FwEnd(legs);   /* K-158: via the fuel depot */
+   const back=afMv(g77FwToDepot(s0[0],CL),vm,{th0,blend,v0:6,v1:3,fullEnds:true});back.kind='back';legs.push(back);
+   const fl=apttHold(back.endPose(),g77FiFill(o.fi.fillPost,'FW'),'fill');fl.kind='fill';legs.push(fl);
+   const rv=apttVehMove([[P.x+22,AF.HW],[P.x,AF.HW-16],[P.x,P.y]],[12],vm*.4,{th0:back.endPose()[2],rev:true,v0:3,v1:6});rv.kind='back';legs.push(rv);
+   const home=afMv([...g77FwFromDepot(CL),...g77WTail(b,null)],vm,{th0:rv.endPose()[2],blend:20,v0:5,fullEnds:true});home.kind='back';legs.push(home);
+  }else {const back=afMv([...D.back,...retTailF(D.back)],vm,{th0,blend,v0:6,fullEnds:b.row==='WR'});back.kind='back';legs.push(back)}
+ }
+ if(b.row==='W')g77WIn(legs,b,vm);if(b.row==='EM')g77AmbIn(legs,b,vm);   // GATE-77 S6c · p176   // GATE-77 S4: reverse into the west-base bay
+ const trk=afTrackOf(v,legs);
+ return{trk,dOut:out.dur+(pre?pre.dur:0)+xo,hold:hd.dur,dur:trk.seq.dur};
+}
+
+// ---------- placing a task in the reservation table --------------------------------------------------------------------------------------------------
+// extra = {sh, from}: shapes of the parked aircraft that are not (yet) in the table from slice `from` on; the task must clear them until kEnd
+function afExtraOk(sm,s,extra,kEnd){
+ if(!extra)return true;
+ const k0=Math.max(0,extra.from-s),k1=Math.min(sm.K-1,kEnd);
+ for(let k=k0;k<=k1;k++){const A=sm.S[k];for(let i=0;i<A.length;i++)for(const b of extra.sh)if(aoC(A[i],b))return false}
+ return true;
+}
+function afSearch(v,trk,sm,sMin,sMax,extra,kEnd){
+ let s=sMin;const dur=trk.seq.dur;
+ for(let it=0;it<80&&s<=sMax;it++){
+  // 1. the vehicle itself must be free (cheap): jump over its own tasks
+  let moved=true;
+  while(moved){moved=false;const t0=aoT(s);for(const k of v.tasks)if(t0<k.t1+AF.GAP&&t0+dur>k.t0-AF.GAP){s=Math.max(s+1,aoSlUp(k.t1+AF.GAP));moved=true;break}}
+  if(s>sMax)return -1;
+  // 2. the track must fit in the reservation table
+  const s2=aoSearch(sm,s,sMax);if(s2<0)return -1;
+  if(s2!==s){s=s2;continue}                       // moved: the vehicle's own availability must be re-checked at the new start
+  // 3. the parked aircraft (not yet in the table beyond `from`): later starts only overlap it more, so a failure is final
+  return afExtraOk(sm,s,extra,kEnd)?s:-1;
+ }
+ return -1;
+}function* afSearchG(v,trk,sm,sMin,sMax,extra,kEnd){
+ let s=sMin;const dur=trk.seq.dur;
+ for(let it=0;it<80&&s<=sMax;it++){
+  if(AO.sliced&&aoOver())yield 0;
+  // 1. the vehicle itself must be free (cheap): jump over its own tasks
+  let moved=true;
+  while(moved){moved=false;const t0=aoT(s);for(const k of v.tasks)if(t0<k.t1+AF.GAP&&t0+dur>k.t0-AF.GAP){s=Math.max(s+1,aoSlUp(k.t1+AF.GAP));moved=true;break}}
+  if(s>sMax)return -1;
+  // 2. the track must fit in the reservation table
+  const s2=yield* aoSearchG(sm,s,sMax);if(s2<0)return -1;
+  if(s2!==s){s=s2;continue}                       // moved: the vehicle's own availability must be re-checked at the new start
+  // 3. the parked aircraft (not yet in the table beyond `from`): later starts only overlap it more, so a failure is final
+  return afExtraOk(sm,s,extra,kEnd)?s:-1;
+ }
+ return -1;
+}
+function afCommit(v,trk,sm,s,role,meta){
+ aoCommit(sm,s);
+ const t0=aoT(s),task=Object.assign({t0,t1:t0+trk.seq.dur,tr:trk,role},meta||{});
+ v.tasks.push(task);v.tasks.sort((a,b)=>a.t0-b.t0);
+ AO.LOG.push(()=>{const i=v.tasks.indexOf(task);if(i>=0)v.tasks.splice(i,1)});
+ AF.stats.tasks++;
+ return task;
+}
+const afSEarliest=()=>aoSlUp(AO.t+.6);
+// flexible task (baggage, fuel): the work position is reached at tNom or later
+
+// ==== GATE-77 S6b-d · p164 · D-170: the stock ledger allows gaps (not append-only) ========================================================
+G77_FI.gaps=true;G77_FI.brk=true;   // GATE-77 S6c · p167
+function* g77FiTryG(v,D,ac,hold,tNom,maxD,bestS,extra){const F=G77_FI,C=F.T[v.type],cap=C.cap,up=g77FiUp(ac,v.type),lim=Math.max(F.min*cap,C.keep||0);
+ const T=v.tasks.filter(k=>k.fi).sort((a,b)=>a.t0-b.t0);let res=null;
+ for(let g=0;g<=T.length;g++){
+  const L0=g===0?(v.fiL!=null?v.fiL:cap):T[g-1].fi.after,w0=g===0?-Infinity:T[g-1].t1+AF.GAP,w1=g<T.length?T[g].t0-AF.GAP:Infinity;
+  for(const lm of (lim>F.min*cap+1e-6?[lim,F.min*cap]:[lim])){   /* K-161 · p274: the refill after the task (keep) only when it fits; otherwise the old rule */
+  const pre=L0<up-1e-6,before=pre?cap:L0,left=before-up,post=left<lm-1e-6,after=post?cap:left;
+  const fi={up,L0,before,left,after,pre,post,fillPre:pre?cap-L0:0,fillPost:post?cap-left:0,free:w0};
+  let ok=true,Lc=after;const upd=[];
+  for(let j=g;j<T.length;j++){const q=T[j].fi,b2=q.pre?cap:Lc,l2=b2-q.up;if(b2<q.up-1e-6||(!q.post&&l2<F.min*cap-1e-6)){ok=false;break}
+   const a2=q.post?cap:l2;upd.push([q,{L0:Lc,before:b2,left:l2,after:a2}]);Lc=a2}
+  if(!ok)continue;
+  const B=afBuild(v,D,hold,{fi}),sm=(yield* aoSampG(B.trk,aoSeqLeg(B.trk.seq)));
+  const sNom=Math.max(aoSlUp(tNom-B.dOut),afSEarliest(),w0>-1e9?aoSlUp(w0):0);
+  let sMax=(G77_FI.brk?Math.max(aoSlUp(tNom-B.dOut),afSEarliest()):sNom)+aoSl(maxD);if(bestS!=null)sMax=Math.min(sMax,bestS-1);if(res)sMax=Math.min(sMax,res.s-1);if(w1<Infinity)sMax=Math.min(sMax,aoSl(w1-B.trk.seq.dur));
+  if(sMax<sNom)continue;
+  const s=(yield* afSearchG(v,B.trk,sm,sNom,sMax,extra,Math.round((B.dOut+B.hold+16)/AO.DT)));
+  if(s<0)continue;res={s,sNom,sReq:Math.max(aoSlUp(tNom-B.dOut),afSEarliest()),B,sm,fi,upd};break}}
+ return res}
+function g77FiApply(upd){if(!upd)return;for(const [q,val] of upd){const old={L0:q.L0,before:q.before,left:q.left,after:q.after};Object.assign(q,val);AO.LOG.push(()=>{Object.assign(q,old)})}}
+function* afServeG(role,sd,ac,tNom,hold,maxD,meta,extra){
+ const D=afDest(role,sd,ac);if(!D){AF.last='nodest '+role+' '+sd.id+' '+ac;return null}
+ let best=null;
+ for(const v of (role==='bag'?f2BagCandidates(sd,6):g77Cands(role,sd,5))){
+  if(AO.sliced&&aoOver())yield 0;                      // nothing of this call is committed yet: safe to continue next frame
+  if(G77_FI.on&&G77_FI.gaps&&(role==='fuel'||role==='wat'||role==='lav')&&G77_FI.T&&G77_FI.T[v.type]){   // GATE-77 S6b-d · p164: the ledger with gaps
+   const r=(yield* g77FiTryG(v,D,ac,hold,tNom,maxD,best?best.s:null,extra));
+   if(!r){const key=role+':fi-none';AF.fails[key]=(AF.fails[key]||0)+1;continue}
+   if(!best||r.s<best.s)best={v,B:r.B,sm:r.sm,s:r.s,fi:r.fi,upd:r.upd};
+   if(r.s-(G77_FI.brk?r.sReq:r.sNom)<=aoSl(6))break;   // GATE-77 S6c · p167: on time = from the request, not from the truck's free time
+   continue}
+  const fi=(role==='fuel'||role==='wat'||role==='lav')?g77FiPlan(v,ac):null;   // GATE-77 S6b-d · p160 · D-170
+  const B=role==='bag'?f2BagBuild(v,sd,ac,hold,(meta&&meta.kind)||'arr',meta&&meta.code):afBuild(v,D,hold,fi?{fi}:{}),sm=(yield* aoSampG(B.trk,aoSeqLeg(B.trk.seq)));
+  const sNom=Math.max(aoSlUp(tNom-B.dOut),afSEarliest(),fi&&fi.free>-1e9?aoSlUp(fi.free):0);
+  const W_=meta&&meta.win;let sLo=sNom,sHi=best?best.s-1:sNom+aoSl(maxD);if(W_){const sMax=aoSl(W_[1]-B.hold-B.dOut);sLo=Math.max(aoSlUp(W_[0]-B.dOut),afSEarliest(),Math.min(sNom,sMax-aoSl(W_[2]||0)));sHi=Math.min(best?best.s-1:sMax,sMax);if(sHi<sLo){const key=role+':win';AF.fails[key]=(AF.fails[key]||0)+1;continue}}   /* GATE-77P · p218 · K-148 */
+  const s=(yield* afSearchG(v,B.trk,sm,sLo,sHi,extra,Math.round((B.dOut+B.hold+16)/AO.DT)));
+  if(s<0){const w=aoWhy(sm,sNom);const key=role+':'+(w?w.b.replace(/\d+/g,'#'):'busy/none');AF.fails[key]=(AF.fails[key]||0)+1;
+   if(AO.diagF){AF.fd=AF.fd||[];if(AF.fd.length<400)AF.fd.push({role,sd:sd.id,ac,v:v.id,sNom,t:+aoT(sNom).toFixed(1),w,k:w?w.k:null,leg:w&&B.trk.seq.legAt(w.k*.25)?B.trk.seq.legAt(w.k*.25).leg.kind:null,at:w&&B.trk.seq.at(w.k*.25)?B.trk.seq.at(w.k*.25).slice(0,2).map(Math.round):null})}continue}
+  if(!best||s<best.s)best={v,B,sm,s,fi};
+  if(s-(G77_FI.brk&&fi?Math.max(aoSlUp(tNom-B.dOut),afSEarliest()):sNom)<=aoSl(6))break;   // GATE-77 S6c · p167
+ }
+ if(!best){AF.stats.fail++;return null}
+ const task=afCommit(best.v,best.B.trk,best.sm,best.s,role,Object.assign({code:meta&&meta.code,at:aoT(best.s)+best.B.dOut},meta));
+ if(best.upd)g77FiApply(best.upd);   // GATE-77 S6b-d · p164: the tasks after the gap
+ if(best.fi){task.fi=best.fi;G77_FI.stats.tasks++;if(best.fi.pre)G77_FI.stats.pre++;if(best.fi.post)G77_FI.stats.post++}   // GATE-77 S6b-d · p160: the ledger
+ return{t0:task.t0,end:task.t1,at:task.at,done:task.at+best.B.hold,v:best.v,task};
+}
+function afServe(...a){const sl=AO.sliced;AO.sliced=false;const g=afServeG(...a);let r;do{r=g.next()}while(!r.done);AO.sliced=sl;return r.value}
+// task coupled to the aircraft's pushback / departure: prepared once, tried for every candidate push slice sP.
+//   role 'tug' : opts {push, lead:seconds the tug waits at the nose before the push, off}
+//   role 'bag' : opts {hold, before:seconds before the push at which the baggage train reaches the aircraft}
+function afCouple(role,sd,ac,opts){
+ const D=afDest(role,sd,ac);if(!D)return null;
+ const cands=[],bfs=opts.befores||[opts.before];
+ for(const v of (role==='bag'?f2BagCandidates(sd,6):g77Cands(role,sd,role==='tug'&&G77_NB.on?6:3))){
+  let B;
+  if(role==='tug'){B=afBuild(v,D,0,{hold0:opts.lead,push:opts.push,off:opts.off});const h=aoSlUp(B.dOut+opts.lead)*AO.DT-B.dOut;if(h-opts.lead>1e-9)B=afBuild(v,D,0,{hold0:h,push:opts.push,off:opts.off})}
+  else B=role==='bag'?f2BagBuild(v,sd,ac,opts.hold,'dep',opts.code):afBuild(v,D,opts.hold);
+  cands.push({v,B,sm:aoSamp(B.trk,aoSeqLeg(B.trk.seq))});
+ }
+ if(!cands.length)return null;
+ if(role==='tug'&&G77_NB.on)cands.sort((a,b)=>a.B.dOut-b.B.dOut);   // GATE-77 S6b-c · p157: the nearest tug first (the near tug park)
+ const leads=c=>role==='tug'?[aoSlUp(c.B.dOut+opts.lead)]:bfs.map(bf=>aoSlUp(c.B.dOut+bf));
+ return{
+  role,cands,
+  minSP(){let m=1e9;for(const c of this.cands)for(const l of leads(c))m=Math.min(m,afSEarliest()+l);return m},   // earliest push slice any vehicle could serve
+  jump:1,pend:[],
+  try(sP){
+   const R=AF.rj;this.pend=[];this.jump=1;
+   const bfx=role==='bag'&&G77_BLW&&G77_BLW.on&&S6R_BW.w?bfs.concat(g77BlwList()):bfs;   // GATE-77 S7-a · p190: + the end of the loader's stay
+   for(const bf of (role==='tug'?[0]:bfx.keys()))for(const c of this.cands){
+    const bw_=bfx[bf],bv=role==='tug'?0:(bw_&&typeof bw_==='object'?g77BlwBf(c,sP,bw_.w):bw_);if(bv==null&&bw_&&typeof bw_==='object')continue;
+    const lead=role==='tug'?leads(c)[0]:aoSlUp(c.B.dOut+bv);
+    const sT0=sP-lead,se=afSEarliest();
+    if(sT0<se){R.early++;this.pend.push(se-sT0);continue}
+    if(opts.win&&!opts.win(aoT(sT0)+c.B.dOut,aoT(sT0)+c.B.dOut+(c.B.hold||0))){R.win=(R.win||0)+1;this.pend.push(1);continue}
+    const t0=aoT(sT0);
+    if(!afFreeAt(c.v,t0,t0+c.B.dur)){R.busy++;this.pend.push(afBusyShift(c.v,t0,c.B.dur));continue}
+    const kk=aoFreeK(c.sm,sT0);
+    if(kk>=0){R.shape++;this.pend.push({a:AO._ca,base:sT0+kk});continue}
+    this.pend=[];{if(bfx[bf]&&typeof bfx[bf]==='object')G77_BLW.n++;const tk=afCommit(c.v,c.B.trk,c.sm,sT0,role,{code:opts.code});tk.s6rAt=aoT(sT0)+c.B.dOut;tk.s6rDone=tk.s6rAt+(c.B.hold||0);return tk}
+   }
+   return null;
+  },
+  // lower bound (slices) for the next push slice that could work for any candidate: call after the failed attempt has been rolled back
+  jumpNow(){
+   let m=1e9;
+   for(const q of this.pend){
+    if(typeof q==='number'){m=Math.min(m,q);continue}
+    let d=1;while(d<4000&&aoBlocked(q.a,q.base+d))d++;m=Math.min(m,d);
+   }
+   return m===1e9?1:Math.max(1,m);
+  }
+ };
+}function* afCoupleG(role,sd,ac,opts){
+ const D=afDest(role,sd,ac);if(!D)return null;
+ const cands=[],bfs=opts.befores||[opts.before];
+ for(const v of (role==='bag'?f2BagCandidates(sd,6):g77Cands(role,sd,role==='tug'&&G77_NB.on?6:3))){
+  if(AO.sliced&&aoOver())yield 0;
+  let B;
+  if(role==='tug'){B=afBuild(v,D,0,{hold0:opts.lead,push:opts.push,off:opts.off});const h=aoSlUp(B.dOut+opts.lead)*AO.DT-B.dOut;if(h-opts.lead>1e-9)B=afBuild(v,D,0,{hold0:h,push:opts.push,off:opts.off})}
+  else B=role==='bag'?f2BagBuild(v,sd,ac,opts.hold,'dep',opts.code):afBuild(v,D,opts.hold);
+  cands.push({v,B,sm:(yield* aoSampG(B.trk,aoSeqLeg(B.trk.seq)))});
+ }
+ if(!cands.length)return null;
+ if(role==='tug'&&G77_NB.on)cands.sort((a,b)=>a.B.dOut-b.B.dOut);   // GATE-77 S6b-c · p157: the nearest tug first (the near tug park)
+ const leads=c=>role==='tug'?[aoSlUp(c.B.dOut+opts.lead)]:bfs.map(bf=>aoSlUp(c.B.dOut+bf));
+ return{
+  role,cands,
+  minSP(){let m=1e9;for(const c of this.cands)for(const l of leads(c))m=Math.min(m,afSEarliest()+l);return m},   // earliest push slice any vehicle could serve
+  jump:1,pend:[],
+  try(sP){
+   const R=AF.rj;this.pend=[];this.jump=1;
+   const bfx=role==='bag'&&G77_BLW&&G77_BLW.on&&S6R_BW.w?bfs.concat(g77BlwList()):bfs;   // GATE-77 S7-a · p190: + the end of the loader's stay
+   for(const bf of (role==='tug'?[0]:bfx.keys()))for(const c of this.cands){
+    const bw_=bfx[bf],bv=role==='tug'?0:(bw_&&typeof bw_==='object'?g77BlwBf(c,sP,bw_.w):bw_);if(bv==null&&bw_&&typeof bw_==='object')continue;
+    const lead=role==='tug'?leads(c)[0]:aoSlUp(c.B.dOut+bv);
+    const sT0=sP-lead,se=afSEarliest();
+    if(sT0<se){R.early++;this.pend.push(se-sT0);continue}
+    if(opts.win&&!opts.win(aoT(sT0)+c.B.dOut,aoT(sT0)+c.B.dOut+(c.B.hold||0))){R.win=(R.win||0)+1;this.pend.push(1);continue}
+    const t0=aoT(sT0);
+    if(!afFreeAt(c.v,t0,t0+c.B.dur)){R.busy++;this.pend.push(afBusyShift(c.v,t0,c.B.dur));continue}
+    const kk=aoFreeK(c.sm,sT0);
+    if(kk>=0){R.shape++;this.pend.push({a:AO._ca,base:sT0+kk});continue}
+    this.pend=[];{if(bfx[bf]&&typeof bfx[bf]==='object')G77_BLW.n++;const tk=afCommit(c.v,c.B.trk,c.sm,sT0,role,{code:opts.code});tk.s6rAt=aoT(sT0)+c.B.dOut;tk.s6rDone=tk.s6rAt+(c.B.hold||0);return tk}
+   }
+   return null;
+  },
+  // lower bound (slices) for the next push slice that could work for any candidate: call after the failed attempt has been rolled back
+  jumpNow(){
+   let m=1e9;
+   for(const q of this.pend){
+    if(typeof q==='number'){m=Math.min(m,q);continue}
+    let d=1;while(d<4000&&aoBlocked(q.a,q.base+d))d++;m=Math.min(m,d);
+   }
+   return m===1e9?1:Math.max(1,m);
+  }
+ };
+}
+// slices by which a start has to move later so that the vehicle's own tasks no longer overlap
+function afBusyShift(v,t0,dur){let m=1;for(const k of v.tasks)if(t0<k.t1+AF.GAP&&t0+dur>k.t0-AF.GAP)m=Math.max(m,aoSlUp(k.t1+AF.GAP-t0));return m}
+
+// ---------- chores (support vehicles) --------------------------------------------------------------------------------------------------------------
+function afChores(now){
+ for(const v of AO.fleet){
+  if(!RSP_E.bays.length||(v.type!=='SH'&&v.type!=='MX'))continue;   // GATE-77 S6r · M5d: the cleaning vans make no chores (QA-88) · M5e: no chore bays
+  if(v.nextChore==null){v.nextChore=now+aoR(20,150);continue}
+  if(now+AO.H<v.nextChore)continue;
+  const k=Math.floor(AO.rng()*3),D=afChoreDest(v,k),hold=aoR(...D.hold),tReq=Math.max(v.nextChore,now+2);
+  const B=afBuild(v,D,hold),sm=aoSamp(B.trk,aoSeqLeg(B.trk.seq));
+  const s0=Math.max(aoSlUp(tReq),afSEarliest()),s=afSearch(v,B.trk,sm,s0,s0+aoSl(120));
+  if(s>=0){afCommit(v,B.trk,sm,s,'chore',{code:v.id});v.nextChore=aoT(s)+B.dur+aoR(150,420)}
+  else v.nextChore=now+aoR(30,90);
+ }
+}function* afChoresG(now){
+ for(const v of AO.fleet){
+  if(!RSP_E.bays.length||(v.type!=='SH'&&v.type!=='MX'))continue;   // GATE-77 S6r · M5d · M5e
+  if(v.nextChore==null){v.nextChore=now+aoR(20,150);continue}
+  if(now+AO.H<v.nextChore)continue;
+  if(AO.sliced&&aoOver())yield 0;
+  const k=Math.floor(AO.rng()*3),D=afChoreDest(v,k),hold=aoR(...D.hold),tReq=Math.max(v.nextChore,now+2);
+  const B=afBuild(v,D,hold),sm=(yield* aoSampG(B.trk,aoSeqLeg(B.trk.seq)));
+  const s0=Math.max(aoSlUp(tReq),afSEarliest()),s=(yield* afSearchG(v,B.trk,sm,s0,s0+aoSl(120)));
+  if(s>=0){afCommit(v,B.trk,sm,s,'chore',{code:v.id});v.nextChore=aoT(s)+B.dur+aoR(150,420)}
+  else v.nextChore=now+aoR(30,90);
+ }
+}
+function afPrune(now){
+ for(const v of AO.fleet){
+  while(v.tasks.length&&v.tasks[0].t1<now-2){const k=v.tasks.shift();if(k.fi)v.fiL=k.fi.after;if(AO.keep)v.hist.push(k)}
+ }
+}
+// ---------- poses for the renderer -------------------------------------------------------------------------------------------------------------------
+function afPose(v,t){
+ for(const k of v.tasks)if(t>=k.t0&&t<k.t1){const p=k.tr.seq.at(t-k.t0);if(p)return{pose:p,tr:k.tr,task:k}}
+ return{pose:v.home,tr:v.tr0,task:null};
+}
+function afState(v,t){
+ const r=afPose(v,t);if(!r.task)return'IDLE';
+ const l=r.task.tr.seq.legAt(t-r.task.t0);const kd=l?l.leg.kind:'';
+ return kd==='out'||kd==='mid'?'DISPATCHED':kd==='back'?'RETURNING':kd==='push'?'ATTACHED':kd==='mu'?'BAG_MAKEUP':'SERVICING';
+}
+function afActors(now,out){
+ for(const v of AO.fleet){const r=afPose(v,now);out.push({kind:'veh',id:v.asset,nm:v.id,pose:r.pose,tr:r.tr,f:null,v,lt:r.task?now-r.task.t0:null})}
+ return out;
+}
+// ---------- verification helpers (used by aoVerify) ---------------------------------------------------------------------------------------------
+function afShapes(t,moving,idle){
+ for(const v of AO.fleet){
+  const r=afPose(v,t),out=[];apttShapes(r.tr,r.pose,out,r.task?t-r.task.t0:null);
+  const dst=r.task?moving:idle;for(const s of out)dst.push(s);
+ }
+}
+function afCheck(add,t0,t1){
+ for(const v of AO.fleet){
+  const all=v.hist.concat(v.tasks).filter(k=>k.t1>=t0&&k.t0<=t1);
+  for(let i=0;i<all.length;i++){
+   const k=all[i],L=k.tr.seq.legs;
+   if(i&&all[i-1].t1+AF.GAP-1e-6>k.t0)add('FLEET overlap '+v.id,k.t0);
+   for(let j=0;j+1<L.length;j++){
+    const a=L[j].pose(L[j].dur),b=L[j+1].pose(0);
+    if(!a||!b)continue;
+    if(Math.hypot(a[0]-b[0],a[1]-b[1])>1.5||Math.abs(Math.atan2(Math.sin(a[2]-b[2]),Math.cos(a[2]-b[2])))>.05)add('TELEPORT '+v.id+' leg '+j+'→'+(j+1)+' ('+L[j].kind+'→'+L[j+1].kind+')',k.t0);
+   }
+   const p0=L[0].pose(0),pe=L[L.length-1].pose(L[L.length-1].dur),h=v.home;
+   if(Math.hypot(p0[0]-h[0],p0[1]-h[1])>1.5||Math.abs(Math.atan2(Math.sin(p0[2]-h[2]),Math.cos(p0[2]-h[2])))>.05)add('FLEET '+v.id+' does not start in its bay',k.t0);
+   if(Math.hypot(pe[0]-h[0],pe[1]-h[1])>1.5||Math.abs(Math.atan2(Math.sin(pe[2]-h[2]),Math.cos(pe[2]-h[2])))>.05)add('FLEET '+v.id+' does not end in its bay',k.t1);
+   // never faded
+   const n=Math.ceil(k.tr.seq.dur/.5);for(let q=0;q<=n;q++){const p=k.tr.seq.at(Math.min(q*.5,k.tr.seq.dur-1e-6));if(p&&p[4]!==1){add('FLEET alpha<1 '+v.id,k.t0+q*.5);break}}
+  }
+ }
+}
+
+// ====================================================================================================================================
+// v1.94 · AIRPORT B — OPS CORE.  Space-time reservation planner.
+// Every flight is planned in full the moment it is admitted: each leg (approach+landing+taxi-in, park, pushback, taxi-out, hold-short,
+// line-up+take-off) is placed at the earliest time at which its swept shapes (and its taxi-segment / stand / runway tokens) do not
+// intersect anything already reserved.  A leg that cannot be placed waits (queue / hold) — nothing is ever teleported or overlapped.
+// Needs apt_prim_v194.js (primitives) + globals APTT_SPEC, APTT_C.   DOM free: the same file runs in Node (QA) and in the game.
+// ====================================================================================================================================
+const AO={stepCapMs:3,chJob:null,sliced:false,useClock:false,DT:.25,M:6,SEP:3,LA:4,H:45,MAXQ:360,MAXW:360,keep:false,hist:[],work:0,job:null,budget:150,lead:22,
+ cfg:{turn:[130,300],gap:[25,170],gaDwell:[200,600],gaGap:[60,260],cgDwell:[150,330],cgGap:[60,220],heliDwell:[100,300],heliAway:[40,110],bag1:9,fuel:14,bag2:58,disc:4,holdShort:3,clear:4,maxHold:15,holdAim:5,ms:2.5,demand:+(typeof process!=='undefined'&&process.env&&process.env.DEMAND||.6)},
+ B:new Map(),ST:[],LOG:[],flights:[],nid:1,t:0,seed:1,rng:null,stands:[],dbg:[],
+ stats:{planned:0,failed:0,recovered:0,queued:0,maxQueue:0,pruned:0,planMs:0,why:{}}};
+var aoSl=t=>Math.round(t/AO.DT), aoT=s=>s*AO.DT, aoSlUp=t=>Math.ceil(t/AO.DT-1e-9);
+function aoRng(seed){let s=seed>>>0;return()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+const aoR=(a,b)=>a+(b-a)*AO.rng();
+const aoRI=(a,b)=>Math.round(aoR(a,b));
+function aoDbg(ev,o){const e={t:+AO.t.toFixed(2),ev,...o};AO.dbg.push(e);if(AO.dbg.length>400)AO.dbg.shift();if(ev!=='plan'){AO.evt=AO.evt||[];AO.evt.push(e);if(AO.evt.length>300)AO.evt.shift()}if(ev!=='plan'&&typeof Dbg!=='undefined'&&Dbg&&Dbg.event)try{Dbg.event('airport',ev,o)}catch(_){}}
+
+// ---------- taxi-segment / link / junction tokens (a plane holds every token its fuselage touches; tokens are held 'LA' seconds ahead) -----
+function aoToks(){
+ if(AO.TK)return AO.TK;
+ const C=APTT_C,X=APTT_X,T=C.TWY,ty0=T.cy-T.w/2,ty1=T.cy+T.w/2,rb=C.RWY.cy+C.RWY.w/2;
+ const mk=(k,x0,x1,y0,y1)=>({k,x0,x1,y0,y1,o:{x:(x0+x1)/2,y:(y0+y1)/2,hx:(x1-x0)/2,hy:(y1-y0)/2,c:1,s:0}});
+ const out=[];
+ for(const [n,x] of [['1',X.A1],['2',X.A2],['3',X.A3]])out.push(mk('LNK'+n,x-55,x+55,rb,ty0),mk('J'+n,x-55,x+55,ty0,ty1));
+ out.push(mk('TW0',T.x0-40,X.A1-55,ty0,ty1),mk('TW1',X.A1+55,6140,ty0,ty1),mk('TW2',6140,X.A2-55,ty0,ty1),mk('TW3',X.A2+55,7215,ty0,ty1),
+  mk('JG',7215,7305,ty0,ty1),mk('GL',7215,7305,APT_Y.LS,1000),mk('TW4',7305,X.A3-55,ty0,ty1),mk('TW5',X.A3+55,T.x1+40,ty0,ty1));
+ g73Tokens(mk,out);
+ return AO.TK=out;
+}
+function aoTokensOf(F){const o=[];for(const T of aoToks())if(F.x0<=T.x1&&F.x1>=T.x0&&F.y0<=T.y1&&F.y1>=T.y0&&apttObbHit(F,T.o,0))o.push(T.k);return o}
+const aoRB=()=>{if(!AO.RBX){const R=APTT_C.RWY,x0=4000,x1=8500,y0=R.cy-R.w/2-20,y1=R.cy+R.w/2+20;AO.RBX={L:'R',x:(x0+x1)/2,y:(y0+y1)/2,hx:(x1-x0)/2,hy:(y1-y0)/2,c:1,s:0,x0,x1,y0,y1}}return AO.RBX};
+
+// ---------- sampling: a leg placed at slice s covers slices s .. s+K-1; shapes depend only on the local time -------------------------------
+function aoSamp(tr,leg,o={}){
+ const dt=AO.DT,K=Math.ceil(leg.dur/dt-1e-9)+1,S=new Array(K),rw=new Uint8Array(K),isAc=tr.kind==='ac',tk=new Array(K);
+ let rwFirst=-1,rwLast=-1;
+ for(let k=0;k<K;k++){
+  const p=leg.pose(Math.min(k*dt,leg.dur)),out=[];
+  tk[k]=null;
+  if(p){
+   apttShapes(tr,p,out,Math.min(k*dt,leg.dur));
+   if(isAc){
+    let onR=false;const ks=new Set();
+    for(const s of out){
+     if(s.L==='A')onR=true;
+     else if(s.L==='F'){for(const q of aoTokensOf(s))ks.add(q);if(s.y0<APT_Y.RS+12&&s.y1>APT_Y.RN-12&&s.x1>4000&&s.x0<8500)onR=true}
+    }
+    if(onR){rw[k]=1;if(rwFirst<0)rwFirst=k;rwLast=k}
+    tk[k]=ks;
+   }
+  }
+  S[k]=out;
+ }
+ // runway lock: ± SEP seconds around every slice on / over the runway strip
+ const mm=Math.round(AO.SEP/dt);
+ if(isAc&&rwFirst>=0){const m2=new Uint8Array(K);for(let k=0;k<K;k++)if(rw[k])for(let j=Math.max(0,k-mm);j<Math.min(K,k+mm+1);j++)m2[j]=1;
+  const R=Object.assign({},aoRB(),{t:tr.nm+'-R'});for(let k=0;k<K;k++)if(m2[k])S[k].push(R)}
+ let rk=null,rs=null;
+ if(isAc&&rwFirst>=0){rk=[];rs=[];for(let k=0;k<K;k++){const A=S[k];for(let i=0;i<A.length;i++)if(A[i].L==='R'){rk.push(k);rs.push(A[i]);break}}}
+ // tokens, reserved LA seconds before they are first needed
+ if(isAc){const la=Math.round(AO.LA/dt);const add=Array.from({length:K},()=>new Set());
+  for(let k=0;k<K;k++)if(tk[k])for(const q of tk[k])for(let j=Math.max(0,k-la);j<=k;j++)add[j].add(q);
+  for(let k=0;k<K;k++)for(const q of add[k])S[k].push({L:'S',k:q,t:tr.nm});
+  if(o.stand){const kf=Math.max(0,Math.round((o.standFrom||0)/dt)),kt=o.standTo!=null?Math.min(K,Math.round(o.standTo/dt)+1):K;for(let k=kf;k<kt;k++)S[k].push({L:'S',k:'ST:'+o.stand,t:tr.nm})}}
+ {const SQ=leg.seq;if(tr.kind==='veh'&&SQ&&SQ.legs&&typeof g2GatePath==='function'&&typeof APL!=='undefined'){for(let li=0;li<SQ.legs.length;li++){const g=SQ.legs[li].g2;if(!g||g.at!=='gate'||!(g.n>0))continue;const b=APL.bays.find(q=>q.fleetId===tr.nm);if(!b)break;   /* GATE-77 S6b · p148 · K-108: the passengers at the bus gate */
+  const L0=SQ.st[li],Ld=SQ.legs[li].dur,P0=g2GatePath(b),pts=g.gate==='load'?P0.slice().reverse():P0,segs=[];let acc=0;for(let i=1;i<pts.length;i++){const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);if(l>.01)segs.push([pts[i-1],pts[i],acc,acc+l]);acc+=l}
+  const W=G2_WALK;for(let k=Math.max(0,Math.floor(L0/dt));k<K&&k*dt<=L0+Ld;k++){const tau=k*dt-L0;if(tau<0)continue;const d1=Math.min(acc,(tau-W.pre)*W.v),d0=Math.max(0,(tau-W.pre-(g.n-1)*W.gap)*W.v);if(d1<=0||d0>=acc||d1<d0)continue;
+   for(const q of segs){const a=q[0],e2=q[1],s0=q[2],s1=q[3],u0=Math.max(d0,s0),u1=Math.min(d1,s1);if(u1<u0)continue;const L=s1-s0,ax=a[0]+(e2[0]-a[0])*(u0-s0)/L,ay=a[1]+(e2[1]-a[1])*(u0-s0)/L,bx=a[0]+(e2[0]-a[0])*(u1-s0)/L,by=a[1]+(e2[1]-a[1])*(u1-s0)/L,hl=Math.hypot(bx-ax,by-ay)/2+1;
+    const o2=apttObb((ax+bx)/2,(ay+by)/2,Math.atan2(e2[1]-a[1],e2[0]-a[0]),[-hl,hl,-1,1],'P',tr.nm+'-pax');o2.own=tr.nm;S[k].push(o2)}}}}}
+ let M=null;if(tr.kind==='veh'&&(tr.hx||0)>=25){M=new Array(K);for(let k=0;k<K;k++){const tm=(k+.5)*dt;if(tm>=leg.dur){M[k]=null;continue}const p=leg.pose(tm),o2=[];if(p)apttShapes(tr,p,o2,tm);M[k]=o2.filter(q=>q.L==='V')}}   /* GATE-77 S6b · p147 · K-109: the body mid-slice */
+ return g76XMark({K,S,dur:leg.dur,rwFirst,rwLast,rk,rs,M});
+}function* aoSampG(tr,leg,o={}){
+ const dt=AO.DT,K=Math.ceil(leg.dur/dt-1e-9)+1,S=new Array(K),rw=new Uint8Array(K),isAc=tr.kind==='ac',tk=new Array(K);
+ let rwFirst=-1,rwLast=-1;
+ for(let k=0;k<K;k++){
+  if((k&15)===15&&AO.sliced&&aoOver())yield 0;
+  const p=leg.pose(Math.min(k*dt,leg.dur)),out=[];
+  tk[k]=null;
+  if(p){
+   apttShapes(tr,p,out,Math.min(k*dt,leg.dur));
+   if(isAc){
+    let onR=false;const ks=new Set();
+    for(const s of out){
+     if(s.L==='A')onR=true;
+     else if(s.L==='F'){for(const q of aoTokensOf(s))ks.add(q);if(s.y0<APT_Y.RS+12&&s.y1>APT_Y.RN-12&&s.x1>4000&&s.x0<8500)onR=true}
+    }
+    if(onR){rw[k]=1;if(rwFirst<0)rwFirst=k;rwLast=k}
+    tk[k]=ks;
+   }
+  }
+  S[k]=out;
+ }
+ // runway lock: ± SEP seconds around every slice on / over the runway strip
+ const mm=Math.round(AO.SEP/dt);
+ if(isAc&&rwFirst>=0){const m2=new Uint8Array(K);for(let k=0;k<K;k++)if(rw[k])for(let j=Math.max(0,k-mm);j<Math.min(K,k+mm+1);j++)m2[j]=1;
+  const R=Object.assign({},aoRB(),{t:tr.nm+'-R'});for(let k=0;k<K;k++)if(m2[k])S[k].push(R)}
+ let rk=null,rs=null;
+ if(isAc&&rwFirst>=0){rk=[];rs=[];for(let k=0;k<K;k++){const A=S[k];for(let i=0;i<A.length;i++)if(A[i].L==='R'){rk.push(k);rs.push(A[i]);break}}}
+ // tokens, reserved LA seconds before they are first needed
+ if(isAc){const la=Math.round(AO.LA/dt);const add=Array.from({length:K},()=>new Set());
+  for(let k=0;k<K;k++)if(tk[k])for(const q of tk[k])for(let j=Math.max(0,k-la);j<=k;j++)add[j].add(q);
+  for(let k=0;k<K;k++)for(const q of add[k])S[k].push({L:'S',k:q,t:tr.nm});
+  if(o.stand){const kf=Math.max(0,Math.round((o.standFrom||0)/dt)),kt=o.standTo!=null?Math.min(K,Math.round(o.standTo/dt)+1):K;for(let k=kf;k<kt;k++)S[k].push({L:'S',k:'ST:'+o.stand,t:tr.nm})}}
+ {const SQ=leg.seq;if(tr.kind==='veh'&&SQ&&SQ.legs&&typeof g2GatePath==='function'&&typeof APL!=='undefined'){for(let li=0;li<SQ.legs.length;li++){const g=SQ.legs[li].g2;if(!g||g.at!=='gate'||!(g.n>0))continue;const b=APL.bays.find(q=>q.fleetId===tr.nm);if(!b)break;   /* GATE-77 S6b · p148 · K-108: the passengers at the bus gate */
+  const L0=SQ.st[li],Ld=SQ.legs[li].dur,P0=g2GatePath(b),pts=g.gate==='load'?P0.slice().reverse():P0,segs=[];let acc=0;for(let i=1;i<pts.length;i++){const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);if(l>.01)segs.push([pts[i-1],pts[i],acc,acc+l]);acc+=l}
+  const W=G2_WALK;for(let k=Math.max(0,Math.floor(L0/dt));k<K&&k*dt<=L0+Ld;k++){const tau=k*dt-L0;if(tau<0)continue;const d1=Math.min(acc,(tau-W.pre)*W.v),d0=Math.max(0,(tau-W.pre-(g.n-1)*W.gap)*W.v);if(d1<=0||d0>=acc||d1<d0)continue;
+   for(const q of segs){const a=q[0],e2=q[1],s0=q[2],s1=q[3],u0=Math.max(d0,s0),u1=Math.min(d1,s1);if(u1<u0)continue;const L=s1-s0,ax=a[0]+(e2[0]-a[0])*(u0-s0)/L,ay=a[1]+(e2[1]-a[1])*(u0-s0)/L,bx=a[0]+(e2[0]-a[0])*(u1-s0)/L,by=a[1]+(e2[1]-a[1])*(u1-s0)/L,hl=Math.hypot(bx-ax,by-ay)/2+1;
+    const o2=apttObb((ax+bx)/2,(ay+by)/2,Math.atan2(e2[1]-a[1],e2[0]-a[0]),[-hl,hl,-1,1],'P',tr.nm+'-pax');o2.own=tr.nm;S[k].push(o2)}}}}}
+ let M=null;if(tr.kind==='veh'&&(tr.hx||0)>=25){M=new Array(K);for(let k=0;k<K;k++){const tm=(k+.5)*dt;if(tm>=leg.dur){M[k]=null;continue}const p=leg.pose(tm),o2=[];if(p)apttShapes(tr,p,o2,tm);M[k]=o2.filter(q=>q.L==='V')}}   /* GATE-77 S6b · p147 · K-109: the body mid-slice */
+ return g76XMark({K,S,dur:leg.dur,rwFirst,rwLast,rk,rs,M});
+}
+function aoHold(tr,pose,stand){
+ const out=[];apttShapes(tr,pose,out);
+ const ks=new Set();for(const s of out)if(s.L==='F')for(const q of aoTokensOf(s))ks.add(q);
+ for(const q of ks)out.push({L:'S',k:q,t:tr.nm});
+ if(stand)out.push({L:'S',k:'ST:'+stand,t:tr.nm});
+ return out;
+}
+function aoC(a,b){
+ if(a.t===b.t)return false;
+ const la=a.L,lb=b.L;
+ if(la==='S'||lb==='S')return la===lb&&a.k===b.k;
+ if(la==='R'||lb==='R')return la==='R'&&lb==='R';              // both are the same strip rectangle: any two locks collide
+ const m=(a.dk&&a.dk===b.dk&&(a.dkr==='L')!==(b.dkr==='L'))?G77_DKZ.m:AO.M;   /* GATE-77P · p216 · D-194 */if(a.x0>b.x1+m||a.x1<b.x0-m||a.y0>b.y1+m||a.y1<b.y0-m)return false;
+ return apttConflict(a,b,m);
+}
+// ---------- the reservation table: slice -> shapes ---------------------------------------------------------------------------------------
+// ==== p376 · the planner's hot loops skip what cannot collide — the same answer by construction: skip, or run the original code ==========
+// aoFreeK: windows of 2^lg samples, window j = [j·2^lg−1, (j+1)·2^lg−1), window 0 = [0, 2^lg−1): each yield sample of aoFreeKG
+// (k & 31 === 31; lg ≤ 5) opens a window, so what a window looks at is never kept across a yield.
+// Can collide (aoC): a token (S) only with a token of the same key, a runway lock (R) only with a lock; any other pair only after a box
+// test — m (statics, the slice), 3 (the mid-slice body vs the passengers), AO.M (g77IhHit): a box that misses the union grown by
+// max(m,AO.M,3)+1 misses every shape in it (the +1 absorbs the rounding of the other forms of the test; a NaN box never misses).
+var AO_FW={on:true,lg:3,win:0,wok:0,sk:0,skip:0,hs:0,hskip:0},AO_FWC=new WeakMap();
+const AO_FWN={},AO_FWX={};   // the window's one t: none (g77IhHit is false for all its shapes) / more than one
+// once per leg (legs and their shapes are not changed after aoSamp): per sample the union box of its box shapes and of its mid-slice body,
+// its token keys, its lock; per window the union, the token keys, the locks, `bad` (a shape that is not a token / lock without a finite
+// box: the window is never OK) and `it` (the one t of its box shapes)
+function aoFwGet(sm){const lg=Math.max(1,Math.min(5,AO_FW.lg|0));let W=AO_FWC.get(sm);if(W&&W.lg===lg)return W;
+ const K=sm.K,S=sm.S,M=sm.M,nw=(K>>lg)+1,I=Infinity,rs=new Uint8Array(K),tk=new Array(K).fill(null),
+  sx0=new Float64Array(K),sx1=new Float64Array(K),sy0=new Float64Array(K),sy1=new Float64Array(K),bad=new Uint8Array(nw),rw=new Uint8Array(nw),tw=new Array(nw).fill(null),it=new Array(nw).fill(AO_FWN),
+  x0=new Float64Array(nw).fill(I),x1=new Float64Array(nw).fill(-I),y0=new Float64Array(nw).fill(I),y1=new Float64Array(nw).fill(-I);
+ for(let k=0;k<K;k++){const A=S[k],j=(k+1)>>lg;let bx0=I,bx1=-I,by0=I,by1=-I,T=null;
+  if(A.length){   // an empty sample: the original skips it before its slice and its mid-slice body are looked at
+   for(let i=0;i<A.length;i++){const a=A[i],L=a.L;if(L==='S'){(T||(T=new Set())).add(a.k);continue}if(L==='R'){rs[k]=rw[j]=1;continue}
+    if(!(a.x0<=a.x1&&a.y0<=a.y1)){bad[j]=1;continue}it[j]=it[j]===AO_FWN||it[j]===a.t?a.t:AO_FWX;
+    if(a.x0<bx0)bx0=a.x0;if(a.x1>bx1)bx1=a.x1;if(a.y0<by0)by0=a.y0;if(a.y1>by1)by1=a.y1}
+   const Mk=M&&M[k];if(Mk)for(let i=0;i<Mk.length;i++){const a=Mk[i];if(!(a.x0<=a.x1&&a.y0<=a.y1)){bad[j]=1;continue}if(a.x0<bx0)bx0=a.x0;if(a.x1>bx1)bx1=a.x1;if(a.y0<by0)by0=a.y0;if(a.y1>by1)by1=a.y1}
+   if(T){const U=tw[j]||(tw[j]=new Set());for(const q of T)U.add(q)}
+   if(bx0<x0[j])x0[j]=bx0;if(bx1>x1[j])x1[j]=bx1;if(by0<y0[j])y0[j]=by0;if(by1>y1[j])y1[j]=by1}
+  tk[k]=T;sx0[k]=bx0;sx1[k]=bx1;sy0[k]=by0;sy1[k]=by1}
+ W={lg,rs,tk,sx0,sx1,sy0,sy1,bad,rw,tw,it,x0,x1,y0,y1};AO_FWC.set(sm,W);return W}
+// can a shape of `bk` collide with shapes of union box (x0..y1, already grown), token keys T, locks R?
+function aoFwAny(bk,n,x0,x1,y0,y1,T,R){
+ if(T||R){for(let i=0;i<n;i++){const b=bk[i],L=b.L;if(L==='S'){if(T&&T.has(b.k))return true;continue}if(L==='R'){if(R)return true;continue}if(!(x0>b.x1||x1<b.x0||y0>b.y1||y1<b.y0))return true}return false}
+ for(let i=0;i<n;i++){const b=bk[i];if(x0>b.x1||x1<b.x0||y0>b.y1||y1<b.y0)continue;const L=b.L;if(L==='S'||L==='R')continue;return true}   // no token / lock here: tokens and locks there cannot collide
+ return false}
+// window j is OK when it has no `bad` shape and neither a static (ST[0..ns), as the caller reads them) nor an idle vehicle can collide with any of its samples
+function aoFwWin(W,j,m,ST,ns){AO_FW.win++;if(W.bad[j])return false;
+ const E=Math.max(m,AO.M,3)+1,x0=W.x0[j]-E,x1=W.x1[j]+E,y0=W.y0[j]-E,y1=W.y1[j]+E;
+ if(aoFwAny(ST,ns,x0,x1,y0,y1,W.tw[j],W.rw[j]))return false;
+ const TT=W.it[j];if(TT!==AO_FWN&&G77_IH&&G77_IH.on&&AO.fleet){const F=AO.fleet;if(!(G77_IH.R&&G77_IH.F===F&&G77_IH.nF===F.length))return false;   // g77IhHit's guards; its rows only from the cache
+  const R=G77_IH.R;for(let i=0;i<R.length;i++){const G=R[i];if(x0>G.x1||x1<G.x0||y0>G.y1||y1<G.y0)continue;
+   const Hs=G.h;for(let q=0;q<Hs.length;q++){const h=Hs[q];if(h.id===TT||x0>h.x1||x1<h.x0||y0>h.y1||y1<h.y0)continue;return false}}}   // h.id === a.t: g77IhHit passes its own vehicle
+ AO_FW.wok++;return true}
+// sample k of an OK window cannot collide when no shape of its slice can collide with it (no slice: nothing to collide with)
+function aoFwSlice(W,k,bk,nb,m){AO_FW.sk++;if(nb){const E=Math.max(m,3)+1;if(aoFwAny(bk,nb,W.sx0[k]-E,W.sx1[k]+E,W.sy0[k]-E,W.sy1[k]+E,W.tk[k],W.rs[k]))return false}AO_FW.skip++;return true}
+// aoHoldLimit: the hold shapes are the same at every slice — their union box grown by m+1, their token keys, their locks (null: a shape without a finite box)
+function aoFwHold(sh,m){let x0=Infinity,x1=-Infinity,y0=Infinity,y1=-Infinity,T=null,R=false;
+ for(let i=0;i<sh.length;i++){const a=sh[i],L=a.L;if(L==='S'){(T||(T=new Set())).add(a.k);continue}if(L==='R'){R=true;continue}
+  if(!(a.x0<=a.x1&&a.y0<=a.y1))return null;if(a.x0<x0)x0=a.x0;if(a.x1>x1)x1=a.x1;if(a.y0<y0)y0=a.y0;if(a.y1>y1)y1=a.y1}
+ const E=m+1;return{x0:x0-E,x1:x1+E,y0:y0-E,y1:y1+E,T,R}}
+function aoFwHoldClear(H,bk){AO_FW.hs++;if(aoFwAny(bk,bk.length,H.x0,H.x1,H.y0,H.y1,H.T,H.R))return false;AO_FW.hskip++;return true}
+// index of the first sample that collides (and the colliding shape in AO._ca), or -1 when the leg fits at slice s0
+function aoFreeK(sm,s0){
+ AO.work++;
+ const ST=AO.ST,ns=ST.length,m=AO.M,rk=sm.rk;
+ if(rk){for(let q=0;q<rk.length;q++){const bk=AO.B.get(s0+rk[q]);if(!bk)continue;const a=sm.rs[q];for(let j=0;j<bk.length;j++){const b=bk[j];if(b.L==='R'&&b.t!==a.t){AO._ca=a;return rk[q]}}}}
+ if(sm.gx&&G76X.ofs0!=null){const gx=sm.gx;for(let q=0;q<gx.length;q++)if(g76XBusyRail(aoT(s0+gx[q])+G76X.ofs0)){AO._ca=sm.ga[q];G76X.stats.blocked++;return gx[q]}}   // GATE-76 S1: the rail crossing (RAIL-05)
+ const FW=AO_FW.on?aoFwGet(sm):null;let kw=0,wok=false;   /* p376: windows of samples (aoFwWin), then each sample (aoFwSlice): skip what cannot collide, run the rest unchanged */
+ for(let k=0;k<sm.K;k++){if(k===kw&&FW){const j=(k+1)>>FW.lg;kw=((j+1)<<FW.lg)-1;wok=aoFwWin(FW,j,m,ST,ns)}const A=sm.S[k],na=A.length;if(!na)continue;
+  const bk=AO.B.get(s0+k),nb=bk?bk.length:0;if(wok&&aoFwSlice(FW,k,bk,nb,m))continue;const FK=nb&&G77_FK.on?g77FkSplit(A,na,bk,nb,m):null;   /* GATE-77P-a · p205 */   /* p376 */
+  for(let i=0;i<na;i++){const a=A[i],ax0=a.x0-m,ax1=a.x1+m,ay0=a.y0-m,ay1=a.y1+m,Lb=FK?(a.L==='S'?FK.t:FK.c):bk,nl=FK?Lb.length:nb;   /* tokens have no box: the comparisons are false and aoC decides */
+   for(let j=0;j<ns;j++){const b=ST[j];if(ax0>b.x1||ax1<b.x0||ay0>b.y1||ay1<b.y0)continue;if(aoC(a,b)){AO._ca=a;return k}}
+   for(let j=0;j<nl;j++){const b=Lb[j];if(ax0>b.x1||ax1<b.x0||ay0>b.y1||ay1<b.y0)continue;if(aoC(a,b)){AO._ca=a;return k}}if(g77IhHit(a,s0+k)){AO._ca=a;return k}}   /* GATE-77 S7-a · p188 */
+  if(sm.M&&sm.M[k]&&nb){const Mk=sm.M[k];for(let i=0;i<Mk.length;i++){const a=Mk[i];for(let j=0;j<nb;j++){const b=bk[j];if(b.L!=='P'||b.own===a.t)continue;if(a.x0>b.x1+3||a.x1<b.x0-3||a.y0>b.y1+3||a.y1<b.y0-3)continue;if(apttObbHit(a,b,3)){AO._ca=a;return k}}}}   /* GATE-77 S6b · p147 · K-109 */
+ }
+ return -1;
+}function* aoFreeKG(sm,s0){
+ AO.work++;
+ const ST=AO.ST,ns=ST.length,m=AO.M,rk=sm.rk;
+ if(rk){for(let q=0;q<rk.length;q++){const bk=AO.B.get(s0+rk[q]);if(!bk)continue;const a=sm.rs[q];for(let j=0;j<bk.length;j++){const b=bk[j];if(b.L==='R'&&b.t!==a.t){AO._ca=a;return rk[q]}}}}
+ if(sm.gx&&G76X.ofs0!=null){const gx=sm.gx;for(let q=0;q<gx.length;q++)if(g76XBusyRail(aoT(s0+gx[q])+G76X.ofs0)){AO._ca=sm.ga[q];G76X.stats.blocked++;return gx[q]}}   // GATE-76 S1: the rail crossing (RAIL-05)
+ const FW=AO_FW.on?aoFwGet(sm):null;let kw=0,wok=false;   /* p376: windows of samples (aoFwWin), then each sample (aoFwSlice): skip what cannot collide, run the rest unchanged */
+ for(let k=0;k<sm.K;k++){if((k&31)===31&&AO.sliced&&aoOver())yield 0;if(k===kw&&FW){const j=(k+1)>>FW.lg;kw=((j+1)<<FW.lg)-1;wok=aoFwWin(FW,j,m,ST,ns)}const A=sm.S[k],na=A.length;if(!na)continue;
+  const bk=AO.B.get(s0+k),nb=bk?bk.length:0;if(wok&&aoFwSlice(FW,k,bk,nb,m))continue;const FK=nb&&G77_FK.on?g77FkSplit(A,na,bk,nb,m):null;   /* GATE-77P-a · p205 */   /* p376 */
+  for(let i=0;i<na;i++){const a=A[i],ax0=a.x0-m,ax1=a.x1+m,ay0=a.y0-m,ay1=a.y1+m,Lb=FK?(a.L==='S'?FK.t:FK.c):bk,nl=FK?Lb.length:nb;   /* tokens have no box: the comparisons are false and aoC decides */
+   for(let j=0;j<ns;j++){const b=ST[j];if(ax0>b.x1||ax1<b.x0||ay0>b.y1||ay1<b.y0)continue;if(aoC(a,b)){AO._ca=a;return k}}
+   for(let j=0;j<nl;j++){const b=Lb[j];if(ax0>b.x1||ax1<b.x0||ay0>b.y1||ay1<b.y0)continue;if(aoC(a,b)){AO._ca=a;return k}}if(g77IhHit(a,s0+k)){AO._ca=a;return k}}   /* GATE-77 S7-a · p188 */
+  if(sm.M&&sm.M[k]&&nb){const Mk=sm.M[k];for(let i=0;i<Mk.length;i++){const a=Mk[i];for(let j=0;j<nb;j++){const b=bk[j];if(b.L!=='P'||b.own===a.t)continue;if(a.x0>b.x1+3||a.x1<b.x0-3||a.y0>b.y1+3||a.y1<b.y0-3)continue;if(apttObbHit(a,b,3)){AO._ca=a;return k}}}}   /* GATE-77 S6b · p147 · K-109 */
+ }
+ return -1;
+}
+const aoFree=(sm,s0)=>aoFreeK(sm,s0)<0;
+function aoBlocked(a,s){if(g76XHit(a)&&g76XBusyApt(aoT(s)))return true;const bk=AO.B.get(s);if(!bk)return false;const m=AO.M,ax0=a.x0-m,ax1=a.x1+m,ay0=a.y0-m,ay1=a.y1+m;for(let j=0;j<bk.length;j++){const b=bk[j];if(ax0>b.x1||ax1<b.x0||ay0>b.y1||ay1<b.y0)continue;if(aoC(a,b))return true}return false}
+function aoWhy(sm,s0){
+ for(let k=0;k<sm.K;k++){const A=sm.S[k];const bk=AO.B.get(s0+k);for(const a of A){for(const b of AO.ST)if(aoC(a,b))return{k,a:a.t+'['+a.L+(a.k?':'+a.k:'')+']',b:b.t+'['+b.L+(b.k?':'+b.k:'')+']'};if(bk)for(const b of bk)if(aoC(a,b))return{k,a:a.t+'['+a.L+(a.k?':'+a.k:'')+']',b:b.t+'['+b.L+(b.k?':'+b.k:'')+']'}}}
+ return null}
+function aoHoldLimit(sh,from,cap){ // first slice (>= from) at which the hold shapes would collide with something reserved; cap if none
+ AO._hs=null;AO._hperm=false;
+ for(const a of sh)for(const b of AO.ST)if(aoC(a,b)){AO._hs=a;AO._hperm=true;return from}
+ const m=AO.M,n=sh.length,X0=new Float64Array(n),X1=new Float64Array(n),Y0=new Float64Array(n),Y1=new Float64Array(n);for(let i=0;i<n;i++){const a=sh[i];X0[i]=a.x0-m;X1[i]=a.x1+m;Y0[i]=a.y0-m;Y1[i]=a.y1+m}
+ const H=AO_FW.on?aoFwHold(sh,m):null;   /* p376: a slice whose shapes cannot collide with the hold shapes is skipped; any other runs the loop unchanged */
+ for(let s=from;s<cap;s++){const bk=AO.B.get(s);if(!bk)continue;if(H&&aoFwHoldClear(H,bk))continue;for(let i=0;i<n;i++){const a=sh[i],ax0=X0[i],ax1=X1[i],ay0=Y0[i],ay1=Y1[i];for(let j=0;j<bk.length;j++){const b=bk[j];if(ax0>b.x1||ax1<b.x0||ay0>b.y1||ay1<b.y0)continue;if(aoC(a,b)){AO._hs=a;return s}}}}
+ return cap;
+}
+function* aoHoldLimitG(sh,from,cap){
+ AO._hs=null;AO._hperm=false;
+ for(const a of sh)for(const b of AO.ST)if(aoC(a,b)){AO._hs=a;AO._hperm=true;return from}
+ const m=AO.M,n=sh.length,X0=new Float64Array(n),X1=new Float64Array(n),Y0=new Float64Array(n),Y1=new Float64Array(n);for(let i=0;i<n;i++){const a=sh[i];X0[i]=a.x0-m;X1[i]=a.x1+m;Y0[i]=a.y0-m;Y1[i]=a.y1+m}
+ const H=AO_FW.on?aoFwHold(sh,m):null;   /* p376: a slice whose shapes cannot collide with the hold shapes is skipped; any other runs the loop unchanged */
+ for(let s=from;s<cap;s++){if(((s-from)&127)===127&&AO.sliced&&aoOver()){yield 0;AO._hs=null;AO._hperm=false}const bk=AO.B.get(s);if(!bk)continue;if(H&&aoFwHoldClear(H,bk))continue;for(let i=0;i<n;i++){const a=sh[i],ax0=X0[i],ax1=X1[i],ay0=Y0[i],ay1=Y1[i];for(let j=0;j<bk.length;j++){const b=bk[j];if(ax0>b.x1||ax1<b.x0||ay0>b.y1||ay1<b.y0)continue;if(aoC(a,b)){AO._hs=a;return s}}}}
+ return cap;
+}
+function aoCommit(sm,s0){for(let k=0;k<sm.K;k++){const A=sm.S[k];if(!A.length)continue;let bk=AO.B.get(s0+k);if(!bk){bk=[];AO.B.set(s0+k,bk)}for(const a of A){bk.push(a);AO.LOG.push(s0+k)}}}
+function aoCommitHold(sh,s0,s1){for(let s=s0;s<s1;s++){let bk=AO.B.get(s);if(!bk){bk=[];AO.B.set(s,bk)}for(const a of sh){bk.push(a);AO.LOG.push(s)}}}
+function aoRoll(mark){while(AO.LOG.length>mark){const k=AO.LOG.pop();if(typeof k==='function'){k();continue}const b=AO.B.get(k);if(b)b.pop()}}
+function aoSearch(sm,sMin,sMax,hold,after){
+ let lim=sMax;if(hold){lim=Math.min(lim,aoHoldLimit(hold.sh,hold.from,sMax+1))}
+ for(let s=sMin;s<=lim;){
+  const k=aoFreeK(sm,s);
+  if(k<0){
+   if(after){const e=s+sm.K-1,c=aoHoldLimit(after.sh,e,e+after.len);
+    if(c<e+after.len){
+     if(AO._hperm)return -1;                      // the parked aircraft would sit on a permanent obstacle
+     const h=AO._hs;let c2=c+1;while(c2<c+4000&&aoBlocked(h,c2))c2++;
+     s=Math.max(s+1,c2-(sm.K-1));continue}}
+   return s}
+  // jump over the whole stretch during which the blocking shape stays blocked
+  const a=AO._ca,base=s+k;let d=1;if(G77_IH&&G77_IH.last&&G77_IH.w===AO.work){G77_IH.last=false;G77_IH.jump++;d=Math.max(1,Math.min(4000,G77_IH.until-base))}else while(d<4000&&aoBlocked(a,base+d))d++;
+  s+=d;
+ }
+ return -1;
+}function* aoSearchG(sm,sMin,sMax,hold,after){
+ let lim=sMax;if(hold){lim=Math.min(lim,(yield* aoHoldLimitG(hold.sh,hold.from,sMax+1)))}
+ for(let s=sMin;s<=lim;){
+  if(AO.sliced&&aoOver())yield 0;
+  const k=(yield* aoFreeKG(sm,s));
+  if(k<0){
+   if(after){const e=s+sm.K-1,c=(yield* aoHoldLimitG(after.sh,e,e+after.len));
+    if(c<e+after.len){
+     if(AO._hperm)return -1;                      // the parked aircraft would sit on a permanent obstacle
+     const h=AO._hs;let c2=c+1;while(c2<c+4000&&aoBlocked(h,c2)){c2++;if((c2&511)===0&&AO.sliced&&aoOver())yield 0}
+     s=Math.max(s+1,c2-(sm.K-1));continue}}
+   return s}
+  // jump over the whole stretch during which the blocking shape stays blocked
+  const a=AO._ca,base=s+k;let d=1;if(G77_IH&&G77_IH.last&&G77_IH.w===AO.work){G77_IH.last=false;G77_IH.jump++;d=Math.max(1,Math.min(4000,G77_IH.until-base))}else while(d<4000&&aoBlocked(a,base+d)){d++;if((d&511)===0&&AO.sliced&&aoOver())yield 0}
+  s+=d;
+ }
+ return -1;
+}
+const aoSeqLeg=seq=>({dur:seq.dur,seq,pose:t=>seq.at(Math.min(t,seq.dur-1e-6))});   // GATE-77 S6b · p148: the legs (the gate legs carry passengers)
+
+// ====================================================================================================================================
+// stands and routes
+// ====================================================================================================================================
+const AO_STATES={ // legal successor states (QA-24)
+ INBOUND:['APPROACH'],APPROACH:['LANDING_RESERVED','GO_AROUND'],GO_AROUND:['INBOUND'],LANDING_RESERVED:['LANDING_ROLL','GO_AROUND'],LANDING_ROLL:['VACATE_RUNWAY'],VACATE_RUNWAY:['TAXI_IN'],
+ TAXI_IN:['STAND_RESERVED'],STAND_RESERVED:['ON_BLOCK'],ON_BLOCK:['TURNAROUND_READY'],TURNAROUND_READY:['PUSHBACK_RESERVED','TAXI_OUT'],
+ PUSHBACK_RESERVED:['PUSHBACK'],PUSHBACK:['TAXI_OUT'],TAXI_OUT:['HOLD_SHORT'],HOLD_SHORT:['RUNWAY_RESERVED'],RUNWAY_RESERVED:['LINE_UP'],LINE_UP:['TAKEOFF_ROLL'],TAKEOFF_ROLL:['DEPARTED'],DEPARTED:[]};
+function aoMakeStands(){
+ APL=aplBuild();
+ const out=APL.stands.map(s=>Object.assign({},s));
+ APL.helis.forEach((h,i)=>out.push({id:h.id,kind:'heli',accepts:[h.aircraft],ngx:h.x,ngy:h.y,th:0,first:h.aircraft,live:h.live,pad:h}));
+ return out;
+}
+// legs for one visit ------------------------------------------------------------------------------------------------------------------------
+const AO_PUSH={bridge:1,apronSW:1,apronSE:1,cargoS:1};
+const AO_ROLL={'AC-PR-01':500,'AC-BJ-01':700,'AC-TP-01':700,'AC-RJ-01':1000,'AC-NB-01':1500,'AC-CG-01':1500,'AC-LG-01':1900,'AC-QJ-01':1100,'AC-MW-01':1600,'AC-LT-01':550,'AC-CN-01':650,'AC-AM-01':600,'AC-TB-01':650};   // line-up at a mid-field link: roll needed (px)
+function aoNeedTug(sd,ac){return sd.tpl==='bridge'||!!(sd.svc&&sd.svc.tug&&(!sd.svc.tugFor||sd.svc.tugFor.includes(ac)))}
+function aoArrLeg(sd,ac){return g73ArrLeg(g77StandView(sd,ac),ac)}
+// departure: {push?, taxi, hold pose, takeoff}
+function aoDepLegs(sd,ac){return g73DepLegs(g77StandView(sd,ac),ac)}
+
+// ====================================================================================================================================
+// planning one visit of a stand:  arrival -> park/turnaround -> departure.   Returns the flight record or null (everything rolled back).
+// ====================================================================================================================================
+
+// ==== GATE-77 S6b-c · part 4 · p159 · K-112: a code is never shared by two live flights (the reservation table keys on it) ============
+function aoCodeLive(c){for(const f of AO.flights)if(f.code===c)return true;return false}
+function aoCode(sd){let c=aoCode0(sd,0);for(let k=1;k<64&&aoCodeLive(c);k++){c=aoCode0(sd,k);AO.codeBump=(AO.codeBump||0)+1}return c}   // AO.codeBump: how many times (QA)
+// QA (airportRun): two flights whose lives overlap in time never share a code
+function g77CodeAudit(fl){const by=new Map(),r={ok:true,flights:0,dup:[],bump:AO.codeBump||0};for(const f of fl){if(!f.code)continue;r.flights++;let L=by.get(f.code);if(!L)by.set(f.code,L=[]);L.push(f)}
+ for(const [c,L] of by){if(L.length<2)continue;for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j],a0=Math.min(a.t0??0,a.tDraw??Infinity),b0=Math.min(b.t0??0,b.tDraw??Infinity);
+   if(a0<(b.t1??Infinity)&&b0<(a.t1??Infinity)){r.ok=false;if(r.dup.length<8)r.dup.push(c+' '+a.stand+' / '+b.stand)}}}return r}
+function aoCode0(sd,k){const n=AO.nid+k*29;   // k = 0: the code as before
+ if(sd.kind==='cargo')return'TCC'+String(10+(n*7)%90).padStart(2,'0');
+ if(sd.kind==='ga'||sd.kind==='ovf'){const m=k?Math.floor(n/26)+k:0;return'4X-G'+String.fromCharCode(65+(n*5)%26)+String.fromCharCode(65+(n*11+m)%26)+String.fromCharCode(65+(n*3+m*7)%26)}
+ if(sd.kind==='heli')return'4X-H'+String(10+(n*3+k)%90);
+ return'TC'+(100+(n*37)%900);
+}
+function aoChoose(sd){const l=sd.accepts.filter(a=>aoFits(sd,a));return l[Math.floor(AO.rng()*l.length)]||null}
+// ==== GATE-77 S1 · AIR-35…48 / QA-54: aircraft profiles, stand profiles, the matrix, Best-Fit, quantities ===================================
+// size class (Best-Fit), role, seats, cargo units (ULD / pallet positions — the physical chain is S4), and the mandatory services by stage
+const G77_AC={
+ 'AC-PR-01':{cls:1,role:'ga',seats:3,cargoU:0,name:'מטוס קל',svc:['fuel']},
+ 'AC-BJ-01':{cls:2,role:'ga',seats:4,cargoU:0,name:'מטוס עסקים',svc:['fuel','push','catering','lavatory']},
+ 'AC-LT-01':{cls:1,role:'ga',seats:5,cargoU:0,name:'דו-מנועי קל',svc:['fuel']},   // GATE-77 S5e · D-87
+ 'AC-CN-01':{cls:2,role:'ga',seats:7,cargoU:0,name:'מטוס עסקים עם כנף קדמית',svc:['fuel','push','catering','lavatory']},   // GATE-77 S5e · D-87
+ 'AC-AM-01':{cls:2,role:'ga',seats:1,cargoU:0,name:'מטוס ים אמפיבי',svc:['fuel']},   // GATE-77 S5e-b · D-87 (tourists; 10–11 by AIR-38)
+ 'AC-TB-01':{cls:3,role:'cargo',seats:0,cargoU:3,name:'משא קטן עם 2 קורות זנב',svc:['cargo','fuel','push','gpu','marshal','chocks']},   // GATE-77 S5e-b · D-87 (C2 only)
+ 'AC-TP-01':{cls:3,role:'pax',seats:70,cargoU:0,name:'טורבו-פרופ אזורי',svc:['pax','bags','fuel','catering','cleaning','water','gpu','marshal','chocks']},
+ 'AC-RJ-01':{cls:4,role:'pax',seats:88,cargoU:0,name:'סילון אזורי',svc:['pax','bags','fuel','push','catering','cleaning','water','lavatory','gpu','marshal','chocks']},
+ 'AC-NB-01':{cls:5,role:'pax',seats:180,cargoU:2,name:'צר-גוף',svc:['pax','bags','fuel','push','catering','cleaning','water','lavatory','gpu','belt','marshal','chocks']},
+ 'AC-CG-01':{cls:6,role:'cargo',seats:0,cargoU:12,name:'מטוס מטען',svc:['cargo','fuel','push','gpu','highloader','marshal','chocks']},
+ 'AC-QJ-01':{cls:5,role:'pax',seats:100,cargoU:0,name:'סילון ארבע-מנועי אזורי',svc:['pax','bags','fuel','push','catering','cleaning','water','lavatory','gpu','marshal','chocks']},   // GATE-77 S5c · D-87
+ 'AC-MW-01':{cls:6,role:'pax',seats:290,cargoU:7,name:'רחב-גוף דו-מנועי',svc:['pax','bags','fuel','push','catering','cleaning','water','lavatory','gpu','belt','highloader','marshal','chocks']},   // GATE-77 S5c · D-81
+ 'AC-LG-01':{cls:7,role:'pax',seats:416,cargoU:8,name:'מטוס נוסעים גדול',svc:['pax','bags','fuel','push','catering','cleaning','water','lavatory','gpu','belt','highloader','marshal','chocks']},
+ 'AC-HC-01':{cls:8,role:'cargo',seats:0,cargoU:24,name:'מטוס מטען כבד',svc:['cargo','fuel','push','gpu','highloader','marshal','chocks']},
+ 'AC-HL-01':{cls:0,role:'heli',seats:0,cargoU:0,name:'מסוק קל',svc:['marshal']},
+ 'AC-HL-02':{cls:0,role:'heli',seats:0,cargoU:0,name:'מסוק משטרה / חילוץ',svc:['marshal']},'AC-HL-03':{cls:0,role:'heli',seats:0,cargoU:0,name:'מסוק משא / עבודה',svc:['marshal']},'AC-HL-04':{cls:0,role:'heli',seats:0,cargoU:0,name:'מסוק אמבולנס',svc:['marshal']},'AC-HL-05':{cls:0,role:'heli',seats:0,cargoU:0,name:'מסוק מנהלים',svc:['marshal']},'AC-HL-06':{cls:0,role:'heli',seats:0,cargoU:0,name:'מסוק תיירות',svc:['marshal']}};
+// the feeder turboprop at the cargo stand C2 flies cargo (AIR-48: no passenger services)
+const G77_TP_CARGO={cls:3,role:'cargo',seats:0,cargoU:4,name:'טורבו-פרופ מטען (מזין)',svc:['cargo','fuel','push','gpu','marshal','chocks']};
+// when each service exists in the game: 0 = before GATE-77 (baggage train, fuel truck, pushback tug, bridge / remote passengers)
+const G77_SVC={pax:{n:'נוסעים',st:0},bags:{n:'כבודה',st:0},fuel:{n:'דלק',st:0},push:{n:'גרירה לאחור',st:0},catering:{n:'קייטרינג',st:2},cleaning:{n:'ניקיון',st:2},water:{n:'מים',st:2},lavatory:{n:'שירותים',st:2},gpu:{n:'חשמל קרקע',st:2},belt:{n:'מסוע כבודה',st:2},highloader:{n:'מעמיס מטען',st:4},marshal:{n:'מכוון חניה',st:3},chocks:{n:'סדים וקונוסים',st:3},cargo:{n:'שרשרת מטען',st:4}};
+const G77_STAGE=4;   // the GATE-77 substage of this build
+// a maintenance bay (M1–M3): the aircraft is towed in and stands inside the hangar — no turnaround services
+const G77_MAINT_C=new Map();
+function g77Prof(sd,ac){if(sd&&sd.kind==='cargo'&&ac==='AC-TP-01')return G77_TP_CARGO;const P=G77_AC[ac];if(!P||!sd||sd.kind!=='maint')return P;
+ if(!G77_MAINT_C.has(ac))G77_MAINT_C.set(ac,Object.assign({},P,{role:'maint',seats:0,cargoU:0,name:P.name+' · תחזוקה',svc:['push','chocks']}));return G77_MAINT_C.get(ac)}
+function g77Role(sd,ac){const P=g77Prof(sd,ac);return P?P.role:'pax'}
+function g77StandCls(sd){let c=0;for(const a of sd.accepts||[])if(G77_AC[a])c=Math.max(c,G77_AC[a].cls);return c}
+// what can reach a stand (reach) and what already works there today (now): the routes that exist (afDest) and the declared access of the
+// services that come in S2–S4 (apron side / cargo row / GA aprons); marshaller / chocks at every live stand
+// a service route that runs into an aircraft parked for good (the static occupants of the stands that are not live) never works: the
+// pushback tug / the fuel truck of this stand and type is sampled against those shapes once per stand object (cached)
+function g77StaticBlock(sd,ac,role){
+ const C=sd._g77blk||(sd._g77blk={}),key=role+'|'+ac;if(key in C)return C[key];
+ let r=null;
+ try{const D=afDest(role,sd,ac),v=D&&AO.ST&&AO.ST.length?(g77Cands(role,sd,1)||[])[0]:null;
+  if(v){let B;if(role==='tug'){const Dd=aoDepLegs(sd,ac),g=apttAcGeom(ac);B=afBuild(v,D,0,{hold0:3,push:Dd.push,off:g.nose+9+afPtHx()})}else B=afBuild(v,D,20);
+   const seq=B.trk.seq;for(let t=0;t<seq.dur&&!r;t+=AO.DT){const p=seq.at(t);if(!p)continue;const out=[];apttShapes(B.trk,p,out);
+    for(const a of out){for(const b of AO.ST)if(b.L!=='S'&&aoC(a,b)){r=b.t;break}if(r)break}}}}catch(e){r=null}
+ return C[key]=r}
+function g77StaticStand(code){for(const f of AO.flights)if(f.code===code&&f.never)return f.stand;return code}
+function g77StandSvc(sd,ac){
+ const has=r=>{try{return!!afDest(r,sd,ac)}catch(e){return false}},bridge=sd.tpl==='bridge',remote=g2Remote(sd,ac),cargo=sd.kind==='cargo',ga=sd.kind==='ga'||sd.kind==='ovf',apron=bridge||remote||sd.kind==='pax',pushes=!!AO_PUSH[sd.tpl];
+ const R=(reach,now)=>({reach:!!reach,now:!!(reach&&now)}),tugU=pushes&&aoNeedTug(sd,ac),fuelU=bridge||!!(sd.svc&&sd.svc.fuel)||(G77_STAGE>=4&&cargo);
+ return{pax:R(bridge||remote,true),bags:R(bridge||remote,has('bag')),fuel:R(!fuelU||!g77StaticBlock(sd,ac,'fuel'),fuelU),push:R(!tugU||!g77StaticBlock(sd,ac,'tug'),!tugU||has('tug')),
+  catering:R(apron||ga,has('cat')),cleaning:R(apron,has('cln')),water:R(apron,has('wat')),lavatory:R(apron||ga,has('lav')),gpu:bridge?R(true,true):cargo?(G77_STAGE>=4?R(true,has('gpu')):Object.assign(R(true,false),{st:4})):R(apron||ga,has('gpu')),belt:R(apron,has('belt')),highloader:R(cargo||bridge,G77_STAGE>=4&&cargo&&has('hl')),marshal:R(true,false),chocks:R(true,false),cargo:R(cargo,G77_STAGE>=4&&cargo)}}
+// one row of the matrix: compatible? which services, from which stage; quantities
+function g77Match(sd,ac){
+ const P=g77Prof(sd,ac),r={stand:sd.id,ac,role:g77Role(sd,ac),accepts:(sd.accepts||[]).includes(ac),cls:P?P.cls:0,standCls:g77StandCls(sd),svc:{},missing:[],later:[],ok:false};
+ if(!P){r.why='no-profile';return r}
+ const S=g77StandSvc(sd,ac);
+ for(const k of P.svc){const q=S[k]||{reach:false,now:false},st=q.st||G77_SVC[k].st;r.svc[k]=!q.reach?'no':q.now?'ok':'S'+Math.max(2,st);if(!q.reach)r.missing.push(k);else if(!q.now)r.later.push(k)}
+ r.ok=r.accepts&&!r.missing.length;r.why=!r.accepts?'stand-does-not-accept':r.missing.length?'service-cannot-reach:'+r.missing.join(','):'ok';
+ if(r.missing.length){const bl=[];for(const k of r.missing){const b=k==='push'?g77StaticBlock(sd,ac,'tug'):k==='fuel'?g77StaticBlock(sd,ac,'fuel'):null;if(b)bl.push(k+'→'+g77StaticStand(b))}if(bl.length){r.blocked=bl;r.why+=' (static parking: '+bl.join(', ')+')'}}
+ return r}
+// ---- quantities (AIR-38 / 39 / 44): from the flight code (deterministic), by aircraft size ---------------------------------------------------
+function g77Hash(s){let h=2166136261;for(const ch of String(s))h=Math.imul(h^ch.charCodeAt(0),16777619)>>>0;return h}
+// AIR-38: two aircraft of different sizes never carry the same number — the low end of a type starts above the high end of the next smaller one
+const G77_PAXR=(()=>{const L=Object.entries(G77_AC).filter(([k,P])=>P.seats>0&&P.role!=='cargo').sort((a,b)=>a[1].seats-b[1].seats),r={};let hi=0;
+ for(const [k,P] of L){const mn=Math.max(hi+1,Math.round(P.seats*.62)),mx=Math.max(mn,Math.round(P.seats*.95));r[k]={floor:hi+1,min:mn,max:mx};hi=mx}return r})();
+// load factor .62–.95 of the seats, spread evenly over the band of the type (deterministic from the flight code)
+function g77Pax(code,ac,phase,sd){const P=g77Prof(sd,ac),B=G77_PAXR[ac];if(!P||!P.seats||P.role==='cargo'||P.role==='maint'||!B)return 0;const u=(g77Hash(code+'|'+phase)%34)/33;return Math.round(B.min+(B.max-B.min)*u)}
+// baggage carts: GA 0–1, regional ≈2, narrow-body 3–5, large 8+; a baggage train pulls 2 carts (6 bag stacks each) → trips
+function g77Bags(code,ac,phase,sd){const n=g77Pax(code,ac,phase,sd),P=g77Prof(sd,ac);if(!P||P.role==='cargo'||P.role==='maint'||P.role==='heli'||!n)return{n:0,carts:0,trips:0,units:0};
+ const carts=P.role==='ga'?(n>4?1:0):Math.max(1,Math.ceil(n/38));return{n:Math.round(n*1.05),carts,trips:Math.ceil(carts/(sd&&sd.id?f2TrainCarts(sd):2)),units:carts*6,per:6*(sd&&sd.id?f2TrainCarts(sd):2)}}
+// turnaround time (s) from the quantities: every passenger walks the bridge (or the stairs) off and on, plus cleaning / catering time
+const G77_DW={pax:[130,300],cargo:[150,330],ga:[200,600]};
+function g77Dwell(sd,ac,code){const k=sd.kind==='pax'?'pax':sd.kind==='cargo'?'cargo':'ga',base=aoR(...(k==='pax'?AO.cfg.turn:k==='cargo'?AO.cfg.cgDwell:AO.cfg.gaDwell));
+ if(k==='cargo'&&G77_STAGE>=4){const u=(g77Prof(sd,ac)||{}).cargoU||0;return Math.max(base,90+Math.ceil(u/3)*2*Math.round(76+.032*Math.abs(sd.cx-G77_DK.x)))}   // the deck takes one train load at a time (build / break-down + the conveyor); the trains' cycle grows with the stand's distance from the deck (C1 80 · C2 82 · C3 92 s per trip)
+ if(k!=='pax')return base;const a=g77Pax(code,ac,'arr',sd),d=g77Pax(code,ac,'dep',sd),walk=n=>8+(n-1)*.92;return Math.max(base,walk(a)+walk(d)+(G77_AC[ac]&&G77_AC[ac].cls>=5?70:45)+28)}
+// ---- Best-Fit (AIR-36): a smaller stand that takes the same type in the same role and is free now ------------------------------------------
+function g77FreeState(s2,now){if(!s2.live)return'not-live';if(s2.indoor)return'indoor';if(s2.busy)return'busy';for(const f of AO.flights)if(f.stand===s2.id&&(f.tGone??f.t1)>now)return'occupied:'+f.code;return'free'}
+function g77Free(s2,now){return g77FreeState(s2,now)==='free'}
+// every smaller stand that takes the same type in the same role, with its state at decision time (recorded on the flight → audited)
+function g77SmallerState(sd,ac,now){const role=g77Role(sd,ac),c=g77StandCls(sd),out=[];for(const s2 of AO.stands){if(s2===sd||s2.kind==='heli'||!(s2.accepts||[]).includes(ac)||g77Role(s2,ac)!==role)continue;
+  if(g77StandCls(s2)<c&&g77Match(s2,ac).ok)out.push([s2.id,g77FreeState(s2,now)])}return out}
+function g77SmallerFree(sd,ac,now){return g77SmallerState(sd,ac,now).filter(x=>x[1]==='free').map(x=>x[0])}
+function g77Choose(sd,now){
+ const l=sd.accepts.filter(a=>aoFits(sd,a)&&g77Match(sd,a).ok);if(!l.length)return null;
+ const fit=l.filter(a=>!g77SmallerFree(sd,a,now).length);
+ if(!fit.length)return null;
+ const lgOk=fit.includes('AC-LG-01')&&fit.length>1,rest=lgOk?fit.filter(a=>a!=='AC-LG-01'):fit,ac=lgOk&&AO.rng()<.25?'AC-LG-01':rest[Math.floor(AO.rng()*rest.length)];if(g77Prof(sd,ac).cls<g77StandCls(sd))AO.stats.bfOver=(AO.stats.bfOver||0)+1;AO.bfLast={at:now,ac,c:g77SmallerState(sd,ac,now)};return ac}
+// ---- Best-Fit audit (AIR-36 / QA-54): every assignment re-checked against its decision record ---------------------------------------------
+function g77BestFitAudit(fl){
+ fl=fl||AO.hist.concat(AO.flights);const byCode=new Map();for(const f of fl){const l=byCode.get(f.code);if(l)l.push(f);else byCode.set(f.code,[f])}   // GA registrations can repeat
+ const r={n:0,over:0,free:0,occ:0,occOk:0,occUnk:0,busy:0,off:0,issues:[]};
+ for(const f of fl){if(!f.bfC||f.heli||f.never)continue;r.n++;const c=g77StandCls(f.sd),pc=(g77Prof(f.sd,f.ac)||{}).cls||0;if(pc<c)r.over++;
+  for(const [id,s] of f.bfC){
+   if(s==='free'){r.free++;r.issues.push('WASTE '+f.code+' '+f.ac.slice(3,5)+'@'+f.stand+' while '+id+' free');continue}
+   if(s==='busy'){r.busy++;continue}
+   if(s==='not-live'||s==='indoor'){r.off++;continue}
+   if(s.startsWith('occupied:')){r.occ++;const L=byCode.get(s.slice(9));if(!L){r.occUnk++;continue}
+    if(!L.some(g=>g.stand===id&&g.t1>f.bfAt))r.issues.push('CLAIM '+f.code+': '+id+' '+s+' not true at '+(+f.bfAt).toFixed(1));else r.occOk++}}}
+ r.ok=!r.issues.length;return r}
+// ---- the stand profile row (AIR-35): access, sides, pushback ----------------------------------------------------------------------------------
+function g77Access(sd,ac){const P=g77Prof(sd,ac)||{};if(sd.kind==='heli')return'מנחת — הליכה';if(sd.kind==='maint')return'האנגר — גרירה פנימה';if(sd.kind==='cargo')return'רחבת מטען';
+ if(sd.tpl==='bridge')return'שרוול';if(g2Remote(sd,ac))return'מדרגות + אוטובוס';return P.role==='ga'?'הליכה רגלית (GA)':'הליכה רגלית'}
+function g77Push(sd,ac){if(sd.kind==='heli')return'המראה אנכית';if(sd.kind==='maint')return'גרירה';const ps=!!AO_PUSH[sd.tpl];return!ps?'יציאה קדימה':aoNeedTug(sd,ac)?'דחיפה לאחור עם גורר':'יציאה לאחור בכוח המנוע'}
+// ---- one full turnaround of a type at a stand, in a sandbox (QA-54): an empty airport (the static parking stays), this stand only ----------
+const G77_VROLE=x=>x.role||(x.task&&x.task.role)||(x.v&&x.v.role)||'?';
+function g77Turn(id,ac,seed,xo){
+ if(!APTT_SPEC){APTT_SPEC=aptBuildSpec();APTT_C=aptBuildC()}
+ return aoSandbox(()=>{
+  AO.keep=true;aoInit(0,seed||777);for(const s of AO.stands){s.init=null;s.next=Infinity}
+  const sd=AO.stands.find(s=>s.id===id),t0w=performance.now();let P=null;
+  if(sd.kind==='heli')P=AO.flights.find(f=>f.stand===id&&!f.never&&f.heli)||null;
+  let tries=0;const whys=[];
+  if(sd.kind!=='heli'){for(;tries<4&&!P;tries++){const w0=Object.assign({},AO.stats.why);P=aoPlanVisit(sd,AO.lead+5+tries*AO.H,Object.assign({ac,bfC:[],bfAt:0},xo||{}));
+   if(!P){let why='?';for(const k in AO.stats.why)if((AO.stats.why[k]||0)>(w0[k]||0))why=k;whys.push(why)}}
+   if(!P)return{ok:false,why:'plan-failed:'+whys.join(','),tries,issues:['PLAN '+whys.join(',')]}}
+  if(!P)return{ok:false,why:'no-heli-plan',issues:['PLAN heli']};
+  const seq=P.states.map(s=>s[1]),issues=[];
+  const need=sd.kind==='heli'?['ON_BLOCK','TAXI_OUT','DEPARTED']:['INBOUND','TAXI_IN','ON_BLOCK','TURNAROUND_READY','DEPARTED'];
+  let last=-1,lt=-Infinity;for(const n of need){const i=seq.indexOf(n);if(i<0){issues.push('SEQ missing '+n);continue}if(i<last)issues.push('SEQ order '+n);last=i}
+  for(const s of P.states){if(s[0]<lt-1e-6)issues.push('SEQ time');lt=s[0]}
+  const roles={};for(const x of P.vt||[]){const k=G77_VROLE(x);roles[k]=(roles[k]||0)+1}
+  const m=g77Match(sd,ac),prof=g77Prof(sd,ac)||{svc:[]},q=P.q||g77Quant(sd,ac,P.code),bridge=sd.tpl==='bridge'&&!P.nb,remote=g2Remote(sd,ac);
+  // every mandatory service that works today was delivered
+  for(const k of prof.svc){if(m.svc[k]!=='ok')continue;
+   if(k==='bags'){const want=Math.max(1,q.bagsA.trips)+Math.max(1,q.bagsD.trips);if((roles.bag||0)<want)issues.push('MISSING bags '+(roles.bag||0)+'/'+want)}
+   else if(k==='fuel'){if(!roles.fuel)issues.push('MISSING fuel')}
+   else if(k==='push'){if(AO_PUSH[sd.tpl]&&aoNeedTug(sd,ac)&&!roles.tug)issues.push('MISSING tug')}
+   else if(k==='pax'){if(bridge&&!(P.pax&&P.pax.count>0))issues.push('MISSING bridge passengers');if(P.nb&&!(P.nb.arr&&P.nb.dep))issues.push('MISSING bus passengers');if(remote&&!P.g2)issues.push('MISSING bus')}
+   else if(k==='cargo'&&G77_STAGE>=4){const n=Math.ceil((q.cargoU||0)/3)*2;if((roles.cgo||0)<n)issues.push('MISSING cargo trips '+(roles.cgo||0)+'/'+n)}
+   else if(k==='marshal'){if(!P.crew||!P.crew.walkers.length)issues.push('MISSING marshal')}
+   else if(k==='chocks'){if(!P.crew||!P.crew.items.some(i=>i.k==='chock'))issues.push('MISSING chocks')}
+   else if(G77_ROLE_OF[k]&&!(k==='gpu'&&sd.tpl==='bridge')&&g77Need(P.code,k,ac)&&!roles[G77_ROLE_OF[k]]&&!(k==='catering'&&roles.cats))issues.push('MISSING '+k)}   // GATE-77 S7-a · p185: the van (cats) serves the catering of the small ones
+
+  // and nothing it must not get (AIR-46 / 48)
+  const role=prof.role;
+  if((role==='cargo'||role==='ga'||role==='heli'||role==='maint')&&(roles.bag||P.g2||(P.pax&&P.pax.count)))issues.push('WRONG passenger/baggage service for '+role);
+  if(role==='heli'&&(P.vt||[]).length)issues.push('WRONG vehicle at a helipad');
+  if(role==='pax'&&q.paxA<1)issues.push('QTY no passengers');
+  if(G77_FX.on)for(const h of g77FixedHits(P))issues.push(h);   // GATE-77 S6c · p172 · D-180: QA-54 + the fixed objects
+  const v=aoVerify(P.t0,Math.min(P.t1,P.t0+3600));for(const i of v.issues)issues.push('CONFLICT '+i);
+  if(G77_STAGE>=3&&P.crew){const ca=g77CrewAudit([P],P.t0,Math.min(P.t1,P.t0+3600));for(const i of ca.issues)issues.push('CREW '+i)}
+  return{ok:!issues.length,code:P.code,mode:P.nb?'bus':P.g2?'remote':(P.bridgeAt?'bridge':'own'),catQ:typeof s6rCatQa==='function'?s6rCatQa([P]):null,seq:seq.join('>'),roles,pax:q.paxA+'/'+q.paxD,bags:q.bagsA.trips+'/'+q.bagsD.trips,carts:q.bagsA.carts+'/'+q.bagsD.carts,
+   dwell:P.tOB!=null&&P.tPush!=null?Math.round(P.tPush-P.tOB):null,dur:Math.round(Math.min(P.t1,P.t0+3600)-P.t0),tries:tries||1,retryWhy:whys,paxDrawn:P.pax?P.pax.count:(P.g2?'bus':null),issues:issues.slice(0,8),ms:Math.round(performance.now()-t0w)}
+ })}
+// ---- the QA-54 table: every live aircraft type × every specific stand ------------------------------------------------------------------------
+function g77Stands(){return AO.stands&&AO.stands.length?AO.stands:aoMakeStands()}
+function g77LiveTypes(st){const s=new Set();for(const sd of st)for(const a of sd.accepts||[])if(G77_AC[a])s.add(a);return Object.keys(G77_AC).filter(a=>s.has(a))}
+function g77Matrix(o={}){
+ const st=g77Stands(),types=g77LiveTypes(st),rows=[];
+ for(const sd of st)for(const ac of types){
+  const m=g77Match(sd,ac),P=g77Prof(sd,ac)||{},q=g77Quant(sd,ac,'QA54-'+sd.id+'-'+ac.slice(3,5));
+  const row={stand:sd.id,kind:sd.kind,live:!!sd.live,ac,type:P.name,role:m.role,cls:m.cls,standCls:m.standCls,accepts:m.accepts,compatible:m.ok,why:m.why,svc:m.svc,later:m.later,missing:m.missing,
+   pax:q.paxA+'/'+q.paxD,bags:q.bagsA.carts+'/'+q.bagsD.carts+' עגלות · '+q.bagsA.trips+'/'+q.bagsD.trips+' נסיעות',cargoU:q.cargoU,access:m.accepts?g77Access(sd,ac):'',push:m.accepts?g77Push(sd,ac):'',
+   sides:m.accepts&&sd.kind!=='heli'&&sd.kind!=='maint'?{pax:sd.door==='R'?'ימין':'שמאל',svc:sd.door==='R'?'שמאל':'ימין'}:null,
+   bestFitFirst:m.accepts?g77SmallerState(sd,ac,-1).map(x=>x[0]):[]};
+  if(!m.accepts)row.result='לא מורשה';
+  else if(!m.ok)row.result='חסום — שירות לא מגיע (לא מוקצה)';
+  else if(!sd.live)row.result='חניה קבועה — העמדה לא פעילה בשלב זה';
+  else if(o.turn===false)row.result='תואם';
+  else{row.turn=g77Turn(sd.id,ac,o.seed);row.result=row.turn.ok?'PASS':'FAIL';if(o.qa87!==false&&typeof s6rNoBridge==='function'&&s6rNoBridge(APL.stands.find(s=>s.id===sd.id)||sd,ac)&&!s6rBusOnly(sd.id,ac))row.turnB=g77Turn(sd.id,ac,o.seed,{nbOff:true})}   // GATE-77 S6r · M5c · QA-87
+  rows.push(row)}
+ const T=rows.filter(r=>r.turn);
+ return{stage:G77_STAGE,types:types.length,stands:st.length,rows,compatible:rows.filter(r=>r.compatible).length,turns:T.length,pass:T.filter(r=>r.turn.ok).length,fail:T.filter(r=>!r.turn.ok).map(r=>r.stand+':'+r.ac.slice(3,5)+' '+r.turn.issues.slice(0,2).join(';')),qa87:o.turn===false?null:g77Qa87(rows)}}
+// GATE-77 S6r · M5c · QA-87: the forced coverage — every compatible aircraft × stand × each of its service modes (the bridge stands P2 / P3:
+// the bus, and the bridge for a type that may take either), in a forced visit ('bring now'), not what a seed happened to draw. Per visit:
+// the visit passes (QA-54), the mode is the one asked for, the catering platform's end ≤ 2 px from its door (K-82), a belt where the type
+// needs one (D-108); per bridge stand: the power pit exists and the cable starts in it (K-81). "נבדקו X / Y" — X / Y = 100 %.
+function g77Qa87(rows){const out={tested:0,total:0,pass:0,fails:[],pits:{}};
+ for(const r of rows){if(!r.turn)continue;const sdx=APL.stands.find(s=>s.id===r.stand)||{id:r.stand},nb=typeof s6rNoBridge==='function'&&s6rNoBridge(sdx,r.ac),bo=nb&&typeof s6rBusOnly==='function'&&s6rBusOnly(r.stand,r.ac);
+  const modes=[['default',r.turn,nb?'bus':null]];if(nb&&!bo)modes.push(['bridge',r.turnB,'bridge']);
+  for(const [name,t,exp] of modes){out.total++;if(!t){out.fails.push(r.stand+':'+r.ac.slice(3,5)+'/'+name+' not run');continue}out.tested++;const why=[];
+   if(!t.ok)why.push(...(t.issues||[]).slice(0,2));
+   if(exp&&t.mode!==exp)why.push('mode '+t.mode+' ≠ '+exp);
+   if(t.catQ&&t.catQ.jobs>0&&!t.catQ.ok)why.push('catering miss '+t.catQ.maxMiss);
+   if(sdx.tpl==='bridge'&&t.mode==='bridge'&&typeof s6rBeltAc==='function'&&s6rBeltAc(sdx,r.ac)&&!(t.roles&&t.roles.belt))why.push('no belt');
+   if(t.mode==='remote'&&S6A_BELT[r.ac]&&!(t.roles&&t.roles.belt))why.push('no belt (remote)');   // GATE-77 S6r · M5d: P5 / P6 — a belt where the type needs one
+   if(why.length)out.fails.push(r.stand+':'+r.ac.slice(3,5)+'/'+name+' '+why.join('; '));else out.pass++}}
+ for(const sd of APL.stands){if(sd.tpl!=='bridge')continue;const p=s6rPit(sd,null);out.pits[sd.id]=!!p;out.total++;out.tested++;if(p)out.pass++;else out.fails.push(sd.id+' no power pit')}
+ out.text='נבדקו '+out.tested+' / '+out.total;out.ok=out.total>0&&out.tested===out.total&&out.pass===out.total;return out}
+
+// GATE-77 S6r · T2 · QA-88 (6): three four-engine jets at P1–P3 within minutes
+function g77Force3(seed){if(!APTT_SPEC){APTT_SPEC=aptBuildSpec();APTT_C=aptBuildC()}return aoSandbox(()=>{AO.keep=true;aoInit(0,seed||777);for(const s of AO.stands){s.init=null;s.next=Infinity}
+ const out=[],t0=AO.lead+5;
+ ['P2','P3'].forEach((id,i)=>{const sd=AO.stands.find(s=>s.id===id),tq=t0+i*90;   /* p406: the RJ100 is not P1's (rule 3) */let P=null,tries=0;const why=[];for(;tries<3&&!P;tries++){const w0=Object.assign({},AO.stats.why);P=aoPlanVisit(sd,tq+tries*AO.H,{ac:'AC-QJ-01',bfC:[],bfAt:0});if(!P){for(const k in AO.stats.why)if((AO.stats.why[k]||0)>(w0[k]||0))why.push(k)}}
+  out.push({stand:id,ok:!!P,tries,code:P&&P.code,tReq:Math.round(tq),tOB:P&&P.tOB!=null?Math.round(P.tOB):null,delay:P&&P.tOB!=null?Math.round(P.tOB-tq):null,mode:P?(P.nb?'bus':(P.bridgeAt?'bridge':'other')):null,busWait:P&&P.nb&&P.nb.arr?Math.round(P.nb.arr.at-(P.tOB+G77_CHOCK+5)):null,why:why.slice(0,3),nbWhy:AF.nbWhy||null})});
+ const v=aoVerify(0,3600),cr=g77CrewAudit(AO.flights,0,3600);
+ const bwMax=Math.max(0,...out.map(o=>o.busWait||0)),ok=out.every(o=>o.ok)&&out.filter(o=>o.stand!=='P1').every(o=>o.mode==='bus')&&bwMax<=120&&v.ok&&cr.ok;   // p139: + the bus wait ≤ 120 s (AIR-58)
+ return{seed:seed||777,out,verify:v.ok,vIssues:v.issues.slice(0,4),crew:cr.ok,crewIssues:cr.issues.slice(0,3),busWaitMax:bwMax,ok}})}
+// GATE-77 S6r · M5c · QA-88: the ground-service capacity report (the sandbox run of tools/s6r/qa_capacity.js, now in the registry) +
+// the AIR-58 verdict per service (wait mean ≤ 30 s, max ≤ 120 s) and the turboprop / QJ at the bridge stands (s6rNbStats)
+function g77Capacity(seed,SEC){const t0w=performance.now();const r=aoSandbox(()=>{
+      if (!APTT_SPEC) { APTT_SPEC = aptBuildSpec(); APTT_C = aptBuildC() }
+      AO.keep = true; aoInit(0, seed); for (let t = 0; t <= SEC; t += 1) aoStep(t);
+      const all = AO.hist.concat(AO.flights).filter(f => !f.never && f.tOB != null && f.tOB <= SEC);
+      const fx = all.filter(f => !f.heli), he = all.filter(f => f.heli);
+      const by = (arr, k) => { const m = {}; for (const x of arr) { const key = k(x); m[key] = (m[key] || 0) + 1 } return m };
+      const mean = a => a.length ? +(a.reduce((p, q) => p + q, 0) / a.length).toFixed(1) : null, mx = a => a.length ? +Math.max(...a).toFixed(1) : null;
+      // aircraft
+      const types = by(fx, f => f.ac), stands = by(fx, f => f.stand), dwell = {};
+      for (const f of fx) { const d = (f.tPush ?? f.t1) - f.tOB; (dwell[f.ac] || (dwell[f.ac] = [])).push(d) }
+      const dwellM = Object.fromEntries(Object.entries(dwell).map(([k, a]) => [k, [mean(a), mx(a)]]));
+      // services planned per visit (svcQ: nominal vs actual)
+      const svc = {};
+      for (const f of fx) for (const q of f.svcQ || []) { const s = svc[q.svc] || (svc[q.svc] = { n: 0, wait: [], hold: [], byAc: {} }); s.n++; s.wait.push(Math.max(0, q.at - q.nom)); s.hold.push(q.done - q.at); s.byAc[f.ac] = (s.byAc[f.ac] || 0) + 1 }
+      // fuel / bags / tug from the visit's vehicle tasks
+      for (const f of fx) for (const x of f.vt || []) { const r = x.role || (x.task && x.task.role); if (!r) continue; const k = 'vt:' + r, s = svc[k] || (svc[k] = { n: 0, wait: [], hold: [], byAc: {} }); s.n++; s.byAc[f.ac] = (s.byAc[f.ac] || 0) + 1;
+        if (r === 'fuel' && x.at != null) { const nom = f.tOB + AO.cfg.fuel + G77_CHOCK + g77ChockExtra(f.ac); s.wait.push(Math.max(0, x.at - nom)); if (x.done != null) s.hold.push(x.done - x.at) } }
+      // buses (remote P5 / P6 and the bridge stands P2 / P3)
+      const bus = { remote: 0, nb: 0, waitArr: [], waitDep: [], pax: 0, trips: 0 };
+      for (const f of fx) { for (const [k, r] of [['remote', f.g2], ['nb', f.nb]]) { if (!r) continue; bus[k]++; bus.trips += 2; bus.pax += (r.arr ? r.arr.n : 0) + (r.dep ? r.dep.n : 0); if (r.arr) bus.waitArr.push(Math.max(0, r.arr.at - (f.tOB + G77_CHOCK + 5))) } }
+      const svcOut = Object.fromEntries(Object.entries(svc).map(([k, s]) => [k, { n: s.n, perH: +(s.n * 3600 / SEC).toFixed(1), waitMean: mean(s.wait), waitMax: mx(s.wait), holdMean: mean(s.hold), byAc: s.byAc }]));
+      // the fleet: per type
+      const fleet = {};
+      for (const v of AO.fleet) {
+        const F = fleet[v.type] || (fleet[v.type] = { n: 0, tasks: 0, busy: 0, work: 0, drive: 0, ev: [], roles: {} }); F.n++;
+        for (const k of v.hist.concat(v.tasks)) { if (k.t0 > SEC) continue; const t1 = Math.min(k.t1, SEC); F.tasks++; F.busy += t1 - k.t0; F.ev.push([k.t0, 1], [t1, -1]); F.roles[k.role] = (F.roles[k.role] || 0) + 1;
+          const L = k.tr && k.tr.seq ? k.tr.seq.legs : []; for (const l of L) { const atAc = l.kind === 'svc' || (l.kind === 'hold' && (l.label === 'svc' || l.at === 'ac' || (l.g2 && l.g2.at === 'ac'))); if (atAc) F.work += l.dur; else if (l.kind !== 'hold' && l.kind !== 'absent') F.drive += l.dur } }
+      }
+      const fleetOut = {};
+      for (const [k, F] of Object.entries(fleet)) { F.ev.sort((a, b) => a[0] - b[0] || a[1] - b[1]); let c = 0, pk = 0; for (const e of F.ev) { c += e[1]; pk = Math.max(pk, c) }
+        fleetOut[k] = { n: F.n, tasks: F.tasks, perH: +(F.tasks * 3600 / SEC).toFixed(1), util: +(F.busy / (F.n * SEC)).toFixed(2), peak: pk, workShare: F.busy ? +(F.work / F.busy).toFixed(2) : 0, driveShare: F.busy ? +(F.drive / F.busy).toFixed(2) : 0, roles: F.roles } }
+      return { seed, sec: SEC, flights: fx.length, perH: +(fx.length * 3600 / SEC).toFixed(1), heli: he.length, types, stands, dwell: dwellM,
+        failed: AO.stats.failed, why: AO.stats.why, queued: AO.stats.queued, maxQueue: AO.stats.maxQueue && +AO.stats.maxQueue.toFixed(1),
+        services: svcOut, bus: { remote: bus.remote, nb: bus.nb, trips: bus.trips, pax: bus.pax, waitArrMean: mean(bus.waitArr), waitArrMax: mx(bus.waitArr) },
+        fleet: fleetOut, nb: s6rNbStats(all, SEC), ms: Math.round(performance.now() - t0w) };
+    });
+ const over=[];for(const [k,q] of Object.entries(r.services||{})){if(q.waitMean==null)continue;if(q.waitMean>30||q.waitMax>120)over.push(k+' '+q.waitMean+' / '+q.waitMax)}
+ r.air58={over,ok:!over.length};return r}
+// GATE-77 S6r · M5c · QA-89: the bags and the belts in a run — bags unloaded / loaded (the visible transfers), belt jobs, bags at a belt
+// aircraft with no belt loader at the hold (= 0, sampled every second), loaded by hand (the aircraft without a belt). The inventory (2) and
+// save / load in the middle of a loading (3) — S7 (K-57).
+function g77BagQa(seed,sec){return aoSandbox(()=>{if(!APTT_SPEC){APTT_SPEC=aptBuildSpec();APTT_C=aptBuildC()}AO.keep=true;aoInit(0,seed);let gap=0,gapAt=[];
+ for(let t=0;t<=sec;t+=1){aoStep(t);if(t>=60&&typeof s6rBeltGapAt==='function'){const g=s6rBeltGapAt(t);if(g&&g.length){gap++;if(gapAt.length<4)gapAt.push(t+':'+g.slice(0,2).join(','))}}}
+ let un=0,ld=0,trips={arr:0,dep:0},hand=0,beltJobs=0;const all=AO.hist.concat(AO.flights).filter(f=>!f.never&&!f.heli);
+ for(const v of AO.fleet){for(const k of v.hist.concat(v.tasks)){if(k.t0>sec)continue;if(k.role==='belt')beltJobs++;if(k.role!=='bag')continue;const m=k.tr.seq.legs.find(l=>l.kind==='mu');const n=m&&m.f2?m.f2.n:0;
+  if(k.tr.f2bag==='arr'){un+=n;trips.arr++}else if(k.tr.f2bag==='dep'){ld+=n;trips.dep++}
+  const code=String(k.code||'').split('/')[0],f=all.find(q=>q.code===code);if(f&&!(f.vt||[]).some(x=>G77_VROLE(x)==='belt'))hand+=n}}
+ return{seed,sec,unloaded:un,loaded:ld,trips,beltJobs,noBeltSeconds:gap,noBeltAt:gapAt,byHand:hand,ok:gap===0&&(un+ld)>0}})}
+
+window.__TC_G77_MATRIX=o=>g77Matrix(o||{});
+// ---- the cheap part for the world audits: the profiles, the quantity bands, every live stand has a compatible type, Best-Fit on the live state
+function g77StaticAudit(){
+ const st=g77Stands(),types=g77LiveTypes(st),issues=[];let rows=0,compat=0;
+ const PAXSVC=['pax','bags','catering','cleaning','water','lavatory','belt'];
+ for(const [k,P] of Object.entries(G77_AC).concat([['AC-TP-01(cargo)',G77_TP_CARGO]])){
+  if(P.role==='cargo'&&P.svc.some(s=>PAXSVC.includes(s)))issues.push('PROFILE '+k+' cargo with passenger service');
+  if(P.role==='ga'&&P.svc.some(s=>['bags','belt','highloader','cargo','cleaning','water','pax'].includes(s)))issues.push('PROFILE '+k+' GA with airline service');
+  if(P.role==='pax'&&P.svc.includes('cargo'))issues.push('PROFILE '+k+' passenger with cargo chain');
+  if(P.role==='pax'&&P.svc.includes('highloader')&&P.cls<6)issues.push('PROFILE '+k+' high loader below wide-body');   // GATE-77 S5c: the wide-body tri-jet (class 6)
+  for(const s of P.svc)if(!G77_SVC[s])issues.push('PROFILE '+k+' unknown service '+s)}
+ // quantities: bands never overlap between sizes; carts by size
+ const L=Object.keys(G77_PAXR).sort((a,b)=>G77_AC[a].seats-G77_AC[b].seats);
+ for(let i=1;i<L.length;i++)if(G77_PAXR[L[i]].min<=G77_PAXR[L[i-1]].max)issues.push('QTY overlap '+L[i-1]+'/'+L[i]);
+ const cart=(ac,f)=>{let v=f==='min'?1e9:0;for(let i=0;i<60;i++){const c=g77Bags('Q'+i,ac,'arr').carts;v=f==='min'?Math.min(v,c):Math.max(v,c)}return v};
+ if(cart('AC-PR-01','max')>1||cart('AC-BJ-01','max')>1)issues.push('QTY GA carts');
+ if(cart('AC-TP-01','min')<1||cart('AC-TP-01','max')>2)issues.push('QTY regional carts');
+ if(cart('AC-NB-01','min')<3)issues.push('QTY narrow-body carts');
+ if(cart('AC-LG-01','min')<7)issues.push('QTY large carts');
+ for(const sd of st){let n=0;for(const ac of types){rows++;const m=g77Match(sd,ac);if(m.ok){compat++;n++}}if(sd.live&&!n)issues.push('STAND '+sd.id+' live without a compatible type')}
+ const bf=g77BestFitAudit();for(const i of bf.issues.slice(0,4))issues.push('BESTFIT '+i);
+ return{ok:!issues.length,issues,rows,compat,types:types.length,bf}}
+
+
+
+// ---- GATE-77 S5 · per-type stops (AIR-20): a stand view with the type's own nose-gear stop; everything downstream reads f.sd.ngy
+const G77_LGX=6972,G77_LGY=625;   // GATE-77 S5c · D-93: the huge jet's line at P4 (door R on the P4 bridge)   // GATE-77 S5b · D-65: the large jet's line at the large stand
+function g77StandView(sd,ac){const y=sd&&sd.stopBy&&sd.stopBy[ac];if(y==null||sd.viewFor)return sd;const k='_view_'+ac;
+ return sd[k]||(sd[k]=Object.assign(Object.create(sd),typeof y==='number'?{ngy:y,viewFor:ac}:{ngy:y.y,ngx:y.x,cx:y.x,door:y.door||sd.door,svcSide:y.svcSide||sd.svcSide,viewFor:ac}))}
+function g77Mars(a,p,b){return!!(a&&b&&a.large&&g77MarsLock(a.id,p).has(b.id))}   /* p407 · R-29: by the envelope and the path (G77_MARS), not the name */
+// ---- p407 · R-29: the large stand's locks, from the layout with the audit's own numbers (G73_REQ) — computed once. lock: 'P4|type' → the
+// stands it closes while there; lane: the 'P4|type' whose tail closes lane L east (an apronSW stand's taxi out sweeps it). Lane L is
+// forced open while the legs are made (the legs of a closed lane go by A3). The sweeps here step 0.5 s; g73StandAudit (0.25 s) is
+// the authority: a pair it finds too close and not locked here fails it. ----
+var G77_MARS=null;const G77_MARS_NONE=new Set();
+function g77MarsCalc(){const M={lock:new Map(),lane:new Set(),locked:new Set(),gap:{},ok:false,ms:0},t0=performance.now(),fz=G77_LC_FORCE;G77_MARS=M;
+ try{G77_LC_FORCE=false;aptReady();const R=G73_REQ,S=APL.stands.filter(s=>!s.indoor),env=(s,ac)=>{const v=g77StandView(s,ac);return aplEnv(ac,v.ngx,v.ngy,v.th)};
+  const legs=(s,ac)=>{let a=null,D=null;try{a=aoArrLeg(s,ac);D=aoDepLegs(s,ac)}catch(e){return[]}return[['arr',a,a?Math.max(0,a.dur-45):0],['push',D&&D.push,0],['taxi',D&&D.taxi,0]]};
+  const sweep=(s,ac,kinds,o,E)=>{let m=1e9;for(const [k,leg,ts] of legs(s,ac)){if(!leg||!kinds.includes(k))continue;for(let t=ts;t<=leg.dur;t+=.5){const p=leg.pose(t);if(!p||p[3]>2||Math.abs(o.ngx-p[0])>600||Math.abs(o.ngy-p[1])>600)continue;const me=aplEnv(ac,p[0],p[1],p[2]);for(const e of E){const g=g73EnvGap(me,e);if(g<m)m=g}}}return m};
+  for(const L of S){if(!L.large)continue;for(const p of L.accepts){const key=L.id+'|'+p,eL=env(L,p),set=new Set();
+   for(const b of S){if(b===L)continue;const dx=Math.abs(b.ngx-L.ngx),dy=Math.abs(b.ngy-L.ngy);if((dx>700||dy>700)&&Math.hypot(dx,dy)>=900)continue;
+    const eb=b.accepts.map(q=>env(b,q)),need=L.tpl==='bridge'&&b.tpl==='bridge'?R.bridgeWing:R.margin,sw=b.tpl==='apronSW';
+    let park=1e9;for(const e of eb){const g=g73EnvGap(eL,e);if(g<park)park=g}
+    let path=1e9;if(b.live)for(const q of b.accepts)path=Math.min(path,sweep(b,q,sw?['arr','push']:['arr','push','taxi'],L,[eL]));
+    if(L.live)path=Math.min(path,sweep(L,p,['arr','push','taxi'],b,eb));
+    if(park<need||path<R.margin){set.add(b.id);M.locked.add(b.id);M.gap[key+'>'+b.id]=[+(park/A34_PXM).toFixed(1),+(path/A34_PXM).toFixed(1)]}
+    if(sw&&b.live){let tx=1e9;for(const q of b.accepts)tx=Math.min(tx,sweep(b,q,['taxi'],L,[eL]));if(tx<R.margin){M.lane.add(key);M.gap[key+'>L']=M.gap[key+'>L']||[b.id,+(tx/A34_PXM).toFixed(1)]}}}
+   M.lock.set(key,set)}}M.ok=true}
+ catch(e){M.err=String(e&&e.message||e).slice(0,160);   // never unlocked by an error: the old pairs (the audit reports the error)
+  M.lock.clear();M.lane.clear();M.locked.clear();for(const ac of ['AC-LG-01','AC-MW-01']){M.lock.set('P4|'+ac,new Set(['P3']));M.lane.add('P4|'+ac)}M.locked.add('P3')}
+ finally{G77_LC_FORCE=fz}M.ms=Math.round(performance.now()-t0);return M}
+function g77MarsLock(L,ac){const M=G77_MARS||g77MarsCalc();return M.lock.get(L+'|'+ac)||G77_MARS_NONE}
+function g77MarsLane(L,ac){const M=G77_MARS||g77MarsCalc();return M.lane.has(L+'|'+ac)}
+function g77MarsHas(L,ac){return g77MarsLock(L,ac).size>0||g77MarsLane(L,ac)}
+// what a large stand holds now: the scheduler's own wants (its flags name the type it brings) and every visit planned there until it is
+// free (held — any type, the opening's parked one too)
+function g77Held(L,now){const H=[];if(L.lgWant||(L.lgUntil||-1)>now)H.push('AC-LG-01');if(L.wideWant||(L.wideUntil||-1)>now)H.push('AC-MW-01');if(L.marsWant)H.push(L.marsWant);if(L.held)for(const k in L.held)if(L.held[k]>now)H.push(k);return H}
+// the large stand (and its type) that closes stand sd now — null when none; Ls: the stands (the audit passes its own)
+function g77MarsBy(sd,now,Ls){const M=G77_MARS||g77MarsCalc();if(!M.locked.has(sd.id))return null;for(const L of Ls||AO.stands||[]){if(!L.large||L===sd||L.id===sd.id)continue;for(const ac of g77Held(L,now))if(g77MarsLock(L.id,ac).has(sd.id))return L.id+'/'+ac}return null}
+function g77LaneBy(now,Ls){for(const L of Ls||AO.stands||[]){if(!L.large)continue;for(const ac of g77Held(L,now))if(g77MarsLane(L.id,ac))return L.id+'/'+ac}return null}
+// the world audit (R-29): every type of every large stand — its locks with the numbers (m: parked, path) — and the runtime path
+function g77MarsAudit(){try{const M=G77_MARS||g77MarsCalc();if(!M.ok)return{ok:false,detail:'calc '+(M.err||'?')};aptReady();
+ const S=APL.stands.filter(s=>!s.indoor),iss=[],rows=[];
+ for(const L of S){if(!L.large)continue;const none={id:L.id,large:true};for(const b of S)if(b!==L&&g77MarsBy(b,0,[none]))iss.push(L.id+':empty-closes-'+b.id);if(g77LaneBy(0,[none]))iss.push(L.id+':empty-closes-L');
+  for(const p of L.accepts){const set=g77MarsLock(L.id,p),lane=g77MarsLane(L.id,p),hold={id:L.id,large:true,held:{[p]:1e9}};
+   for(const b of S){if(b===L)continue;if(!!g77MarsBy(b,0,[hold])!==set.has(b.id))iss.push(L.id+'/'+p.slice(3,5)+':runtime-'+b.id)}
+   if(!!g77LaneBy(0,[hold])!==lane)iss.push(L.id+'/'+p.slice(3,5)+':runtime-L');
+   rows.push(L.id+'/'+p.slice(3,5)+(set.size?' סוגר '+[...set].map(b=>b+' ('+M.gap[L.id+'|'+p+'>'+b].join('/')+' מ׳)').join(', '):' לא סוגר עמדה')+(lane?' · נתיב L מזרח ('+M.gap[L.id+'|'+p+'>L'].join(' ')+' מ׳)':''))}}
+ return{ok:!iss.length,detail:(iss.length?iss.join('|')+' · ':'')+rows.join(' · ')+' · '+M.ms+' ms'}}catch(e){return{ok:false,detail:'error '+String(e&&e.message||e).slice(0,120)}}}   // the large jet at the large stand ↔ P3 (never together, SAFETY BLOCK) · GA5 (its B2 traffic waits)
+function g77LgPick(sd,now){AO.bfLast={at:now,ac:'AC-LG-01',c:g77SmallerState(sd,'AC-LG-01',now)};return'AC-LG-01'}
+function g77P2Blocked(now){return false}   // S5b: the large jet lives at the large stand (D-65)
+function g77P3Blocked(now){const p=AO.stands.find(s=>s.id==='P3');return!!p&&!!g77MarsBy(p,now)}   /* p407 · R-29: what P4 holds, closed by the geometry */   // MARS: its west wing covers P3's way in / out
+let G77_LC_FORCE=null;
+// GATE-77 S5c · D-81 (owner 09:31 — the red boxes never over each other): P4's marking — the wide-body's envelope + 4 px as the red box
+// (x 6892–7218: 10 px east of P3's box, 2 px short of the service path), the lead-in line down x 7055 from lane L, the stop bar at its nose gear
+function g77PaintP4(g,P){const v=g77StandView(P,'AC-MW-01'),E=aplEnv('AC-MW-01',v.ngx??P.ngx,v.ngy,P.th).map(aplBox),x0=Math.min(...E.map(b=>b.x0))-4,x1=Math.max(...E.map(b=>b.x1))+4,y0=Math.min(...E.map(b=>b.y0))-4,y1=Math.max(...E.map(b=>b.y1))+4,cx=v.ngx??P.ngx;
+ g.save();g.strokeStyle='rgba(214,58,52,.85)';g.lineWidth=2;g.setLineDash([12,7]);g.strokeRect(x0,y0,x1-x0,y1-y0);g.setLineDash([]);
+ g.strokeStyle='#e0b93a';g.lineWidth=2;g.beginPath();g.moveTo(cx,APT_Y.LY);g.lineTo(cx,v.ngy+5);g.stroke();g.lineWidth=4;g.beginPath();g.moveTo(cx-18,v.ngy+5);g.lineTo(cx+18,v.ngy+5);g.stroke();
+ aptTxt(g,'P4',cx+30,v.ngy+5,9,'rgba(244,242,232,.9)',700);aptTxt(g,'P4 · WIDE-BODY · L CLOSED WHILE PARKED',(x0+x1)/2,y1-10,8,'rgba(244,242,232,.8)',700);g.restore();return{x0,x1,y0,y1}}
+function g77LargeAudit(){const out=[],R=G73_REQ,L=APL.stands.find(s=>s.large);if(!L)return out;const E=[];for(const t of L.accepts.filter(a=>g77MarsLane(L.id,a))){   /* p407 */const v=g77StandView(L,t);E.push(...aplEnv(t,v.ngx??L.ngx,v.ngy,L.th))}if(!E.length)return out;   // GATE-77 S5c: every large type of P4
+ G77_LC_FORCE=true;try{for(const s of APL.stands){if(!s.live||s.tpl!=='apronSW')continue;for(const ac of s.accepts){let D;try{D=aoDepLegs(s,ac)}catch(e){out.push('large:'+s.id+'/'+ac+':route-error '+e.message);continue}
+  if(!D.viaA3)out.push('large:'+s.id+'/'+ac.slice(3,5)+':not-via-A3');
+  for(const [k,leg] of [['push',D.push],['taxi',D.taxi]]){if(!leg)continue;let m=1e9;for(let t=0;t<=leg.dur;t+=.25){const p=leg.pose(t);if(!p||p[3]>2)continue;m=Math.min(m,g73EnvGap(aplEnv(ac,p[0],p[1],p[2]),E))}
+   if(m<R.margin)out.push('large:'+s.id+'/'+ac.slice(3,5)+':'+k+'(A3) ✕ LG '+m.toFixed(0))}}}}finally{G77_LC_FORCE=null}return out}
+function g77LEastClosed(){if(G77_LC_FORCE!=null)return G77_LC_FORCE;return!!AO.stands&&!!g77LaneBy(AO.t)}   /* p407 · R-29: what P4 holds, its tail by the geometry */   // its tail on L
+function g77LgLive(){return true}   // GATE-77 S5c · D-93: the huge jet at P4 (P3 closed)   // AIR-20: the large jet's turnaround (5 + 4 baggage trips, 9 carts, belts, high-loader round a 64.8 m wing) needs the per-type work plans of S6b (AIR-61) — K-66
+function g77L1Closed(){return false}
+function aoFits(sd,ac){return sd.accepts.includes(ac)}
+const aoDwell=sd=>sd.kind==='pax'?aoR(...AO.cfg.turn):sd.kind==='cargo'?aoR(...AO.cfg.cgDwell):aoR(...AO.cfg.gaDwell);
+
+function* aoPlanG(sd,tReq,o={}){
+ const t0w=(typeof performance!=='undefined'?performance.now():Date.now());
+ const mark=AO.LOG.length,ac=o.ac||aoChoose(sd);if(!ac)return null;const sd0=sd;sd=g77StandView(sd,ac);   // GATE-77 S6r · M4: sd0 — the stand, for a re-plan with the bridge (the turboprop without a departure bus)
+ const code=o.reCode||aoCode(sd);AO.nid++;   // GATE-77 S6b-c · p159: a re-plan keeps its code
+ const tr={kind:'ac',id:ac,nm:code},P={code,ac,sd,kind:sd.kind,stand:sd.id,tracks:[],states:[],tReq,vt:[],bfC:o.bfC||null,bfAt:o.bfAt,q:g77Quant(sd,ac,code),parked:!!(o.parked&&!o.never)};
+ const fail=(why)=>{aoRoll(mark);AO.stats.failed++;AO.stats.why[why]=(AO.stats.why[why]||0)+1;aoDbg('plan-fail',{code,stand:sd.id,why});return null};
+ let pushes=!!AO_PUSH[sd.tpl],bridge=sd.tpl==='bridge',nbW=s6rNoBridge(sd,ac)&&!o.nbOff,tug=pushes&&aoNeedTug(sd,ac),fuelSvc=bridge||!!(sd.svc&&sd.svc.fuel)||(G77_STAGE>=4&&sd.kind==='cargo'),remote=!o.never&&g2Remote(sd,ac),hasSvc=bridge||tug||fuelSvc||remote;
+ let sPark,tOB,legsSeq=[],arr=null,tA=null;
+ const st=(t,s)=>{const l=P.states.length?P.states[P.states.length-1][0]:-Infinity;P.states.push([Math.max(t,l),s])};
+ // ---- arrival -----------------------------------------------------------------------------------------------------------------------------
+ if(!o.parked){
+  arr=aoArrLeg(sd,ac);const tTd=apttTof(arr.prof,arr.meta.sTd),tEx=apttTof(arr.prof,arr.meta.sEx0);
+  const smA0=(yield* aoSampG(tr,arr,{stand:sd.id,standFrom:tEx}));
+  const dw0=o.dwell!=null?o.dwell:g77Dwell(sd,ac,code);o.dwell=dw0;
+  const sReq=aoSlUp(tReq),sA=(yield* aoSearchG(smA0,sReq,sReq+aoSl(AO.MAXQ),null,{sh:aoHold(tr,arr.park,sd.id),len:aoSlUp(Math.min(dw0,150)+10)}));
+  if(sA<0){if(AO.diag)aoDbg('noslot',{code,stand:sd.id,w0:aoWhy(smA0,sReq),w1:aoWhy(smA0,sReq+400),w2:aoWhy(smA0,sReq+800),w3:aoWhy(smA0,sReq+1200)});return fail('no-arrival-slot')}
+  if(AO.diag&&sA-sReq>aoSl(15))aoDbg('queue',{code,stand:sd.id,wait:+aoT(sA-sReq).toFixed(1),why:aoWhy(smA0,sReq),why2:aoWhy(smA0,sReq+Math.floor((sA-sReq)/2))});
+  aoCommit(smA0,sA);tA=aoT(sA);
+  const wait=tA-tReq;if(wait>1){AO.stats.queued++;AO.stats.maxQueue=Math.max(AO.stats.maxQueue,wait)}
+  tOB=tA+arr.dur;sPark=sA+smA0.K-1;                              // the aircraft stands on the stand from the last sample of its arrival leg
+  const rwL=smA0.rwLast>=0?smA0.rwLast*AO.DT:tEx;
+  const ibL=g77InLeg(ac,arr);P.tIn=ibL?ibL.dur:0;st(Math.min(tReq,tA-P.tIn),'INBOUND');   /* GATE-77 S6b-c · p153 · K-113 */
+  st(tA,'APPROACH');st(Math.max(tA,tA+tTd-6),'LANDING_RESERVED');st(tA+tTd,'LANDING_ROLL');st(tA+tEx,'VACATE_RUNWAY');st(tA+Math.max(tEx,rwL),'TAXI_IN');st(tOB-8,'STAND_RESERVED');st(tOB,'ON_BLOCK');
+  if(ibL)legsSeq.push(ibL);legsSeq.push(arr);P.t0=tA;P.tDraw=tA-P.tIn;   /* P.t0 stays the arrival; the track and the drawing start at tDraw */
+ }else{
+  tOB=aoT(aoSl(o.tPark));sPark=aoSl(tOB);P.t0=tOB;st(tOB,'ON_BLOCK');
+ }
+ const park=o.parked?[sd.ngx,sd.ngy,sd.th,0,1]:arr.park;
+ const parkSh=aoHold(tr,park,sd.id);
+ // ---- stand dwell / turnaround ------------------------------------------------------------------------------------------------------------
+ const D=aoDepLegs(sd,ac);
+ const dwell=o.parked&&!o.never?Math.max(o.dwell||0,g77Dwell(sd,ac,code)):o.dwell!=null?o.dwell:g77Dwell(sd,ac,code);
+ let tRdy=tOB+dwell;
+ if(o.never){ // static occupant: never leaves (its shapes are permanent)
+  for(const a of parkSh)AO.ST.push(a);
+  P.tracks=[{t0:P.t0,tr:Object.assign({},tr,{seq:apttSeq([...legsSeq,{kind:'hold',dur:1e7,pose:()=>park}])}),main:true}];P.t1=Infinity;P.never=true;P.init=true;
+  return aoFinish(P,mark,t0w)}
+ P.holdFrom=sPark;
+ if(hasSvc){
+  // the baggage / fuel work needs the aircraft parked: the park hold is committed first so the vehicles check against it.  Vehicles are the
+  // persistent fleet: if none is free the work (and the turnaround) starts later, if nothing fits the visit is not admitted.
+  const sRdy0=aoSlUp(tRdy);
+  if((yield* aoHoldLimitG(parkSh,sPark,sRdy0))<sRdy0)return fail('stand-blocked-in-dwell');
+  aoCommitHold(parkSh,sPark,sRdy0);
+  const xh={sh:parkSh,from:sRdy0};
+  if(G77_FM.on&&arr&&G77_FM.st[sd.id]){const fm=yield* g77FmServeG(sd,ac,arr,tA,{code,svc:'fm'},xh);   // GATE-77 S6c · p175 · AIR-65: FOLLOW ME (optional) — first, before the services
+   if(fm){P.vt.push(fm);P.fm={v:fm.v.id,tL:fm.L.tL,tP:fm.L.tP,W:fm.L.W.map(Math.round),lead:+fm.L.lead.toFixed(1),hold:+fm.task.tr.seq.legs.find(l=>l.kind==='wait').dur.toFixed(1)};G77_FM.ok++}else G77_FM.skip++}
+  let end=0,endE=0;
+  if(nbW){const m0=AO.LOG.length,ra=yield* s6rNbArrG(sd,ac,tOB,dwell,{code},xh);   // GATE-77 S6r · M4 · D-112: the arrival bus first (before the fuel and the services)
+   if(ra)P.nbA=ra;else{const why=AF.nbWhy||'no-bus';aoRoll(m0);if(s6rBusOnly(sd.id,ac))return fail('no-nb-bus');nbW=false;P.nbWhy=why}}
+  if(o.nbOff&&o.nbWhy)P.nbWhy=o.nbWhy;   // re-planned with the bridge: no bus in time
+  if(remote){const rm=yield* g2RemoteServicesG(sd,ac,tOB,dwell,{code},xh);if(!rm)return fail('no-remote-ground-service');P.g2=rm.plan;end=Math.max(end,rm.end)}
+  if(G77_STAGE>=2){for(const q of g77SvcPlan(sd,ac,code,P.q,'early',dwell)){const r=yield* afServeG(q.role,sd,ac,tOB+q.t+G77_CHOCK+g77ChockExtra(ac),q.hold,Math.max(110,dwell-40)+(o.parked?900:0),{code,svc:q.svc},xh);
+    if(!r){if(o.parked){AO.stats.parkedSkip=(AO.stats.parkedSkip||0)+1;(P.skipped||(P.skipped=[])).push(q.svc);continue}return fail('no-'+q.svc+'-vehicle')}P.vt.push(r);(P.svcQ||(P.svcQ=[])).push({svc:q.svc,nom:tOB+q.t+G77_CHOCK+g77ChockExtra(ac),at:r.at,done:r.done,v:r.v.id});endE=Math.max(endE,r.done+4)}}
+  if(G77_STAGE>=4&&sd.kind==='cargo'){const hlT=(P.vt||[]).find(x=>x.role==='hl'||(x.task&&x.task.role==='hl')),tr=yield* g77CargoTripsG(sd,ac,code,P.q,hlT,tOB,xh,P);if(!tr){if(!o.parked)return fail('no-cargo-train')}else end=Math.max(end,tr.end)}   // GATE-77 S4: the cargo trains
+  if(bridge||remote){const nA=Math.max(1,P.q.bagsA.trips);let tN=tOB+AO.cfg.bag1+G77_CHOCK+g77ChockExtra(ac);{const bq=(P.svcQ||[]).find(x=>x.svc==='belt');if(bq)tN=Math.max(tN,bq.at+3)}for(let k=0;k<nA;k++){const c=g77BagCode(code,'a',k,P.q.bagsA);const b1=yield* afServeG('bag',sd,ac,tN,aoR(14,22),remote?320:90+k*60,{code:c},xh);if(!b1)return fail('no-baggage-vehicle');P.vt.push(b1);end=Math.max(end,b1.done+4);tN=Math.max(tN+4,b1.done-30)}   // GATE-77 S1: one trip per train load
+   const nD=Math.max(1,P.q.bagsD.trips);for(let k=0;k<nD-1;k++){const c=g77BagCode(code,'d',k,P.q.bagsD);const bwD=G77_BWD.on&&s6rBeltAc(sd,ac)?s6rBeltWinOf(P):null;let b2=yield* afServeG('bag',sd,ac,Math.max(tN,end-10,tOB+G77_CHOCK+.4*dwell),aoR(14,20),160+k*60,bwD?{code:c,kind:'dep',win:[bwD[0],bwD[1],G77_BWD.back]}:{code:c,kind:'dep'},xh);   /* GATE-77P · p218 · K-148 */
+   if(bwD){if(b2)G77_BWD.n++;else{G77_BWD.fb++;G77_BWH.code=G77_BWH.on?c:null;try{b2=yield* afServeG('bag',sd,ac,Math.max(tN,end-10,tOB+G77_CHOCK+.4*dwell),aoR(14,20),160+k*60,{code:c,kind:'dep'},xh)}finally{G77_BWH.code=null}}   /* GATE-77P · p233 · K-152 */}if(!b2)return fail('no-baggage-vehicle-dep');P.vt.push(b2);end=Math.max(end,b2.done+4);tN=b2.done-30}}
+  if(fuelSvc){const fu=yield* afServeG('fuel',sd,ac,tOB+AO.cfg.fuel+G77_CHOCK+g77ChockExtra(ac),aoR(20,32),Math.max(220,dwell+20)+(o.parked?900:0),{code},xh);if(!fu&&!o.parked){if(AO.trace)console.log('FUEL FAIL',sd.id,ac,tOB,AF.last,JSON.stringify(AF.stats));return fail('no-fuel-vehicle')}if(fu){P.vt.push(fu);end=Math.max(end,fu.done+4)}else{AO.stats.parkedSkip=(AO.stats.parkedSkip||0)+1;(P.skipped||(P.skipped=[])).push('fuel')}}
+  if(G77_STAGE>=2){for(const q of g77SvcPlan(sd,ac,code,P.q,'late',dwell)){const r=yield* afServeG(q.role,sd,ac,tOB+q.t+G77_CHOCK+g77ChockExtra(ac),q.hold,Math.max(110,dwell-40)+(o.parked?900:0),{code,svc:q.svc},xh);
+    if(!r){if(o.parked){AO.stats.parkedSkip=(AO.stats.parkedSkip||0)+1;(P.skipped||(P.skipped=[])).push(q.svc);continue}return fail('no-'+q.svc+'-vehicle')}P.vt.push(r);(P.svcQ||(P.svcQ=[])).push({svc:q.svc,nom:tOB+q.t+G77_CHOCK+g77ChockExtra(ac),at:r.at,done:r.done,v:r.v.id});end=Math.max(end,r.done+4)}}
+  if(G77_SH.on&&P.g2&&P.g2.arr&&P.g2.dep){const hS=g77ShHold(sd,ac),lo=P.g2.arr.done+G77_SH.after,hi=P.g2.dep.at-G77_SH.before-hS;   // GATE-77 S6c · p170 · AIR-64: the crew change (optional)
+   if(hi>=lo){const r=yield* afServeG('crew',sd,ac,lo,hS,hi-lo,{code,svc:'crew'},xh);if(r){P.vt.push(r);P.sh={v:r.v.id,at:r.at,done:r.done,n:g77ShN(ac)};G77_SH.ok++}else G77_SH.skip++}else G77_SH.noWin++}
+  if(G77_AMB.on&&P.g2&&P.g2.arr&&P.g2.dep&&G77_AMB.st[sd.id]&&g77AmbWants(code)){const hA=g77AmbHold(sd,ac),lo=P.g2.arr.done+G77_AMB.after,hi=P.g2.dep.at-G77_AMB.before-hA;   // GATE-77 S6c · p176 · AIR-65: the passenger lift (optional)
+   if(hi>=lo){const r=yield* afServeG('amb',sd,ac,lo,hA,hi-lo,{code,svc:'amb'},xh);if(r){P.vt.push(r);P.amb={v:r.v.id,at:r.at,done:r.done};G77_AMB.ok++}else G77_AMB.skip++}else G77_AMB.noWin++}
+  if(P.nbA){const sv=(P.svcQ||[]).filter(q=>q.svc==='cleaning'||q.svc==='catering'),lo=Math.max(P.nbA.lo,...sv.map(q=>q.done+5)),rd=yield* s6rNbDepG(sd,ac,tOB,dwell,{code},xh,P.nbA,lo);   // GATE-77 S6r · M4
+   if(!rd){if(s6rBusOnly(sd.id,ac))return fail('no-nb-bus-dep');aoRoll(mark);AO.nid--;return yield* aoPlanG(sd0,tReq,Object.assign({},o,{ac,nbOff:true,nbWhy:'no-bus-dep',reCode:code}))}P.nb=rd.plan;P.nbA=null;end=Math.max(end,rd.end)}
+  tRdy=Math.max(tRdy,end,endE);
+  P.holdFrom=sRdy0;
+ }
+ if(G77_K151.on&&!hasSvc){const sR=aoSlUp(tRdy);if((yield* aoHoldLimitG(parkSh,P.holdFrom,sR))<sR){G77_K151.n++;return fail('stand-blocked-in-dwell')}}   /* GATE-77P · p248 · K-151 */
+ const sRdy=Math.max(aoSlUp(tRdy),P.holdFrom);
+ st(aoT(sRdy),'TURNAROUND_READY');
+ // ---- coupled vehicles (prepared once; tried for every candidate pushback slice) ---------------------------------------------------------------
+ let TG=null,BG=null;
+ if(tug){const g=apttAcGeom(ac);TG=(yield* afCoupleG('tug',sd,ac,{push:D.push,lead:3,off:g.nose+9+afPtHx(),code}));if(!TG)return fail('no-tug-route')}
+ if(bridge||remote){BG=(yield* afCoupleG('bag',sd,ac,{hold:aoR(14,20),befores:remote?[70,55,90,110,130,150]:[40,28,55,70,90,110,140,180,230],win:s6rBeltWin,code:g77BagCode(code,'d',Math.max(1,P.q.bagsD.trips)-1,P.q.bagsD)}));if(!BG)return fail('no-baggage-route');P.bw=s6rBeltAc(sd,ac)?s6rBeltWinOf(P):null;P.blg=P.bw?(yield* afCoupleG('belt',sd,ac,{hold:64,befores:[92,112,136],code})):null}   // GATE-77 S6r · K-78   // S2 GROUND OPS: remote stands load before departure too
+ // ---- departure: pushback (or power-back), taxi, hold-short, take-off ------------------------------------------------------------------------
+ const maxW=aoSl(AO.MAXW),step=pushes?4:2,limPark=(yield* aoHoldLimitG(parkSh,P.holdFrom,sRdy+maxW+aoSl(400))),maxHold=aoSl(AO.cfg.maxHold),holdAim=aoSl(AO.cfg.holdAim);
+ const smPush=pushes?(yield* aoSampG(tr,D.push,{stand:sd.id,standFrom:0})):null;
+ let res=null,tries=0;const RJ={push:0,tug:0,bag:0,taxi:0,to:0,lim:limPark-sRdy,sRdy};P.rj=RJ;const AOM={};
+ for(let sP=sRdy;sP<=sRdy+maxW&&sP<=limPark;){
+  if(AO.sliced&&aoOver())yield 0;                  // out of this frame's budget: the plan continues next frame (the table holds only its committed prefix here)
+  tries++;let jump=step;
+  const m2=AO.LOG.length;
+  const done=()=>{aoRoll(m2)};
+  if(pushes){
+   if(TG){const mn=TG.minSP();if(sP<mn){sP=mn;continue}}
+   if(BG){const mn=BG.minSP();if(sP<mn){sP=mn;continue}}
+   if(AO.prof)AO._w=AO.work;
+   if((yield* aoFreeKG(smPush,sP))>=0){RJ.push++;sP+=step;continue}
+   aoCommitHold(parkSh,P.holdFrom,sP);aoCommit(smPush,sP);
+   let tk=null,bk=null;
+   if(AO.prof){AO.prof.push=(AO.prof.push||0)+AO.work-AO._w;AO._w=AO.work}
+   if(TG){tk=TG.try(sP);if(!tk){RJ.tug++;done();sP+=Math.max(step,TG.jumpNow());continue}}
+   if(AO.prof){AO.prof.tug=(AO.prof.tug||0)+AO.work-AO._w;AO._w=AO.work}
+   if(BG){S6R_BW.w=P.bw||null;bk=BG.try(sP);if(!bk&&P.blg){const lb=P.blg.try(sP);if(lb){S6R_BW.w=[lb.s6rAt+2,lb.s6rDone-2];bk=BG.try(sP)}}S6R_BW.w=null;if(!bk){RJ.bag++;done();sP+=Math.max(step,BG.jumpNow());continue}}
+   const sPE=sP+smPush.K-1,pe=D.pe,disc=aoSlUp(AO.cfg.disc),sTmin=sPE+disc;
+   if(AO.prof){AO.prof.bag=(AO.prof.bag||0)+AO.work-AO._w;AO._w=AO.work}
+   const tx=AOM.tx||(AOM.tx=(yield* aoSampG(tr,D.taxi))),holdPE=aoHold(tr,pe,null);
+   const sT=(yield* aoSearchG(tx,sTmin,sTmin+maxHold,{sh:holdPE,from:sPE}));
+   if(AO.prof){AO.prof.taxi=(AO.prof.taxi||0)+AO.work-AO._w;AO._w=AO.work}
+   if(sT<0){RJ.taxi++;done();sP+=step;continue}
+   aoCommitHold(holdPE,sPE,sT);aoCommit(tx,sT);
+   const sTE=sT+tx.K-1,hs=aoHold(tr,D.hold,null),to=AOM.to||(AOM.to=(yield* aoSampG(tr,D.takeoff))),sTOmin=sTE+aoSlUp(AO.cfg.holdShort);
+   let sTO=(yield* aoSearchG(to,sTOmin,sTOmin+maxHold,{sh:hs,from:sTE}));
+   if(sTO<0){
+    const any=(yield* aoSearchG(to,sTOmin,sTOmin+maxW,{sh:hs,from:sTE}));
+    if(any>=0)jump=Math.max(step,any-sTOmin-holdAim);
+    else if(tries>400){sTO=(yield* aoSearchG(to,sTOmin,sTOmin+maxW))}   // last resort: nothing better will come
+    if(sTO<0){if(AO.prof){AO.prof.toFail=(AO.prof.toFail||0)+AO.work-AO._w;AO._w=AO.work}RJ.to++;done();sP+=jump;continue}
+   }
+   if(AO.prof){AO.prof.to=(AO.prof.to||0)+AO.work-AO._w;AO._w=AO.work}
+   aoCommitHold(hs,sTE,sTO);aoCommit(to,sTO);
+   res={sP,sPE,sT,sTE,sTO,tk,bk,smPush,tx,to};break;
+  }else{
+   // power-out: no push; the aircraft leaves its stand under its own power
+   const tx=AOM.txo||(AOM.txo=(yield* aoSampG(tr,D.taxi,{stand:sd.id,standFrom:0,standTo:9})));
+   const sT=sP;if((yield* aoFreeKG(tx,sT))>=0){sP+=step;continue}
+   aoCommitHold(parkSh,P.holdFrom,sT);aoCommit(tx,sT);
+   const sTE=sT+tx.K-1,hs=aoHold(tr,D.hold,null),to=AOM.to||(AOM.to=(yield* aoSampG(tr,D.takeoff))),sTOmin=sTE+aoSlUp(AO.cfg.holdShort);
+   let sTO=(yield* aoSearchG(to,sTOmin,sTOmin+maxHold,{sh:hs,from:sTE}));
+   if(sTO<0){
+    const any=(yield* aoSearchG(to,sTOmin,sTOmin+maxW,{sh:hs,from:sTE}));
+    if(any>=0)jump=Math.max(step,any-sTOmin-holdAim);
+    else if(tries>400){sTO=(yield* aoSearchG(to,sTOmin,sTOmin+maxW))}
+    if(sTO<0){done();sP+=jump;continue}
+   }
+   aoCommitHold(hs,sTE,sTO);aoCommit(to,sTO);
+   res={sP:sT,sT,sTE,sTO,tx,to};break;
+  }
+ }
+ if(!res){AO.stats.rj=RJ;if(limPark<sRdy)RJ.why=aoHoldWhy(parkSh,P.holdFrom,sRdy+maxW+aoSl(400));return fail('no-departure-chain')}
+ if(!o.parked&&(P.tDraw??P.t0)<AO.t+.5)return fail('too-late');
+ // ---- assemble the tracks ---------------------------------------------------------------------------------------------------------------------
+ const T=s=>aoT(s),legs=[...legsSeq];
+ let cur=tOB;
+ const parkEnd=T(res.sP);legs.push({kind:'hold',dur:parkEnd-cur,pose:()=>park});cur=parkEnd;
+ if(pushes){
+  legs.push(D.push);cur+=D.push.dur;
+  const tT=T(res.sT);legs.push({kind:'hold',dur:tT-cur,pose:()=>D.pe});cur=tT;
+ }
+ legs.push(D.taxi);cur+=D.taxi.dur;
+ const tTO=T(res.sTO);legs.push({kind:'hold',dur:tTO-cur,pose:()=>D.hold});cur=tTO;
+ legs.push(D.takeoff);cur+=D.takeoff.dur;P.tGone=cur;{const ob=g77OutLeg(ac,D.takeoff);if(ob){legs.push(ob);cur+=ob.dur}}   /* GATE-77 S6b-c · p153 · K-112: drawn, not sampled; tGone — the visit ends for the stand logic where the track ended before p144 */
+ const acTr=Object.assign({},tr,{seq:apttSeq(legs)});
+ P.tracks.push({t0:P.tDraw??P.t0,tr:acTr,main:true});
+ if(res.tk)P.vt.push({role:'tug',t0:res.tk.t0,end:res.tk.t1,at:g77TugAt(res.tk)});
+ if(res.bk)P.vt.push({role:'bag',t0:res.bk.t0,end:res.bk.t1});
+ if(bridge&&!nbW){const a=tOB+2+G77_CHOCK+g77ChockExtra(ac),b=T(res.sP)-18;P.bridge=t=>apttCl(apttSm((t-a)/7)-apttSm((t-b)/7),0,1);P.bridgeAt=[a,b]}
+ // states of the departure
+ if(pushes){st(Math.max(T(sRdy),res.tk?res.tk.t0:0),'PUSHBACK_RESERVED');st(T(res.sP),'PUSHBACK')}
+ st(T(res.sT),'TAXI_OUT');st(T(res.sTE),'HOLD_SHORT');
+ st(Math.max(T(res.sTE),tTO-AO.cfg.clear),'RUNWAY_RESERVED');
+ st(tTO,'LINE_UP');const tSAE=tTO+apttTof(D.takeoff.prof,D.takeoff.meta.sAE),tLO=tTO+apttTof(D.takeoff.prof,D.takeoff.meta.sLo);
+ st(tSAE,'TAKEOFF_ROLL');st(tLO,'DEPARTED');
+ P.t1=cur;P.tFree=pushes?T(res.sPE):T(res.sT)+9;P.tDep=tTO;P.tOB=tOB;P.tPush=pushes?T(res.sP):T(res.sT);
+ return aoFinish(P,mark,t0w);
+}
+function aoPlanVisit(sd,tReq,o={}){const sl=AO.sliced;AO.sliced=false;const g=aoPlanG(sd,tReq,o);let r;do{r=g.next()}while(!r.done);AO.sliced=sl;return r.value}
+function aoOver(){
+ if(AO.work>=AO.workLimit)return true;
+ return !!(AO.useClock&&typeof performance!=='undefined'&&performance.now()>AO.deadline);
+}
+
+// ==== GATE-77 S3 · ground crew (AIR-40 / 41 · QA-57) ======================================================================================
+const G77_CHOCK=16;
+function g77ChockExtra(ac){const g=apttAcGeom(ac),d=(g.F[1]-(g.mgx||0))-149.9;return d>0?d/G77_WALK+1:0}   // GATE-77 S5b: longer aircraft — the main chocks are further from the nose                       // no service vehicle at the aircraft before the chocks are in (s after on-block)
+const G77_WALK=13;                        // crew walking speed (px/s)
+const G77_CREW_ASSET='PE-40';             // airport ground crew
+function g77Loc(sd,th){const u=[Math.cos(th),Math.sin(th)],n=[-Math.sin(th),Math.cos(th)];return(a,d)=>[sd.ngx+u[0]*a+n[0]*d,sd.ngy+u[1]*a+n[1]*d]}
+// the staff door each crew member walks out of / back into, and the waypoints between it and the stand (around hangars / aircraft)
+
+// ==== GATE-77 S6c · p165 · D-166 / QA-91: the crew of the bridge stands come down the bridge's service stair (no crossing of lane L) ======
+var G77_STAIR={on:true,cache:{},toward:false};   // GATE-77 S6c · p171
+function g77StairPost(sd){const C=G77_STAIR.cache;if(C[sd.id])return C[sd.id];const K=G77_K72.st[sd.id];if(!K)return null;const Ry=G77_K72.Ry,rr=G77_K72.rr;
+ const homes=(typeof afHomeRects==='function'?afHomeRects('F2'):[]),bad=(x,y)=>y>AF.L-12-4||homes.some(r=>x>r.x0-6&&x<r.x1+6&&y>r.y0-6&&y<r.y1+6);
+ const sg=(G77_STAIR.toward?-1:1)*(Math.sign(K.rx-sd.cx)||1);   // GATE-77 S6c · p171: beside the rotunda (not under the fixed arm); the side — G77_STAIR.toward
+ for(const [dx,dy] of [[sg*(rr+7),12],[-sg*(rr+7),12],[sg*(rr+7),2],[-sg*(rr+7),2],[0,rr+5]]){const x=K.rx+dx,y=Ry+dy;if(!bad(x,y)){const q=[x,y];q.side=dx?Math.sign(dx):0;return C[sd.id]=q}}return C[sd.id]=[K.rx,Ry+rr+5]}
+function g77PaintStairs(g){if(!G77_STAIR.on||typeof APL==='undefined'||!APL)return;for(const sd of APL.stands){if(sd.tpl!=='bridge'||sd.large)continue;const p=g77StairPost(sd);if(!p)continue;
+  g.save();g.fillStyle='rgba(8,18,26,.25)';if(p.side){const sx=p.side,x0=sx>0?p[0]-6:p[0]-2;g.fillRect(x0+.8,p[1]-3.2,8,7);g.fillStyle='#5b6168';g.fillRect(x0,p[1]-4,8,7);g.fillStyle='#e8b92b';g.fillRect(x0,p[1]-4,8,.6);g.fillRect(x0,p[1]+2.4,8,.6);g.strokeStyle='rgba(230,232,235,.8)';g.lineWidth=.6;for(let i=0;i<4;i++){g.beginPath();g.moveTo(x0+1+i*2,p[1]-3.2);g.lineTo(x0+1+i*2,p[1]+2.2);g.stroke()}}   // GATE-77 S6c · p171: out sideways from the rotunda
+ else{g.fillStyle='#5b6168';g.fillRect(p[0]-3.5,p[1]-6,7,8);g.strokeStyle='rgba(230,232,235,.75)';g.lineWidth=.6;for(let i=0;i<4;i++){g.beginPath();g.moveTo(p[0]-3,p[1]-5+i*2);g.lineTo(p[0]+3,p[1]-5+i*2);g.stroke()}}g.restore()}}
+// QA-91: people on the service lanes (crew walkers + passengers), every 0.5 s
+function g77PeopleLanes(){const Lr=APL.lanes;return[{id:'L',x0:6004,x1:7236,y0:AF.L-12,y1:AF.L+12},{id:'GLINK',x0:AF.GLN-12,x1:AF.GLS+12,y0:APT_Y.TS,y1:AF.HE+10},
+  {id:'HW',x0:AF.GLN,x1:Lr.wOut,y0:AF.HW-11,y1:AF.HW+11},{id:'HE',x0:AF.GLN,x1:Lr.wIn,y0:AF.HE-11,y1:AF.HE+11},
+  {id:'YARD-W',x0:Lr.wOut-11,x1:Lr.wIn+11,y0:AF.HW,y1:Lr.O2+11},{id:'YARD-I',x0:Lr.wIn,x1:Lr.spineIn,y0:Lr.I-11,y1:Lr.I+11},
+  {id:'YARD-O2',x0:Lr.wOut,x1:Lr.spineOut,y0:Lr.O2-11,y1:Lr.O2+11},{id:'SPINE-E',x0:Lr.spineIn-11,x1:Lr.spineOut+11,y0:G73_NE.road,y1:1500},
+  {id:'NB-LANES',x0:7240,x1:7440,y0:782,y1:824},{id:'CARGO-LANE',x0:5010,x1:5990,y0:690,y1:710}]}
+// the walkers' detours, side steps and linger cells never go onto a service lane (D-166)
+function g77SegLane(a,b){const d=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.ceil(d/3));for(let i=0;i<=n;i++){const u=i/n;if(g77PplLane(a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u))return true}return false}
+function g77PplLane(x,y){const L=G77_STAIR.lanes||(G77_STAIR.lanes=g77PeopleLanes());for(const l of L)if(x>l.x0-2&&x<l.x1+2&&y>l.y0-2&&y<l.y1+2)return true;return false}
+function g77PeopleLaneAudit(fl,t0,t1){const lanes=g77PeopleLanes(),r={ok:true,samples:0,crew:0,pax:0,hits:0,by:{},issues:[]};
+ const hit=(p,who,t)=>{for(const l of lanes){if(p.x>=l.x0&&p.x<=l.x1&&p.y>=l.y0&&p.y<=l.y1){r.hits++;r.by[l.id]=(r.by[l.id]||0)+1;if(r.issues.length<8)r.issues.push('LANE '+l.id+' '+who+' @'+t.toFixed(1)+' ('+Math.round(p.x)+','+Math.round(p.y)+')');return}}};
+ for(let t=t0;t<=t1;t+=.5){for(const f of fl){const C=f.crew;if(!C||!C.walkers)continue;C.walkers.forEach((w,i)=>{const p=g77WalkerAt(w,t);if(!p)return;r.samples++;r.crew++;hit(p,f.code+' crew#'+i,t)})}
+  const P=(typeof s6rNbPassengers==='function'?s6rNbPassengers(t,fl):[]).concat(g2RemotePassengers(t,fl));for(const p of P){if(p.alpha<.99)continue;r.samples++;r.pax++;hit(p,p.flight+' pax '+p.phase,t)}}
+ r.ok=!r.hits;return r}
+function g77CrewPost(sd){
+ if(sd.tpl==='bridge'){const sv=sd.svcSide||-1;return{p:sd.large?[7137,700]:G77_STAIR.on&&g77StairPost(sd)?g77StairPost(sd).slice():[sd.cx+sv*118,AF.L+20],via:[]}}   // GATE-77 S6c · p165: the bridge's service stair (D-166)   // GATE-77 S5c: P4 between its columns (pocket D)   // GATE-77 S5c: P4 — north of the tug lane
+ if(sd.id==='P6')return{p:[8150,866],via:[[8100,850],[7975,850]]};
+ if(sd.id==='P5')return{p:[7694,841],via:[]};   // the staff door in the maintenance building's north face, west of P5's nose (the GPU works east of it)
+ if(sd.kind==='cargo')return{p:sd.id==='C1'?[5062,662]:sd.id==='C2'?[5340,662]:sd.id==='C3'?[5728,662]:[sd.cx+64,650],via:[]};
+ return null}
+function g77MarshalSpot(sd,g,L){if(sd.id==='P5')return L(g.F[1]-6,g.F[3]+14);if(sd.id==='P6')return L(g.F[1]-6,-(g.F[3]+14));   // remote: beside the nose (the GPU stands in front of it)
+ if(sd.tpl==='bridge'){const a=Math.min(g.F[1]+8,AF.L-17.5-sd.ngy);if(a-g.F[1]<6)return L(g.F[1]-20,(g.F[3]+16)*(sd.svcSide?-sd.svcSide:1));return L(a,0)}return L(g.F[1]+12,0)}   // S5b: the large jet — beside its nose
+// one walker: a list of legs {t0,t1,a,b} (walk) or {t0,t1,a,b:a,hold:1} (stand), poses from time
+function g77Walker(post){return{legs:[],t:-Infinity,at:post.slice(),post:post.slice()}}
+// the crew yields: a walk waits (at its start, out of the way) while a reserved vehicle or another aircraft would pass through it; the crew's own
+// legs are then reserved (layer P) so that every vehicle / aircraft planned later goes round them (AIR-40 · QA-57)
+let G77_YC=null;   // the visit whose crew is being planned: {code,tag,waits,forced}
+function g77Slice(s){const Y=G77_YC;if(!Y||!Y.rg)return AO.B.get(s);let c=Y.cache.get(s);if(c)return c;const bk=AO.B.get(s)||[],[x0,x1,y0,y1]=Y.rg;c=[];   // the crew's area only (cached per slice while one crew is planned)
+ let nb=null;for(const b of bk){const L=b.L;if(L!=='V'&&L!=='F'&&L!=='W'&&L!=='T')continue;if(b.x1<x0||b.x0>x1||b.y1<y0||b.y0>y1)continue;
+  if(b.t===Y.code){if(!nb)nb=new Set([...(AO.B.get(s-1)||[]),...(AO.B.get(s+1)||[])]);if(nb.has(b))continue;c.push(b);c.own=1;continue}   /* GATE-77 S6r · M5b · K-67: the own aircraft while it moves */
+  c.push(b)}Y.cache.set(s,c);return c}
+
+// GATE-77 S6b-a · p141 · K-103: the clearance to a vehicle shape b at slice s — 5 px + half the largest corner travel of that vehicle to s+1
+function g77VMarg(b,s){let m=5;const n2=g77Slice(s+1);if(!n2)return m;let best=null,bd=1e9;for(const q of n2){if(q.L!=='V'||q.t!==b.t)continue;const d=Math.hypot(q.x-b.x,q.y-b.y);if(d<bd){bd=d;best=q}}
+ if(!best||bd>40)return m;const dth=Math.abs(Math.atan2(b.s*best.c-b.c*best.s,b.c*best.c+b.s*best.s));return m+(bd+2*Math.sin(dth/2)*Math.hypot(b.hx,b.hy))/2}
+function g77Busy(x,y,t){const f=t/AO.DT,s=Math.floor(f+1e-9);return g77Busy1(x,y,s)||(f-s>1e-6&&g77Busy1(x,y,s+1))}   // GATE-77 S6r · M5b · K-93: the slice before and the slice after (aoSl rounds)
+function g77Busy1(x,y,s){const bk=g77Slice(s);if(!bk||!bk.length)return false;const a=apttObb(x,y,0,[-1.5,1.5,-1.5,1.5],'P','q'),Y=G77_YC,own=Y&&(!Y.rg||Y.noOwn)&&Y.code;
+ for(let i=0;i<bk.length;i++){const b=bk[i],L=b.L;if(L!=='V'&&L!=='F'&&L!=='W'&&L!=='T')continue;if(own&&b.t===own)continue;let m=L==='F'||L==='W'?5:3;if(a.x0>b.x1+m+14||a.x1<b.x0-m-14||a.y0>b.y1+m+14||a.y1<b.y0-m-14)continue;if(L==='V')m=g77VMarg(b,s);if(a.x0>b.x1+m||a.x1<b.x0-m||a.y0>b.y1+m||a.y1<b.y0-m)continue;if(apttObbHit(a,b,m))return true}return false}   /* p141 · K-103 */
+function g77SegOk(a,b,ts,d){return g77SegFree(a,b,ts,d)&&g77HoldFree(b,ts+d,ts+d+2)}
+function g77SegFree(a,b,ts,d){const n=Math.max(1,Math.ceil(d/AO.DT));for(let i=0;i<=n;i++){const u=i/n;if(g77Busy(a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,ts+d*u))return false}return true}
+function g77HoldFree(p,t0,t1){for(let t=t0;t<=t1+1e-9;t+=AO.DT)if(g77Busy(p[0],p[1],t))return false;return true}
+function g77SegD(c,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],l=dx*dx+dy*dy||1,u=Math.max(0,Math.min(1,((c[0]-a[0])*dx+(c[1]-a[1])*dy)/l));return Math.hypot(a[0]+dx*u-c[0],a[1]+dy*u-c[1])}
+// GATE-77 S6b · p143 · K-109: a waypoint is entered only if the walker can stand there until the next leg is free (or 60 s)
+function g77NextOk(p,q,t1){if(!q)return true;const d=Math.hypot(q[0]-p[0],q[1]-p[1]);if(d<.5)return true;const dd=d/G77_WALK;for(let tw=t1;tw<=t1+60;tw+=1){if(g77SegFree(p,q,tw,dd))return true;if(!g77HoldFree(p,tw,tw+1))return false}return true}
+function g77Go(w,pts,t0){let t=Math.max(t0,w.t),at=w.at;
+ for(let pi=0;pi<pts.length;pi++){const p=pts[pi],nx=pts[pi+1]||null,d=Math.hypot(p[0]-at[0],p[1]-at[1]);if(d<.5)continue;const dur=d/G77_WALK;
+  if(G77_YC&&AO.B.size&&!g77SegOk(at,p,t,dur)){const ux=(p[0]-at[0])/d,uy=(p[1]-at[1])/d,mx=(at[0]+p[0])/2,my=(at[1]+p[1])/2;let dt=null;
+   for(const o of [20,-20,40,-40,64,-64]){const m=[mx-uy*o,my+ux*o],d1=Math.hypot(m[0]-at[0],m[1]-at[1])/G77_WALK,d2=Math.hypot(p[0]-m[0],p[1]-m[1])/G77_WALK;if(m[1]>APT_Y.LN-4&&m[1]<APT_Y.LS+4&&m[0]>G73_L.x0-10&&m[0]<G73_L.x1+10)continue;if(G77_STAIR.on&&(g77PplLane(m[0],m[1])||(!g77PplLane(at[0],at[1])&&g77SegLane(at,m))||(!g77PplLane(p[0],p[1])&&g77SegLane(m,p))))continue;if(APL.helis.some(h=>g77SegD([h.x,h.y],at,m)<h.r+8||g77SegD([h.x,h.y],m,p)<h.r+8))continue;if(g77SegFree(at,m,t,d1)&&g77SegOk(m,p,t+d1,d2)){dt=m;break}}
+   if(dt){G77_YC.detours=(G77_YC.detours||0)+1;const t1=t+Math.hypot(dt[0]-at[0],dt[1]-at[1])/G77_WALK;w.legs.push({t0:t,t1,a:at,b:dt});t=t1;at=dt;const d2=Math.hypot(p[0]-at[0],p[1]-at[1]),t2=t+d2/G77_WALK;w.legs.push({t0:t,t1:t2,a:at,b:p});t=t2;at=p;continue}}
+  let dd=dur;if(G77_YC&&AO.B.size){let ts=t,k=0,na=0;for(;k<300&&!(g77SegOk(at,p,ts,dd)&&g77NextOk(p,nx,ts+dd));k++){if(w.legs.length&&!g77HoldFree(at,ts,ts+1)){   /* GATE-77 S6r · M5d · p132: step aside, keep waiting */
+     if(na<3){if(ts>t){w.legs.push({t0:t,t1:ts,a:at,b:at,hold:1});t=ts}w.t=t;w.at=at;if(g77Aside(w,t+20)){na++;at=w.at;t=w.t;ts=t;dd=Math.hypot(p[0]-at[0],p[1]-at[1])/G77_WALK;continue}}break}ts+=1}
+   if(k<300&&!g77SegFree(at,p,ts,dd)){for(let j=0;j<300;j++){ts+=1;if(g77SegFree(at,p,ts,dd))break}}   /* GATE-77 S6b-a · p143 · K-107: keep waiting for a free crossing (≤ 300 s) */
+   if(k>=300||!g77SegFree(at,p,ts,dd)){G77_YC.forced++;(G77_YC.fl||(G77_YC.fl=[])).push({t:+t.toFixed(1),ts:+ts.toFixed(1),k,a:at.map(Math.round),b:p.map(Math.round)})}if(ts>t){G77_YC.waits++;if(w.legs.length){if(G77_LG.on&&!g77HoldFree(at,t,ts)){w.t=t;w.at=at;if(g77Linger(w,ts,null,false,p)){at=w.at;dd=Math.hypot(p[0]-at[0],p[1]-at[1])/G77_WALK}else w.legs.push({t0:t,t1:ts,a:at,b:at,hold:1})}else w.legs.push({t0:t,t1:ts,a:at,b:at,hold:1})}t=ts}}   // GATE-77 S6b-c · p158 · D-166
+  const t1=t+dd;w.legs.push({t0:t,t1,a:at,b:p});t=t1;at=p}
+ w.t=t;w.at=at;return t}
+function g77CrewCommit(C,tag){if(!C)return;for(const w of C.walkers){if(!w.legs.length)continue;const s0=aoSlUp(w.legs[0].t0),s1=aoSl(w.t);
+ for(let s=s0;s<=s1;s+=1){/* GATE-77 S6r · M5b · K-93: every slice */const p=g77WalkerAt(w,aoT(s));if(!p)continue;let bk=AO.B.get(s);if(!bk){bk=[];AO.B.set(s,bk)}const o=apttObb(p.x,p.y,0,[-4.8,4.8,-4.8,4.8],'P',tag);o.own=C.code;bk.push(o);AO.LOG.push(s)}}
+ for(const it of C.items){if(it.k!=='cone'||it.t1==null)continue;const o=apttObb(it.p[0],it.p[1],0,[-2.2,2.2,-2.2,2.2],'P',tag);o.own=C.code;for(let s=aoSlUp(it.t0);s<=aoSl(it.t1);s+=1){let bk=AO.B.get(s);   /* GATE-77 S6b-b · p150 · K-110: every slice */if(!bk){bk=[];AO.B.set(s,bk)}bk.push(o);AO.LOG.push(s)}}}   // the cones too: a vehicle planned later goes round them
+
+// ==== GATE-77 S6b-c · part 4 · p158 · D-166: the crew never stands where a vehicle will pass — a space-time linger ======================
+var G77_LG={on:true,R:45,cell:5,dt:.4,back:12,maxW:120,n:0,ok:0,fail:0,ms:0,why:{}};
+function g77LgFail(k){G77_LG.fail++;G77_LG.why[k]=(G77_LG.why[k]||0)+1;return false}
+function g77Linger(w,t1,face,mustHome,goTo){const T0=performance.now();G77_LG.n++;try{return g77Linger1(w,t1,face,mustHome,goTo)}finally{G77_LG.ms+=performance.now()-T0}}
+// goTo: the next point — the linger may end on any free cell from which the walk there is clear at t1 (home first)
+function g77Linger1(w,t1,face,mustHome,goTo){
+ const Lg=G77_LG,dt=Lg.dt,home=w.at.slice();
+ let k=w.legs.length,tS=w.t,fc=face||null;   // the hold legs just before, on the same spot: the walker may leave inside them
+ while(k>0){const q=w.legs[k-1];if(!q.hold||q.follow||!q.a||Math.hypot(q.a[0]-home[0],q.a[1]-home[1])>.5)break;k--;tS=q.t0;if(q.face&&!fc)fc=q.face}
+ let tb=null,te=null;for(let t=tS;t<=t1+1e-9;t+=AO.DT)if(g77Busy(home[0],home[1],t)){if(tb==null)tb=t;te=t}
+ if(tb==null)return g77LgFail('free');
+ const tE=mustHome||goTo?t1:Math.min(t1,te+1);let n=Math.max(1,Math.floor((tE-Math.max(tS,tb-Lg.back))/dt+1e-9)),tA=tE-n*dt;
+ if(tA>tb-1e-6){n++;tA-=dt}if(tA<tS-1e-6)return g77LgFail('late');if(n*dt>Lg.maxW)return g77LgFail('long');
+ const c=Lg.cell,N=2*Math.round(Lg.R/c)+1,h=(N-1)/2,NC=N*N,hI=h*N+h,pos=i=>i===hI?home.slice():[home[0]+(i%N-h)*c,home[1]+(Math.floor(i/N)-h)*c];
+ const st=new Int8Array(NC);   // 0 unknown, 1 ok, 2 no
+ const B=apttBldShapes().filter(b=>b.x1>home[0]-Lg.R-8&&b.x0<home[0]+Lg.R+8&&b.y1>home[1]-Lg.R-8&&b.y0<home[1]+Lg.R+8),FO=g77FenceObbs().filter(f=>f.x1>home[0]-Lg.R-8&&f.x0<home[0]+Lg.R+8&&f.y1>home[1]-Lg.R-8&&f.y0<home[1]+Lg.R+8);
+ const stOk=i=>{if(st[i])return st[i]===1;if(i===hI){st[i]=1;return true}const q=pos(i);let ok=true;
+  if(q[1]>APT_Y.LN-4&&q[1]<APT_Y.LS+4&&q[0]>G73_L.x0-10&&q[0]<G73_L.x1+10)ok=false;else if(G77_STAIR.on&&g77PplLane(q[0],q[1]))ok=false;else if(q[1]<APT_Y.TS+6&&q[0]>4790&&q[0]<8410)ok=false;
+  else if(APL.helis.some(z=>Math.hypot(q[0]-z.x,q[1]-z.y)<z.r+8))ok=false;
+  else{const a=apttObb(q[0],q[1],0,[-1.5,1.5,-1.5,1.5],'P','q');for(const b of B)if(apttObbHit(a,b,2)){ok=false;break}if(ok)for(const f of FO)if(apttObbHit(a,f,4)){ok=false;break}}
+  st[i]=ok?1:2;return ok};
+ const par=new Int16Array((n+1)*NC).fill(-1);let cur=[hI];par[hI]=hI;
+ for(let s=1;s<=n;s++){const t=tA+s*dt,nx=[],o=s*NC;
+  for(const ci of cur){const cx=ci%N;for(const d of [0,1,-1,N,-N]){if(d===1&&cx===N-1||d===-1&&cx===0)continue;const nj=ci+d;if(nj<0||nj>=NC||par[o+nj]!==-1)continue;if(!stOk(nj))continue;const q=pos(nj);if(g77Busy(q[0],q[1],t))continue;par[o+nj]=ci;nx.push(nj)}}
+  if(!nx.length)return g77LgFail('boxed');cur=nx}
+ const goOk=ci=>{if(!goTo)return true;const q=pos(ci),d=Math.hypot(goTo[0]-q[0],goTo[1]-q[1]);return d<.5||g77SegFree(q,goTo,tE,d/G77_WALK)};
+ let g=-1;if(par[n*NC+hI]!==-1&&goOk(hI))g=hI;else if(!mustHome){const cs=cur.map(ci=>{const q=pos(ci);return[ci,goTo?Math.hypot(q[0]-goTo[0],q[1]-goTo[1])+.3*Math.hypot(q[0]-home[0],q[1]-home[1]):Math.hypot(q[0]-home[0],q[1]-home[1])]}).sort((a,b)=>a[1]-b[1]);
+  for(const [ci] of cs)if(goOk(ci)){g=ci;break}}
+ if(g<0)return g77LgFail('home');
+ const seq=new Array(n+1);seq[n]=g;for(let s=n;s>0;s--)seq[s-1]=par[s*NC+seq[s]];
+ const L=[];if(tA>tS+1e-6)L.push({t0:tS,t1:tA,a:home.slice(),b:home.slice(),hold:1,face:fc});
+ for(let s=0;s<n;){const a=seq[s];let e=s+1;
+  if(seq[e]===a){while(e<n&&seq[e+1]===a)e++;const p=pos(a);L.push({t0:tA+s*dt,t1:tA+e*dt,a:p,b:p.slice(),hold:1,face:a===hI?fc:null})}
+  else{const d=seq[e]-a;while(e<n&&seq[e+1]-seq[e]===d)e++;L.push({t0:tA+s*dt,t1:tA+e*dt,a:pos(a),b:pos(seq[e])})}
+  s=e}
+ const end=pos(g);if(g!==hI&&tE<t1-1e-6&&!g77HoldFree(end,tE,t1))return g77LgFail('endHold');if(tE<t1-1e-6)L.push({t0:tE,t1,a:end,b:end.slice(),hold:1,face:g===hI?fc:null});
+ w.legs.length=k;for(const q of L)w.legs.push(q);w.t=t1;w.at=end;Lg.ok++;if(G77_YC)G77_YC.linger=(G77_YC.linger||0)+1;return true}
+function g77Hold(w,t1,face){if(!w.legs.length){w.t=Math.max(w.t,t1);return w.t}   // in the staff door until then
+ if(t1>w.t){if(G77_YC&&AO.B.size&&!g77HoldFreeV(w.at,w.t,t1)&&!g77Aside(w,t1)&&G77_LG.on&&g77Linger(w,t1,face,false))return w.t;   // GATE-77 S6b-c · p158 · D-166
+  w.legs.push({t0:w.t,t1,a:w.at,b:w.at,hold:1,face});w.t=t1}return w.t}
+// GATE-77 S6r · M5b · K-93: a hold clear of the vehicles and the aircraft (the own one only while it moves: its crew works beside it parked)
+function g77BusyVeh(x,y,t){const f=t/AO.DT,s=Math.floor(f+1e-9),a=apttObb(x,y,0,[-1.5,1.5,-1.5,1.5],'P','q');for(const z of [s,s+1]){const bk=g77Slice(z);if(!bk)continue;for(const b of bk){if(b.L!=='V')continue;if(a.x0>b.x1+17||a.x1<b.x0-17||a.y0>b.y1+17||a.y1<b.y0-17)continue;const m=g77VMarg(b,z);if(a.x0>b.x1+m||a.x1<b.x0-m||a.y0>b.y1+m||a.y1<b.y0-m)continue;if(apttObbHit(a,b,m))return true}}return false}   /* p141 · K-103 */
+function g77HoldFreeV(p,t0,t1){for(let t=t0;t<=t1+1e-9;t+=AO.DT)if(g77Busy(p[0],p[1],t))return false;return true}   // the own aircraft only while it moves (g77Slice)
+function g77Aside(w,t1){const at=w.at;for(const o of [[12,0],[-12,0],[0,12],[0,-12],[20,0],[-20,0],[0,20],[0,-20],[28,0],[-28,0],[0,28],[0,-28]]){const q=[at[0]+o[0],at[1]+o[1]],d=Math.hypot(o[0],o[1])/G77_WALK;
+  if(q[1]>APT_Y.LN-4&&q[1]<APT_Y.LS+4&&q[0]>G73_L.x0-10&&q[0]<G73_L.x1+10)continue;if(G77_STAIR.on&&(g77PplLane(q[0],q[1])||g77SegLane(at,q)))continue;if(APL.helis.some(h=>Math.hypot(q[0]-h.x,q[1]-h.y)<h.r+8))continue;
+  if(w.t+d<t1&&g77SegFree(at,q,w.t,d)&&g77HoldFreeV(q,w.t+d,t1)){w.legs.push({t0:w.t,t1:w.t+d,a:at,b:q});w.t+=d;w.at=q;G77_YC.aside=(G77_YC.aside||0)+1;return true}}
+ G77_YC.holdHit=(G77_YC.holdHit||0)+1;return false}
+function g77PathT(from,pts){let d=0,at=from;for(const p of pts){d+=Math.hypot(p[0]-at[0],p[1]-at[1]);at=p}return d/G77_WALK}
+// the crew plan of one visit
+const G77_PM={n:0,ms:0,max:0};   // crew planning cost (QA)
+function g77CrewPlan(P){const t0=performance.now();G77_YC={code:P.code,waits:0,forced:0};try{const C=g77CrewPlan1(P);if(C){C.code=P.code;C.waits=G77_YC.waits;C.forced=G77_YC.forced;C.fl=G77_YC.fl;g77CrewCommit(C,P.code+'-crew')}return C}finally{G77_YC=null;const d=performance.now()-t0;G77_PM.n++;G77_PM.ms+=d;G77_PM.max=Math.max(G77_PM.max,d);if(G77_PM.n<=400)(G77_PM.all||(G77_PM.all=[])).push(+d.toFixed(1))}}
+
+// ==== GATE-77 S6b-d · p162: a late crew round may start up to 180 s earlier (was 90) ====================================================
+var G77_FIT={max:180,n:8};
+function g77CrewPlan1(P){
+ const sd=P.sd,prof=g77Prof(sd,P.ac);if(!prof||P.never||P.heli||!(prof.svc.includes('marshal')||prof.svc.includes('chocks')))return null;
+ const post=g77CrewPost(sd);if(!post)return null;
+ const g=apttAcGeom(P.ac),L=g77Loc(sd,sd.th),hw=g.F[3],span=g.W?(g.W[3]-g.W[2])/2/APTT_WT:hw*4,wa=g.W?(g.W[0]+g.W[1])/2:g.F[0]*.5,mg=g.mgx||g.F[0]*.35;
+ {const R0=Math.max(span,g.F[1]-g.F[0])+120,xs=[post.p[0],...post.via.map(q=>q[0]),sd.ngx-R0,sd.ngx+R0],ys=[post.p[1],...post.via.map(q=>q[1]),sd.ngy-R0,sd.ngy+R0];G77_YC.rg=[Math.min(...xs)-20,Math.max(...xs)+20,Math.min(...ys)-20,Math.max(...ys)+20];G77_YC.cache=new Map()}
+ const tOB=P.tOB!=null?P.tOB:P.t0,tPush=P.tPush!=null?P.tPush:P.t1-60,parked=!!P.parked,sv=sd.svcSide?-sd.svcSide:1;
+ const out={walkers:[],items:[],post:post.p},via=post.via,back=via.slice().reverse().concat([post.p]);
+ // the cones go where no vehicle already planned for this visit drives while they stand (the wingtips, behind the tail)
+ const iFree=(cs0)=>{const cs=cs0.filter(c=>c[0]<APT_GLINK.x-APT_GLINK.w/2-4||c[0]>APT_GLINK.x+APT_GLINK.w/2+4||c[1]>APT_GLINK.y1);for(const c of cs){let ok=true;for(let t=tOB;t<=tPush&&ok;t+=.5)if(g77Busy(c[0],c[1],t))ok=false;if(ok)return c}return null};   // none free: no cone there
+ const kW=sg=>iFree(sd.large?[[wa,span-6],[wa+14,span-6],[wa-14,span-6],[wa,span-14],[wa+14,span-14],[wa-14,span-14]].map(q=>L(q[0],q[1]*sg)):[[wa,span+8],[wa+14,span+8],[wa-14,span+8],[wa,span-6],[wa+14,span-6],[wa-14,span-6],[wa,span+20],[wa+14,span+20],[wa-14,span+20],[wa+28,span+4],[wa-28,span+4],[wa,span+34],[wa+28,span+20],[wa-28,span+20],[wa,span+48]].map(q=>L(q[0],q[1]*sg)));
+ const ms=g77MarshalSpot(sd,g,L),cN=L(5,0),cM1=L(mg,hw*.9*sv),cM2=L(mg,-hw*.9*sv),kW1=kW(sv),kW2=kW(-sv),kT=sd.ngy+g.F[0]<APT_Y.LS+20?null:iFree([[0,0],[0,12],[0,-12],[-8,20],[-8,-20],[-16,0],[-16,24],[-16,-24],[-28,0],[0,30],[0,-30]].map(q=>L(g.F[0]-8+q[0],q[1])));   // S5b: not on L
+ const order=[cM1,kW1,kT,kW2,cM2].filter(Boolean),rev=order.slice().reverse(),isChock=q=>q===cM1||q===cM2;
+ const tug=(P.vt||[]).find(x=>x.role==='tug'),tugAt=tug&&tug.at!=null?tug.at:null;
+ // a walker built from a start time; when it would be late (it yielded to vehicles on the way), it starts earlier
+ const fit=(build,start,late)=>{let s0=start,r=null;const M=G77_FIT.max,N=G77_FIT.n;for(let i=0;i<N;i++){const y0=[G77_YC.waits,G77_YC.forced];r=build(s0);const l=late(r);if(l<=.01||s0<=start-M)break;if(i<N-1){G77_YC.waits=y0[0];G77_YC.forced=y0[1];s0=Math.max(start-M,s0-(l+1))}}return r};   // GATE-77 S6b-d · p162   // at most 90 s earlier (GATE-77 S5c; was 40)
+ // marshaller: at the spot before on-block (not for an aircraft that stood there when the session started), then the nose chock
+ let m=null,rc=null;
+ if(!parked){
+  m=fit(s0=>{const w=g77Walker(post.p),r={w};g77Hold(w,s0);g77Go(w,via.concat([ms]),s0);r.at=w.t;g77Hold(w,tOB+2,'ac');g77Go(w,[cN],w.t);g77Hold(w,w.t+3);r.chock=w.t-1.5;g77Go(w,[ms].concat(back),w.t);return r},
+   tOB-25-g77PathT(post.p,via.concat([ms])),r=>r.at-(tOB-8));
+  // ramp crew: waits beside the nose (clear of the arriving aircraft), main chocks and cones after on-block, round the aircraft, back
+  const wait=sd.id==='P5'?L(g.F[1]-14,hw+20):sd.remote?L(g.F[1]-14,-(hw+20)):sd.tpl==='bridge'?L(Math.min(g.F[1]+6,AF.L-17.5-sd.ngy),(hw+8)*sv):L(g.F[1]+12,(hw+16)*sv);
+  rc=fit(s0=>{const w=g77Walker(post.p),r={w,t:[]};g77Hold(w,s0);g77Go(w,via.concat([wait]),s0);r.at=w.t;g77Hold(w,tOB+1);for(const q of order){g77Go(w,[q],w.t);g77Hold(w,w.t+2.5);r.t.push(w.t-1.2)}g77Go(w,[sd.kind==='cargo'?wait:ms].concat(back),w.t);return r},
+   tOB-8-g77PathT(post.p,via.concat([wait])),r=>r.at-(tOB+1));
+ }
+ // before the pushback: cones and main chocks away (reverse order), out to the side of the aircraft, clear before the tug comes / the push
+ const S1=L(mg,(hw+14)*sv),S2=L(G77_STAIR.on&&sd.tpl==='bridge'?Math.min(g.F[1]+12,AF.L-17.5-sd.ngy):g.F[1]+12,(hw+14)*sv),tClear=Math.min(tPush-6,tugAt!=null?tugAt-4:Infinity),dRound=g77PathT(post.p,via.concat(rev,[S1,S2]))+rev.length*2.5;
+ const rr=fit(s0=>{const w=g77Walker(post.p),r={w,t:[]};g77Hold(w,s0);g77Go(w,via,s0);for(const q of rev){g77Go(w,[q],w.t);g77Hold(w,w.t+2.5);r.t.push(w.t-1.2)}g77Go(w,[S1,S2],w.t);r.clear=w.t;g77Go(w,back,w.t);return r},
+  tClear-dRound-4,r=>r.clear-tClear);
+ // the marshaller takes the nose chock last, from the side, before the tug comes in
+ const A=sd.id==='P5'?L(g.F[1]-6,hw+12):sd.tpl==='bridge'?L(Math.min(g.F[1]+6,AF.L-17.5-sd.ngy),(hw+8)*sv):L(g.F[1]+10,(hw+12)*sv),tN=Math.min(tPush-8,tugAt!=null?tugAt-5:Infinity),nAfter=rr.t[rr.t.length-1]+1;
+ const m2=fit(s0=>{const w=g77Walker(post.p),r={w};g77Hold(w,s0);g77Go(w,via.concat([A]),s0);g77Hold(w,nAfter-g77PathT(A,[cN]));g77Go(w,[cN],w.t);r.at=w.t;g77Hold(w,w.t+2.5);r.chock=w.t-1;g77Go(w,[sd.kind==='cargo'?L(5,(hw+14)*sv):A].concat(back),w.t);return r},
+  tN-g77PathT(post.p,via.concat([A,cN]))-3,r=>r.at-tN);
+ // the chocks and cones (yellow / orange): from placement to removal
+ out.items.push({k:'chock',p:cN,t0:parked?P.t0:m.chock,t1:m2.chock});
+ order.forEach((q,i)=>out.items.push({k:isChock(q)?'chock':'cone',p:q,t0:parked?P.t0:rc.t[i],t1:rr.t[rev.indexOf(q)]}));
+ if(m)out.walkers.push(m.w);if(rc)out.walkers.push(rc.w);out.walkers.push(rr.w,m2.w);
+ // wing walkers (narrow-body / regional jet / cargo jet with a tug): at the wingtips before the push, with the wingtip while the aircraft goes
+ // straight back (never into the taxilane), then a spot clear of the aircraft until it has left the stand, then back
+ const pushes=!!AO_PUSH[sd.tpl]&&aoNeedTug(sd,P.ac),main=P.tracks.find(q=>q.main);
+ if(pushes&&main&&['AC-NB-01','AC-RJ-01','AC-CG-01'].includes(P.ac)){
+  const len=g.F[1]-g.F[0],tEndM=main.t0+main.tr.seq.dur,h0=(main.tr.seq.at(tPush-main.t0)||[0,0,sd.th])[2];
+  let tc=tPush+12;for(;tc<tEndM;tc+=1){const a=main.tr.seq.at(tc-main.t0);if(!a||Math.hypot(a[0]-sd.ngx,a[1]-sd.ngy)>len+span+40)break}
+  for(const side of [1,-1]){let off=[wa,(span+10)*side*sv];for(const q of [[0,10],[14,10],[-14,10],[0,20],[24,12],[-24,12],[0,30]]){const o=[wa+q[0],(span+q[1])*side*sv],pt=L(o[0],o[1]);if(g77HoldFree(pt,tPush-10,tPush)){off=o;break}}const wt=L(off[0],off[1]);
+   let f1=tPush;for(;f1<tPush+12;f1+=.25){const a=main.tr.seq.at(f1+.25-main.t0),pf=g77FollowAt(main,off,f1+.25);if(!a||Math.abs(G77_ANG(h0,a[2]))>.12||pf[1]<APT_Y.LS+14)break}
+   for(let t=tPush;t<=f1;t+=AO.DT){const pf=g77FollowAt(main,off,t);if(g77BusyVeh(pf[0],pf[1],t)){f1=tPush;G77_YC.noFollow=(G77_YC.noFollow||0)+1;break}}   /* GATE-77 S6r · M5b · K-93 */
+   const ww=fit(s0=>{const w=g77Walker(post.p),r={w};g77Hold(w,s0);g77Go(w,via.concat([wt]),s0);r.at=w.t;g77Hold(w,tPush,'ac');
+    if(f1>tPush){w.legs.push({t0:tPush,t1:f1,follow:{tr:main,off}});w.t=f1}
+    const pe=g77FollowAt(main,off,w.t),pc=g77FollowAt(main,[wa,0],w.t),dx=pe[0]-pc[0],dy=pe[1]-pc[1],dl=Math.hypot(dx,dy)||1,nO=[dx/dl,dy/dl],uS=[Math.cos(sd.th),Math.sin(sd.th)];
+    const po=g77WWSpot(main,pe,uS,nO,w.t,tc);r.spot=!!po;w.at=pe;g77Go(w,[po||[pe[0]+nO[0]*14,pe[1]+nO[1]*14]],w.t);g77Hold(w,tc,'ac');g77Go(w,[ms].concat(back),w.t);return r},
+    tPush-6-g77PathT(post.p,via.concat([wt])),r=>r.at-(tPush-2));
+   if(!ww.spot)G77_YC.forced++;out.walkers.push(ww.w)}}
+ out.tA=Math.min(...out.walkers.map(w=>w.legs.length?w.legs[0].t0:Infinity),...out.items.map(i=>i.t0));
+ out.tB=Math.max(...out.walkers.map(w=>w.t),...out.items.map(i=>i.t1||0));
+ out.chockMain=parked?null:rc.t[0];out.tOB=tOB;out.tPush=tPush;
+ return out}
+function g77HeliPost(sd){const p=sd.pad;if(!p||p.live===false)return null;
+ if(p.y<1000){const sx=p.x-(p.r+12);return{p:[8150,866],via:[[8172,850],[8172,800],[sx,725]],spot:[sx,p.y]}}   /* GATE-77 S6b-b · p150 · K-110: the lane and the swept strip in one leg; no waypoint in the strip */   /* GATE-77 S6b-a · p142 · K-103: H1 — the bus's swing crossed in one diagonal */   // GATE-77 S6r · M5d · p132: H1 too — east of P6's bus, clear of the stairs column x 8040
+ return{p:[p.x-63,1514],via:[],spot:[p.x-(p.r+10),p.y]}}
+function g77HeliCrew(P){G77_YC={code:P.code,waits:0,forced:0};try{const C=g77HeliCrew1(P);if(C){C.code=P.code;C.waits=G77_YC.waits;C.forced=G77_YC.forced;g77CrewCommit(C,P.code+'-crew')}return C}finally{G77_YC=null}}
+function g77HeliCrew1(P){
+ const sd=P.sd,hp=g77HeliPost(sd);if(!hp||P.never)return null;
+ {const xs=[hp.p[0],hp.spot[0],...hp.via.map(q=>q[0])],ys=[hp.p[1],hp.spot[1],...hp.via.map(q=>q[1])];G77_YC.rg=[Math.min(...xs)-90,Math.max(...xs)+90,Math.min(...ys)-90,Math.max(...ys)+90];G77_YC.cache=new Map()}
+ const L=aoHeliLegs(sd),tLift=(P.states.find(s=>s[1]==='TAXI_OUT')||[P.t0+60])[0],tLand=P.t1-L.land.dur-L.yaw.dur,go=hp.via.concat([hp.spot]),back=hp.via.slice().reverse().concat([hp.p]),d=g77PathT(hp.p,go);
+ const out={walkers:[],items:[],post:hp.p,heli:true,tOB:P.t0,tPush:tLift,chockMain:null},w1=g77Walker(hp.p);
+ if(tLift>P.t0+20){g77Hold(w1,tLift-10-d);g77Go(w1,go,w1.t);g77Hold(w1,tLift+5,'ac')}
+ const s2=tLand-8-d;if(w1.legs.length&&s2<w1.t+d+4){g77Hold(w1,tLand+L.land.dur+4,'ac');g77Go(w1,back,w1.t);out.walkers.push(w1)}
+ else{if(w1.legs.length){g77Go(w1,back,w1.t);out.walkers.push(w1)}const w2=g77Walker(hp.p);g77Hold(w2,s2);g77Go(w2,go,w2.t);g77Hold(w2,tLand+L.land.dur+4,'ac');g77Go(w2,back,w2.t);out.walkers.push(w2)}
+ out.tA=Math.min(...out.walkers.map(w=>w.legs[0].t0));out.tB=Math.max(...out.walkers.map(w=>w.t));return out}
+function g77WWSpot(main,pe,u,n,t1,tc){const sh=[],hit=(x,y,t)=>{if(g77Busy(x,y,t))return true;const a=main.tr.seq.at(t-main.t0);if(!a)return false;sh.length=0;apttShapes(main.tr,a,sh);const box=apttObb(x,y,0,[-1.5,1.5,-1.5,1.5],'P','w');for(const s of sh)if((s.L==='F'||s.L==='W'||s.L==='T')&&apttObbHit(box,s,8))return true;return false};
+ for(const d of [0,16,32,48,64,80,96])for(const e of [6,18,30,42]){const c=[pe[0]+u[0]*d+n[0]*e,pe[1]+u[1]*d+n[1]*e];if(c[1]<APT_Y.LS+12)continue;const dd=Math.hypot(c[0]-pe[0],c[1]-pe[1])/G77_WALK;let ok=true;
+  for(let t=t1;t<=t1+dd&&ok;t+=.25){const q=dd?(t-t1)/dd:1;if(hit(pe[0]+(c[0]-pe[0])*q,pe[1]+(c[1]-pe[1])*q,t))ok=false}
+  for(let t=t1+dd;t<=tc+1&&ok;t+=.5)if(hit(c[0],c[1],t))ok=false;
+  if(ok)return c}
+ return null}
+
+function g77S3Audit(){
+ const issues=[],st=g77Stands(),bld=apttBldShapes(),pt=(x,y)=>apttObb(x,y,0,[-1.5,1.5,-1.5,1.5],'P','a');let posts=0,heli=0,bridges=0;
+ const inB=(x,y)=>bld.some(b=>apttObbHit(pt(x,y),b,0)),onL=(x,y)=>y>APT_Y.LN-2&&y<APT_Y.LS+2&&x>G73_L.x0-10&&x<G73_L.x1+10;
+ if(G77_STAGE<3)issues.push('stage '+G77_STAGE);
+ for(const sd of st){if(sd.live===false)continue;
+  if(sd.kind==='heli'){const hp=g77HeliPost(sd);if(!hp){if(sd.pad&&sd.pad.live!==false)issues.push('no heli post '+sd.id);continue}heli++;
+   for(const h of APL.helis)if(Math.hypot(hp.spot[0]-h.x,hp.spot[1]-h.y)<h.r+4)issues.push('heli spot '+sd.id+' in pad '+h.id);
+   for(const q of [hp.p,...hp.via,hp.spot])if(inB(q[0],q[1]))issues.push('heli path '+sd.id+' in a building');continue}
+  const acs=(sd.accepts||[]).filter(a=>{const p=g77Prof(sd,a);return p&&(p.svc.includes('marshal')||p.svc.includes('chocks'))});if(!acs.length)continue;
+  const post=g77CrewPost(sd);if(!post){issues.push('no crew post '+sd.id);continue}posts++;
+  for(const q of [post.p,...post.via]){if(inB(q[0],q[1]))issues.push('post '+sd.id+' in a building');if(onL(q[0],q[1]))issues.push('post '+sd.id+' on the taxilane')}}
+ if(typeof APT_STANDS!=='undefined'&&APTT_SPEC)for(const s of APT_STANDS){try{const sd={cx:s[2]},f=null;bridges++}catch(e){}}
+ return{ok:!issues.length,issues:issues.slice(0,8),posts,heli,bridges}}
+function g77TugAt(tk){if(!tk||!tk.tr)return null;const q=tk.tr.seq;for(let s=0;s<q.dur;s+=.5){const l=q.legAt(s);if(l&&l.leg.kind!=='out'&&l.leg.kind!=='mid')return tk.t0+l.start}return null}
+function g77FollowAt(tr,off,t){const p=tr.tr.seq.at(t-tr.t0)||tr.tr.seq.at(tr.tr.seq.dur-1e-6),c=Math.cos(p[2]),s=Math.sin(p[2]);return[p[0]+c*off[0]-s*off[1],p[1]+s*off[0]+c*off[1]]}
+// the pose of a walker at time t: {x,y,face,walk,alpha} or null (in the staff door)
+function g77WalkerAt(w,t){
+ const L=w.legs;if(!L.length||t<L[0].t0||t>L[L.length-1].t1)return null;
+ for(const q of L){if(t<q.t0||t>q.t1)continue;
+  if(q.follow){const p=g77FollowAt(q.follow.tr,q.follow.off,t),p2=g77FollowAt(q.follow.tr,q.follow.off,t+.3),dx=p2[0]-p[0],dy=p2[1]-p[1];return{x:p[0],y:p[1],dx,dy,walk:Math.hypot(dx,dy)>.05}}
+  const u=q.t1>q.t0?(t-q.t0)/(q.t1-q.t0):1,x=q.a[0]+(q.b[0]-q.a[0])*u,y=q.a[1]+(q.b[1]-q.a[1])*u;return{x,y,dx:q.b[0]-q.a[0],dy:q.b[1]-q.a[1],walk:!q.hold,face:q.face}}
+ return null}
+function g77Face(dx,dy){return Math.abs(dx)>Math.abs(dy)?(dx>0?2:6):(dy>0?4:0)}
+// drawing: crew (the ground-crew figure), chocks (yellow) and cones (orange); the marshaller's wands while signalling
+const G77_CI={ch:[],co:[]};
+function g77DrawCrewItems(){const A=G77_CI.ch,B=G77_CI.co;if(!A.length&&!B.length)return;ctx.save();const P=(col,f)=>{ctx.fillStyle=col;ctx.beginPath();f();ctx.fill()};
+ if(A.length){P('#e3bf3e',()=>{for(let i=0;i<A.length;i+=2){const x=A[i],y=A[i+1];ctx.rect(x-2.6,y-1.3,1.8,2.6);ctx.rect(x+.8,y-1.3,1.8,2.6)}});P('#6b5418',()=>{for(let i=0;i<A.length;i+=2)ctx.rect(A[i]-.8,A[i+1]-.3,1.6,.6)})}
+ if(B.length){const R=(dx,dy,r)=>()=>{for(let i=0;i<B.length;i+=2){ctx.moveTo(B[i]+dx+r,B[i+1]+dy);ctx.arc(B[i]+dx,B[i+1]+dy,r,0,Math.PI*2)}};P('rgba(8,18,26,.25)',R(.8,.9,2.4));P('#f06a1f',R(0,0,2.2));P('#f4f1e8',R(0,0,1))}
+ ctx.restore();A.length=0;B.length=0}
+
+// ==== GATE-77 S6c · p169 · D-73: the marshaller's signals by phase; the ground crew a little bigger ====================================
+var G77_MS={on:true,sc:.51,far:420,tSlow:6,tStop:1.5,turn:.1,n:{}};
+function g77AcPoseAt(f,t){for(const r of f.tracks||[])if(r.tr&&r.tr.kind==='ac'){const a=r.tr.seq.at(t-r.t0);if(a)return a}return null}
+// the phase from the time to on-block (the aircraft arrives fast and stops hard — by distance the signals would last a second each):
+// in the stand area (≤ far px) "come ahead" (or "turn" while its heading is off the stand's), the last tSlow s "slow down", from tStop s
+// before on-block "stop", after it "chocks in"; before that — waiting, the wands down
+function g77MarshalPhase(f,t){const tOB=f.tOB!=null?f.tOB:f.t0;if(tOB!=null&&t>=tOB-G77_MS.tStop)return t<tOB+.8?'stop':'chocks';
+ const a=g77AcPoseAt(f,t);if(!a)return'wait';const sd=f.sd,d=Math.hypot(a[0]-sd.ngx,a[1]-sd.ngy);if(d>G77_MS.far)return'wait';
+ if(tOB!=null&&t>=tOB-G77_MS.tSlow)return'slow';let dh=(a[2]||0)-(sd.th||0);while(dh>Math.PI)dh-=2*Math.PI;while(dh<-Math.PI)dh+=2*Math.PI;
+ return Math.abs(dh)>G77_MS.turn?(dh>0?'right':'left'):'ahead'}
+function g77MarshalSignal(f,p,t){const ph=g77MarshalPhase(f,t),x=p.x,y=p.y,k=Math.sin(t*5);G77_MS.n[ph]=(G77_MS.n[ph]||0)+1;
+ const W=(x0,y0,x1,y1)=>{ctx.moveTo(x0,y0);ctx.lineTo(x1,y1)};ctx.save();ctx.strokeStyle='#ff8a1e';ctx.lineWidth=1.3;ctx.lineCap='round';ctx.beginPath();
+ if(ph==='wait'){W(x-3,y-6,x-3.6,y-1.2);W(x+3,y-6,x+3.6,y-1.2)}                                                   // wands down at the sides
+ else if(ph==='ahead'){const u=(k+1)/2;W(x-3,y-8,x-4.6+2.6*u,y-14+.8*u);W(x+3,y-8,x+4.6-2.6*u,y-14+.8*u)}          // both up, beckoning
+ else if(ph==='left'||ph==='right'){const s=ph==='left'?-1:1,u=(k+1)/2;W(x+3*s,y-7,x+8*s,y-7.4);W(x-3*s,y-8,x-(4.6-2.6*u)*s,y-14+.8*u)}   // one out, one beckoning
+ else if(ph==='slow'){const u=k*.9;W(x-3,y-6,x-6.5,y-2.6+u);W(x+3,y-6,x+6.5,y-2.6+u)}                               // low, patting
+ else if(ph==='stop'){W(x-4.2,y-14,x+4.2,y-8.4);W(x+4.2,y-14,x-4.2,y-8.4)}                                          // crossed above the head
+ else{const u=(k+1)*.5;W(x-6.2+u,y-5.2,x-1.8+u,y-5.2);W(x+6.2-u,y-5.2,x+1.8-u,y-5.2)}                              // chocks in: pointing inward
+ ctx.stroke();ctx.restore()}
+
+// ==== GATE-77 S6c · p174 · K-126: the crew in front of an aircraft are drawn over it, the crew under it — under it =====================
+var G77_ZS={on:true,m:1,n:{over:0,under:0}};
+// is (x,y) under an aircraft on the ground — inside its fuselage box or its wing box (+m)?
+function g77UnderAc(x,y){if(!APTT_SPEC)return false;for(const a of APT_ACT){if(a.kind!=='ac')continue;const p=a.pose;if((p[3]||0)>8)continue;const dx=x-p[0],dy=y-p[1];if(dx*dx+dy*dy>420*420)continue;
+  const g=apttAcGeom(a.id);if(!g||!g.F)continue;const c=Math.cos(p[2]||0),s=Math.sin(p[2]||0),lx=dx*c+dy*s,ly=-dx*s+dy*c,m=G77_ZS.m;
+  if(lx>g.F[0]-m&&lx<g.F[1]+m&&ly>g.F[2]-m&&ly<g.F[3]+m)return true;if(g.W&&lx>g.W[0]-m&&lx<g.W[1]+m&&ly>g.W[2]-m&&ly<g.W[3]+m)return true}
+ return false}
+function g77DrawCrew(now,v,mode){if(WTC_LP===1||!APT_OPS.ready)return;const t=APT_OPS.clk;if(mode!=='over'){G77_CI.ch.length=0;G77_CI.co.length=0;
+ for(const f of AO.flights){const C=f.crew;if(!C||t<C.tA-1||t>C.tB+1)continue;for(const it of C.items){if(t<it.t0||(it.t1!=null&&t>it.t1))continue;const [x,y]=it.p;if(!portVis(v,x-6,y-6,12,12))continue;(it.k==='chock'?G77_CI.ch:G77_CI.co).push(x,y)}}g77DrawCrewItems()}   // GATE-77 S6c · p174: the cones and chocks — once, on the ground layer
+ for(const f of AO.flights){const C=f.crew;if(!C||t<C.tA-1||t>C.tB+1)continue;
+  for(const w of C.walkers){const p=g77WalkerAt(w,t);if(!p||!portVis(v,p.x-12,p.y-20,24,30))continue;if(mode&&G77_ZS.on){const u=g77UnderAc(p.x,p.y);if((mode==='under')!==u)continue;G77_ZS.n[mode]++}   // GATE-77 S6c · p174 · K-126
+   
+   const face=p.face==='ac'?g77Face(f.sd.ngx-p.x,f.sd.ngy-p.y):g77Face(p.dx,p.dy),I=TurboCity.info(G77_CREW_ASSET,{scale:G77_MS.sc,direction:face,pose:p.walk?'walking':'standing'}),feet=I.an.find(q=>q[0]==='Feet')||['Feet',I.w/2,I.h*.55];
+   const dIn=Math.hypot(p.x-C.post[0],p.y-C.post[1]),al=Math.min(1,dIn/6+.15);   // fades only in the staff door
+   if(p34Crew(f,p,t,al,w,face))continue;   /* p381 */ctx.save();ctx.globalAlpha=al;TurboCity.draw(ctx,G77_CREW_ASSET,p.x-feet[1],p.y-feet[2],{mode:'runtime',scale:G77_MS.sc,direction:face,pose:p.walk?'walking':'standing',time:p.walk?t:0});ctx.restore();
+   if(p.face==='ac'&&!p.walk&&G77_MS.on){g77MarshalSignal(f,p,t)}else if(p.face==='ac'&&!p.walk){const k=Math.sin(t*5)*.6;ctx.save();ctx.strokeStyle='#ff8a1e';ctx.lineWidth=1.3;ctx.beginPath();ctx.moveTo(p.x-3,p.y-7);ctx.lineTo(p.x-6,p.y-11-k*2);ctx.moveTo(p.x+3,p.y-7);ctx.lineTo(p.x+6,p.y-11+k*2);ctx.stroke();ctx.restore()}}
+ }
+}
+// ---- QA-57 

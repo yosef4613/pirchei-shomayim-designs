@@ -1,0 +1,884 @@
+solid #ffffff2a;border-radius:14px;color:#e8f1f6;padding:8px 14px;font:13px Segoe UI,Arial,sans-serif;min-width:min(600px,92vw);box-shadow:0 10px 30px #0008}
+#f3Hud.show{display:block}#f3Hud .l1{display:flex;gap:14px;flex-wrap:wrap;align-items:baseline}#f3Hud .l1 b{color:#ffe08a;font-size:15px}#f3Hud .k{color:#9fb6c4;font-size:11px;margin-top:3px}
+#f3Hud .bar{height:11px;background:#0d2f43;border-radius:6px;overflow:hidden;margin-top:6px}#f3Hud .bar i{display:block;height:100%;transition:width .1s}
+#f3Hud .hold{float:left;margin:2px 0 0 0;background:#f2c45a;color:#14202a;border:0;border-radius:10px;padding:6px 12px;font-weight:700;cursor:pointer;user-select:none}
+.f3cb{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}.f3cb .bt{background:#0e3249;border:1px solid #ffffff22;border-radius:12px;padding:8px;color:#e8f1f6}
+.f3cb canvas{width:100%;height:auto;border-radius:9px;background:#0b3550}.f3cb b{color:#ffe08a}.f3cb small{display:block;color:#a9c6d6}.f3cb ul{margin:6px 0;padding-inline-start:18px;font-size:12px;line-height:1.45}
+.f3cb .pr{font-size:16px;font-weight:800;color:#fff}.f3cb .pr i{font-style:normal;font-size:11px;font-weight:400;color:#a9c6d6}.f3cb .st{font-size:12px;color:#9fe3b0;margin:4px 0}`;
+ function ensureDom(){if(document.getElementById('f3Menu'))return;const st=document.createElement('style');st.id='f3Css';st.textContent=CSS;document.head.appendChild(st);
+  const m=document.createElement('div');m.id='f3Menu';m.innerHTML='<div id="f3Panel"></div>';document.body.appendChild(m);const h=document.createElement('div');h.id='f3Hud';document.body.appendChild(h);
+  m.addEventListener('click',e=>{const a=e.target.closest('[data-f3m]');if(!a)return;e.stopPropagation();const [k,v]=a.dataset.f3m.split('|');const c=S.cfg;if(!c)return;
+   if(k==='close')closeMenu();else if(k==='go')startDrop();else{if(k==='rod')c.rod=v;else if(k==='bait')c.bait=v;else if(k==='weight')c.weight=v;else if(k==='tool')c.tool=v;else if(k==='bm')c.bottomMode=v==='1';renderMenu()}},true);
+  m.addEventListener('input',e=>{if(e.target&&e.target.id==='f3Depth'&&S.cfg){S.cfg.depth=+e.target.value;S.cfg.bottomMode=false;renderMenu(true)}},true);
+  const hold=v=>e=>{S.hold=v;e.preventDefault()};h.addEventListener('mousedown',e=>{if(e.target.closest('.hold'))hold(true)(e)});addEventListener('mouseup',()=>{S.hold=false});h.addEventListener('touchstart',e=>{if(e.target.closest('.hold'))hold(true)(e)},{passive:false});addEventListener('touchend',()=>{S.hold=false});
+  addEventListener('keydown',e=>{if(e.code==='Escape'&&S.menu){e.stopPropagation();closeMenu()}},true)}
+ function openMenu(){ensureDom();const b=boatById(S.aboard);if(!b)return;const bottom=depthAt(b.x,b.y),spot=nearSpot(b.x,b.y);if(!S.cfg||!b.rods.includes(S.cfg.rod))S.cfg=defaultCfg(b,spot,bottom);S.menu=true;renderMenu();document.getElementById('f3Menu').classList.add('show');return true}
+ function closeMenu(){S.menu=false;const m=document.getElementById('f3Menu');if(m)m.classList.remove('show');try{focusGame()}catch(e){}}
+ function rodCanvas(id){return '<canvas data-f3rod="'+id+'" width="150" height="34"></canvas>'}
+ function renderMenu(onlyOdds){const m=document.getElementById('f3Menu'),b=boatById(S.aboard);if(!m||!b||!S.cfg)return;const pn=m.querySelector('#f3Panel')||m,c=S.cfg,W=seaNow(),ck=clockNow(),bottom=depthAt(b.x,b.y),spot=nearSpot(b.x,b.y),T=tod(ck.h),D=effDepth(c,bottom,W),O=odds(c,spot,bottom,W,ck.h,b),left=rentLeft(),cls=RODS3[c.rod].cls,so=SIZE_ODDS[cls],big=so[2]+so[3]+((BAITS3[c.bait].key==='live'||BAITS3[c.bait].key==='chunk')?8:0),wt=biteWait({cfg:c,spot,bottom,W});
+  const oddsHtml=O.map(r=>{const q=r.q,mn=Math.round(q.base*FISH_SIZE_SCALE[0]*.88),mx=Math.round(q.base*FISH_SIZE_SCALE[3]*1.1),k0=q.k*Math.pow(mn/100,3),k1=q.k*Math.pow(mx/100,3),dr=(q.dn&&T==='night')?q.dn:q.d;
+    return `<div class="fishOdd"><canvas data-f3fish="${q.id}" data-cm="${Math.round((mn+mx)/2)}"></canvas><b>${r.pct.toFixed(1)}%</b><span>${q.name}${r.pct<.5?' <em class="f3low">סיכוי נמוך מאוד</em>':r.pct<3?' <em class="f3low">סיכוי נמוך</em>':''}</span><span style="display:block">${mn}–${mx} ס״מ · ${kgTxt(k0)}–${kgTxt(k1)}</span><span style="display:block">עומק ${dr[0]}–${dr[1]} מ׳${q.bot?' · תחתית':''}${r.why?' · '+r.why:''}</span></div>`}).join('');
+  if(onlyOdds){const o=pn.querySelector('#f3Odds');if(o){o.innerHTML=oddsHtml;paintFish(o)}const dv=pn.querySelector('#f3DepthV');if(dv)dv.textContent=D+' מ׳';return}
+  const opt=(k,id,on,html,dis,x)=>`<button class="fishChoice ${x||''} ${on?'sel':''}" data-f3m="${k}|${id}" ${dis?'disabled':''}>${html}</button>`;
+  const rods=Object.entries(RODS3).map(([id,r])=>opt('rod',id,c.rod===id,`<canvas data-f3rod="${id}" width="230" height="40"></canvas><span class="fr7"><b>${r.name}</b><small>${r.sub}</small><span class="nums7"><i>${r.len.toFixed(1)} מ׳</i><i>עד ${r.line} ק״ג</i><i>${r.cap} מ׳ חוט</i></span><em>${r.reel}</em>${b.rods.includes(id)?'':'<em class="no7">לא בסירה הזו</em>'}</span>`,!b.rods.includes(id),'fishRod7')).join('');
+  const baits=Object.entries(BAITS3).map(([id,q])=>{const n=inv(id);return opt('bait',id,c.bait===id,`<b>${q.label}</b><small>${q.desc}</small><em>${q.reuse?(n?'בסירה · רב־פעמי':'אין בסירה'):'במלאי ×'+n}</em>`,n<=0)}).join('');
+  const wts=Object.entries(WEIGHTS3).map(([id,q])=>opt('weight',id,c.weight===id,`<b>${q.label}</b><small>${q.desc}</small>`,!b.weights.includes(id))).join('');
+  const tools=Object.entries(TOOLS3).map(([id,q])=>opt('tool',id,c.tool===id,`<b>${q.label}</b><small>${id==='net'?'לדגים עד 15 ק״ג':'לדגים גדולים — טונה ודג חרב'}</small>`,!b.tools.includes(id))).join('');
+  const cond=[[bottom+' מ׳','עומק המים (מד העומק)'],[W.wave+' מ׳','גובה הגלים'],[W.wind+' קשר','רוח '+dirHe(W.dir)],[W.sky,'השמיים'],[W.temp+'°','המים'],[TOD_HE[T],'השעה '+ck.hhmm]].map(([v,l])=>`<div class="fishOdd"><b>${v}</b><span>${l}</span></div>`).join('');
+  pn.innerHTML=`<h2>הכנת ציוד לדיג — הים העמוק (שלב 3)</h2><div class="sub">${spot?'נקודת דיג: '+spot.name+' · '+HAB_HE[spot.hab]:'מים פתוחים — אין כאן להקה מסומנת'} · הסירה "${b.name}"${P().rental?' · נותרו '+Math.max(0,Math.round(left))+' דק׳ להשכרה':''}. בחר חכה, פיתיון, משקולת ועומק. הסיכויים מתעדכנים לפי הציוד, הים והשעה.</div>
+<div class="f3cols"><div class="pc"><h3>הים עכשיו</h3><div class="fishOdds" style="grid-template-columns:repeat(3,1fr)">${cond}</div><div class="fishQualityLine" style="display:block;line-height:1.5">${seaEffect(W)} ${T==='dawn'?'בשחר ובין הערביים הטונות והברקודות פעילות במיוחד.':T==='night'?'בלילה דג החרב עולה מהעומק, והמורנה יוצאת מהסלעים.':'ביום הלוקוס נוגס בשונית, ודג החרב נמצא עמוק מאוד.'}${spot?' '+spot.desc+'.':''}</div></div>
+<div class="pc"><h3>1. בחר חכה וסליל</h3><div class="fishChoiceGrid" style="grid-template-columns:1fr">${rods}</div></div>
+<div class="pc"><h3>2. בחר פיתיון</h3><div class="fishChoiceGrid">${baits}</div></div>
+<div class="pc"><h3>3. משקולת ועומק</h3><div class="fishChoiceGrid">${wts}</div>${opt('bm','1',c.bottomMode,`<b>עד התחתית — ${bottom} מ׳</b><small>לדגי התחתית: לוקוס ומורנה</small>`)}<div class="fishQualityLine"><span>עומק הדיג</span><b id="f3DepthV">${D} מ׳</b></div><input id="f3Depth" type="range" min="2" max="${Math.max(3,bottom)}" step="1" value="${Math.min(c.depth,bottom)}" style="width:100%"><div class="fishQualityLine"><span>העומק בפועל — לפי המשקולת, הרוח והזרם</span><b>${WEIGHTS3[c.weight].label}</b></div></div>
+<div class="pc"><h3>4. רשת וגאף</h3><div class="fishChoiceGrid">${tools}</div><div class="fishQualityLine" style="display:block">הדג עולה לסירה ברשת או בגאף. בלי הכלי הנכון — יותר דגים נופלים ליד הדופן.</div></div>
+<div class="pc" style="grid-column:1/-1"><h3>5. סיכויים והתחלת הדיג — דגי הים מתוך 24 הסוגים</h3><div class="fishOdds" id="f3Odds">${oddsHtml}</div><div class="fishQualityLine"><span>סיכוי לדג גדול או שיא</span><b>${Math.min(60,big).toFixed(0)}%</b></div><div class="fishQualityLine"><span>זמן משוער עד נשיכה</span><b>${wt.sum<.05?'אין כאן נשיכות בציוד הזה':Math.round(wt.ms/1000)+' שנ׳'}</b></div>
+<div class="fishQualityLine" style="display:block">F — מורידים את הפיתיון. נשיכה: F — מכים. במשיכה: מחזיקים F כדי לגלגל, ומשחררים כשהמתיחה באדום — אחרת החוט נקרע. ליד הסירה — רשת או גאף, והדייג מרים את הדג.</div><button class="primary fishStartInline" data-f3m="go|">להוריד את הפיתיון (F)</button></div></div>
+<div class="f3act"><button data-f3m="close|">ביטול</button></div>`;
+  requestAnimationFrame(()=>{try{renderFishThumbCanvases(pn);paintRods(pn);paintFish(pn)}catch(e){er('menuCv',e)}})}
+ /* D‑567: כרטיסי הדגים — הדג בפרופורציה שלו (הקנבס בגודל של הכרטיס, בלי מתיחה), במרכז, בגודל לפי האורך היחסי, על מים רגועים ובצבעים מלאים */
+ function paintFish(root){const L=[...root.querySelectorAll('canvas[data-f3fish]')];if(!L.length)return;const mx=Math.max(...L.map(c=>+c.dataset.cm||50)),dpr=Math.min(2,window.devicePixelRatio||1);
+  L.forEach(cv=>{const W=Math.max(80,Math.round(cv.getBoundingClientRect().width||cv.clientWidth||170)),H=64,id=cv.dataset.f3fish,cm=+cv.dataset.cm||50;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);
+   const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#1f7096');gr.addColorStop(1,'#11455f');g.fillStyle=gr;g.fillRect(0,0,W,H);g.strokeStyle='rgba(255,255,255,.07)';g.lineWidth=1;for(let y=9;y<H;y+=11){g.beginPath();for(let x=0;x<=W;x+=8)g.lineTo(x,y+Math.sin(x*.06+y)*1.1);g.stroke()}
+   try{const I=TurboCity.info(id,{scale:1,sz:2,variant:0}),fp=(I.fp&&I.fp[2]>0)?I.fp:[0,0,I.w,I.h],fr=.3+.6*Math.sqrt(cm/mx),sc=Math.min(W*fr/fp[2],(H-16)/fp[3]),J=TurboCity.info(id,{scale:sc,sz:2,variant:0}),f2=(J.fp&&J.fp[2]>0)?J.fp:[0,0,J.w,J.h],x=W/2-(f2[0]+f2[2]/2),y=H/2-3-(f2[1]+f2[3]/2);
+    g.fillStyle='rgba(0,18,28,.28)';g.beginPath();g.ellipse(W/2,H/2-3+f2[3]*.55+3,f2[2]*.4,2.6,0,0,TAU);g.fill();TurboCity.draw(g,id,x,y,{mode:'runtime',scale:sc,sz:2,variant:0,time:0})}catch(e){er('fishCard',e)}
+   g.fillStyle='rgba(223,247,255,.85)';g.font='600 10px Segoe UI,Arial';g.textAlign='left';g.fillText(cm+' ס״מ',5,H-5)})}
+ function paintRods(root){root.querySelectorAll('canvas[data-f3rod]').forEach(cv=>{const r=rodObj(cv.dataset.f3rod,false),g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);g.fillStyle='#0a2536';g.fillRect(0,0,W,H);try{FISHX.rodSide(g,r,W-6,H*.45,(W-14)/2.6,{min:.7})}catch(e){}g.fillStyle='#9fb0bd';g.font='600 9px Segoe UI,Arial';g.textAlign='left';g.fillText(r.len.toFixed(1)+' מ׳',3,H-3)})}
+ /* ---- שורת הסירה בתחתית המסך ---- */
+ function hud(){try{examHud()}catch(err){}const h=document.getElementById('f3Hud');if(!h)return;const b=boatById(S.aboard);if(!b||State.phoneOpen||S.menu){h.classList.remove('show');return}const t=NOW();if(t-S.hudT<160)return;S.hudT=t;
+  const W=seaNow(),kn=(Math.abs(b.u)/10*1.944).toFixed(1),dep=depthAt(b.x,b.y),sp=nearSpot(b.x,b.y),f=S.f,left=rentLeft();let l2='';
+  if(f&&f.phase!=='idle'){const ph={drop:'הפיתיון יורד — '+Math.round(f.depth)+' / '+f.target+' מ׳',wait:'ממתינים לנשיכה · '+Math.round(f.depth)+' מ׳',bite:'נשיכה! F — להכות',fight:'במשיכה · '+(f.row?f.row.name:'')+' · חוט בחוץ '+Math.round(f.line)+' מ׳',land:'הדג ליד הסירה — '+(TOOLS3[f.cfg.tool]||{}).label,hold:'נתפס '+(f.row?f.row.name+' · '+f.row.lengthCm+' ס״מ · '+kgTxt(f.row.weightKg):''),lost:'הדג ברח'}[f.phase]||'';
+   l2=`<div class="l1"><b>${ph}</b></div>`+(f.phase==='fight'?`<button class="hold">החזק — גלגול (F)</button><div class="bar"><i style="width:${Math.round(cl(f.T,0,1)*100)}%;background:${f.T>.85?'#e2372b':f.T>.65?'#f2c230':'#3cb371'}"></i></div><div class="k">המתיחה של החוט · החזק F כדי לגלגל, ושחרר באדום</div>`:'<div class="k">F — להרים את החכה (והעוגן עולה)</div>')}
+  else l2=b.anchor?`<div class="k">העוגן במים · F — התפריט של הדיג · W או S — מרימים את העוגן ושטים</div>`:`<div class="k">W ו-S — מצערת · A ו-D — הגה · רווח — עצירה · F — ${inBasin(b.x,b.y)?'(באגן לא דגים)':'התפריט של הדיג'} · E — ${b.owned?'קשירה במקום שלך במעגן':inBasin(b.x,b.y)?'קשירה במעגן '+b.be.n:'(יורדים רק במזח)'}</div>`;
+  h.innerHTML=`<div class="l1"><b>"${b.name}"</b><span>${kn} קשר</span><span>עומק ${dep} מ׳</span><span>רוח ${W.wind} קשר · גלים ${W.wave} מ׳</span>${sp?'<span>נקודת דיג: '+sp.name+'</span>':''}${b.anchor?'<span style="color:#ffd27a">'+(b.anchor.st==='up'?'מרימים את העוגן':'העוגן במים')+'</span>':''}${P().rental?'<span>'+(left>=0?'נותרו '+Math.round(left)+' דק׳':'שעה נוספת')+'</span>':''}${b.owned&&HOOK.hud?HOOK.hud(b):''}${S.exam&&b.school?'<span>מבחן: שער '+Math.min(S.exam.next,EXAM.gates.length)+' / '+EXAM.gates.length+' · '+examClock()+'</span>':''}</div>`+l2;h.classList.add('show')}
+ /* ======================= מסך המקום של מועדון השייט ======================= */
+ const SHOP_BAITS=['sea-squid','sea-sardine','sea-live','sea-chunk','sea-jig','sea-plug'];
+ function clubHtml(){init();const p=P(),r=p.rental,W=seaNow(),ck=clockNow();let h='';let saleFirst='';
+  const st=b=>b.mode==='moored'?(r&&r.boat===b.id?'שכורה לך — במעגן '+b.be.n:'במעגן '+b.be.n+' — פנויה'):S.aboard===b.id?'בים — איתך':'בדרך חזרה למעגן '+b.be.n+' עם אורי';
+  h+=(typeof LIC570!=='undefined'?LIC570.clubCards():'')+pcard('השכרת סירת דיג — לים העמוק, עם סקיפר',`<div class="f3cb">${BOATS.filter(b=>!b.school&&!b.owned).map(b=>`<div class="bt"><canvas data-f3-boatcv="${b.id}" width="300" height="150"></canvas><b>"${b.name}" — ${b.type}</b><small>${b.len} מ׳ · ${b.engine} · עד ${b.speed} קשר · ${b.seats} אנשים</small>
+<div class="pr">${money(b.price)} לשעה <i>הסקיפר של המועדון אחראי על הסירה — לדיג צריך רק רישיון דיג עמוק</i></div><ul>${b.gear.map(g=>'<li>'+g+'</li>').join('')}</ul><div class="st">${st(b)}</div>
+<div class="phoneActions">${r?'':[1,2,4].map(hh=>`<button ${hh===2?'class="primary"':''} data-f3r="rent|${b.id}|${hh}" ${b.mode!=='moored'||!licenseOwned('LIC-12')?'disabled':''}>${hh===1?'שעה':hh===2?'שעתיים':'חצי יום — 4 שעות'} · ${money(b.price*hh+PERMIT)}</button>`).join('')}</div></div>`).join('')}</div>`+
+   pnote('הסירה יוצאת מהמעגן שלה וחוזרת אליו. באגן — עד 5 קשר; היציאה לים דרך הפתח שליד הפנס הירוק. הזמן נספר בשעון של המשחק; כל שעה נוספת — במחיר של שעה. סירה שלא חזרה — אורי מהמועדון מחזיר אותה בשיט, בתוספת '+money(60)+'.'),'shop');
+  if(r){const b=boatById(r.boat),left=rentLeft();h+=pcard('הסירה שלך',pkv([['הסירה','"'+b.name+'" · '+b.type],['המעגן',b.be.n+' · '+(b.be.pier==='PIER-1'?'המזח הראשון':'המזח השני')],['הזמן',left>=0?'נותרו '+Math.round(left)+' דקות':'עברו '+Math.round(-left)+' דקות מעבר לזמן'],['שולם',money(r.paid)]])+
+    `<div class="phoneActions"><button class="primary" data-f3r="nav|${b.id}">ניווט לסירה</button>${r.boarded?'':'<button data-f3r="cancel|">לבטל את ההשכרה</button>'}</div>`,'shop')}
+  h+=pcard('פיתיונות וציוד לים',`<div class="phoneActions" style="flex-wrap:wrap">${SHOP_BAITS.map(id=>{const q=BAITS3[id];return`<button data-f3r="buy|${id}">${q.label}${q.pack>1?' × '+q.pack:''} · ${money(q.price)} <small>(יש ${PlayerProfile.inventory[id]||0})</small></button>`}).join('')}</div>`+pnote('הפיתיונות של הסירה כלולים בהשכרה; מה שקונים כאן נשאר בתיק.'),'shop');
+  const fx=ensureFishingSchema(),bag=(fx.inventory||[]).filter(q=>q.habitat==='sea'),tot=bag.reduce((n,q)=>n+fishSellValue(q),0);
+  const saleCard=pcard('קניית דגים מהסירה',bag.length?`<div>${bag.slice().reverse().map(q=>`<div class="fishBagRow"><canvas class="fishThumb" data-fish-thumb="${q.id}" data-fish-size="${q.sizeIndex??1}"></canvas><div class="ftxt"><b>${q.name} · ${FISH_SIZE_HE[q.sizeIndex]||''}</b><small>${q.lengthCm} ס״מ · ${kgTxt(q.weightKg||0)} · ${(SPOT_ID[q.spot]||{}).name||'בים'} · עומק ${q.depthM||'?'} מ׳</small><span class="fishRecord">${fishRecordLabel(q.id)}</span></div><div class="fishBagActions"><div class="fval">${money(fishSellValue(q))}</div><button class="primary" data-f3r="sell|${q.catchId}">למכור</button></div></div>`).join('')}</div>
+<div class="phoneActions"><button class="primary" data-f3r="sellall|">למכור את כל השלל · ${money(tot)}</button><button data-f3r="keep|">לשמור בקטלוג ובתיק</button></div>`:pnote('אין עדיין דגי ים בתיק. שוכרים סירה, יוצאים לנקודות הדיג וחוזרים — המועדון קונה את השלל.'),'shop');
+  if(bag.length)h=saleCard+h;else h+=saleCard;
+  h+=pcard('הקטלוג — דגי הים העמוק',`<div>${SEA.map(q=>{const rec=fx.records[q.id];return`<div class="fishBagRow"><canvas class="fishThumb" data-fish-thumb="${q.id}" data-fish-size="2"></canvas><div class="ftxt"><b>${q.name}</b><small>אורך בסיס ${q.base} ס״מ · ${kgTxt(q.k*Math.pow(q.base/100,3))} · עומק ${q.d[0]}–${q.d[1]} מ׳${q.dn?' (בלילה '+q.dn[0]+'–'+q.dn[1]+')':''}</small><span class="fishRecord">${rec?'שיא אישי: '+rec.lengthCm+' ס״מ'+(rec.weightKg?' · '+kgTxt(rec.weightKg):''):'טרם נתפס'}</span></div></div>`}).join('')}</div>`,'shop');
+  const fc=[0,3,6].map(dh=>{const hh=(ck.h+dh)%24,dd=ck.day+Math.floor((ck.h+dh)/24),w=seaAt(dd,hh);return[dh?'בעוד '+dh+' שעות':'עכשיו',w.sky+' · רוח '+w.wind+' קשר '+dirHe(w.dir)+' · גלים '+w.wave+' מ׳']});
+  h+=pcard('תחזית הים',pkv(fc)+pnote(seaEffect(W)),'shop');return h}
+ function clubAct(a,id,x){const p=P();if(a==='rent')rent(id,+x);else if(a==='exam')examStart();else if(a==='buylic'){try{LIC570.buy()}catch(e){}}else if(a==='cancel')cancelRental();else if(a==='nav'){try{setNavigationTarget('F3-BOARD-'+id,{silent:true});toast('הניווט — אל "'+boatById(id).name+'"')}catch(e){}}
+  else if(a==='buy'){const q=BAITS3[id];if(PlayerProfile.money<q.price)return toast('אין מספיק כסף');PlayerProfile.money-=q.price;PlayerProfile.inventory[id]=(PlayerProfile.inventory[id]||0)+q.pack;try{recordTransaction('shop-purchase',-q.price,{item:id,shop:'F3-CLUB'})}catch(e){}toast('נקנה: '+q.label+(q.pack>1?' × '+q.pack:''))}
+  else if(a==='sell'||a==='sellall'){const fx=ensureFishingSchema(),sold=[];for(let i=fx.inventory.length-1;i>=0;i--){const q=fx.inventory[i];if(q.habitat==='sea'&&(a==='sellall'||q.catchId===id))sold.push(...fx.inventory.splice(i,1))}if(!sold.length)return toast('אין דגים למכירה');
+   const tot=sold.reduce((n,q)=>n+fishSellValue(q),0);PlayerProfile.money+=tot;fx.totalSold+=sold.length;fx.totalEarned+=tot;p.sold=(p.sold||0)+sold.length;p.earned=(p.earned||0)+tot;try{recordTransaction('fish-sale',tot,{count:sold.length,shop:'F3-CLUB',fish:sold.map(q=>q.id),catchIds:sold.map(q=>q.catchId)})}catch(e){}
+   try{SaveManager.save('fish-sale',{backup:false,silent:true})}catch(e){}toast(sold.length===1?'נמכר '+sold[0].name+' · '+money(tot):'נמכרו '+sold.length+' דגים · '+money(tot))}
+  else if(a==='keep'){toast('השלל נשמר בתיק — ובקטלוג נרשמו השיאים')}try{renderPhone()}catch(e){}}
+ function paintClub(root){root.querySelectorAll('canvas[data-f3-boatcv]').forEach(cv=>{const b=boatById(cv.dataset.f3BoatCv||cv.dataset.f3Boatcv);if(!b)return;const g=cv.getContext('2d'),W=cv.width,H=cv.height,gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#2f7fa8');gr.addColorStop(1,'#0d4566');g.fillStyle=gr;g.fillRect(0,0,W,H);
+   g.strokeStyle='rgba(255,255,255,.18)';g.lineWidth=1;for(let i=0;i<9;i++){const y=12+i*16;g.beginPath();g.moveTo(10+(i*37)%40,y);g.quadraticCurveTo(W/2,y-4,W-10,y+2);g.stroke()}
+   const sc=Math.min(W/(b.L*1.9),H/(b.L*1.05));g.save();g.translate(W/2,H*.6);g.scale(sc,sc);try{PAINTER.fn(g,b,0,0,-.42,0,{u:0,trail:[],wave:.3,night:0,thumb:true})}catch(e){er('thumb',e)}g.restore()});}
+ /* ======================= הסצנות של הדף החי (הכול בתנועה אמיתית — לא מעבירים סירה ממקום למקום) ======================= */
+ function ff(sec){const dt=1/30;for(let i=0;i<sec*30;i++){stepAll(dt);if(S.aboard)stepAboard(dt);const b=S.aboard&&boatById(S.aboard);if(b&&b.mode==='player'&&!b.legs.length&&!S.f)break}}
+ function ensureRent(id){const p=P();if(p.rental&&p.rental.boat===id)return true;if(p.rental)return false;PlayerProfile.money=Math.max(PlayerProfile.money,5000);if(!licenseOwned('LIC-12')){PlayerProfile.licenses=PlayerProfile.licenses||{};PlayerProfile.licenses['LIC-12']={state:'owned',acquiredAt:isoNow(),demo:true}}return rent(id,4)}   /* הסצנות של הדף החי ושל הבדיקה — עם רישיון (בדמו) */
+ function walkTo(x,y){try{if(PlayerProfile.mode!=='walk'&&typeof exitVehicle==='function')exitVehicle()}catch(e){}PlayerProfile.mode='walk';State.mapQa=false;PlayerPed.x=x;PlayerPed.y=y;Camera.x=x;Camera.y=y}
+ function scene(n){init();ensureDom();if(n==='day'||n==='night'){try{c34Night(n==='night'?1:0);wtcInvalidate()}catch(e){}return n}try{setPhoneOpen(false)}catch(e){}closeMenu();const b=boatById('F3-RB-B');S.auto=false;
+  if(n==='exam'){const sb=BOATS.find(q=>q.school);if(S.aboard||P().rental||sb.mode!=='moored'){ff(200);if(S.aboard||P().rental)return 'קודם מחזירים את הסירה'}if(licenseOwned('LIC-10'))delete PlayerProfile.licenses['LIC-10'];PlayerProfile.money=Math.max(PlayerProfile.money,500);
+   examStart();walkTo(sb.be.board[0],sb.be.board[1]);board(sb);const G=EXAM.gates;S.exam.demo=1;setTimeout(()=>{const c=document.getElementById('f3ExamCard');if(c)c.style.display='none'},3500);sb.mode='auto';sb.legs=legsOut(sb).concat(G.map(g=>go((g.x0+g.x1)/2,g.y+30,sb.maxV*.6,{tol:12})));Camera.zoom=1.3;return 'exam'}   /* הדף החי: המדריך מראה את המסלול — אותו מבחן, בטייס */
+  try{const c=document.getElementById('f3ExamCard');if(c&&n!=='examInfo')c.style.display='none'}catch(e){}
+  if(S.exam&&S.exam.demo&&n!=='exam'){examFail('ההדגמה של המבחן הופסקה');ff(300)}   /* הדף החי: כפתור אחר באמצע ההדגמה — המדריך מחזיר את סירת המבחן */
+  if(n==='examInfo'){walkTo(6380,2072);State.mapQa=true;Camera.x=6880;Camera.y=2300;Camera.zoom=.9;examCard('info');return 'examInfo'}
+  if(n==='dock'){const a=boatById('F3-RB-A');if(S.aboard&&S.aboard!==a.id)ff(300);if(!S.aboard){if(a.mode!=='moored')ff(200);ensureRent(a.id);walkTo(a.be.board[0],a.be.board[1]);board(a)}a.mode='player';a.u=0;a.x=a.be.cx+3;a.y=a.be.cy+14;a.h=ang(a.be.h+Math.PI+.35);Camera.zoom=2.8;
+   setTimeout(()=>{try{tryLeave()}catch(e){}},900);return 'dock'}   /* הדף החי: הסירה בתוך המעגן, החרטום החוצה ועקום — E: נצמדת בלי סיבוב */
+  if(n==='bump'){const a=boatById('F3-RB-A');if(S.aboard&&S.aboard!==a.id){ff(300)}if(!S.aboard){if(a.mode!=='moored')ff(200);ensureRent(a.id);walkTo(a.be.board[0],a.be.board[1]);board(a)}a.mode='player';a.u=0;Camera.zoom=2.6;
+   Input.held.add('KeyW');setTimeout(()=>{Input.held.delete('KeyW');toast(a.hitN?'הסירה נעצרה במזח — לא עוברת דרכו ('+(a.lastHit||'מזח')+')':'הסירה עצרה')},2600);return 'bump'}   /* הדף החי: סירה מול מזח — נעצרת */
+  if(n==='club'){if(S.aboard)return 'על הסירה';walkTo(6380,2072);Camera.zoom=1.6;openPoiPhone('business','F3-CLUB');return 'club'}
+  if(n==='berth'){if(S.aboard)return 'על הסירה';if(b.mode!=='moored'){ff(120)}ensureRent(b.id);walkTo(b.be.board[0],b.be.board[1]+6);Camera.zoom=2.3;return 'berth'}
+  if(n==='out'){if(!S.aboard){scene('berth');board(b)}const s=SPOT_ID['F3-SPOT-2'];b.mode='auto';b.legs=legsOut(b,[s.x-40,s.y]);S.demo='out';Camera.zoom=1.5;return 'out'}
+  if(n==='spot'||n==='hook'||n==='menu'){if(!S.aboard)scene('out');const s=SPOT_ID[n==='hook'?'F3-SPOT-4':'F3-SPOT-1'];if(S.aboard){S.f=null;b.mode='auto';b.legs=inBasin(b.x,b.y)?legsOut(b,[s.x-40,s.y+10]):[go(s.x-40,s.y+10,b.maxV*.6,{tol:14})]}ff(240);b.mode='player';b.legs=[];b.u=0;
+   if(n==='menu'){openMenu();return 'menu'}if(n==='hook'){S.cfg=defaultCfg(b,s,depthAt(b.x,b.y));S.cfg.rod='SR-DEEP';S.cfg.bait='sea-live';S.cfg.tool='gaff';S.cfg.bottomMode=false;S.cfg.depth=60;startDrop();const f=S.f;f.depth=f.target;f.phase='bite';f.q=SEA_ID['FS-SE-06'];f.row=makeRow(f.q,2,f);f.biteT=NOW();strike();S.auto=true;return 'hook'}
+   Camera.zoom=1.7;return 'spot'}
+  if(n==='return'){if(S.aboard){S.f=null;b.mode='moor';b.legs=legsHome(b);ff(400)}const fx=ensureFishingSchema();if(!fx.inventory.some(q=>q.habitat==='sea')){const f={spot:SPOT_ID['F3-SPOT-4'],cfg:{bait:'sea-live',rod:'SR-DEEP'},depth:60};const row=makeRow(SEA_ID['FS-SE-06'],2,f);row.boat='F3-RB-B';fx.inventory.push(row)}
+   walkTo(6380,2072);Camera.zoom=1.6;openPoiPhone('business','F3-CLUB');return 'return'}
+  if(n==='day'||n==='night'){try{c34Night(n==='night'?1:0);wtcInvalidate()}catch(e){}return n}return 'לא ידוע'}
+ /* D‑587 · הבדיקה: יציאה (E) מכל מעגן של המועדון, מכמה מקומות בתוך המעגן ומכל הכיוונים (כל 15°) — הסיבוב הכי גדול בעגינה, והסיבוב המצטבר */
+ function dockAudit(){init();const rows=[];let worst=0,worstSum=0,bad=0;for(const b of BOATS){const r=b.be.rect,offs=[[0,0],[-4,-12],[4,12],[3,-20],[-3,20]];
+   for(const [ox,oy] of offs)for(let k=0;k<24;k++){const c=Object.assign(Object.create(Object.getPrototypeOf(b)),b,{x:b.be.cx+ox,y:b.be.cy+oy,h:ang(b.be.h+k*Math.PI/12),u:0,r:0,vl:0,trail:[],mode:'moor',moorH:null});
+    if(!inBerth(c))continue;c.legs=legsDock(c);let prev=c.h,sum=0,mx=0;const h0=c.h;for(let n=0;n<30*10&&c.legs.length;n++){autopilot(c,1/30);const d=ang(c.h-prev);sum+=Math.abs(d);mx=Math.max(mx,Math.abs(ang(c.h-h0)));prev=c.h}
+    const deg=mx*180/Math.PI,sdeg=sum*180/Math.PI;worst=Math.max(worst,deg);worstSum=Math.max(worstSum,sdeg);if(deg>90.5||sdeg>90.5||c.legs.length||Math.hypot(c.x-b.be.cx,c.y-b.be.cy)>.5)bad++;rows.push(deg)}}
+  return{ok:!bad,cases:rows.length,bad,maxTurnDeg:+worst.toFixed(1),maxSumDeg:+worstSum.toFixed(1)}}
+ /* D‑586 · הבדיקה: 0 חפיפות — כל הסירות שבמעגנים מול המזחים ומול האחרות, וכל הדרכים של הטייס (יציאה מכל מעגן לים וחזרה מהים ומהאגן), צעד אחרי צעד */
+ function overlapAudit(){init();const out={moored:[],pairs:[],paths:[]},D=F34_DECKS.map(rectP);
+  const all=[...F34_BOATS.filter(o=>!o.fish).map(o=>({id:o.id,P:obb(o.x,o.y,o.h,o.len*.96,o.len*(BEAMR[o.asset]||.33)*.92)})),...(F34_FISH?[{id:F34_FISH.id,P:obb(F34_FISH.x,F34_FISH.y,F34_FISH.h,F34_FISH.len*.96,F34_FISH.len*.33*.92)}]:[]),
+   ...BOATS.map(b=>({id:b.id,P:obb(b.be.cx,b.be.cy,b.be.h,b.L*.97,b.B*.92)}))];
+  for(const a of all)D.forEach((d,i)=>{if(sat(a.P,d))out.moored.push(a.id+'×deck'+i)});
+  for(let i=0;i<all.length;i++)for(let j=i+1;j<all.length;j++)if(sat(all[i].P,all[j].P))out.pairs.push(all[i].id+'×'+all[j].id);
+  for(const b of BOATS){const runs=[['out',{x:b.be.cx,y:b.be.cy,h:b.be.h},c=>legsOut(c,[SPOTS[1].x,SPOTS[1].y])],['home-sea',{x:SPOTS[3].x,y:SPOTS[3].y,h:0},c=>legsHome(c)],...(b.owned?(HOOK.runs?HOOK.runs(b):[]):[['home-basin',{x:6900,y:2244,h:Math.PI},c=>legsHome(c)]])];
+   for(const [nm,st,mk] of runs){const c=Object.assign(Object.create(Object.getPrototypeOf(b)),b,st,{u:0,r:0,vl:0,trail:[],mode:'return',legs:[]});c.legs=mk(c);let n=0,hits=0,first=null;
+    for(;n<30*500&&c.legs.length;n++){const L0=c.legs[0];autopilot(c,1/30);if(c.legs.length&&c.legs[0]===L0&&L0.k==='go'||L0.k==='pivot'){}const hh=(Math.hypot(c.x-b.be.cx,c.y-b.be.cy)<3)?null:hullHit(c,c.x,c.y,c.h);if(hh&&hh!=='החוף'){hits++;if(!first)first=hh+'@'+Math.round(c.x)+','+Math.round(c.y)}}
+    out.paths.push({boat:b.id,run:nm,steps:n,done:!c.legs.length,hits,first})}}
+  const bad=out.paths.filter(r=>r.hits||!r.done);return{ok:!out.moored.length&&!out.pairs.length&&!bad.length,mooredHits:out.moored,pairHits:out.pairs,paths:out.paths,lanes:BOATS.map(b=>({id:b.id,berth:b.be.n,lane:laneY(b)}))}}
+ /* ======================= הבדיקה ======================= */
+ function audit(){init();const issues=[],chk=(ok,w)=>{if(!ok)issues.push(w)};
+  for(const b of BOATS){chk(w3IsSea(b.be.cx,b.be.cy),b.id+':berth-not-sea');chk(!F34_BOATS.some(o=>Math.hypot(o.x-b.be.cx,o.y-b.be.cy)<20),b.id+':berth-taken');chk(!f34CollisionAt(b.be.board[0],b.be.board[1],3),b.id+':board-not-deck');
+   for(const L of[legsOut(Object.assign({},b,{x:b.be.cx,y:b.be.cy}),[SPOTS[1].x,SPOTS[1].y]),legsHome(Object.assign({},b,{x:SPOTS[3].x,y:SPOTS[3].y})),legsHome(Object.assign({},b,{x:SPOTS[4].x,y:SPOTS[4].y}))]){let px=b.be.cx,py=b.be.cy;const pts=L.filter(l=>l.k==='go');if(pts[0]&&pts[0].x!==b.be.cx)px=pts[0].x,py=pts[0].y;
+    for(const l of pts){for(let i=1;i<=20;i++){const x=lerp(px,l.x,i/20),y=lerp(py,l.y,i/20);if(!w3IsSea(x,y)){issues.push(b.id+':path-land@'+Math.round(x)+','+Math.round(y));break}}px=l.x;py=l.y}}}
+  for(const s of SPOTS){chk(w3IsSea(s.x,s.y),s.id+':not-sea');chk(!(s.x>SWIM[0]-40&&s.x<SWIM[2]+40&&s.y>SWIM[1]-40&&s.y<SWIM[3]+40),s.id+':swim');chk(!(s.x>6560&&s.x<7010&&s.y>3400),s.id+':ship-lane');chk(!inBasin(s.x,s.y),s.id+':basin');chk(!!navPoiRegistry()[s.id],s.id+':no-nav')}
+  chk(SEA.length===7&&SEA.every(q=>!!TurboCity.get(q.id)),'species');chk(SEA.every(q=>[...LAKE_FISH,...COAST_FISH].every(x=>x.id!==q.id)||COAST_FISH.some(x=>x.id===q.id&&x.base===q.base&&x.value===q.value)),'species-table');
+  let cont=null;try{const b=BOATS[0],sv={x:b.x,y:b.y,h:b.h,mode:b.mode,legs:b.legs.slice(),trail:b.trail};let mx=0;const t0={x:b.x,y:b.y};b.mode='return';b.x=7300;b.y=3300;b.legs=legsHome(b);let lx=b.x,ly=b.y,n=0;for(;n<30*400&&b.mode!=='moored';n++){autopilot(b,1/30);mx=Math.max(mx,Math.hypot(b.x-lx,b.y-ly));lx=b.x;ly=b.y}
+   cont={steps:n,arrived:b.mode==='moored',maxStepPx:+mx.toFixed(2),limitPx:+(b.maxV/30*1.2).toFixed(2),atBerth:Math.round(Math.hypot(b.x-b.be.cx,b.y-b.be.cy))};chk(cont.arrived&&cont.maxStepPx<=cont.limitPx&&cont.atBerth<=3,'return-continuity');Object.assign(b,sv);b.trail=sv.trail}catch(e){issues.push('cont:'+String(e&&e.message||e))}
+  let story=null;try{story=S9STORY.qa('F3-ST-FISH3');chk(story.ok,'story')}catch(e){issues.push('story:'+e)}
+  let club=null;try{const h=clubHtml();club={rent:(h.match(/data-f3r="rent\|/g)||[]).length,cards:(h.match(/pcard|class="pc/g)||[]).length,len:h.length};chk(club.rent>=6||!!P().rental,'club-rent')}catch(e){issues.push('club:'+e)}
+  return{ok:!issues.length,issues:issues.slice(0,20),boats:BOATS.map(b=>({id:b.id,name:b.name,berth:b.be.n,mode:b.mode,x:Math.round(b.x),y:Math.round(b.y)})),spots:SPOTS.map(s=>({id:s.id,depth:depthAt(s.x,s.y)})),species:SEA.map(q=>q.name),cont,story,club,err:ERR.e,errs:ERR.n}}
+ /* ======================= הסיפור — "הדייג הוותיק מהמרינה" (D‑512) ======================= */
+ try{S9STORY.add('F3-ST-FISH3',{zone:'F3',name:'הדייג הוותיק מהמרינה',reward:600,badge:'דייג ים עמוק',start:'F3-CLUB',hours:[5,9.5],who:'נסים אלמליח',chars:{'f3-nissim':['נסים אלמליח','#2b6f8f'],'f3-uri':['אורי מהמועדון','#1d4f91']},
+  intro:['f3-nissim','בוקר טוב! אני נסים, הדייג הכי ותיק במרינה. רוצה ללמוד לדוג בים העמוק? בוא למועדון השייט.'],
+  steps:[
+   {poi:'F3-CLUB',who:'נסים אלמליח',title:'הסיפורים של נסים',text:'נסים יושב במרפסת המועדון: "פעם הוצאתי מהשונית לוקוס של עשרים קילו. תשכור סירה — ואני אסמן לך את המקום."',btn:'יצאתי לסירה',wait:()=>!!P().rental,waitText:'קודם שוכרים סירה — בכרטיס "השכרת סירת דיג" שבמסך הזה.',msg:['f3-nissim','סימנתי לך את השונית הסלעית. צא דרך הפתח שליד הפנס הירוק — ובאגן לאט.']},
+   {poi:'F3-SPOT-1',who:'נסים אלמליח',title:'השונית הסלעית',drive:[6905,3215,80],text:'שטים לשונית הסלעית — הציפורים שמעליה מראות את המקום.',btn:null,msg:['f3-nissim','יפה! עכשיו F: קלמרי או ג׳יג, משקולת 300 גרם, עד התחתית — 24 מטר.']},
+   {poi:'F3-SPOT-1',who:'נסים אלמליח',title:'הדג של השונית',text:'דגים בשונית עד שעולה דג — לוקוס, מורנה או לברק. מחזיקים F כדי לגלגל, ומשחררים כשהחוט נמתח.',btn:null,msg:['f3-nissim','זה דג! עכשיו תחזיר את הסירה למעגן, ותביא לי לראות.']},
+   {poi:'F3-CLUB',who:'נסים אלמליח',title:'נסים במרפסת',text:'קושרים את הסירה במעגן ומביאים את הדג לנסים. "ככה מתחיל דייג אמיתי," הוא אומר.',btn:'להראות לנסים את השלל',wait:()=>!P().rental&&!S.aboard,waitText:'נסים מחכה שהסירה תהיה קשורה במעגן שלה.',msg:['f3-nissim','מחר בבוקר — המים הכחולים. שם הטונות. אני כבר מחכה.']}]})}catch(e){er('story',e)}
+ return{HOOK,anchorDrop,anchorUp,anchorDraw,anchorOf:b=>b&&b.anchor,hullPush,hullPushX,mtv,calmAt,physics,take,go,pivot,obb,sat,rectP,seaLine,clockNow,inBasin,autopilot,legsDock,inBerth,placePed,save,clearFishState,stepAshore,GAP:{IN:GAP_IN,OUT:GAP_OUT,FAIR_X,FAIR_S,LANES},dockAudit,examMapSvg,examCard,examRoute,examText,overlapAudit,hullHit,examStart,examRun,examRec,EXAM,rateSim,TUNE,leave:()=>{const b=boatById(S.aboard);if(b)leaveBoat(b,'away')},setPainter:fn=>{PAINTER.fn=typeof fn==='function'?fn:F3_BOAT_PAINT.paint},PAINTER,BOATS,SPOTS,SEA,RODS3,BAITS3,WEIGHTS3,TOOLS3,S,P,init,stepAll,stepAboard,rent,board,tryLeave,seaAction,openMenu,closeMenu,renderMenu,hud,clubHtml,clubAct,paintClub,drawBoat,spotsWater,spotsBirds,oldMan,audit,scene,ff,depthAt,seaNow,odds,legsHome,legsOut,ERR,boatById,nearSpot,ensureDom}})();
+window.__TC_FISH3=FISH3;
+/* ---- החיבורים למשחק ---- */
+{const F=FISH3;
+ for(const [id,q] of Object.entries(F.BAITS3)){if(!SHOP_CATALOG[id])SHOP_CATALOG[id]={name:q.label,price:q.price,store:'marina',once:!!q.reuse,desc:q.desc};BAIT_LABELS[id]=q.label}
+ /* הדגים של הים בציור של FISHX (טונה ודג חרב אינם בטבלאות האגם והחוף): אותו חשבון של קנה המידה */
+ {const fa0=FISHX.fishAt,FZ=[.6,.85,1,1.35];FISHX.fishAt=function(g,id,cm,mx,my,a,ppc,si,v,t){const sp=F.SEA.find(q=>q.id===id);if(!sp||COAST_FISH.some(q=>q.id===id))return fa0.apply(this,arguments);
+  try{if(!TurboCity.get(id))return;const sz=si==null?2:si,scale=ppc*cm/(sp.base*FZ[sz]),I=TurboCity.info(id,{scale}),c=I.an.find(q=>q[0]==='Center')||['C',I.w/2,I.h/2];g.save();g.translate(mx,my);g.rotate(a);TurboCity.draw(g,id,-cm*ppc/2-c[1],-c[2],{mode:'runtime',scale,v:v==null?3:v,sz,time:t||0});g.restore()}catch(e){}}}
+ try{PLACE_ID['F3-CLUB']=()=>({name:'מועדון השייט של המרינה',kind:'מרינה · השכרת סירות דיג · ציוד ימי · קניית דגים',slogan:'יוצאים לדוג בים העמוק — סירה, ציוד ופיתיון במקום אחד',c1:'#0f4c6e',c2:'#f2c45a',logo:placeMono('מועדון השייט','#0f4c6e','#f2c45a')})}catch(e){}
+ const pS=simStep;simStep=function(dt){const r=pS.apply(this,arguments);F.stepAll(dt);return r};
+ const pU=updatePed;updatePed=function(dt){try{F.init();if(F.S.aboard){if(Math.hypot(PlayerPed.x-F.S.pedX,PlayerPed.y-F.S.pedY)<=40){F.stepAboard(dt);return}}}catch(e){F.ERR.e=F.ERR.e||'ped '+e}return pU.apply(this,arguments)};
+ const pD=drawPlayerPed;drawPlayerPed=function(now){try{F.ensureDom();for(const b of F.BOATS)if(b.id===F.S.aboard||Camera.zoom<=.3)F.drawBoat(b,now);F.hud()}catch(e){F.ERR.e=F.ERR.e||'draw '+String(e&&e.stack||e).slice(0,200)}if(F.S.aboard)return;return pD.apply(this,arguments)};
+ S9_HOOKS.live.push((c,now,N)=>{F.init();F.spotsWater(c,now);for(const b of F.BOATS)if(b.id!==F.S.aboard)F.drawBoat(b,now);F.oldMan(c,now)});
+ S9_HOOKS.live.push((c,now,N)=>{for(const b of F.BOATS)if(b.anchor)try{F.anchorDraw(c,b,now)}catch(e){F.ERR.e=F.ERR.e||'anchor '+e}});   /* 10.11: השרשרת, החבל והמצוף של העוגן — מתחת לסירה שהשחקן עליה */
+ S9_HOOKS.over.push((c,now,N)=>F.spotsBirds(c,now));
+ const pI=interactNearbyPoi;interactNearbyPoi=function(){try{F.init();if(F.S.aboard&&Math.hypot(PlayerPed.x-F.S.pedX,PlayerPed.y-F.S.pedY)<=40)return F.seaAction();if(PlayerProfile.mode==='walk'&&!(typeof G77_FF!=='undefined'&&G77_FF.open)){for(const b of F.BOATS){if(b.mode==='moored'&&Math.hypot(PlayerPed.x-b.be.board[0],PlayerPed.y-b.be.board[1])<34)return F.board(b)}}}catch(e){F.ERR.e=F.ERR.e||'F '+e}return pI.apply(this,arguments)};
+ const pT=toggleVehicle;toggleVehicle=function(){try{F.init();if(F.S.aboard&&Math.hypot(PlayerPed.x-F.S.pedX,PlayerPed.y-F.S.pedY)<=40)return F.tryLeave();if(PlayerProfile.mode==='walk'){for(const b of F.BOATS){if(b.mode==='moored'&&Math.hypot(PlayerPed.x-b.be.board[0],PlayerPed.y-b.be.board[1])<34)return F.board(b)}}}catch(e){F.ERR.e=F.ERR.e||'E '+e}return pT.apply(this,arguments)};
+ const pB=phoneBusinessBase;phoneBusinessBase=function(){const id=State.interactionId;if(id==='F3-CLUB'){let h='';try{h=F.clubHtml()}catch(e){F.ERR.e=F.ERR.e||'club '+e}return h+pB.apply(this,arguments)}return pB.apply(this,arguments)};
+ const pR=renderPhone;renderPhone=function(){const r=pR.apply(this,arguments);try{if(State.interactionId==='F3-CLUB'&&State.phoneOpen){const body=$('phoneBody');if(body)requestAnimationFrame(()=>{try{F.paintClub(body);renderFishThumbCanvases(body)}catch(e){}})}}catch(e){}return r};
+ const pN=navPoiRegistry;navPoiRegistry=function(){const o=pN.apply(this,arguments);for(const s of F.SPOTS)if(!o[s.id])o[s.id]={id:s.id,label:'נקודת דיג — '+s.name,short:s.name,x:s.x,y:s.y,chunk:s.zone,app:'business',mode:'walk'};
+  for(const b of F.BOATS){const k='F3-BOARD-'+b.id;if(!o[k])o[k]={id:k,label:'הסירה "'+b.name+'" — מעגן '+b.be.n,short:b.name,x:b.be.board[0],y:b.be.board[1],chunk:'F3',app:'business',mode:'walk'}}return o};
+ const pH=hudGoalText;hudGoalText=function(){try{if(F.S.aboard){const b=F.boatById(F.S.aboard);return'בים · "'+b.name+'" · F — דיג · E — קשירה במזח'}if(PlayerProfile.mode==='walk')for(const b of F.BOATS)if(b.mode==='moored'&&Math.hypot(PlayerPed.x-b.be.board[0],PlayerPed.y-b.be.board[1])<34)return b.owned?'F · לעלות לסירה שלך "'+b.name+'"':F.P().rental&&F.P().rental.boat===b.id?'F · לעלות לסירה "'+b.name+'"':'הסירה "'+b.name+'" — להשכרה במועדון השייט'}catch(e){}return pH.apply(this,arguments)};
+ document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-f3r]');if(!a)return;e.stopPropagation();const [k,id,x]=a.dataset.f3r.split('|');F.clubAct(k,id,x)},true);
+ try{TC_LIVE.zones.F3&&(TC_LIVE.zones.F3.fish3=1)}catch(e){}}
+
+/* ==== D‑551 · דיג החוף (שלב 2) אחרי S9: עמדות על שובר הגלים של המרינה (F3), בטיילת קיר הים ובמרפסת התצפית LK-F5 (F5) ====================
+   אותו חלון הכנה, אותו דייג ב-3/4, אותן חכות, פיתיונות ודגי חוף כמו ב-B6 (habitat 'coastal', אזור סלעים). */
+var S9_COAST_SPOTS=[
+ {id:'F3-FISH-1',label:'שובר הגלים של המרינה · עמדה 1',x:6800,y:2584,water:{x:6800,y:2662}},
+ {id:'F3-FISH-2',label:'שובר הגלים של המרינה · עמדה 2',x:6872,y:2584,water:{x:6880,y:2662}},
+ {id:'F5-FISH-1',label:'טיילת קיר הים',x:6226,y:3700,water:{x:6310,y:3712}},
+ {id:'F5-FISH-2',label:'מרפסת התצפית LK-F5 · עמדה 1',x:6292,y:4012,water:{x:6362,y:4000}},
+ {id:'F5-FISH-3',label:'מרפסת התצפית LK-F5 · עמדה 2',x:6292,y:4048,water:{x:6362,y:4062}}].map(q=>({...q,habitat:'coastal',zone:'rock',dir:4,s9:true}));
+{const pNB=nearbyB2FishingSpot;nearbyB2FishingSpot=function(maxDist=68){const r=pNB.apply(this,arguments);if(r||PlayerProfile.mode!=='walk')return r;const ch=currentChunkId(PlayerPed.x,PlayerPed.y);if(!['F3','F4','F5'].includes(ch))return null;
+  let best=null;for(const s of S9_COAST_SPOTS){const d=Math.hypot(PlayerPed.x-s.x,PlayerPed.y-s.y);if(d<=Math.min(maxDist,28)&&(!best||d<best.d))best={...s,d}}return best};
+ const pAF=allFishingSpots;allFishingSpots=function(){return[...pAF.apply(this,arguments),...S9_COAST_SPOTS]};
+ const pFS=fishingSpotById;fishingSpotById=function(id){return pFS.apply(this,arguments)||S9_COAST_SPOTS.find(s=>s.id===id)||null};
+ const pI2=interactNearbyPoi;interactNearbyPoi=function(){try{if(PlayerProfile.mode==='walk'&&!(window.__TC_FISH3&&window.__TC_FISH3.S.aboard&&Math.hypot(PlayerPed.x-window.__TC_FISH3.S.pedX,PlayerPed.y-window.__TC_FISH3.S.pedY)<=40)){const ss=State.fishingSession;if(ss&&ss.busy&&S9_COAST_SPOTS.some(q=>q.id===ss.spot))return fishingActionAtSpot(fishingSpotById(ss.spot));
+   const sp=nearbyB2FishingSpot(40);if(sp&&sp.s9)return fishingActionAtSpot(sp)}}catch(e){}return pI2.apply(this,arguments)};
+ const pN2=navPoiRegistry;navPoiRegistry=function(){const o=pN2.apply(this,arguments);for(const s of S9_COAST_SPOTS)if(!o[s.id])o[s.id]={id:s.id,label:'דיג מהחוף — '+s.label,short:s.label,x:s.x,y:s.y,chunk:currentChunkId(s.x,s.y),app:'business',mode:'walk'};return o};
+ /* הסימון של העמדות — כמו ב-B6 */
+ S9_HOOKS.live.push((c,now,N)=>{if(WTC_LP===1)return;const near=nearbyB2FishingSpot(78),ss=State.fishingSession,act=ss&&ss.busy?ss.spot:null;for(const s of S9_COAST_SPOTS){if(!e3InView(s.x-20,s.y-30,40,50,20))continue;const active=act===s.id,hot=near&&near.id===s.id,bite=active&&['bite','reel'].includes(ss.phase);if(active&&!bite)continue;
+   c.fillStyle=bite?'#ffcf45':hot?'#ffe08a':'#55bce7';c.beginPath();c.arc(s.x,s.y,active?13:hot?11:7,0,Math.PI*2);c.fill();c.strokeStyle='#07131b';c.lineWidth=1.5;c.stroke();c.fillStyle='#07131b';c.font='700 9px Segoe UI,Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(bite?'!':'F',s.x,s.y+.5);
+   try{Targets.add({id:s.id,label:s.label,category:'fishing',x:s.x,y:s.y,shape:'circle',r:14})}catch(e){}if(hot&&!active)try{s9Txt(c,'F · '+s.label,s.x,s.y-24,8,'#ffe08a')}catch(e){}}});
+ const pH2=hudGoalText;hudGoalText=function(){try{const sp=nearbyB2FishingSpot(40);if(sp&&sp.s9)return 'F · דיג מהחוף — '+sp.label}catch(e){}return pH2.apply(this,arguments)};
+ window.__TC_S9_COAST_SPOTS=S9_COAST_SPOTS}
+/* D‑567: הגלגלת מעל תפריט שנגלל (הדיג העמוק, הדיג בחוף והדיג באגם) מגלגלת את התפריט — לא את הזום של העולם */
+window.addEventListener('wheel',e=>{const t=e.target;if(!t||!t.closest)return;const host=t.closest('#f3Menu,#fishingSetupPanel');if(!host)return;let el=t;
+ while(el&&el!==host.parentElement){const cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.scrollHeight>el.clientHeight+1)break;el=el.parentElement}
+ if(!el||el===host.parentElement)el=host;el.scrollTop+=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?el.clientHeight:1);e.preventDefault();e.stopImmediatePropagation()},{capture:true,passive:false});
+/* D‑590 / D‑591: חכה "תקועה" — מצב דיג פעיל (State.fishingSession.busy) כשהשחקן כבר לא בעמדה: בלי עמדה, רחוק ממנה, ברכב או על סירה. אז המצב מתנקה,
+   כדי שהשחקן לא יישאר "בדיג" על היבשה (זה מה שהחזיר את הציור הישן עם החכה הכתומה). נבדק פעם בשנייה. */
+setInterval(()=>{try{const s=State.fishingSession;if(!s)return;const nowP=performance.now(),fut=[s.castEndsAt,s.biteDueAt,s.escapeAt,s.reelStartedAt,s.biteAt,s.lastAt].some(v=>Number.isFinite(v)&&v>nowP+60000);
+ if(fut){State.fishingSession={busy:false,last:null,lastAt:0,hooked:null};try{SaveManager.log('fishing','stale_clock_cleared',{})}catch(e){}return}   /* זמנים מ-performance.now() של משחק קודם — מאפסים */
+ if(!s.busy)return;const sp=fishingSpotById(s.spot),far=!sp||PlayerProfile.mode!=='walk'||(window.__TC_FISH3&&__TC_FISH3.S&&__TC_FISH3.S.aboard)||Math.hypot(PlayerPed.x-sp.x,PlayerPed.y-sp.y)>90;
+ if(far){State.fishingSession={busy:false,last:null,lastAt:0,hooked:null};try{SaveManager.log('fishing','stale_session_cleared',{spot:s.spot||null})}catch(e){}}}catch(e){}},1000);
+
+/* ==== D‑544 / D‑550 · BOAT34 — צייר אחד לכל כלי השיט ולכל מה שבמים (ענף boats, ‏8.11) ==========================================================
+   מקור הסוגים והמידות: טבלת כלי השיט של התוכנית (D‑383, ‏21 סוגים), ‏SHIP‑01 ("גוף, סיפון, מבנה פיקוד, פרטים ותאורה ברמת VEH‑01; צי קיים מוחלף;
+   hitbox / עגינה ללא שינוי סמוי"), ‏D‑264 (מבט 3/4 מהנתונים, אותה זווית ואותה שמש). רק הציור מוחלף — התנועה, המקום, הגודל והזמנים של כל כלי שיט
+   נשארים כמו שהיו (כללים 25 ו-32): הצייר מקבל מקום, כיוון וזמן, ולא מחליט שום דבר על התנועה.
+   ההטלה: מסך = (x, y − z·K), ‏K = 0.6, ‏10 פיקס׳ = 1 מ׳ (z במטרים — KZ = 6 פיקס׳ למטר); השמש: נקודה בגובה z מטילה צל z·(0.25, 0.32) — כמו כל העיר.
+   paint(c, spec, x, y, h, t, o): ‏spec = {type, L, B (פיקס׳), id, lv (צבעים), name}; ‏h — כיוון החרטום; ‏o = {u (מהירות, פיקס׳/שנ׳), vx, vy, trail,
+   wave (מ׳), night (0–1), under (בשיט), moored, anchor:'deck' (הסיפון בגובה הקרקע — אוניות הנמל, כך שהמטען והמנופים במקומם), people, row (חתירה),
+   lines: [[x, y] ...] (חבלי קשירה), thumb}. ‏ship / port / ferry / marina / lake / fish3 — המתאמים של כל מקום. */
+var BOAT34=(function(){
+ const TAU=Math.PI*2,KZ=6,SX=2.5,SY=3.2,ERR={e:null,n:0},cl=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t;
+ const nightNow=()=>cl(+window.__TC_NIGHT||0,0,1),zoomNow=()=>{try{return Camera.zoom*(window.devicePixelRatio||1)}catch(e){return 1}};
+ const hash=s=>{let h=2166136261;s=String(s);for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+ /* ---- צבעים: הצללה לפי הפנים, ובלילה — כהה וכחול יותר (אין שכבת לילה כללית במשחק) ---- */
+ const SHC=new Map();
+ function shade(hx,k,N){const key=hx+(k*100|0)+'|'+(N*10|0);let v=SHC.get(key);if(v)return v;const n=parseInt(hx.slice(1),16),nk=1-.58*N,f=(x,a)=>cl(Math.round(x*k*nk+a),0,255);
+  v='rgb('+f(n>>16&255,-6*N)+','+f(n>>8&255,-2*N)+','+f(n&255,12*N)+')';if(SHC.size>6000)SHC.clear();SHC.set(key,v);return v}
+ const wallK=(nx,ny)=>.84+.16*(-.61*nx-.79*ny);
+ /* ---- הזוהר של פנס: תמונה אחת לכל צבע ---- */
+ const GLOW={};function glowImg(col){if(GLOW[col])return GLOW[col];const cv=document.createElement('canvas');cv.width=cv.height=64;const g=cv.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,'rgba('+col+',.95)');gr.addColorStop(.18,'rgba('+col+',.55)');gr.addColorStop(1,'rgba('+col+',0)');g.fillStyle=gr;g.fillRect(0,0,64,64);return GLOW[col]=cv}
+ const LC={red:'255,52,40',green:'40,255,110',white:'255,250,228',amber:'255,190,80',blue:'70,140,255',warm:'255,214,140'};
+ function lamp(c,X,Y,col,r,a,refl){c.save();c.globalCompositeOperation='lighter';c.globalAlpha=a;c.drawImage(glowImg(LC[col]),X-r,Y-r,2*r,2*r);
+  if(refl){c.globalAlpha=a*.35;c.drawImage(glowImg(LC[col]),X-r*.35,Y+refl*.4,r*.7,refl*1.6)}c.restore();c.fillStyle='rgb('+LC[col]+')';c.beginPath();c.arc(X,Y,Math.max(.8,r*.09),0,TAU);c.fill()}
+ /* ---- ההטלה של נקודה בגוף (lx לחרטום, ly לימין, z במטרים מעל המים) ---- */
+ function frame(x,y,h,t,ph,wave,moving,zr,lf){const w=wave==null?.3:wave;return{x,y,h,c:Math.cos(h),s:Math.sin(h),t,zr:zr||0,lf:lf||0,
+  bob:Math.sin(t*1.5+ph)*(.35+w*.9),roll:Math.sin(t*1.2+ph*1.3)*(.035+w*.06)*(moving?.6:1)}}
+ const pj=(o,lx,ly,z)=>[o.x+lx*o.c-ly*o.s+z*KZ*o.roll,o.y+lx*o.s+ly*o.c-(z-o.zr+o.lf)*KZ+o.bob];
+ const sp=(o,lx,ly,z)=>[o.x+lx*o.c-ly*o.s+z*SX,o.y+lx*o.s+ly*o.c+z*SY+o.zr*KZ+o.bob*.3];
+ function poly(c,P){c.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)c.lineTo(P[i][0],P[i][1]);c.closePath()}
+ function hull2d(P){P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
+  for(const p of P){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(let i=P.length-1;i>=0;i--){const p=P[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}
+  up.pop();lo.pop();return lo.concat(up)}
+ /* ---- צורת הגוף: חצי הרוחב לאורך הסירה (חרטום מחודד, ירכתיים עם מראה או ירכתי שייט) ---- */
+ const OUT={};
+ function outline(m){const key=m.type+'|'+m.L+'|'+m.B;if(OUT[key])return OUT[key];const L=m.L,B=m.B,S=m.shape,bl=L*S.bow,sl=L*S.stern,xs=[];
+  const nb=10,ns=5;for(let i=0;i<=ns;i++)xs.push(-L/2+sl*i/ns);const mid=Math.max(1,Math.round((L-bl-sl)/(L*.18)));for(let i=1;i<mid;i++)xs.push(-L/2+sl+(L-bl-sl)*i/mid);for(let i=0;i<nb;i++)xs.push(L/2-bl+bl*i/nb);
+  const w=x=>{if(x>L/2-bl){const u=(x-(L/2-bl))/bl;return B/2*Math.pow(Math.max(0,1-Math.pow(u,S.bp||1.9)),S.bq||.6)}if(x<-L/2+sl){const u=((-L/2+sl)-x)/sl;return B/2*lerp(1,S.tr,u*u)}return B/2};
+  const sheer=x=>x>L/2-bl*1.6?S.sheer*Math.pow((x-(L/2-bl*1.6))/(bl*1.6),2):0;
+  const st=xs.map(x=>[x,w(x),sheer(x)]),tip=[L/2,0,S.sheer],P=[...st,tip,...st.slice().reverse().map(p=>[p[0],-p[1],p[2]])];
+  return OUT[key]={P,n:P.length}}
+ /* ================= הסוגים — טבלת כלי השיט (D‑383) ועוד שני דגמים שקיימים היום במשחק ================= */
+ /* L, B, H — המידות האמיתיות בטבלה (מ׳), H — הגובה מעל המים של הנקודה הגבוהה; fb — גובה הסיפון; lv — צבעי החברות (3 לפחות לכל סוג) */
+ const LV=(hull,stripe,sup,deck,extra)=>Object.assign({hull,stripe,sup,deck,boot:'#7a2a24',top:sup,funnel:stripe},extra||{});
+ const T={
+  container:{he:'אוניית מכולות',row:1,id:'SH-CS-01',real:[120,20,32],fb:8.5,shape:{bow:.17,stern:.1,tr:.62,sheer:2.2,bp:2.1,bq:.55},lv:[LV('#1b3a63','#c43b2f','#eef1f2','#7d878c'),LV('#6e1e26','#e0b93a','#f1f1ec','#7d878c'),LV('#1d5a44','#f1f1ec','#eef1f2','#7a8a86'),LV('#2d3338','#2e86c1','#f3f5f6','#80898d'),LV('#0f4d68','#e08a1e','#eef1f2','#7d878c'),LV('#8a6a2f','#1d3a63','#f1f1ec','#8a8e8a')]},
+  bulk:{he:'אוניית תפזורת',row:2,id:'SH-BK-01',real:[70,12,24],fb:6,shape:{bow:.2,stern:.1,tr:.6,sheer:1.6},lv:[LV('#7a2b22','#e8e4da','#f0f0ea','#3f6a4c',{hatch:'#9a4a36'}),LV('#24456e','#e0b93a','#f2f2ee','#7a6a4a',{hatch:'#3f6a8a'}),LV('#2a5a3c','#e8e4da','#eef0ec','#8a7a52',{hatch:'#4a7a5a',funnel:'#c43b2f'})]},
+  ferry:{he:'מעבורת',row:3,id:'SH-FY-01',real:[45,13,14],fb:1.7,shape:{bow:.24,stern:.08,tr:.82,sheer:.6},lv:[LV('#f2f4f5','#1f6fb0','#fafbfb','#cfd6d9',{funnel:'#e0b93a',boot:'#1f3f66'}),LV('#e8edf0','#c43b2f','#f6f8f9','#c9d2d6',{funnel:'#1f6fb0',boot:'#2a2f35'}),LV('#f4f2ea','#16857a','#fbfaf6','#d2d6d0',{funnel:'#16857a',boot:'#7a2a24'})]},
+  tug:{he:'גוררת',row:4,id:'SH-TG-01',real:[25,8.5,11],fb:2.3,shape:{bow:.32,stern:.14,tr:.7,sheer:.9,bp:1.6,bq:.7},lv:[LV('#232a30','#c43b2f','#f1f4f5','#6f797e',{funnel:'#c43b2f',boot:'#7a2a24'}),LV('#1f3f66','#f2a01a','#f4f2ea','#6f797e',{funnel:'#f2a01a'}),LV('#7a1f1f','#f1f1ec','#f4f4f0','#6a7276',{funnel:'#1d1f22'})]},
+  pilot:{he:'סירת נתב',row:5,id:'SH-PB-01',real:[15,5,6],fb:1.3,shape:{bow:.36,stern:.1,tr:.86,sheer:.5},lv:[LV('#1d2328','#e0731d','#f2a03a','#a9b1b5',{boot:'#7a2a24'}),LV('#f2f4f5','#e0731d','#f6f6f2','#cfd6d9',{boot:'#2a2f35'}),LV('#2a3a52','#f2c230','#f4f0e6','#aab2b6')]},
+  fish:{he:'סירת דייג',row:6,id:'SH-FB-01',real:[11,3.5,5.5],fb:.9,shape:{bow:.34,stern:.1,tr:.8,sheer:.45},lv:[LV('#2a5a8a','#f2f0e8','#f2ead8','#c9a77a'),LV('#f2f0e8','#1d6fa5','#ffffff','#c9b28a'),LV('#c8402a','#f2f0e8','#f5efe0','#b89a72'),LV('#1f6a5a','#f2c230','#f4efe2','#c2a47a')]},
+  trawl:{he:'ספינת מכמורת',row:7,id:'SH-TR-01',real:[30,8,12],fb:1.8,shape:{bow:.3,stern:.12,tr:.8,sheer:1},lv:[LV('#2a4a6a','#f2f0e8','#f2ead8','#6a5a48'),LV('#8a2a22','#f2f0e8','#f4ede0','#6a5a48'),LV('#1f5a3a','#f2c230','#f0ece0','#6a6050')]},
+  motor:{he:'סירת מנוע',row:8,id:'SH-MB-01',real:[6,2.5,2.3],fb:1,shape:{bow:.36,stern:.06,tr:.88,sheer:.3},lv:[LV('#f6f6f2','#1d6fa5','#ffffff','#d8c9a8',{boot:'#1d3a63'}),LV('#f6f6f2','#2a2f35','#ffffff','#e2d6bc',{boot:'#2a2f35'}),LV('#1f3f66','#f2f0e8','#f4f2ea','#d8c9a8'),LV('#f2efe6','#c43b2f','#ffffff','#d2c4a4',{boot:'#c43b2f'})]},
+  speed:{he:'סירה מהירה',row:9,id:'SH-SP-01',real:[6,2.3,1.6],fb:.8,shape:{bow:.42,stern:.04,tr:.9,sheer:.25,bp:1.5,bq:.75},lv:[LV('#d8302a','#f4f4f4','#ffffff','#e8e8e8',{boot:'#2a2f35'}),LV('#f4f4f4','#1f6fb0','#ffffff','#2a2f35',{boot:'#1f6fb0'}),LV('#1d1f22','#f2c230','#f4f4f4','#3a3f45',{boot:'#f2c230'}),LV('#f4f4f4','#16857a','#ffffff','#d8d8d4',{boot:'#16857a'})]},
+  rent:{he:'סירה להשכרה',row:10,id:'SH-RB-01',real:[5.5,2.2,1.2],fb:.62,shape:{bow:.38,stern:.06,tr:.86,sheer:.25},lv:[LV('#3a8a6a','#f4f2ea','#f4f2ea','#d8c9a8'),LV('#2f6fd0','#f4f2ea','#f4f2ea','#d8c9a8'),LV('#e0a020','#f4f2ea','#f4f2ea','#d8c9a8'),LV('#c8402a','#f4f2ea','#f4f2ea','#d8c9a8')]},
+  yacht:{he:'יאכטה',row:11,id:'SH-YT-01',real:[20,5.3,6.5],fb:2.1,shape:{bow:.3,stern:.05,tr:.84,sheer:.6,bp:1.7,bq:.62},lv:[LV('#f6f8fa','#24497a','#fbfcfd','#c9a77a',{boot:'#24497a',glass:'#1d2a36'}),LV('#f6f8fa','#2a2f35','#fbfcfd','#c9a77a',{boot:'#2a2f35',glass:'#141a20'}),LV('#1d2a3a','#c9a77a','#f4f4f0','#c9a77a',{boot:'#c9a77a',glass:'#141a20'})]},
+  yachtL:{he:'יאכטה גדולה',row:12,id:'SH-YT-02',real:[30,7,11],fb:2.6,shape:{bow:.3,stern:.05,tr:.84,sheer:.9,bp:1.7,bq:.62},lv:[LV('#f6f8fa','#24497a','#fbfcfd','#c9a77a',{boot:'#24497a',glass:'#1d2a36'}),LV('#2a3038','#c9a77a','#f4f4f0','#c9a77a',{boot:'#c9a77a',glass:'#141a20'}),LV('#f6f8fa','#7a2a2a','#fbfcfd','#c9a77a',{boot:'#7a2a2a',glass:'#1d2a36'})]},
+  roro:{he:'ספינת רכבים',row:13,real:[100,18,30],fb:4,shape:{bow:.14,stern:.04,tr:.9,sheer:1},lv:[LV('#f2f2ee','#c43b2f','#f2f2ee','#7d878c',{funnel:'#c43b2f'}),LV('#1b3a63','#f2f2ee','#1b3a63','#7d878c',{funnel:'#f2f2ee',sup:'#eef1f2'}),LV('#2a5a3c','#f2f2ee','#e8ece8','#7d878c',{funnel:'#2a5a3c'})]},
+  tanker:{he:'מכלית ימית',row:14,real:[110,18,28],fb:6,shape:{bow:.16,stern:.1,tr:.62,sheer:1.8},lv:[LV('#2a2f35','#c43b2f','#f1f4f5','#a14a32',{funnel:'#c43b2f'}),LV('#1b3a63','#f2c230','#f1f4f5','#8a3a2a',{funnel:'#f2c230'}),LV('#7a2b22','#f2f2ee','#f2f2ee','#5a6a52',{funnel:'#2a2f35'})]},
+  sail:{he:'מפרשית',row:15,real:[6,2.4,9],fb:.7,shape:{bow:.38,stern:.05,tr:.7,sheer:.3},lv:[LV('#f6f6f2','#1d6fa5','#ffffff','#c9a77a',{sail:'#fbfaf4'}),LV('#1f3f66','#f6f6f2','#f4f2ea','#c9a77a',{sail:'#fbfaf4'}),LV('#f6f6f2','#c43b2f','#ffffff','#d8c9a8',{sail:'#f2ead6'})]},
+  service:{he:'סירת שירות ואספקה',row:16,real:[20,6,8],fb:1.6,shape:{bow:.28,stern:.06,tr:.9,sheer:.8},lv:[LV('#e0731d','#2a2f35','#f4f2ea','#6f797e'),LV('#2a5a8a','#f2c230','#f4f2ea','#6f797e'),LV('#f2c230','#2a2f35','#f4f2ea','#6f797e')]},
+  jetski:{he:'אופנוע ים',row:17,real:[3.3,1.2,1.1],fb:.5,shape:{bow:.45,stern:.05,tr:.8,sheer:.15,bp:1.4,bq:.8},lv:[LV('#f4f4f4','#d8302a','#2a2f35','#2a2f35'),LV('#f2c230','#1d1f22','#1d1f22','#2a2f35'),LV('#1f6fb0','#f4f4f4','#1d1f22','#2a2f35'),LV('#16857a','#f4f4f4','#1d1f22','#2a2f35')]},
+  coast:{he:'סירת משמר החופים והחילוץ',row:18,real:[15,4.5,6],fb:1.2,shape:{bow:.34,stern:.04,tr:.9,sheer:.5},lv:[LV('#2a3a4a','#e0731d','#f4f4f0','#8a949a',{collar:'#e0731d'}),LV('#f4f4f0','#c43b2f','#ffffff','#8a949a',{collar:'#3a4046'}),LV('#24456e','#f2c230','#f4f4f0','#8a949a',{collar:'#f2c230'})]},
+  tour:{he:'אוניית תיירים',row:19,real:[40,9,12],fb:1.8,shape:{bow:.22,stern:.07,tr:.84,sheer:.7},lv:[LV('#f4f6f8','#1f6fb0','#ffffff','#c9b28a',{boot:'#1f3f66'}),LV('#1f3f66','#f2c230','#f4f2ea','#c9b28a'),LV('#f4f2ea','#16857a','#ffffff','#c9b28a',{boot:'#16857a'})]},
+  taxi:{he:'מונית ים',row:20,real:[10,3.5,3.4],fb:.9,shape:{bow:.32,stern:.06,tr:.9,sheer:.4},lv:[LV('#f2c230','#1d1f22','#f4f2ea','#c9b28a',{boot:'#1d1f22'}),LV('#f4f4f0','#f2c230','#ffffff','#c9b28a',{boot:'#2a2f35'}),LV('#1f6fb0','#f2c230','#f4f2ea','#c9b28a')]},
+  row:{he:'סירה באגם',row:21,real:[4,1.6,.7],fb:.4,shape:{bow:.36,stern:.18,tr:.42,sheer:.18,bp:1.6,bq:.7},lv:[LV('#c0392b','#f3e3c2','#f3e3c2','#b5884f'),LV('#2f6fd0','#f3e3c2','#f3e3c2','#b5884f'),LV('#1f6a5a','#f3e3c2','#f3e3c2','#b5884f'),LV('#f2efe6','#c0392b','#f3e3c2','#b5884f')]},
+  cruiser:{he:'סירת מנוע גדולה (קרוזר)',row:0,id:'SH-PB-01 במרינה',real:[14,4.2,4.6],fb:1.7,shape:{bow:.34,stern:.05,tr:.86,sheer:.5,bp:1.7,bq:.62},lv:[LV('#f6f8fa','#1d3a63','#ffffff','#c9a77a',{boot:'#1d3a63',glass:'#1d2a36'}),LV('#f4f2ea','#7a2a2a','#ffffff','#c9a77a',{boot:'#7a2a2a',glass:'#1d2a36'}),LV('#2a3038','#c9c9c4','#f4f4f0','#c9a77a',{boot:'#c9c9c4',glass:'#141a20'})]},
+  sport:{he:'סירת דיג ספורט עם תא הגה',row:0,id:'F3-RB-B',real:[7.4,2.8,3.4],fb:1.05,shape:{bow:.34,stern:.05,tr:.88,sheer:.4},lv:[LV('#1f3f66','#e8e4d8','#f3f1ea','#e6e0d0')]},
+  console:{he:'סירת דיג עם קונסולה',row:0,id:'F3-RB-A',real:[6,2.4,2.6],fb:.9,shape:{bow:.36,stern:.05,tr:.88,sheer:.35},lv:[LV('#f5f5f1','#1d6fa5','#ffffff','#d8d3c4')]}
+ };
+ for(const k in T)T[k].type=k;
+ /* ================= הבנייה של כל סוג: רשימת חלקים בקואורדינטות של הגוף (פיקס׳, z במטרים) ================= */
+ function build(type,L,B,lv,o){const ty=T[type],fb=ty.fb,P=[],box=(x0,x1,y0,y1,z0,z1,col,opt)=>P.push(Object.assign({k:'box',x0,x1,y0,y1,z0,z1,col},opt||{})),
+   cyl=(x,y,r,z0,z1,col,band)=>P.push({k:'cyl',x,y,r,z0,z1,col,band}),mast=(x,y,z0,z1,w,col,opt)=>P.push(Object.assign({k:'mast',x,y,z0,z1,w,col},opt||{})),
+   flat=(pts,z,col,line)=>P.push({k:'flat',pts,z,col,line}),ring=(x,y,z)=>P.push({k:'ring',x,y,z}),flag=(x,y,z)=>P.push({k:'flag',x,y,z}),
+   motor=(x,n,big)=>P.push({k:'motor',x,n,big}),glass=(x0,x1,y0,y1,z0,z1)=>P.push({k:'glass',x0,x1,y0,y1,z0,z1}),seat=(x,y,w,d,col)=>box(x-d/2,x+d/2,y-w/2,y+w/2,fb,fb+.45,col||'#f2efe6',{top:col||'#e8e2d4'}),
+   rail=(f0,f1,h)=>P.push({k:'rail',f0,f1,h:h||1}),lights={},m=L/ty.real[0];   /* m — פיקס׳ לכל מטר של הסוג (הגודל של המקום במשחק) */
+  const SUP=lv.sup,GL=lv.glass||'#24394c',WIN={n:1,col:GL};
+  switch(type){
+   case'container':case'tanker':case'bulk':case'roro':{
+    const aft=type==='roro'?L*.22:-L/2+L*.045,len=type==='container'?L*.1:type==='roro'?L*.12:L*.13,tiers=type==='container'?5:type==='roro'?3:4,tz=2.7,bw=B*.78;
+    const xa=type==='roro'?aft:aft,x1=xa+len;
+    if(type==='roro'&&!o.glass){box(-L*.47,L*.36,-B*.48,B*.48,fb,fb+15,lv.hull,{top:'#9aa4aa',win:{n:3,col:'#2a3a48',p:7*m},stripe:lv.stripe})}
+    for(let i=0;i<tiers;i++)box(xa+i*.02*L*0,x1,-bw/2,bw/2,fb+(type==='roro'?15:0)+i*tz,fb+(type==='roro'?15:0)+(i+1)*tz,SUP,{win:{n:1,col:GL,p:3.2*m},top:i===tiers-1?'#d8dee1':null});
+    const zb=fb+(type==='roro'?15:0)+tiers*tz;box(x1-len*.42,x1+len*.04,-B*.5,B*.5,zb,zb+2.6,SUP,{win:{n:1,col:'#1d3a4c',p:1.6*m,big:1},top:'#cfd7da'});   /* הגשר עם הכנפיים, כל רוחב האונייה */
+    cyl(xa+len*.3+(type==='roro'?-len*.6:0),0,B*.1,zb,zb+5.5,lv.funnel,lv.hull);
+    mast(x1-len*.2,0,zb+2.6,zb+9,1.4,'#e8ecee',{yard:B*.16,radar:B*.13,lightZ:zb+9});lights.mast=[x1-len*.2,0,zb+9];lights.side=[x1-len*.25,B*.5,zb+2.2];lights.stern=[-L/2,0,fb+1.5];lights.fwd=[L*.44,0,fb+ty.shape.sheer+8];
+    mast(L*.44,0,fb+ty.shape.sheer,fb+ty.shape.sheer+8,1.1,'#e8ecee');ring(x1+1,-bw/2,fb+3.2);ring(x1+1,bw/2,fb+3.2);
+    box(xa-len*.18,xa,-B*.32,B*.32,fb,fb+2.2,'#e07a1f',{top:'#f08a2a'});   /* סירת ההצלה בירכתיים */
+    if(type==='container'&&!o.cargoLive){const rnd=(i=>()=>{i=Math.imul(i^(i>>>15),2246822507)+1013904223>>>0;return i/4294967296})(hash(o.id||'c')),bays=Math.floor((L*.78-len)/(13*m));
+     const CC=['#c43b2f','#2e86c1','#1d5a44','#e0a020','#7a5aaa','#d8d8d4','#e06a1a','#2a8a8a'];for(let b=0;b<bays;b++){const xb=x1+2*m+b*13*m,rows=Math.floor(B*.86/(2.5*m));for(let r=0;r<rows;r++){const n=1+Math.floor(rnd()*3.2);if(rnd()<.12)continue;const y0=-rows*2.5*m/2+r*2.5*m;box(xb,xb+12.2*m,y0+.1*m,y0+2.4*m,fb+.6,fb+.6+n*2.6,CC[Math.floor(rnd()*CC.length)],{ctn:1})}}}
+    if(type==='container'&&o.cargoLive){flat([[x1+m,-B*.43],[L*.36,-B*.43],[L*.36,B*.43],[x1+m,B*.43]],fb+.05,'#566268','rgba(255,255,255,.14)')}
+    if(type==='bulk'){const n=o.hatches||5,pitch=o.hatchPitch||L*.14;for(let i=0;i<n;i++){const cx=(i-(n-1)/2)*pitch;box(cx-pitch*.4,cx+pitch*.4,-B*.32,B*.32,fb,fb+1.4,lv.hatch||'#9a4a36',{ribs:1})}}
+    if(type==='tanker'){flat([[x1+m,-B*.06],[L*.4,-B*.06],[L*.4,B*.06],[x1+m,B*.06]],fb+1.6,'#c9ced2');for(const y of[-B*.14,-B*.1,B*.1,B*.14])P.push({k:'pipe',x0:x1+2*m,x1:L*.38,y,z:fb+.7,col:y<0?'#d8b03a':'#c9ced2'});
+     box(-L*.02,L*.04,-B*.42,B*.42,fb,fb+.8,'#5a6a72',{top:'#7a8a92'});for(const y of[-B*.38,B*.38])mast(L*.01,y,fb,fb+9,1.6,'#e0a020',{jib:[L*.06,y*.5,fb+7]});}
+    if(type==='roro'){box(-L/2-1.5*m,-L/2+3*m,-B*.3,B*.3,fb-1,fb+.4,'#5a6268',{top:'#6f787e'})}
+    if(type==='roro'&&o.glass)for(const p of P){if(p.k==='ring')p.z+=15;else if(p.k==='box'&&p.col==='#e07a1f'){p.z0+=15;p.z1+=15}else if(p.k==='cyl')p.z0=fb+15}   /* S10 ד: תיבת הרכבים שקופה (021x מצייר אותה) — סירת ההצלה, הגלגלים והארובה על הגג */
+    lights.fb=fb;break}
+   case'ferry':case'tour':{const c0=-L*.38,c1=L*.24;box(c0,c1,-B*.44,B*.44,fb,fb+2.5,SUP,{win:{n:1,col:GL,p:1.8*m,round:1},stripe:lv.stripe,text:type==='ferry'?'מעבורת':null});   /* D‑583: השלט על הדופן של המבנה */
+    box(c0+L*.05,c1-L*.1,-B*.38,B*.38,fb+2.5,fb+4.6,SUP,{win:{n:1,col:GL,p:1.6*m},top:'#cfd6d9'});box(c1-L*.2,c1-L*.08,-B*.3,B*.3,fb+4.6,fb+6.6,SUP,{win:{n:1,col:'#1d3a4c',p:1*m,big:1},top:'#e0e6e8'});
+    rail(.02,.98,1.1);P.push({k:'rail2',x0:c0+L*.05,x1:c1-L*.1,w:B*.38,z:fb+4.6});for(const s of[-1,1])for(let i=0;i<2;i++)P.push({k:'hcyl',x:c1-L*.03-i*L*.04,y:s*B*.3,z:fb+4.95,r:.35,w:B*.05,col:'#f2f2ee',end:'#e8e8e4'});   /* D‑583: מכלי רפסודות ההצלה בגג (שוכבים) */for(let i=0;i<4;i++)seat(c0+L*.1+i*L*.07,0,B*.5,.6*m,'#2f6fd0');
+    cyl(c0+L*.12,0,B*.1,fb+4.6,fb+7.6,lv.funnel,lv.stripe);mast(c1-L*.14,0,fb+6.6,fb+10.5,1,'#e8ecee',{radar:B*.18});lights.mast=[c1-L*.14,0,fb+10.5];lights.side=[c1-L*.18,B*.44,fb+5.8];lights.stern=[-L/2,0,fb+2];
+    for(const s of[-1,1])for(let i=0;i<3;i++)box(c0+L*.16+i*L*.11,c0+L*.16+i*L*.11+L*.06,s*B*.4-B*.06,s*B*.4+B*.06,fb+2.5,fb+3.2,'#f0701e',{top:'#f68a3c',cap:1});   /* D‑583: סירות ההצלה בכתום, כמו באמת */
+    ring(c1+1,-B*.44,fb+1.4);ring(c1+1,B*.44,fb+1.4);ring(c0-1,B*.44,fb+1.4);flag(-L/2+2,0,fb+1.2);
+    flat([[c1+m,-B*.3],[L*.4,-B*.16],[L*.4,B*.16],[c1+m,B*.3]],fb+.02,'#bfc7cb');if(type==='tour'){box(c0+L*.06,c1-L*.24,-B*.36,B*.36,fb+4.6,fb+6.4,'#ffffff',{canopy:1,top:lv.stripe})}break}
+   case'tug':{box(-L*.18,L*.18,-B*.34,B*.34,fb,fb+2.6,SUP,{win:{n:1,col:GL,p:1.7*m},top:'#d8dee1'});box(-L*.06,L*.16,-B*.3,B*.3,fb+2.6,fb+5.4,SUP,{win:{n:1,col:'#1d3a4c',p:1.1*m,big:1},top:'#c9d1d4'});
+    cyl(-L*.14,-B*.17,B*.07,fb+2.6,fb+6.4,lv.funnel,'#15191c');cyl(-L*.14,B*.17,B*.07,fb+2.6,fb+6.4,lv.funnel,'#15191c');mast(L*.06,0,fb+5.4,fb+10.5,1.2,'#e8ecee',{radar:B*.22,yard:B*.2});
+    for(const s of[-1,1])box(-L*.33,-L*.28,s*B*.17-.15*m,s*B*.17+.15*m,fb,fb+1.25,'#3a4046',{top:'#4a5056'});P.push({k:'hcyl',x:-L*.305,z:fb+1.05,r:.6,w:B*.16,col:'#3a4046',net:'#8a6a3a',end:'#c43b2f'});   /* D‑583: תוף הכבל של הגרירה על שתי רגליים */box(-L*.42,-L*.38,-B*.22,B*.22,fb,fb+.9,'#e0a020',{top:'#f0b830'});P.push({k:'fender',f0:.36,f1:.64,w:3.2});P.push({k:'tyres',n:7});
+    lights.mast=[L*.06,0,fb+10.5];lights.side=[L*.12,B*.34,fb+4.6];lights.stern=[-L/2,0,fb+1.4];ring(L*.17,-B*.34,fb+1.4);ring(L*.17,B*.34,fb+1.4);flag(-L/2+1,0,fb+.8);break}
+   case'pilot':case'coast':{box(-L*.16,L*.18,-B*.34,B*.34,fb,fb+2.1,SUP,{win:{n:1,col:'#1d3a4c',p:1.2*m,big:1},top:'#e8ecee',text:type==='pilot'?'נתב':'חילוץ'});
+    P.push({k:'fender',f0:0,f1:1,w:type==='coast'?4.5:2.6,col:lv.collar||'#3a4046'});mast(L*.02,0,fb+2.1,fb+5.2,1,'#e8ecee',{radar:B*.24,yard:B*.18});ring(-L*.18,-B*.34,fb+1.2);ring(-L*.18,B*.34,fb+1.2);
+    box(-L*.4,-L*.3,-B*.18,B*.18,fb,fb+.7,'#d8dcde',{top:'#e8ecee'});lights.mast=[L*.02,0,fb+5.2];lights.side=[L*.12,B*.34,fb+1.8];lights.stern=[-L/2,0,fb+1];lights.beacon=type==='coast'?'blue':type==='pilot'?'pilot':null;flag(-L/2+1,0,fb+.6);break}
+   case'fish':case'trawl':{const big=type==='trawl';box(big?L*.04:-L*.02,big?L*.24:L*.18,-B*.3,B*.3,fb,fb+2.1,SUP,{win:{n:1,col:GL,p:1.1*m},top:'#e8e2d0'});
+    mast(big?L*.16:L*.1,0,fb+2.1,fb+(big?9:5.2),1.1,'#d8dcde',{yard:B*.3,radar:big?B*.16:0});P.push({k:'gantry',x:-L*.38,w:B*.36,h:big?5.5:3});
+    {const xd=big?-L*.2:-L*.25,rd=big?.8:.6;for(const s of[-1,1])box(xd-.25*m,xd+.25*m,s*B*.3-.12*m,s*B*.3+.12*m,fb,fb+rd+.15,'#5a6268',{top:'#6a7278'});P.push({k:'hcyl',x:xd,z:fb+rd+.15,r:rd,w:B*.28,col:'#4f6a44',net:'#2a3f26',end:'#c43b2f'})}   /* D‑583: תוף הרשת שוכב לרוחב, על שתי רגליים */
+    box(L*.21,L*.31,-B*.17,B*.17,fb,fb+.22,'#8a7a5a',{top:'#a08e68'});box(L*.24,L*.27,B*.3,B*.38,fb,fb+.7,'#3a4046',{top:'#5a6268'});   /* מכסה המחסן לדגים, והמושך של הרשת בצד ימין */for(let i=0;i<(big?6:3);i++)box(-L*.12+i*L*.035,-L*.12+i*L*.035+L*.03,B*.12,B*.3,fb,fb+.5,i%2?'#4a8ac0':'#e07a1f',{top:i%2?'#5a9ad0':'#f08a2a'});
+    if(big)for(const s of[-1,1])mast(L*.1,s*B*.3,fb+1,fb+6,1,'#c9ced2',{boom:[L*.02,s*B*1.1,fb+3]});ring(L*.19,B*.3,fb+1.2);lights.mast=[big?L*.16:L*.1,0,fb+(big?9:5.2)];lights.side=[L*.14,B*.3,fb+1.8];lights.stern=[-L/2,0,fb+1];flag(-L/2+1,0,fb+.5);lights.work=1;break}
+   case'motor':case'cruiser':{const cr=type==='cruiser',v=cr?0:o.variant!=null?o.variant:hash('v|'+(o.id||'m'))%3;   /* D‑583 — שלושה דגמים: עם תא (קבינה קטנה בחרטום), פתוחה עם מושבים בחרטום, וקונסולה מרכזית עם גגון */
+    if(v===0){box(L*.02,L*.3,-B*.3,B*.3,fb,fb+(cr?.9:.5),cr?lv.sup:lv.hull,{top:cr?lv.sup:lv.hull,cabin:1,win:cr?null:{n:1,col:GL,p:.9*m}});glass(L*.0,L*.1,-B*.4,B*.4,fb,fb+(cr?1.3:.9))}
+    else if(v===1){box(L*.1,L*.34,-B*.3,B*.3,fb-.2,fb+.1,'#f2efe6',{top:'#ece6d6',cushion:1});glass(L*.02,L*.08,-B*.4,B*.4,fb,fb+.7);box(-L*.02,L*.05,B*.06,B*.3,fb,fb+.55,lv.sup,{top:'#2a2f35'})}
+    else{box(-L*.05,L*.07,-B*.15,B*.15,fb,fb+.9,lv.sup,{top:'#f2f2ee',cabin:1});glass(L*.06,L*.09,-B*.15,B*.15,fb+.9,fb+1.25);P.push({k:'tTop',x0:-L*.1,x1:L*.08,w:B*.26,z:fb+2.1,col:'#eef1f3'});box(L*.14,L*.3,-B*.22,B*.22,fb,fb+.35,'#f2efe6',{top:'#e8e2d4',cushion:1})}
+    if(cr){box(-L*.18,L*.04,-B*.42,B*.42,fb+1.6,fb+1.8,'#f4f6f8',{top:'#eef1f3'});for(const s of[-1,1])mast(-L*.15,s*B*.38,fb,fb+1.7,.8,'#c9ced2');mast(-L*.04,0,fb+1.8,fb+3,.8,'#e8ecee',{radar:B*.14})}
+    if(v!==2){seat(-L*.04,-B*.17,B*.24,.55*L/9);seat(-L*.04,B*.17,B*.24,.55*L/9)}box(-L*.36,-L*.18,-B*.38,B*.38,fb,fb+.42,'#f2efe6',{top:'#e8e2d4',cushion:1});
+    if(cr)flat([[-L/2-.9*m,-B*.42],[-L/2,-B*.42],[-L/2,B*.42],[-L/2-.9*m,B*.42]],.35,lv.deck);else motor(-L/2,1);rail(.62,1,.7);ring(-L*.4,B*.42,fb+.6);lights.mast=[cr?-L*.04:-L*.42,0,fb+(cr?3:1.6)];lights.side=[L*.32,B*.36,fb+.3];lights.stern=[-L/2,0,fb+.4];flag(-L/2+1,0,fb+.3);break}
+   case'speed':{glass(L*.06,L*.16,-B*.38,B*.38,fb,fb+.75);seat(-L*.02,-B*.16,B*.22,.6*m);seat(-L*.02,B*.16,B*.22,.6*m);box(-L*.32,-L*.16,-B*.36,B*.36,fb,fb+.4,'#2a2f35',{top:'#3a3f45',cushion:1});
+    P.push({k:'stripe',col:lv.stripe});if(o.variant!=null?o.variant:hash('v|'+(o.id||'s'))%2)P.push({k:'arch',x:-L*.1,w:B*.4,z:fb,h:1.25});motor(-L/2,1,1);lights.mast=[-L*.4,0,fb+1.4];lights.side=[L*.3,B*.3,fb+.2];lights.stern=[-L/2,0,fb+.3];break}
+   case'rent':case'row':{const n=type==='row'?2:3;for(let i=0;i<n;i++){const x=-L*.25+i*L*(type==='row'?.32:.22);box(x-.18*m,x+.18*m,-B*.42,B*.42,fb*.55,fb*.75,'#b5884f',{top:'#c9a46a'})}
+    if(type==='rent'){motor(-L/2,1);flat([[L*.18,-B*.22],[L*.34,-B*.1],[L*.34,B*.1],[L*.18,B*.22]],fb+.01,'#f4f2ea');P.push({k:'num',x:L*.26,y:0,z:fb+.02,txt:String(1+hash(o.id||'r')%12)})}
+    else P.push({k:'oars'});lights.stern=[-L/2,0,fb+.3];break}
+   case'yacht':case'yachtL':{const big=type==='yachtL',sy=!big&&(o.variant!=null?o.variant===1:hash('v|'+(o.id||'y'))%2===1),c0=-L*.32,c1=L*.2;box(c0,c1,-B*.4,B*.4,fb,fb+2,SUP,{win:{n:1,col:GL,p:2.2*m,band:1}});   /* D‑583 — שני דגמים: עם גשר עליון (פליי-ברידג׳), ויאכטת ספורט עם גג קשיח נמוך */
+    if(sy)box(c0+L*.02,c1-L*.01,-B*.38,B*.38,fb+2,fb+2.22,'#f4f6f8',{top:'#eef1f3'});else box(c0+L*.06,c1-L*.06,-B*.36,B*.36,fb+2,fb+3.8,SUP,{win:{n:1,col:GL,p:2*m,band:1},top:'#eef1f3'});if(big)box(c0+L*.12,c1-L*.14,-B*.3,B*.3,fb+3.8,fb+5.5,SUP,{win:{n:1,col:GL,p:2*m,band:1},top:'#eef1f3'});
+    glass(c1,c1+L*.05,-B*.36,B*.36,fb,fb+1.9);const zt=fb+(big?5.5:sy?2.22:3.8);box(c0+L*.13,c0+L*.23,-B*.3,B*.3,zt,zt+.25,'#f4f6f8',{top:'#e4e8ea'});mast(c0+L*.18,0,zt+.25,zt+2.6,.8,'#e8ecee',{radar:B*.14,dome:1});
+    box(c0+L*.02,c0+L*.11,-B*.24,B*.24,fb+2.05,fb+2.6,'#f2efe6',{top:'#e8e2d4',cushion:1});flat([[-L/2-1.2*m,-B*.38],[-L/2,-B*.4],[-L/2,B*.4],[-L/2-1.2*m,B*.38]],.45,'#c9a77a','rgba(90,70,40,.35)');flat([[-L*.47,-B*.34],[c0,-B*.36],[c0,B*.36],[-L*.47,B*.34]],fb+.03,'#c49a66','rgba(90,70,40,.3)');   /* דק טיק רק בתא האחורי */
+   
+    P.push({k:'tender',x:c0-L*.02,len:L*.13});rail(.08,.98,1);ring(-L*.42,B*.4,fb+.8);lights.mast=[c0+L*.18,0,zt+2.6];lights.side=[c1,B*.4,fb+1.8];lights.stern=[-L/2,0,fb+.6];flag(-L/2-1*m,0,.9);lights.teak=1;break}
+   case'sail':{box(-L*.12,L*.14,-B*.28,B*.28,fb,fb+.6,lv.sup,{win:{n:1,col:GL,p:.9*m},top:lv.sup});P.push({k:'rig',x:L*.06,h:ty.real[2]});lights.mast=[L*.06,0,ty.real[2]];lights.side=[L*.4,B*.2,fb+.2];lights.stern=[-L/2,0,fb+.4];break}
+   case'service':{box(L*.12,L*.36,-B*.36,B*.36,fb,fb+2.4,SUP,{win:{n:1,col:'#1d3a4c',p:1.3*m,big:1},top:'#d8dee1'});mast(L*.24,0,fb+2.4,fb+6,1,'#e8ecee',{radar:B*.18,yard:B*.2});
+    for(let i=0;i<3;i++)box(-L*.38+i*L*.12,-L*.3+i*L*.12,-B*.3,B*.1,fb,fb+1.6,['#2e86c1','#c43b2f','#e0a020'][i],{ctn:1});mast(L*.06,B*.3,fb,fb+4,1.4,'#e0a020',{jib:[-L*.1,B*.1,fb+3.4]});
+    P.push({k:'tyres',n:6});lights.mast=[L*.24,0,fb+6];lights.side=[L*.3,B*.36,fb+1.8];lights.stern=[-L/2,0,fb+1];break}
+   case'jetski':{/* D‑569: אופנוע ים אמיתי — מכסה קדמי משופע בצבע הגוף, תא אחסון, כידון עם שמשה קטנה, אוכף ארוך דו-גוני, משטח עלייה מאחור וסילון מים בשיט */
+    flat([[-L*.5,-B*.34],[-L*.34,-B*.4],[-L*.34,B*.4],[-L*.5,B*.34]],fb+.02,'#3a3f45','rgba(255,255,255,.12)');for(const s of[-1,1])box(-L*.4,-L*.06,s*B*.44-B*.05,s*B*.44+B*.05,fb*.3,fb*.75,'#1d1f22',{top:'#2a2f35'});
+    box(L*.04,L*.36,-B*.3,B*.3,fb,fb+.34,lv.hull,{top:lv.hull,cabin:1});box(L*.16,L*.3,-B*.14,B*.14,fb+.34,fb+.4,lv.stripe,{top:lv.stripe});
+    box(-L*.34,L*.02,-B*.16,B*.16,fb,fb+.4,'#1d1f22',{top:'#2a2f35',cushion:1});box(-L*.3,-L*.06,-B*.13,B*.13,fb+.4,fb+.47,lv.stripe,{top:lv.stripe,cushion:1});
+    box(-L*.01,L*.08,-B*.17,B*.17,fb+.3,fb+.62,'#2a2f35',{top:'#3a3f45'});glass(L*.08,L*.12,-B*.2,B*.2,fb+.5,fb+.82);mast(L*.04,0,fb+.55,fb+.86,.6,'#1d1f22',{yard:B*.44});
+    P.push({k:'jet'});lights.stern=[-L/2,0,fb+.25];lights.side=[L*.3,B*.3,fb+.2];lights.mast=[L*.04,0,fb+.9];break}
+   case'taxi':{box(-L*.22,L*.22,-B*.36,B*.36,fb,fb+1.7,lv.sup,{win:{n:1,col:GL,p:.9*m},top:lv.hull,text:'מונית ים'});mast(L*.12,0,fb+1.7,fb+2.6,.7,'#e8ecee');rail(.7,1,.6);ring(-L*.3,B*.36,fb+.6);
+    lights.mast=[L*.12,0,fb+2.6];lights.side=[L*.2,B*.36,fb+1.2];lights.stern=[-L/2,0,fb+.5];flag(-L/2+1,0,fb+.3);break}
+   case'console':case'sport':{const cab=type==='sport';if(cab){box(-L*.06,L*.2,-B*.3,B*.3,fb,fb+1.85,SUP,{win:{n:1,col:GL,p:.85*m},top:lv.stripe});mast(L*.06,0,fb+1.85,fb+2.75,.7,'#e8ecee',{radar:B*.16,dome:1})}
+    else{box(-L*.02,L*.1,-B*.16,B*.16,fb,fb+1.05,SUP,{top:'#f2f2ee'});glass(L*.08,L*.12,-B*.16,B*.16,fb+1.05,fb+1.5);P.push({k:'tTop',x0:-L*.08,x1:L*.1,w:B*.24,z:fb+2.25,col:lv.stripe})}
+    for(const s of[-1,1])P.push({k:'rods',x:-L*.32,y:s*B*.38});motor(-L/2,cab?2:1,cab);box(-L*.3,-L*.2,-B*.08,B*.08,fb,fb+.55,'#e8e8e4',{top:'#ffffff'});rail(.7,1,.6);
+    lights.mast=cab?[L*.06,0,fb+2.75]:[-L*.04,0,fb+2.3];lights.side=[L*.36,B*.36,fb+.4];lights.stern=[-L/2,0,fb+.6];lights.work=1;break}
+  }
+  if(o.up){const U=o.up,jet=type==='jetski',big=type==='yacht'||type==='yachtL'||type==='cruiser',fishT=type==='fish'||type==='trawl',mp=P.find(p=>p.k==='motor'),tt=P.find(p=>p.k==='tTop'),
+    top=P.filter(p=>p.k==='box'&&p.x0<L*.25&&p.x1>-L*.25).reduce((a,p)=>!a||p.z1>a.z1?p:a,null),roofed=!!tt||(top&&top.z1>fb+.8),rz=tt?tt.z:roofed?top.z1:fb,xr=tt?(tt.x0+tt.x1)/2:roofed?(top.x0+top.x1)/2:-L*.03,
+    zOn=(x0,x1,y0,y1)=>P.reduce((z,p)=>p.k==='box'&&p.x0<x1&&p.x1>x0&&p.y0<y1&&p.y1>y0&&p.z1<=fb+.65&&p.z1>z?p.z1:z,fb);   /* החלק עומד על מה שמתחתיו (ספסל, ארגז) — כדי שלא ייעלם מתחתיו בציור */
+   /* 10.11 09:43 (הבעלים: "לא ברור לי מה אני אמור לראות שונה"): כל שדרוג גדול וברור בזום של המשחק — נמדד ב-S7F283 (fx_visdiff.js): 76 מתוך 108 השדרוגים (עם הצביעה) שינו פחות
+      מ-140 פיקס׳ על המסך בזום 1.3, ו-6 לא שינו כלום (מנוע 1 ב"ים תיכון 740" וב"חץ 650", מיכל 2 בשני אופנועי הים, מאתר הדגים ב"אלמוג 800" וב"חץ 650"). עכשיו כל שדרוג מוסיף חלק גדול בצבע בולט:
+      מנוע — מכסה מנוע גדול שחור עם פס כתום, ובדרגה 2 עוד מנוע עם מכסים לבנים ופס אדום (פנימי: ארובות פליטה; יאכטה: פתחי פליטה ואז כונסי אוויר; אופנוע ים: כונס אוויר כתום ואז סנפירים אדומים);
+      מיכל — מיכל אלומיניום גדול עם פס צהוב ופקק אדום (בדרגה 2 — שניים); ציוד דיג — חכות עבות וארגז פיתיון, אאוטריגרים, כיסא לחימה; אלקטרוניקה — מסך תכלת ואנטנה,
+      כיפת מכ״ם גדולה; עיצוב — פסי מרוץ רחבים, או גג / גגון בצבע הפס, פס סביב הדופן ודגל גדול */
+   if(U.engine){if(jet){box(L*.14,L*.42,-B*.3,B*.3,fb+.32,fb+.74,'#ff5a1f',{top:'#ff7a3a'});if(U.engine>1)for(const s of[-1,1])box(-L*.52,-L*.24,s*B*.52-B*.08,s*B*.52+B*.08,fb*.3,fb+.42,'#c43b2f',{top:'#ea4a3a'})}
+    else if(mp){mp.up=U.engine;mp.big=1;if(U.engine>1){mp.n=Math.min(3,mp.n+1);mp.col='#eceff1';mp.top='#ffffff';mp.band='#c43b2f'}else{mp.col='#16181b';mp.top='#26292d';mp.band='#ef7a1a'}}
+    else if(big){for(const sd of[-1,1]){box(-L*.505,-L*.44,sd*B*.25-B*.1,sd*B*.25+B*.1,fb*.3,fb+.6,'#dfe4e7',{top:'#aab2b8'});box(-L*.51,-L*.495,sd*B*.25-B*.06,sd*B*.25+B*.06,fb*.3+.12,fb+.35,'#101215')}
+     if(U.engine>1)for(const sd of[-1,1])box(-L*.32,-L*.1,sd*B*.43-B*.05,sd*B*.43+B*.05,fb+.3,fb+1.6,'#15191c',{top:'#3a4046',ribs:1})}
+    else for(let i=0;i<(U.engine>1?2:1);i++){const sd=i?-1:1;cyl(-L*.06,sd*B*.2,Math.max(1.8,B*.08),fb,fb+3.9+(U.engine>1?.6:0),'#2a2f35','#d8302a')}}
+   if(U.tank){if(jet){for(let i=0;i<Math.min(2,U.tank);i++){const y=(i?-1:1)*B*.17;box(-L*.54,-L*.32,y-B*.15,y+B*.15,fb+.02,fb+.64,'#c43b2f',{top:'#ea4a3a'});cyl(-L*.43,y,Math.max(.8,B*.05),fb+.64,fb+.78,'#f2c230')}}
+    else for(let i=0;i<Math.min(2,U.tank);i++){const y=(i?-1:1)*B*.27,x0=big?-L*.43:fishT?-L*.48:-L*.485,w=big?L*.08:L*.15,z0=zOn(x0,x0+w,y-B*.14,y+B*.14);box(x0,x0+w,y-B*.14,y+B*.14,z0,z0+.9,'#c3cacf',{top:'#e4e8eb',ribs:1,stripe:'#f2c230',sf:[.42,.62]});cyl(x0+w*.5,y,Math.max(1.1,B*.035),z0+.9,z0+1.05,'#d8302a')}}
+   if(U.fishing&&!jet){if(!P.some(p=>p.k==='rods'))for(const s of[-1,1])P.push({k:'rods',x:-L*.34,y:s*B*.38});for(const p of P)if(p.k==='rods')p.th=1;
+    if(!(type==='console'||type==='sport'||fishT)){const bx0=big?-L*.43:-L*.17,bx1=bx0+L*.1,bz=zOn(bx0,bx1,-B*.15,B*.15);box(bx0,bx1,-B*.15,B*.15,bz,bz+.65,'#f4f6f8',{top:'#2f86c1'})}
+    if(U.fishing>1){const z0=roofed?rz:fb+.3;for(const s of[-1,1])mast(xr-L*.02,s*B*(roofed?.26:.42),z0,z0+2.8,1.6,'#eef1f3',{boom:[xr-L*.3,s*B*1.05,z0+4.6],bw:1.6});if(roofed)for(let i=0;i<4;i++)mast(xr-L*.06,(i-1.5)*B*.11,rz,rz+1.9,.8,'#2a2d31')}
+    if(U.fishing>2){const xc=big?-L*.4:fishT?-L*.12:-L*.29,cz=zOn(xc-L*.065,xc+L*.04,-B*.11,B*.11),tz=zOn(xc+L*.07,xc+L*.12,-B*.2,B*.2);box(xc-L*.04,xc+L*.04,-B*.11,B*.11,cz,cz+.75,'#f4f4f0',{top:'#e8e2d4',cushion:1});box(xc-L*.065,xc-L*.04,-B*.11,B*.11,cz+.75,cz+1.6,'#f4f4f0',{top:'#e8e2d4'});box(xc+L*.07,xc+L*.12,-B*.2,B*.2,tz,tz+.8,'#e8ecee',{top:'#2f86c1'});P.push({k:'pipe',x0:-L*.38,x1:-L*.04,y:-B*.42,z:fb+.65,col:'#eef1f3',w:1.5})}}
+   if(U.elec){const zs=jet?fb+.62:tt?fb+1.05:roofed?Math.min(rz,fb+1.2):Math.max(fb+.45,top?top.z1:fb),xs=jet?L*.02:tt?(tt.x0+tt.x1)/2:roofed?top.x1-L*.03:(top?(top.x0+top.x1)/2:0),ys=!jet&&!tt&&!roofed&&top?(top.y0+top.y1)/2:0,sw=jet?3:Math.max(2.4,L*.05);
+    box(xs-sw,xs+sw,ys-B*(jet?.24:.18),ys+B*(jet?.24:.18),zs,zs+.8,'#15191c',{top:'#45d6ff'});if(!jet){const ax=roofed?xr-L*.07:xs-L*.06,az=roofed?rz:zs;cyl(ax,B*.2,Math.max(2,B*.11),az,az+.8,'#f4f6f8');mast(ax-L*.01,-B*.2,az,az+2.6,.9,'#2a2d31')}
+    if(U.elec>1&&!jet){if(P.some(p=>p.k==='mast'&&p.radar)){cyl(xr-L*.1,-B*.16,Math.max(3.4,B*.16),rz,rz+1.1,'#f4f6f8');mast(xr-L*.02,B*.24,rz,rz+2.6,.8,'#2a2d31')}
+     else{let zb=rz,xm=xr;if(!roofed){P.push({k:'arch',x:-L*.16,w:B*.46,z:fb,h:1.8,th:1});zb=fb+1.8;xm=-L*.19}mast(xm,0,zb,zb+1.1,1,'#e8ecee',{radar:Math.max(4.4,B*.27)});cyl(xm,0,Math.max(3.4,B*.16),zb+1.1,zb+2.1,'#f4f6f8');if(!lights.mast||lights.mast[2]<zb+1.1)lights.mast=[xm,0,zb+1.1];for(const s of[-1,1])mast(xm-L*.01,s*B*(roofed?.26:.3),zb,zb+2,.6,'#2a2d31')}}}
+   if(U.design===1){const rgb=h=>/^#[0-9a-f]{6}$/i.test(h||'')?[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)):[236,230,214],dif=(a,b)=>{const A=rgb(a),Bq=rgb(b);return Math.abs(A[0]-Bq[0])+Math.abs(A[1]-Bq[1])+Math.abs(A[2]-Bq[2])},sc=dif(lv.stripe,lv.deck)>160?lv.stripe:dif(lv.hull,lv.deck)>160?lv.hull:'#1d1f22';   /* הפסים בצבע שבולט על הסיפון */
+    const gl=P.filter(p=>p.k==='glass'&&p.x0>-L*.12&&p.y1-p.y0>B*.5).reduce((a,p)=>Math.max(a,p.x1),-1e9),xa=type==='sport'?L*.2:jet?L*.04:Math.max(L*.02,gl+L*.01),
+     ub=P.filter(p=>p.k==='box'&&p.x0<L*.45&&p.x1>xa&&p.y0<B*.2&&p.y1>-B*.2&&p.z1<=fb+.65).reduce((a,p)=>!a||p.z1>a.z1?p:a,null);
+    P.push({k:'stripe2',col:sc,th:jet?3:1,x:ub?(ub.x0+ub.x1)/2:(xa+L*.45)/2,xa,z:(ub?Math.max(fb,ub.z1):fb)+.06})}   /* הפסים על מה שמתחתיהם (הסיפון, המכסה או הספסל), ובאותו עומק בציור — מעליו */if(U.design===2){P.push({k:'fender',f0:0,f1:1,w:Math.max(4,270/L*1.15),col:lv.stripe,band:1});if(tt)tt.col=lv.stripe;else if(roofed)top.top=lv.stripe;else if(!jet)P.push({k:'tTop',x0:-L*.18,x1:L*.06,w:B*.36,z:fb+2,col:lv.stripe});else for(const p of P)if(p.k==='box'&&p.cushion)p.top=lv.stripe;P.push({k:'flag',x:L*.44,y:0,z:fb+.2,big:1})}}
+  return{P,lights,fb}}
+ /* ================= הציור ================= */
+ const MODEL=new Map();
+ /* D‑583: רוחב קו המים ביחס לרוחב הסיפון (כמה הדופן מתעגלת), הסוגים עם פיברגלס מבריק (2 — פס נירוסטה), הנטייה של המבנה העליון, והשמות */
+ const HYT={container:.96,bulk:.96,tanker:.96,roro:.96,ferry:.9,tour:.9,service:.9,tug:.82,trawl:.86,fish:.82,pilot:.8,coast:.8,speed:.74,jetski:.72,row:.72,rent:.8,motor:.8,sport:.8,console:.78,yacht:.84,yachtL:.86,cruiser:.82,taxi:.84,sail:.72};
+ const GLOSS={motor:2,cruiser:2,speed:1,rent:1,yacht:2,yachtL:2,sport:2,console:1,jetski:1,taxi:1,coast:1,sail:2,pilot:1,tour:2};
+ const RAKE={motor:[.5,.1,.08],cruiser:[.5,.1,.08],speed:[.5,.1,.08],rent:[.4,.08,.06],yacht:[.5,.1,.08],yachtL:[.5,.1,.08],sport:[.45,.1,.06],console:[.4,.1,.06],taxi:[.45,.1,.06],sail:[.5,.1,.08],jetski:[.4,.1,.06],
+  tug:[-.18,.06,.04],pilot:[-.16,.06,.04],fish:[-.16,.06,.04],trawl:[-.16,.05,.04],coast:[-.12,.06,.04],ferry:[.25,.05,.03],tour:[.3,.06,.03],service:[.2,.05,.03]};
+ const NAMES=['שחף','אלמוג','רוח ים','גל כחול','דולפין','צדף','מגדלור','כוכב ים','נווד','תכלת','אופק','ים שקט','סנונית','מפרש לבן','פנינה','הרפתקה','לבנטין','שקיעה','רוח מערבית','נמל הבית','קשת','זריחה','אדמירל','מרלין'];
+ const SHIPT={container:1,bulk:1,tanker:1,roro:1};
+ const NAMED={yacht:1,yachtL:1,motor:1,cruiser:1,speed:1,sport:1,fish:1,tug:1,trawl:1};   /* גם לסירת הדייג, לגוררת ולמכמורת — שם על הירכתיים, כמו באמת */
+ function nameOf(spec){if(!NAMED[spec.type])return null;return NAMES[hash('n|'+(spec.id||spec.type))%NAMES.length]}
+ function model(spec){const key=spec.type+'|'+spec.L+'|'+spec.B+'|'+(spec.lvKey||'')+'|'+(spec.cargoLive?1:0)+'|'+(spec.id||'')+'|'+(spec.hatches||0)+'|'+(spec.upKey||'')+'|'+(spec.variant==null?'':spec.variant);let M=MODEL.get(key);if(M)return M;
+  const ty=T[spec.type]||T.motor,lv0=spec.lv||ty.lv[hash(spec.id||spec.type)%ty.lv.length],lv=/^(yacht|yachtL|cruiser)$/.test(spec.type)?Object.assign({},lv0,{deck:'#e6e3da'}):lv0,m={type:ty.type,L:spec.L,B:spec.B,shape:ty.shape},b=build(ty.type,spec.L,spec.B,lv,spec);
+  {const rk=RAKE[spec.type],mm=spec.L/ty.real[0];if(rk)for(const p of b.P)if(p.k==='box'&&(p.win||p.cabin)&&!p.tp&&!p.ctn){const h=p.z1-p.z0,lx=p.x1-p.x0,ly=p.y1-p.y0,f=rk[0]*h*mm;p.tp=[f>0?Math.min(lx*.32,f):Math.max(-lx*.12,f),Math.min(ly*.18,rk[1]*h*mm),Math.min(lx*.12,rk[2]*h*mm)]}}
+  M={ty,lv,m,out:outline(m),P:b.P,lights:b.lights,fb:ty.fb,zTop:Math.max(ty.fb+1,...b.P.map(p=>p.z1||p.z||0),b.lights.mast?b.lights.mast[2]:0)};if(MODEL.size>400)MODEL.clear();MODEL.set(key,M);return M}
+ /* קופסה: הקירות שפונים אל הצופה, החלונות, ואז הגג */
+ /* קופסה (D‑583): הקירות שפונים אל הצופה, החלונות, ואז הגג. p.tp = [חרטום, צדדים, ירכתיים] — הגג נכנס פנימה (שמשה נטויה, קירות שנוטים
+    פנימה כמו בסירות אמיתיות; חרטום שלילי — חלונות גשר שנוטים קדימה, כמו בגוררת ובסירות העבודה). קיר נטוי מואר לפי הנורמל שלו מול השמש.
+    בחלונות — השתקפות של השמיים בחלק העליון והברק האלכסוני, כמו בזכוכית של המכוניות */
+ function drawBox(c,o,p,N,lod){const C=[[p.x0,p.y0],[p.x1,p.y0],[p.x1,p.y1],[p.x0,p.y1]],NR=[[0,-1],[1,0],[0,1],[-1,0]],tp=p.tp,H=p.z1-p.z0;
+  const Ct=tp?[[p.x0+tp[2],p.y0+tp[1]],[p.x1-tp[0],p.y0+tp[1]],[p.x1-tp[0],p.y1-tp[1]],[p.x0+tp[2],p.y1-tp[1]]]:C,INS=tp?[tp[1],tp[0],tp[1],tp[2]]:null;
+  const W=(i,f)=>{const a=C[i],b=Ct[i];return pj(o,a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,p.z0+H*f)},E=(i,u,f)=>{const A=W(i,f),Q=W((i+1)%4,f);return[A[0]+(Q[0]-A[0])*u,A[1]+(Q[1]-A[1])*u]},
+   Q4=(i,u0,u1,f0,f1)=>[E(i,u0,f0),E(i,u1,f0),E(i,u1,f1),E(i,u0,f1)];
+  for(let i=0;i<4;i++){const nx=NR[i][0]*o.c-NR[i][1]*o.s,ny=NR[i][0]*o.s+NR[i][1]*o.c;let nz=0,k;
+   if(INS){const hp=Math.max(.01,H*10),d=INS[i],nl=Math.hypot(hp,d)||1;nz=d/nl;if(ny*hp/nl+.6*nz<=.015)continue;k=wallK(nx,ny)*(1-Math.abs(nz))+(nz>0?1.06:.6)*Math.abs(nz)}else{if(ny<=.015)continue;k=wallK(nx,ny)}
+   const a=C[i],b=C[(i+1)%4];c.fillStyle=shade(p.col,k,N);c.beginPath();poly(c,Q4(i,0,1,0,1));c.fill();
+   if(p.ctn&&lod>1){c.strokeStyle='rgba(0,0,0,.22)';c.lineWidth=.5;c.beginPath();const n=Math.max(2,Math.round(Math.hypot(b[0]-a[0],b[1]-a[1])/3));for(let q=1;q<n;q++){const u=q/n,q0=E(i,u,0),q1=E(i,u,1);c.moveTo(q0[0],q0[1]);c.lineTo(q1[0],q1[1])}c.stroke()}
+   if(p.stripe&&lod>0){const sf=p.sf||[.08,.16];c.fillStyle=shade(p.stripe,k,N);c.beginPath();poly(c,Q4(i,0,1,sf[0],sf[1]));c.fill()}
+   if(p.win&&lod>0){const len=Math.hypot(b[0]-a[0],b[1]-a[1]),fA=p.win.big?.3:.42,fB=p.win.big?.88:.8,lit=N>.35,refl=!lit&&lod>1,ra=(.2+.16*Math.max(0,nz)).toFixed(3);
+    const pane=(u0,u1,col)=>{c.fillStyle=col;c.beginPath();poly(c,Q4(i,u0,u1,fA,fB));c.fill();if(refl){c.fillStyle='rgba(205,228,248,'+ra+')';c.beginPath();poly(c,Q4(i,u0,u1,fB-(fB-fA)*.38,fB));c.fill()}};
+    if(p.win.band||lod<2||len<p.win.p*1.5){pane(.06,.94,lit?'rgba(255,212,140,.92)':p.win.col);if(lod>1&&!lit&&len>14){c.strokeStyle='rgba(225,232,238,.45)';c.lineWidth=.35;c.beginPath();const nm=Math.max(1,Math.round(len/(p.win.p*1.2||6)));for(let q=1;q<nm;q++){const u=.06+.88*q/nm,q0=E(i,u,fA),q1=E(i,u,fB);c.moveTo(q0[0],q0[1]);c.lineTo(q1[0],q1[1])}c.stroke()}}
+    else{const n=Math.max(1,Math.floor(len/p.win.p)),wd=.62/n*(p.win.big?1.35:1);let sd=hash(p.x0+'|'+p.z0+'|'+i);for(let q=0;q<n;q++){const u=(q+.5)/n;sd=Math.imul(sd^(sd>>>13),1274126177)>>>0;
+      pane(u-wd/2,u+wd/2,lit?((sd&7)<5?'rgba(255,214,140,.95)':'rgba(70,64,52,.9)'):p.win.col)}}
+    if(refl){c.fillStyle='rgba(255,255,255,.14)';c.beginPath();poly(c,[E(i,.08,fB),E(i,.5,fB),E(i,.3,fA)]);c.fill()}}
+   if(p.text&&lod>1&&ny>.5&&N<.5){const m=E(i,.5,.2);c.fillStyle='#e0731d';c.font='700 '+Math.max(2.4,(p.z1-p.z0)*1.2).toFixed(1)+'px Segoe UI,Arial';c.textAlign='center';c.fillText(p.text,m[0],m[1])}}
+  const top=Ct.map(q=>pj(o,q[0],q[1],p.z1));c.fillStyle=shade(p.top||p.col,p.canopy?1:1.05,N);c.beginPath();poly(c,top);c.fill();
+  if(p.ribs&&lod>0){c.strokeStyle='rgba(0,0,0,.25)';c.lineWidth=.6;c.beginPath();const n=6;for(let k=1;k<n;k++){const u=k/n,q0=pj(o,lerp(Ct[0][0],Ct[1][0],u),Ct[0][1],p.z1),q1=pj(o,lerp(Ct[0][0],Ct[1][0],u),Ct[2][1],p.z1);c.moveTo(q0[0],q0[1]);c.lineTo(q1[0],q1[1])}c.stroke()}
+  if(p.cushion&&lod>1){c.strokeStyle='rgba(0,0,0,.12)';c.lineWidth=.4;c.beginPath();poly(c,top);c.stroke()}
+  if(lod>1&&!p.ctn){c.strokeStyle='rgba(255,255,255,.28)';c.lineWidth=.5;c.beginPath();c.moveTo(top[3][0],top[3][1]);c.lineTo(top[0][0],top[0][1]);c.lineTo(top[1][0],top[1][1]);c.stroke()}}
+ function drawCyl(c,o,p,N){const b=pj(o,p.x,p.y,p.z0),t=pj(o,p.x,p.y,p.z1),r=p.r;c.fillStyle=shade(p.col,.8,N);c.fillRect(b[0]-r,t[1],2*r,b[1]-t[1]);c.beginPath();c.arc(b[0],b[1],r,0,Math.PI);c.fill();
+  c.fillStyle=shade(p.col,1,N);c.fillRect(b[0]-r,t[1],r*.7,b[1]-t[1]);if(p.band){const z=p.z1-(p.z1-p.z0)*.22,q=pj(o,p.x,p.y,z);c.fillStyle=shade(p.band,.9,N);c.fillRect(q[0]-r,q[1]-(p.z1-p.z0)*.08*KZ,2*r,(p.z1-p.z0)*.12*KZ)}
+  c.fillStyle=shade(p.col,1.08,N);c.beginPath();c.arc(t[0],t[1],r,0,TAU);c.fill();c.fillStyle='#15191c';c.beginPath();c.arc(t[0],t[1],r*.62,0,TAU);c.fill()}
+ function line(c,a,b,w,col){c.strokeStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+ /* גוף, צל, השתקפות, שובל — ואז החלקים לפי העומק */
+ function paint(c,spec,x,y,h,t,o){o=o||{};try{
+  const M=model(spec),L=spec.L,B=spec.B,fb=M.fb,N=o.night!=null?o.night:nightNow(),z0=zoomNow()*(o.scaleHint||1),lod=o.lod!=null?o.lod:(z0<.32?0:z0<.8?1:2),moving=(o.u||0)>3||o.under;
+  const F=frame(x,y,h,t,o.ph!=null?o.ph:(hash(spec.id||'b')%628)/100,o.wave,moving,o.anchor==='deck'?fb:0,o.lift||0),out=M.out.P,lv=M.lv,zT=M.zTop;if(o.dry){F.bob=0;F.roll=0}   /* D‑582: o.dry — הסירה מחוץ למים (במבדוק): בלי נדנוד, בלי השתקפות וקצף, והתחתית כולה נראית */
+  /* השובל, גלי החרטום והקצף — רק כשהוא זז; ההיסטוריה של המקום (o.trail) או הכיוון והמהירות */
+  if(!o.thumb&&!o.trail&&spec.id)trailRec(spec,F,o);if(!o.thumb&&(o.u||0)>3)wake(c,F,spec,o.trail?o:Object.assign({},o,{trail:TRL.get(spec.id)&&TRL.get(spec.id).P,cur:true}),lod);
+  /* הצל על המים: הסיפון בגובה שלו, וכל מבנה בגובה שלו (צורה אחת) */
+  if(!o.noShadow){c.fillStyle='rgba(2,14,28,'+(.24*(1-.45*N)).toFixed(3)+')';c.beginPath();poly(c,out.map(p=>sp(F,p[0],p[1],fb+p[2])));
+  for(const p of M.P)if(p.k==='box'&&p.z1>fb+.6){const Q=[];for(const[a,b]of[[p.x0,p.y0],[p.x1,p.y0],[p.x1,p.y1],[p.x0,p.y1]]){Q.push(sp(F,a,b,p.z0),sp(F,a,b,p.z1))}poly(c,hull2d(Q))}c.fill('nonzero')}
+  /* ההשתקפות במים */
+  if(lod>0&&!o.noRefl&&!o.dry){c.save();c.globalAlpha=(.16+.06*N);c.fillStyle=shade(lv.hull,.8,N);c.beginPath();for(let i=0;i<out.length;i++){const a=out[i],b=out[(i+1)%out.length],nx=-(b[1]-a[1]),ny=(b[0]-a[0]),wy=nx*F.s+ny*F.c;if(wy<=0)continue;
+    poly(c,[pj(F,a[0]*.97,a[1]*.92,0),pj(F,b[0]*.97,b[1]*.92,0),pj(F,b[0],b[1],-(fb+b[2])*.75),pj(F,a[0],a[1],-(fb+a[2])*.75)])}c.fill();c.restore()}
+  /* הדפנות (D‑583) — הגוף מטבעות, כמו המכוניות: קו המים צר יותר והדופן מתעגלת ממנו החוצה עד קו הסיפון (הסינר); כל רצועה מוארת לפי הנורמל
+     שלה מול השמש — החלק התחתון פונה מעט מטה ולכן כהה יותר, וכך הדופן נראית מעוגלת. מתחת לקו המים — צבע התחתית שנראה דרך המים. */
+  const HX=.975,HY=HYT[spec.type]||.84,gF=f=>1-Math.pow(1-f,2.2),
+   R=(a,f)=>{if(f<0){const u=-f;return[a[0]*(HX-.06*u),a[1]*(HY-.55*u),fb*f]}const g=gF(f);return[a[0]*(HX+(1-HX)*g),a[1]*(HY+(1-HY)*g),(fb+a[2])*f]},
+   RP=(a,f)=>{const r=R(a,f);return pj(F,r[0],r[1],r[2])};
+  const sides=[];for(let i=0;i<out.length;i++){const a=out[i],b=out[(i+1)%out.length],lx=b[0]-a[0],ly=b[1]-a[1],ln=Math.hypot(lx,ly)||1,nx=-ly/ln,ny=lx/ln,wx=nx*F.c-ny*F.s,wy=nx*F.s+ny*F.c;if(wy>-.3)sides.push([a,b,wx,wy])}
+  const q4=(a,b,f0,f1)=>[RP(a,f0),RP(b,f0),RP(b,f1),RP(a,f1)],
+   nrm=(a,b,f0,f1)=>{const A=R(a,f0),Q=R(b,f0),D=R(a,f1),ex=Q[0]-A[0],ey=Q[1]-A[1],dx=D[0]-A[0],dy=D[1]-A[1],dz=(D[2]-A[2])*10;let nx=-ey*dz,ny=ex*dz,nz=ey*dx-ex*dy;const n=Math.hypot(nx,ny,nz)||1;nx/=n;ny/=n;nz/=n;return[nx*F.c-ny*F.s,nx*F.s+ny*F.c,nz]},
+   litK=w=>{const hh=Math.hypot(w[0],w[1])||1,az=Math.abs(w[2]);return cl(wallK(w[0]/hh,w[1]/hh)*(1-az)+(w[2]>0?1.06:.56)*az,.5,1.12)};
+  const band=(f0,f1,col,k)=>{if(lod===0){c.fillStyle=shade(col,.8*(k||1),N);c.beginPath();for(const[a,b,wx,wy]of sides)if(wy>-.02)poly(c,q4(a,b,f0,f1));c.fill();return}
+   for(const[a,b]of sides){const w=nrm(a,b,f0,f1);if(w[1]+.6*w[2]<=-.02)continue;c.fillStyle=shade(col,litK(w)*(k||1),N);c.beginPath();poly(c,q4(a,b,f0,f1));c.fill()}};
+  if(lod>0&&!o.noUW&&!o.dry){c.save();c.globalAlpha=.2*(1-.5*N);c.fillStyle=shade(lv.boot||'#7a2a24',.72,N);c.beginPath();for(const[a,b,wx,wy]of sides)if(wy>-.02)poly(c,q4(a,b,-.6,0));c.fill();
+   if(SHIPT[spec.type]){const q=pj(F,L*.5*HX,0,-fb*.32);c.beginPath();c.ellipse(q[0],q[1],L*.03,B*.13,F.h,0,TAU);c.fill()}c.restore()}   /* D‑583: החרטום הבולבוסי של האוניות, מתחת למים */
+  if(o.dry){band(-1,-.5,lv.boot||'#7a2a24',.72);band(-.5,0,lv.boot||'#7a2a24',.88)}band(0,1,lv.hull,.96);band(0,.16,lv.boot||'#7a2a24',1);
+  if(lod>0){const s0=GLOSS[spec.type]?.64:.74,s1=GLOSS[spec.type]?.8:.86;band(.155,.2,'#f4f4f0',1);if(lod>1){band(.2,.45,lv.hull,1);band(.45,s0,lv.hull,1);band(s1,1,lv.hull,1)}band(s0,s1,lv.stripe,1)}
+  if(lod>0&&!o.dry){c.strokeStyle='rgba(235,248,255,'+(.5-.25*N).toFixed(2)+')';c.lineWidth=Math.max(.6,B*.02);c.beginPath();for(const[a,b,wx,wy]of sides){if(wy<=-.02)continue;const p=RP(a,0),q=RP(b,0);c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1])}c.stroke()}
+  /* פיברגלס מבריק: קו ברק לאורך הדופן העליונה, ופס השפשוף (נירוסטה או גומי) בקו הסיפון */
+  if(lod>1&&GLOSS[spec.type]){const gl=GLOSS[spec.type];c.lineCap='round';c.strokeStyle='rgba(255,255,255,'+(.34*(1-N)).toFixed(2)+')';c.lineWidth=Math.max(.35,B*.012);c.beginPath();
+   for(const[a,b,wx,wy]of sides){if(wy<.12)continue;const p=RP(a,.93),q=RP(b,.93);c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1])}c.stroke();
+   c.strokeStyle=shade(gl===2?'#d4d9dd':'#2a2f35',1,N);c.lineWidth=Math.max(.45,B*.022);c.beginPath();for(const[a,b,wx,wy]of sides){if(wy<=-.02)continue;const p=RP(a,1),q=RP(b,1);c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1])}c.stroke();c.lineCap='butt'}
+  /* D‑583: באוניות — קווי הלוחות של הפלדה, ובחרטום — צינור העוגן והעוגן בכל צד שפונה אל הצופה */
+  if(lod>1&&SHIPT[spec.type]){c.strokeStyle='rgba(0,0,0,'+(.1+.05*N).toFixed(2)+')';c.lineWidth=.45;c.beginPath();for(const[a,b,wx,wy]of sides){if(wy<.2)continue;const p=RP(a,.42),q=RP(b,.42),p2=RP(a,.62),q2=RP(b,.62);c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1]);c.moveTo(p2[0],p2[1]);c.lineTo(q2[0],q2[1])}c.stroke();
+   for(const sd of[-1,1]){if(sd*F.c<.12)continue;let best=null;for(const a of out)if(a[1]*sd>0&&(!best||Math.abs(a[0]-L*.41)<Math.abs(best[0]-L*.41)))best=a;if(!best)continue;
+    const h0=RP(best,.86),a0=RP(best,.8),a1=RP(best,.6),aw=Math.max(.8,B*.03);c.fillStyle=shade('#15191c',1,N);c.beginPath();c.ellipse(h0[0],h0[1],aw*.9,aw*.6,0,0,TAU);c.fill();
+    c.fillStyle=shade('#2a2f35',1,N);c.beginPath();c.moveTo(a0[0]-aw*.3,a0[1]);c.lineTo(a0[0]+aw*.3,a0[1]);c.lineTo(a1[0]+aw*.9,a1[1]);c.lineTo(a1[0]-aw*.9,a1[1]);c.closePath();c.fill()}}
+  /* השם על הירכתיים (D‑583): ביאכטות ובסירות המנוע, כשהירכתיים פונות אל הצופה */
+  if(lod>1&&N<.8&&L<300&&-F.s>.15){const nm=spec.name||nameOf(spec);if(nm){const g=gF(.5),lx=-L/2*(HX+(1-HX)*g),q=pj(F,lx-.3,0,fb*.5),wT=B*(M.ty.shape.tr||.8)*(HY+(1-HY)*g)*.74,fs=Math.max(1.2,fb*10*.36),cT=c.getTransform(),scr=fs*KZ/10*Math.hypot(cT.a,cT.b);
+   if(scr>=3.2){c.save();c.transform(-F.s,F.c,0,KZ/10,q[0],q[1]);c.font='700 '+fs.toFixed(2)+'px Segoe UI,Arial';const tw=c.measureText(nm).width||1;if(tw>wT)c.scale(wT/tw,1);
+   const lum=parseInt((lv.hull||'#ffffff').slice(1,3),16);c.fillStyle=shade(lum>140?'#1d2f45':'#d8b45a',1,N);c.textAlign='center';c.textBaseline='middle';c.direction='rtl';c.fillText(nm,0,0);c.restore()}}}   /* שם רק כשהאותיות בגובה 3 פיקס׳ לפחות על המסך — בלי כתם קטן ולא קריא */
+  /* הסיפון, והמעקה (הדופן העליונה) */
+  const deck=out.map(p=>pj(F,p[0],p[1],fb+p[2]));c.fillStyle=shade(lv.hull,1.1,N);c.beginPath();poly(c,deck);c.fill();
+  const inn=out.map(p=>pj(F,p[0]*.96-(p[0]>0?0:-L*.005),p[1]*.86,fb+p[2]+.02));c.fillStyle=shade(lv.deck,1,N);c.beginPath();poly(c,inn);c.fill();
+  if(lod>1&&(M.lights.teak||spec.type==='row'||spec.type==='fish'||spec.type==='console'||spec.type==='sport')){c.strokeStyle='rgba(80,60,40,.22)';c.lineWidth=.35;c.beginPath();for(let k=-3;k<=3;k++){const a=pj(F,-L*.46,k*B*.12,fb+.03),b=pj(F,M.lights.teak?-L*.33:L*.3,k*B*.12*(M.lights.teak?1:(1-.2*Math.abs(k)/3)),fb+.03);c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1])}c.stroke()}
+  if(lod>1&&L>220){c.fillStyle='rgba(30,36,40,.7)';for(let x=-L*.42;x<L*.4;x+=L*.09)for(const s of[-1,1]){const q=pj(F,x,s*B*.44,fb+.05);c.fillRect(q[0]-1.2,q[1]-1,2.4,2)}}
+  if(o.moored&&lod>1&&L<260){for(const s of[-1,1])for(const f of[-.18,.12]){if(s*F.c<-.08)continue;const q=pj(F,L*f,s*B*.5,fb*.55);c.fillStyle=shade(s>0?'#1d3a5a':'#2a4a6a',1,N);c.beginPath();c.ellipse(q[0],q[1],Math.max(.7,B*.05),Math.max(1.1,fb*KZ*.32),0,0,TAU);c.fill();c.fillStyle='rgba(255,255,255,.3)';c.beginPath();c.arc(q[0]-.3,q[1]-fb*KZ*.15,Math.max(.3,B*.015),0,TAU);c.fill()}}
+  /* החלקים לפי העומק (הרחוק קודם) */
+  const items=[];for(const p of M.P){const cx=p.x!=null?p.x:p.x0!=null?(p.x0+p.x1)/2:0,cy=p.y!=null?p.y:p.y0!=null?(p.y0+p.y1)/2:0;items.push([p.sk!=null?p.sk:cx*F.s+cy*F.c+(p.z0||p.z||0)*.6+(p.k==='flat'?-1e4:0),p])}
+  for(const pp of(o.people||[]))items.push([pp.lx*F.s+pp.ly*F.c+(pp.z!=null?pp.z:fb)*.6+.5,{k:'person',pp}]);
+  items.sort((a,b)=>a[0]-b[0]);
+  for(const[,p]of items)part(c,F,p,M,N,lod,o,spec);
+  /* מעקה, פגושים */
+  /* אורות הניווט ופנסי הסיפון בלילה */
+  if(N>.2&&!o.noLights)lightsOf(c,F,M,N,o,spec,lod);
+  if(spec.name&&lod>1&&L>200&&N<.6){const q=pj(F,h===0||Math.cos(h)>0?L*.36:-L*.36,B*.5,fb*.55);c.fillStyle='rgba(255,255,255,.85)';c.font='600 '+(fb*.9).toFixed(1)+'px Segoe UI,Arial';c.textAlign='center';c.fillText(spec.name,q[0],q[1])}
+  return F}catch(e){ERR.n++;ERR.e=ERR.e||String(e&&e.stack||e).slice(0,400);return null}}
+ function part(c,F,p,M,N,lod,o,spec){const fb=M.fb,L=spec.L,B=spec.B,lv=M.lv;
+  switch(p.k){
+   case'box':drawBox(c,F,p,N,lod);break;
+   case'cyl':drawCyl(c,F,p,N);break;
+   case'hcyl':{/* D‑583: גליל שוכב לרוחב הסירה (תוף הרשת בדייג, תוף הכבל בגוררת) — גוף, פס אור למעלה, ליפופי הרשת, והדיסקה שפונה אל הצופה */
+    const mm=L/M.ty.real[0],rx=p.r*mm,n=14,E=(t,y)=>pj(F,p.x+Math.cos(t)*rx,(p.y||0)+y,p.z+Math.sin(t)*p.r),A=[];for(let i=0;i<n;i++){const t=i/n*TAU;A.push(E(t,-p.w),E(t,p.w))}
+    c.fillStyle=shade(p.col,.8,N);c.beginPath();poly(c,hull2d(A));c.fill();
+    if(lod>0){c.fillStyle=shade(p.col,1.04,N);c.beginPath();poly(c,[E(1,-p.w),E(2.1,-p.w),E(2.1,p.w),E(1,p.w)]);c.fill()}
+    if(lod>1&&p.net){c.strokeStyle=shade(p.net,.7,N);c.lineWidth=.35;c.beginPath();for(const t of[.45,.8,1.25,1.7,2.15,2.6]){const a=E(t,-p.w*.96),b=E(t,p.w*.96);c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1])}c.stroke()}
+    const ye=F.c>0?p.w:-p.w,D=[];for(let i=0;i<n;i++)D.push(E(i/n*TAU,ye));c.fillStyle=shade(p.end||p.col,.95,N);c.beginPath();poly(c,D);c.fill();
+    if(lod>0){const q=pj(F,p.x,(p.y||0)+ye,p.z);c.fillStyle=shade('#2a2f35',1,N);c.beginPath();c.arc(q[0],q[1],Math.max(.5,rx*.22),0,TAU);c.fill()}break}
+   case'flat':{c.fillStyle=shade(p.col,1,N);c.beginPath();poly(c,p.pts.map(q=>pj(F,q[0],q[1],p.z)));c.fill();if(p.line&&lod>1){c.strokeStyle=p.line;c.lineWidth=.6;c.stroke()}break}
+   case'mast':{if(lod===0&&p.w<1.2)break;const a=pj(F,p.x,p.y,p.z0),b=pj(F,p.x,p.y,p.z1);line(c,a,b,Math.max(.5,p.w*.8),shade(p.col,.9,N));
+    if(p.yard&&lod>0){const q=p.z0+(p.z1-p.z0)*.62;line(c,pj(F,p.x,p.y-p.yard,q),pj(F,p.x,p.y+p.yard,q),.7,shade(p.col,.8,N))}
+    if(p.radar&&lod>0){const z=p.z0+(p.z1-p.z0)*.4,an=(o.under||(o.u||0)>3)?F.t*2.6:.6;if(p.dome){const q=pj(F,p.x,p.y,z);c.fillStyle=shade('#f4f6f8',1,N);c.beginPath();c.ellipse(q[0],q[1],p.radar*.45,p.radar*.32,0,0,TAU);c.fill()}
+     else line(c,pj(F,p.x+Math.cos(an)*p.radar,p.y+Math.sin(an)*p.radar,z),pj(F,p.x-Math.cos(an)*p.radar,p.y-Math.sin(an)*p.radar,z),1.2,shade('#2a2f35',1,N))}
+    if(p.jib&&lod>0)line(c,pj(F,p.x,p.y,p.z1-.3),pj(F,p.jib[0],p.jib[1],p.jib[2]),.9,shade(p.col,.85,N));
+    if(p.boom&&lod>0)line(c,pj(F,p.x,p.y,p.z0+.2),pj(F,p.boom[0],p.boom[1],p.boom[2]),p.bw||.7,shade(p.col,.85,N));
+    if(lod>1&&p.w<1.6)line(c,pj(F,p.x,p.y,p.z1),pj(F,p.x-L*.02,p.y,p.z1+.9),.35,'rgba(40,44,48,.8)');break}
+   case'glass':{/* D‑583: שמשה כהה-שקופה עם מסגרת אלומיניום, השתקפות של השמיים בחלק העליון וברק אלכסוני — לא מלבן שחור */
+    const g0=pj(F,p.x1,p.y0,p.z0),g1=pj(F,p.x1,p.y1,p.z0),g2=pj(F,p.x0,p.y1,p.z1),g3=pj(F,p.x0,p.y0,p.z1),mid=(a,b,u)=>[lerp(a[0],b[0],u),lerp(a[1],b[1],u)];c.fillStyle=N>.4?'rgba(36,54,72,.7)':'rgba(64,98,124,.55)';c.beginPath();poly(c,[g0,g1,g2,g3]);c.fill();
+    if(lod>0&&N<=.4){c.fillStyle='rgba(214,232,246,.32)';c.beginPath();poly(c,[mid(g0,g3,.55),mid(g1,g2,.55),g2,g3]);c.fill()}
+    if(lod>0){c.strokeStyle=shade('#dfe5ea',1,N);c.lineWidth=Math.max(.45,(spec.B||20)*.012);c.beginPath();poly(c,[g0,g1,g2,g3]);c.stroke()}
+    if(lod>1&&N<=.4){c.fillStyle='rgba(255,255,255,.28)';c.beginPath();poly(c,[mid(g0,g1,.12),mid(g0,g1,.3),mid(g3,g2,.22),mid(g3,g2,.06)]);c.fill()}break}
+   case'motor':{const ku=p.up?1.4:1;for(let i=0;i<p.n;i++){const y=(p.n>1?(i-(p.n-1)/2)*B*(p.up?.3:.32):0),x0=p.x-(p.big?.9:.6)*L/14*ku,x1=p.x+.05*L/14,w=B*(p.big?.11:.08)*(p.up?1.25:1);drawBox(c,F,{x0,x1,y0:y-w,y1:y+w,z0:.15,z1:M.fb+(p.big?.75:.5)*ku,col:p.col||'#2a2f35',top:p.top||'#3a4046',stripe:p.band,sf:p.up?[.5,.72]:null},N,lod);
+     if(lod>1){const q=pj(F,x0+(x1-x0)*.3,y,M.fb+(p.big?.6:.4));c.fillStyle='rgba(255,255,255,.55)';c.fillRect(q[0]-w*.4,q[1],w*.8,.6)}}break}
+   case'rail':{if(lod<2)break;const out=M.out.P,n=out.length,i0=Math.floor(n/2*(p.f0)),pts=[];for(let i=0;i<n;i++){const q=out[i],f=(q[0]/L+.5);if(f<p.f0||f>p.f1)continue;pts.push(pj(F,q[0]*.97,q[1]*.94,fb+q[2]+p.h))}
+    if(pts.length>1){c.strokeStyle=shade('#e8eef2',1,N);c.lineWidth=.45;c.beginPath();let first=true,prevF=null;for(let i=0;i<n;i++){const q=out[i],f=(q[0]/L+.5);if(f<p.f0||f>p.f1){first=true;continue}const P=pj(F,q[0]*.97,q[1]*.94,fb+q[2]+p.h);if(first){c.moveTo(P[0],P[1]);first=false}else c.lineTo(P[0],P[1])}c.stroke()}break}
+   case'rail2':{if(lod<2)break;c.strokeStyle=shade('#e8eef2',1,N);c.lineWidth=.45;c.beginPath();poly(c,[[p.x0,-p.w],[p.x1,-p.w],[p.x1,p.w],[p.x0,p.w]].map(q=>pj(F,q[0],q[1],p.z+1)));c.stroke();break}
+   case'ring':{if(lod<1)break;const q=pj(F,p.x,p.y,p.z),r=Math.max(1.2,B*.035);c.lineWidth=r*.55;for(let k=0;k<4;k++){c.strokeStyle=k%2?'#f4f4f0':'#f25a1a';c.beginPath();c.arc(q[0],q[1],r,k*Math.PI/2,(k+1)*Math.PI/2);c.stroke()}break}
+   case'flag':{if(lod<1)break;const a=pj(F,p.x,p.y,p.z),b=pj(F,p.x,p.y,p.z+Math.max(1.2,L/90)*(p.big?1.8:1)),w=Math.max(2.2,L*.025)*(p.big?2:1),hh=w*.66,wv=Math.sin(F.t*4+p.x)*w*.12;line(c,a,b,.4,'#c9ced2');
+    c.fillStyle=N>.6?'#8a8e94':'#fbfbfb';c.beginPath();c.moveTo(b[0],b[1]);c.lineTo(b[0]-w,b[1]+wv);c.lineTo(b[0]-w,b[1]+hh+wv);c.lineTo(b[0],b[1]+hh);c.closePath();c.fill();if(lod>1){c.fillStyle='#1f4fa0';c.fillRect(b[0]-w,b[1]+hh*.12+wv*.5,w,hh*.13);c.fillRect(b[0]-w,b[1]+hh*.75+wv*.5,w,hh*.13)}break}
+   case'fender':{const out=M.out.P,n=out.length;c.strokeStyle=shade(p.col||'#26292c',1,N);c.lineWidth=Math.max(1,p.w*(L/270)*1.2);c.lineJoin='round';c.beginPath();let first=true;
+    for(let i=0;i<n;i++){const q=out[i],f=q[0]/L+.5;if(p.f1<1&&(f<.6))continue;const P=pj(F,q[0]*1.005,q[1]*1.01,fb*.7+q[2]);if(first){c.moveTo(P[0],P[1]);first=false}else c.lineTo(P[0],P[1])}if(p.f1>=1)c.closePath();c.stroke();break}
+   case'tyres':{if(lod<1)break;for(let i=0;i<p.n;i++){const x=-L*.36+i*L*.72/(p.n-1);for(const s of[-1,1]){if(s*F.c<-.08)continue;   /* D‑583: הצמיגים בצד הרחוק תלויים מאחורי הדופן — לא נראים (לא צפים במים) */
+     const q=pj(F,x,s*B*.5,fb*.55);c.fillStyle=shade('#202326',1,N);c.beginPath();c.arc(q[0],q[1],Math.max(1,B*.035),0,TAU);c.fill()}}break}
+   case'gantry':{const a=pj(F,p.x,-p.w,fb),b=pj(F,p.x,p.w,fb),a1=pj(F,p.x-L*.02,-p.w,fb+p.h),b1=pj(F,p.x-L*.02,p.w,fb+p.h),col=shade('#e0a020',1,N),w=Math.max(.8,B*.04);line(c,a,a1,w,col);line(c,b,b1,w,col);line(c,a1,b1,w,col);
+    if(lod>1)line(c,[(a1[0]+b1[0])/2,(a1[1]+b1[1])/2],pj(F,p.x-L*.06,0,fb+.3),.4,'rgba(30,30,30,.7)');break}
+   case'pipe':{const a=pj(F,p.x0,p.y,p.z),b=pj(F,p.x1,p.y,p.z);line(c,a,b,Math.max(.8,B*.012)*(p.w||1),shade(p.col,1,N));break}
+   case'stripe':{const a=pj(F,-L*.4,0,fb+.42),b=pj(F,L*.38,0,fb+.05);line(c,a,b,Math.max(.8,B*.08),shade(p.col,1,N));break}
+   case'num':{if(lod<2)break;const q=pj(F,p.x,p.y,p.z);c.fillStyle='#1d1f22';c.font='700 '+(B*.22).toFixed(1)+'px Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(p.txt,q[0],q[1]);c.textBaseline='alphabetic';break}
+   case'oars':{const ph=o.row!=null?o.row:null,a=ph==null?.15:Math.sin(ph)*.55;for(const s of[-1,1]){const r=pj(F,-L*.02,s*B*.46,fb+.12),e=pj(F,-L*.02-Math.sin(a)*L*.28,s*B*(ph==null?1.05:1.5),ph==null?fb-.05:.02+Math.max(0,Math.cos(ph))*.3);line(c,r,e,Math.max(.6,B*.05),shade('#8a5a2b',1,N));
+     const bl=pj(F,-L*.02-Math.sin(a)*L*.3,s*B*(ph==null?1.12:1.62),.02);c.fillStyle=shade('#6b4a2a',1,N);c.beginPath();c.ellipse(bl[0],bl[1],Math.max(.8,B*.08),Math.max(.5,B*.04),F.h,0,TAU);c.fill();
+     if(ph!=null&&Math.cos(ph)<0&&lod>0){c.strokeStyle='rgba(255,255,255,.45)';c.lineWidth=.6;c.beginPath();c.arc(bl[0],bl[1]+.5,B*.12,0,TAU);c.stroke()}}break}
+   case'arch':{const a=pj(F,p.x,-p.w,p.z),b=pj(F,p.x,p.w,p.z),a1=pj(F,p.x-L*.03,-p.w*.7,p.z+p.h),b1=pj(F,p.x-L*.03,p.w*.7,p.z+p.h),col=shade('#f4f6f8',.95,N),w=Math.max(.8,B*.05)*(p.th?1.5:1);line(c,a,a1,w,col);line(c,b,b1,w,col);line(c,a1,b1,w,col);break}
+   case'tender':{const q=pj(F,p.x,0,fb+.05);c.save();c.translate(q[0],q[1]);c.rotate(F.h);c.fillStyle=shade('#3a4046',1,N);c.beginPath();c.ellipse(0,0,p.len/2,B*.14,0,0,TAU);c.fill();c.fillStyle=shade('#d8d8d4',1,N);c.beginPath();c.ellipse(0,-.6,p.len*.42,B*.09,0,0,TAU);c.fill();c.restore();break}
+   case'tTop':{const Q=[[p.x0,-p.w],[p.x1,-p.w],[p.x1,p.w],[p.x0,p.w]];for(const q of Q)line(c,pj(F,q[0]*.9,q[1]*.9,fb),pj(F,q[0],q[1],p.z),.5,shade('#c9ced2',1,N));c.fillStyle=shade(p.col,1,N);c.beginPath();poly(c,Q.map(q=>pj(F,q[0],q[1],p.z)));c.fill();break}
+   case'rods':{if(lod<1)break;const a=pj(F,p.x,p.y,fb+.4),b=pj(F,p.x-L*.18*(p.th?1.25:1),p.y*1.25,fb+(p.th?3.2:2.6));line(c,a,b,p.th?Math.max(1,B*.04):.4,'#2a2d31');if(p.th){c.fillStyle=shade('#d8302a',1,N);c.beginPath();c.arc(a[0]+(b[0]-a[0])*.2,a[1]+(b[1]-a[1])*.2,Math.max(.8,B*.03),0,TAU);c.fill()}break}
+   case'rig':{const mz=p.h,base=pj(F,p.x,0,fb),top=pj(F,p.x,0,mz);line(c,base,top,Math.max(.6,B*.04),shade('#c9ced2',1,N));const under=o.under||(o.u||0)>3,wind=o.windDir!=null?o.windDir:0;
+    if(lod>0){c.strokeStyle='rgba(60,60,60,.5)';c.lineWidth=.3;c.beginPath();c.moveTo(top[0],top[1]);const bw=pj(F,L*.48,0,fb+.3);c.lineTo(bw[0],bw[1]);const st=pj(F,-L*.48,0,fb+.3);c.moveTo(top[0],top[1]);c.lineTo(st[0],st[1]);c.stroke()}
+    const bm=pj(F,-L*.36,under?B*.25:0,fb+1.1);line(c,pj(F,p.x,0,fb+1.1),bm,Math.max(.5,B*.035),shade('#9aa2a8',1,N));
+    if(under){c.fillStyle=shade(lv.sail||'#fbfaf4',1,N);c.beginPath();poly(c,[pj(F,p.x,0,mz-.3),pj(F,p.x,0,fb+1.2),bm]);c.fill();c.beginPath();poly(c,[pj(F,p.x+L*.02,0,mz-1),pj(F,L*.46,0,fb+.4),pj(F,p.x+L*.04,B*.18,fb+.8)]);c.fill()}
+    else{c.fillStyle=shade('#1f4fa0',1,N);c.beginPath();poly(c,[pj(F,p.x,-B*.05,fb+1.3),pj(F,-L*.34,-B*.03,fb+1.2),pj(F,-L*.34,B*.03,fb+1.2),pj(F,p.x,B*.05,fb+1.3)]);c.fill()}break}
+   case'jet':{const u=o.u||0;if(u<22||o.dry)break;const k=cl((u-22)/120,.2,1),n=7;for(let i=0;i<n;i++){const f=i/(n-1),q=pj(F,-L*.5-f*L*(.9+k*.9),Math.sin(F.t*9+i)*B*.05,.25+Math.sin(f*Math.PI)*(.9+k*1.3));c.fillStyle='rgba(255,255,255,'+((.75-.6*f)*(1-.4*N)).toFixed(2)+')';c.beginPath();c.arc(q[0],q[1],Math.max(.8,B*(.08+.16*f)),0,TAU);c.fill()}break}
+   case'stripe2':{if(lod<1)break;const th=p.th===3?3.2:p.th?2.3:1,za=p.z!=null?p.z:fb+.06;for(const s of[-1,1])line(c,pj(F,p.xa!=null?p.xa:L*.06,s*B*.08*th,za),pj(F,L*.45,s*B*.04*th,za+M.ty.shape.sheer*.9),Math.max(.7,B*.05*th),shade(p.col,1,N));break}
+   case'person':{try{const pp=p.pp;pp.draw(pj(F,pp.lx,pp.ly,pp.z!=null?pp.z:fb),F)}catch(e){ERR.e=ERR.e||'person '+e}break}
+  }}
+ function lightsOf(c,F,M,N,o,spec,lod){const Lt=M.lights,L=spec.L,B=spec.B,a=cl(N*1.2,0,1),r=Math.max(5,Math.min(24,L*.05+4)),under=o.under||(o.u||0)>3,refl=(o.anchor==='deck'?0:1);
+  const P=v=>pj(F,v[0],v[1],v[2]),ry=v=>(v[2]-F.zr)*KZ*refl;
+  if(under){if(Lt.side){const sY=Lt.side[1];lamp(c,...P([Lt.side[0],-sY,Lt.side[2]]),'red',r*.7,a,ry(Lt.side));lamp(c,...P([Lt.side[0],sY,Lt.side[2]]),'green',r*.7,a,ry(Lt.side))}
+   if(Lt.mast)lamp(c,...P(Lt.mast),'white',r*.8,a,ry(Lt.mast));if(Lt.fwd)lamp(c,...P(Lt.fwd),'white',r*.7,a,ry(Lt.fwd));if(Lt.stern)lamp(c,...P(Lt.stern),'white',r*.6,a,ry(Lt.stern))}
+  else{if(Lt.mast)lamp(c,...P(Lt.mast),'white',r*.5,a*.75,0);else if(Lt.stern)lamp(c,...P(Lt.stern),'white',r*.45,a*.7,0)}
+  if(Lt.beacon==='blue'&&under&&(F.t*2.2%1)<.5)lamp(c,...P([Lt.mast[0],0,Lt.mast[2]-.6]),'blue',r,a,0);
+  if(Lt.beacon==='pilot'&&Lt.mast){lamp(c,...P([Lt.mast[0],0,Lt.mast[2]-.5]),'white',r*.5,a*.9,0);lamp(c,...P([Lt.mast[0],0,Lt.mast[2]-1.1]),'red',r*.5,a*.9,0)}
+  if((Lt.work&&o.fishing)||(L>200&&!under)){const q=Lt.stern?P([Lt.stern[0]+L*.08,0,Lt.stern[2]+1.2]):P([0,0,M.fb+3]);lamp(c,...q,'warm',r*1.6,a*.55,0)}
+  if(L>400){for(let x=-L*.3;x<L*.35;x+=L*.16)lamp(c,...P([x,0,M.fb+6]),'warm',r*1.1,a*.35,0)}}
+ /* השובל: שני גלי הצד (זווית קלווין, 19.5°), הקצף מאחור וגלי החרטום. מההיסטוריה של המקום, או לאורך הכיוון */
+ /* D‑592: השובל נגזר מהדרך שהכלי באמת עבר — רשימה קצרה של המקומות של הירכתיים (כל 0.1 שנ׳). מתרחב ונעלם בתוך כמה שניות, האורך לפי המהירות
+    (לכל היותר פי 3 מאורך הכלי), ובפנייה הוא מתעקל. אין קרן ישרה. */
+ const TRL=new Map(),WK=new Map();
+ function trailRec(spec,F,o){const now=performance.now(),k=spec.id;let T=TRL.get(k);const sx=F.x-F.c*spec.L*.5,sy=F.y-F.s*spec.L*.5,u=o.u||0;
+  if(!T||now-T.t>1000){T={P:[],t:now};TRL.set(k,T);if(TRL.size>80)TRL.delete(TRL.keys().next().value)}T.t=now;T.cur={x:sx,y:sy,L:spec.L,u};
+  if(u>3&&(!T.P.length||now-T.P[T.P.length-1].t>=100)){T.P.push({x:sx,y:sy,h:F.h,u,t:now});}const maxAge=Math.min(6,3*spec.L/Math.max(u,1));while(T.P.length&&now-T.P[0].t>maxAge*1000)T.P.shift();if(T.P.length>80)T.P.shift()}
+ function wake(c,F,spec,o,lod){const L=spec.L,B=spec.B,u=o.u||0,T=o.trail,k=cl(u/(L>200?30:45),.15,1)*(1-.55*(o.night!=null?o.night:nightNow())),fz=o.anchor==='deck'?F.zr*KZ:0;c.save();c.lineCap='round';c.lineJoin='round';
+  const sideways=o.vx!=null&&Math.abs(-o.vx*F.s+o.vy*F.c)>Math.abs(o.vx*F.c+o.vy*F.s)*1.2;
+  if(sideways){const vn=Math.hypot(o.vx,o.vy)||1,nx=-o.vx/vn,ny=-o.vy/vn;c.fillStyle='rgba(240,250,255,'+(.3*k).toFixed(2)+')';c.beginPath();
+   const a=[F.x-F.c*L*.45+nx*B*.5,F.y-F.s*L*.45+ny*B*.5+fz],b=[F.x+F.c*L*.45+nx*B*.5,F.y+F.s*L*.45+ny*B*.5+fz];c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.lineTo(b[0]+nx*B*.5,b[1]+ny*B*.5);c.lineTo(a[0]+nx*B*.5,a[1]+ny*B*.5);c.fill();c.restore();return}
+  const now=performance.now(),maxAge=Math.min(6,3*L/Math.max(u,1)),stern={x:F.x-F.c*L*.5,y:F.y-F.s*L*.5,h:F.h,u,t:now},P=[stern];if(T)for(let i=T.length-1;i>=0;i--){const q=T[i],ag=(now-q.t)/1000;if(ag>maxAge)break;P.push(q)}
+  if(P.length>1&&Math.hypot(P[1].x-P[0].x,P[1].y-P[0].y)>Math.max(14,u*.2))P.length=1;   /* כמעט עומד והדרך רחוקה — בלי שובל מנותק */
+  if(P.length>1){let run=0;for(let i=1;i<P.length;i++){const d=Math.hypot(P[i].x-P[i-1].x,P[i].y-P[i-1].y);if(run+d>3*L){const f=(3*L-run)/Math.max(1e-6,d);P[i]=Object.assign({},P[i],{x:P[i-1].x+(P[i].x-P[i-1].x)*f,y:P[i-1].y+(P[i].y-P[i-1].y)*f});run=3*L;P.length=i+1;break}run+=d}
+   WK.set(spec.id||'?',{L,u:Math.round(u),len:Math.round(run),gap:Math.round(Math.hypot(P[1].x-P[0].x,P[1].y-P[0].y)),t:now});
+   for(const side of[1,-1]){let prev=null;for(const q of P){const ag=(now-q.t)/1000,f=ag/maxAge,sp=B*.42+ag*(q.u||u)*.17,sx=-Math.sin(q.h)*side,sy=Math.cos(q.h)*side,pt=[q.x+sx*sp,q.y+sy*sp+fz];
+     if(prev){c.strokeStyle='rgba(255,255,255,'+(.55*(1-f)*k).toFixed(3)+')';c.lineWidth=Math.max(.6,B*.04)+ag*.45;c.beginPath();c.moveTo(prev[0],prev[1]);c.lineTo(pt[0],pt[1]);c.stroke()}prev=pt}}
+   for(const q of P){const ag=(now-q.t)/1000;if(ag>1.8)break;c.fillStyle='rgba(255,255,255,'+(.3*(1-ag/1.8)*k).toFixed(3)+')';c.beginPath();c.ellipse(q.x,q.y+fz,B*.3+ag*B*.12,B*.2+ag*B*.06,q.h,0,TAU);c.fill()}}
+  /* גלי החרטום — קצרים, צמודים לחרטום */
+  const bx=F.x+F.c*L*.5,by=F.y+F.s*L*.5+fz;for(const side of[1,-1]){const nx=-F.s*side,ny=F.c*side;c.strokeStyle='rgba(250,253,255,'+(.7*k).toFixed(2)+')';c.lineWidth=Math.max(.7,B*.05);c.beginPath();c.moveTo(bx,by);
+   c.quadraticCurveTo(bx-F.c*L*.1+nx*B*.45,by-F.s*L*.1+ny*B*.45,bx-F.c*L*.26+nx*B*.58,by-F.s*L*.26+ny*B*.58);c.stroke()}
+  c.restore()}
+ /* הבדיקה (D‑592): לכל כלי שזז — האורך של השובל שמצויר (לכל היותר פי 3 מאורכו) והמרחק של תחילת השובל מהירכתיים */
+ function wakeAudit(){const now=performance.now(),rows=[];for(const [id,w] of WK){if(now-w.t>1500)continue;rows.push({id,L:Math.round(w.L),u:w.u,len:w.len,ratio:+(w.len/w.L).toFixed(2),firstGap:w.gap})}
+  return{ok:rows.every(r=>r.ratio<=3.001&&r.firstGap<=Math.max(14,r.u*.2)),rows}}
+ /* ---- מהירות וכיוון התנועה של כל כלי — מהמקום בפריימים הקודמים (רק לציור; התנועה עצמה לא משתנה) ---- */
+ const VEL=new Map();
+ function vel(id,x,y,now){let q=VEL.get(id);if(!q||now<q.t||now-q.t>1500){q={x,y,t:now,u:0,vx:0,vy:0};VEL.set(id,q);if(VEL.size>300)VEL.delete(VEL.keys().next().value);return q}
+  const dt=(now-q.t)/1000;if(dt>=.04){const vx=(x-q.x)/dt,vy=(y-q.y)/dt;q.vx=lerp(q.vx,vx,.4);q.vy=lerp(q.vy,vy,.4);q.u=Math.hypot(q.vx,q.vy);q.x=x;q.y=y;q.t=now}return q}
+ /* ---- תמונה שמורה לכלי שעומד (מעגן): אותו ציור, נבנה פעם אחת לכל זום וליום / לילה ---- */
+ const SPR=new Map();
+ function still(c,key,spec,x,y,h,t,o,dh,bob){const M=model(spec),z=zoomNow(),q=z<.3?.35:z<.6?.6:z<1.1?1:z<1.8?1.5:z<2.4?2:3,qq=spec.L>500?Math.min(q,1):q,N=o.night!=null?o.night:nightNow(),nb=N>.5?1:0,lod=z<.32?0:z<.8?1:2,
+  k=key+'|'+qq+'|'+nb+'|'+lod;let S=SPR.get(k);
+  if(!S){const L=spec.L,B=spec.B,ca=Math.abs(Math.cos(h)),sa=Math.abs(Math.sin(h)),ex=L/2*ca+B/2*sa+6,ey=L/2*sa+B/2*ca+6,zr=o.anchor==='deck'?M.fb:0,top=ey+(M.zTop-zr)*KZ+14,bot=ey+zr*KZ+M.fb*KZ+M.zTop*SY+14,lef=ex+10,rig=ex+M.zTop*SX+14;
+   const cv=document.createElement('canvas');cv.width=Math.ceil((lef+rig)*qq);cv.height=Math.ceil((top+bot)*qq);const g=cv.getContext('2d');g.scale(qq,qq);
+   paint(g,spec,lef,top,h,0,Object.assign({},o,{u:0,under:false,lod,night:nb?1:0,ph:0,wave:0}));S={cv,lef,top,w:lef+rig,h:top+bot};SPR.set(k,S);
+   if(SPR.size>160){const k0=SPR.keys().next().value,o0=SPR.get(k0);SPR.delete(k0);try{o0.cv.width=0}catch(e){}}}
+  if(dh){c.save();c.translate(x,y+(bob||0));c.rotate(dh);c.drawImage(S.cv,-S.lef,-S.top,S.w,S.h);c.restore()}else c.drawImage(S.cv,x-S.lef,y-S.top+(bob||0),S.w,S.h);
+  if(N>.2&&nb===0)0;return S}
+ /* ================= המתאמים — כל מקום שיש בו היום כלי שיט ================= */
+ const ASSET={'SH-MB-01':'motor','SH-SP-01':'speed','SH-RB-01':'rent','SH-YT-01':'yacht','SH-PB-01':'cruiser','SH-FB-01':'fish','SH-YT-02':'yachtL','SH-TG-01':'tug','SH-TR-01':'trawl','SH-FY-01':'ferry','SH-CS-01':'container','SH-BK-01':'bulk'};
+ const BEAM={motor:.34,speed:.34,rent:.4,yacht:.27,cruiser:.3,fish:.33,yachtL:.24,tug:.36,trawl:.27,ferry:.2,container:.17,bulk:.17};
+ /* המרינה (F3): הסירות במעגנים — תמונה שמורה עם הנדנוד; "דג הזהב" — חי, עם שובל */
+ function marina(c,B,x,y,h,now,moving){const ty=ASSET[B.asset]||'motor',spec=B.__s34||(B.__s34={type:ty,L:B.len,B:Math.round(B.len*(BEAM[ty]||.33)),id:B.id});const t=(now||0)/1000;
+  if(!moving&&!B.fish){const h0=B.h,dh=h-h0;still(c,'M|'+B.id,spec,x,y,h0,t,{moored:1},Math.abs(dh)>.002?dh:0,0);if(zoomNow()>.8)moorLines(c,B,x,y,h0,spec);return}
+  const v=vel('F3|'+B.id,x,y,now||performance.now());paint(c,spec,x,y,h,t,{u:moving?Math.max(v.u,8):0,vx:v.vx,vy:v.vy,under:!!moving,moored:!moving})}
+ function moorLines(c,B,x,y,h,spec){const b=B.berth;if(!b)return;const cs=Math.cos(h),sn=Math.sin(h),L=spec.L,W=spec.B,fbz=T[spec.type].fb*KZ,pts=[[L*.42,0],[-L*.46,-W*.4],[-L*.46,W*.4]];
+  const cor=[[b.x,b.y],[b.x+b.w,b.y],[b.x+b.w,b.y+b.h],[b.x,b.y+b.h]];c.save();c.strokeStyle='rgba(236,228,206,.75)';c.lineWidth=.45;c.beginPath();
+  for(const[lx,ly]of pts){const X=x+lx*cs-ly*sn,Y=y+lx*sn+ly*cs-fbz;let best=null,bd=1e9;for(const q of cor){const d=Math.hypot(q[0]-X,q[1]-Y);if(d<bd){bd=d;best=q}}if(best&&bd<Math.max(W*1.6,L*.32)){c.moveTo(X,Y);c.quadraticCurveTo((X+best[0])/2,(Y+best[1])/2+2,best[0],best[1])}}c.stroke();c.restore()}
+ /* הנמל (C6, ‏E6, ‏D6): האוניות ברציף — הסיפון בגובה הרציף, כך שהמטען שעל הסיפון והמנופים נשארים במקום */
+ function portShip(c,b,S,x,y,now){const ty=b.kind==='container'?'container':b.kind==='bulk'?'bulk':'ferry',h=b.dir<0?Math.PI:0,lvA=T[ty].lv,lv0=S.livery||{},lv=Object.assign({},lvA[hash(lv0.id||b.id)%lvA.length],{hull:lv0.hull||lvA[0].hull,stripe:lv0.stripe||lvA[0].stripe,deck:lv0.deck||lvA[0].deck,funnel:lv0.funnel||lvA[0].funnel,hatch:lv0.hatch}),
+   spec={type:ty,L:b.L,B:b.B,id:b.id+'|'+S.k,lv,lvKey:lv0.id||'',cargoLive:ty==='container',hatches:b.hatches,hatchPitch:120,name:S.name};
+  const v=vel('PORT|'+b.id,x,y,now),moving=S.phase==='arrive'||S.phase==='depart';
+  if(!moving||v.u<1)return still(c,'P|'+b.id+'|'+S.k,spec,x,y,h,now/1000,{anchor:'deck'},0,0);
+  paint(c,spec,x,y,h,now/1000,{anchor:'deck',u:v.u*3,vx:v.vx,vy:v.vy,under:true})}
+ function portBoat(c,o,x,y,h,now,moving){const ty=o.id==='E6-TUG'?'tug':'pilot',spec=o.__s34||(o.__s34={type:ty,L:o.L,B:o.B,id:o.id});if(!moving)return still(c,'PB|'+o.id,spec,x,y,h,now/1000,{},0,0);
+  const v=vel('PB|'+o.id,x,y,now);paint(c,spec,x,y,h,now/1000,{u:Math.max(v.u,10),vx:v.vx,vy:v.vy,under:true})}
+ /* המעבורת A6 ↔ G8 */
+ /* D‑592: הכיוון של המעבורת בציור — החרטום קדימה בכיוון הנסיעה, ופנייה הדרגתית ביציאה מהמזח (חצי סיבוב לאורך 22 מ׳); המקום והזמנים — של a6FerryPose */
+ const smooth=v=>{v=cl(v,0,1);return v*v*(3-2*v)};
+ function ferryHeading(F,p){try{const Lp=F.path.len,s=Lp*p.u,ph=apttAt(F.path,cl(s,0,Lp))[2];if(p.phase==='A6')return ph+Math.PI;if(p.phase==='G8')return ph;
+   if(p.phase==='outbound')return ph+Math.PI*(1-smooth((s-30)/220));return ph+Math.PI*smooth((Lp-s-30)/220)}catch(e){return p.heading}}
+ function ferry(c,F,p,now){p=Object.assign({},p,{heading:ferryHeading(F,p)});const spec=F.__s34||(F.__s34={type:'ferry',L:F.length,B:F.width,id:F.id,lv:T.ferry.lv[0]}),v=vel('FY|'+F.id,p.x,p.y,now),st=(p.phase==='A6'||p.phase==='G8');
+  return paint(c,spec,p.x,p.y,p.heading,now/1000,{u:st?0:Math.max(v.u,6),vx:v.vx,vy:v.vy,under:!st,moored:st})}
+ /* האגם (B1): סירת המשוטים — המשוטים בתנועת חתירה כשהיא בשיט */
+ function lake(c,Bt,t){const spec=Bt.__s34||(Bt.__s34={type:'row',L:47,B:17,id:Bt.id,lv:T.row.lv[0]}),out=Bt.phase==='out';return paint(c,spec,Bt.x,Bt.y,Bt.h,t,{u:out?Math.max(Bt.v||0,6):0,under:out,row:out?t*2.4:null,wave:.08,moored:!out})}
+ /* הדיג העמוק (שלב 3): FISH3.setPainter — אותו ממשק כמו F3_BOAT_PAINT.paint */
+ function fish3(c,b,x,y,h,t,o){o=o||{};const ty=b.kind==='cabin'?'sport':'console',spec=b.__s34||(b.__s34={type:ty,L:b.L,B:b.B,id:b.id,lv:LV(b.hull,b.stripe||b.rim,b.top,b.deck,{boot:b.rim||'#2a2f35',glass:'#24394c'})});
+  const F=paint(c,spec,x,y,h,t,{u:Math.abs(o.u||0),trail:o.trail,wave:o.wave,night:o.night,under:o.under,fishing:o.fishing,people:o.people,thumb:o.thumb,lod:o.thumb?2:undefined,noRefl:o.thumb});
+  if(F&&o.fishing&&(o.night||0)>.25){const q=pj(F,-b.L*.42,0,T[ty].fb+1.6);lamp(c,q[0],q[1],'warm',22,.6*(o.night||0),0)}return F}
+ /* ================= מה שבמים: מצופים, מזחים ורציפים ================= */
+ /* מצוף נתיב (IALA A): אדום — גלילי (שמאל הנתיב), ירוק — חרוטי (ימין); שרשרת לעוגן, אדווה, ובלילה פנס מהבהב והשתקפות */
+ function buoy(c,x,y,col,t,N,lit,opt){opt=opt||{};const red=col==='red',yel=col==='yellow',C=red?'#d23a2c':yel?'#f2c230':col==='orange'?'#f2701a':'#2f9a4a',D=red?'#8e2219':yel?'#a8861a':col==='orange'?'#a84a10':'#1d6531',s=opt.s||1,ph=(x*.013+y*.007),
+   tilt=Math.sin(t*1.3+ph)*1.4*s,bob=Math.sin(t*1.7+ph)*.9*s,lod=zoomNow()<.35?0:zoomNow()<.8?1:2;
+  c.save();c.fillStyle='rgba(6,20,34,.3)';c.beginPath();c.ellipse(x+3.5*s,y+3*s,6.5*s,3.4*s,0,0,TAU);c.fill();
+  if(lod>0){c.strokeStyle='rgba(255,255,255,'+(.4-.2*N).toFixed(2)+')';c.lineWidth=.8;const rr=(t*.6+ph)%1;c.beginPath();c.ellipse(x,y+1,(7+rr*7)*s,(3.4+rr*3.4)*s,0,0,TAU);c.globalAlpha=1-rr;c.stroke();c.globalAlpha=1;
+   c.strokeStyle='rgba(30,40,46,.35)';c.lineWidth=.7;c.beginPath();c.moveTo(x,y+2*s);c.quadraticCurveTo(x-4*s,y+7*s,x-2*s,y+12*s);c.stroke()}
+  const by=y+bob,top=by-11*s,w=4.8*s,dk=shade(D,1,N),cc=shade(C,1,N);c.fillStyle=dk;c.beginPath();c.ellipse(x,by,6.5*s,3.4*s,0,0,TAU);c.fill();c.fillStyle=shade('#2a2f35',1,N);c.beginPath();c.ellipse(x,by-1*s,6.5*s,3.2*s,0,0,TAU);c.fill();
+  c.fillStyle=cc;if(red||yel||col==='orange'){c.fillRect(x-w+tilt*.2,top,2*w,by-1*s-top);c.beginPath();c.ellipse(x+tilt*.2,top,w,w*.42,0,0,TAU);c.fillStyle=shade(C,1.15,N);c.fill()}
+  else{c.beginPath();c.moveTo(x-w,by-1*s);c.lineTo(x+tilt*.3,top-3*s);c.lineTo(x+w,by-1*s);c.closePath();c.fill()}
+  c.fillStyle='rgba(255,255,255,'+(.3-.15*N).toFixed(2)+')';c.fillRect(x-w,by-5.5*s,w*.7,3.5*s);
+  if(lod>0){c.fillStyle='#f4f4f0';c.fillRect(x-w,by-4.2*s,2*w,1.2*s)}
+  const mt=top-(red?4:7)*s;line(c,[x+tilt*.3,top-(red?0:3)*s],[x+tilt*.5,mt],.9*s,shade('#2b3136',1,N));c.fillStyle=cc;if(lod>0){if(red){c.fillRect(x-1.6*s+tilt*.5,mt-2.6*s,3.2*s,2.6*s)}else{c.beginPath();c.moveTo(x-1.8*s+tilt*.5,mt);c.lineTo(x+tilt*.5,mt-3*s);c.lineTo(x+1.8*s+tilt*.5,mt);c.fill()}}
+  if(lit)lamp(c,x+tilt*.5,mt-3.6*s,red?'red':yel?'amber':col==='orange'?'amber':'green',13*s,.95,10*s);c.restore()}
+ /* מצוף של קו הרחצה (כדור על החבל) */
+ function float(c,x,y,col,N){c.fillStyle='rgba(6,20,34,.25)';c.beginPath();c.ellipse(x+1.4,y+1.4,2.6,1.5,0,0,TAU);c.fill();c.fillStyle=shade(col,.85,N);c.beginPath();c.arc(x,y-.6,2.6,0,TAU);c.fill();c.fillStyle=shade(col,1.12,N);c.beginPath();c.arc(x-.8,y-1.5,1.3,0,TAU);c.fill()}
+ /* פגושים ועמודים לאורך מזח: עמוד עגול במבט 3/4 עם הקצף שסביבו, ופגוש שחור / כחול תלוי */
+ function pile(c,x,y,r,hM,N){const t=y-hM*KZ;c.fillStyle='rgba(255,255,255,'+(.3-.15*N).toFixed(2)+')';c.beginPath();c.ellipse(x,y+.5,r*1.6,r*.8,0,0,TAU);c.fill();c.fillStyle=shade('#4a3a2a',.8,N);c.fillRect(x-r,t,2*r,y-t);c.fillStyle=shade('#6a5238',1,N);c.fillRect(x-r,t,r*.7,y-t);c.fillStyle=shade('#8a6e4c',1.05,N);c.beginPath();c.arc(x,t,r,0,TAU);c.fill()}
+ function fender(c,x,y,vert,N,col){c.fillStyle=shade(col||'#1d2a36',1,N);c.beginPath();if(vert)c.ellipse(x,y,1.3,2.6,0,0,TAU);else c.ellipse(x,y,2.6,1.3,0,0,TAU);c.fill();c.fillStyle='rgba(255,255,255,.25)';c.beginPath();c.arc(x-.5,y-.6,.6,0,TAU);c.fill()}
+ /* ================= הקטלוג (לדף החי ולגיליון): כל הסוגים, יום ולילה, בגודל של הטבלה ================= */
+ function scaled(type){const ty=T[type];return{L:Math.round(ty.real[0]*10*(type==='container'?1:1.125)),B:Math.round(ty.real[1]*10*(type==='container'?1:1.125))}}
+ function catalog(g,type,vi,night,zm,t,under,hd){   /* hd — הכיוון (D‑583: הקטלוג מסתובב ב-8 כיוונים); בלי — ‎−0.38‎ כמו קודם */const ty=T[type],d=scaled(type),W=g.canvas.width,H=g.canvas.height;g.save();g.setTransform(1,0,0,1,0,0);
+  const sea=g.createLinearGradient(0,0,0,H);sea.addColorStop(0,night?'#0b2236':'#2c7fb0');sea.addColorStop(1,night?'#071827':'#1d6a98');g.fillStyle=sea;g.fillRect(0,0,W,H);
+  g.strokeStyle=night?'rgba(120,170,210,.12)':'rgba(255,255,255,.1)';g.lineWidth=1;for(let y=8;y<H;y+=14){g.beginPath();for(let x=0;x<=W;x+=12)g.lineTo(x,y+Math.sin(x*.05+y+t)*1.6);g.stroke()}
+  const sc=zm||Math.min((W*.78)/(d.L+d.B),(H*.6)/(d.B+ty.real[2]*KZ+20));g.translate(W/2,H*.6);g.scale(sc,sc);
+  const spec={type,L:d.L,B:d.B,id:type+'|'+vi,lv:ty.lv[vi%ty.lv.length],name:type==='container'?'נשר הים':''};
+  paint(g,spec,0,0,hd!=null?hd:-.38,t,{night:night?1:0,u:under?(d.L>300?14:30):0,under:!!under,lod:2,scaleHint:sc,wave:.3,row:under&&type==='row'?t*2.4:null});g.restore();return d}
+ function audit(){const types=Object.keys(T).filter(k=>T[k].row>0);return{ok:types.length===21&&!ERR.e,types:types.length,err:ERR.e,errN:ERR.n,models:MODEL.size,sprites:SPR.size}}
+ return{wakeAudit,ferryHeading,TRL,paint,still,marina,portShip,portBoat,ferry,lake,fish3,buoy,float,pile,fender,catalog,scaled,audit,T,ASSET,KZ,pj,err:()=>ERR.e,ERR,shade,lamp,hash}})();
+
+/* ---- החיבור: כל מקום שמצייר היום כלי שיט מצייר דרך BOAT34 — אותה תנועה, אותו מקום, אותו גודל ---- */
+try{FISH3.setPainter(BOAT34.fish3)}catch(e){BOAT34.ERR.e=BOAT34.ERR.e||'fish3 '+e}
+/* הנמל: אותה פונקציה של drawPortShips (השעון, הרציף, ההחלקה והשקיפות של הכניסה / היציאה, המטען שעל הסיפון והמטרות) — רק הציור של הגוף */
+const TAU2=Math.PI*2;
+drawPortShips=function(v,now){if(WTC_LP===1)return;
+ const ops=portOps(now);ctx.save();ctx.beginPath();ctx.rect(PORT_BOX.x,PORT_QY-400,PORT_BOX.w,1300);ctx.clip();
+ /* הרציף: פגושי גומי וצמיגים על הקיר, והגלים שמתנפצים לאורכו (בלי לשנות את הרציף עצמו) */
+ {const z=Camera.zoom*(window.devicePixelRatio||1),N=+window.__TC_NIGHT||0,x0=Math.max(PORT_BOX.x,v.x0-60),x1=Math.min(PORT_BOX.x+PORT_BOX.w,v.x1+60),y=PORT_QY;if(z>.3&&y>v.y0-40&&y<v.y1+40){const t=now/1000;
+  ctx.strokeStyle='rgba(240,250,255,'+(.42-.2*N).toFixed(2)+')';ctx.lineWidth=1.2;ctx.beginPath();for(let x=Math.floor(x0/14)*14;x<x1;x+=14){const a=Math.sin(x*.05+t*1.7)*.5+.5;ctx.moveTo(x,y+3+a*2);ctx.lineTo(x+9,y+3+a*2.6)}ctx.stroke();
+  for(let x=Math.ceil(x0/64)*64;x<x1;x+=64){ctx.fillStyle=BOAT34.shade('#1d2124',1,N);ctx.fillRect(x-3,y-1,6,7);ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(x-3,y-1,2,7);if(z>.8){ctx.strokeStyle=BOAT34.shade('#2a2d30',1,N);ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(x+32,y+2.5,3,0,TAU2);ctx.stroke()}}}}
+ for(const b of PORT_BERTHS){const S=ops[b.id];if(!S.present)continue;const x=b.cx,y=b.yc+S.off;if(!portVis(v,b.x0-30,y-b.B/2-260,b.L+60,b.B+330))continue;
+  const bob=Math.sin(now/1700+b.cx*.01)*.7*(S.phase==='load'?.6:1);ctx.globalAlpha=S.alpha;BOAT34.portShip(ctx,b,S,x,y+bob,now);
+  if(b.kind==='container')flDrawCargo(b,S,bob);ctx.globalAlpha=1;
+  Targets.add({id:'SHIP-'+b.id,label:(b.kind==='container'?'אוניית מכולות · ':b.kind==='bulk'?'מובילת תפזורת · ':'מעבורת · ')+S.name,category:'port-ship',x:b.cx,y:y,w:b.L,h:b.B})}
+ for(const o of PORT_BOATS){if(o.away&&o.away(now))continue;if(!portVis(v,o.x-o.B/2-60,o.y-80,o.B+120,o.L+120))continue;const bob=Math.sin(now/1500+o.x*.02)*.6;
+  BOAT34.portBoat(ctx,o,o.x,o.y+o.L/2+bob,-Math.PI/2,now,false);Targets.add({id:o.id,label:o.label,category:'port-ship',x:o.x,y:o.y+o.L/2,w:o.B,h:o.L})}
+ ctx.restore()};
+/* המעבורת A6 ↔ G8: אותו מקום ואותו זמן (a6FerryPose); הנוסעים על הסיפון — בגובה הסיפון */
+a6DrawFerry=function(now){if(WTC_LP===1)return;let p=a6FerryPose();const F=A6_FERRY;if(!e3InView(p.x-330,p.y-180,660,360,80))return;
+ BOAT34.ferry(ctx,F,p,now);Targets.add({id:F.id,label:'מעבורת A6 ↔ G8 · '+p.phase,category:'ferry',x:p.x,y:p.y,w:F.length,h:F.width});
+ if(p.phase==='A6'||p.phase==='G8'){const x=p.phase==='A6'?800:6592,y=p.phase==='A6'?5120:7330;ctx.fillStyle='#b7b6a2';ctx.fillRect(x-8,y,16,6)}
+ const up=BOAT34.T.ferry.fb*BOAT34.KZ,fh=BOAT34.ferryHeading(F,p);p=Object.assign({},p,{heading:fh});for(let i=0;i<5;i++){const dx=-88+i*31,dy=i%2?13:-9,x=p.x+dx*Math.cos(p.heading)-dy*Math.sin(p.heading),y=p.y+dx*Math.sin(p.heading)+dy*Math.cos(p.heading)-up;f2DrawPerson({id:'FERRY-'+F.id+'-'+i,asset:i%2?'PE-43':'PE-44',x,y,face:4,state:'idle'},now)}};
+/* המצופים של נתיב השיט (F5 / F6) */
+f56Buoy=function(c,b,bob,N,lit){BOAT34.buoy(c,b.x,b.y+bob*.2,b.color==='red'?'red':'green',(typeof performance!=='undefined'?performance.now():0)/1000,+N||0,!!lit)};
+/* ==== S10 ד (10.11) · אוניית הרכבים "גלי הכרמל" (BRT-D6) — קירות, גג וסיפונים שקופים, והרכבים של הסימולציה בפנים (הבעלים 10.11, D‑622 / כלל 15) ====
+   הציור: deliver/2026-11-10/s10d/S10d_design.html. רק ציור — הסימולציה (021w) לא משתנה.
+   הגוף מתחת לסיפון, המבנה העליון, הארובה והאורות — הצייר של כלי השיט (BOAT34, הסוג roro, עם הדגל glass: בלי התיבה האטומה; 074b — נקודת חיבור אחת).
+   מעל הסיפון — תיבה של זכוכית עם מסגרת פלדה (עמודים כל 3.1 מ׳, קורה בכל סיפון), שני סיפונים עליונים שקופים, גג זכוכית עם קורות, גופי תאורה (בלילה — אורות פנים).
+   בפנים — 12 הרכבים של הבטן (S10CI.ship.hold: הדגם, הצבע והמקום שלהם), ורכב שיוצא — עד שהוא עובר את הירכתיים (אז הציור הרגיל של התנועה).
+   סדר השכבות (שום דבר מעל מה שמתחתיו): [1] הצל, הגוף, הסיפון הראשי והקירות הרחוקים, המבנה העליון ← [חי] הרכבים ← [2] הסיפונים העליונים, האורות, הקירות הקרובים
+   והגג (בלי המקום של המבנה העליון) ← [3] המבנה העליון שוב (רק הפיקסלים שלו). שלוש התמונות שמורות לכל אחד מ-32 הכיוונים, לכל זום (איכות) וליום / לילה —
+   בכל פריים רק הרכבים חיים. (היה: תמונה שמורה אחת בלי הכיוון במפתח — האונייה לא הסתובבה בציור כשהיא הסתובבה בים.) */
+var S10DS=(function(){
+ const PI=Math.PI,TAU=2*PI,KZ=6,SX=2.5,SY=3.2,ND=32,FB=4,ZH=15,st={on:true,err:null,made:0,hit:0,frames:0,cars:0,ms:0};
+ const CACHE=new Map();
+ const hull2=P=>{P=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
+  for(const p of P){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(let i=P.length-1;i>=0;i--){const p=P[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}up.pop();lo.pop();return lo.concat(up)};
+ const poly=(c,P)=>{c.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length;i++)c.lineTo(P[i][0],P[i][1]);c.closePath()};
+ function specOf(s){if(s.__s10dG)return s.__s10dG;const T=BOAT34.T.roro;return s.__s10dG={type:'roro',L:s.L,B:s.B,id:s.id,name:s.name,lv:T.lv[BOAT34.hash(s.id)%T.lv.length],lvKey:'glass',glass:1}}
+ /* המידות של התיבה ושל המבנה העליון — כמו ב-build של roro (074b) */
+ function geo(s){const L=s.L,B=s.B,len=L*.12,xa=L*.22,x1=xa+len,zb=FB+ZH+3*2.7;
+  return{L,B,X0:-L*.47,X1:L*.36,W:B*.48,top:[[xa,x1,-B*.39,B*.39,FB+ZH,zb],[x1-len*.42,x1+len*.04,-B*.5,B*.5,zb,zb+2.6],[xa+len*.3-len*.6-B*.1,xa+len*.3-len*.6+B*.1,-B*.1,B*.1,FB+ZH,zb+5.5],[xa-len*.18,xa,-B*.32,B*.32,FB+ZH,FB+ZH+2.2],[x1-len*.2-1,x1-len*.2+1,-1,1,zb+2.6,zb+9]]}}
+ const PJ=(F,lx,ly,z)=>BOAT34.pj(F,lx,ly,z);
+ /* ---------- השכבה 1 (בתוך paint, אחרי הגוף ולפני המבנה העליון): הסיפון הראשי והקירות הרחוקים ---------- */
+ function back(g,F,G,N){const sh=BOAT34.shade,X0=G.X0,X1=G.X1,W=G.W,z0=FB+.02;
+  g.fillStyle=sh('#4f585f',1,N);g.beginPath();poly(g,[PJ(F,X0,-W,z0),PJ(F,X1,-W,z0),PJ(F,X1,W,z0),PJ(F,X0,W,z0)]);g.fill();   /* פלדה כהה */
+  g.lineWidth=.9;for(const [ly,col] of[[0,'rgba(236,240,243,.75)'],[-W+6,'rgba(242,194,48,.85)'],[W-6,'rgba(242,194,48,.85)']]){g.strokeStyle=col;g.beginPath();for(let x=X0+8;x<X1-12;x+=18){const a=PJ(F,x,ly,z0),b=PJ(F,x+9,ly,z0);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke()}
+  g.fillStyle='rgba(20,24,28,.55)';for(let x=X0+12;x<X1-6;x+=31)for(const ly of[-34,-8,8,34]){const q=PJ(F,x,ly,z0);g.fillRect(q[0]-.7,q[1]-.5,1.4,1)}   /* נקודות הקשירה */
+  for(const w of walls(G))if(wy(F,w.n)<-.01)wall(g,F,w,N,false)}
+ function walls(G){const X0=G.X0,X1=G.X1,W=G.W;return[{a:[X0,-W],b:[X1,-W],n:[0,-1]},{a:[X0,W],b:[X1,W],n:[0,1]},{a:[X1,-W],b:[X1,W],n:[1,0]},{a:[X0,-W],b:[X0,W],n:[-1,0]}]}
+ const wy=(F,n)=>n[0]*F.s+n[1]*F.c;   /* הרכיב הצפון-דרום של הנורמל בעולם: חיובי — פונה אל הצופה */
+ function wall(g,F,w,N,near){const sh=BOAT34.shade,len=Math.hypot(w.b[0]-w.a[0],w.b[1]-w.a[1]),n=Math.max(1,Math.round(len/31)),at=(f,z)=>PJ(F,w.a[0]+(w.b[0]-w.a[0])*f,w.a[1]+(w.b[1]-w.a[1])*f,z),zt=FB+ZH;
+  g.fillStyle=N?(near?'rgba(42,62,80,.2)':'rgba(36,54,72,.22)'):(near?'rgba(176,214,236,.17)':'rgba(160,200,224,.18)');g.beginPath();poly(g,[at(0,FB),at(1,FB),at(1,zt),at(0,zt)]);g.fill();
+  if(near&&N<.5){g.fillStyle='rgba(255,255,255,.12)';g.beginPath();poly(g,[at(0,FB+10.6),at(1,FB+10.6),at(1,zt),at(0,zt)]);g.fill();   /* השתקפות השמיים בחלק העליון, וברק אלכסוני */
+   g.fillStyle='rgba(255,255,255,.07)';for(let f=.06;f<.95;f+=.31){g.beginPath();poly(g,[at(f,zt),at(f+.07,zt),at(f+.02,FB),at(f-.05,FB)]);g.fill()}}
+  const fr=sh('#eef1f3',near?.96:.8,N);g.strokeStyle=fr;g.lineCap='butt';
+  g.lineWidth=near?1.15:1;g.beginPath();for(let i=0;i<=n;i++){const a=at(i/n,FB),b=at(i/n,zt);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke();
+  for(const z of near?[FB,FB+5,FB+10,zt]:[FB+5,FB+10,zt]){g.lineWidth=near?(z===FB||z===zt?2.1:1.7):1.4;g.beginPath();const a=at(0,z),b=at(1,z);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke()}}
+ /* ---------- השכבה 2: הסיפונים העליונים, גופי התאורה, הקירות הקרובים, הגג ---------- */
+ function front(g,F,G,N){const sh=BOAT34.shade,X0=G.X0,X1=G.X1,W=G.W,zt=FB+ZH;
+  for(const z of[FB+5,FB+10]){g.fillStyle=N?'rgba(70,86,100,.1)':'rgba(214,230,238,.1)';g.beginPath();poly(g,[PJ(F,X0,-W,z),PJ(F,X1,-W,z),PJ(F,X1,W,z),PJ(F,X0,W,z)]);g.fill();
+   g.strokeStyle=sh('#eef1f3',.86,N);g.globalAlpha=.3;g.lineWidth=.6;g.beginPath();for(let x=X0;x<=X1+.1;x+=(X1-X0)/12){const a=PJ(F,x,-W,z),b=PJ(F,x,W,z);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke();
+   g.globalAlpha=.3;g.strokeStyle='#ffffff';g.lineWidth=.6;g.beginPath();for(const ly of[-W+6,0,W-6])for(let x=X0+8;x<X1-12;x+=22){const a=PJ(F,x,ly,z),b=PJ(F,x+10,ly,z);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke();g.globalAlpha=1}
+  /* גופי התאורה מתחת לכל סיפון ומתחת לגג; בלילה — אורות הפנים דולקים */
+  for(const z of[FB+4.85,FB+9.85,zt-.15])for(let x=X0+26;x<X1-10;x+=52)for(const ly of[-21,21]){const q=PJ(F,x,ly,z);g.fillStyle=N?'#fff3d6':'rgba(226,232,236,.9)';g.fillRect(q[0]-4.5,q[1]-.8,9,1.6);
+   if(N>.2)BOAT34.lamp(g,q[0],q[1],'warm',z<FB+5?20:14,(z<FB+5?.5:.32)*Math.min(1,N*1.2),0)}
+  for(const w of walls(G))if(wy(F,w.n)>.01)wall(g,F,w,N,true);
+  g.fillStyle=N?'rgba(48,64,78,.16)':'rgba(214,235,246,.15)';g.beginPath();poly(g,[PJ(F,X0,-W,zt),PJ(F,X1,-W,zt),PJ(F,X1,W,zt),PJ(F,X0,W,zt)]);g.fill();   /* הגג */
+  g.strokeStyle=sh('#eef1f3',1.02,N);g.lineWidth=1.05;g.beginPath();for(let x=X0;x<=X1+.1;x+=(X1-X0)/12){const a=PJ(F,x,-W,zt),b=PJ(F,x,W,zt);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}
+  for(const ly of[-W,-W/3,W/3,W]){const a=PJ(F,X0,ly,zt),b=PJ(F,X1,ly,zt);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke()}
+ function silhouette(g,F,G){g.beginPath();for(const b of G.top){const P=[];for(const u of[b[0],b[1]])for(const v of[b[2],b[3]])for(const z of[b[4],b[5]])P.push(PJ(F,u,v,z));poly(g,hull2(P))}g.fill('nonzero')}
+ /* ---------- התמונות השמורות של כיוון ---------- */
+ function layers(s,k,q,nb,lod){const key=k+'|'+q+'|'+nb+'|'+lod;let E=CACHE.get(key);if(E){st.hit++;return E}const t0=performance.now();
+  const G=geo(s),h=k*TAU/ND,c=Math.cos(h),sn=Math.sin(h),ex=G.L/2*Math.abs(c)+G.B/2*Math.abs(sn)+24,ey=G.L/2*Math.abs(sn)+G.B/2*Math.abs(c)+24,lef=ex+16,rig=ex+110,top=ey+210,bot=ey+160,W=lef+rig,H=top+bot;
+  const mk=()=>{const cv=document.createElement('canvas');cv.width=Math.ceil(W*q);cv.height=Math.ceil(H*q);const g=cv.getContext('2d');g.scale(q,q);return[cv,g]};
+  const N=nb,spec=specOf(s),F2={x:lef,y:top,h,c,s:sn,t:0,zr:FB,lf:0,bob:0,roll:0};
+  /* 1: חצי צל לתיבה השקופה (הזכוכית והמסגרת), ואז הגוף, הסיפון, הרחוקים והמבנה העליון */
+  const [c1,g1]=mk();{const P=[];for(const u of[G.X0,G.X1])for(const v of[-G.W,G.W])for(const z of[FB,FB+ZH])P.push([lef+u*c-v*sn+z*SX,top+u*sn+v*c+z*SY+FB*KZ]);g1.fillStyle='rgba(2,14,28,'+(.1*(1-.45*N)).toFixed(3)+')';g1.beginPath();poly(g1,hull2(P));g1.fill()}
+  BOAT34.paint(g1,spec,lef,top,h,0,{anchor:'deck',moored:1,u:0,under:false,lod,night:N,ph:0,wave:0,people:[{lx:-5000*sn,ly:-5000*c,draw:(p,F)=>back(g1,F,G,N)}]});
+  /* 2: הקדמי, בלי המקום של המבנה העליון */
+  const [c2,g2]=mk();front(g2,F2,G,N);g2.globalCompositeOperation='destination-out';g2.fillStyle='#000';silhouette(g2,F2,G);g2.globalCompositeOperation='source-over';
+  /* 3: המבנה העליון לבדו (מתמונה 1) */
+  const [c3,g3]=mk();g3.setTransform(1,0,0,1,0,0);g3.drawImage(c1,0,0);g3.scale(q,q);g3.globalCompositeOperation='destination-in';g3.fillStyle='#000';silhouette(g3,F2,G);g3.globalCompositeOperation='source-over';
+  /* 2 + 3 — תמונה אחת, חתוכה למקום של התיבה והמבנה העליון (פחות פיקסלים בכל פריים) */
+  g2.setTransform(1,0,0,1,0,0);g2.drawImage(c3,0,0);c3.width=0;
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const b of[[G.X0,G.X1,-G.W,G.W,FB,FB+ZH],...G.top])for(const u of[b[0],b[1]])for(const v of[b[2],b[3]])for(const z of[b[4],b[5]]){const p=PJ(F2,u,v,z);x0=Math.min(x0,p[0]);y0=Math.min(y0,p[1]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1])}
+  x0=Math.max(0,Math.floor(x0-24));y0=Math.max(0,Math.floor(y0-24));x1=Math.min(W,Math.ceil(x1+24));y1=Math.min(H,Math.ceil(y1+24));
+  const c4=document.createElement('canvas');c4.width=Math.ceil((x1-x0)*q);c4.height=Math.ceil((y1-y0)*q);c4.getContext('2d').drawImage(c2,Math.floor(x0*q),Math.floor(y0*q),c4.width,c4.height,0,0,c4.width,c4.height);c2.width=0;
+  E={c1,c2:c4,c3:null,ox:Math.floor(x0*q)/q,oy:Math.floor(y0*q)/q,w2:c4.width/q,h2:c4.height/q,lef,top,W,H,h};CACHE.set(key,E);st.made++;st.ms+=performance.now()-t0;
+  while(CACHE.size>4){const k0=CACHE.keys().next().value,o=CACHE.get(k0);CACHE.delete(k0);for(const cv of[o.c1,o.c2])try{cv.width=0}catch(e){}}
+  return E}
+ /* רכב של הבטן או רכב שיוצא — בתוך הגוף (עד הירכתיים) */
+ function inShip(v,s){const dx=v.x-s.x,dy=v.y-s.y,c=Math.cos(s.h||0),sn=Math.sin(s.h||0),lx=dx*c+dy*sn,ly=-dx*sn+dy*c;return lx>-s.L/2+1&&lx<s.L/2&&Math.abs(ly)<s.B/2}
+ function carsIn(s){const L=[];try{for(const v of S10CI.cars){const m=v.s10c.m;if(m==='hold'||(m==='exit'&&inShip(v,s)))L.push(v)}}catch(e){}return L}
+ function draw(c,x,y,h,bob){const t0=performance.now(),s=S10KIT.c6d6.shipOf('BRT-D6'),z=(()=>{try{return Camera.zoom*(window.devicePixelRatio||1)}catch(e){return 1}})(),q=z<.3?.35:z<.6?.6:z<1.1?1:1.5,   /* האיכות עד 1.5 (הזיכרון: שלוש תמונות לכיוון) */
+   N=Math.max(0,Math.min(1,+window.__TC_NIGHT||0)),nb=N>.5?1:0,lod=z<.32?0:z<.8?1:2,k=((Math.round(h/(TAU/ND))%ND)+ND)%ND,E=layers(s,k,q,nb,lod),dh=(()=>{let d=h-E.h;d-=Math.round(d/TAU)*TAU;return d})();
+  const img=(cv,ox,oy,w,hh)=>{c.save();c.translate(x,y+bob);if(Math.abs(dh)>1e-4)c.rotate(dh);c.drawImage(cv,ox-E.lef,oy-E.top,w,hh);c.restore()};
+  img(E.c1,0,0,E.W,E.H);
+  const L=carsIn({x,y,h,L:s.L,B:s.B}).sort((a,b)=>a.y-b.y);for(const v of L)s10cDrawCar(c,v,v.x,v.y+bob,v.heading,0);st.cars=L.length;
+  img(E.c2,E.ox,E.oy,E.w2,E.h2);st.frames++;st.ms+=performance.now()-t0;return E}
+ return{st,draw,inShip,carsIn,layers,cache:CACHE,get on(){return st.on},set on(v){st.on=!!v}}})();
+/* החיבור: הנמל מצייר את האונייה דרך BOAT34.still (021e: ship) — גם בעגינה וגם בים (021w: s10cAwayShip) */
+{const pS=BOAT34.still;BOAT34.still=function(c,key,spec,x,y,h,t,o,dh,bob){if(key==='S10|BRT-D6'&&S10DS.on){try{return S10DS.draw(c,x,y,h,bob||0)}catch(e){S10DS.st.err=S10DS.st.err||String(e&&e.stack||e).slice(0,300)}}return pS.apply(this,arguments)}}
+/* הרכב שיוצא מהבטן מצויר בתוך האונייה (בין הקירות) עד שהוא עובר את הירכתיים — הציור הרגיל של התנועה מדלג עליו שם */
+{const pD=drawTrafficCars;drawTrafficCars=function(now){const hid=[];try{if(S10DS.on&&typeof S10CI!=='undefined'&&S10CI.on){const s=S10KIT.c6d6.shipOf('BRT-D6');for(const v of S10CI.cars)if(v.s10c.m==='exit'&&v.x>-9000&&S10DS.inShip(v,s)){hid.push([v,v.x]);v.x=-1e7}}}catch(e){}
+ try{return pD.apply(this,arguments)}finally{for(const [v,x] of hid)v.x=x}}}
+window.__S10D=Object.assign(window.__S10D||{},{ship:()=>({on:S10DS.on,err:S10DS.st.err,made:S10DS.st.made,hit:S10DS.st.hit,frames:S10DS.st.frames,cars:S10DS.st.cars,msPerFrame:S10DS.st.frames?+(S10DS.st.ms/S10DS.st.frames).toFixed(2):null,cache:S10DS.cache.size}),err:()=>S10DS.st.err||(window.__S10D.cerr&&window.__S10D.cerr())||null});
+/* ==== S10 ד (10.11) · מוביל הרכבים CAR-01 — עיצוב אמיתי (הבעלים 10.11: "מעוצב ממש התחלתי — צריך עיצוב אמיתי") ====
+   הציור: deliver/2026-11-10/s10d/S10d_design.html. רק ציור — הגוף של הסימולציה (VH-TR-01: ‏10.1 × 2.8 מ׳, 3 רכבים), הדרכים והזמנים של 021w לא משתנים.
+   משאית להובלת רכבים במבט 3/4, בכל כיוון (ההטלה של המשחק: ‏x + u·cos − v·sin, ‏y + u·sin + v·cos − 6·z; האור והשמש של C34):
+   תא מודרני נמוך בכחול הנמל (חלון קדמי עם השתקפות, חלונות בדלתות, מראות על זרועות, פנסי LED, פס LED, גריל, פגוש, מדרגות), שלדה, מכל דלק,
+   מרכב שתי קומות: עמודים, קורות אלכסוניות, מעקות, בוכנות הידראוליות צהובות; הקומה העליונה מעל התא, והחלק האחורי שלה מוטה בטעינה של הקומה העליונה;
+   שתי רמפות אחוריות הידראוליות (זקופות בנסיעה, יורדות בטעינה ובפריקה); גלגל קדמי ושני סרנים אחוריים עם גלגלים כפולים; פס זוהר צהוב-לבן לאורך השלדה;
+   בלילה — פנסים, אורות אחוריים ואורות צד כתומים. הרכבים — האמיתיים (הדגם והצבע), בגובה של הקומה או של הרמפה במקום שלהם.
+   הסדר (שום דבר מעל מה שמתחתיו): הצל ← הרמפות (כשהאחור רחוק) ← הגלגלים, השלדה והקומה התחתונה ← המסגרת הרחוקה ← התא ← הרכב בקומה התחתונה ←
+   הקומה העליונה ← הרכבים בקומה העליונה ← המסגרת הקרובה ← הרמפות והרכב שעליהן (כשהאחור קרוב) ← האורות. */
+var S10DC=(function(){
+ const K=6,HL=50.6,HW=14.06,LD=(()=>{const v=[-.42,-.55,.72],n=Math.hypot(...v);return v.map(a=>a/n)})(),TOPB=.62+.38*LD[2],st={err:null,frames:0,ms:0},CM=new Map();
+ function lit(hex,w,N){const d=w[0]*LD[0]+w[1]*LD[1]+w[2]*LD[2],b=Math.round(((.62+.38*Math.max(0,d))/TOPB)*40)/40,key=hex+b+(N?'n':'');let r=CM.get(key);if(r)return r;
+  const n=parseInt(hex.slice(1),16);let R=(n>>16&255)*b,G=(n>>8&255)*b,B=(n&255)*b;if(N){R=R*.5;G=G*.53;B=B*.62+8}r='rgb('+[R,G,B].map(q=>Math.max(0,Math.min(255,Math.round(q)))).join(',')+')';if(CM.size>3000)CM.clear();CM.set(key,r);return r}
+ /* מצב הרמפות והקומה המוטה (ציור בלבד; לפי השעון של הסימולציה) */
+ function anim(c){const A=c.__s10d||(c.__s10d={ramp:0,tilt:0,T:S10CI.T});let dt=S10CI.T-A.T;A.T=S10CI.T;const jump=!(dt>=0)||dt>5;if(jump)dt=0;const g=c.logi,W=g&&g.work,at=c.c5.mode==='bay'&&W&&!W.done;
+  let tr=0,tt=0;if(at){const id=g.site==='D3D'?S10CI.unl:S10CI.pick,v=id&&S10CI.cars.find(o=>o.id===id);if(g.site==='D3D')tr=1;if(v){tr=1;tt=v.s10c.slot!=null&&v.s10c.slot<2?1:0}}
+  const mv=(a,b,sp)=>jump?b:a<b?Math.min(b,a+sp*dt):Math.max(b,a-sp*dt);A.ramp=mv(A.ramp,tr,.6);A.tilt=mv(A.tilt,tt,.4);return A}   /* קפיצה בזמן (הרצה מהירה בלי ציור) — ישר למצב של עכשיו */
+ /* הגובה של רכב (במטרים) לפי המקום שלו לאורך המוביל: הרמפה (מ-u ‎−86 עד ‎−50), הקומה התחתונה (1.05), הקומה העליונה (3.4) והחלק המוטה (מ-u ‎−52 עד ‎−8) */
+ const zSec=(u,A)=>{const zr=3.4-(3.4-1.5)*A.tilt;return u>=-8?3.4:zr+(3.4-zr)*Math.max(0,(u+52))/44};
+ function zOf(u,upper,A){const zt=upper?1+.5*A.tilt:1.05;if(u<=-50)return Math.max(0,zt*Math.min(1,A.ramp*1.02)*(1-(-50-u)/36));return upper?Math.min(zSec(u,A),Math.max(zt,zSec(u,A))):1.05}
+ function draw(now){const t0=performance.now(),c=S10CI.carrier;if(!c||!e3InView(c.x-150,c.y-150,300,300,60))return;const g=ctx,N=Math.max(0,Math.min(1,+window.__TC_NIGHT||0)),Nn=N>.5,A=anim(c);
+  const h=c.heading,cs=Math.cos(h),sn=Math.sin(h),x=c.x,y=c.y,P=(u,v,z)=>[x+u*cs-v*sn,y+u*sn+v*cs-K*z],wn=n=>[n[0]*cs-n[1]*sn,n[0]*sn+n[1]*cs,n[2]],vis=n=>{const w=wn(n);return w[1]*.6+w[2]};
+  const Q=(pts,fill,stroke,lw)=>{g.beginPath();g.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)g.lineTo(pts[i][0],pts[i][1]);g.closePath();if(fill){g.fillStyle=fill;g.fill()}if(stroke){g.strokeStyle=stroke;g.lineWidth=lw||.45;g.stroke()}};
+  const L=(a,b,col,w)=>{g.strokeStyle=col;g.lineWidth=w;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke()};
+  const box=(u0,u1,v0,v1,z0,z1,col,top,edge)=>{const F=[[[u0,v1],[u1,v1],[0,1,0]],[[u0,v0],[u1,v0],[0,-1,0]],[[u1,v0],[u1,v1],[1,0,0]],[[u0,v0],[u0,v1],[-1,0,0]]];
+   for(const [a,b,n] of F){if(vis(n)<=.01)continue;Q([P(a[0],a[1],z0),P(b[0],b[1],z0),P(b[0],b[1],z1),P(a[0],a[1],z1)],lit(col,wn(n),Nn),edge===false?null:'rgba(0,0,0,.3)',.35)}
+   Q([P(u0,v0,z1),P(u1,v0,z1),P(u1,v1,z1),P(u0,v1,z1)],lit(top||col,[0,0,1],Nn),edge===false?null:'rgba(0,0,0,.32)',.35)};
+  const nearV=vis([0,1,0])>.02?1:vis([0,-1,0])>.02?-1:0,rearNear=vis([-1,0,0])>.02,frontVis=vis([1,0,0])>.02;
+  const FR='#b4bcc3',DECK='#848d95',DTOP='#a2abb2',CAB='#1d5fbf',YEL='#f2b51a';
+  /* הרכבים: על הקומות, ובדרך אליהן / מהן (נהג הנמל) */
+  const mine=[];for(let k=0;k<3;k++){const v=c.deck[k];if(v)mine.push(v)}for(const v of S10CI.cars){const m=v.s10c.m;if((m==='tocar'||m==='offdeck')&&v.s10c.z>.04&&!mine.includes(v))mine.push(v)}
+  const cars=mine.map(v=>{const dx=v.x-x,dy=v.y-y,u=dx*cs+dy*sn,up=v.s10c.slot!=null&&v.s10c.slot<2;v.__s10dMine=st.frames+1;return{v,u,up,z:v.s10c.m==='deck'?(up?(v.s10c.slot===1?zSec(u,A):3.4):1.05):zOf(u,up,A)}});
+  const drawCar=o=>{try{S10DC_car(g,o.v,o.v.x,o.v.y,o.v.heading,K*o.z)}catch(e){}};
+  const f=()=>{g.save();try{
+   /* הצל */
+   {const sp=(u,v,z)=>[x+u*cs-v*sn+2.5*z,y+u*sn+v*cs+3.2*z];g.fillStyle='rgba(8,12,16,'+(.22*(1-.4*N)).toFixed(3)+')';g.beginPath();const H=[sp(-HL,-HW,0),sp(HL,-HW,0),sp(HL,HW,0),sp(-HL,HW,0),sp(-HL,-HW,3.9),sp(HL,-HW,3.9),sp(HL,HW,3.9),sp(-HL,HW,3.9)];
+    const hull=(()=>{const Pp=H.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]),cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];for(const p of Pp){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(let i=Pp.length-1;i>=0;i--){const p=Pp[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}up.pop();lo.pop();return lo.concat(up)})();
+    g.moveTo(hull[0][0],hull[0][1]);for(const q of hull)g.lineTo(q[0],q[1]);g.closePath();g.globalAlpha=.75;g.fill();g.globalAlpha=1}
+   const ramps=()=>{const zt=1+.5*A.tilt;for(const [v0,v1] of[[-11.2,-4.6],[4.6,11.2]]){if(A.ramp<.03){box(-52.6,-50.6,v0,v1,1,3.7,'#c9ced4','#e2e6ea');continue}
+     const a=A.ramp,ue=-50.6-36*a,ze=zt*(1-a),zs=zt+(3.7-zt)*(1-a)*0;const p0=P(-50.6,v0,zt),p1=P(-50.6,v1,zt),p2=P(ue,v1,ze),p3=P(ue,v0,ze);
+     Q([p0,p1,p2,p3],lit('#c9ced4',[0,0,1],Nn),'rgba(0,0,0,.45)',.45);g.strokeStyle='rgba(60,66,72,.55)';g.lineWidth=.4;g.beginPath();for(let i=1;i<9;i++){const f2=i/9,A0=P(-50.6-36*a*f2,v0,zt+(ze-zt)*f2),A1=P(-50.6-36*a*f2,v1,zt+(ze-zt)*f2);g.moveTo(A0[0],A0[1]);g.lineTo(A1[0],A1[1])}g.stroke();
+     if(vis([0,1,0])>.02||vis([0,-1,0])>.02){const vv=nearV>0?v1:v0;Q([P(-50.6,vv,zt),P(ue,vv,ze),P(ue,vv,ze-.12),P(-50.6,vv,zt-.12)],lit('#8e979e',wn([0,nearV,0]),Nn))}
+     Q([P(ue,v0,ze),P(ue,v1,ze),P(ue+2.2,v1,ze+.06),P(ue+2.2,v0,ze+.06)],'#f2b51a');
+     if(a>.2)L(P(-48,(v0+v1)/2,1.1),P(-50.6-14*a,(v0+v1)/2,zt*(1-.4*a)+.1),'#e9edf0',.9)}};   /* הבוכנה של הרמפה */
+   if(!rearNear)ramps();
+   /* הגלגלים (הרחוקים), השלדה, מכל הדלק, הקומה התחתונה */
+   const wheel=(u,sg,dual)=>{const vo=sg*(HW-.6),vi=sg*(HW-(dual?6:3.4)),r=5.1,pts=[];for(let i=0;i<14;i++){const a=i/14*6.2832;for(const v of[vo,vi])pts.push(P(u+Math.cos(a)*r,v,(r+Math.sin(a)*r)/10))}
+    const Pp=pts.sort((a,b)=>a[0]-b[0]||a[1]-b[1]),cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];for(const p of Pp){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(let i=Pp.length-1;i>=0;i--){const p=Pp[i];while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}up.pop();lo.pop();
+    Q(lo.concat(up),'#15181b');if(sg===nearV){const c0=P(u,vo+sg*.05,.51),R=[];for(let i=0;i<12;i++){const a=i/12*6.2832;R.push(P(u+Math.cos(a)*2.6,vo+sg*.05,(5.1+Math.sin(a)*2.6)/10))}Q(R,Nn?'#5a6066':'#b7bfc5');g.fillStyle='#2a2f35';g.beginPath();g.arc(c0[0],c0[1],.9,0,6.2832);g.fill();
+     if(dual){g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=.4;g.beginPath();for(let i=0;i<6;i++){const a=i/6*6.2832,q=P(u+Math.cos(a)*1.9,vo+sg*.05,(5.1+Math.sin(a)*1.9)/10);g.moveTo(c0[0],c0[1]);g.lineTo(q[0],q[1])}g.stroke()}}};
+   const AX=[[36,false],[-21,true],[-33,true]];for(const [u,d] of AX)wheel(u,-(nearV||1),d);
+   box(-50.6,48,-5.2,5.2,.5,.95,'#2b3036','#353b41');
+   for(const [u0,u1] of[[-27.5,-26.5]])box(u0,u1,-HW+1,HW-1,.5,.95,'#2b3036');
+   box(-15,22,-HW+.2,HW-.2,.42,.62,'#3a4048','#4a5058');   /* מגיני הצד (בין הסרנים) */
+   box(6,20,(nearV||1)*(HW-4.2),(nearV||1)*(HW-.4),.5,1.0,'#cfd5da','#e8ecef');   /* מכל הדלק */
+   box(-50.6,26,-HW+.6,HW-.6,.92,1.05,DECK,DTOP);
+   {g.strokeStyle='rgba(30,34,38,.35)';g.lineWidth=.4;g.beginPath();for(let u=-48;u<25;u+=3){const a=P(u,-HW+1.2,1.05),b=P(u+1.4,HW-1.2,1.05);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke()}
+   for(const [u,d] of AX)if(nearV)wheel(u,nearV,d);
+   for(const u of[-27,-21,-33]){}
+   /* המסגרת בצד אחד: עמודים, מעקה תחתון ועליון, קורות אלכסוניות, בוכנות */
+   const side=sg=>{const v0=sg>0?HW-1.1:-HW,v1=sg>0?HW:-HW+1.1,vm=sg*(HW-.55),cF=lit(FR,wn([0,sg,0]),Nn);
+    for(const u of[-49.5,-11,24])box(u-.9,u+.9,v0,v1,1.0,4.0,FR,'#dfe3e7');
+    box(-50.6,26,v0,v1,1.0,1.35,FR,'#dfe3e7');box(-8,48,v0,v1,3.3,3.95,FR,'#dfe3e7');
+    {const zr=zSec(-52,A);Q([P(-52,vm,zr),P(-8,vm,3.3),P(-8,vm,3.95),P(-52,vm,zr+.65)],cF,'rgba(0,0,0,.3)',.35)}   /* המעקה של החלק המוטה */
+    g.lineCap='round';for(const [ua,ub,za,zb] of[[-49,-31,1.35,3.2],[-31,-12,3.2,1.35],[-10,7,1.35,3.2],[7,23,3.2,1.35]])L(P(ua,vm,za),P(ub,vm,zb),cF,.95);
+    for(const [ua,ub] of[[-46,-50],[-14,-9.5]]){L(P(ua,vm-sg*.4,1.15),P(ub,vm-sg*.4,3.05),lit(YEL,wn([0,sg,0]),Nn),1.7);L(P(ub,vm-sg*.4,3.05),P(ub+(ub-ua)*.25,vm-sg*.4,3.45),'#e9edf0',.8)}
+    /* פס זוהר (סימון קונטור) לאורך השלדה */
+    if(sg===nearV){for(let u=-49;u<26;u+=5)Q([P(u,sg*HW,.86),P(u+2.5,sg*HW,.86),P(u+2.5,sg*HW,.72),P(u,sg*HW,.72)],Nn?'#fff1a8':((Math.round(u/5)&1)?'#ffd23f':'#f4f6f8'))}
+    g.lineCap='butt'};
+   if(nearV)side(-nearV);
+   /* התא */
+   const c0=27.5,c1=HL,zc0=.65,zc1=3.0;box(c0,c1,-HW+.4,HW-.4,zc0,zc1,CAB,'#2a6cd0');
+   if(frontVis){const fv=(v,z)=>P(c1+.02,v,z);Q([fv(-HW+1.4,1.75),fv(HW-1.4,1.75),fv(HW-1.4,2.85),fv(-HW+1.4,2.85)],Nn?'#46505a':'#2b3f50','#0f1418',.5);
+    if(!Nn)Q([fv(-HW+2,2.42),fv(-HW+8.5,2.42),fv(-HW+6.2,2.82),fv(-HW+2,2.82)],'rgba(220,236,248,.3)');
+    Q([fv(-6,.95),fv(6,.95),fv(6,1.58),fv(-6,1.58)],'#15171b');g.strokeStyle='#c7cdd3';g.lineWidth=.35;g.beginPath();for(const z of[1.08,1.22,1.36,1.5]){const a=fv(-5.6,z),b=fv(5.6,z);g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1])}g.stroke();
+    for(const sg of[-1,1]){Q([fv(sg*(HW-1.1),1.0),fv(sg*(HW-4.4),1.0),fv(sg*(HW-4.4),1.38),fv(sg*(HW-1.1),1.38)],Nn?'#fff6dc':'#eef3f6','rgba(0,0,0,.4)',.35);L(fv(sg*(HW-1.1),1.45),fv(sg*(HW-4.6),1.45),'#bfe6ff',.7);Q([fv(sg*(HW-.6),1.0),fv(sg*(HW-1.1),1.0),fv(sg*(HW-1.1),1.38),fv(sg*(HW-.6),1.38)],'#f5a524')}
+    Q([fv(-HW+.4,zc0),fv(HW-.4,zc0),fv(HW-.4,.92),fv(-HW+.4,.92)],'#3a4048');Q([fv(-2.2,1.62),fv(2.2,1.62),fv(2.2,1.7),fv(-2.2,1.7)],'#e9edf0')}
+   for(const sg of[-1,1]){if(vis([0,sg,0])<=.02)continue;const sv=(u,z)=>P(u,sg*(HW-.4),z);
+    Q([sv(38.5,1.85),sv(49.8,1.85),sv(49.8,2.82),sv(38.5,2.82)],Nn?'#46505a':'#2b3f50','#0f1418',.4);if(!Nn)Q([sv(41,2.5),sv(45,2.82),sv(43,2.82),sv(39.5,2.5)],'rgba(220,236,248,.25)');
+    Q([sv(37.5,.8),sv(49.9,.8),sv(49.9,2.88),sv(37.5,2.88)],null,'rgba(0,0,0,.4)',.45);Q([sv(c0,1.42),sv(c1,1.42),sv(c1,1.56),sv(c0,1.56)],'#f4f6f8');
+    Q([sv(39,.45),sv(43,.45),sv(43,.52),sv(39,.52)],'#3a4048')}
+   for(const sg of[-1,1]){const a=P(47.5,sg*(HW-.4),2.45),b=P(48.2,sg*(HW+2.1),2.5);L(a,b,'#1b1f24',.9);box(47.6,48.8,sg>0?HW+1.2:-HW-2.6,sg>0?HW+2.6:-HW-1.2,1.75,2.7,'#1b1f24','#2b3036',false)}
+   /* הרכב בקומה התחתונה (ובדרך אליה) */
+   for(const o of cars.filter(o=>!o.up&&o.u>-50).sort((a,b)=>a.v.y-b.v.y))drawCar(o);
+   /* הקומה העליונה: החלק הקבוע (מעל התא) והחלק האחורי המוטה */
+   box(-8,48.4,-HW+.6,HW-.6,3.18,3.33,DECK,DTOP);
+   {const zr=zSec(-52,A),zf=3.33;Q([P(-52,-HW+.6,zr),P(-8,-HW+.6,zf),P(-8,HW-.6,zf),P(-52,HW-.6,zr)],lit(DTOP,[0,0,1],Nn),'rgba(0,0,0,.35)',.35);
+    if(nearV)Q([P(-52,nearV*(HW-.6),zr),P(-8,nearV*(HW-.6),zf),P(-8,nearV*(HW-.6),zf-.15),P(-52,nearV*(HW-.6),zr-.15)],lit(DECK,wn([0,nearV,0]),Nn))}
+   if(Nn)for(const sg of[-1,1]){const q=P(48,sg*(HW-.8),3.4);BOAT34.lamp(g,q[0],q[1],'amber',5,.85,0)}
+   /* הרכבים בקומה העליונה (ובדרך אליה) */
+   for(const o of cars.filter(o=>o.up&&o.u>-50).sort((a,b)=>a.v.y-b.v.y))drawCar(o);
+   if(nearV)side(nearV);
+   if(rearNear)ramps();
+   for(const o of cars.filter(o=>o.u<=-50))drawCar(o);
+   /* האורות: פנסים קדמיים, אורות אחוריים, אורות צד כתומים */
+   if(N>.25){const a=Math.min(1,N*1.3);for(const sg of[-1,1]){{const q=P(HL+.5,sg*(HW-2.7),1.2);BOAT34.lamp(g,q[0],q[1],'white',frontVis?14:10,(frontVis?.8:.65)*a,0)}{const q=P(-HL-.5,sg*(HW-2),.9);BOAT34.lamp(g,q[0],q[1],'red',rearNear?7:5.5,.85*a,0)}
+     if(vis([0,sg,0])>.02)for(const u of[-44,-24,-4,16]){const q=P(u,sg*HW,.85);BOAT34.lamp(g,q[0],q[1],'amber',6,a,0)}}}
+  }catch(e){st.err=st.err||String(e&&e.stack||e).slice(0,300)}g.restore()};
+  lgQ(c.y+HL*.2,f);st.frames++;st.ms+=performance.now()-t0;
+  try{Targets.add({id:c.id,label:c.label+' · '+(c.deck.filter(Boolean).length)+' רכבים',category:'vehicle',x:c.x,y:c.y,shape:'circle',r:30})}catch(e){}}
+ return{st,draw,anim,zOf}})();
+/* החיבור (021w): s10cDrawCarrier — הציור החדש; s10cDrawCar — רכב שהמוביל כבר צייר (על הקומות או ברמפה) לא מצויר שוב בלולאה של 021w */
+var S10DC_car=s10cDrawCar;
+{const p0=s10cDrawCarrier;s10cDrawCarrier=function(now){if(!S10DC.on0)try{return S10DC.draw(now)}catch(e){S10DC.st.err=S10DC.st.err||String(e)}return p0.apply(this,arguments)}}
+{const p1=s10cDrawCar;s10cDrawCar=function(g,v,x,y,h,lift){if(v&&v.__s10dMine===S10DC.st.frames&&lift>0&&!S10DC.on0)return;return p1.apply(this,arguments)}}
+window.__S10D=Object.assign(window.__S10D||{},{carrier:()=>{const c=S10CI.carrier;return{err:S10DC.st.err,frames:S10DC.st.frames,msPerFrame:S10DC.st.frames?+(S10DC.st.ms/S10DC.st.frames).toFixed(3):null,anim:c&&c.__s10d?{ramp:+c.__s10d.ramp.toFixed(2),tilt:+c.__s10d.tilt.toFixed(2)}:null}},cerr:()=>S10DC.st.err});
+/* ==== S10 ב · E6 — הרציף העמוק בתנועה, והפרטים החיים (D‑512: לפחות 8 מ-4 סוגים) =========================================================================
+   האונייה "שחר הים" (אוניית מכולות, 100 × 18 מ׳ — טבלת כלי השיט) עוגנת ברציף ולא מגיעה ולא עוזבת (כלל 25). שני מנופי הרציף עובדים על שני תאים שלה.
+   שני גוררי מסוף (סמיטריילר — קטר ושלדה עם מכולה; רכבי הנמל, במסלול קבוע ואמיתי) נוסעים בלולאה אחת: מתחת למנוף על נתיב הרציף (y 5012) ← מערבה אל פתח
+   הרציף מול DW-E6-01 ← צפונה, חוצים את דרך הרציף, אל הנתיב שלאורך מסוף המשאיות ← נקודת ההעברה מול הרציף המערבי של המסוף (פורקים את המכולה במלגזה)
+   ← מזרחה אל DW-E6-02 ← דרך הרציף מזרחה ← משטח הסיבוב ← הרציף ← המנוף. במנוף — מחזור כפול: המנוף מעלה לאונייה את המכולה הריקה שהגורר החזיר,
+   ומוריד ממנה מכולה מלאה אל הגורר. הכול פונקציה של השעון (כמו מערכת הזרימה של הנמל), כך שכל רגע במחזור מצויר זהה — במשחק ובבדיקה.
+   כלי רכב לא מופיע ולא נעלם: שני הגוררים תמיד בתמונה; רכבי הכביש עוצרים בשבילם (dynamicVehicleBodyBlocked). */
+var S10EB=(function(){const TAU=6.2832,E={err:null},err=(k,e)=>{if(!E.err)E.err=k+': '+String(e&&e.stack||e).slice(0,300)};
+ const b=portBerth('E6'),LANE=5012,TY_STAND=LANE,SHIP=S10E_SHIP;
+ const BOXDX=Math.abs(PORT_TRUCK_BOX_DX);   /* מרכז המכולה מאחורי מרכז הסמיטריילר */
+ /* המנופים: מנוף 1 עובד על התא השני (bay 1), מנוף 2 — על הרביעי (bay 3); שני התאים האחרים — מטען שנשאר (שני מנופים לא עובדים על תאים סמוכים: הפורטל 20.8 מ׳) */
+ const CR={'E6-CR1':{bay:1,x:b.stationX(1),tr:'T1'},'E6-CR2':{bay:3,x:b.stationX(3),tr:'T2'}};
+ for(const c of PORT_CRANES)if(c.berth==='E6'){const q=CR[c.id];c.home=q.x;c.cx=q.x;c.set=[q.bay];for(const l of c.legs)l.solid.x=q.x+l.dx*PORT_HW-8}
+ const tipFar=b.cargoY0+b.rows*PORT_ROWP+4,tipNear=PORT_RAIL_W+78;
+ /* ---- המסלול: קטעים ישרים, קשתות ועקומות; לכל קטע — מהירות ---- */
+ function P(){const pts=[];return{pts,line(x,y,n){const a=pts[pts.length-1];n=n||Math.max(2,Math.ceil(Math.hypot(x-a[0],y-a[1])/10));for(let i=1;i<=n;i++)pts.push([a[0]+(x-a[0])*i/n,a[1]+(y-a[1])*i/n]);return this},
+  arc(cx,cy,r,a0,a1,n){n=n||Math.max(6,Math.ceil(Math.abs(a1-a0)*r/8));for(let i=1;i<=n;i++){const t=a0+(a1-a0)*i/n;pts.push([cx+r*Math.cos(t),cy+r*Math.sin(t)])}return this},
+  bez(c1,c2,e,n){const a=pts[pts.length-1];n=n||16;for(let i=1;i<=n;i++){const t=i/n,u=1-t;pts.push([u*u*u*a[0]+3*u*u*t*c1[0]+3*u*t*t*c2[0]+t*t*t*e[0],u*u*u*a[1]+3*u*u*t*c1[1]+3*u*t*t*c2[1]+t*t*t*e[1]])}return this}}}
+ function cum(pts){const s=[0];for(let i=1;i<pts.length;i++)s.push(s[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));return s}
+ function at(L,d){const s=L.s,pts=L.pts;d=Math.max(0,Math.min(L.len,d));let lo=0,hi=s.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(s[m]<=d)lo=m;else hi=m}const a=pts[lo],q=pts[hi],f=(d-s[lo])/Math.max(1e-6,s[hi]-s[lo]);
+  const i0=Math.max(0,lo-1),i1=Math.min(pts.length-1,hi+1);return{x:a[0]+(q[0]-a[0])*f,y:a[1]+(q[1]-a[1])*f,h:Math.atan2(pts[i1][1]-pts[i0][1],pts[i1][0]-pts[i0][0])}}
+ /* הלולאה של גורר — מתחילה בעמידה מתחת למנוף (מרכז המכולה מתחת לעגלה; פני הגורר מערבה) */
+ function loop(craneX){const sx=craneX-BOXDX;
+  const A=P();A.pts.push([sx,LANE]);A.line(4980,LANE).arc(4970,4942,70,Math.PI/2,Math.PI).line(4900,4842).arc(4952,4842,52,Math.PI,Math.PI*1.5).line(5044,4790);   /* אל נקודת ההעברה */
+  const B=P();B.pts.push([5044,4790]);B.line(5409,4790).arc(5409,4840,50,-Math.PI/2,0).line(5459,4862).arc(5528,4862,69,Math.PI,Math.PI/2).line(5530,4931)
+   .bez([5560,4931],[5570,4880],[5600,4880]).arc(5600,4945,65,-Math.PI/2,Math.PI/2).line(sx,LANE);   /* חזרה אל המנוף דרך משטח הסיבוב */
+  const La={pts:A.pts,s:cum(A.pts)},Lb={pts:B.pts,s:cum(B.pts)};La.len=La.s[La.s.length-1];Lb.len=Lb.s[Lb.s.length-1];return{A:La,B:Lb,sx}}
+ /* הזמנים: עמידה במנוף (מחזור כפול) 44 שנ׳ · נסיעה אל ההעברה · פריקה במלגזה 34 שנ׳ · חזרה */
+ const D_CR=44,D_TR=34,V=46;
+ const T={};for(const [id,q] of Object.entries(CR)){const L=loop(q.x),dA=L.A.len/V,dB=L.B.len/V;T[q.tr]={id:q.tr,crane:id,L,dA,dB,T:
