@@ -1,0 +1,463 @@
+{
+ "file": "try8120.html",
+ "steps": {
+  "check": {
+   "ok": true,
+   "bad": [],
+   "sleep": [
+    {
+     "start": "22:30",
+     "k": "morning",
+     "from": "יום 1 · 22:30",
+     "to": "יום 2 · 07:00",
+     "min": 510,
+     "want": 510,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "22:30",
+     "k": "h2",
+     "from": "יום 2 · 07:00",
+     "to": "יום 2 · 09:00",
+     "min": 120,
+     "want": 120,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "22:30",
+     "k": "h4",
+     "from": "יום 2 · 09:00",
+     "to": "יום 2 · 13:00",
+     "min": 240,
+     "want": 240,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "22:30",
+     "k": "h8",
+     "from": "יום 2 · 13:00",
+     "to": "יום 2 · 21:00",
+     "min": 480,
+     "want": 480,
+     "saved": true,
+     "night": 1,
+     "sky": 1
+    },
+    {
+     "start": "22:30",
+     "k": "match",
+     "why": "יש משחק עכשיו באצטדיון"
+    },
+    {
+     "start": "3:0",
+     "k": "morning",
+     "from": "יום 3 · 03:00",
+     "to": "יום 3 · 07:00",
+     "min": 240,
+     "want": 240,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "3:0",
+     "k": "h2",
+     "from": "יום 3 · 07:00",
+     "to": "יום 3 · 09:00",
+     "min": 120,
+     "want": 120,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "3:0",
+     "k": "h4",
+     "from": "יום 3 · 09:00",
+     "to": "יום 3 · 13:00",
+     "min": 240,
+     "want": 240,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "3:0",
+     "k": "h8",
+     "from": "יום 3 · 13:00",
+     "to": "יום 3 · 21:00",
+     "min": 480,
+     "want": 480,
+     "saved": true,
+     "night": 1,
+     "sky": 1
+    },
+    {
+     "start": "3:0",
+     "k": "match",
+     "from": "יום 3 · 21:00",
+     "to": "יום 5 · 19:00",
+     "min": 2760,
+     "want": 2760,
+     "saved": true,
+     "night": 0.125,
+     "sky": 0.074
+    },
+    {
+     "start": "6:55",
+     "k": "morning",
+     "why": "כבר בוקר"
+    },
+    {
+     "start": "6:55",
+     "k": "h2",
+     "from": "יום 6 · 06:55",
+     "to": "יום 6 · 08:55",
+     "min": 120,
+     "want": 120,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "6:55",
+     "k": "h4",
+     "from": "יום 6 · 08:55",
+     "to": "יום 6 · 12:55",
+     "min": 240,
+     "want": 240,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "6:55",
+     "k": "h8",
+     "from": "יום 6 · 12:55",
+     "to": "יום 6 · 20:55",
+     "min": 480,
+     "want": 480,
+     "saved": true,
+     "night": 1,
+     "sky": 1
+    },
+    {
+     "start": "6:55",
+     "k": "match",
+     "from": "יום 6 · 20:55",
+     "to": "יום 8 · 19:00",
+     "min": 2765,
+     "want": 2765,
+     "saved": true,
+     "night": 1,
+     "sky": 1
+    },
+    {
+     "start": "12:0",
+     "k": "morning",
+     "from": "יום 9 · 12:00",
+     "to": "יום 10 · 07:00",
+     "min": 1140,
+     "want": 1140,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "12:0",
+     "k": "h2",
+     "from": "יום 10 · 07:00",
+     "to": "יום 10 · 09:00",
+     "min": 120,
+     "want": 120,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "12:0",
+     "k": "h4",
+     "from": "יום 10 · 09:00",
+     "to": "יום 10 · 13:00",
+     "min": 240,
+     "want": 240,
+     "saved": true,
+     "night": 0,
+     "sky": 0
+    },
+    {
+     "start": "12:0",
+     "k": "h8",
+     "from": "יום 10 · 13:00",
+     "to": "יום 10 · 21:00",
+     "min": 480,
+     "want": 480,
+     "saved": true,
+     "night": 1,
+     "sky": 1
+    },
+    {
+     "start": "12:0",
+     "k": "match",
+     "from": "יום 10 · 21:00",
+     "to": "יום 11 · 19:00",
+     "min": 1320,
+     "want": 1320,
+     "saved": true,
+     "night": 1,
+     "sky": 1
+    }
+   ]
+  },
+  "levels": [
+   {
+    "n": 1,
+    "ok": true,
+    "app": "house",
+    "open": true,
+    "sleep": 5,
+    "peek": true,
+    "svg": true,
+    "hangar": false,
+    "saba": true,
+    "player": false,
+    "lvl": "1"
+   },
+   {
+    "n": 2,
+    "ok": true,
+    "app": "house",
+    "open": true,
+    "sleep": 5,
+    "peek": true,
+    "svg": true,
+    "hangar": false,
+    "saba": true,
+    "player": false,
+    "lvl": "2"
+   },
+   {
+    "n": 3,
+    "ok": true,
+    "app": "house",
+    "open": true,
+    "sleep": 5,
+    "peek": true,
+    "svg": true,
+    "hangar": false,
+    "saba": true,
+    "player": false,
+    "lvl": "3"
+   },
+   {
+    "n": 4,
+    "ok": true,
+    "app": "house",
+    "open": true,
+    "sleep": 5,
+    "peek": true,
+    "svg": true,
+    "hangar": false,
+    "saba": true,
+    "player": false,
+    "lvl": "4"
+   },
+   {
+    "n": 5,
+    "ok": true,
+    "app": "house",
+    "open": true,
+    "sleep": 5,
+    "peek": true,
+    "svg": true,
+    "hangar": false,
+    "saba": true,
+    "player": false,
+    "lvl": "5"
+   },
+   {
+    "n": 6,
+    "ok": true,
+    "app": "house",
+    "open": true,
+    "sleep": 5,
+    "peek": true,
+    "svg": true,
+    "hangar": false,
+    "saba": true,
+    "player": false,
+    "lvl": "6"
+   },
+   {
+    "n": 7,
+    "ok": true,
+    "app": "house",
+    "open": true,
+    "sleep": 5,
+    "peek": true,
+    "svg": true,
+    "hangar": false,
+    "saba": true,
+    "player": false,
+    "lvl": "7"
+   },
+   {
+    "n": 8,
+    "ok": true,
+    "app": "house",
+    "open": true,
+    "sleep": 5,
+    "peek": false,
+    "svg": true,
+    "hangar": false,
+    "saba": true,
+    "player": false,
+    "lvl": "8"
+   }
+  ],
+  "real": {
+   "before": {
+    "day": 1,
+    "hour": 22,
+    "minute": 30,
+    "min": 1350.08,
+    "hhmm": "22:30",
+    "worldS": 13.28
+   },
+   "after": {
+    "day": 2,
+    "hour": 7,
+    "minute": 0,
+    "min": 420.5,
+    "hhmm": "07:00",
+    "worldS": 15.18,
+    "last": {
+     "k": "morning",
+     "where": "home",
+     "from": 1350.39,
+     "to": 1860,
+     "day": 2,
+     "hhmm": "07:00",
+     "saved": true,
+     "at": 1794918398074
+    },
+    "night": 0,
+    "phone": false,
+    "held": 0,
+    "heldLog": []
+   },
+   "ms": 11578
+  },
+  "h8": {
+   "b8": {
+    "day": 2,
+    "hour": 15,
+    "minute": 0,
+    "min": 900.03,
+    "hhmm": "15:00",
+    "worldS": 15.31
+   },
+   "a8": {
+    "day": 2,
+    "hour": 23,
+    "minute": 0,
+    "min": 1380.32,
+    "hhmm": "23:00",
+    "worldS": 16.06,
+    "night": 1
+   }
+  },
+  "matchT": {
+   "N": {
+    "day": 5,
+    "K": 6930
+   },
+   "T": {
+    "why": "יש משחק עכשיו באצטדיון"
+   }
+  },
+  "reload": {
+   "saved": {
+    "day": 3,
+    "hour": 1,
+    "minute": 0,
+    "min": 60.72,
+    "hhmm": "01:00",
+    "worldS": 17.21
+   },
+   "loaded": {
+    "day": 3,
+    "hour": 1,
+    "minute": 1,
+    "min": 61.11,
+    "hhmm": "01:01",
+    "worldS": 17.98
+   }
+  },
+  "hotel": {
+   "ho": {
+    "here": true,
+    "m0": 2500,
+    "P": [
+     "id",
+     "label",
+     "chunk",
+     "x",
+     "y",
+     "r"
+    ]
+   },
+   "ha": {
+    "day": 4,
+    "hour": 7,
+    "minute": 0,
+    "min": 420.04,
+    "hhmm": "07:00",
+    "worldS": 18.29,
+    "money": 2380,
+    "last": {
+     "k": "morning",
+     "where": "hotel",
+     "from": 4260,
+     "to": 4740,
+     "day": 4,
+     "hhmm": "07:00",
+     "saved": true,
+     "at": 1794918424169
+    }
+   }
+  },
+  "peek": {
+   "pk": {
+    "c3": 5,
+    "lv": 4,
+    "on": true,
+    "money": 100
+   },
+   "pk2": {
+    "c3": 4,
+    "lv": 4,
+    "on": false
+   }
+  },
+  "heli7": {
+   "still": 10,
+   "spin": 0
+  },
+  "heli8": {
+   "still": 24,
+   "spin": 0
+  }
+ },
+ "bad": [
+  "המעבר ארוך: 11578"
+ ],
+ "errors": [],
+ "ok": false
+}

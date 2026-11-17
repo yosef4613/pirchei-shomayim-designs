@@ -1,0 +1,1 @@
+const { chromium } = require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1300,height:1000}});await p.goto('file://'+process.argv[2]);await p.screenshot({path:process.argv[3],fullPage:false});await p.evaluate(()=>window.scrollTo(0,1900));await p.screenshot({path:process.argv[3].replace('.png','_b.png')});await b.close()})();

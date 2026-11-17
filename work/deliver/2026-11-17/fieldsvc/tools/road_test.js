@@ -1,0 +1,17 @@
+const fs=require('fs');const src='/home/user/tc_root/tc/pkg/work/src_game_t17_fieldsvc/parts/';
+const data=fs.readFileSync(src+'019l_S15_data.js','utf8');const {S15D}=new Function(data+';return {S15D,S15SIM}')();
+const mine=fs.readFileSync(src+'074zz5_fieldsvc.js','utf8');
+const pick=n=>{const i=mine.indexOf('function '+n+'(');let j=i,d=0,st=false;for(;j<mine.length;j++){const c=mine[j];if(c==='{'){d++;st=true}else if(c==='}'){d--;if(st&&d===0){j++;break}}}return mine.slice(i,j)};
+const lanes=/const FSV_LANES=[^;]*;/.exec(mine)[0],okf=/const fsvOk=[^\n]*/.exec(mine)[0].split('   //')[0];
+const code=['const FSV={};',lanes,okf,pick('fsvRoads'),pick('fsvAccess'),pick('fsvSegNodes'),pick('fsvRoute'),pick('fsvClean'),'return {fsvRoads,fsvAccess,fsvRoute,fsvClean}'].join('\n');
+const F=new Function('S15D',code)(S15D);const G=F.fsvRoads();console.log('segments',G.S.length,'nodes',G.N.length,'edges',G.N.reduce((s,n)=>s+n.e.length,0));
+for(const [n,i] of G.N.map((n,i)=>[n,i]))if(!n.e.length)console.log('בודד',i,n.x,n.y);
+const R=(p,q)=>{const a=F.fsvAccess(p,1)[0],b=F.fsvAccess(q,1)[0];if(!a||!b)return 'אין גישה '+JSON.stringify([!!a,!!b]);const r=F.fsvRoute(a.q,a.s,b.q,b.s);return r?F.fsvClean(r).map(x=>x.map(Math.round).join(',')).join(' → ')+'  ['+a.s.id+'→'+b.s.id+']':'אין דרך '+a.s.id+'→'+b.s.id};
+console.log('חוות הדלק → P2:',R([8010,1368],[6977,600]));
+console.log('חוות הדלק → GA1:',R([8010,1368],[7350,2150]));
+console.log('חוות הדלק → R2:',R([8010,1368],[9015,2100]));
+console.log('P3|P4 → P2 tail:',R([7600,720],[6900,300]));
+console.log('חוות הדלק → C2:',R([8010,1368],[5536,600]));
+console.log('R2 tail → חוות הדלק:',R([9015,2100],[8010,1368]));
+console.log('GA1 south → חוות הדלק:',R([7350,2240],[8010,1368]));
+console.log('חוות הדלק → GA1 south:',R([8010,1368],[7350,2240]));

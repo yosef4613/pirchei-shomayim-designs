@@ -1,0 +1,340 @@
+{
+  "favicon_links": [],
+  "passenger_trains": [
+    {
+      "id": "RL-PS-01",
+      "L": 675.4458000000001,
+      "cycle": 502.0004124227018,
+      "cars": [
+        {
+          "id": "C1",
+          "asset": "RL-PS-01",
+          "variant": 1,
+          "label": "רכבת הנוסעים · קרון 1 (קבינה)",
+          "len": 164.36145000000002
+        },
+        {
+          "id": "C2",
+          "asset": "RL-PS-01",
+          "variant": 1,
+          "label": "רכבת הנוסעים · קרון 2",
+          "len": 164.36145000000002
+        },
+        {
+          "id": "C3",
+          "asset": "RL-PS-01",
+          "variant": 1,
+          "label": "רכבת הנוסעים · קרון 3",
+          "len": 164.36145000000002
+        },
+        {
+          "id": "C4",
+          "asset": "RL-PS-01",
+          "variant": 1,
+          "label": "רכבת הנוסעים · קרון 4 (קבינה)",
+          "len": 164.36145000000002
+        }
+      ],
+      "runs": [
+        {
+          "to": "תחנת החוף",
+          "dwell": 20,
+          "legs": [
+            [
+              "B-E3",
+              760,
+              "S"
+            ],
+            [
+              "B-STUB-N",
+              "E",
+              322
+            ],
+            [
+              "X-BA",
+              "S",
+              "E"
+            ],
+            [
+              "A-0N",
+              272,
+              "E"
+            ],
+            [
+              "A-00",
+              "S",
+              "E"
+            ],
+            [
+              "A-0",
+              "S",
+              "E"
+            ],
+            [
+              "A-1",
+              "S",
+              158
+            ]
+          ]
+        },
+        {
+          "to": "רציף הנמל",
+          "dwell": 30,
+          "legs": [
+            [
+              "A-00",
+              30.554,
+              "E"
+            ],
+            [
+              "A-0",
+              "S",
+              "E"
+            ],
+            [
+              "A-1",
+              "S",
+              "E"
+            ],
+            [
+              "A-2",
+              "S",
+              "E"
+            ],
+            [
+              "A-3",
+              "S",
+              "E"
+            ],
+            [
+              "A-4",
+              "S",
+              "E"
+            ],
+            [
+              "A-5",
+              "S",
+              226
+            ]
+          ]
+        },
+        {
+          "to": "רציף 2 · E3",
+          "dwell": 107.98772837423431,
+          "legs": [
+            [
+              "A-5",
+              226,
+              "S"
+            ],
+            [
+              "A-4",
+              "E",
+              "S"
+            ],
+            [
+              "A-3",
+              "E",
+              "S"
+            ],
+            [
+              "A-2",
+              "E",
+              "S"
+            ],
+            [
+              "A-1",
+              "E",
+              "S"
+            ],
+            [
+              "A-0",
+              "E",
+              "S"
+            ],
+            [
+              "XN",
+              "E",
+              "S"
+            ],
+            [
+              "B-STUB",
+              "S",
+              "E"
+            ],
+            [
+              "B-STUB-N",
+              "S",
+              "E"
+            ],
+            [
+              "B-E3",
+              "S",
+              760
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "RL-PS-02",
+      "L": 164.36145000000002,
+      "cycle": 740,
+      "cars": [
+        {
+          "id": "C1",
+          "asset": "RL-PS-01",
+          "variant": 1,
+          "label": "רכבת האי · קרון נוסעים עם שתי קבינות",
+          "len": 164.36145000000002
+        }
+      ],
+      "runs": [
+        {
+          "to": "תחנת האי",
+          "dwell": 70,
+          "legs": [
+            [
+              "B-3",
+              210,
+              "S"
+            ],
+            [
+              "B-LINK",
+              "E",
+              "S"
+            ],
+            [
+              "EAST-B",
+              "S",
+              "E"
+            ],
+            [
+              "EAST-B2",
+              "S",
+              "E"
+            ],
+            [
+              "ISL-A1",
+              "S",
+              "E"
+            ],
+            [
+              "ISL-A2",
+              "S",
+              1644.0681736192298
+            ]
+          ]
+        },
+        {
+          "to": "רציף הנמל",
+          "dwell": 488.5991731838056,
+          "legs": [
+            [
+              "ISL-A2",
+              1644.0681736192298,
+              "S"
+            ],
+            [
+              "ISL-A1",
+              "E",
+              "S"
+            ],
+            [
+              "EAST-B2",
+              "E",
+              "S"
+            ],
+            [
+              "EAST-B",
+              "E",
+              "S"
+            ],
+            [
+              "B-LINK",
+              "S",
+              "E"
+            ],
+            [
+              "B-3",
+              "S",
+              210
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "island_platforms": {
+    "port": [
+      [
+        5826,
+        4470
+      ],
+      [
+        5874,
+        4470
+      ],
+      [
+        5874,
+        4690
+      ],
+      [
+        5826,
+        4690
+      ]
+    ],
+    "island": [
+      [
+        8417.571948,
+        6944.3169100000005
+      ],
+      [
+        9233.671948000001,
+        7522.3169100000005
+      ],
+      [
+        9194.328051999999,
+        7577.88309
+      ],
+      [
+        8378.328051999999,
+        6999.88309
+      ]
+    ]
+  },
+  "stadium_watch_action": "function plcAct(a,arg){const id=State.interactionId;if(!PLC_POIS[id])return;if(!plcHere(id))return toast('התקרב ברגל');const pay=(n,what)=>{if(PlayerProfile.money<n){toast('אין מספיק כסף');return false}PlayerProfile.money-=n;recordTransaction(what,-n,{place:id});return true};\n if(a==='night'){if(!pay(PLC_PRICE.night,'hotel-night'))return;try{gameClockSet(7,0)}catch(e){}PLC.n.night++;setPhoneOpen(false);let ok=false;try{ok=!!(SaveManager.save('manual-hotel')||{}).ok}catch(e){}toast('🛏 ישנת במלון הכיכר · 07:00 · '+(ok?'המשחק נשמר':'השמירה לא הצליחה'));return}\n if(a==='view'){if(!pay(PLC_PRICE.view,'tower-view'))return;PLC.n.view++;setPhoneOpen(false);try{Camera.zoom=.5}catch(e){}toast('🔭 התצפית מגג מגדל הכיכר — הגלגלת מקרבת חזרה');return}\n if(a==='ticket'){if(!pay(PLC_PRICE.ticket,'stadium-ticket'))return;PlayerProfile.inventory['a3-ticket']=(PlayerProfile.inventory['a3-ticket']||0)+1;PLC.n.ticket++;renderPhone();return}\n if(a==='kiosk'){const k=PLC_KIOSK.find(q=>q[0]===arg);if(!k||!pay(k[2],'shop-purchase'))return;PlayerProfile.inventory[k[0]]=(PlayerProfile.inventory[k[0]]||0)+1;PLC.n.kiosk++;renderPhone();return}\n if(a==='watch'){if(!(PlayerProfile.inventory['a3-ticket']>0))return toast('צריך כרטיס');const on=plcMatchOn();if(on){PlayerProfile.inventory['a3-ticket']--;if(!PlayerProfile.inventory['a3-ticket'])delete PlayerProfile.inventory['a3-ticket']}\n  PLC.n.watch++;setPhoneOpen(false);try{Camera.zoom=1.25}catch(e){}toast(on?'⚽ אתה ביציע — המשחק באצטדיון':'המגרש ריק עכשיו · המשחק הבא: '+((plcNextMatch()||{}).label||'—')+' · הכרטיס נשאר בתיק');return}}",
+  "player_car_renderer": "function () { if (!DOORS.v.size) return __drC34Pl.apply(this, arguments); DOORS.cur = DOORS.v.has('PLAYER-CAR') ? 'PLAYER-CAR' : null; try { return __drC34Pl.apply(this, arguments) } finally { DOORS.cur = null } }",
+  "tile_fallback": "function wtcPass0(list,G,now,miss){\n const B=ctx.getTransform();ctx.setTransform(1,0,0,1,0,0);const lost=[],zpBase=list.length&&(list[0][0]==='M'||list[0][0]==='L0');   /* D-225 · p295 */\n for(const [layer,i,j] of list){const t=WTC.tiles.get(layer+'|'+G.key+'|'+i+'|'+j);if(!t&&WTC_EMPTY.has(layer+'|'+G.key+'|'+i+'|'+j))continue;if(t){t.last=WTC.frame;if(t.cv){const b=t.bb;if(G.k===1){if(b)wtcBlit(t.cv,b[0],b[1],b[2],b[3],i*G.T+G.ox+b[0],j*G.T+G.oy+b[1],b[2],b[3]);else wtcBlit(t.cv,0,0,G.T,G.T,i*G.T+G.ox,j*G.T+G.oy,G.T,G.T)}\n   else{const q=G.tw*G.sd,X0=Math.round(i*q+G.cx),Y0=Math.round(j*q+G.cy),kx=(Math.round((i+1)*q+G.cx)-X0)/G.T,ky=(Math.round((j+1)*q+G.cy)-Y0)/G.T;if(b)wtcBlit(t.cv,b[0],b[1],b[2],b[3],X0+b[0]*kx,Y0+b[1]*ky,b[2]*kx,b[3]*ky);else wtcBlit(t.cv,0,0,G.T,G.T,X0,Y0,G.T*kx,G.T*ky)}   /* 25.10 · p317: only the part on the screen */   /* K-163 · p268: a level tile, scaled to the screen (the edges rounded once — no seams) */WTC.stats.drawn++}}else lost.push([layer,i,j])}\n ctx.setTransform(B);\n if(zpBase&&!lost.length)G77_ZP.full={key:G.key,tw:G.tw};   /* D-225 · p295: the last level with all its tiles */\n if(lost.length&&WTC.prev){const keep=[];for(const q of lost){if(!wtcPrevCover(q,G))keep.push(q)}lost.length=0;lost.push(...keep)}\n if(lost.length&&G77_ZP.on&&G77_ZP.full&&G77_ZP.full.key!==G.key&&(!WTC.prev||G77_ZP.full.key!==WTC.prev.key)){const P0=WTC.prev;WTC.prev=G77_ZP.full;try{const keep=[];for(const q of lost){if(!wtcPrevCover(q,G))keep.push(q)}if(keep.length<lost.length)G77_ZP.stats.fullCover+=lost.length-keep.length;lost.length=0;lost.push(...keep)}finally{WTC.prev=P0}}   /* D-225 · p295 */\n if(lost.length&&WTC.mapFill&&MAPBASE.done&&MAPBASE.levels){const keep=[];for(const q of lost){if(!wtcMapCover(q,G))keep.push(q)}lost.length=0;lost.push(...keep)}\n if(lost.length&&typeof G77_PHS!=='undefined'&&G77_PHS.under){G77_PHS.lostSkip+=lost.length;lost.length=0}   /* D-226 · p316: not seen under the phone */for(const layer of ['M','L0','L1','T']){const L=lost.filter(q=>q[0]===layer);if(!L.length)continue;WTC.stats.fallbackTiles+=L.length;miss.n+=L.length;\n  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;ctx.save();ctx.beginPath();for(const [,i,j] of L){const X=i*G.tw,Y=j*G.tw;ctx.rect(X,Y,G.tw,G.tw);x0=Math.min(x0,X);y0=Math.min(y0,Y);x1=Math.max(x1,X+G.tw);y1=Math.max(y1,Y+G.tw)}ctx.clip();\n  const pv=VIEW_OVR,pm=WTC_MODE,pmu=Targets.mute;VIEW_OVR={cx:(x0+x1)/2,cy:(y0+y1)/2,hw:(x1-x0)/2+WTC.margin,hh:(y1-y0)/2+WTC.margin};WTC_MODE=1;Targets.mute=true;WTC.ctxBuilding=ctx;\n  try{if(layer==='T')wtcPaintL2(now);else if(layer==='L0')wtcPaintL0(now);else if(layer==='L1')wtcPaintL1(now);else{wtcPaintL0(now);wtcPaintL1(now)}}catch(e){if(!WTC.err){WTC.err=String(e&&e.stack||e);console.error('world tile fallback',e)}}finally{VIEW_OVR=pv;WTC_MODE=pm;Targets.mute=pmu;WTC.ctxBuilding=null}\n  ctx.restore()}}",
+  "sport_api": [
+    "CDUR",
+    "CNAME",
+    "STG",
+    "celeCheck",
+    "vbTouchCheck",
+    "bkNow",
+    "a3Live",
+    "a3Info",
+    "a3Sess",
+    "goal3",
+    "goalShadows",
+    "flags3",
+    "logo",
+    "board3",
+    "bkLive",
+    "hoopShadows",
+    "vbLive",
+    "audit",
+    "dev",
+    "err",
+    "A3",
+    "BK",
+    "VB",
+    "TEAM",
+    "bkInfo",
+    "vbNow",
+    "vbSess",
+    "simTo",
+    "scoreAt"
+  ]
+}

@@ -1,0 +1,109 @@
+{
+ "build": "try6844.html",
+ "kiosks": [
+  {
+   "id": "B2-KIOSK",
+   "g7": "lakek",
+   "tcb": "lakec",
+   "key": "lakec"
+  },
+  {
+   "id": "E3-KIOSK",
+   "g7": "stationk",
+   "tcb": "cafe",
+   "key": "cafe"
+  }
+ ],
+ "rows": [
+  {
+   "id": "B2-KIOSK",
+   "g7": "lakek",
+   "tcb": "lakec",
+   "key": "lakec",
+   "sign": null,
+   "bannerTok": "tcp:g7|lakek|44",
+   "drawn": {
+    "sign": 0,
+    "tile": 34,
+    "lit": 0,
+    "wrap": 0,
+    "plaque": 0,
+    "rear": 0,
+    "poster": 0
+   },
+   "f": {
+    "open": true,
+    "id": "B2-KIOSK",
+    "tcb": "lakec",
+    "h1": "קיוסק האגם",
+    "small": "קיוסק",
+    "banner": false,
+    "bannerTok": null
+   },
+   "label": "דלת",
+   "before": {
+    "sign": 0,
+    "tile": 11,
+    "lit": 0,
+    "wrap": 0,
+    "plaque": 0,
+    "rear": 0,
+    "poster": 0
+   }
+  },
+  {
+   "id": "E3-KIOSK",
+   "g7": "stationk",
+   "tcb": "cafe",
+   "key": "cafe",
+   "sign": null,
+   "bannerTok": "tcp:g7|stationk|44",
+   "drawn": {
+    "sign": 52,
+    "tile": 0,
+    "lit": 0,
+    "wrap": 0,
+    "plaque": 0,
+    "rear": 0,
+    "poster": 0
+   },
+   "f": {
+    "open": true,
+    "id": "E3-KIOSK",
+    "tcb": "cafe",
+    "h1": "קיוסק התחנה",
+    "small": "קיוסק",
+    "banner": false,
+    "bannerTok": null
+   },
+   "label": "דלת",
+   "before": {
+    "sign": 43,
+    "tile": 0,
+    "lit": 0,
+    "wrap": 0,
+    "plaque": 0,
+    "rear": 0,
+    "poster": 0
+   }
+  }
+ ],
+ "stats": {
+  "n": {
+   "title": 0,
+   "meta": 2,
+   "tcb": 2,
+   "mono": 0,
+   "name": 0,
+   "hookS9": 1,
+   "bld": 3,
+   "kiosk": 3,
+   "band": 345
+  },
+  "err": null,
+  "rows": 471,
+  "brands": 256
+ },
+ "pageErrors": [],
+ "ok": true
+}

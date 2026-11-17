@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>איפה אוחזים</title>
+<style>
+:root{
+  --bg:#f6f4ef;--panel:#ffffff;--ink:#1d2329;--mute:#5d6770;--line:#dcd7cc;--soft:#efebe3;
+  --g:#2f7d4f;--g-bg:#e3f2e8;--m:#1f5f99;--m-bg:#dfeaf6;--w:#8a5a00;--w-bg:#fbf0d4;--n:#b23a2e;--n-bg:#f9e1dd;--o:#7a3b8a;--o-bg:#f1e2f5;--d:#2b6f6a;--d-bg:#dcf0ee;--s:#8a4a1c;--s-bg:#f6e3d3;
+  --acc:#1f5f99;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181c;--panel:#1c2228;--ink:#e6e9ec;--mute:#9aa4ad;--line:#2f3841;--soft:#232a31;
+  --g:#7fd3a0;--g-bg:#1d3327;--m:#8cc0f0;--m-bg:#1c2f43;--w:#f0c56a;--w-bg:#3a3020;--n:#f19a8f;--n-bg:#3b2321;--o:#dba8ea;--o-bg:#33223a;--d:#86d6cf;--d-bg:#183331;--s:#f0a878;--s-bg:#3a2618;--acc:#8cc0f0;}}
+:root[data-theme="dark"]{
+  --bg:#14181c;--panel:#1c2228;--ink:#e6e9ec;--mute:#9aa4ad;--line:#2f3841;--soft:#232a31;
+  --g:#7fd3a0;--g-bg:#1d3327;--m:#8cc0f0;--m-bg:#1c2f43;--w:#f0c56a;--w-bg:#3a3020;--n:#f19a8f;--n-bg:#3b2321;--o:#dba8ea;--o-bg:#33223a;--d:#86d6cf;--d-bg:#183331;--s:#f0a878;--s-bg:#3a2618;--acc:#8cc0f0;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Segoe UI",Arial,"Noto Sans Hebrew",sans-serif}
+.wrap{max-width:1160px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:25px;margin:0 0 4px}
+h2.sec{font-size:20px;margin:34px 0 4px;padding-top:6px;border-top:2px solid var(--line)}
+h2.sec:first-of-type{border-top:0}
+.lead{margin:2px 0 10px;color:var(--mute);font-size:14px}
+.sub{color:var(--mute);font-size:13px}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+nav.toc a{color:var(--acc);font-size:13.5px;text-decoration:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:3px 10px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin:10px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 11px;border-inline-start:5px solid var(--line)}
+.card b{display:block;font-size:24px;line-height:1.2;font-variant-numeric:tabular-nums}
+.card span{color:var(--mute);font-size:12.5px}
+.card.k-G,.card.k-D{border-inline-start-color:var(--g)}.card.k-M{border-inline-start-color:var(--m)}.card.k-W{border-inline-start-color:var(--w)}.card.k-N{border-inline-start-color:var(--n)}.card.k-S{border-inline-start-color:var(--s)}.card.k-O{border-inline-start-color:var(--o)}
+.cardrow{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;margin:14px 0 0;font-weight:700}
+.bar100{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--soft);margin:6px 0 2px;gap:2px}
+.bar100 i{display:block;height:100%}
+.bg-G,.bg-D{background:var(--g)}.bg-M{background:var(--m)}.bg-W{background:var(--w)}.bg-N{background:var(--n)}.bg-S{background:var(--s)}.bg-O{background:var(--o)}
+.b{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.k-G>.lbl,.b.k-G{color:var(--g);background:var(--g-bg)}.b.k-D{color:var(--d);background:var(--d-bg)}.b.k-M{color:var(--m);background:var(--m-bg)}.b.k-W{color:var(--w);background:var(--w-bg)}.b.k-N{color:var(--n);background:var(--n-bg)}.b.k-S{color:var(--s);background:var(--s-bg)}.b.k-O{color:var(--o);background:var(--o-bg)}
+.b.old{color:var(--mute);background:var(--soft)}
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:13.5px}
+th,td{text-align:start;vertical-align:top;padding:7px 9px;border-bottom:1px solid var(--line)}
+th{background:var(--soft);font-weight:700;font-size:12.5px;color:var(--mute)}
+tr:last-child td{border-bottom:0}
+td.tid{white-space:nowrap;font-weight:700;font-variant-numeric:tabular-nums}
+td .t{display:block;font-weight:600}
+td .acc{display:block;color:var(--mute);font-size:12px;margin-top:3px}
+.pt{display:inline-block;font-size:11.5px;padding:0 6px;margin:1px;border-radius:6px;font-variant-numeric:tabular-nums}
+.ph{margin:18px 0 6px;display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.ph h3{margin:0;font-size:16px}
+.ph .mini{display:flex;gap:4px;flex-wrap:wrap}
+details.box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:12px 0}
+details.box summary{cursor:pointer;font-weight:700}
+.git{font-size:11.5px;color:var(--mute);font-family:ui-monospace,Consolas,monospace;direction:ltr;unicode-bidi:isolate}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{all:unset;cursor:pointer;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:13px}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+select,input[type=search]{font:inherit;font-size:14px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);max-width:100%}
+input[type=search]{flex:1;min-width:160px}
+.count{color:var(--mute);font-size:13px;margin-inline-start:auto}
+h4.topic{font-size:16px;margin:20px 0 6px}
+h4.topic small{color:var(--mute);font-weight:400;font-size:13px}
+.it{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin:7px 0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px}
+.it.chk{opacity:.55}
+.it input[type=checkbox]{width:18px;height:18px;margin-top:3px;accent-color:var(--acc)}
+.hd{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.id{font-weight:700;font-variant-numeric:tabular-nums}
+.date{color:var(--mute)}
+.req{grid-column:2;margin:2px 0;font-size:15px}
+.n3{grid-column:2;font-size:13.5px;background:var(--soft);border-radius:8px;padding:5px 8px}
+.fd{grid-column:2;font-size:12.5px;color:var(--mute)}
+.fd::before{content:"מצאתי (בוקר): ";font-weight:700}
+.src{grid-column:2;font-size:12px;color:var(--mute)}
+.empty{color:var(--mute);padding:30px 0;text-align:center}
+footer{margin-top:30px;color:var(--mute);font-size:12px}
+@media (max-width:700px){
+  .wrap{padding:14px 16px 50px}h1{font-size:21px}.card b{font-size:20px}
+  table,thead,tbody,tr,td{display:block;width:100%}thead{display:none}
+  tr{border-bottom:1px solid var(--line);padding:6px 0}td{border:0;padding:3px 10px}
+  td[data-h]::before{content:attr(data-h) ": ";font-weight:700;color:var(--mute);font-size:12px}
+}
+.upd{margin:4px 0 8px;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>איפה אוחזים — 17.11</h1>
+  <p class="upd"><b>מעודכן ל-18.11 00:00</b> — אחרי מסירת S7F306 (פנים הבית): מה במשחק, מה עצר להיום ובאיזה ענף, ומה לא התחיל.</p>
+  <div class="sub" id="meta"></div>
+  <nav class="toc" aria-label="תוכן">
+    <a href="#plan">66 המשימות (98 ההערות)</a><a href="#owner">בקשות הבעלים מהיום</a><a href="#all">כל הרשימה (194)</a><a href="#legend">מה כל סטטוס אומר</a>
+  </nav>
+
+  <h2 class="sec" id="plan">1. הדף שחיכה לבוקר — 66 המשימות של "התוכנית אחרי S16"</h2>
+  <p class="lead">plan_s7f298_site (13.11): ‏66 משימות ב-9 שלבים (B1–B9), שמכסות 98 נקודות מ-19 הודעות (C01.01–C19.01). לכל משימה — הסטטוס המאומת מול git, מה מתנאי הקבלה כבר עומד ומה חסר, ואילו נקודות היא מכסה. נקודה מקבלת את הסטטוס של המשימה הכי פחות מתקדמת שמכסה אותה.</p>
+  <div class="cardrow">66 המשימות</div><div id="c66"></div>
+  <div class="cardrow">98 הנקודות</div><div id="c98"></div>
+  <div id="planT"></div>
+  <details class="box"><summary>98 הנקודות לפי ההודעה — עם הסטטוס</summary><div id="ptsT"></div></details>
+
+  <h2 class="sec" id="owner">2. בקשות הבעלים מ-17.11</h2>
+  <p class="lead">Owner_requests_all_1112.txt — שורות 145–194, ועוד 07:58 / 08:10 (HANDOFF_1111) ו-16:05. הודעה עם כמה בקשות פוצלה לשורות (12:55 א–ח).</p>
+  <div id="cOwn"></div>
+  <div id="ownT"></div>
+
+  <h2 class="sec" id="all">3. כל הרשימה המרוכזת — 194 פריטים</h2>
+  <p class="lead">כל מה שנאסף בבוקר (ledger + ledger2), עם הסטטוס של עכשיו.</p>
+  <div id="cAll"></div>
+  <div class="bar" role="search">
+    <div class="chips" id="fSt" aria-label="סטטוס"></div>
+    <select id="fTopic" aria-label="נושא"><option value="">כל הנושאים</option></select>
+    <select id="fAgent" aria-label="סוכן"><option value="">כל הסוכנים</option></select>
+    <input type="search" id="fq" placeholder="חיפוש (מזהה, בקשה, סוכן, commit)">
+    <label class="sub"><input type="checkbox" id="fHide"> להסתיר מסומנים</label>
+    <span class="count" id="cnt"></span>
+  </div>
+  <div id="list"></div>
+
+  <h2 class="sec" id="legend">מה כל סטטוס אומר</h2>
+  <div id="leg"></div>
+  <footer id="foot"></footer>
+</div>
+<script>
+const D=/*@@DATA@@*/null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KEY='tc_ledger_checks_v1';
+let checks={};try{checks=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){checks={}}
+const saveChecks=()=>{try{localStorage.setItem(KEY,JSON.stringify(checks))}catch(e){}};
+const KN={G:'במשחק',M:'מוכן — במיזוג S7F305',W:'בעבודה',S:'עצר להיום',N:'לא התחיל',O:'לאישור הבעלים',D:'נעשה מחוץ למשחק'};
+const ORDER=['G','D','M','W','S','O','N'];
+const badge=(k,t)=>'<span class="b k-'+k+'">'+esc(t)+'</span>';
+const gi=D.gitinfo;
+$('meta').textContent=D.version+' · נבנה '+D.built+' (שעון ישראל) · '+D.base+' · S7F299 '+gi.tags.S7F299+' · S7F300 '+gi.tags.S7F300+' · S7F301 '+gi.tags.S7F301+' · S7F302 '+gi.tags.S7F302+' · S7F303 '+gi.tags.S7F303+' · S7F304 '+gi.tags.S7F304;
+function cards(cnt,total,keys){keys=keys||ORDER.filter(k=>cnt[k]);
+  const bar='<div class="bar100" role="img" aria-label="'+keys.map(k=>KN[k]+' '+(cnt[k]||0)).join(', ')+'">'+keys.map(k=>'<i class="bg-'+k+'" style="width:'+(100*(cnt[k]||0)/total)+'%"></i>').join('')+'</div>';
+  return bar+'<div class="cards">'+keys.map(k=>'<div class="card k-'+k+'"><b>'+(cnt[k]||0)+'</b><span>'+KN[k]+' · '+Math.round(100*(cnt[k]||0)/total)+'%</span></div>').join('')+'<div class="card"><b>'+total+'</b><span>סה״כ</span></div></div>'}
+const S3=D.s3;
+$('c66').innerHTML=cards(S3.plan66,D.plan.length);
+$('c98').innerHTML=cards(S3.points98,D.points.length);
+const ptReq={};D.points.forEach(p=>ptReq[p.id]=p);
+let h='';
+for(const ph of D.phases){const L=D.plan.filter(x=>x.phase===ph.id);const c={};L.forEach(x=>c[x.st_key]=(c[x.st_key]||0)+1);
+ h+='<div class="ph"><h3>'+esc(ph.id)+' · '+esc(ph.title)+'</h3><span class="mini">'+ORDER.filter(k=>c[k]).map(k=>badge(k,KN[k]+' '+c[k])).join('')+'</span></div>';
+ h+='<table><thead><tr><th>משימה</th><th>סטטוס</th><th>מה כבר עומד</th><th>מה חסר</th><th>הנקודות (Cxx.yy)</th></tr></thead><tbody>';
+ for(const x of L){h+='<tr><td data-h="משימה"><span class="t">'+esc(x.id)+' · '+esc(x.title)+' <span class="b old">'+esc(x.priority)+'</span></span><details><summary class="sub">תנאי הקבלה</summary><span class="acc">'+esc(x.acceptance)+'</span></details></td>'+
+  '<td data-h="סטטוס">'+badge(x.st_key,x.st_label)+(x.git.length?'<div class="git">'+esc(x.git.join(' '))+'</div>':'')+'</td>'+
+  '<td data-h="עומד">'+esc(x.have)+'</td><td data-h="חסר">'+esc(x.miss)+'</td>'+
+  '<td data-h="נקודות">'+x.points.map(p=>'<span class="pt b k-'+ptReq[p].st_key+'" title="'+esc(ptReq[p].req)+'">'+esc(p)+'</span>').join('')+(x.items.length?'<div class="sub">ברשימה: '+esc(x.items.join(', '))+'</div>':'')+'</td></tr>'}
+ h+='</tbody></table>'}
+$('planT').innerHTML=h;
+let pm={};D.points.forEach(p=>{(pm[p.msg]=pm[p.msg]||{t:p.msg_title,L:[]}).L.push(p)});
+$('ptsT').innerHTML='<table><thead><tr><th>נקודה</th><th>הבקשה (בתמצית)</th><th>משימות</th><th>סטטוס</th></tr></thead><tbody>'+Object.entries(pm).map(([m,g])=>
+ '<tr><td colspan="4" style="background:var(--soft);font-weight:700">הודעה '+esc(m)+' · '+esc(g.t)+'</td></tr>'+g.L.map(p=>'<tr><td data-h="נקודה" class="tid">'+esc(p.id)+'</td><td data-h="בקשה">'+esc(p.req)+'</td><td data-h="משימות">'+esc(p.tasks.join(', '))+'</td><td data-h="סטטוס">'+badge(p.st_key,KN[p.st_key])+'</td></tr>').join('')).join('')+'</tbody></table>';
+$('cOwn').innerHTML=cards(S3.owner17,D.owner17.length);
+$('ownT').innerHTML='<table><thead><tr><th>שעה</th><th>הבקשה</th><th>סטטוס</th><th>איפה זה עומד</th></tr></thead><tbody>'+D.owner17.map(x=>
+ '<tr><td data-h="שעה" class="tid">'+esc(x.time)+'</td><td data-h="בקשה">'+esc(x.req)+'<div class="sub">'+esc(x.src)+'</div></td><td data-h="סטטוס">'+badge(x.st_key,x.st_label)+(x.git.length?'<div class="git">'+esc(x.git.join(' '))+'</div>':'')+'</td><td data-h="עומד">'+esc(x.n)+'</td></tr>').join('')+'</tbody></table>';
+$('cAll').innerHTML=cards(S3.items,D.items.length);
+const F={st:new Set(),topic:'',agent:'',q:'',hide:false};
+$('fSt').innerHTML=ORDER.filter(k=>S3.items[k]).map(k=>'<button class="chip" aria-pressed="false" data-v="'+k+'">'+esc(KN[k])+' '+S3.items[k]+'</button>').join('');
+$('fSt').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const v=b.dataset.v;if(F.st.has(v))F.st.delete(v);else F.st.add(v);b.setAttribute('aria-pressed',F.st.has(v));render()};
+const agOf=x=>/^[WS]:/.test(x.st3)?x.st3.slice(2):'';
+const topics=[...new Set(D.items.map(x=>x.topic))];topics.forEach(t=>$('fTopic').insertAdjacentHTML('beforeend','<option>'+esc(t)+'</option>'));
+const ags=[...new Set(D.items.map(agOf).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'he'));ags.forEach(t=>$('fAgent').insertAdjacentHTML('beforeend','<option value="'+esc(t)+'">'+esc(t)+'</option>'));
+$('fTopic').onchange=e=>{F.topic=e.target.value;render()};$('fAgent').onchange=e=>{F.agent=e.target.value;render()};
+$('fq').oninput=e=>{F.q=e.target.value.trim();render()};$('fHide').onchange=e=>{F.hide=e.target.checked;render()};
+function ok(x){if(F.st.size&&!F.st.has(x.st3_key))return false;
+ if(F.topic&&x.topic!==F.topic)return false;if(F.agent&&agOf(x)!==F.agent)return false;if(F.hide&&checks[x.id])return false;
+ if(F.q){const s=(x.id+' '+x.req+' '+x.found+' '+x.src.join(' ')+' '+x.st3_label+' '+x.st3_note+' '+x.st3_git.join(' ')).toLowerCase();if(!s.includes(F.q.toLowerCase()))return false}return true}
+function render(){const L=D.items.filter(ok);$('cnt').textContent=L.length+' / '+D.items.length;
+ if(!L.length){$('list').innerHTML='<div class="empty">אין פריטים לסינון הזה</div>';return}
+ let h='';for(const t of topics){const g=L.filter(x=>x.topic===t);if(!g.length)continue;
+  const c={};g.forEach(x=>c[x.st3_key]=(c[x.st3_key]||0)+1);
+  h+='<h4 class="topic">'+esc(t)+' <small>'+g.length+' · '+ORDER.filter(k=>c[k]).map(k=>KN[k]+' '+c[k]).join(' · ')+'</small></h4>';
+  for(const x of g){h+='<div class="it'+(checks[x.id]?' chk':'')+'"><input type="checkbox" data-id="'+x.id+'" aria-label="סימון '+x.id+'"'+(checks[x.id]?' checked':'')+'>'+
+   '<div class="hd"><span class="id">'+x.id+'</span>'+badge(x.st3_key,x.st3_label)+'<span class="date">'+esc(x.date)+'</span>'+(x.st3_git.length?'<span class="git">'+esc(x.st3_git.join(' '))+'</span>':'')+'</div>'+
+   '<div class="req">'+esc(x.req)+'</div>'+(x.st3_note?'<div class="n3">'+esc(x.st3_note)+'</div>':'')+
+   (x.found&&x.found!=='—'?'<div class="fd">'+esc(x.found)+'</div>':'')+'<div class="src">'+esc(x.src.join(' · '))+'</div></div>'}}
+ $('list').innerHTML=h}
+$('list').onchange=e=>{const c=e.target;if(!c.dataset||!c.dataset.id)return;if(c.checked)checks[c.dataset.id]=1;else delete checks[c.dataset.id];saveChecks();render()};
+$('leg').innerHTML='<table><tbody>'+Object.entries(D.st3_legend).map(([k,v])=>'<tr><td>'+badge(k,KN[k])+'</td><td>'+esc(v)+'</td></tr>').join('')+'</tbody></table>'+
+ '<p class="sub">האימות: לכל סטטוס רשומים ה-commits שעליהם הוא נשען, ולכל אחד — איפה הוא נמצא ב-git (התגית הראשונה שמכילה אותו, int305 = במיזוג S7F305, או branch = עוד לא במיזוג). הבנייה של הדף נכשלת אם סטטוס לא מתאים ל-git; אי-התאמות עכשיו: '+(S3.git_mismatch.length||'0')+'.</p>';
+$('foot').innerHTML='המקורות: '+D.sources.map(esc).join(' · ')+'<br>הסימונים נשמרים רק בדפדפן הזה.';
+render();
+</script>
+</body>
+</html>

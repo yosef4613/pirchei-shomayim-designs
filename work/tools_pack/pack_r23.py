@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""28.10 · חבילת המקור R23 (S7F111 להרצה; שלב 7 חלקים 1–4, ‏p349–p358, בדיקת הבעלים; התוכנית עד v6.18). כמו R22, ועוד: p349–p356, ‏tools/post_s7f109–114.txt, כלי שלב 7 ובדיקת הבעלים (qa/ownerperf), ‏garage8_ui.py, ‏w12measure.sh, ‏qa/stage6/garage/, ‏qa/s7f107/ (נעצרה בכוונה), ‏qa/s7f108/; בתוכנית — v600_step23 ואילך; ‏docs_audit/audit_v600_r9 (בלי repro/). בגלל מגבלת ההעלאה (400 MiB) החבילה נארזת גם בשני חלקים: part1 — הכול חוץ מ-qa/worldb, ‏part2 — ‏qa/worldb; פותחים את שניהם לאותה תיקייה. R21 היה (S7F106 — סגירת ביקורת 8: הגדר במערב על הקווים של חלק ו; התוכנית v6.15): p346, tools/post_s7f106.txt, w11measure.sh, ‏qa/audit8/, ‏qa/s7f106/, ‏qa/stage6/uniforms/, ‏qa/stage6/people/peopleh_all*; בתוכנית — fence_plan_check.py, ‏v600_step22 (v6.15), ‏data/audit8_findings.json; ‏docs_audit/audit_v600_r8 (בלי repro/). R20 היה: p342–p345, tools/post_s7f102–105.txt, הכלים w8measure.sh, w9measure.sh, w10measure.sh, s7f102_check.sh, ‏qa/s6p56/, ‏qa/s6p67/, ‏qa/s7f102/, ‏qa/s7f105/, ‏qa/stage6/people/; בתוכנית — v600_step21 (v6.14). R19 היה: p337–p340 (שלב 6 — טבלת הגדלים, אורך ורוחב המכוניות, האמבולנס), p341 (הגדר — ביקורת 7, ‏W01), tools/post_s7f100.txt ו-post_s7f101.txt, הכלים tools/dev/w6measure.sh, w7measure.sh, s7f101_check.sh, fitcheck2.js, gpu_why.js, ‏qa/stage6/, ‏qa/fence101/, ‏qa/s7f100/, ‏qa/s7f101/; בתוכנית — v600_step19 (סגירת ביקורת 7) ו-v600_step20 (שלב 6 והגדר), ‏v600_replay.sh עד v6.13; ‏docs_audit/audit_v600_r7 (בלי repro/, ‏snap/). R18 היה (S7F94 — שלבים 4 ו-5): p335, p336, ‏qa/worldd/, ‏qa/s7f94/, ‏v600_step16–18, ‏docs_plan/data_v610 + v600_replay.sh. R15 היה (S7F88 — שלב 3): p331–p334 (World‑a), הכלים tools/dev/w3*.py ו-worldshot.py, ‏qa/worlda/, ‏qa/s7f88/; בתוכנית — סגירת ביקורת 5 (v600_step14.py, ‏tools/swept.py, ‏tools/parkscan2.py, ‏data/parking_v2.json) ושלב 3 (v600_step15.py); ‏docs_audit/audit_v600_r5. מ-R14: חלקים ד, ה, ז אחרי ביקורת 4 (v600_step13.py, tools/dev/parkscan.py, qa/city/parking.json); מ-R13: S7F87 (p330 — השעון, tools/post_s7f87.txt, repro.sh), חלק א מגאומטריה (part_a_build.py), חלק ו אחרי ביקורת 4, v600_step12.py, ביקורת 4 (docs_audit/audit_v600_r4), qa/s7f87, qa/k86/airflow.json. R11 היה: חלק ו (docs_plan/data/part_f.json, docs_plan/tools/part_f_build.py, v600_step10.py), העובדות של השדה (qa/air, tools/dev/airgeo.js). R10 היה: חלק ה (docs_plan/data/part_e.json, docs_plan/tools/part_e_build.py, v600_step9.py), העובדות של העיר (qa/city, tools/dev/citygeo.js, peek.js). R9 היה: חלק ד (docs_plan/data/part_d.json, docs_plan/tools/part_d_build.py, v600_step8.py), העובדות של הים (qa/sea, tools/dev/seageo.js, seashots.js). R8 היה: p329 (K‑86), חלק א, הסקר הסופי. R7 היה: הביקורת השלישית (docs_audit/audit_v600_r3), כלי הסקר ונתוני הסקר (qa/survey — בלי חילוץ צילומי הזום, שנמצאים ב-ZIP של הצילומים, ובלי תמונות הביניים). R6 היה: ההודעות ששוחזרו מציטוט (ב6‑24), שתי הביקורות של v6.00 (docs_audit/). העץ הנקי בלי build/ ו-out/ ובלי קובצי ה-ZIP הכבדים של הצילומים; ועוד: הודעות הבעלים מאז 25.10,
+קבצי ההמשך (NEXT, PROGRESS, NOTES), מפת הדרכים R2, ותיקיית התוכנית החדשה (docs_plan/: הכלים, הנתונים, v5.62 המקורית, v6.00, הזהות).
+לא מוחק כלום: מעתיק לתיקייה חדשה ואורז ממנה.
+usage: pack_r6.py <out.zip>"""
+import sys, os, shutil, glob, hashlib, zipfile, time
+W = '/home/claude/work'; OUT = os.path.abspath(sys.argv[1]); T = os.path.join(W, 'pack_r23_' + time.strftime('%H%M%S')); os.makedirs(T)
+def ign(d, names):
+    out = set()
+    rel = os.path.relpath(d, os.path.join(W, 'clean_r2b_025637'))
+    if rel == '.': out |= {'build', 'out', '_to_delete'}
+    out |= {n for n in names if n.startswith('owner_zones_') and n.endswith('.zip')}
+    if rel == os.path.join('qa', 'survey'): out |= {'zones84_zoom'}   # the zoom shots — extracted from the ZIP of the shots, which the owner has
+    if rel == os.path.join('qa', 'survey', 's7f85_borders'): out |= {n for n in names if n.endswith('.jpg')}   # superseded by s7f85_borders_all (the same shots + the rest)
+    if rel == os.path.join('qa', 'survey', 's7f85_activity'): out |= {n for n in names if n.endswith('.jpg')}   # the single frames; the sheets (sheets/) stay
+    return out
+shutil.copytree(os.path.join(W, 'clean_r2b_025637'), T, ignore=ign, dirs_exist_ok=True)
+for f in glob.glob(os.path.join(W, 'src/docs_study/owner_2026-10-2[5-7]_*.txt')) + glob.glob(os.path.join(W, 'src/docs_study/owner_*_FROM_QUOTE.txt')):
+    dst = os.path.join(T, 'docs_study', os.path.basename(f))
+    if not os.path.exists(dst): shutil.copy2(f, dst)
+for f in ['study/NEXT_2026-10-27.md', 'study/PROGRESS_2026-10-27.md', 'study/NOTES.md', 'deliver/sp5/Turbo_City_ROADMAP_R2.md']:
+    shutil.copy2(os.path.join(W, f), os.path.join(T, 'docs_study', os.path.basename(f)))
+shutil.copytree(os.path.join(W, 'plan600'), os.path.join(T, 'docs_plan'), ignore=lambda d, n: ({'shots'} if d.endswith('/out') else set()) | ({'_to_delete'} if d.rstrip('/').endswith('plan600') else set()), dirs_exist_ok=True)
+for a in ('audit_v600', 'audit_v600_r2', 'audit_v600_r3', 'audit_v600_r4', 'audit_v600_r5', 'audit_v600_r6', 'audit_v600_r7', 'audit_v600_r8', 'audit_v600_r9'):
+    if os.path.isdir(os.path.join(W, a)): shutil.copytree(os.path.join(W, a), os.path.join(T, 'docs_audit', a), ignore=lambda d, n: {'tmp', 'repro', 'repro_s1', 'repro_s2', 'snap', 'build', '_to_delete'}, dirs_exist_ok=True)   # repro/ — the auditor's own unpacked copy of the source package
+ALL = []
+for root, dirs, files in os.walk(T):
+    dirs.sort()
+    for fn in sorted(files): ALL.append(os.path.relpath(os.path.join(root, fn), T))
+part2 = lambda r: r.startswith(os.path.join('qa', 'worldb') + os.sep)
+def pack(path, names):
+    with zipfile.ZipFile(path, 'w', zipfile.ZIP_DEFLATED) as z:
+        for r in names: z.write(os.path.join(T, r), r)
+    b = open(path, 'rb').read(); print(path, hashlib.sha1(b).hexdigest(), len(b), 'bytes', len(names), 'files')
+print(T)
+# the full file is not built (the upload limit — only the two parts are delivered; the disk)
+pack(OUT.replace('.zip', '_part1.zip'), [r for r in ALL if not part2(r)])
+pack(OUT.replace('.zip', '_part2.zip'), [r for r in ALL if part2(r)])

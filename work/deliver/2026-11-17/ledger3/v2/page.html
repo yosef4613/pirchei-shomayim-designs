@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>הרשימה המרוכזת</title>
+<style>
+:root{
+  --bg:#f6f4ef;--panel:#ffffff;--ink:#1d2329;--mute:#5d6770;--line:#dcd7cc;--soft:#efebe3;
+  --done:#2f7d4f;--done-bg:#e3f2e8;--part:#9a6a00;--part-bg:#fbf0d4;--no:#b23a2e;--no-bg:#f9e1dd;--unk:#5a5f8f;--unk-bg:#e6e7f5;
+  --today:#1f5f99;--today-bg:#dfeaf6;--g2:#8a3b72;--g2-bg:#f5e2ee;--wait:#6b5a2e;--wait-bg:#efe8d6;--acc:#1f5f99;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181c;--panel:#1c2228;--ink:#e6e9ec;--mute:#9aa4ad;--line:#2f3841;--soft:#232a31;
+  --done:#7fd3a0;--done-bg:#1d3327;--part:#f0c56a;--part-bg:#3a3020;--no:#f19a8f;--no-bg:#3b2321;--unk:#b9bdf0;--unk-bg:#2a2c45;
+  --today:#8cc0f0;--today-bg:#1c2f43;--g2:#e7a6d2;--g2-bg:#3a2433;--wait:#d9c48f;--wait-bg:#322c1d;--acc:#8cc0f0;}}
+:root[data-theme="dark"]{
+  --bg:#14181c;--panel:#1c2228;--ink:#e6e9ec;--mute:#9aa4ad;--line:#2f3841;--soft:#232a31;
+  --done:#7fd3a0;--done-bg:#1d3327;--part:#f0c56a;--part-bg:#3a3020;--no:#f19a8f;--no-bg:#3b2321;--unk:#b9bdf0;--unk-bg:#2a2c45;
+  --today:#8cc0f0;--today-bg:#1c2f43;--g2:#e7a6d2;--g2-bg:#3a2433;--wait:#d9c48f;--wait-bg:#322c1d;--acc:#8cc0f0;}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Segoe UI",Arial,"Noto Sans Hebrew",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:24px;margin:0 0 4px}
+.sub{color:var(--mute);font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.card b{display:block;font-size:24px;line-height:1.2;font-variant-numeric:tabular-nums}
+.card span{color:var(--mute);font-size:13px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{all:unset;cursor:pointer;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);font-size:13px}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+select,input[type=search]{font:inherit;font-size:14px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);max-width:100%}
+input[type=search]{flex:1;min-width:160px}
+.count{color:var(--mute);font-size:13px;margin-inline-start:auto}
+h2{font-size:17px;margin:22px 0 8px;display:flex;gap:8px;align-items:baseline}
+h2 small{color:var(--mute);font-weight:400;font-size:13px}
+.it{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px}
+.it.chk{opacity:.55}
+.it input[type=checkbox]{width:18px;height:18px;margin-top:3px;accent-color:var(--acc)}
+.hd{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.id{font-weight:700;font-variant-numeric:tabular-nums}
+.b{padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.s-נעשה{color:var(--done);background:var(--done-bg)}.s-חלקי{color:var(--part);background:var(--part-bg)}.s-לא{color:var(--no);background:var(--no-bg)}.s-לא\ נבדק{color:var(--unk);background:var(--unk-bg)}
+.t-today{color:var(--today);background:var(--today-bg)}.t-g2{color:var(--g2);background:var(--g2-bg)}.t-wait{color:var(--wait);background:var(--wait-bg)}.t-done{color:var(--done);background:var(--done-bg)}
+.date{color:var(--mute)}
+.req{grid-column:2;margin:2px 0;font-size:15px}
+.fd{grid-column:2;font-size:13.5px;color:var(--ink);background:var(--soft);border-radius:8px;padding:5px 8px}
+.fd::before{content:"מצאתי: ";font-weight:700}
+.src{grid-column:2;font-size:12px;color:var(--mute)}
+.nt{grid-column:2;font-size:12.5px;color:var(--part)}
+.b.old{color:var(--mute);background:var(--soft)}
+details.old{grid-column:2;font-size:12.5px;color:var(--mute)}details.old summary{cursor:pointer}
+.rv{grid-column:2;font-size:12px;color:var(--mute);font-style:italic}
+.empty{color:var(--mute);padding:30px 0;text-align:center}
+footer{margin-top:30px;color:var(--mute);font-size:12px}
+@media (max-width:560px){.wrap{padding:14px 16px 50px}h1{font-size:20px}.card b{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>הרשימה המרוכזת — מה נשאר</h1>
+  <div class="sub" id="meta"></div>
+  <div class="cards" id="cards"></div>
+  <div class="bar" role="search">
+    <div class="chips" id="fState" aria-label="מצב בקוד"></div>
+    <div class="chips" id="fToday" aria-label="היום"></div>
+    <select id="fTopic" aria-label="נושא"><option value="">כל הנושאים</option></select>
+    <select id="fAgent" aria-label="סוכן"><option value="">כל הסוכנים</option></select>
+    <input type="search" id="fq" placeholder="חיפוש בבקשה, במקור או במצאתי">
+    <label class="sub"><input type="checkbox" id="fHide"> להסתיר מסומנים</label>
+    <span class="count" id="cnt"></span>
+  </div>
+  <div id="list"></div>
+  <footer id="foot"></footer>
+</div>
+<script>
+const D=/*@@DATA@@*/null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KEY='tc_ledger_checks_v1';
+let checks={};try{checks=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){checks={}}
+const saveChecks=()=>{try{localStorage.setItem(KEY,JSON.stringify(checks))}catch(e){}};
+const STATES=['נעשה','חלקי','לא','לא נבדק'];
+const TODAY=['נכנס ל-S7F299','מוכן למיזוג — הגל הבא','בעבודה היום','בעבודה היום (גל מאוחר)','לא מכוסה — גל 2','ממתין לבעלים','נעשה'];
+const tCls=t=>t.startsWith('בעבודה')||t.startsWith('מוכן')?'t-today':t.startsWith('לא מכוסה')?'t-g2':t==='ממתין לבעלים'?'t-wait':'t-done';
+const F={state:new Set(),today:new Set(),topic:'',agent:'',q:'',hide:false};
+$('meta').textContent=D.version+' · נבנה '+D.built+' (שעון ישראל) · הבסיס: '+D.base+(D.reviewed?' · '+D.reviewed:'');
+const S=D.summary;
+$('cards').innerHTML=[
+ [S.total,'פריטים'],[S.open_total,'פתוחים (לא נעשה)'],[S.state['לא'],'לא קיים בקוד'],[S.state['חלקי'],'חלקי'],
+ [S.today['נכנס ל-S7F299']||0,'נכנס ל-S7F299'],[S.today['מוכן למיזוג — הגל הבא']||0,'מוכן למיזוג'],[S.today['בעבודה היום']+S.today['בעבודה היום (גל מאוחר)'],'בעבודה היום'],[S.open_uncovered,'פתוחים בלי סוכן — גל 2'],[S.today['ממתין לבעלים'],'ממתין לבעלים'],[S.state['נעשה'],'נעשה']
+].map(([n,t])=>'<div class="card"><b>'+n+'</b><span>'+t+'</span></div>').join('');
+function chips(el,vals,set){el.innerHTML=vals.map(v=>'<button class="chip" aria-pressed="false" data-v="'+esc(v)+'">'+esc(v)+'</button>').join('');
+ el.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const v=b.dataset.v;if(set.has(v))set.delete(v);else set.add(v);b.setAttribute('aria-pressed',set.has(v));render()}}
+chips($('fState'),STATES,F.state);chips($('fToday'),TODAY,F.today);
+const topics=[...new Set(D.items.map(x=>x.topic))];topics.forEach(t=>$('fTopic').insertAdjacentHTML('beforeend','<option>'+esc(t)+'</option>'));
+const ags=[...new Set(D.items.map(x=>x.agent))].sort((a,b)=>a.localeCompare(b,'he'));ags.forEach(t=>$('fAgent').insertAdjacentHTML('beforeend','<option>'+esc(t)+'</option>'));
+$('fTopic').onchange=e=>{F.topic=e.target.value;render()};$('fAgent').onchange=e=>{F.agent=e.target.value;render()};
+$('fq').oninput=e=>{F.q=e.target.value.trim();render()};$('fHide').onchange=e=>{F.hide=e.target.checked;render()};
+function ok(x){if(F.state.size&&!F.state.has(x.state))return false;if(F.today.size&&!F.today.has(x.today))return false;
+ if(F.topic&&x.topic!==F.topic)return false;if(F.agent&&x.agent!==F.agent)return false;if(F.hide&&checks[x.id])return false;
+ if(F.q){const h=(x.id+' '+x.req+' '+x.found+' '+(x.found298||'')+' '+x.src.join(' ')+' '+x.agent+' '+x.note+' '+(x.rev2||'')).toLowerCase();if(!h.includes(F.q.toLowerCase()))return false}return true}
+function render(){const L=D.items.filter(ok);$('cnt').textContent=L.length+' / '+D.items.length;
+ if(!L.length){$('list').innerHTML='<div class="empty">אין פריטים לסינון הזה</div>';return}
+ let h='';for(const t of topics){const g=L.filter(x=>x.topic===t);if(!g.length)continue;
+  const open=g.filter(x=>x.state!=='נעשה').length;
+  h+='<h2>'+esc(t)+' <small>'+g.length+' · פתוחים '+open+'</small></h2>';
+  for(const x of g){h+='<div class="it'+(checks[x.id]?' chk':'')+'"><input type="checkbox" data-id="'+x.id+'" aria-label="סימון '+x.id+'"'+(checks[x.id]?' checked':'')+'>'+
+   '<div class="hd"><span class="id">'+x.id+'</span><span class="b s-'+esc(x.state)+'">'+esc(x.state)+'</span><span class="b '+tCls(x.today)+'">'+esc(x.today)+'</span>'+
+   (x.agent!=='—'&&!x.agent.startsWith('לא מכוסה')&&x.agent!=='ממתין לבעלים'?'<span class="b t-today">'+esc(x.agent)+'</span>':'')+(x.state298&&x.state298!==x.state?'<span class="b old">ב-S7F298: '+esc(x.state298)+'</span>':'')+'<span class="date">'+esc(x.date)+'</span></div>'+
+   '<div class="req">'+esc(x.req)+'</div>'+(x.found&&x.found!=='—'?'<div class="fd">'+esc(x.found)+'</div>':'')+
+   (x.note?'<div class="nt">'+esc(x.note)+'</div>':'')+(x.found298&&x.found298!=='—'&&x.found298!==x.found?'<details class="old"><summary>מה נמצא ב-S7F298</summary>'+esc(x.found298)+'</details>':'')+(x.rev2?'<div class="rv">'+esc(x.rev2)+'</div>':'')+'<div class="src">'+esc(x.src.join(' · '))+'</div></div>'}}
+ $('list').innerHTML=h}
+$('list').onchange=e=>{const c=e.target;if(!c.dataset||!c.dataset.id)return;if(c.checked)checks[c.dataset.id]=1;else delete checks[c.dataset.id];saveChecks();render()};
+$('foot').innerHTML='המקורות: '+D.sources.map(esc).join(' · ')+'<br>מצב: '+Object.entries(D.states_legend).map(([k,v])=>esc(k)+' — '+esc(v)).join(' · ')+'<br>הסימונים נשמרים רק בדפדפן הזה.';
+render();
+</script>
+</body>
+</html>

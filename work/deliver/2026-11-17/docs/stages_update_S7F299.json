@@ -1,0 +1,915 @@
+{
+ "meta": {
+  "base": "S7F299 (int299 930919a)",
+  "from": "v7.01 + git diff S7F298 S7F299 -- parts + merge/handback.txt",
+  "at": "17.11.2026 07:06",
+  "total": 1329.92,
+  "done": 953.68,
+  "pct": 71.71,
+  "old_total": 1151.92,
+  "old_done": 901.58,
+  "old_pct": 78.27,
+  "done_with_branches": 956.95,
+  "pct_with_branches": 71.96,
+  "left": 376.24
+ },
+ "moved": [
+  {
+   "id": "W27",
+   "from": 0,
+   "to": 45.0
+  },
+  {
+   "id": "W28",
+   "from": 0,
+   "to": 75.0
+  },
+  {
+   "id": "W29",
+   "from": 0,
+   "to": 60.0
+  },
+  {
+   "id": "W31",
+   "from": 0,
+   "to": 80.0
+  },
+  {
+   "id": "W34",
+   "from": 0,
+   "to": 28.0
+  },
+  {
+   "id": "S18",
+   "from": 0,
+   "to": 15.0
+  },
+  {
+   "id": "S15",
+   "from": 82.0,
+   "to": 84.0
+  },
+  {
+   "id": "S16",
+   "from": 75.0,
+   "to": 78.0
+  },
+  {
+   "id": "W16",
+   "from": 88.0,
+   "to": 89.0
+  },
+  {
+   "id": "W9",
+   "from": 63.0,
+   "to": 65.0
+  }
+ ],
+ "stages": [
+  {
+   "id": "S1",
+   "hours": 7.86,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "S2",
+   "hours": 7.86,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "S3",
+   "hours": 15.74,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "S4",
+   "hours": 15.74,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "S5",
+   "hours": 15.74,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": [
+    "תחנת כיבוי 2 ב-C4 קיבלה צי (074x2_c4fire.js, סיטיסוק) — הפער מהמעבר הקודם נסגר"
+   ]
+  },
+  {
+   "id": "S6",
+   "hours": 16.89,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": [
+    "התדלוק של מכוניות העיר עדיין כבוי (070:FUEL2 / 074w2_fuel2.js) — נספר ב-W11"
+   ]
+  },
+  {
+   "id": "S7",
+   "hours": 23.6,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "S8",
+   "hours": 33.78,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "S9a",
+   "hours": 5.79,
+   "progress": 95.0,
+   "progress_with_branches": 95.0,
+   "status": "active",
+   "evidence": [
+    "074p_linesE.js:ל״א",
+    "074t_S16_line4.js (קו 4 מהמסוף)",
+    "074zs_zone_stories.js:ZS-E3"
+   ],
+   "remaining": [
+    "חמשת המפרצים בלי מקום (D‑527 (2))",
+    "הרכבת עם 4 קרונות ברציף של E3 (D‑530 (1))"
+   ]
+  },
+  {
+   "id": "S9",
+   "hours": 18.18,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "S10",
+   "hours": 14.26,
+   "progress": 90.0,
+   "progress_with_branches": 90.0,
+   "status": "active",
+   "evidence": [
+    "021n_E6_s10b_data.js — ST-PORT m אורך 22",
+    "021c_C6D6_s10_base.js (המנוף הנייד — בלי צעד מעל קרון)",
+    "040_C6_E6_D4_p520a.js:RL_TRAINS"
+   ],
+   "remaining": [
+    "שירות המנופים לקרונות — טעינה ופריקה של רכבות המשא (GATE‑56)",
+    "רציף הנמל לרכבת הנוסעים — 22 מ׳ מול 74 (D‑566 (2))",
+    "מדידת זיכרון לפי אזור (R-89, ‏K‑239)"
+   ]
+  },
+  {
+   "id": "S11",
+   "hours": 12.06,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "S12",
+   "hours": 26.04,
+   "progress": 95.0,
+   "progress_with_branches": 95.0,
+   "status": "active",
+   "evidence": [
+    "019f_S12_data.js:S12D",
+    "023b_S12_build.js",
+    "038h_S12_live.js"
+   ],
+   "remaining": [
+    "בדיקה חוסמת D‑500 (כל מטר מנוצל) — לא נבדק"
+   ]
+  },
+  {
+   "id": "S13",
+   "hours": 39.06,
+   "progress": 92.0,
+   "progress_with_branches": 92.0,
+   "status": "active",
+   "evidence": [
+    "074l7_ise0_routes.js",
+    "ferry2:4223475 (ענף, לא מוכן)"
+   ],
+   "remaining": [
+    "האי מתוכנן מחדש מאפס — S17 (D‑694); הפקקים של האי הנוכחי לא מתוקנים (D‑694)"
+   ]
+  },
+  {
+   "id": "S14",
+   "hours": 25.0,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": [
+    "המעבורת 450 × 130 עם רכבים נבנתה (074zf_ferry.js, מעבורת) — הפער מהמעבר הקודם נסגר"
+   ]
+  },
+  {
+   "id": "S15",
+   "hours": 46.0,
+   "progress": 84.0,
+   "progress_with_branches": 84.0,
+   "status": "active",
+   "evidence": [
+    "074k2_S15p_dims.js:S15P_DIM",
+    "074r2_S15p_stairs.js:S15P",
+    "074r2_S15bag_belt.js:S15BAG",
+    "074zb_s15_stopbar.js:S15SB",
+    "074zn_gacolor.js:גאסולו״ר",
+    "s15pax:53605דף (ענף — s15pax_flow נכשל)",
+    "068_core.js:liveryFns",
+    "074x3_S15pax.js",
+    "051_F1_p190.js"
+   ],
+   "remaining": [
+    "23 היפוכים של 180° בדרכים",
+    "משמרת מנהל צוותי הקרקע — R26‑8",
+    "AB-R1 / SH-R2 — לעצור בטרמינל",
+    "חלון ל-AC-AM-01 ב-S15SIM",
+    "שתי סימולציות שדה רצות (045:aptOpsTick הישנה)",
+    "החישוב מחדש — S18"
+   ]
+  },
+  {
+   "id": "S16",
+   "hours": 32.0,
+   "progress": 78.0,
+   "progress_with_branches": 78.0,
+   "status": "active",
+   "evidence": [
+    "074s_S16_land.js:S16_BUILDINGS",
+    "074v_S16d_lots.js",
+    "074t_S16_line4.js",
+    "074w_S16c_island.js",
+    "074zp_pier_pickup.js"
+   ],
+   "remaining": [
+    "4 האוטובוסים החונים של F2 — אין מפרץ",
+    "מתקני רחבת האוטובוסים והמוניות",
+    "P‑WEST / P‑RENT בגודל העיר",
+    "מכוניות שנכנסות ב-AP3",
+    "המדרכה המקורה והמפרצים מול הדלתות D1–D5"
+   ]
+  },
+  {
+   "id": "W1",
+   "hours": 7,
+   "progress": 90.0,
+   "progress_with_branches": 90.0,
+   "status": "active",
+   "evidence": [
+    "—"
+   ],
+   "remaining": [
+    "K‑167, ‏K‑168, ‏K‑169, ‏K‑176 — ממתינים לקובץ של הבעלים"
+   ]
+  },
+  {
+   "id": "W2",
+   "hours": 28,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.1",
+   "hours": 8,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.2",
+   "hours": 11,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.2א",
+   "hours": 3,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.3",
+   "hours": 17,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.4",
+   "hours": 5,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.5",
+   "hours": 4,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.6",
+   "hours": 6,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.7",
+   "hours": 6,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W2.8",
+   "hours": 8,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W3",
+   "hours": 2,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W4",
+   "hours": 11,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W5",
+   "hours": 2,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W6",
+   "hours": 4,
+   "progress": 100.0,
+   "progress_with_branches": 100.0,
+   "status": "done",
+   "evidence": [],
+   "remaining": []
+  },
+  {
+   "id": "W7",
+   "hours": 265.5,
+   "progress": 71.43,
+   "progress_with_branches": 71.43,
+   "status": "active",
+   "evidence": [
+    "065_core_p378.js (P34)",
+    "038h_S12_live.js:מכונה ציור",
+    "038g_A6B6_s11_live.js:מכונה ציור"
+   ],
+   "remaining": [
+    "האוטובוס והסמי בעיצוב מלא",
+    "המכולות 144 → 122 פיקס׳",
+    "המכונות של הכפר, ההר והחוף — עדיין מלמעלה (038h / 038g:מכונה ציור)",
+    "בדיקת המקום fitcheck2 — לא נבדק"
+   ]
+  },
+  {
+   "id": "W8",
+   "hours": 41.32,
+   "progress": 91.0,
+   "progress_with_branches": 91.0,
+   "status": "active",
+   "evidence": [
+    "074zg_veg_data.js",
+    "074zh_veg.js"
+   ],
+   "remaining": [
+    "העצים — 2,437 מול 3,000–4,000 (לאישור: אדניות ברחבות)",
+    "ערכת רחוב אחת לכל העיר במגוון — חלקי",
+    "המבנים ב-3/4 לפי משפחה — לא נבדק"
+   ]
+  },
+  {
+   "id": "W9",
+   "hours": 36.5,
+   "progress": 65.0,
+   "progress_with_branches": 72.0,
+   "status": "active",
+   "evidence": [
+    "028_C2_D2_D3_p332.js:MAP_SHOWN_IDS / ציור מפה אזורים",
+    "074zn_map_missions.js:ממא״ס",
+    "ui7a:1579c35 (ענף — הקלפים 5 / 7)",
+    "074n3_posters.js (האייקון, blob)",
+    "074zp_mapfix.js"
+   ],
+   "remaining": [
+    "קלפי הישג ושיא דיג (R26‑2) — ui7a 1579c35, ‏5 / 7 בדיקות",
+    "לחיצה על המיני־מפה פותחת את M",
+    "אפליקציות כפולות בטלפון (מצב / כרטיס) — 19 אפליקציות",
+    "F — 153 כותרות \"עסקי תעשייה קלה\", 73 מסכים בלי כפתור (הביקורת, חלק 2)",
+    "R26‑5 — 4 מצבים לכל פריט בחנות — לא נבדק"
+   ]
+  },
+  {
+   "id": "W10",
+   "hours": 35.5,
+   "progress": 57.0,
+   "progress_with_branches": 59.0,
+   "status": "active",
+   "evidence": [
+    "074l5_line5_run.js:L5R (כבוי)",
+    "074l7_ise0_routes.js:L5C7",
+    "074g_linesB_term.js:שהייה לב · 074p_linesE.js (16) / (21) — e3fix",
+    "תנועה:e6a1004 (ענף, כבוי)"
+   ],
+   "remaining": [
+    "קו 5 דולק — יוצא עם האי החדש (D‑694, ‏S17)",
+    "האוטובוסים מול המכוניות — \"פושים ועוצרים סתם\" (אוטובוסים בסבב 17.11)",
+    "מנגנוני שחרור התקיעות — מה כפול ומה לא עובד",
+    "הפרסומות בצד האוטובוס — פי 4, חצי שקוף (פוסטרס בסבב 17.11)",
+    "התנועה לפי שעה ורובע — תנועה e6a1004 (כבוי)",
+    "לילות הקווים לא נבדקו על S7F297 / S7F298",
+    "49 אוטובוסים לפי חלק ה — לא נבדק"
+   ]
+  },
+  {
+   "id": "W11",
+   "hours": 26.0,
+   "progress": 60.0,
+   "progress_with_branches": 60.0,
+   "status": "active",
+   "evidence": [
+    "074w2_fuel2.js:לג״ף / F4.def=אמת"
+   ],
+   "remaining": [
+    "הדלק לשדה (S15)",
+    "הזרמים של D6, ‏C1, ‏E4 / E6",
+    "המנופים והקרונות בנמל (GATE‑82)",
+    "הנפט מהאונייה בצינור לבית הזיקוק — שרשרת כמות (סיליף בסבב 17.11)",
+    "הפריקה של מוביל הרכבים ב-D3 — הרוורס מערבה, צפונה, ואז דרומה (מוביל בסבב 17.11)",
+    "משאיות בלילה — 2/5 לא עברו (המקור לא הוכח)"
+   ]
+  },
+  {
+   "id": "W12",
+   "hours": 3,
+   "progress": 0.0,
+   "progress_with_branches": 0.0,
+   "status": "planned",
+   "evidence": [
+    "—"
+   ],
+   "remaining": [
+    "GATE‑78 — 0 דרישות יתומות, ריצה ארוכה"
+   ]
+  },
+  {
+   "id": "W13",
+   "hours": 12,
+   "progress": 50.0,
+   "progress_with_branches": 50.0,
+   "status": "active",
+   "evidence": [
+    "074y_perf.js"
+   ],
+   "remaining": [
+    "GATE‑83P, הפתיחה, PERF_BUDGET — לא נבדק"
+   ]
+  },
+  {
+   "id": "W14",
+   "hours": 2.0,
+   "progress": 85.0,
+   "progress_with_branches": 85.0,
+   "status": "active",
+   "evidence": [
+    "040a_rail_pax.js:רל״ף",
+    "040b_S16c_island_train.js",
+    "021n_E6_s10b_data.js — ST-PORT m אורך 22"
+   ],
+   "remaining": [
+    "רציף הנמל 74 מ׳ (D‑566 (2))",
+    "המסוט על רציף תחנת החוף (D‑566 (3))"
+   ]
+  },
+  {
+   "id": "W15",
+   "hours": 14,
+   "progress": 80.0,
+   "progress_with_branches": 80.0,
+   "status": "active",
+   "evidence": [
+    "074x_citysvc.js",
+    "074x2_c4fire.js",
+    "025_A4_B4_B3_p573.js:A4_FLEET_CFG / updateA4Fleet"
+   ],
+   "remaining": [
+    "המסוק הרפואי — לאישור (המנחת של בית החולים תפוס)",
+    "תדלוק ותחזוקה של מסוקי החירום בשדה",
+    "ניידת מהחצר של A5 כשאין ניידת בסיור",
+    "רכב השחקן שעומד בנתיב המיון",
+    "ידוע: 3 כבאיות בתוך התחנה ב-C4 (וינו)"
+   ]
+  },
+  {
+   "id": "W16",
+   "hours": 27.5,
+   "progress": 89.0,
+   "progress_with_branches": 89.0,
+   "status": "active",
+   "evidence": [
+    "074m6_brands6_data.js",
+    "074n_brands_game.js:שלט טקבר / TCBR_BY_PLACE",
+    "074n3_posters.js:טספ״ו",
+    "074n3s_posters_set11.js:TC_EVENT_POSTERS"
+   ],
+   "remaining": [
+    "המוסך בעיר — בנייה מחדש (D‑380, מאושר ב-D‑695; מוסך בסבב 17.11) — מסך F מסתובב ותצוגה מקדימה: W31",
+    "הזהות על משאית הקופסה ועל השקיות (R25‑N‑13)",
+    "סט 12 — זהות ושילוט לכל העיר (463 רשומות, 184 משטחים; לא במשחק — שלטים בסבב 17.11)",
+    "בסיס האמבולנסים, בית הזיקוק, הכיבוי A4, המגדל — בלי שלט (D‑631)",
+    "להאזין לפס הקול — הבעלים"
+   ]
+  },
+  {
+   "id": "W17",
+   "hours": 98.0,
+   "progress": 55.0,
+   "progress_with_branches": 55.0,
+   "status": "active",
+   "evidence": [
+    "063a_cars70_prop.js:r70mode0 = stage2",
+    "012b_cars14_models.js · 063b_cars14_prop.js:X14 · 074y3_cars14_city.js:C14C",
+    "012c_sp05_asset.js · 063c_sp05.js:X5 · 074y4_sp05_city.js:SP5C",
+    "032_D3_C4_C3_p416.js (kit34)"
+   ],
+   "remaining": [
+    "שלב המידות (D‑389): אורך לכל דגם — מעטפת, חניות, תנועה ושמירות; רוחב הגררים",
+    "כ-24 סוגים חדשים של D‑392: עירייה ובנייה, משאיות קופסה, מיניבוס, הסעת תלמידים, טנדר משטרה ועוד",
+    "הלימוזינה נוסעת בעיר (סוג במעטפת + מסלול)",
+    "השחקן קונה ונוהג באופנוע / ג׳יפ (D‑340); לעלות על כל כלי — 15 כלים של w17 לא רשומים (הביקורת, חלק 2)",
+    "SP-05 ושאר מכוניות העל בקטלוג של הסוכנות (היום 6 דגמים) ומכירה",
+    "מכונית־על נוספת, שונה מאוד מ-SP-05 (הבקשות 12.11 — w17 בסבב 17.11)"
+   ]
+  },
+  {
+   "id": "W18",
+   "hours": 8,
+   "progress": 85.0,
+   "progress_with_branches": 85.0,
+   "status": "active",
+   "evidence": [
+    "074v_econ.js:ECON_PRO / דרגה כלכלה",
+    "074v_econ2_tow.js:ECON_TOW",
+    "040_C6_E6_D4_p520a.js:פעילויות / ACT_JOB_LIST / ACT_CERTS",
+    "039_B2_D4_B1_p462.js:LICENSE_TRIALS"
+   ],
+   "remaining": [
+    "גרר אמיתי בכביש — אחרי ההחלטה על הבית (E4 T2), עם הרכבים החדשים",
+    "מקצועות רכבת וטיסה — כשיהיו עבודות",
+    "GATE‑95: \"0 יתום\", \"העברות פיזיות\" — לא נבדק"
+   ]
+  },
+  {
+   "id": "W19",
+   "hours": 6,
+   "progress": 90.0,
+   "progress_with_branches": 90.0,
+   "status": "active",
+   "evidence": [
+    "074d_world_daynight.js",
+    "070_D4_p330.js:שעון המשחק",
+    "074zd_ui7a.js"
+   ],
+   "remaining": [
+    "R25‑S‑6 — לא נבדק"
+   ]
+  },
+  {
+   "id": "W20",
+   "hours": 17,
+   "progress": 90.0,
+   "progress_with_branches": 90.0,
+   "status": "active",
+   "evidence": [
+    "074c_weather01.js:מזג אוויר",
+    "074e_world_weather.js:וק״ו / וקס ציור מעל / פודלס וקס / שמשייה וקס",
+    "074zd_ui7a.js:UI7_SEA",
+    "074s_sfx_engine.js:טסספ״ק (מרבי=24)",
+    "074za_tcaudio.js:טסאידא״ו",
+    "074zz_animals34.js:AN34"
+   ],
+   "remaining": [
+    "ערפל, שלג, סערה — אין (וגם לא בתוכנית D‑573; הסערה נדרשת לפרק 5 בסיפור)",
+    "טבלת עוגני שמע לכל אזור — לא נמצאה",
+    "משקלי מזג אוויר לסתיו ולאביב",
+    "האזנה של הבעלים"
+   ]
+  },
+  {
+   "id": "W21",
+   "hours": 4,
+   "progress": 0.0,
+   "progress_with_branches": 0.0,
+   "status": "planned",
+   "evidence": [
+    "—"
+   ],
+   "remaining": [
+    "GATE‑95P"
+   ]
+  },
+  {
+   "id": "W22",
+   "hours": 13.0,
+   "progress": 57.0,
+   "progress_with_branches": 57.0,
+   "status": "active",
+   "evidence": [
+    "074zt_story_hours.js:ZSFIX_HOURS",
+    "038a_E4E5_s9_live.js:H שעון"
+   ],
+   "remaining": [
+    "פרק 5 \"העיר צריכה אותך\" — טיוטה (תלוי בסערה, במסוק הרפואי)",
+    "פרק 6 \"העיר שלי\" והסיום \"פסטיבל העיר\"",
+    "חדשות העיר — שלב ג",
+    "הסצנות של הסיפור — W29",
+    "הקולות לחברים ולמשימות (D‑692; ויסינט בסבב 17.11)"
+   ]
+  },
+  {
+   "id": "W23",
+   "hours": 35,
+   "progress": 0.0,
+   "progress_with_branches": 0.0,
+   "status": "planned",
+   "evidence": [
+    "—"
+   ],
+   "remaining": [
+    "GATE‑105 – GATE‑108"
+   ]
+  },
+  {
+   "id": "W24",
+   "hours": 0,
+   "progress": 0.0,
+   "progress_with_branches": 0.0,
+   "status": "planned",
+   "evidence": [
+    "—"
+   ],
+   "remaining": []
+  },
+  {
+   "id": "W25",
+   "hours": 11.0,
+   "progress": 83.0,
+   "progress_with_branches": 83.0,
+   "status": "active",
+   "evidence": [
+    "074zt_story_hours.js"
+   ],
+   "remaining": [
+    "D‑500 — רשימת השטחים בלי ייעוד",
+    "K‑255 — מה שבמפה ולא במשחק",
+    "E3-PB 15 → 20 חניות; ‏D4S / D4B",
+    "העצים בים — B8 / C8 / D8 (סיטריס בסבב 17.11) — W34"
+   ]
+  },
+  {
+   "id": "W26",
+   "hours": 19.0,
+   "progress": 90.0,
+   "progress_with_branches": 90.0,
+   "status": "active",
+   "evidence": [
+    "074i_city_live.js:ס״ל / לוח זמנים קל",
+    "074j_city2.js"
+   ],
+   "remaining": [
+    "הנוסע יורד מהרכב / מהאוטובוס ונכנס בדלת (צריך את המדרכה המקורה של S16)"
+   ]
+  },
+  {
+   "id": "S17",
+   "hours": 32.0,
+   "progress": 0.0,
+   "progress_with_branches": 0.0,
+   "status": "planned",
+   "evidence": [],
+   "remaining": [
+    "הציור והחישוב של התחנות (כלל 13) → בקר התוכניות (כלל 20) — אי בסבב 17.11",
+    "הבנייה",
+    "קו 5 דולק על האי החדש",
+    "בדיקת נעילה: גשר, כביש, מסילה ואוניות"
+   ]
+  },
+  {
+   "id": "S18",
+   "hours": 24.0,
+   "progress": 15.0,
+   "progress_with_branches": 15.0,
+   "status": "active",
+   "evidence": [
+    "074zq_fieldcalc.js:__TC_FC",
+    "074zo_fieldfix.js",
+    "019m_S15_draw.js"
+   ],
+   "remaining": [
+    "הלוח החדש לפי החישוב — יותר טיסות מהישן (הישן 44–45 תנועות בחצי שעה; היום 30)",
+    "עמדות הכבודה, הצי, ההרחבה דרומה, האמפיבי — הציור → הבקר → הבנייה"
+   ]
+  },
+  {
+   "id": "W27",
+   "hours": 24.0,
+   "progress": 45.0,
+   "progress_with_branches": 45.0,
+   "status": "active",
+   "evidence": [
+    "074zu_mission_board.js",
+    "074ze_story_engine.js (open / next / focus / MAXOPEN)",
+    "038a_E4E5_s9_live.js:S9STORY.start",
+    "074zp_portraits.js"
+   ],
+   "remaining": [
+    "פעולות משחק אמיתיות — הרמה / נשיאה / מסירה / תיקון (156 / 228 שלבים) — actions, לא מוכן למיזוג ב-06:47",
+    "יום משחק מלא עם הלוח (mb_day) — לא נבדק על המועמד",
+    "הכרטיס של הלוח מעל סצנה שמתנגנת — להסתיר כש-TCCUT.playing() (merge)"
+   ]
+  },
+  {
+   "id": "W28",
+   "hours": 10.0,
+   "progress": 75.0,
+   "progress_with_branches": 75.0,
+   "status": "active",
+   "evidence": [
+    "074zu_newgame_tut.js",
+    "055_G2_F2_p296.js",
+    "074zu_locks_phys.js",
+    "074zp_pier_pickup.js"
+   ],
+   "remaining": [
+    "ng_play מקצה לקצה על הבנייה המאוחדת — לא נבדק",
+    "F מתוך רכב — 13 מתוך 23 מקומות",
+    "pier ‏6bab6c9 — \"בבדיקה\" (הגל הבא)"
+   ]
+  },
+  {
+   "id": "W29",
+   "hours": 22.0,
+   "progress": 60.0,
+   "progress_with_branches": 60.0,
+   "status": "active",
+   "evidence": [
+    "074zu_cutscenes.js:TCCUT",
+    "009c_loading.js:TCLD",
+    "074zf9_loading_hooks.js"
+   ],
+   "remaining": [
+    "סרטון הפתיחה במנוע — opening, לא מוכן למיזוג ב-06:47",
+    "הפס של מסך הפתיחה יורד באפייה השנייה של mapfix (B.rebake מאפס את MAPBASE.next)",
+    "loading ‏db999f9 — הגל הבא"
+   ]
+  },
+  {
+   "id": "W30",
+   "hours": 8.0,
+   "progress": 0.0,
+   "progress_with_branches": 0.0,
+   "status": "planned",
+   "evidence": [],
+   "remaining": [
+    "אירועים — בסבב 17.11"
+   ]
+  },
+  {
+   "id": "W31",
+   "hours": 6.0,
+   "progress": 80.0,
+   "progress_with_branches": 80.0,
+   "status": "active",
+   "evidence": [
+    "074zz2_garage_studio.js"
+   ],
+   "remaining": [
+    "אותו מסך בסוכנות — לא נבדק",
+    "המוסך בעיר עצמו (הבנייה מחדש) — garage ‏0ebac85, אחרי המיזוג (W16)"
+   ]
+  },
+  {
+   "id": "W32",
+   "hours": 10.0,
+   "progress": 0.0,
+   "progress_with_branches": 0.0,
+   "status": "planned",
+   "evidence": [],
+   "remaining": [
+    "תריד, ‏גפקסליב — בסבב 17.11",
+    "ההחלטה של הבעלים אם ממשיכים"
+   ]
+  },
+  {
+   "id": "W33",
+   "hours": 2.0,
+   "progress": 50.0,
+   "progress_with_branches": 50.0,
+   "status": "active",
+   "evidence": [],
+   "remaining": [
+    "plan.html — v7.01 מוכן (מסמכים, ‏17.11); הדחיפה — המתאם",
+    "בכל מסירה מ-S7F299 — המשחק והתוכנית יחד"
+   ]
+  },
+  {
+   "id": "W34",
+   "hours": 40.0,
+   "progress": 28.0,
+   "progress_with_branches": 28.0,
+   "status": "active",
+   "evidence": [
+    "074_F9.js · 074zz9_f9_audit.js",
+    "074f_league4.js · 024_A3_A4_p549.js · 074v_places.js",
+    "074zh2_seatrees.js",
+    "028_C2_D2_D3_p332.js · 074zp_mapfix.js",
+    "074n3_posters.js (האייקון)"
+   ],
+   "remaining": [
+    "3 עצים בשולי מגרש B4 (tree_sweep על המועמד) — seatrees / mapfix",
+    "האייקון — toBlob בלי ניסיון חוזר תחת עומס (posters)",
+    "האוניות, הגוררות, הנפט, ferry2 (sealife)",
+    "החקלאות (farm)",
+    "קנס רק כשנתפסים + רישיון טיס (police, ‏D‑691)",
+    "ביצועים וזיכרון בזומים (perf)",
+    "סט 12 והפרסומות פי 4 (signs, ‏buses)",
+    "הרכבל — 8 קרונות; פנים הבית; השינה בבית; הצגות והפסקה; צפייה במשחק באצטדיון — עוד לא שובצו"
+   ]
+  }
+ ]
+}

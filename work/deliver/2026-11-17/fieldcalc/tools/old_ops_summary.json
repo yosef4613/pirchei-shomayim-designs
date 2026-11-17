@@ -1,0 +1,906 @@
+{
+ "seeds": [
+  {
+   "seed": 777,
+   "land": 24,
+   "to": 21,
+   "mov": 45,
+   "heliLand": 35,
+   "heliDep": 38,
+   "mixL": {
+    "AC-LT-01": 5,
+    "AC-TB-01": 2,
+    "AC-PR-01": 3,
+    "AC-NB-01": 5,
+    "AC-CG-01": 2,
+    "AC-TP-01": 2,
+    "AC-MW-01": 2,
+    "AC-CN-01": 2,
+    "AC-BJ-01": 1
+   },
+   "mixT": {
+    "AC-PR-01": 3,
+    "AC-BJ-01": 1,
+    "AC-RJ-01": 2,
+    "AC-NB-01": 4,
+    "AC-LT-01": 5,
+    "AC-TB-01": 2,
+    "AC-CG-01": 1,
+    "AC-TP-01": 1,
+    "AC-MW-01": 1,
+    "AC-CN-01": 1
+   },
+   "stands": {
+    "GA8": 4,
+    "C2": 4,
+    "GA7": 4,
+    "P6": 3,
+    "GA1": 3,
+    "O2": 3,
+    "C1": 3,
+    "P5": 4,
+    "P1": 4,
+    "GA3": 4,
+    "P4": 3,
+    "GA2": 3,
+    "P2": 3
+   },
+   "nStands": 13,
+   "turn_med": 545,
+   "turnBy": {
+    "AC-TB-01": [
+     357,
+     384,
+     411,
+     2
+    ],
+    "AC-NB-01": [
+     503,
+     562,
+     788,
+     7
+    ],
+    "AC-PR-01": [
+     433,
+     510,
+     588,
+     2
+    ],
+    "AC-LT-01": [
+     572,
+     574,
+     575,
+     2
+    ],
+    "AC-CG-01": [
+     778,
+     874,
+     969,
+     2
+    ],
+    "AC-TP-01": [
+     421,
+     450,
+     788,
+     3
+    ],
+    "AC-MW-01": [
+     689,
+     711,
+     733,
+     2
+    ],
+    "AC-CN-01": [
+     421,
+     450,
+     479,
+     2
+    ],
+    "AC-BJ-01": [
+     545,
+     545,
+     545,
+     2
+    ],
+    "AC-AM-01": [
+     457,
+     457,
+     457,
+     1
+    ]
+   },
+   "rotA": [
+    7.3,
+    14.5,
+    17.4
+   ],
+   "rotD": [
+    9.7,
+    10.4,
+    23.2
+   ],
+   "rollD": 3.4,
+   "taxiIn": 31,
+   "taxiOut": 68,
+   "holdW": 3.0,
+   "gapMin": 10.2,
+   "gapMed": 29.5,
+   "gapMax": 189.4,
+   "stats": {
+    "planned": 89,
+    "failed": 314,
+    "recovered": 311,
+    "queued": 237,
+    "maxQueue": 356.75
+   },
+   "why": {
+    "no-baggage-vehicle": 14,
+    "stand-blocked-in-dwell": 156,
+    "no-nb-bus": 7,
+    "no-cargo-train": 1,
+    "no-arrival-slot": 21,
+    "no-gpu-vehicle": 28,
+    "no-departure-chain": 6,
+    "no-fuel-vehicle": 52,
+    "no-water-vehicle": 6,
+    "no-lavatory-vehicle": 8,
+    "no-cleaning-vehicle": 4,
+    "no-catering-vehicle": 11
+   },
+   "fleet": {
+    "FT": {
+     "n": 5,
+     "used": 5,
+     "tasks": 18,
+     "busy": 2346
+    },
+    "SH": {
+     "n": 2,
+     "used": 2,
+     "tasks": 3,
+     "busy": 250
+    },
+    "SVC": {
+     "n": 3,
+     "used": 3,
+     "tasks": 10,
+     "busy": 1945
+    },
+    "CT": {
+     "n": 2,
+     "used": 2,
+     "tasks": 5,
+     "busy": 1490
+    },
+    "WT": {
+     "n": 1,
+     "used": 1,
+     "tasks": 2,
+     "busy": 347
+    },
+    "PT": {
+     "n": 5,
+     "used": 5,
+     "tasks": 15,
+     "busy": 1452
+    },
+    "GP": {
+     "n": 3,
+     "used": 3,
+     "tasks": 5,
+     "busy": 1435
+    },
+    "LV": {
+     "n": 2,
+     "used": 2,
+     "tasks": 3,
+     "busy": 559
+    },
+    "BL": {
+     "n": 4,
+     "used": 4,
+     "tasks": 9,
+     "busy": 3576
+    },
+    "MX": {
+     "n": 2,
+     "used": 1,
+     "tasks": 4,
+     "busy": 403
+    },
+    "BT": {
+     "n": 8,
+     "used": 8,
+     "tasks": 35,
+     "busy": 4618
+    },
+    "AB": {
+     "n": 3,
+     "used": 2,
+     "tasks": 10,
+     "busy": 2189
+    },
+    "MS": {
+     "n": 4,
+     "used": 3,
+     "tasks": 3,
+     "busy": 1231
+    },
+    "ARFF": {
+     "n": 3,
+     "used": 0,
+     "tasks": 0,
+     "busy": 0
+    },
+    "EMS": {
+     "n": 2,
+     "used": 1,
+     "tasks": 1,
+     "busy": 134
+    },
+    "POL": {
+     "n": 2,
+     "used": 0,
+     "tasks": 0,
+     "busy": 0
+    },
+    "CU": {
+     "n": 2,
+     "used": 2,
+     "tasks": 15,
+     "busy": 1507
+    },
+    "PW": {
+     "n": 1,
+     "used": 1,
+     "tasks": 3,
+     "busy": 252
+    },
+    "GC": {
+     "n": 1,
+     "used": 1,
+     "tasks": 4,
+     "busy": 1415
+    },
+    "HL": {
+     "n": 1,
+     "used": 1,
+     "tasks": 2,
+     "busy": 957
+    },
+    "FW": {
+     "n": 1,
+     "used": 1,
+     "tasks": 4,
+     "busy": 239
+    },
+    "CS": {
+     "n": 1,
+     "used": 1,
+     "tasks": 3,
+     "busy": 694
+    }
+   },
+   "reached": 2201
+  },
+  {
+   "seed": 31337,
+   "land": 24,
+   "to": 20,
+   "mov": 44,
+   "heliLand": 35,
+   "heliDep": 36,
+   "mixL": {
+    "AC-BJ-01": 1,
+    "AC-PR-01": 4,
+    "AC-LT-01": 3,
+    "AC-CN-01": 2,
+    "AC-TP-01": 5,
+    "AC-NB-01": 2,
+    "AC-AM-01": 3,
+    "AC-QJ-01": 2,
+    "AC-CG-01": 1,
+    "AC-MW-01": 1
+   },
+   "mixT": {
+    "AC-NB-01": 2,
+    "AC-BJ-01": 2,
+    "AC-PR-01": 3,
+    "AC-RJ-01": 2,
+    "AC-LT-01": 2,
+    "AC-MW-01": 1,
+    "AC-CG-01": 1,
+    "AC-CN-01": 2,
+    "AC-TP-01": 3,
+    "AC-AM-01": 1,
+    "AC-QJ-01": 1
+   },
+   "stands": {
+    "O2": 3,
+    "GA8": 5,
+    "GA1": 5,
+    "GA7": 4,
+    "GA2": 3,
+    "C2": 3,
+    "P6": 3,
+    "P1": 4,
+    "P5": 3,
+    "GA3": 3,
+    "P3": 2,
+    "P2": 2,
+    "C3": 1,
+    "P4": 2,
+    "C1": 1
+   },
+   "nStands": 15,
+   "turn_med": 498,
+   "turnBy": {
+    "AC-BJ-01": [
+     416,
+     416,
+     416,
+     1
+    ],
+    "AC-LT-01": [
+     381,
+     381,
+     381,
+     1
+    ],
+    "AC-CN-01": [
+     221,
+     562,
+     571,
+     3
+    ],
+    "AC-TP-01": [
+     379,
+     556,
+     785,
+     5
+    ],
+    "AC-NB-01": [
+     467,
+     479,
+     533,
+     3
+    ],
+    "AC-AM-01": [
+     401,
+     467,
+     554,
+     3
+    ],
+    "AC-QJ-01": [
+     481,
+     490,
+     498,
+     2
+    ],
+    "AC-PR-01": [
+     411,
+     411,
+     411,
+     1
+    ],
+    "AC-CG-01": [
+     959,
+     1030,
+     1100,
+     2
+    ],
+    "AC-MW-01": [
+     679,
+     679,
+     679,
+     1
+    ],
+    "AC-RJ-01": [
+     556,
+     556,
+     556,
+     1
+    ]
+   },
+   "rotA": [
+    7.3,
+    14.5,
+    17.4
+   ],
+   "rotD": [
+    9.7,
+    10.3,
+    23.2
+   ],
+   "rollD": 3.3,
+   "taxiIn": 29,
+   "taxiOut": 71,
+   "holdW": 3.0,
+   "gapMin": 10.5,
+   "gapMed": 27.9,
+   "gapMax": 216.3,
+   "stats": {
+    "planned": 89,
+    "failed": 347,
+    "recovered": 345,
+    "queued": 238,
+    "maxQueue": 358.5
+   },
+   "why": {
+    "no-baggage-vehicle": 4,
+    "stand-blocked-in-dwell": 73,
+    "no-remote-ground-service": 40,
+    "no-gpu-vehicle": 25,
+    "no-arrival-slot": 48,
+    "no-departure-chain": 7,
+    "no-fuel-vehicle": 61,
+    "no-water-vehicle": 13,
+    "no-cleaning-vehicle": 9,
+    "no-catering-vehicle": 11,
+    "no-lavatory-vehicle": 3,
+    "no-nb-bus": 14,
+    "no-cargo-train": 38,
+    "no-baggage-vehicle-dep": 1
+   },
+   "fleet": {
+    "FT": {
+     "n": 5,
+     "used": 5,
+     "tasks": 19,
+     "busy": 2454
+    },
+    "SH": {
+     "n": 2,
+     "used": 2,
+     "tasks": 2,
+     "busy": 193
+    },
+    "SVC": {
+     "n": 3,
+     "used": 3,
+     "tasks": 9,
+     "busy": 1778
+    },
+    "CT": {
+     "n": 2,
+     "used": 1,
+     "tasks": 4,
+     "busy": 951
+    },
+    "WT": {
+     "n": 1,
+     "used": 1,
+     "tasks": 4,
+     "busy": 584
+    },
+    "PT": {
+     "n": 5,
+     "used": 5,
+     "tasks": 15,
+     "busy": 1482
+    },
+    "GP": {
+     "n": 3,
+     "used": 3,
+     "tasks": 4,
+     "busy": 980
+    },
+    "LV": {
+     "n": 2,
+     "used": 2,
+     "tasks": 4,
+     "busy": 708
+    },
+    "BL": {
+     "n": 4,
+     "used": 4,
+     "tasks": 6,
+     "busy": 2539
+    },
+    "MX": {
+     "n": 2,
+     "used": 1,
+     "tasks": 3,
+     "busy": 298
+    },
+    "BT": {
+     "n": 8,
+     "used": 8,
+     "tasks": 34,
+     "busy": 4271
+    },
+    "AB": {
+     "n": 3,
+     "used": 3,
+     "tasks": 9,
+     "busy": 1945
+    },
+    "MS": {
+     "n": 4,
+     "used": 3,
+     "tasks": 4,
+     "busy": 913
+    },
+    "ARFF": {
+     "n": 3,
+     "used": 0,
+     "tasks": 0,
+     "busy": 0
+    },
+    "EMS": {
+     "n": 2,
+     "used": 1,
+     "tasks": 1,
+     "busy": 134
+    },
+    "POL": {
+     "n": 2,
+     "used": 0,
+     "tasks": 0,
+     "busy": 0
+    },
+    "CU": {
+     "n": 2,
+     "used": 2,
+     "tasks": 21,
+     "busy": 2109
+    },
+    "PW": {
+     "n": 1,
+     "used": 1,
+     "tasks": 2,
+     "busy": 169
+    },
+    "GC": {
+     "n": 1,
+     "used": 1,
+     "tasks": 3,
+     "busy": 1789
+    },
+    "HL": {
+     "n": 1,
+     "used": 1,
+     "tasks": 2,
+     "busy": 1478
+    },
+    "FW": {
+     "n": 1,
+     "used": 1,
+     "tasks": 3,
+     "busy": 168
+    },
+    "CS": {
+     "n": 1,
+     "used": 1,
+     "tasks": 3,
+     "busy": 822
+    }
+   },
+   "reached": 2201
+  },
+  {
+   "seed": 4242,
+   "land": 22,
+   "to": 22,
+   "mov": 44,
+   "heliLand": 36,
+   "heliDep": 38,
+   "mixL": {
+    "AC-AM-01": 1,
+    "AC-PR-01": 2,
+    "AC-TP-01": 3,
+    "AC-NB-01": 3,
+    "AC-BJ-01": 3,
+    "AC-CN-01": 3,
+    "AC-RJ-01": 2,
+    "AC-LT-01": 2,
+    "AC-CG-01": 1,
+    "AC-MW-01": 1,
+    "AC-QJ-01": 1
+   },
+   "mixT": {
+    "AC-PR-01": 5,
+    "AC-AM-01": 1,
+    "AC-NB-01": 3,
+    "AC-BJ-01": 4,
+    "AC-RJ-01": 3,
+    "AC-MW-01": 1,
+    "AC-CG-01": 1,
+    "AC-TP-01": 2,
+    "AC-CN-01": 1,
+    "AC-LT-01": 1
+   },
+   "stands": {
+    "O2": 4,
+    "GA8": 4,
+    "C2": 3,
+    "P6": 3,
+    "GA2": 4,
+    "P2": 3,
+    "GA1": 4,
+    "GA7": 3,
+    "P5": 4,
+    "P3": 2,
+    "GA3": 4,
+    "C3": 1,
+    "P1": 2,
+    "P4": 2,
+    "C1": 1
+   },
+   "nStands": 15,
+   "turn_med": 465,
+   "turnBy": {
+    "AC-AM-01": [
+     295,
+     295,
+     295,
+     1
+    ],
+    "AC-TP-01": [
+     487,
+     686,
+     750,
+     3
+    ],
+    "AC-NB-01": [
+     390,
+     419,
+     614,
+     4
+    ],
+    "AC-BJ-01": [
+     350,
+     433,
+     487,
+     3
+    ],
+    "AC-CN-01": [
+     293,
+     321,
+     422,
+     4
+    ],
+    "AC-RJ-01": [
+     515,
+     572,
+     629,
+     2
+    ],
+    "AC-LT-01": [
+     444,
+     444,
+     444,
+     1
+    ],
+    "AC-CG-01": [
+     956,
+     962,
+     967,
+     2
+    ],
+    "AC-MW-01": [
+     659,
+     659,
+     659,
+     1
+    ],
+    "AC-QJ-01": [
+     676,
+     676,
+     676,
+     1
+    ]
+   },
+   "rotA": [
+    7.3,
+    13.5,
+    17.4
+   ],
+   "rotD": [
+    9.7,
+    10.1,
+    23.2
+   ],
+   "rollD": 3.1,
+   "taxiIn": 29,
+   "taxiOut": 69,
+   "holdW": 3.0,
+   "gapMin": 9.1,
+   "gapMed": 27.2,
+   "gapMax": 240.8,
+   "stats": {
+    "planned": 90,
+    "failed": 307,
+    "recovered": 305,
+    "queued": 202,
+    "maxQueue": 357.5
+   },
+   "why": {
+    "no-nb-bus-dep": 3,
+    "stand-blocked-in-dwell": 35,
+    "no-remote-ground-service": 18,
+    "no-gpu-vehicle": 35,
+    "no-departure-chain": 1,
+    "no-arrival-slot": 40,
+    "no-baggage-vehicle": 2,
+    "no-lavatory-vehicle": 5,
+    "no-water-vehicle": 9,
+    "no-fuel-vehicle": 92,
+    "no-cleaning-vehicle": 14,
+    "no-catering-vehicle": 14,
+    "no-belt-vehicle": 1,
+    "no-cargo-train": 34,
+    "no-nb-bus": 4
+   },
+   "fleet": {
+    "FT": {
+     "n": 5,
+     "used": 5,
+     "tasks": 21,
+     "busy": 2550
+    },
+    "SH": {
+     "n": 2,
+     "used": 2,
+     "tasks": 3,
+     "busy": 300
+    },
+    "SVC": {
+     "n": 3,
+     "used": 3,
+     "tasks": 10,
+     "busy": 1997
+    },
+    "CT": {
+     "n": 2,
+     "used": 2,
+     "tasks": 5,
+     "busy": 1333
+    },
+    "WT": {
+     "n": 1,
+     "used": 1,
+     "tasks": 2,
+     "busy": 313
+    },
+    "PT": {
+     "n": 5,
+     "used": 5,
+     "tasks": 17,
+     "busy": 1851
+    },
+    "GP": {
+     "n": 3,
+     "used": 3,
+     "tasks": 4,
+     "busy": 1236
+    },
+    "LV": {
+     "n": 2,
+     "used": 2,
+     "tasks": 7,
+     "busy": 1054
+    },
+    "BL": {
+     "n": 4,
+     "used": 4,
+     "tasks": 7,
+     "busy": 2939
+    },
+    "MX": {
+     "n": 2,
+     "used": 1,
+     "tasks": 1,
+     "busy": 100
+    },
+    "BT": {
+     "n": 8,
+     "used": 8,
+     "tasks": 34,
+     "busy": 4408
+    },
+    "AB": {
+     "n": 3,
+     "used": 2,
+     "tasks": 10,
+     "busy": 2342
+    },
+    "MS": {
+     "n": 4,
+     "used": 3,
+     "tasks": 6,
+     "busy": 1982
+    },
+    "ARFF": {
+     "n": 3,
+     "used": 0,
+     "tasks": 0,
+     "busy": 0
+    },
+    "EMS": {
+     "n": 2,
+     "used": 1,
+     "tasks": 1,
+     "busy": 145
+    },
+    "POL": {
+     "n": 2,
+     "used": 0,
+     "tasks": 0,
+     "busy": 0
+    },
+    "CU": {
+     "n": 2,
+     "used": 2,
+     "tasks": 21,
+     "busy": 2148
+    },
+    "PW": {
+     "n": 1,
+     "used": 1,
+     "tasks": 2,
+     "busy": 169
+    },
+    "GC": {
+     "n": 1,
+     "used": 1,
+     "tasks": 3,
+     "busy": 1789
+    },
+    "HL": {
+     "n": 1,
+     "used": 1,
+     "tasks": 2,
+     "busy": 1536
+    },
+    "FW": {
+     "n": 1,
+     "used": 1,
+     "tasks": 3,
+     "busy": 374
+    },
+    "CS": {
+     "n": 1,
+     "used": 1,
+     "tasks": 7,
+     "busy": 1603
+    }
+   },
+   "reached": 2201
+  }
+ ],
+ "svcPairs": {
+  "AC-RJ-01|gpu": 6,
+  "AC-RJ-01|cleaning": 9,
+  "AC-NB-01|belt": 17,
+  "AC-NB-01|cleaning": 17,
+  "AC-NB-01|catering": 17,
+  "AC-TB-01|gpu": 2,
+  "AC-NB-01|gpu": 5,
+  "AC-NB-01|lavatory": 5,
+  "AC-CG-01|gpu": 8,
+  "AC-CG-01|highloader": 8,
+  "AC-TP-01|gpu": 8,
+  "AC-TP-01|cleaning": 6,
+  "AC-TP-01|catering": 3,
+  "AC-MW-01|belt": 6,
+  "AC-MW-01|cleaning": 6,
+  "AC-MW-01|water": 3,
+  "AC-MW-01|lavatory": 2,
+  "AC-CN-01|catering": 5,
+  "AC-NB-01|water": 4,
+  "AC-BJ-01|catering": 7,
+  "AC-TP-01|water": 2,
+  "AC-MW-01|catering": 1,
+  "AC-BJ-01|lavatory": 3,
+  "AC-CN-01|lavatory": 5,
+  "AC-QJ-01|cleaning": 3,
+  "AC-QJ-01|lavatory": 1,
+  "AC-QJ-01|catering": 3,
+  "AC-QJ-01|gpu": 2,
+  "AC-QJ-01|water": 1,
+  "AC-RJ-01|water": 1,
+  "AC-RJ-01|lavatory": 2,
+  "AC-RJ-01|catering": 2
+ }
+}

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>סרטון הפתיחה</title>
+<style>
+:root{--bg:#f6f3ec;--card:#fffdf8;--ink:#1d1a14;--mut:#6b6355;--line:#ddd5c4;--acc:#b8862e;--acc2:#2f5fa0;--ok:#2e7d4f;--warn:#a5600b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14120f;--card:#1e1b16;--ink:#f1ebdd;--mut:#a89f8c;--line:#3a342a;--acc:#e0b24a;--acc2:#7fa8e8;--ok:#6fc28f;--warn:#e0a050}}
+:root[data-theme="dark"]{--bg:#14120f;--card:#1e1b16;--ink:#f1ebdd;--mut:#a89f8c;--line:#3a342a;--acc:#e0b24a;--acc2:#7fa8e8;--ok:#6fc28f;--warn:#e0a050}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:28px;margin:0 0 4px}h2{font-size:21px;margin:34px 0 10px;border-bottom:2px solid var(--line);padding-bottom:6px}
+.sub{color:var(--mut);margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.fr{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.fr svg{display:block;width:100%;height:auto;background:#000}
+.fr .t{padding:10px 12px}
+.fr .n{font-weight:800;color:var(--acc)}
+.fr .k{font-size:13px;color:var(--mut)}
+.fr .v{font-size:13.5px;margin-top:4px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin-inline-start:6px;color:var(--mut)}
+.tag.real{border-color:var(--acc2);color:var(--acc2)}.tag.drawn{border-color:var(--acc);color:var(--acc)}.tag.voice{border-color:var(--ok);color:var(--ok)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14.5px}
+th,td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{background:color-mix(in srgb,var(--acc) 12%,var(--card))}
+code{font-family:Consolas,monospace;font-size:13px;background:color-mix(in srgb,var(--line) 45%,transparent);padding:0 4px;border-radius:4px}
+.flow svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.note{background:var(--card);border-inline-start:4px solid var(--warn);padding:10px 14px;border-radius:8px;margin:10px 0}
+ul{margin:6px 0;padding-inline-start:22px}
+.bar{height:26px;display:flex;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin:8px 0 2px}
+.bar i{display:block;height:100%}
+.leg{font-size:12.5px;color:var(--mut)}
+</style>
+</head>
+<body>
+<main>
+<h1>סרטון הפתיחה — במנוע המשחק</h1>
+<p class="sub">סבב 17.11 · סוכן opening · הציור לפני הבנייה (כלל 13) · כל הסצנות מצוירות בקוד: צילומים חיים של העיר האמיתית (הצייר של המשחק, TCCITY) וסצנות מצוירות (ערכת הציור TCK). בלי וידאו ובלי תמונות.</p>
+
+<h2>מה כבר קיים (מלאי, כלל 16 / 19)</h2>
+<table>
+<tr><th>מה</th><th>איפה</th><th>מה עושים איתו</th></tr>
+<tr><td>נגן ההצגות והסרטים — אולם קולנוע, כתוביות, עצירה / השתקה / עוצמה, מעברים (חיתוך, דעיכה, שחור)</td><td><code>029c_show_player.js</code> · TCSHOW.open</td><td><b>משדרגים:</b> מצב "מסך מלא" (full) — בלי אולם, בלי וילון וקהל; כפתור "דלג"; Enter / Esc / F מדלגים. הקולנוע — בלי שינוי.</td></tr>
+<tr><td>צילום של העיר האמיתית בתוך סרט — המצלמה זזה בתוך תמונה חיה של העולם, עם התנועה האמיתית; צבע לפי השעה</td><td><code>029h</code> TCCITY · <code>029i</code> TCREAL.shot / caption</td><td>כל צילום חי בסרטון — דרך TCREAL.shot (אותו מנגנון של "העיר שנולדה מהים")</td></tr>
+<tr><td>ערכת הציור: שמיים לפי שעה, שמש, ים, עננים, קו רקיע, אנשים עם פנים ותנועה</td><td><code>029b</code> TCK · <code>029d</code> TCFA.titleCard / credits</td><td>הסצנות המצוירות: המטוס מעל הים, אולם ההגעות, השולחן בבית של סבא</td></tr>
+<tr><td>התזמורת בקוד (מיתרים, נחושת, נבל, פסנתר, תופים) והאווירה (ים, רוח, עיר)</td><td><code>029a</code> TCSND</td><td>מוזיקה מקורית לסרטון — באותו פורמט של רמזים</td></tr>
+<tr><td>הקולות המוקלטים של הסיפור (63 הקלטות, Gemini) — לפי הטקסט המדויק והדמות</td><td><code>074zf_story_vrec_data</code> · <code>074zg_story_vrec</code> · <code>029k</code> TCVREC</td><td>בסרטון: <b>סבא אהרן</b> (V‑O‑01) ו<b>שמעון</b> (V‑O‑02) — ההקלטות עצמן, דרך הנגן הקיים. שורה בלי הקלטה — לא נכנסת (רק כתוביות על המסך)</td></tr>
+<tr><td>הלוגו של הבעלים (מונפש)</td><td><code>009b</code> TCLOGO.make / draw</td><td>כרטיס הסיום של הסרטון</td></tr>
+<tr><td>מסך הפתיחה, "משחק חדש", תפריט Esc</td><td><code>074zc</code> TCO · <code>074zf_saves</code> TCSAVE (האירוע tcsave · how=new, הווים TCO_EXT)</td><td>הסרטון מתחיל באירוע "משחק חדש"; כפתור "סרטון הפתיחה" בתפריט Esc — דרך הווים, בלי לשנות את 074zc</td></tr>
+<tr><td>מנוע הסיפור — מחכה כשהצגה פתוחה (busy ← TCSHOW.on)</td><td><code>074ze</code> TCSTORY</td><td>ההודעה הראשונה של שמעון מגיעה אחרי הסרטון, בלי שינוי במנוע</td></tr>
+</table>
+
+<h2>לוח הסצנות (73 שניות)</h2>
+<div class="bar" aria-label="ציר הזמן">
+<i style="flex:7;background:#c98a4a" title="1"></i><i style="flex:7;background:#3a6aa0" title="2"></i><i style="flex:7;background:#3a6aa0" title="3"></i><i style="flex:7;background:#c98a4a" title="4"></i><i style="flex:6;background:#3a6aa0" title="5"></i><i style="flex:6;background:#3a6aa0" title="6"></i><i style="flex:6;background:#3a6aa0" title="7"></i><i style="flex:6;background:#c98a4a" title="8"></i><i style="flex:6;background:#3a6aa0" title="9"></i><i style="flex:7;background:#c98a4a" title="10"></i><i style="flex:8;background:#6a4a8a" title="11"></i>
+</div>
+<p class="leg">כחול — צילום חי של העיר האמיתית (6) · כתום — סצנה מצוירת (4) · סגול — כרטיס הסיום עם הלוגו. הקולות: סבא אהרן 8–21.5 שנ׳, שמעון 22.5–33 שנ׳.</p>
+
+<div class="grid">
+<!-- 1 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="מטוס מעל הים בזריחה">
+<defs><linearGradient id="s1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a3a6a"/><stop offset=".6" stop-color="#e08a6a"/><stop offset="1" stop-color="#f6c48a"/></linearGradient></defs>
+<rect width="320" height="135" fill="url(#s1)"/><circle cx="250" cy="96" r="14" fill="#fff0c0"/><rect y="98" width="320" height="37" fill="#2a5a80"/><path d="M0 104h320M0 112h320M0 121h320" stroke="#6aa0c8" stroke-width=".8" opacity=".6"/>
+<ellipse cx="60" cy="70" rx="38" ry="8" fill="#fff" opacity=".55"/><ellipse cx="200" cy="58" rx="30" ry="6" fill="#fff" opacity=".45"/>
+<g transform="translate(150 52)"><ellipse rx="36" ry="5.5" fill="#eef0f4"/><path d="M-30 -2 L-40 -14 L-34 -14 L-22 -3Z" fill="#2f5fa0"/><path d="M-4 1 L12 14 L18 14 L6 1Z" fill="#c8ccd4"/><path d="M-22 -1h44" stroke="#5a7aa0" stroke-width="1.2" stroke-dasharray="2 2"/></g>
+<text x="160" y="30" fill="#fff" font-size="11" text-anchor="middle" font-weight="600">אולפני טורבו סיטי מציגים</text></svg>
+<div class="t"><span class="n">1 · מעל הים</span><span class="tag drawn">מצויר</span><div class="k">0–7 שנ׳ · זריחה</div><div class="v">מטוס נוסעים חוצה את השמיים מעל הים לכיוון העיר. "אולפני טורבו סיטי מציגים" ← "טורבו סיטי". המוזיקה נפתחת (קרן + נבל).</div></div></div>
+<!-- 2 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="שדה התעופה">
+<rect width="320" height="135" fill="#7a9a6a"/><rect x="0" y="30" width="320" height="22" fill="#4a4e56" transform="rotate(-4 160 41)"/><path d="M10 41h300" stroke="#fff" stroke-dasharray="10 8" transform="rotate(-4 160 41)"/>
+<rect x="150" y="78" width="120" height="30" fill="#c8ccd4"/><rect x="150" y="74" width="120" height="6" fill="#2f5fa0"/><rect x="282" y="56" width="10" height="50" fill="#d8d0c0"/><rect x="278" y="50" width="18" height="9" fill="#3a6a8a"/>
+<g transform="translate(90 40) rotate(-4)"><ellipse rx="20" ry="3.5" fill="#fff"/><path d="M-2 0 L8 10 L12 10 L4 0Z" fill="#ddd"/></g>
+<rect x="196" y="8" width="118" height="30" fill="#000" opacity=".55"/><rect x="310" y="8" width="3" height="30" fill="#f2c45a"/><text x="304" y="21" fill="#fff" font-size="10" text-anchor="end" font-weight="800">שדה התעופה</text><text x="304" y="33" fill="#eee" font-size="7.5" text-anchor="end">F2 · הבוקר</text>
+<rect x="40" y="114" width="240" height="15" rx="4" fill="#000" opacity=".5"/><text x="160" y="124.5" fill="#fff" font-size="8" text-anchor="middle">שלום, נכד יקר. אם אתה שומע את זה, שמעון כבר מצא אותך בשדה…</text></svg>
+<div class="t"><span class="n">2 · שדה התעופה</span><span class="tag real">צילום חי</span><span class="tag voice">סבא אהרן · מוקלט</span><div class="k">7–14 שנ׳ · F2 · מסלול, טרמינל, מגדל</div><div class="v">המצלמה נעה מעל המסלול אל הטרמינל ומגדל הפיקוח — המטוסים האמיתיים של הסימולציה. הקול של סבא (V‑O‑01) מתחיל.</div></div></div>
+<!-- 3 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="מרכז העיר">
+<rect width="320" height="135" fill="#8a8e84"/><path d="M0 70h320M0 76h320" stroke="#4a4e56" stroke-width="6"/><path d="M150 0v135" stroke="#4a4e56" stroke-width="7"/>
+<g fill="#c8ccd4"><rect x="20" y="20" width="40" height="40"/><rect x="70" y="14" width="34" height="46"/><rect x="180" y="18" width="50" height="44"/><rect x="240" y="88" width="60" height="36"/><rect x="30" y="88" width="50" height="34"/></g>
+<g fill="#5a7aa0"><rect x="20" y="16" width="40" height="6"/><rect x="70" y="10" width="34" height="6"/><rect x="180" y="14" width="50" height="6"/></g>
+<rect x="160" y="86" width="70" height="40" fill="#a8d0e8" opacity=".7"/><path d="M160 92h70M160 100h70M160 108h70" stroke="#5a6a7a" stroke-width="1"/>
+<rect x="110" y="70" width="10" height="5" fill="#c0392b"/><rect x="200" y="70" width="9" height="5" fill="#f2c45a"/><rect x="146" y="40" width="6" height="10" fill="#2e86c1"/>
+<rect x="196" y="8" width="118" height="30" fill="#000" opacity=".55"/><rect x="310" y="8" width="3" height="30" fill="#f2c45a"/><text x="304" y="21" fill="#fff" font-size="10" text-anchor="end" font-weight="800">העיר</text><text x="304" y="33" fill="#eee" font-size="7.5" text-anchor="end">מרכז העסקים ותחנת E3</text></svg>
+<div class="t"><span class="n">3 · העיר</span><span class="tag real">צילום חי</span><span class="tag voice">סבא (המשך)</span><div class="k">14–21 שנ׳ · D2–E3</div><div class="v">מרכז העסקים, השדרה ותחנת E3 עם הגג השקוף — מכוניות ואוטובוסים אמיתיים. "ברוך הבא לטורבו סיטי. אני לא שם, ויש לזה סיבה טובה."</div></div></div>
+<!-- 4 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="אולם ההגעות ושמעון עם שלט">
+<rect width="320" height="135" fill="#dfe6ea"/><rect y="0" width="320" height="64" fill="#a8cce0"/><path d="M0 64h320" stroke="#7a8a96" stroke-width="3"/><path d="M40 0v64M120 0v64M200 0v64M280 0v64" stroke="#7a8a96" stroke-width="2"/>
+<g transform="translate(240 40)"><ellipse rx="26" ry="4" fill="#fff"/><path d="M-20 -2 L-28 -11 L-23 -11 L-14 -3Z" fill="#2f5fa0"/></g>
+<rect x="0" y="100" width="320" height="35" fill="#c8c0b0"/><rect x="250" y="12" width="56" height="14" fill="#1d3a5a"/><text x="278" y="22" fill="#ffd27a" font-size="8" text-anchor="middle" font-weight="800">הגעות</text>
+<g transform="translate(110 104)"><rect x="-6" y="-38" width="12" height="26" rx="3" fill="#2e6aa0"/><circle cy="-44" r="7" fill="#e0b08c"/><rect x="-8" y="-52" width="16" height="5" rx="2" fill="#1f5fa8"/><rect x="-5" y="-12" width="4" height="12" fill="#3a3a42"/><rect x="1" y="-12" width="4" height="12" fill="#3a3a42"/>
+<rect x="-34" y="-70" width="58" height="22" fill="#fff" stroke="#1d1a14"/><text x="-5" y="-55" font-size="7.5" text-anchor="middle" font-weight="800" fill="#1d1a14">הנכד של אהרן</text><path d="M-6 -48 L-2 -36 M10 -48 L4 -36" stroke="#2e6aa0" stroke-width="3"/></g>
+<g transform="translate(220 104)"><rect x="-6" y="-36" width="12" height="24" rx="3" fill="#c0392b"/><circle cy="-42" r="6.5" fill="#d9a07a"/><rect x="-5" y="-12" width="4" height="12" fill="#27455f"/><rect x="1" y="-12" width="4" height="12" fill="#27455f"/><rect x="10" y="-20" width="14" height="18" rx="2" fill="#5a4a3a"/></g>
+<rect x="40" y="114" width="240" height="15" rx="4" fill="#000" opacity=".5"/><text x="160" y="124.5" fill="#fff" font-size="8" text-anchor="middle">אני מחכה בצד של ההגעות, עם שלט גדול…</text></svg>
+<div class="t"><span class="n">4 · אולם ההגעות</span><span class="tag drawn">מצויר</span><span class="tag voice">שמעון · מוקלט</span><div class="k">21–28 שנ׳</div><div class="v">שמעון — כובע כחול, חיוך של נהג מונית — עומד עם שלט גדול "הנכד של אהרן". הנכד יוצא מהשער עם מזוודה, שמעון מנופף. הקול של שמעון (V‑O‑02).</div></div></div>
+<!-- 5 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="הדרך לעיר">
+<rect width="320" height="135" fill="#8a9a7a"/><path d="M-10 90 C80 80 200 60 330 40" stroke="#4a4e56" stroke-width="22" fill="none"/><path d="M-10 90 C80 80 200 60 330 40" stroke="#fff" stroke-width="1" stroke-dasharray="8 6" fill="none"/>
+<rect x="90" y="74" width="16" height="8" fill="#f2c45a" transform="rotate(-6 98 78)"/><rect x="180" y="58" width="22" height="9" fill="#2e86c1" transform="rotate(-9 191 62)"/><rect x="250" y="47" width="14" height="7" fill="#c0392b" transform="rotate(-11 257 50)"/>
+<rect x="196" y="8" width="118" height="30" fill="#000" opacity=".55"/><rect x="310" y="8" width="3" height="30" fill="#f2c45a"/><text x="304" y="21" fill="#fff" font-size="10" text-anchor="end" font-weight="800">הדרך לעיר</text><text x="304" y="33" fill="#eee" font-size="7.5" text-anchor="end">מוניות, אוטובוסים ורכבות</text></svg>
+<div class="t"><span class="n">5 · הדרך לעיר</span><span class="tag real">צילום חי</span><span class="tag voice">שמעון (המשך)</span><div class="k">28–34 שנ׳ · תחנת המוניות של הטרמינל ← מערבה</div><div class="v">היציאה מהטרמינל: המוניות והאוטובוסים של הסימולציה בדרך לעיר.</div></div></div>
+<!-- 6 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="הנמל">
+<rect width="320" height="135" fill="#2a6a9a"/><rect width="320" height="58" fill="#9a9a90"/><path d="M0 58h320" stroke="#5a5a52" stroke-width="3"/>
+<g stroke="#e0a020" stroke-width="3" fill="none"><path d="M60 58V14h40M90 14v20"/><path d="M160 58V10h46M196 10v24"/><path d="M250 58V18h36"/></g>
+<rect x="40" y="70" width="140" height="22" fill="#3a3a42"/><g fill="#c0392b"><rect x="50" y="62" width="20" height="9"/><rect x="100" y="62" width="20" height="9"/></g><g fill="#2e86c1"><rect x="74" y="62" width="20" height="9"/><rect x="124" y="62" width="20" height="9"/></g>
+<rect x="196" y="8" width="118" height="30" fill="#000" opacity=".55"/><rect x="310" y="8" width="3" height="30" fill="#f2c45a"/><text x="304" y="21" fill="#fff" font-size="10" text-anchor="end" font-weight="800">הנמל</text><text x="304" y="33" fill="#eee" font-size="7.5" text-anchor="end">המנופים והאוניות</text></svg>
+<div class="t"><span class="n">6 · הנמל</span><span class="tag real">צילום חי</span><div class="k">34–40 שנ׳ · D5–D6</div><div class="v">המנופים, המכולות והאוניות שבנמל — כמו שהם באמת עכשיו.</div></div></div>
+<!-- 7 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="המרינה">
+<rect width="320" height="135" fill="#2f7ab0"/><rect width="120" height="135" fill="#c8b890"/><g stroke="#8a6a42" stroke-width="4"><path d="M120 30h150M120 70h150M120 110h150"/></g>
+<g fill="#fff"><path d="M150 22h22l-4 6h-14z"/><path d="M200 62h26l-5 6h-16z"/><path d="M240 102h22l-4 6h-14z"/><path d="M180 104h20l-4 6h-12z"/></g>
+<rect x="196" y="8" width="118" height="30" fill="#000" opacity=".55"/><rect x="310" y="8" width="3" height="30" fill="#f2c45a"/><text x="304" y="21" fill="#fff" font-size="10" text-anchor="end" font-weight="800">המרינה</text><text x="304" y="33" fill="#eee" font-size="7.5" text-anchor="end">F3 · הסירות והטיילת</text></svg>
+<div class="t"><span class="n">7 · המרינה</span><span class="tag real">צילום חי</span><div class="k">40–46 שנ׳ · F3</div><div class="v">המעגנים, מזח הדלק והטיילת. אחר הצהריים — הצבע מתחיל להתחמם.</div></div></div>
+<!-- 8 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="האי">
+<defs><linearGradient id="s8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a6a9a"/><stop offset="1" stop-color="#1f4a70"/></linearGradient></defs>
+<rect width="320" height="135" fill="url(#s8)"/><path d="M30 100 C60 50 120 40 170 60 C220 30 280 50 300 90 C260 110 90 120 30 100Z" fill="#6a8a4a"/><path d="M150 62 C170 40 190 38 200 56" fill="#8a7a5a"/>
+<rect x="282" y="58" width="6" height="26" fill="#fff"/><rect x="282" y="58" width="6" height="6" fill="#c0392b"/><circle cx="285" cy="56" r="8" fill="#fff6c0" opacity=".45"/>
+<rect width="320" height="135" fill="#ff9a5a" opacity=".16"/>
+<rect x="196" y="8" width="118" height="30" fill="#000" opacity=".55"/><rect x="310" y="8" width="3" height="30" fill="#f2c45a"/><text x="304" y="21" fill="#fff" font-size="10" text-anchor="end" font-weight="800">האי</text><text x="304" y="33" fill="#eee" font-size="7.5" text-anchor="end">מעבר למים · E9–H9</text></svg>
+<div class="t"><span class="n">8 · האי</span><span class="tag drawn">מצויר</span><div class="k">46–52 שנ׳ · ערב</div><div class="v">האי מעבר למים בשקיעה: הרכס, הכפר עם האורות, הרכבל לפסגה, המגדלור עם האלומה, והמעבורת שחוצה אליו. "מעבר למים · שם מחכה סבא". <b>מצויר ולא צילום חי:</b> האי של היום כמעט ריק (D‑694 — תכנון מחדש מאפס); כשהאי החדש ייבנה — הצילום החי נכנס במקום (שורה אחת בקוד).</div></div></div>
+<!-- 9 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="הבית של סבא">
+<rect width="320" height="135" fill="#7a8a5a"/><path d="M0 104h320" stroke="#4a4e56" stroke-width="14"/><g transform="translate(160 86)"><rect x="-46" y="-34" width="92" height="40" fill="#e8d8b8"/><path d="M-54 -32 L0 -62 L54 -32Z" fill="#a0422a"/><rect x="-10" y="-14" width="20" height="20" fill="#6a4a2a"/><rect x="-36" y="-24" width="16" height="12" fill="#ffd98a"/><rect x="20" y="-24" width="16" height="12" fill="#ffd98a"/></g>
+<rect x="232" y="90" width="22" height="10" fill="#1f5fa8"/><rect width="320" height="135" fill="#ff8a4a" opacity=".2"/>
+<rect x="196" y="8" width="118" height="30" fill="#000" opacity=".55"/><rect x="310" y="8" width="3" height="30" fill="#f2c45a"/><text x="304" y="21" fill="#fff" font-size="10" text-anchor="end" font-weight="800">הבית של סבא</text><text x="304" y="33" fill="#eee" font-size="7.5" text-anchor="end">C3 · השקיעה</text></svg>
+<div class="t"><span class="n">9 · הבית של סבא</span><span class="tag real">צילום חי</span><div class="k">52–58 שנ׳ · C3 · PLAYER‑HOME</div><div class="v">המצלמה יורדת לאט אל הבית של סבא בשקיעה — המקום שבו המשחק מתחיל.</div></div></div>
+<!-- 10 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="המכתב על השולחן">
+<rect width="320" height="135" fill="#3a2a1e"/><path d="M0 52 L320 40 L320 135 L0 135Z" fill="#8a5a32"/><path d="M0 52 L320 40" stroke="#5a3a20" stroke-width="2"/>
+<circle cx="268" cy="40" r="44" fill="#ffd98a" opacity=".22"/><rect x="250" y="18" width="36" height="30" fill="#ffcf8a" opacity=".5"/>
+<g transform="translate(140 92) rotate(-6)"><rect x="-44" y="-30" width="88" height="60" fill="#f6efdc"/><text x="30" y="-16" font-size="8" fill="#5a3a20" text-anchor="end" font-weight="700">לנכד שלי —</text><path d="M-34 -6h64M-34 2h60M-34 10h66M-34 18h40" stroke="#8a7a60" stroke-width="1.2"/></g>
+<g transform="translate(232 98) rotate(8)"><rect x="-22" y="-28" width="44" height="56" fill="#fffaf0"/><g font-size="6.5" fill="#5a3a20" text-anchor="end"><text x="16" y="-16">1 ·</text><text x="16" y="-7">2 ·</text><text x="16" y="2">3 ·</text><text x="16" y="11">4 ·</text><text x="16" y="20">5 ·</text></g></g>
+<g transform="translate(64 108)"><circle r="6" fill="none" stroke="#d9a93b" stroke-width="2.5"/><path d="M6 0h20M20 0v5M24 0v4" stroke="#d9a93b" stroke-width="2.5"/></g></svg>
+<div class="t"><span class="n">10 · השולחן של סבא</span><span class="tag drawn">מצויר</span><div class="k">58–65 שנ׳ · בפנים</div><div class="v">על השולחן: המכתב "לנכד שלי —", המפתח הקטן של המוסך והרשימה עם שש השורות. מבעד לחלון — האי באופק. "המכתב של סבא מחכה על השולחן."</div></div></div>
+<!-- 11 -->
+<div class="fr"><svg viewBox="0 0 320 135" role="img" aria-label="הלוגו">
+<rect width="320" height="135" fill="#0d1630"/><g fill="#ffd98a" opacity=".7"><circle cx="30" cy="110" r="1.5"/><circle cx="70" cy="104" r="1.5"/><circle cx="250" cy="112" r="1.5"/><circle cx="290" cy="100" r="1.5"/><circle cx="180" cy="118" r="1.5"/></g>
+<rect x="0" y="96" width="320" height="39" fill="#1a2650"/><g fill="#22305a"><rect x="10" y="78" width="26" height="20"/><rect x="40" y="70" width="18" height="28"/><rect x="250" y="74" width="30" height="24"/><rect x="284" y="64" width="20" height="34"/></g>
+<text x="160" y="58" fill="#f2c45a" font-size="30" font-weight="900" text-anchor="middle" font-family="Arial">TURBO CITY</text><path d="M78 66h164" stroke="#2e86c1" stroke-width="3"/><text x="160" y="84" fill="#f4ecd8" font-size="11" text-anchor="middle" font-weight="700">הסיפור מתחיל</text></svg>
+<div class="t"><span class="n">11 · הלוגו</span><span class="tag drawn">הלוגו של הבעלים</span><span class="tag real">העיר בלילה</span><div class="k">65–73 שנ׳</div><div class="v">הלוגו החי של הבעלים (TCLOGO) מעל העיר בלילה. "הסיפור מתחיל". המוזיקה נסגרת — ומיד המשחק.</div></div></div>
+</div>
+
+<h2>איך זה עובד במשחק</h2>
+<div class="flow"><svg viewBox="0 0 1100 300" role="img" aria-label="הזרימה">
+<style>.b{fill:var(--card);stroke:var(--line);stroke-width:2}.bt{fill:var(--ink);font:600 15px "Segoe UI",Arial,sans-serif}.bs{fill:var(--mut);font:13px "Segoe UI",Arial,sans-serif}.a{stroke:var(--acc);stroke-width:2.5;fill:none;marker-end:url(#ar)}.hl{fill:color-mix(in srgb,var(--acc) 16%,var(--card));stroke:var(--acc);stroke-width:2}</style>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--acc)"/></marker></defs>
+<rect class="b" x="880" y="30" width="200" height="70" rx="12"/><text class="bt" x="980" y="60" text-anchor="middle">מסך הפתיחה</text><text class="bs" x="980" y="82" text-anchor="middle">"משחק חדש" ← שם ומצב</text>
+<rect class="b" x="620" y="30" width="220" height="70" rx="12"/><text class="bt" x="730" y="60" text-anchor="middle">TCSAVE.startNew</text><text class="bs" x="730" y="82" text-anchor="middle">האירוע tcsave · how=new</text>
+<rect class="hl" x="330" y="20" width="250" height="90" rx="12"/><text class="bt" x="455" y="52" text-anchor="middle">סרטון הפתיחה — מסך מלא</text><text class="bs" x="455" y="74" text-anchor="middle">TCSHOW.open (full) · 73 שנ׳</text><text class="bs" x="455" y="94" text-anchor="middle">"דלג" · Enter / Esc / F</text>
+<rect class="b" x="40" y="30" width="250" height="70" rx="12"/><text class="bt" x="165" y="60" text-anchor="middle">המשחק · הסיפור מתחיל</text><text class="bs" x="165" y="82" text-anchor="middle">שמעון: "נחתת? אני כבר ליד הבית"</text>
+<path class="a" d="M880 65H844"/><path class="a" d="M620 65H584"/><path class="a" d="M330 65H294"/>
+<rect class="b" x="620" y="170" width="220" height="80" rx="12"/><text class="bt" x="730" y="200" text-anchor="middle">תפריט Esc</text><text class="bs" x="730" y="222" text-anchor="middle">"סרטון הפתיחה · צפייה חוזרת"</text><text class="bs" x="730" y="240" text-anchor="middle">(דרך TCO_EXT — בלי לשנות את 074zc)</text>
+<path class="a" d="M620 205 C560 205 520 160 470 114"/>
+<rect class="b" x="40" y="170" width="250" height="80" rx="12"/><text class="bt" x="165" y="200" text-anchor="middle">בזמן הסרטון</text><text class="bs" x="165" y="222" text-anchor="middle">העיר חיה (הצילומים חיים); הסיפור מחכה</text><text class="bs" x="165" y="240" text-anchor="middle">(busy ← TCSHOW.on); המקשים לא מגיעים למשחק</text>
+<text class="bs" x="455" y="150" text-anchor="middle">לא מופיע ב-‎#dev / ‏#qa / ‏#bench ובבדיקת הבעלים (רק בכפתור)</text>
+</svg></div>
+
+<h2>הכללים שנשמרים</h2>
+<ul>
+<li><b>כלל 17 / 17ב:</b> אין קובץ תמונה ואין תמונות מוטמעות — הצילומים "החיים" הם הצייר של המשחק שמצייר לקנבס בזמן אמת; הסצנות — נתיבים בקוד.</li>
+<li><b>כלל 19א:</b> אין נגן חדש — מצב "מסך מלא" לנגן הקיים (029c), צילומים דרך TCREAL, קולות דרך TCVREC, מוזיקה דרך TCSND, הלוגו דרך TCLOGO.</li>
+<li><b>רק במשחק חדש</b>, תמיד אפשר לדלג, וצפייה חוזרת מתפריט Esc.</li>
+</ul>
+<div class="note"><b>לאישורך:</b> (1) ההודעה של סבא (V‑O‑01) נשמעת בסרטון, ושוב בטלפון שמעון נותן (כמו היום) — חזרה מכוונת; אפשר להוריד מהסרטון. (2) הסרטון לא מופיע אוטומטית בהמשך משחק שמור — רק בכפתור. (3) כפתור גם במסך הפתיחה עצמו — בתחום של סוכן loading (תלות).</div>
+</main>
+</body>
+</html>

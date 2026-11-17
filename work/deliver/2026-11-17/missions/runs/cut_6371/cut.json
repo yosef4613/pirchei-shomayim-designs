@@ -1,0 +1,11 @@
+{
+ "a": "z:ZS-C4",
+ "before": "{\"card\":true,\"q\":0,\"disp\":\"block\",\"vis\":\"visible\",\"cutOn\":false,\"playing\":false,\"scene\":null}",
+ "b": "1-van",
+ "cut0": "{\"card\":true,\"q\":1,\"disp\":\"block\",\"vis\":\"hidden\",\"cutOn\":true,\"playing\":true,\"scene\":\"1-van\"}",
+ "cut1": "{\"card\":true,\"q\":1,\"disp\":\"none\",\"vis\":\"hidden\",\"cutOn\":true,\"playing\":true,\"scene\":\"1-van\"}",
+ "c": "end",
+ "after": "{\"card\":true,\"q\":1,\"disp\":\"block\",\"vis\":\"visible\",\"cutOn\":false,\"playing\":false,\"scene\":null}",
+ "ok": true,
+ "errs": []
+}

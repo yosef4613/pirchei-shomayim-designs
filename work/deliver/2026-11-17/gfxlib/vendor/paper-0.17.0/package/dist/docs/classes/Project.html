@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Project</title>
+<base target="class-frame">
+<link href="../assets/css/docs.css" rel="stylesheet" type="text/css">
+<script src="../assets/js/paper.js"></script>
+<script src="../assets/js/jquery.js"></script>
+<script src="../assets/js/codemirror.js"></script>
+<script src="../assets/js/docs.js"></script>
+</head>
+<body>
+<article class="reference"> 
+<div class="reference-class">
+<h1>Project</h1>
+
+<p>A Project object in Paper.js is what usually is referred to as the document: The top level object that holds all the items contained in the scene graph. As the term document is already taken in the browser context, it is called Project.</p>
+<p>Projects allow the manipulation of the styles that are applied to all newly created items, give access to the selected items, and will in future versions offer ways to query for items in the scene graph defining specific requirements, and means to persist and load from different formats, such as SVG and PDF.</p>
+<p>The currently active project can be accessed through the <a href="../classes/PaperScope.html#project"><tt>paperScope.project</tt></a> variable.</p>
+<p>An array of all open projects is accessible through the <a href="../classes/PaperScope.html#projects"><tt>paperScope.projects</tt></a> variable.</p>
+
+
+</div>
+
+<!-- =============================== constructors ========================== -->
+<div class="reference-members">
+	<h2>Constructors</h2>
+	
+		
+<div id="project-element" class="member">
+<div class="member-link">
+<a name="project-element" href="#project-element"><tt><b>Project</b>(element)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+    <p>Creates a Paper.js project containing one empty <a href="../classes/Layer.html"><tt>Layer</tt></a>, referenced by <a href="../classes/Project.html#activelayer"><tt>project.activeLayer</tt></a>.</p>
+<p>Note that when working with PaperScript, a project is automatically created for us and the <a href="../classes/PaperScope.html#project"><tt>paperScope.project</tt></a> variable points to it.</p>
+    
+    
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>element:</tt> 
+<tt>HTMLCanvasElement</tt>⟋<tt>String</tt>⟋<a href="../classes/Size.html"><tt>Size</tt></a>
+&mdash;&nbsp;the HTML canvas element that should be used as the element for the view, or an ID string by which to find the element, or the size of the canvas to be created for usage in a web worker.
+
+</li>
+	
+</ul>
+
+    
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/Project.html"><tt>Project</tt></a></tt>
+</li>
+
+		
+	</ul>
+
+
+
+    
+    
+</div>
+</div>
+</div>
+	
+</div>
+
+
+
+
+
+<!-- ================================ properties =========================== -->
+	<div class="reference-members">
+		<h2>Properties</h2>
+		
+			
+<div id="currenttextstyle" class="member">
+<div class="member-link">
+<a name="currenttextstyle" href="#currenttextstyle"><tt><b>currentTextStyle</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The style new text items take in a hosted project, in place of <a href="../classes/Project.html#currentstyle"><tt>currentStyle</tt></a>, when the host sets one: for hosts whose new text has defaults of its own, such as a black fill without a stroke whatever new paths take. Paths keep taking the current style.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<a href="../classes/Style.html"><tt>Style</tt></a>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="host" class="member">
+<div class="member-link">
+<a name="host" href="#host"><tt><b>host</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The host document that the project&rsquo;s items come from. Setting it creates the project&rsquo;s layers from the host&rsquo;s records. All items are created as shells that load their content and children from the host on first access. The host draws its items, so setting it also turns off <a href="../classes/View.html#autoupdate"><tt>view.autoUpdate</tt></a>, which would draw them all and load them in full.</p>
+<p>The host provides: - <code>getChildren(key)</code>, which returns the records of the children of  the node with the given key, or of the top level for <code>null</code>, as  columns: <code>keys</code>, <code>types</code> (indices into <code>typeNames</code>), <code>typeNames</code>,  <code>flags</code> (selected: 1, visible: 2, locked: 4, strokeScaling: 8,  clipMask: 64, guide: 128, empty: 256), optionally <code>boxes</code>  (bounds, strokeBounds and roughBounds in the item&rsquo;s coordinates, 12  numbers per item), and the sparse objects <code>names</code> and <code>matrices</code>. - <code>getBounds(key)</code>, for hosts that don&rsquo;t send <code>boxes</code>, which returns  the node&rsquo;s 12 numbers, or <code>null</code> for an empty node. Items ask for  them when their bounds are needed, and again after the host sent  their record again. - <code>getItem(key)</code>, which returns the node&rsquo;s own content in the form  of <a href="../classes/Item.html#importjson-json"><tt>item.importJSON(json)</tt></a>, without children. Linked text  gives <code>linked</code>, the keys of its story&rsquo;s text items in order, and  leaves out its story. Rasters give their <code>size</code> without a <code>source</code>  and <code>crossOrigin</code>. - <code>getImage(key)</code>, for rasters, which returns the node&rsquo;s pixels as a  canvas with a 2D context, of the size that <code>getItem()</code> gives.  Rasters load them on first access to their pixels, and Paper.js  never loads them by itself, except to draw them. Rasters whose  pixels the host fails to give draw nothing. - <code>getStory(key)</code>, for linked text, which returns its story with the  key of any of its text items: <code>content</code> or <code>runs</code>, <code>paragraphs</code>,  and the character and paragraph styles, as  <a href="../classes/Item.html#exportjson-options"><tt>item.exportJSON(options)</tt></a> writes them in the JSON of a  text item. - <code>getAncestorKeys(key)</code>, which returns the keys from the top level  down to the node&rsquo;s parent. - Optionally <code>layOut(json, start, key)</code>, which lays out a text item  from <code>start</code> in its story, given as the JSON string that  <a href="../classes/Item.html#exportjson-options"><tt>item.exportJSON(options)</tt></a> writes of it as the script holds  it, or as <code>null</code> where the script didn&rsquo;t change it since it  loaded or the host took its changes with  <a href="../classes/Project.html#takechanges"><tt>project.takeChanges</tt></a>(), for the host to lay out its own  node, and returns  <code>{ end, lines }</code>: where its visible text ends, and  its lines, each <code>{ start, end, x, y, width, lineHeight, ascent,
+  descent, pieces }</code>, with pieces <code>{ start, end, x, y, dx, width,
+  rotation, size, ascent, descent, lineHeight }</code> and an optional  <code>content</code>, as for a hyphen, all in the item&rsquo;s coordinates. <code>key</code>  is null for text that the host doesn&rsquo;t know yet. Without it,  Paper.js lays out text itself. - <code>getDefinition(key)</code>, for the pattern and symbol definitions that  the host shares between its items, which the JSON of its items  refers to as <code>[&#39;@key&#39;]</code>, as in <code>fillColor: [&#39;pattern&#39;,
+  [&#39;@pattern/Dots&#39;], matrix]</code> or <code>definition: [&#39;@symbol/Star&#39;]</code>.  It returns the definition in the form of  <a href="../classes/Item.html#exportjson-options"><tt>item.exportJSON(options)</tt></a>, with its whole item:  <code>[&#39;PatternDefinition&#39;, item, { tile, spacing }]</code> or  <code>[&#39;SymbolDefinition&#39;, item]</code>, always: for a key that it has no  definition of, an empty one of the type, as  <code>[&#39;SymbolDefinition&#39;, [&#39;Group&#39;, {}]]</code>. Each definition loads  once, and the JSON of the items that use it, as  <a href="../classes/Item.html#exportjson-options"><tt>item.exportJSON(options)</tt></a> writes it, refers to it by its  key again. Definitions that scripts create have no key, and are  written out whole, until the host sets their <code>key</code>, which it can  only set once. <a href="../classes/Project.html#takechanges"><tt>project.takeChanges</tt></a>() lists those that the  changed items use first, nested ones first, as  <code>{ definition, flags }</code> with the <code>ChangeFlag.INSERTION</code> flag,  followed by the changes of the host&rsquo;s definitions. Renaming those  isn&rsquo;t supported. - <code>getDefinitionKeys(type)</code>, which returns the keys of all the  host&rsquo;s definitions of the type, <code>&#39;SymbolDefinition&#39;</code> or  <code>&#39;PatternDefinition&#39;</code>, for <a href="../classes/Project.html#symboldefinitions"><tt>symbolDefinitions</tt></a> and  <a href="../classes/Project.html#patterndefinitions"><tt>patternDefinitions</tt></a>.</p>
+<p>Items that move into a project with another host load in full from their own host first, and drop their keys, so they are new items there. They bring copies without keys of the symbol and pattern definitions of their host along, shared by the items of one insertion or copy, so the new host takes them as new ones too. Linked text brings a copy of its story along, which flows on through the items that stay. Host items can&rsquo;t enter the project of another host.</p>
+<p>The host draws the items, and the selection. To show what scripts draw in <a href="../classes/Item.html#ondraw"><tt>item.onDraw</tt></a> and <a href="../classes/Item.html#ondrawselection"><tt>item.onDrawSelection</tt></a>, it calls <code>project.draw(ctx, matrix, pixelRatio)</code>, which in a hosted project only calls these handlers, with the context, the view&rsquo;s matrix and pixel ratio that the host gives, for the visible items that have them, and for the selected ones. Handlers of classes, such as <code>Path.onDraw</code>, load all items once. The host asks <a href="../classes/Project.html#hasdrawhandlers"><tt>hasDrawHandlers</tt></a>() whether it needs to call it.</p>
+<p><a href="../classes/Project.html#takechanges"><tt>project.takeChanges</tt></a>() marks the changes of the items whose children changed in order other than by new items inserted and items removed, which the other changes don&rsquo;t tell, with <code>reordered: true</code>: the host reads their children whole, and can place the others&rsquo; new items by their indices.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<tt>Object</tt>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="trackchanges" class="member">
+<div class="member-link">
+<a name="trackchanges" href="#trackchanges"><tt><b>trackChanges</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>Specifies whether the project logs the changes of its items, to be retrieved through <a href="../classes/Project.html#takechanges"><tt>takeChanges</tt></a>(). This allows hosts that keep their own document to update only what has changed.</p>
+	
+	
+	
+		<ul class="member-list">
+			<h4>Default:</h4>
+			<li><tt>false</tt></li>
+		</ul>
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<tt>Boolean</tt>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="onactivate" class="member">
+<div class="member-link">
+<a name="onactivate" href="#onactivate"><tt><b>onActivate</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The function to be called when the project is activated through <a href="../classes/Project.html#activate"><tt>activate</tt></a>(). The function receives the previously active project, which is the project itself when it was already active.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<tt>Function</tt>⟋<tt>null</tt>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="ondeactivate" class="member">
+<div class="member-link">
+<a name="ondeactivate" href="#ondeactivate"><tt><b>onDeactivate</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The function to be called when another project is activated through <a href="../classes/Project.html#activate"><tt>activate</tt></a>() while this one is active, or when this one is removed while active.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<tt>Function</tt>⟋<tt>null</tt>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="scope" class="member">
+<div class="member-link">
+<a name="scope" href="#scope"><tt><b>scope</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The scope that this project belongs to.</p>
+	
+		<p>Read only.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<a href="../classes/PaperScope.html"><tt>PaperScope</tt></a>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="view" class="member">
+<div class="member-link">
+<a name="view" href="#view"><tt><b>view</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The reference to the project&rsquo;s view.</p>
+	
+		<p>Read only.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<a href="../classes/View.html"><tt>View</tt></a>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="currentstyle" class="member">
+<div class="member-link">
+<a name="currentstyle" href="#currentstyle"><tt><b>currentStyle</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The currently active path style. All selected items and newly created items will be styled with this style.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<a href="../classes/Style.html"><tt>Style</tt></a>
+		</li>
+	</ul>
+    
+	
+	<h4>Example:</h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-0">
+project.currentStyle = {
+    fillColor: 'red',
+    strokeColor: 'black',
+    strokeWidth: 5
+}
+
+// The following paths will take over all style properties of
+// the current style:
+var path = new Path.Circle(new Point(75, 50), 30);
+var path2 = new Path.Circle(new Point(175, 50), 20);
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-0"></canvas></div>
+</div>
+
+
+<h4>Example:</h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-1">
+project.currentStyle.fillColor = 'red';
+
+// The following path will take over the fill color we just set:
+var path = new Path.Circle(new Point(75, 50), 30);
+var path2 = new Path.Circle(new Point(175, 50), 20);
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-1"></canvas></div>
+</div>
+
+
+</div>
+
+</div>
+</div>
+		
+			
+<div id="index" class="member">
+<div class="member-link">
+<a name="index" href="#index"><tt><b>index</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The index of the project in the <a href="../classes/PaperScope.html#projects"><tt>paperScope.projects</tt></a> list.</p>
+	
+		<p>Read only.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<tt>Number</tt>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+	<h3>Project Content</h3>
+
+<div id="layers" class="member">
+<div class="member-link">
+<a name="layers" href="#layers"><tt><b>layers</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The layers contained within the project.</p>
+	
+		<p>Read only.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			Array of <a href="../classes/Layer.html"><tt>Layer</tt></a> objects
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="activelayer" class="member">
+<div class="member-link">
+<a name="activelayer" href="#activelayer"><tt><b>activeLayer</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The layer which is currently active. New items will be created on this layer by default.</p>
+	
+		<p>Read only.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<a href="../classes/Layer.html"><tt>Layer</tt></a>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="symboldefinitions" class="member">
+<div class="member-link">
+<a name="symboldefinitions" href="#symboldefinitions"><tt><b>symbolDefinitions</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The symbol definitions shared by all symbol items contained place ind project.</p>
+	
+		<p>Read only.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			Array of <a href="../classes/SymbolDefinition.html"><tt>SymbolDefinition</tt></a> objects
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="patterndefinitions" class="member">
+<div class="member-link">
+<a name="patterndefinitions" href="#patterndefinitions"><tt><b>patternDefinitions</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The pattern definitions that the fill and stroke colors of the items in the project use.</p>
+	
+		<p>Read only.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			Array of <a href="../classes/PatternDefinition.html"><tt>PatternDefinition</tt></a> objects
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+			
+<div id="selecteditems" class="member">
+<div class="member-link">
+<a name="selecteditems" href="#selecteditems"><tt><b>selectedItems</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The selected items contained within the project.</p>
+	
+		<p>Read only.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			Array of <a href="../classes/Item.html"><tt>Item</tt></a> objects
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+		
+	</div>
+
+
+
+    <div class="reference-members">
+    	<h2>Static Properties</h2>
+        
+            
+<div id="onactivate" class="member">
+<div class="member-link">
+<a name="onactivate" href="#onactivate"><tt><b>Project.onActivate</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The function to be called when any project is activated, as <a href="../classes/Project.html#onactivate"><tt>onActivate</tt></a> is for a single project, including the projects that activate themselves when they are created, with <code>this</code> set to the project. <code>Project.on(&#39;activate&#39;, handler)</code> and <code>Project.off(&#39;activate&#39;, handler)</code> attach and detach them too. Classes are shared by all <a href="../classes/PaperScope.html"><tt>PaperScope</tt></a> objects, and so are their handlers.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<tt>Function</tt>⟋<tt>null</tt>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+        
+            
+<div id="ondeactivate" class="member">
+<div class="member-link">
+<a name="ondeactivate" href="#ondeactivate"><tt><b>Project.onDeactivate</b></tt></a>
+</div>
+<div class="member-description hidden">
+
+<div class="member-text">
+	<p>The function to be called when any project is deactivated, as <a href="../classes/Project.html#ondeactivate"><tt>onDeactivate</tt></a> is for a single project, see <a href="../classes/Project.html#onactivate"><tt>Project.onActivate</tt></a>.</p>
+	
+	
+	
+	<ul class="member-list">
+		<h4>Type:</h4>
+		<li>
+			<tt>Function</tt>⟋<tt>null</tt>
+		</li>
+	</ul>
+    
+	
+	
+</div>
+
+</div>
+</div>
+        
+    </div>
+
+
+
+<!-- ============================== methods ================================ -->
+	<div class="reference-members">
+		<h2>Methods</h2>
+		
+	
+<div id="getitembykey-key" class="member">
+<div class="member-link">
+<a name="getitembykey-key" href="#getitembykey-key"><tt><b>getItemByKey</b>(key)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Returns the item of the host&rsquo;s node with the given key, loading only the children of its ancestors.</p>
+    
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>key:</tt> 
+<tt>Number</tt>
+&mdash;&nbsp;the key of the host&rsquo;s node
+
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/Item.html"><tt>Item</tt></a></tt>&nbsp;&mdash;&nbsp;the item, or <code>null</code> if the host has no such node
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="hasdrawhandlers" class="member">
+<div class="member-link">
+<a name="hasdrawhandlers" href="#hasdrawhandlers"><tt><b>hasDrawHandlers</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Checks whether any item of the project or class has draw handlers, <a href="../classes/Item.html#ondraw"><tt>item.onDraw</tt></a> or, for the selected items, <a href="../classes/Item.html#ondrawselection"><tt>item.onDrawSelection</tt></a>, for hosts that draw the items themselves, see <a href="../classes/Project.html#host"><tt>host</tt></a>.</p>
+    
+	
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><tt>Boolean</tt></tt>&nbsp;&mdash;&nbsp;<tt>true</tt> if drawing the project calls any handlers, <tt>false</tt> otherwise
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="invalidate-columns" class="member">
+<div class="member-link">
+<a name="invalidate-columns" href="#invalidate-columns"><tt><b>invalidate</b>(columns)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Updates the items of changed host nodes, given in the column format of the host&rsquo;s <code>getChildren()</code>, with two more flags: 16 when the node&rsquo;s own content changed, so the item loads it again on next access, and 32 when its list of children changed, so it loads them again right away if it had loaded them, keeping the items of nodes that remain. Nodes without items are skipped. <code>definitions</code> lists the keys of changed definitions of the host&rsquo;s <code>getDefinition()</code>, which load again right away into the same objects, so the colors and symbol items that use them change along. A definition that the host no longer has, for which <code>getDefinition()</code> may return <code>null</code> here, is emptied and draws nothing. The columns may hold only definitions.</p>
+    
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>columns:</tt> 
+<tt>Object</tt>
+&mdash;&nbsp;the records of the changed nodes
+
+</li>
+	
+</ul>
+
+	
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="takechanges" class="member">
+<div class="member-link">
+<a name="takechanges" href="#takechanges"><tt><b>takeChanges</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Returns the changes logged since tracking was activated or since the last call, and clears the log. Each item is listed once, with the <a href="../classes/ChangeFlag.html"><tt>ChangeFlag</tt></a> values of all its changes combined. Removed items are listed with the <code>ChangeFlag.INSERTION</code> flag, and items that moved to another project are left out, as that one lists them. Symbol and pattern definitions whose item, tile, spacing or name changed are listed too, as <code>{ definition, flags }</code>.</p>
+    
+	
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt>Array of <tt>Object</tt> objects</tt>&nbsp;&mdash;&nbsp;the changes as <code>{ item, flags }</code> and  <code>{ definition, flags }</code> objects, or <code>null</code> if <a href="../classes/Project.html#trackchanges"><tt>trackChanges</tt></a>  is off
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="haschanges" class="member">
+<div class="member-link">
+<a name="haschanges" href="#haschanges"><tt><b>hasChanges</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Checks whether changes were logged since tracking was activated or since the last call of <a href="../classes/Project.html#takechanges"><tt>takeChanges</tt></a>(), without taking them.</p>
+    
+	
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><tt>Boolean</tt></tt>&nbsp;&mdash;&nbsp;<tt>true</tt> if changes were logged, <tt>false</tt> otherwise
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="activate" class="member">
+<div class="member-link">
+<a name="activate" href="#activate"><tt><b>activate</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Activates this project, so all newly created items will be placed in it.</p>
+    
+	
+	
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="clear" class="member">
+<div class="member-link">
+<a name="clear" href="#clear"><tt><b>clear</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Clears the project by removing all <a href="../classes/Project.html#layers"><tt>project.layers</tt></a>.</p>
+    
+	
+	
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="isempty" class="member">
+<div class="member-link">
+<a name="isempty" href="#isempty"><tt><b>isEmpty</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Checks whether the project has any content or not.</p>
+    
+	
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><tt>Boolean</tt></tt>
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="remove" class="member">
+<div class="member-link">
+<a name="remove" href="#remove"><tt><b>remove</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Removes this project from the <a href="../classes/PaperScope.html#projects"><tt>paperScope.projects</tt></a> list, and also removes its view, if one was defined.</p>
+    
+	
+	
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="selectall" class="member">
+<div class="member-link">
+<a name="selectall" href="#selectall"><tt><b>selectAll</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Selects all items in the project.</p>
+    
+	
+	
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="deselectall" class="member">
+<div class="member-link">
+<a name="deselectall" href="#deselectall"><tt><b>deselectAll</b>()</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Deselects all selected items in the project.</p>
+    
+	
+	
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<h3>Hierarchy Operations</h3>
+
+<div id="addlayer-layer" class="member">
+<div class="member-link">
+<a name="addlayer-layer" href="#addlayer-layer"><tt><b>addLayer</b>(layer)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Adds the specified layer at the end of the this project&rsquo;s <a href="../classes/Project.html#layers"><tt>layers</tt></a> list.</p>
+    
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>layer:</tt> 
+<a href="../classes/Layer.html"><tt>Layer</tt></a>
+&mdash;&nbsp;the layer to be added to the project
+
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/Layer.html"><tt>Layer</tt></a></tt>&nbsp;&mdash;&nbsp;the added layer, or <code>null</code> if adding was not possible
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="insertlayer-index-layer" class="member">
+<div class="member-link">
+<a name="insertlayer-index-layer" href="#insertlayer-index-layer"><tt><b>insertLayer</b>(index, layer)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Inserts the specified layer at the specified index in this project&rsquo;s <a href="../classes/Project.html#layers"><tt>layers</tt></a> list.</p>
+    
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>index:</tt> 
+<tt>Number</tt>
+&mdash;&nbsp;the index at which to insert the layer
+
+</li>
+	
+	<li>
+<tt>layer:</tt> 
+<a href="../classes/Layer.html"><tt>Layer</tt></a>
+&mdash;&nbsp;the layer to be inserted in the project
+
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/Layer.html"><tt>Layer</tt></a></tt>&nbsp;&mdash;&nbsp;the added layer, or <code>null</code> if adding was not possible
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<h3>Hit-testing, Fetching and Matching Items</h3>
+
+<div id="hittest-point" class="member">
+<div class="member-link">
+<a name="hittest-point" href="#hittest-point"><tt><b>hitTest</b>(point[, options])</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Performs a hit-test on the items contained within the project at the location of the specified point.</p>
+<p>The options object allows you to control the specifics of the hit-test. Without options, <code>fill</code>, <code>stroke</code> and <code>segments</code> are hit-tested. As soon as an options object is passed, only the hit-tests that it sets to <code>true</code> are performed. It may contain a combination of the following values:</p>
+    <ul class="member-list">
+<h4>Options:</h4>
+<li><tt>options.tolerance: <tt>Number</tt></tt> &mdash; the tolerance of the hit-test, in project coordinates &mdash;&nbsp;default: <tt><a href="../classes/PaperScope.html#settings"><tt>paperScope.settings</tt></a>.hitTolerance</tt></li>
+<li><tt>options.class: <tt>Function</tt></tt> &mdash; only hit-test against a specific item  class, or any of its sub-classes, by providing the constructor  function against which an <code>instanceof</code> check is performed:  <tt>Group</tt>, <tt>Layer</tt>, <tt>Path</tt>, <tt>CompoundPath</tt>, <tt>Shape</tt>, <tt>Raster</tt>, <tt>SymbolItem</tt>, <tt>PointText</tt>, &hellip;</li>
+<li><tt>options.match: <tt>Function</tt></tt> &mdash; a match function to be called for each  found hit result: Return <code>true</code> to return the result, <code>false</code> to keep  searching</li>
+<li><tt>options.fill: <tt>Boolean</tt></tt> &mdash; hit-test the fill of items</li>
+<li><tt>options.stroke: <tt>Boolean</tt></tt> &mdash; hit-test the stroke of path items,  taking into account the setting of stroke color and width</li>
+<li><tt>options.segments: <tt>Boolean</tt></tt> &mdash; hit-test for <a href="../classes/Segment.html#point"><tt>segment.point</tt></a> of  <a href="../classes/Path.html"><tt>Path</tt></a> items</li>
+<li><tt>options.curves: <tt>Boolean</tt></tt> &mdash; hit-test the curves of path items,  without taking the stroke color or width into account</li>
+<li><tt>options.handles: <tt>Boolean</tt></tt> &mdash; hit-test for the handles (<a href="../classes/Segment.html#handlein"><tt>segment.handleIn</tt></a> / <a href="../classes/Segment.html#handleout"><tt>segment.handleOut</tt></a>) of path segments.</li>
+<li><tt>options.ends: <tt>Boolean</tt></tt> &mdash; only hit-test for the first or last  segment points of open path items</li>
+<li><tt>options.position: <tt>Boolean</tt></tt> &mdash; hit-test the <a href="../classes/Item.html#position"><tt>item.position</tt></a> of  of items, which depends on the setting of <a href="../classes/Item.html#pivot"><tt>item.pivot</tt></a></li>
+<li><tt>options.center: <tt>Boolean</tt></tt> &mdash; hit-test the <a href="../classes/Rectangle.html#center"><tt>rectangle.center</tt></a> of  the bounding rectangle of items (<a href="../classes/Item.html#bounds"><tt>item.bounds</tt></a>)</li>
+<li><tt>options.bounds: <tt>Boolean</tt></tt> &mdash; hit-test the corners and side-centers of  the bounding rectangle of items (<a href="../classes/Item.html#bounds"><tt>item.bounds</tt></a>)</li>
+<li><tt>options.guides: <tt>Boolean</tt></tt> &mdash; only hit-test items that have <a href="../classes/Item.html#guide"><tt>item.guide</tt></a> set to <code>true</code></li>
+<li><tt>options.selected: <tt>Boolean</tt></tt> &mdash; only hit selected items</li>
+</ul>
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>point:</tt> 
+<a href="../classes/Point.html"><tt>Point</tt></a>
+&mdash;&nbsp;the point where the hit-test should be performed
+
+</li>
+	
+	<li>
+<tt>options:</tt> 
+<tt>Object</tt>
+
+&mdash;&nbsp;optional, default: <tt>{ fill: true, stroke: true, segments: true,  tolerance: settings.hitTolerance }</tt>
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/HitResult.html"><tt>HitResult</tt></a></tt>&nbsp;&mdash;&nbsp;a hit result object that contains more information  about what exactly was hit or <code>null</code> if nothing was hit
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="hittestall-point" class="member">
+<div class="member-link">
+<a name="hittestall-point" href="#hittestall-point"><tt><b>hitTestAll</b>(point[, options])</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Performs a hit-test on the item and its children (if it is a <a href="../classes/Group.html"><tt>Group</tt></a> or <a href="../classes/Layer.html"><tt>Layer</tt></a>) at the location of the specified point, returning all found hits.</p>
+<p>The options object allows you to control the specifics of the hit- test. See <a href="../classes/Project.html#hittest-point"><tt>hitTest(point[, options])</tt></a> for a list of all options.</p>
+    
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>point:</tt> 
+<a href="../classes/Point.html"><tt>Point</tt></a>
+&mdash;&nbsp;the point where the hit-test should be performed
+
+</li>
+	
+	<li>
+<tt>options:</tt> 
+<tt>Object</tt>
+
+&mdash;&nbsp;optional, default: <tt>{ fill: true, stroke: true, segments: true,  tolerance: settings.hitTolerance }</tt>
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt>Array of <a href="../classes/HitResult.html"><tt>HitResult</tt></a> objects</tt>&nbsp;&mdash;&nbsp;hit result objects for all hits, describing what  exactly was hit or <code>null</code> if nothing was hit
+</li>
+
+		
+	</ul>
+
+
+
+	
+	<ul class="member-list">
+		<h4>See also:</h4>
+		
+			<li><tt><a href="../classes/Project.html#hittest-point"><tt>hitTest(point[, options])</tt></a>;</tt></li>
+		
+	</ul>
+
+	
+</div>
+</div>
+</div>
+
+	
+<div id="getitems-options" class="member">
+<div class="member-link">
+<a name="getitems-options" href="#getitems-options"><tt><b>getItems</b>(options)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Fetch items contained within the project whose properties match the criteria in the specified object.</p>
+<p>Extended matching of properties is possible by providing a comparator function or regular expression. Matching points, colors only work as a comparison of the full object, not partial matching (e.g. only providing the x- coordinate to match all points with that x-value). Partial matching does work for <a href="../classes/Item.html#data"><tt>item.data</tt></a>.</p>
+<p>Matching items against a rectangular area is also possible, by setting either <code>options.inside</code> or <code>options.overlapping</code> to a rectangle describing the area in which the items either have to be fully or partly contained.</p>
+    <ul class="member-list">
+<h4>Options:</h4>
+<li><tt>options.recursive: <tt>Boolean</tt></tt> &mdash; whether to loop recursively  through all children, or stop at the current level &mdash;&nbsp;default: <tt>true</tt></li>
+<li><tt>options.match: <tt>Function</tt></tt> &mdash; a match function to be called for each  item, allowing the definition of more flexible item checks that are  not bound to properties. If no other match properties are defined,  this function can also be passed instead of the <code>match</code> object</li>
+<li><tt>options.class: <tt>Function</tt></tt> &mdash; the constructor function of the item  type to match against</li>
+<li><tt>options.inside: <a href="../classes/Rectangle.html"><tt>Rectangle</tt></a></tt> &mdash; the rectangle in which the items need  to be fully contained</li>
+<li><tt>options.overlapping: <a href="../classes/Rectangle.html"><tt>Rectangle</tt></a></tt> &mdash; the rectangle with which the  items need to at least partly overlap</li>
+</ul>
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>options:</tt> 
+<tt>Object</tt>⟋<tt>Function</tt>
+&mdash;&nbsp;the criteria to match against
+
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt>Array of <a href="../classes/Item.html"><tt>Item</tt></a> objects</tt>&nbsp;&mdash;&nbsp;the list of matching items contained in the project, in  their stacking order from bottom to top, with each item listed  before its own descendants
+</li>
+
+		
+	</ul>
+
+
+
+	
+	<ul class="member-list">
+		<h4>See also:</h4>
+		
+			<li><tt><a href="../classes/Item.html#matches-options"><tt>item.matches(options)</tt></a></tt></li>
+		
+			<li><tt><a href="../classes/Item.html#getitems-options"><tt>item.getItems(options)</tt></a></tt></li>
+		
+	</ul>
+
+	<h4>Example:<span class="description">Fetch all selected path items:</span></h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-2">
+var path1 = new Path.Circle({
+    center: [50, 50],
+    radius: 25,
+    fillColor: 'black'
+});
+
+var path2 = new Path.Circle({
+    center: [150, 50],
+    radius: 25,
+    fillColor: 'black'
+});
+
+// Select path2:
+path2.selected = true;
+
+// Fetch all selected path items:
+var items = project.getItems({
+    selected: true,
+    class: Path
+});
+
+// Change the fill color of the selected path to red:
+items[0].fillColor = 'red';
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-2"></canvas></div>
+</div>
+
+
+<h4>Example:<span class="description">Fetch all items with a specific fill color:</span></h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-3">
+var path1 = new Path.Circle({
+    center: [50, 50],
+    radius: 25,
+    fillColor: 'black'
+});
+
+var path2 = new Path.Circle({
+    center: [150, 50],
+    radius: 25,
+    fillColor: 'purple'
+});
+
+// Fetch all items with a purple fill color:
+var items = project.getItems({
+    fillColor: 'purple'
+});
+
+// Select the fetched item:
+items[0].selected = true;
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-3"></canvas></div>
+</div>
+
+
+<h4>Example:<span class="description">Fetch items at a specific position:</span></h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-4">
+var path1 = new Path.Circle({
+    center: [50, 50],
+    radius: 25,
+    fillColor: 'black'
+});
+
+var path2 = new Path.Circle({
+    center: [150, 50],
+    radius: 25,
+    fillColor: 'black'
+});
+
+// Fetch all path items positioned at {x: 150, y: 150}:
+var items = project.getItems({
+    position: [150, 50]
+});
+
+// Select the fetched path:
+items[0].selected = true;
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-4"></canvas></div>
+</div>
+
+
+<h4>Example:<span class="description">Fetch items using a comparator function:</span></h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-5">
+// Create a circle shaped path:
+var path1 = new Path.Circle({
+    center: [50, 50],
+    radius: 25,
+    fillColor: 'black'
+});
+
+// Create a circle shaped path with 50% opacity:
+var path2 = new Path.Circle({
+    center: [150, 50],
+    radius: 25,
+    fillColor: 'black',
+    opacity: 0.5
+});
+
+// Fetch all items whose opacity is smaller than 1
+var items = paper.project.getItems({
+    opacity: function(value) {
+        return value < 1;
+    }
+});
+
+// Select the fetched item:
+items[0].selected = true;
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-5"></canvas></div>
+</div>
+
+
+<h4>Example:<span class="description">Fetch items using a comparator function (2):</span></h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-6">
+// Create a rectangle shaped path (4 segments):
+var path1 = new Path.Rectangle({
+    from: [25, 25],
+    to: [75, 75],
+    strokeColor: 'black',
+    strokeWidth: 10
+});
+
+// Create a line shaped path (2 segments):
+var path2 = new Path.Line({
+    from: [125, 50],
+    to: [175, 50],
+    strokeColor: 'black',
+    strokeWidth: 10
+});
+
+// Fetch all paths with 2 segments:
+var items = project.getItems({
+    class: Path,
+ segments: function(segments) {
+        return segments.length == 2;
+ }
+});
+
+// Select the fetched path:
+items[0].selected = true;
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-6"></canvas></div>
+</div>
+
+
+<h4>Example:<span class="description">Match (nested) properties of the data property:</span></h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-7">
+// Create a black circle shaped path:
+var path1 = new Path.Circle({
+    center: [50, 50],
+    radius: 25,
+    fillColor: 'black',
+    data: {
+        person: {
+            name: 'john',
+            length: 200,
+            hair: true
+        }
+    }
+});
+
+// Create a red circle shaped path:
+var path2 = new Path.Circle({
+    center: [150, 50],
+    radius: 25,
+    fillColor: 'red',
+    data: {
+        person: {
+            name: 'john',
+            length: 180,
+            hair: false
+        }
+    }
+});
+
+// Fetch all items whose data object contains a person
+// object whose name is john and length is 180:
+var items = paper.project.getItems({
+    data: {
+        person: {
+            name: 'john',
+            length: 180
+        }
+    }
+});
+
+// Select the fetched item:
+items[0].selected = true;
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-7"></canvas></div>
+</div>
+
+
+<h4>Example:<span class="description">Match strings using regular expressions:</span></h4>
+
+<div class="paperscript split">
+
+<div class="buttons">
+<div class="button run">Run</div>
+</div>
+
+<script type="text/paperscript" canvas="canvas-8">
+// Create a path named 'aardvark':
+var path1 = new Path.Circle({
+    center: [50, 50],
+    radius: 25,
+    fillColor: 'black',
+    name: 'aardvark'
+});
+
+// Create a path named 'apple':
+var path2 = new Path.Circle({
+    center: [150, 50],
+    radius: 25,
+    fillColor: 'black',
+    name: 'apple'
+});
+
+// Create a path named 'banana':
+var path2 = new Path.Circle({
+    center: [250, 50],
+    radius: 25,
+    fillColor: 'black',
+    name: 'banana'
+});
+
+// Fetch all items that have a name starting with 'a':
+var items = project.getItems({
+    name: /^a/
+});
+
+// Change the fill color of the matched items:
+for (var i = 0; i < items.length; i++) {
+ items[i].fillColor = 'red';
+}
+</script>
+<div class="canvas"><canvas width="516" height="100" id="canvas-8"></canvas></div>
+</div>
+
+
+</div>
+</div>
+</div>
+
+	
+<div id="getitem-options" class="member">
+<div class="member-link">
+<a name="getitem-options" href="#getitem-options"><tt><b>getItem</b>(options)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Fetch the first item contained within the project whose properties match the criteria in the specified object. Extended matching is possible by providing a compare function or regular expression. Matching points, colors only work as a comparison of the full object, not partial matching (e.g. only providing the x- coordinate to match all points with that x-value). Partial matching does work for <a href="../classes/Item.html#data"><tt>item.data</tt></a>.</p>
+<p>See <a href="../classes/Project.html#getitems-options"><tt>getItems(options)</tt></a> for a selection of illustrated examples.</p>
+    
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>options:</tt> 
+<tt>Object</tt>⟋<tt>Function</tt>
+&mdash;&nbsp;the criteria to match against
+
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/Item.html"><tt>Item</tt></a></tt>&nbsp;&mdash;&nbsp;the first item in the project matching the given criteria
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<h3>Importing / Exporting JSON and SVG</h3>
+
+<div id="exportjson" class="member">
+<div class="member-link">
+<a name="exportjson" href="#exportjson"><tt><b>exportJSON</b>([options])</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Exports (serializes) the project with all its layers and child items to a JSON data object or string.</p>
+    <ul class="member-list">
+<h4>Options:</h4>
+<li><tt>options.asString: <tt>Boolean</tt></tt> &mdash; whether the JSON is returned as  a <code>Object</code> or a <code>String</code> &mdash;&nbsp;default: <tt>true</tt></li>
+<li><tt>options.precision: <tt>Number</tt></tt> &mdash; the amount of fractional digits in  numbers used in JSON data &mdash;&nbsp;default: <tt>5</tt></li>
+</ul>
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>options:</tt> 
+<tt>Object</tt>
+&mdash;&nbsp;the serialization options
+&mdash;&nbsp;optional
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><tt>String</tt></tt>&nbsp;&mdash;&nbsp;the exported JSON data
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="importjson-json" class="member">
+<div class="member-link">
+<a name="importjson-json" href="#importjson-json"><tt><b>importJSON</b>(json)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Imports (deserializes) the stored JSON data into the project. Note that the project is not cleared first. You can call <a href="../classes/Project.html#clear"><tt>project.clear</tt></a>() to do so.</p>
+    
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>json:</tt> 
+<tt>String</tt>
+&mdash;&nbsp;the JSON data to import from
+
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/Item.html"><tt>Item</tt></a></tt>&nbsp;&mdash;&nbsp;the imported item
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+	
+<div id="exportsvg" class="member">
+<div class="member-link">
+<a name="exportsvg" href="#exportsvg"><tt><b>exportSVG</b>([options])</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Exports the project with all its layers and child items as an SVG DOM, all contained in one top level SVG group node.</p>
+    <ul class="member-list">
+<h4>Options:</h4>
+<li><tt>options.bounds: <tt>String</tt>⟋<a href="../classes/Rectangle.html"><tt>Rectangle</tt></a></tt> &mdash; the bounds of the area  to export, either as a string (<tt>&lsquo;view&rsquo;</tt>, <tt>content&rsquo;</tt>), or a  <a href="../classes/Rectangle.html"><tt>Rectangle</tt></a> object: <code>&#39;view&#39;</code> uses the view bounds,  <code>&#39;content&#39;</code> uses the stroke bounds of all content &mdash;&nbsp;default: <tt>&lsquo;view&rsquo;</tt></li>
+<li><tt>options.matrix: <a href="../classes/Matrix.html"><tt>Matrix</tt></a></tt> &mdash; the matrix with which  to transform the exported content: If <code>options.bounds</code> is set to  <code>&#39;view&#39;</code>, <code>paper.view.matrix</code> is used, for all other settings of  <code>options.bounds</code> the identity matrix is used. &mdash;&nbsp;default: <tt>paper.view.matrix</tt></li>
+<li><tt>options.asString: <tt>Boolean</tt></tt> &mdash; whether a SVG node or a  <code>String</code> is to be returned &mdash;&nbsp;default: <tt>false</tt></li>
+<li><tt>options.precision: <tt>Number</tt></tt> &mdash; the amount of fractional digits in  numbers used in SVG data &mdash;&nbsp;default: <tt>5</tt></li>
+<li><tt>options.matchShapes: <tt>Boolean</tt></tt> &mdash; whether path items should  tried to be converted to SVG shape items (rect, circle, ellipse,  line, polyline, polygon), if their geometries match &mdash;&nbsp;default: <tt>false</tt></li>
+<li><tt>options.embedImages: <tt>Boolean</tt></tt> &mdash; whether raster images should  be embedded as base64 data inlined in the xlink:href attribute, or  kept as a link to their external URL. &mdash;&nbsp;default: <tt>true</tt></li>
+<li><tt>options.reuseImages: <tt>Boolean</tt></tt> &mdash; whether raster images with  the same content should only be exported once into the <code>&lt;defs&gt;</code>  element, and placed through <code>&lt;use&gt;</code> elements referencing it &mdash;&nbsp;default: <tt>false</tt></li>
+<li><tt>options.idPrefix: <tt>String</tt></tt> &mdash; a prefix for the ids generated  for definitions such as gradients, clip paths and symbols, to keep  them unique when several exported SVGs are placed in one document &mdash;&nbsp;default: <tt>&rsquo;&rsquo;</tt></li>
+<li><tt>options.reduceAttributes: <tt>Boolean</tt></tt> &mdash; wether to only include  style attributes in the SVG output that differ from their parents,  or to always include them (much faster but leading to redundancies). &mdash;&nbsp;default: <tt>true</tt></li>
+<li>[options.processNode] {Function} the function to process the
+    SVG node made for each exported item, receiving an object with the
+    `item` and its `node`: It can change the node, e.g. to add attributes
+    that Paper.js doesn't export, or return a node to replace it with. It
+    is called before the item's name, style, visibility and data are set
+    on the node, which replace attributes of the same names.</li>
+</ul>
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>options:</tt> 
+<tt>Object</tt>
+&mdash;&nbsp;the export options
+&mdash;&nbsp;optional
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><tt>SVGElement</tt>⟋<tt>String</tt></tt>&nbsp;&mdash;&nbsp;the project converted to an SVG node or a <code>String</code> depending on <code>option.asString</code> value
+</li>
+
+		
+	</ul>
+
+
+
+	
+	<h4>Example:<span class="description">Export layers as Inkscape layers. Setting the attributes with their namespace has the exported SVG declare it:</span></h4>
+
+
+<pre><code>var ns = 'http://www.inkscape.org/namespaces/inkscape';
+var svg = project.exportSVG({
+    asString: true,
+    processNode: function(arg) {
+        var item = arg.item;
+        if (item instanceof Layer) {
+            arg.node.setAttributeNS(ns, 'inkscape:groupmode', 'layer');
+            if (item.name)
+                arg.node.setAttributeNS(ns, 'inkscape:label', item.name);
+        }
+    }
+});</code></pre>
+
+</div>
+</div>
+</div>
+
+	
+<div id="importsvg-svg" class="member">
+<div class="member-link">
+<a name="importsvg-svg" href="#importsvg-svg"><tt><b>importSVG</b>(svg[, options])</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Converts the provided SVG content into Paper.js items and adds them to the active layer of this project. Note that the project is not cleared first. You can call <a href="../classes/Project.html#clear"><tt>project.clear</tt></a>() to do so.</p>
+<p><code>&lt;symbol&gt;</code> elements are imported as <a href="../classes/SymbolDefinition.html"><tt>SymbolDefinition</tt></a> items, and the <code>&lt;use&gt;</code> elements that place them as <a href="../classes/SymbolItem.html"><tt>SymbolItem</tt></a> items. The styles that <code>&lt;use&gt;</code> elements inherit don&rsquo;t reach the symbols&rsquo; content.</p>
+<p>The layers in SVG content that Paper.js exported come back as <a href="../classes/Layer.html"><tt>Layer</tt></a> items inside the imported group. To make the layers of a project&rsquo;s SVG the layers of a project again, add them to it with <code>item.children.slice().forEach(project.addLayer, project)</code>.</p>
+<p>URLs are fetched as they are, so validate URLs that come from untrusted sources first, especially on servers, where they could reach internal addresses.</p>
+    <ul class="member-list">
+<h4>Options:</h4>
+<li><tt>options.expandShapes: <tt>Boolean</tt></tt> &mdash; whether imported shape  items should be expanded to path items &mdash;&nbsp;default: <tt>false</tt></li>
+<li>[options.crossOrigin] {String} the {@link Raster#crossOrigin}
+    value of the rasters created for `<image>` elements, to load their
+    images with CORS</li>
+<li><tt>options.onLoad: <tt>Function</tt></tt> &mdash; the callback function to call once the  SVG content is loaded from the given URL receiving two arguments: the  converted <code>item</code> and the original <code>svg</code> data as a string. Only  required when loading from external resources.</li>
+<li><tt>options.onError: <tt>Function</tt></tt> &mdash; the callback function to call if an  error occurs during loading. Only required when loading from external  resources.</li>
+<li><tt>options.insert: <tt>Boolean</tt></tt> &mdash; whether the imported items should  be added to the project that <code>importSVG()</code> is called on &mdash;&nbsp;default: <tt>true</tt></li>
+<li><tt>options.applyMatrix: <tt>Boolean</tt></tt> &mdash; whether the imported items should have their transformation  matrices applied to their contents or not &mdash;&nbsp;default: <tt><a href="../classes/PaperScope.html#settings"><tt>paperScope.settings</tt></a>.applyMatrix</tt></li>
+<li>[options.processItem] {Function} the function to process the
+    item made for each imported SVG element, receiving an object with
+    the `item` and its `node`: It can read attributes that Paper.js
+    doesn't import, or return an item to replace it with. It is called
+    after the element's attributes and data are applied to the item, so
+    it can extend `item.data`. A replacement item doesn't receive them:
+    copy them over from `item` as needed.</li>
+</ul>
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>svg:</tt> 
+<tt>SVGElement</tt>⟋<tt>String</tt>
+&mdash;&nbsp;the SVG content to import, either as a SVG  DOM node, a string containing SVG content, or a string describing the  URL of the SVG file to fetch.
+
+</li>
+	
+	<li>
+<tt>options:</tt> 
+<tt>Object</tt>
+&mdash;&nbsp;the import options
+&mdash;&nbsp;optional
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/Item.html"><tt>Item</tt></a></tt>&nbsp;&mdash;&nbsp;the newly created Paper.js item containing the converted  SVG content
+</li>
+
+		
+	</ul>
+
+
+
+	
+	<h4>Example:<span class="description">Keep the SVG `class` attribute of items in their data, and export it again:</span></h4>
+
+
+<pre><code>var item = project.importSVG(svg, {
+    processItem: function(arg) {
+        var className = arg.node.getAttribute('class');
+        if (className)
+            arg.item.data.className = className;
+    }
+});
+var exported = project.exportSVG({
+    processNode: function(arg) {
+        var className = arg.item.data.className;
+        if (className)
+            arg.node.setAttribute('class', className);
+    }
+});</code></pre>
+
+</div>
+</div>
+</div>
+
+	
+<div id="importsvg-svg-onLoad" class="member">
+<div class="member-link">
+<a name="importsvg-svg-onLoad" href="#importsvg-svg-onLoad"><tt><b>importSVG</b>(svg, onLoad)</tt></a>
+</div>
+<div class="member-description hidden">
+<div class="member-text">
+	<p>Imports the provided external SVG file, converts it into Paper.js items and adds them to the active layer of this project. Note that the project is not cleared first. You can call <a href="../classes/Project.html#clear"><tt>project.clear</tt></a>() to do so.</p>
+    
+	
+<ul class="member-list">
+	<h4>Parameters:</h4>
+	
+	<li>
+<tt>svg:</tt> 
+<tt>SVGElement</tt>⟋<tt>String</tt>
+&mdash;&nbsp;the URL of the SVG file to fetch.
+
+</li>
+	
+	<li>
+<tt>onLoad:</tt> 
+<tt>Function</tt>
+&mdash;&nbsp;the callback function to call once the SVG  content is loaded from the given URL receiving two arguments: the  converted <code>item</code> and the original <code>svg</code> data as a string. Only  required when loading from external files.
+
+</li>
+	
+</ul>
+
+	
+	<ul class="member-list">
+		<h4>Returns:</h4>
+		
+			<li>
+<tt><a href="../classes/Item.html"><tt>Item</tt></a></tt>&nbsp;&mdash;&nbsp;the newly created Paper.js item containing the converted  SVG content
+</li>
+
+		
+	</ul>
+
+
+
+	
+	
+</div>
+</div>
+</div>
+
+
+		
+	</div>
+
+
+
+
+<!-- =========================== copyright notice ========================== -->
+<p class="footer">
+Paper.js v0.17.0<br>
+Copyright &#169; 2011—2026 <a href="http://www.lehni.org" target="_blank">J&uuml;rg Lehni</a> &amp; <a href="http://www.jonathanpuckey.com" target="_blank">Jonathan Puckey</a>. All Rights Reserved.</p>
+<div class="content-end"></div>
+
+
+</article>
+</body>

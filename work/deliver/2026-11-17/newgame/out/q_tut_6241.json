@@ -1,0 +1,1 @@
+{"qa":{"why":["gate-new","quiet","held-till-story","restart","skip"],"steps":["drive","exit","walk","door","phone","map","enter"],"held":0,"fOpened":"PLAYER-HOME","free":60,"ms":91,"ok":false},"state":{"on":false,"i":0,"id":"drive","st":null,"replay":false,"fin":null,"err":null,"errs":0,"ticks":3,"lastF":null},"tutFlags":[],"label":"הבית של סבא","skip":true,"otOn":true}

@@ -1,0 +1,99 @@
+{
+ "audit": {
+  "ok": true,
+  "issues": [],
+  "cells": [
+   "G3 96 נק׳",
+   "H0 96 נק׳",
+   "H1 96 נק׳",
+   "H2 96 נק׳",
+   "H3 96 נק׳"
+  ],
+  "pts": 480,
+  "world": 0,
+  "open": 0,
+  "regions": 57,
+  "live": 56
+ },
+ "info": {
+  "regions": 57,
+  "live": 56,
+  "on": true,
+  "nodes": [],
+  "fieldNodes": 0,
+  "why": {
+   "7800,2100": [
+    true,
+    "APT-AIRFIELD",
+    "APT-AIRFIELD"
+   ],
+   "9000,-400": [
+    true,
+    "APT-AIRFIELD",
+    "APT-AIRFIELD"
+   ],
+   "9000,400": [
+    true,
+    "APT-AIRFIELD",
+    "APT-AIRFIELD"
+   ],
+   "9000,1300": [
+    true,
+    "APT-AIRFIELD",
+    "APT-AIRFIELD"
+   ],
+   "9000,2100": [
+    true,
+    "APT-AIRFIELD",
+    "APT-AIRFIELD"
+   ],
+   "9590,1000": [
+    true,
+    "APT-AIRFIELD",
+    "APT-AIRFIELD"
+   ],
+   "7000,2100": [
+    true,
+    "WATER",
+    "WATER"
+   ],
+   "8000,1200": [
+    true,
+    "APT-AIRFIELD",
+    "APT-AIRFIELD"
+   ]
+  },
+  "water": null,
+  "mapfix": {
+   "on": true,
+   "all": true,
+   "err": null,
+   "n": {
+    "bake": 11,
+    "trees": 14,
+    "flat": 775,
+    "veg": 11,
+    "clicks": 0,
+    "rebake": 0
+   },
+   "regs": 58,
+   "extra": [
+    "H8 · אסדת הגז (021u)"
+   ],
+   "done": false,
+   "total": 24
+  },
+  "w3": [
+   "live",
+   "live",
+   "live"
+  ],
+  "f9": {
+   "ok": true,
+   "zones": 58,
+   "zoneBodies": 58,
+   "why": []
+  }
+ },
+ "errs": []
+}

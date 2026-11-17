@@ -1,0 +1,19 @@
+TRAFFIC_CARS.length
+TRAFFIC_CARS.map(c=>c.kind).reduce((a,k)=>(a[k]=(a[k]||0)+1,a),{})
+TRAFFIC_CARS.filter(c=>c.kind==='ambulance'||c.kind==='police'||c.kind==='fire').map(c=>[c.id,c.asset,c.kind,Math.round(c.x),Math.round(c.y),!!c.taxiRoute,c.edgeId])
+NPC_PEDESTRIANS.map(n=>[n.id,n.asset,Math.round(n.x),Math.round(n.y),n.nodeId])
+NPC_PEDESTRIANS.length
+['PE-01','PE-02','PE-21','PE-24','PE-25','PE-27'].map(a=>{try{const I=TurboCity.info(a,{targetHeight:34,direction:0,pose:'idle'});return [a,I.name||I.label||'',Math.round(I.w),Math.round(I.h)]}catch(e){return [a,'ERR '+e.message]}})
+typeof window.__TC_STORY, Array.isArray(window.__TC_STORY), typeof (window.__TC_STORY||{}).locked
+(()=>{try{return TCSAVE.mode()}catch(e){return 'ERR '+e.message}})()
+nearestRoadPosition(1088,1325)&&(()=>{const r=nearestRoadPosition(1088,1325);return {e:r.edge.id,u:r.u,d:r.d,x:r.x,y:r.y}})()
+(()=>{const r=nearestRoadPosition(659,3672);return {e:r.edge.id,u:r.u,d:r.d,x:r.x,y:r.y}})()
+Object.keys(navPoiRegistry()).length
+(()=>{const P=navPoiRegistry(),c={};for(const p of Object.values(P)){c[p.chunk]=(c[p.chunk]||0)+1}return c})()
+JSON.stringify(window.__TC_C4F.state()).slice(0,800)
+typeof lgPath, typeof lgPose, typeof lgTurn, typeof trafficEdgePoint, typeof releaseGrant2, typeof PARKED_CARS
+(()=>{try{return PARKED_CARS.length}catch(e){return 'ERR '+e.message}})()
+(()=>{try{return Object.keys(PARKED_CARS[0])}catch(e){return 'ERR '+e.message}})()
+gameClock()
+SIM_LOOP&&Object.keys(SIM_LOOP)
+(()=>{try{tcF9Open();tcF9Show('events');const s=tcF9P('events');return s.innerHTML.slice(0,600)}catch(e){return 'ERR '+e.message}})()

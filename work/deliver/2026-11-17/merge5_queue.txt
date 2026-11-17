@@ -1,0 +1,7 @@
+# גל 5 → S7F304 (מעל master S7F303 = int303 41d3604) — שורות "מוכן למיזוג" שהתקבלו
+perf aff09a7 · try7163 40e1a6a69e08 · (stuckmax 2/4 AIR-FRONT — יכריע על המועמד; חלופה: בלי) — + תיקון startMission כשיגיע
+island 2caa461 · try8007 84a3e04f90be · מעל S7F302 (de36b56) · 2ג-2א + 2ג-2ב-1 · נבדק 14:37–14:49 (q_ingame 344/345, stuckmax 0/0, people_on_road, isl17_e9_*). אחריו בענף: d0891eb (מיזוג sealife), d8eaf86 (יציאת "צוק הים" — try8009 בבדיקה) — הוחלף ב-84a3e7a (try8010 04e5ddfe343e; + יציאת צוק הים ב-L2; stuckmax over5 1 ב-B1-LCN — הרצה חוזרת על המועמד)
+airlogos 6affd1d · try7486 9093609b626b · מעל S7F302 · airlogos_probe, q_ingame 0 שגיאות, people_on_road, stuckmax (1 ואז 0 — משאית ב-C4), 0 data:image · 074v_airlogos.js + שורה ב-074x / 013 / 068
+home 43d1a83 · try8126 00811b60540f · מעל S7F302 · HOME-01 (שינה בכל 8 הרמות, 5 אפשרויות, הצץ, מסוק עומד, 42ffd68) · home_q, people_on_road, q_ingame 342/343 (build_texts) · stuckmax: AI-CAR-19 42.7 שנ׳ ב-AIR-FRONT (try8120 בלי — 0)
+fieldthru2 eb09542 · try8095 980b1f94b4f0 · מעל S7F303 · (הסט המלא על המועמד)
+farm 6a8c477 · try8162 77ee2cea47f6 · מעל S7F303 · farm_q, q_ingame 346/346, rules_gate, people_on_road, stuckmax 0

@@ -1,0 +1,439 @@
+{
+ "audit": {
+  "ok": true,
+  "n": 29,
+  "fail": []
+ },
+ "spots": {
+  "checkin": {
+   "airport": 30,
+   "rail": 2,
+   "terminal-cafe": 2,
+   "sunbeak": 2,
+   "aurelia": 2,
+   "skyline": 2,
+   "coral": 2,
+   "tidewind": 2,
+   "zebrano": 2,
+   "terminal-west": 2
+  },
+  "shopsW": {
+   "airport": 53,
+   "hotel": 2,
+   "terminal-cafe": 3,
+   "tidewind": 4,
+   "zebrano": 3,
+   "terminal-west": 3,
+   "rental": 2,
+   "airport:שער המטען": 1,
+   "airport:מודיעין": 1,
+   "rail": 2,
+   "sunbeak": 2,
+   "gate-cafe": 1,
+   "aurelia": 1,
+   "skyline": 1,
+   "coral": 1,
+   "airport:אגף השערים P1–P6": 1
+  },
+  "food": {
+   "airport": 4,
+   "airport:שער עובדים": 2,
+   "pizza": 7,
+   "shawarma": 7,
+   "salads": 7,
+   "bakery": 7,
+   "dutyfree": 7,
+   "books": 7,
+   "toys": 7,
+   "pharmacy": 7,
+   "gifts": 7,
+   "electronics": 7,
+   "police:משטרה · מד״א": 7,
+   "airport:סדנת רכבי השירות": 7,
+   "fire:כבאות והצלה — השדה": 7,
+   "airport:האנגר א׳": 7,
+   "airport:האנגר ב׳": 7,
+   "airport:אגף השערים P1–P6": 7,
+   "terminal-east": 7,
+   "aurelia": 1,
+   "coral": 1
+  },
+  "shopsE": {
+   "juice": 6,
+   "pizza": 6,
+   "shawarma": 6,
+   "salads": 6,
+   "bakery": 6,
+   "dutyfree": 6,
+   "books": 6,
+   "toys": 6,
+   "pharmacy": 6,
+   "gifts": 6,
+   "electronics": 6,
+   "police:משטרה · מד״א": 6,
+   "airport:סדנת רכבי השירות": 6,
+   "fire:כבאות והצלה — השדה": 6,
+   "airport:האנגר א׳": 6,
+   "airport:האנגר ב׳": 6,
+   "airport:האנגר ג׳": 6,
+   "airport:אגף השערים P1–P6": 6,
+   "terminal-east": 6
+  },
+  "gatecafe": {
+   "airport": 56,
+   "sunbeak": 5,
+   "tidewind": 5,
+   "gate-cafe": 5,
+   "airport:אגף השערים P1–P6": 5,
+   "terminal-west": 5
+  },
+  "termW": {
+   "airport": 135,
+   "rail": 18,
+   "terminal-cafe": 9,
+   "sunbeak": 9,
+   "aurelia": 9,
+   "skyline": 9,
+   "coral": 9,
+   "tidewind": 9,
+   "zebrano": 9,
+   "terminal-west": 9
+  },
+  "termE": {
+   "juice": 6,
+   "pizza": 6,
+   "shawarma": 6,
+   "salads": 6,
+   "bakery": 6,
+   "dutyfree": 6,
+   "books": 6,
+   "toys": 6,
+   "pharmacy": 6,
+   "gifts": 6,
+   "electronics": 6,
+   "police:משטרה · מד״א": 6,
+   "airport:סדנת רכבי השירות": 6,
+   "fire:כבאות והצלה — השדה": 6,
+   "airport:האנגר א׳": 6,
+   "airport:האנגר ב׳": 6,
+   "airport:האנגר ג׳": 6,
+   "airport:אגף השערים P1–P6": 6,
+   "terminal-east": 6
+  },
+  "hangars": {
+   "airport:חוות הדלק": 5,
+   "police:משטרה · מד״א": 5,
+   "airport:סדנת רכבי השירות": 5,
+   "fire:כבאות והצלה — השדה": 5,
+   "airport:האנגר א׳": 5,
+   "airport:האנגר ב׳": 5,
+   "airport:האנגר ג׳": 5,
+   "terminal-east": 5,
+   "airport": 4,
+   "airport:שער עובדים": 2
+  },
+  "fire": {
+   "airport:חוות הדלק": 5,
+   "police:משטרה · מד״א": 5,
+   "airport:סדנת רכבי השירות": 5,
+   "fire:כבאות והצלה — השדה": 5,
+   "airport:האנגר א׳": 5,
+   "airport:האנגר ב׳": 5,
+   "airport:האנגר ג׳": 5,
+   "terminal-east": 5
+  },
+  "hotel": {
+   "airport": 40,
+   "rail": 10,
+   "rental": 10
+  },
+  "rent": {
+   "airport": 39,
+   "rail": 13
+  },
+  "cargo": {
+   "airport": 90,
+   "rail": 20,
+   "rental": 10,
+   "terminal-west": 10
+  },
+  "staff": {
+   "airport": 32,
+   "airport:חוות הדלק": 8,
+   "airport:סדנת רכבי השירות": 8,
+   "airport:האנגר ג׳": 8
+  },
+  "info": {
+   "airport": 80
+  },
+  "parking": {
+   "airport": 7
+  },
+  "gates": {
+   "airport": 39,
+   "sunbeak": 3,
+   "tidewind": 3,
+   "terminal-cafe": 3,
+   "gate-cafe": 3,
+   "airport:אגף השערים P1–P6": 3,
+   "terminal-west": 3
+  },
+  "gates2": {
+   "airport": 24,
+   "tidewind": 8,
+   "skyline": 8,
+   "gate-cafe": 8,
+   "juice": 8,
+   "airport:אגף השערים P1–P6": 8,
+   "terminal-east": 8
+  },
+  "tower": {
+   "airport": 26,
+   "sunbeak": 2,
+   "terminal-cafe": 2,
+   "gate-cafe": 2,
+   "tidewind": 2,
+   "zebrano": 2,
+   "airport:אגף השערים P1–P6": 2,
+   "terminal-west": 2
+  },
+  "checkin_n": {
+   "airport": 110,
+   "rail": 10,
+   "terminal-cafe": 10,
+   "sunbeak": 10,
+   "aurelia": 10,
+   "skyline": 10,
+   "coral": 10,
+   "tidewind": 10,
+   "zebrano": 10,
+   "terminal-west": 10
+  },
+  "shopsW_n": {
+   "airport": 55,
+   "terminal-cafe": 5,
+   "tidewind": 5,
+   "zebrano": 5,
+   "terminal-west": 5
+  },
+  "food_n": {
+   "pizza": 15,
+   "shawarma": 15,
+   "salads": 15,
+   "bakery": 15,
+   "dutyfree": 15,
+   "books": 15,
+   "toys": 15,
+   "pharmacy": 15,
+   "gifts": 15,
+   "electronics": 15,
+   "police:משטרה · מד״א": 15,
+   "airport:סדנת רכבי השירות": 15,
+   "fire:כבאות והצלה — השדה": 15,
+   "airport:האנגר א׳": 15,
+   "airport:האנגר ב׳": 15,
+   "airport:אגף השערים P1–P6": 15,
+   "terminal-east": 15
+  },
+  "shopsE_n": {
+   "juice": 8,
+   "pizza": 8,
+   "shawarma": 8,
+   "salads": 8,
+   "bakery": 8,
+   "dutyfree": 8,
+   "books": 8,
+   "toys": 8,
+   "pharmacy": 8,
+   "gifts": 8,
+   "electronics": 8,
+   "police:משטרה · מד״א": 8,
+   "airport:סדנת רכבי השירות": 8,
+   "fire:כבאות והצלה — השדה": 8,
+   "airport:האנגר א׳": 8,
+   "airport:האנגר ב׳": 8,
+   "airport:האנגר ג׳": 8,
+   "airport:אגף השערים P1–P6": 8,
+   "terminal-east": 8
+  },
+  "gatecafe_n": {
+   "airport": 40,
+   "sunbeak": 4,
+   "tidewind": 4,
+   "gate-cafe": 4,
+   "airport:אגף השערים P1–P6": 4,
+   "terminal-west": 4
+  },
+  "termW_n": {
+   "airport": 225,
+   "rail": 30,
+   "terminal-cafe": 15,
+   "sunbeak": 15,
+   "aurelia": 15,
+   "skyline": 15,
+   "coral": 15,
+   "tidewind": 15,
+   "zebrano": 15,
+   "terminal-west": 15
+  },
+  "termE_n": {
+   "juice": 10,
+   "pizza": 10,
+   "shawarma": 10,
+   "salads": 10,
+   "bakery": 10,
+   "dutyfree": 10,
+   "books": 10,
+   "toys": 10,
+   "pharmacy": 10,
+   "gifts": 10,
+   "electronics": 10,
+   "police:משטרה · מד״א": 10,
+   "airport:סדנת רכבי השירות": 10,
+   "fire:כבאות והצלה — השדה": 10,
+   "airport:האנגר א׳": 10,
+   "airport:האנגר ב׳": 10,
+   "airport:האנגר ג׳": 10,
+   "airport:אגף השערים P1–P6": 10,
+   "terminal-east": 10
+  },
+  "hangars_n": {
+   "airport:חוות הדלק": 9,
+   "police:משטרה · מד״א": 9,
+   "airport:סדנת רכבי השירות": 9,
+   "fire:כבאות והצלה — השדה": 9,
+   "airport:האנגר א׳": 9,
+   "airport:האנגר ב׳": 9,
+   "airport:האנגר ג׳": 9,
+   "terminal-east": 9
+  },
+  "fire_n": {
+   "airport:חוות הדלק": 7,
+   "police:משטרה · מד״א": 7,
+   "airport:סדנת רכבי השירות": 7,
+   "fire:כבאות והצלה — השדה": 7,
+   "airport:האנגר א׳": 7,
+   "airport:האנגר ב׳": 7,
+   "airport:האנגר ג׳": 7,
+   "terminal-east": 7,
+   "coral": 1
+  },
+  "hotel_n": {
+   "hotel": 8,
+   "rental": 17,
+   "airport": 32,
+   "rail": 11,
+   "airport:שער המטען": 4
+  },
+  "rent_n": {
+   "airport": 30,
+   "rail": 10
+  },
+  "cargo_n": {
+   "airport": 99,
+   "rail": 22,
+   "rental": 11,
+   "terminal-west": 11
+  },
+  "staff_n": {
+   "airport": 40,
+   "airport:חוות הדלק": 10,
+   "airport:סדנת רכבי השירות": 10,
+   "airport:האנגר ג׳": 10
+  },
+  "info_n": {
+   "airport": 40
+  },
+  "parking_n": {
+   "airport": 70
+  },
+  "gates_n": {
+   "airport": 43,
+   "sunbeak": 3,
+   "tidewind": 3,
+   "terminal-cafe": 3,
+   "gate-cafe": 3,
+   "airport:אגף השערים P1–P6": 3,
+   "terminal-west": 3,
+   "airport:מודיעין": 2,
+   "skyline": 1
+  },
+  "gates2_n": {
+   "airport": 48,
+   "tidewind": 16,
+   "skyline": 16,
+   "gate-cafe": 16,
+   "juice": 16,
+   "airport:אגף השערים P1–P6": 16,
+   "terminal-east": 16
+  },
+  "tower_n": {
+   "airport": 26,
+   "sunbeak": 2,
+   "terminal-cafe": 2,
+   "gate-cafe": 2,
+   "tidewind": 2,
+   "zebrano": 2,
+   "airport:אגף השערים P1–P6": 2,
+   "terminal-west": 2
+  }
+ },
+ "planes": [
+  {
+   "id": "FL-P3",
+   "al": "Tidewind Air",
+   "seen": {
+    "airport": 46,
+    "sunbeak": 5,
+    "airport:אגף השערים P1–P6": 5,
+    "terminal-west": 5
+   }
+  },
+  {
+   "id": "FL-P2",
+   "al": "Sunbeak",
+   "seen": {
+    "airport": 72,
+    "sunbeak": 8,
+    "airport:אגף השערים P1–P6": 1,
+    "terminal-west": 8
+   }
+  },
+  {
+   "id": "FL-GA6",
+   "al": "GA",
+   "seen": {
+    "airport": 5,
+    "airport:שער המטען": 1
+   }
+  }
+ ],
+ "stats": {
+  "on": true,
+  "err": null,
+  "n": {
+   "shop": 2849,
+   "air": 1040,
+   "plate": 856,
+   "band": 2849,
+   "s9": 102,
+   "tower": 254,
+   "gate": 377,
+   "e4": 8470,
+   "tail": 20,
+   "spr": 63,
+   "hooks": 6
+  },
+  "seen": {
+   "airport": 73,
+   "airport:שער המטען": 1,
+   "terminal-west": 6,
+   "sunbeak": 5
+  },
+  "rows": 25,
+  "sprites": 63
+ },
+ "errs": [],
+ "missing": [],
+ "ok": true
+}

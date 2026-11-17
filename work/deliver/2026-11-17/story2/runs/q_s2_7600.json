@@ -1,0 +1,160 @@
+{
+ "file": "try7600.html",
+ "mymap": {
+  "why": [],
+  "total": 6,
+  "items": 6,
+  "r1": "z:ZS-C4",
+  "reminds": 9,
+  "ms": 20,
+  "ok": true
+ },
+ "board": {
+  "ok": false,
+  "why": [
+   "s2-offer-room 6+0"
+  ],
+  "s2": 6,
+  "max": 6,
+  "ms": 46
+ },
+ "story": {
+  "ok": true,
+  "why": [],
+  "ms": 64
+ },
+ "setup": {
+  "c": {
+   "story": 1,
+   "storyOpen": 1,
+   "storyWait": false,
+   "sx": null,
+   "side": 4,
+   "offer": 0,
+   "total": 4,
+   "running": 0,
+   "acc": 0
+  },
+  "open": [
+   "1-3"
+  ]
+ },
+ "icon": "המפה שלי",
+ "app": {
+  "app": "mymap",
+  "cv": true,
+  "w": 328,
+  "items": [
+   "s:1-3",
+   "s:1-4",
+   "s:1-5",
+   "z:ZS-D3",
+   "z:ZS-C3",
+   "z:ZS-B3",
+   "z:ZS-D2",
+   "j:M-ROUTE-SHOP?"
+  ],
+  "hits": 7,
+  "rows": 8,
+  "c": {
+   "story": 3,
+   "storyOpen": 3,
+   "storyWait": false,
+   "sx": null,
+   "side": 4,
+   "offer": 1,
+   "total": 5,
+   "running": 0,
+   "acc": 0
+  },
+  "st": {
+   "err": null,
+   "errs": 0,
+   "sel": null,
+   "items": 8,
+   "draws": 3,
+   "msAvg": 53.43,
+   "msMax": 135.5,
+   "remind": {
+    "n": 0,
+    "act": 2,
+    "gap": 240,
+    "last": -1000000000,
+    "hist": [],
+    "skip": {
+     "phone": 5
+    }
+   }
+  }
+ },
+ "tap": {
+  "hit": {
+   "key": "z:ZS-D3",
+   "x": 706.96,
+   "y": 356.2
+  },
+  "sel": "z:ZS-D3",
+  "info": "סיפור צד · נסיעת המבחן של המוסךהמוסך העירוני · וילות ורכב · 50 מ׳ · חדשהבחר"
+ },
+ "pick": {
+  "phone": false,
+  "nav": "D3-GARAGE",
+  "card": {
+   "key": "z:ZS-D3",
+   "why": "pick"
+  },
+  "cardTxt": "נחום · בחרת · סיפור צד · הניווט פעיל\"נסיעת המבחן של המוסך\" · 350כאן נחום מהמוסך ב-D3. רוצה ללמוד איך עושים נסיעת מבחן לרכב? בוא למוסך.המוסך העירוני · D3 · 70 מ׳"
+ },
+ "link": {
+  "phone": true,
+  "app": "mymap",
+  "sel": "z:ZS-D3"
+ },
+ "keyJ": {
+  "phone": true,
+  "app": "mymap"
+ },
+ "keyJ2": false,
+ "jr": {
+  "btn": true,
+  "txt": " המפה שלי — לבחור מה עושים עכשיוהמשימות הפעילותהסיפור · 3 / 3▶ רישיון לעיר — מבחן הכפר: עצור את הרכב, והמבחן מתחיל (אגרה 150). נוסעים 350 מ׳ בלי תאונה.התקשרשמוליק והקווים — סע למסוף האוטובוסים תחנת הרכבת והמסוף ועצור ליד המשרד.לעבור אליהנווטהתקשרהבית צריך מקרר — סע לקניון ועצור ליד הכניסה.לעבור אליהנווטהתקשרמשימות צד · 4 על המפה + הצעה = 5 / 6 (לפחות 4 על המפה; ההצעה נספרת)נסיעת המבחן של המוסך התק"
+ },
+ "final": {
+  "mm": {
+   "err": null,
+   "errs": 0,
+   "sel": "z:ZS-D3",
+   "items": 8,
+   "draws": 21,
+   "msAvg": 35.21,
+   "msMax": 238,
+   "remind": {
+    "n": 1,
+    "act": 9,
+    "gap": 517,
+    "last": 8,
+    "hist": [
+     {
+      "t": 8,
+      "key": "j:M-ROUTE-SHOP",
+      "why": "offer",
+      "gm": 603.14
+     }
+    ],
+    "skip": {
+     "phone": 17
+    }
+   }
+  },
+  "mb": {
+   "err": null,
+   "errs": 0
+  },
+  "st": {
+   "err": null
+  }
+ },
+ "errors": [],
+ "sec": 33,
+ "ok": false
+}

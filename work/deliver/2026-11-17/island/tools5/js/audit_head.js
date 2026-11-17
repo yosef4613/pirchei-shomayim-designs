@@ -1,0 +1,18 @@
+ function audit(){const C=[],add=(name,ok,detail)=>C.push({name,ok:!!ok,detail:String(detail||'')});
+  const yAt=(g,x)=>{const P=g.pts;for(let i=1;i<P.length;i++)if(P[i][0]>=x&&P[i-1][0]<=x){const a=P[i-1],b=P[i];return a[1]+(b[1]-a[1])*(x-a[0])/Math.max(1e-6,b[0]-a[0])}return null};
+  try{const bad=[],bent=[];for(const id of['EAST-B4','EAST-N1','EAST-C','EAST-S1','EAST-S2']){const g=RAIL_SEG_BY_ID[id];if(!g)continue;for(const q of rlPiers(g))if(q.x>PX0&&q.x<PX1)bad.push(id+'@'+Math.round(q.x));
+    const ys=[PX0,CX,PX1].map(x=>yAt(g,x)).filter(v=>v!=null);if(ys.length>1&&Math.max(...ys)-Math.min(...ys)>2)bent.push(id)}
+   add('span-piers',!bad.length&&!bent.length&&SPAN.piers[0][1]+SPAN.fw<=CH.x0&&SPAN.piers[1][0]-SPAN.fw>=CH.x1,'מעבר השיט x ‏'+CH.x0+'–'+CH.x1+' ('+((CH.x1-CH.x0)/10)+' מ׳ בין הפגושים) · העמודים '+SPAN.piers.map(p=>p.join('–')).join(' / ')+' · '+(bad.length?'עמודים בתעלה: '+bad.slice(0,6).join(', '):'אין עמוד של הגשר הנמוך בין העמודים')+' · '+(bent.length?'מסילה לא ישרה: '+bent.join(','):'שלוש המסילות ישרות במעבר'))}catch(e){add('span-piers',false,e)}
+  add('clearance',SPAN.clear>=6.5,'גובה חופשי '+SPAN.clear+' מ׳ (D‑383: עד 6.5 מ׳) · הפסים +'+SPAN.rail+' מ׳ · הקשת '+SPAN.rise+' מ׳ מעל הסיפון');
+  try{const B={mode:'player',L:90,B:30};let pass=0,n=0,blockW=0,blockE=0,wall=0;for(let y=4880;y<=5340;y+=6){n++;if(!hit(B,CX,y,Math.PI/2))pass++;if(hit(B,6400,y,Math.PI/2))blockW++;if(hit(B,7600,y,Math.PI/2))blockE++}
+   for(let y=4920;y<=4990;y+=10)if(hit(B,WALLS[0].x-20,y,Math.PI/2))wall++;
+   add('player-boats',pass===n&&blockW>0&&blockE>0&&wall>0,'בתעלה (x ‏'+CX+') — עוברת לכל האורך ('+pass+'/'+n+'); ב-x ‏6400 וב-x ‏7600 — נעצרת בגשר ('+blockW+' / '+blockE+'); בקיר ההנחיה — '+wall)}catch(e){add('player-boats',false,e)}
+  try{let bad=[],under=0;for(let t=0;t<1500;t+=.25){const q=F56LIVE.pilotPose(t*1000);if(!q||q.stop==='berth')continue;if(q.y>YN-20&&q.y<YS+20&&q.x>6230){under++;if(q.x-20<CH.x0||q.x+20>CH.x1)bad.push(Math.round(q.x)+','+Math.round(q.y))}}
+   add('pilot-span',!bad.length&&under>0,'סירת הנתב עוברת מתחת לגשר '+under+' דגימות — כולן בתוך התעלה'+(bad.length?' · מחוץ: '+bad.slice(0,6).join(' | '):''))}catch(e){add('pilot-span',false,e)}
+  try{const ids=decksAt(CX-60,5040,CX+60,5170).map(g=>g.id);const ok=ids.includes('EAST-N1')&&ids.includes('EAST-S2')&&(ids.includes('EAST-B4')||ids.includes('EAST-C'));add('deck-cover',ok,'סירה מתחת למעבר מכוסה בסיפונים: '+ids.join(', '))}catch(e){add('deck-cover',false,e)}
+  try{const bad=[];for(const b of F56_BUOYS){if(!w3IsSea(b.x,b.y))bad.push(b.id+':יבשה');if(b.y>=JOG[0]){const red=b.color==='red'||/-R/.test(b.id);if(red&&b.x>edgeW(b.y)+3)bad.push(b.id+':בתוך הנתיב');if(!red&&b.x<edgeE(b.y)-3)bad.push(b.id+':בתוך הנתיב')}}
+   for(const b of BUOYS)if(!w3IsSea(b.x,b.y))bad.push(b.id+':יבשה');for(const d of DOLPH)if(!w3IsSea(d.x,d.y))bad.push('דולפין:יבשה');
+   add('buoys-lane',F56_BUOYS.length===18&&!bad.length,F56_BUOYS.length+' + '+BUOYS.length+' מצופים — במים, האדומים ממערב לנתיב והירוקים ממזרח'+(bad.length?' · '+bad.join(', '):''))}catch(e){add('buoys-lane',false,e)}
+  /* המטוס האמפיבי (074zm): דרך ההסעה מ-H2 אל קו ההמראה ומסלול המים — רחוקים מהשפה המזרחית של הנתיב בעיקול (לפחות 10 מ׳ אחרי חצי המוטה) */
+  try{const TX=[[7000,4350],[7050,4350],[7170,4440],[7290,4620],[7340,4650],[7400,4650],[7300,4500],[7300,4800]],E=[[6950,JOG[0]],[CH.x1,JOG[1]],[CH.x1,4996]];let m=1e9;for(const p of TX)if(p[1]>=JOG[0]-130)m=Math.min(m,polyD(p[0],p[1],E));
+   add('amph-clear',m>=53+40,'הנתיב בעיקול רחוק '+Math.round(m/10)+' מ׳ מדרך ההסעה ומסלול המים של המטוס האמפיבי (חצי מוטה 5.3 מ׳)')}catch(e){add('amph-clear',false,e)}

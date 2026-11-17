@@ -1,0 +1,1 @@
+return (()=>{const q=TCTUT.qa();const s=TCTUT.state();let F=null;try{F=Object.keys(g77St().flags).filter(k=>/^tut:/.test(k))}catch(e){}return {qa:q,state:s,tutFlags:F,label:navPoiRegistry()['PLAYER-HOME'].label,skip:g77NmSkip(),otOn:G77_OT.on}})()

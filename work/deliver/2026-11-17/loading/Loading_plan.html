@@ -1,0 +1,219 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מסך הטעינה — הציור</title><style>
+:root{--bg:#07101c;--ink:#eef7ff;--mut:#a9c6dd;--gold:#ffd27a}body{margin:0;background:radial-gradient(ellipse at 50% 0,#173a5c,#07101c 60%);color:var(--ink);font:16px/1.6 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 80px}h1{color:var(--gold);margin:.2em 0}h2{color:var(--gold);margin-top:1.8em;border-bottom:1px solid rgba(255,210,122,.25);padding-bottom:4px}
+.sub{color:var(--mut)}.flow{width:100%;height:auto;background:#0b1a2b;border-radius:16px}.tb{width:100%;border-collapse:collapse}.tb td,.tb th{border-bottom:1px solid #22384f;padding:8px;text-align:right;vertical-align:top}.tb th{color:var(--gold)}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}.gc{background:#0e2238;border-radius:16px;padding:12px;box-shadow:0 0 0 1px rgba(255,210,122,.2)}.gc svg{width:100%;height:auto;display:block;border-radius:12px}.gc h3{color:var(--gold);margin:.5em 0 .2em;font-size:18px}.gc p{margin:0;color:#d7e9f8;font-size:14.5px}
+kbd{display:inline-block;min-width:1.4em;text-align:center;font:800 .88em Arial;color:#2a1500;background:linear-gradient(180deg,#fff0b8,#ffb020);border-radius:6px;padding:0 .4em;box-shadow:0 2px 0 #9a5200}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}.btns button{font:700 15px "Segoe UI",Arial;background:#ffb020;color:#2a1500;border:0;border-radius:10px;padding:8px 14px;cursor:pointer}.btns button.x{background:#2a5a86;color:#fff}
+.inv li{margin:.4em 0}.inv i{color:var(--mut)}.note{background:#0e2238;border-right:4px solid var(--gold);padding:10px 14px;border-radius:8px}
+</style></head><body><main>
+<h1>מסך הטעינה ומסך הפתיחה — הציור</h1><div class="sub">טורבו סיטי · 17.11 · הסוכן loading · הציור הוא הקוד עצמו (009c_loading.js) — SVG בקוד, בלי אף תמונה.</div>
+<h2>מתי הוא מופיע</h2><svg viewBox="0 0 1000 300" class="flow" role="img" aria-label="מתי מופיע מסך הטעינה">
+<defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ffd27a"/></marker></defs>
+<g font-family="Segoe UI,Arial" font-size="15" text-anchor="middle">
+<rect x="800" y="20" width="180" height="70" rx="12" fill="#1f4a72" stroke="#8cecff"/><text x="890" y="50" fill="#fff" font-weight="800">פתיחת הדף</text><text x="890" y="72" fill="#cfe6ff" font-size="13">boot · מתחת ללוגו</text>
+<rect x="560" y="20" width="200" height="70" rx="12" fill="#1f4a72" stroke="#8cecff"/><text x="660" y="50" fill="#fff" font-weight="800">מסך הפתיחה מוכן</text><text x="660" y="72" fill="#cfe6ff" font-size="13">strip · פס דק בתחתית</text>
+<rect x="300" y="20" width="220" height="70" rx="12" fill="#5a3f28" stroke="#ffd27a"/><text x="410" y="50" fill="#fff" font-weight="800">"המשך" / "משחק חדש" / שמירה</text><text x="410" y="72" fill="#ffe6b0" font-size="13">full · מסך מלא עד שהעיר מוכנה</text>
+<rect x="40" y="20" width="220" height="70" rx="12" fill="#244a6e" stroke="#4fd17a"/><text x="150" y="50" fill="#fff" font-weight="800">משחקים</text><text x="150" y="72" fill="#cfe6ff" font-size="13">העולם חוזר לרוץ</text>
+<path d="M798 55H764M558 55H524M298 55H264" stroke="#ffd27a" stroke-width="3" marker-end="url(#fa)"/>
+<rect x="40" y="150" width="920" height="130" rx="14" fill="#0e2238" stroke="#3b5670"/>
+<text x="500" y="178" fill="#ffd27a" font-weight="800">בתוך המשחק — אותו מסך מלא בכל טעינה</text>
+<g font-size="14" fill="#eef7ff"><rect x="70" y="196" width="190" height="64" rx="10" fill="#1f4a72"/><text x="165" y="222">F7 · טעינת שמירה</text><text x="165" y="244" fill="#cfe6ff" font-size="12">SaveManager.load / loadString</text>
+<rect x="290" y="196" width="190" height="64" rx="10" fill="#1f4a72"/><text x="385" y="222">מעבר בין שמירות</text><text x="385" y="244" fill="#cfe6ff" font-size="12">מסך "שמירות" · ייבוא</text>
+<rect x="510" y="196" width="190" height="64" rx="10" fill="#1f4a72"/><text x="605" y="222">שדה התעופה ממשיך</text><text x="605" y="244" fill="#cfe6ff" font-size="12">G77_LDS — במקום החלון הישן</text>
+<rect x="730" y="196" width="200" height="64" rx="10" fill="#1f4a72"/><text x="830" y="222">זום רחוק / אזור כבד</text><text x="830" y="244" fill="#cfe6ff" font-size="12">40% חסרים או מכוסים · 0.35 שנ׳</text></g></g></svg>
+<h2>החי — לחיצה מציגה את המסך האמיתי</h2><p class="sub">אותו קוד שבמשחק. האיורים מתחלפים כל 5 שנ׳; ההתקדמות כאן מדומה בכפתורים (במשחק — מהמדידות).</p>
+<div class="btns"><button data-v="boot">פתיחה (מתחת ללוגו)</button><button data-v="strip">פס דק במסך הפתיחה</button><button data-v="full">מסך מלא במשחק</button><button data-v="go">התקדמות +20%</button><button class="x" data-v="off">סגירה (או Esc)</button></div>
+<h2>השלבים — התקדמות אמיתית</h2><table class="tb"><tr><th>שלב</th><th>המקור (מה נמדד)</th><th>מוכן כש…</th></tr>
+<tr><td>קוד המשחק</td><td>הסקריפט הגדול רץ עד הסוף (החלק 074zf9 מסמן)</td><td>עד אז — פס מבהיק, בלי מספר מומצא</td></tr>
+<tr><td>השמירה</td><td>TCO.mode: boot → open / ‏TCO.entered / ‏SaveManager.load</td><td>השמירה הוחלה</td></tr>
+<tr><td>מפת הבסיס</td><td>MAPBASE.next / MAPBASE.total (028 — אריח אחד בכל פריים)</td><td>MAPBASE.done</td></tr>
+<tr><td>אריחי העיר</td><td>האריחים במסך שעוד מצוירים חי כי לא נבנו (wtcPass, המונה miss של 062)</td><td>0 חסרים — 3 פריימים רצופים</td></tr>
+<tr><td>כלי הרכב</td><td>התמונות של מבט 3/4 שבתור (C34.queued, ‏065) ורכבים במסך שמחכים (C34G.n.wait)</td><td>התור ריק, או אף רכב לא מחכה 20 פריימים</td></tr>
+<tr><td>שדה התעופה</td><td>G77_LDS.job — n / total (053 / 054)</td><td>העבודה הסתיימה</td></tr>
+<tr><td>עדכון המפה <i>(חדש 17.11, משקל 0)</i></td><td>האפייה השנייה של mapfix (074zp — MAPBASE.rebake, ‏MAPBASE.next מתאפס)</td><td>לא מחכים לה: המפה כבר שלמה (התמונה הקודמת נשארת) — רק נראית בשורה</td></tr></table>
+<p class="note">הפס לא חוזר אחורה באותה טעינה (17.11): אחוז שכבר הוצג נשאר עד שהמדידה עוברת אותו — גם כשהמצלמה של הרקע עוברת לאריחים חדשים, וגם באפייה השנייה של mapfix (קודם: 87% ← 82%).</p>
+<h2>האיורים והטיפים — 10 כרטיסים</h2><div class="gal"></div>
+<h2>מסך הפתיחה — "סרטון הפתיחה" (17.11, תלות מ-opening)</h2><svg viewBox="0 0 1000 250" class="flow" role="img" aria-label="מסך הפתיחה עם האריח סרטון הפתיחה"><g font-family="Segoe UI,Arial" text-anchor="middle">
+<text x="500" y="30" fill="#ffd27a" font-size="15" font-weight="800">מסך הבית של מסך הפתיחה (074zc · sHome) — האריח החמישי מתווסף רק כש-TCOF קיים</text>
+<rect x="250" y="44" width="500" height="58" rx="14" fill="#ffb020"/><text x="500" y="80" fill="#2a1500" font-size="19" font-weight="900">▶ המשך</text>
+<g font-size="15" font-weight="800" fill="#eaf6ff">
+<rect x="806" y="118" width="170" height="92" rx="14" fill="#16324f" stroke="#8cecff" stroke-opacity=".45"/><text x="891" y="182">משחק חדש</text>
+<rect x="616" y="118" width="170" height="92" rx="14" fill="#16324f" stroke="#8cecff" stroke-opacity=".45"/><text x="701" y="182">שמירות</text>
+<rect x="426" y="118" width="170" height="92" rx="14" fill="#16324f" stroke="#8cecff" stroke-opacity=".45"/><text x="511" y="182">הגדרות</text>
+<rect x="236" y="118" width="170" height="92" rx="14" fill="#16324f" stroke="#8cecff" stroke-opacity=".45"/><text x="321" y="182">איך משחקים</text>
+<rect x="24" y="118" width="192" height="92" rx="14" fill="#1d3f5f" stroke="#ffd27a" stroke-width="2.5"/>
+<g transform="translate(104 128) scale(1.1)" fill="none" stroke="#8cecff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7" width="25" height="18" rx="3.5"/><path d="M3.5 12h25M9 7l-2.6 5M15 7l-2.6 5M21 7l-2.6 5M27 7.4l-2.4 4.6"/><path d="M13.6 15.2v6.4l5.6-3.2z" fill="#ffb020" stroke="#ffb020"/></g>
+<text x="120" y="182">סרטון הפתיחה</text><text x="120" y="200" font-size="11.5" font-weight="600" fill="#9fc2da">73 שנ׳ · אפשר לדלג</text></g>
+<text x="500" y="238" fill="#a9c6dd" font-size="13">לחיצה / Enter — TCOF.play('home'): הסרטון במסך מלא מעל מסך הפתיחה (הנגן 029c), Esc / Enter — דילוג, ובסוף חוזרים למסך הבית והפוקוס על האריח. בלי TCOF — ארבעה אריחים כמו קודם.</text></g></svg>
+<h2>מה מצאתי (המלאי — כלל 19)</h2><ul class="inv">
+<li><b>009b_opening_logo.js</b> — המסך הראשון: הלוגו של הבעלים (TCLOGO) ו"העיר נטענת…" — בלי התקדמות, בלי טיפים; הלוגו מופיע רק אחרי שהסקריפט הגדול נגמר (פריסה אסינכרונית). <i>נשאר, ו-TCLD יושב מתחתיו.</i></li>
+<li><b>074zc_opening.js · TCO</b> — מסך הפתיחה: המשך / משחק חדש / שמירות / הגדרות / איך משחקים / תפריט Esc; הרקע — 11 צילומים מהעולם (TCCITY.grab), כל אחד נבנה כמה שניות. <i>נשאר כמו שהוא; עד שהצילום הראשון מוכן — העיר המצוירת של TCLD מאחור.</i></li>
+<li><b>054_core_p283.js · g77LdsUi</b> — חלון "טוען את שדה התעופה…" עם פס כחול ואחוזים. <i>עכשיו ההתקדמות שלו עוברת למסך הטעינה; החלון הישן — רק גיבוי.</i></li>
+<li><b>028 MAPBASE · 061/062 WTC · 065 C34</b> — המנגנונים שבונים את המפה, האריחים והרכבים בהדרגה. <i>רק קוראים מהם (כלל 19א) — זו ההתקדמות האמיתית.</i></li>
+<li><b>מה היה חסר:</b> בכניסה מהתפריט, ב-F7, במעבר שמירות ובזום רחוק — לא היה שום מסך: העולם הופיע חצי בנוי. אין איורים ואין טיפים בשום מקום.</li></ul>
+<p class="note">ברירות המחדל (לאישורך): בזמן מסך מלא בתוך המשחק — העולם מושהה והמקשים לא עוברים (F5/F11/F12 עוברים); מקסימום 25 שנ׳. זום רחוק / אזור כבד — רק כשיותר מ-40% מהמסך חסר יותר משליש שנייה, פעם ב-20 שנ׳ לכל היותר. ב-#dev ובבדיקות — כבוי, כמו מסך הפתיחה (‎#loading מכריח).</p>
+</main><script>window.__TCO_SKIP=true;</script><script>/* ===== 17.11 · TCLD — מסך הטעינה (סוכן loading; הציור: deliver/2026-11-17/loading/Loading_plan.html). הבעלים 12.11: "כמו בהרבה משחקים".
+   - רץ בגוף 9 (לפני הסקריפט הגדול): המסך, האיורים והטיפים הם SVG בקוד בתוך הדף — מצוירים בפריים הראשון, בלי תמונות ובלי צילום מהעולם (כלל 17).
+   - האיורים מתחלפים כל 5 שנ׳ באנימציה של CSS (שקיפות ותזוזה — רצה גם כשהסקריפט הגדול תופס את הדפדפן), ומתחילים בכרטיס אקראי.
+   - ההתקדמות אמיתית: TCLD.set(k,f,txt) — שלבים עם משקל (קוד המשחק, השמירה, מפת הבסיס MAPBASE, אריחי העיר WTC, כלי הרכב C34, שדה התעופה);
+     שלב שעוד לא יודע כמה — פס מבהיק, בלי מספר מומצא. המדידות עצמן והמקומות שמפעילים את המסך — בחלק 074zf9_loading_hooks.js.
+   - שלושה מראות: 'boot' — בפתיחה, מתחת ללוגו של TCO; ‏'strip' — פס דק בתחתית מסך הפתיחה כשהעיר ממשיכה להיבנות ברקע;
+     'full' — מסך מלא בתוך המשחק (טעינת שמירה, מעבר בין שמירות, כניסה מהתפריט, השדה שממשיך, זום רחוק שבונה מחדש, אזור כבד), עם הלוגו.
+   - כמו מסך הפתיחה: ב-‎#dev / ‏#qa / ‏#bench / ‏#owner / ‏#tool — לא מופיע (הבדיקות כמו קודם); ‎#loading — מכריח. ===== */
+(function(){
+ var h=location.hash||'',FORCE=/(^#|&)loading(&|$)/.test(h),SKIP=!FORCE&&(!!window.__TCO_SKIP||!!window.__TC_QA_FREEZE);   /* qa-freeze: no frame loop — nothing would close it */
+ var SEC=5,FADE=.7,FONT='"Segoe UI","Noto Sans Hebrew",Arial,sans-serif';
+ /* ---------- the drawing helpers (SVG strings, the colours of the logo; 3/4: the roof, and the south face under it) ---------- */
+ function K(x,y,ch,s){s=s||1;var w=34*s,f=(ch.length>1?15:20)*s;return'<g><rect x="'+x+'" y="'+(y+3*s)+'" width="'+w+'" height="'+w+'" rx="'+7*s+'" fill="#7a3d00" opacity=".55"/><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+w+'" rx="'+7*s+'" fill="url(#ldKey)" stroke="#fff3c4" stroke-width="'+1.2*s+'"/><text x="'+(x+w/2)+'" y="'+(y+w/2+f*.36)+'" font-family="Arial" font-weight="900" font-size="'+f+'" text-anchor="middle" fill="#2a1500">'+ch+'</text></g>'}
+ function B(x,y,w,d,hh,roof,face,win,o){o=o||{};var s='<rect x="'+x+'" y="'+(y+d)+'" width="'+w+'" height="'+hh+'" fill="'+face+'"/><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+d+'" fill="'+roof+'"/><rect x="'+x+'" y="'+(y+d)+'" width="'+w+'" height="3" fill="#000" opacity=".22"/>';
+  if(win){var cols=Math.max(1,Math.floor((w-6)/(o.ww||11))),rows=Math.max(1,Math.floor((hh-8)/(o.wh||12)));for(var r=0;r<rows;r++)for(var c=0;c<cols;c++){var lit=((c*7+r*3+x)%5)<2;s+='<rect x="'+(x+5+c*(o.ww||11))+'" y="'+(y+d+6+r*(o.wh||12))+'" width="'+((o.ww||11)-5)+'" height="'+((o.wh||12)-6)+'" rx="1" fill="'+(lit?win:'#16324e')+'"'+(lit&&o.tw?' class="tw" style="--tw:'+(2+((c+r)%4))+'s"':'')+'/>'}}
+  return s}
+ function car(x,y,col,o){o=o||{};var s=o.s||1,w=58*s,hh=26*s;return'<g transform="translate('+x+' '+y+')"><ellipse cx="'+w/2+'" cy="'+(hh+5*s)+'" rx="'+w*.55+'" ry="'+5*s+'" fill="#000" opacity=".3"/>'+
+  '<rect x="0" y="'+8*s+'" width="'+w+'" height="'+(hh-6*s)+'" rx="'+7*s+'" fill="'+col+'"/><rect x="'+10*s+'" y="0" width="'+w*.58+'" height="'+15*s+'" rx="'+5*s+'" fill="'+col+'" stroke="#000" stroke-opacity=".18"/>'+
+  '<rect x="'+13*s+'" y="'+2.5*s+'" width="'+w*.24+'" height="'+8*s+'" rx="2" fill="#bfe9ff" opacity=".9"/><rect x="'+(15*s+w*.25)+'" y="'+2.5*s+'" width="'+w*.24+'" height="'+8*s+'" rx="2" fill="#9fd6f5" opacity=".9"/>'+
+  '<rect x="'+(w-5*s)+'" y="'+12*s+'" width="'+4*s+'" height="'+5*s+'" rx="1" fill="#fff6c8"/><rect x="'+1*s+'" y="'+12*s+'" width="'+3.5*s+'" height="'+5*s+'" rx="1" fill="#ff5a4a"/>'+
+  '<circle cx="'+13*s+'" cy="'+(hh+1*s)+'" r="'+5.5*s+'" fill="#111a24"/><circle cx="'+(w-13*s)+'" cy="'+(hh+1*s)+'" r="'+5.5*s+'" fill="#111a24"/><circle cx="'+13*s+'" cy="'+(hh+1*s)+'" r="'+2.2*s+'" fill="#8a9bb0"/><circle cx="'+(w-13*s)+'" cy="'+(hh+1*s)+'" r="'+2.2*s+'" fill="#8a9bb0"/>'+
+  (o.door?'<path d="M'+(w*.5)+' '+9*s+'l'+10*s+' '+(-6*s)+'v'+16*s+'l'+(-10*s)+' '+4*s+'z" fill="'+col+'" stroke="#fff" stroke-opacity=".5"/>':'')+'</g>'}
+ function man(x,y,o){o=o||{};var s=o.s||1,sh=o.shirt||'#ff970c';return'<g transform="translate('+x+' '+y+')"><ellipse cx="0" cy="'+30*s+'" rx="'+8*s+'" ry="'+2.6*s+'" fill="#000" opacity=".3"/><rect x="'+(-4.5*s)+'" y="'+17*s+'" width="'+3.6*s+'" height="'+13*s+'" rx="1.5" fill="#26364a"/><rect x="'+0.9*s+'" y="'+17*s+'" width="'+3.6*s+'" height="'+13*s+'" rx="1.5" fill="#26364a"/>'+
+  '<rect x="'+(-6*s)+'" y="'+5*s+'" width="'+12*s+'" height="'+14*s+'" rx="'+4*s+'" fill="'+sh+'"/><circle cx="0" cy="0" r="'+5.4*s+'" fill="#e8b48c"/><path d="M'+(-5.4*s)+' '+(-1*s)+'a'+5.4*s+' '+5.4*s+' 0 0 1 '+10.8*s+' 0z" fill="#3a2414"/></g>'}
+ function grad(){return'<defs><linearGradient id="ldKey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".45" stop-color="#ffcf5a"/><stop offset="1" stop-color="#e08300"/></linearGradient>'+
+  '<linearGradient id="ldSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#173a5c"/><stop offset="1" stop-color="#0b1a2b"/></linearGradient><linearGradient id="ldGr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f6a43"/><stop offset="1" stop-color="#1e4a30"/></linearGradient>'+
+  '<radialGradient id="ldGlow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd27a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient></defs>'}
+ function sv(body){return'<svg class="ldArt" viewBox="0 0 320 200" role="img" aria-hidden="true"><rect width="320" height="200" rx="14" fill="url(#ldSky)"/>'+body+'</svg>'}
+ var ROAD='<rect x="0" y="150" width="320" height="50" fill="#2b3644"/><rect x="0" y="148" width="320" height="3" fill="#8aa0b6" opacity=".5"/>'+[0,1,2,3,4,5].map(function(i){return'<rect x="'+(14+i*56)+'" y="174" width="30" height="3" rx="1" fill="#ffd27a" opacity=".75"/>'}).join('');
+ var GROUND='<rect x="0" y="118" width="320" height="34" fill="url(#ldGr)"/>';
+ /* ---------- the cards: the illustration, the title, the tip (E / F / T / M, the phone, the fuel, the licences, the story, the zones, the save, the camera) ---------- */
+ var CARDS=[
+  {k:'E',t:'לצאת מהרכב ולהיכנס — E',p:'עומדים ולוחצים <kbd>E</kbd>: יוצאים מהרכב, ונכנסים לרכב שלך או לרכב תנועה שעצר. <kbd>Shift</kbd> — ריצה ברגל.',
+   a:sv(GROUND+ROAD+B(18,40,92,22,64,'#3c6f9c','#244a6e','#ffd27a',{tw:1})+B(214,58,88,18,48,'#7a5a3a','#5a3f28','#ffe6a8',{tw:1})+car(118,118,'#1f85cc',{door:1,s:1.25})+man(214,112,{s:1.2})+
+    '<path d="M196 128q-12 -10 -24 -4" fill="none" stroke="#ffd27a" stroke-width="3" stroke-dasharray="5 4" marker-end="url(#ldArr)"/>'+K(262,14,'E',1.3))},
+  {k:'F',t:'ליד מקום — F',p:'ליד חנות, מוסך, בית, תחנה או שער לוחצים <kbd>F</kbd>, והמקום נפתח במסך גדול. <kbd>F</kbd> שוב — חזרה לעיר.',
+   a:sv(GROUND+ROAD+B(30,46,130,22,58,'#c94f3d','#8f3427','#ffe6a8')+'<path d="M26 92h138l-8 14H34z" fill="#ffb020"/><path d="M34 106h122" stroke="#c76a00" stroke-width="2"/>'+[0,1,2,3,4,5].map(function(i){return'<path d="M'+(34+i*22)+' 92l-4 14h11z" fill="#fff3d0" opacity=".75"/>'}).join('')+
+    man(100,118,{s:1.15,shirt:'#12dafa'})+'<g><rect x="176" y="26" width="128" height="96" rx="10" fill="#0e2238" stroke="#ffd27a" stroke-width="2"/><rect x="176" y="26" width="128" height="20" rx="10" fill="#1f4a72"/><rect x="186" y="56" width="62" height="7" rx="3" fill="#8cecff"/><rect x="186" y="70" width="96" height="6" rx="3" fill="#5d7c98"/><rect x="186" y="82" width="80" height="6" rx="3" fill="#5d7c98"/><rect x="186" y="98" width="46" height="16" rx="6" fill="#ffb020"/><rect x="238" y="98" width="46" height="16" rx="6" fill="#2a5a86"/></g>'+K(128,22,'F',1.3))},
+  {k:'T',t:'הטלפון — T',p:'<kbd>T</kbd> פותח את הטלפון: משימות, ניווט, מונית, רישיונות, דיג, הישגים, שמירה והגדרות. <kbd>T</kbd> או <kbd>Esc</kbd> — סגירה.',
+   a:sv('<circle cx="160" cy="100" r="92" fill="url(#ldGlow)"/><rect x="112" y="14" width="96" height="176" rx="16" fill="#0a1522" stroke="#8cecff" stroke-width="2.5"/><rect x="120" y="30" width="80" height="146" rx="6" fill="#123050"/>'+
+    ['#ffb020','#12dafa','#4fd17a','#ff6b5a','#b48cff','#ffd27a','#1f85cc','#ff970c','#7ee0c0','#e86fb0','#8cecff','#ffcf5a'].map(function(c,i){return'<rect x="'+(127+(i%3)*24)+'" y="'+(42+Math.floor(i/3)*26)+'" width="18" height="18" rx="5" fill="'+c+'"/>'}).join('')+
+    '<rect x="124" y="150" width="72" height="18" rx="8" fill="#ffd27a"/><rect x="132" y="156" width="40" height="5" rx="2.5" fill="#2a1500"/><circle cx="160" cy="22" r="2.4" fill="#3b5670"/>'+K(232,30,'T',1.4)+K(44,120,'Esc',1.25))},
+  {k:'M',t:'המפה — M',p:'<kbd>M</kbd> פותח את כל העיר: האזורים, קווי האוטובוס והניווט; "אני" — איפה אתה עכשיו. המפה הקטנה תמיד בפינה.',
+   a:sv('<path d="M30 34l84 -14 92 14 84 -14v146l-84 14 -92 -14 -84 14z" fill="#e9dfc4"/><path d="M114 20v146M206 34v146" stroke="#c8b98e" stroke-width="2"/>'+
+    '<path d="M40 70h250M40 116h250M86 30v150M160 30v150M246 30v150" stroke="#9aa9b8" stroke-width="5" opacity=".75"/><path d="M40 70h250M40 116h250M86 30v150M160 30v150M246 30v150" stroke="#fff" stroke-width="1.2" stroke-dasharray="4 4" opacity=".8"/>'+
+    '<rect x="96" y="80" width="54" height="28" fill="#7fb38a" opacity=".85"/><rect x="170" y="126" width="66" height="34" fill="#7fb4d8" opacity=".85"/><rect x="50" y="124" width="28" height="40" fill="#d9a46a" opacity=".85"/>'+
+    '<path d="M64 150V116H160V70H232" fill="none" stroke="#ff970c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 7"/><path d="M232 46c-11 0 -18 8 -18 17 0 13 18 29 18 29s18 -16 18 -29c0 -9 -7 -17 -18 -17z" fill="#e8402e" stroke="#fff" stroke-width="2"/><circle cx="232" cy="63" r="6" fill="#fff"/><circle cx="64" cy="150" r="7" fill="#12dafa" stroke="#fff" stroke-width="2"/>'+K(268,148,'M',1.3))},
+  {k:'fuel',t:'הדלק',p:'הדלק — בפס שלמעלה. כשהוא יורד נוסעים לתחנת דלק ועוצרים ליד משאבה. בלי מספיק כסף — תדלוק חירום קטן, כדי שלא תיתקע.',
+   a:sv(GROUND+ROAD+'<rect x="40" y="60" width="8" height="64" fill="#8aa0b6"/><rect x="190" y="60" width="8" height="64" fill="#8aa0b6"/><rect x="28" y="40" width="182" height="24" rx="4" fill="#bfefff" opacity=".28" stroke="#e7f8ff" stroke-width="2"/><rect x="28" y="40" width="182" height="6" fill="#ff970c"/>'+
+    '<rect x="100" y="80" width="26" height="44" rx="4" fill="#e8402e"/><rect x="104" y="86" width="18" height="12" rx="2" fill="#0b1a2b"/><rect x="106" y="89" width="14" height="5" fill="#4fd17a"/><path d="M126 96q12 2 10 20" fill="none" stroke="#111" stroke-width="3"/>'+car(132,110,'#ffb020',{s:1.1})+
+    '<g transform="translate(262 62)"><circle r="40" fill="#0e2238" stroke="#ffd27a" stroke-width="3"/><path d="M-30 12a32 32 0 0 1 60 0" fill="none" stroke="#3b5670" stroke-width="7"/><path d="M-30 12a32 32 0 0 1 8 -26" fill="none" stroke="#e8402e" stroke-width="7"/><path d="M0 12L-20 -12" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/><circle cy="12" r="4.5" fill="#ffd27a"/><text y="32" font-family="Arial" font-weight="800" font-size="13" text-anchor="middle" fill="#ffd27a">דלק</text></g>')},
+  {k:'lic',t:'הרישיונות',p:'רישיון פותח עבודות וכלים חדשים: נהג אוטובוס, מלגזה בנמל, דיג, ועוד. מבחן הרישיון ומה חסר — בטלפון, באפליקציה "רישיונות".',
+   a:sv('<g transform="rotate(-8 90 110)"><rect x="34" y="52" width="120" height="78" rx="10" fill="#1f4a72" stroke="#8cecff" stroke-width="2"/><text x="94" y="104" font-family="Arial" font-weight="900" font-size="34" text-anchor="middle" fill="#8cecff">BUS</text></g>'+
+    '<g transform="rotate(5 220 110)"><rect x="166" y="48" width="120" height="78" rx="10" fill="#5a3f28" stroke="#ffd27a" stroke-width="2"/><path d="M190 100h40v-24h16l14 24v10h-70z" fill="#ffb020"/><path d="M196 76v-18M196 58h-10" stroke="#ffd27a" stroke-width="4"/><circle cx="200" cy="112" r="6" fill="#111"/><circle cx="248" cy="112" r="6" fill="#111"/></g>'+
+    '<rect x="98" y="96" width="132" height="86" rx="12" fill="#f3ead2" stroke="#ffb020" stroke-width="3"/><rect x="98" y="96" width="132" height="22" rx="12" fill="#ffb020"/><text x="164" y="112" font-family="Arial" font-weight="900" font-size="13" text-anchor="middle" fill="#2a1500">TURBO CITY</text>'+
+    '<rect x="110" y="126" width="34" height="42" rx="4" fill="#c8d3de"/><circle cx="127" cy="140" r="7" fill="#e8b48c"/><rect x="117" y="150" width="20" height="14" rx="5" fill="#1f85cc"/><rect x="152" y="130" width="64" height="7" rx="3" fill="#5d7c98"/><rect x="152" y="144" width="48" height="7" rx="3" fill="#5d7c98"/>'+
+    '<text x="214" y="170" font-family="Arial" font-weight="900" font-size="24" text-anchor="middle" fill="#1f85cc">B</text><circle cx="270" cy="160" r="20" fill="#4fd17a"/><path d="M260 160l7 7 13 -14" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>')},
+  {k:'story',t:'הסיפור',p:'הסיפור מתחיל בבית הסבא. משימה חדשה — הודעה בטלפון וסמן על המפה; כל פרק פותח עוד מקומות בעיר.',
+   a:sv(GROUND+ROAD+'<circle cx="270" cy="40" r="18" fill="#ffd27a" opacity=".9"/>'+B(40,62,96,16,46,'#a8452f','#e3d3b0','#ffd27a')+'<path d="M32 78l56 -36 56 36z" fill="#b8503a"/><path d="M32 78l56 -36 56 36" fill="none" stroke="#6e2a1c" stroke-width="3"/><rect x="78" y="100" width="18" height="24" fill="#6e4a2a"/>'+
+    '<circle cx="168" cy="88" r="22" fill="#2f7a46"/><rect x="164" y="104" width="8" height="20" fill="#5a3f28"/>'+car(196,110,'#4fd17a',{s:1.15})+'<rect x="200" y="112" width="26" height="12" fill="#2f8a55"/>'+
+    '<g><path d="M222 26h68a10 10 0 0 1 10 10v26a10 10 0 0 1 -10 10h-40l-12 12v-12h-16a10 10 0 0 1 -10 -10v-26a10 10 0 0 1 10 -10z" fill="#fff" stroke="#ffb020" stroke-width="2.5"/><text x="256" y="58" font-family="Arial" font-weight="900" font-size="28" text-anchor="middle" fill="#e8402e">!</text></g>'+man(150,116,{s:1.1,shirt:'#1f85cc'}))},
+  {k:'zones',t:'האזורים',p:'העיר מחולקת לאזורים — אותיות A–H ומספרים 0–9 (למשל D3, ‏G4). השם של האזור במפה הקטנה, והמשחק נשמר לבד כשעוברים אזור.',
+   a:sv('<g font-family="Arial" font-weight="800" font-size="11" fill="#8cecff" text-anchor="middle">'+'ABCDEFG'.split('').map(function(c,i){return'<text x="'+(42+i*40)+'" y="20">'+c+'</text>'}).join('')+'0123'.split('').map(function(c,i){return'<text x="12" y="'+(52+i*42)+'">'+c+'</text>'}).join('')+'</g>'+
+    (function(){var s='';for(var j=0;j<4;j++)for(var i=0;i<7;i++){var x=24+i*40,y=28+j*42,lock=(i>=5&&j>=2),k=(i*3+j*5)%4;s+='<rect x="'+x+'" y="'+y+'" width="38" height="40" fill="'+(lock?'#0b1726':['#284e3a','#2c4a66','#3a3550','#4a3d2c'][k])+'" stroke="#0b1a2b" stroke-width="1.5"/>';
+     if(!lock)s+=B(x+6,y+6,12+(k*3),6,10+k*3,'#8cb4d8','#4f7aa0','#ffd27a',{ww:6,wh:6})+B(x+22,y+14,10,5,8+k*2,'#d9a46a','#9a6f42','#ffe6a8',{ww:6,wh:6})}
+     return s})()+'<g transform="translate(244 124)"><rect x="-13" y="-2" width="26" height="22" rx="4" fill="#ffb020"/><path d="M-8 -2v-7a8 8 0 0 1 16 0v7" fill="none" stroke="#ffb020" stroke-width="4"/><circle cy="9" r="3" fill="#2a1500"/></g>'+
+    '<rect x="144" y="112" width="38" height="40" fill="none" stroke="#ffd27a" stroke-width="3"/><text x="163" y="166" font-family="Arial" font-weight="900" font-size="12" text-anchor="middle" fill="#ffd27a">D3</text>')},
+  {k:'save',t:'שמירה',p:'<kbd>F6</kbd> שומר מתי שרוצים. המשחק נשמר גם לבד — בכל מעבר אזור ובכל 15 דקות. "שמירות" במסך הפתיחה — לבחור, לייבא ולייצא.',
+   a:sv('<circle cx="160" cy="100" r="86" fill="url(#ldGlow)"/><g transform="translate(104 44)"><path d="M0 0h88l24 24v88H0z" fill="#1f4a72" stroke="#8cecff" stroke-width="3" stroke-linejoin="round"/><path d="M18 0v36h62V0" fill="#0e2238" stroke="#8cecff" stroke-width="3"/><rect x="60" y="6" width="12" height="22" rx="2" fill="#8cecff"/><rect x="18" y="62" width="76" height="40" rx="5" fill="#f3ead2"/><path d="M28 76h56M28 88h40" stroke="#5d7c98" stroke-width="4" stroke-linecap="round"/></g>'+
+    '<g transform="translate(262 62)"><circle r="30" fill="#0e2238" stroke="#ffd27a" stroke-width="3"/><path d="M0 -18v18l12 8" fill="none" stroke="#ffd27a" stroke-width="4" stroke-linecap="round"/><text y="50" font-family="Arial" font-weight="800" font-size="12" text-anchor="middle" fill="#ffd27a">15 דק׳</text></g>'+K(30,40,'F6',1.4)+K(30,120,'Esc',1.25))},
+  {k:'cam',t:'הזום והמצלמה',p:'הגלגלת — זום פנימה והחוצה; בזום רחוק העיר נבנית מחדש לרגע. <kbd>F4</kbd> — מצלמה חופשית, ו-<kbd>Esc</kbd> — התפריט וההגדרות.',
+   a:sv(GROUND+B(40,58,60,16,50,'#3c6f9c','#244a6e','#ffd27a')+B(108,40,54,14,68,'#8a6a9c','#5a466e','#ffe6a8')+B(170,66,70,18,40,'#3c8a6c','#245a46','#ffd27a')+
+    '<g transform="translate(250 96)"><circle r="34" fill="#bfefff" opacity=".22" stroke="#e7f8ff" stroke-width="5"/><path d="M24 24l24 24" stroke="#e7f8ff" stroke-width="9" stroke-linecap="round"/><path d="M-12 0h24M0 -12v24" stroke="#ffd27a" stroke-width="5" stroke-linecap="round"/></g>'+
+    '<g transform="translate(30 132)"><rect width="34" height="52" rx="17" fill="#e7f0f8" stroke="#8aa0b6" stroke-width="2"/><rect x="14" y="8" width="6" height="14" rx="3" fill="#1f85cc"/><path d="M17 -10v-8M11 -14l6 -6 6 6" fill="none" stroke="#ffd27a" stroke-width="3" stroke-linecap="round"/></g>'+K(84,146,'F4',1.25))}];
+ var ARR='<svg width="0" height="0" style="position:absolute" aria-hidden="true">'+grad().replace('</defs>','')+'<marker id="ldArr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffd27a"/></marker></defs></svg>';
+ /* the city at night along the bottom: blocks in 3/4, windows that blink, a car and a bus on the road, a plane — all moved by CSS */
+ function skyline(){var s='<svg class="ldSky" viewBox="0 0 1600 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><rect y="150" width="1600" height="70" fill="#0d1824"/><rect y="168" width="1600" height="3" fill="#ffd27a" opacity=".25"/>';
+  var x=0,i=0;while(x<1600){var w=50+((i*37)%70),hh=40+((i*53)%110),d=10+(i%3)*3,face=['#102a44','#14304e','#0f2236','#183858'][i%4],roof=['#1e4a72','#24547e','#1a3f60','#2b5f8c'][i%4];s+=B(x,150-hh-d,w,d,hh,roof,face,'#ffd27a',{ww:10,wh:12,tw:1});x+=w+4+((i*13)%10);i++}
+  s+='<g class="ldCar a">'+car(0,160,'#ffb020',{s:.9})+'</g><g class="ldCar b">'+car(0,170,'#12dafa',{s:.8})+'</g><g class="ldBus"><rect x="0" y="152" width="120" height="30" rx="6" fill="#ff970c"/>'+[0,1,2,3,4].map(function(k){return'<rect x="'+(8+k*22)+'" y="157" width="16" height="10" rx="2" fill="#bfe9ff"/>'}).join('')+'<circle cx="24" cy="183" r="6" fill="#111"/><circle cx="96" cy="183" r="6" fill="#111"/></g>'+
+   '<g class="ldPlane"><path d="M0 40l60 -6 18 -14h8l-8 16 30 -2 8 -8h6l-4 10 4 10h-6l-8 -8 -30 -2 8 16h-8l-18 -14z" fill="#dfefff"/><circle cx="2" cy="40" r="2.5" fill="#ff5a4a" class="tw" style="--tw:1.2s"/></g></svg>';return s}
+ function cardsHtml(){var n=CARDS.length,P=100/n,f=FADE/(n*SEC)*100,kf='@keyframes tcldCyc{0%{opacity:0;transform:translateY(10px) scale(.985)}'+f.toFixed(3)+'%{opacity:1;transform:none}'+P.toFixed(3)+'%{opacity:1;transform:none}'+(P+f).toFixed(3)+'%{opacity:0;transform:translateY(-6px)}100%{opacity:0}}'+
+   '@keyframes tcldDot{0%{background:#ffd27a;width:18px}'+f.toFixed(3)+'%{background:#ffd27a;width:18px}'+P.toFixed(3)+'%{background:#ffd27a;width:18px}'+(P+f).toFixed(3)+'%{background:rgba(255,255,255,.28);width:7px}100%{background:rgba(255,255,255,.28);width:7px}}';
+  var st0=Math.floor(Math.random()*n),off=st0*SEC+FADE+.05;st.first=st0;st.off=off;
+  return'<style>'+kf+'</style><div class="cds" style="--n:'+n+';--s:'+SEC+'s;--off:'+off.toFixed(2)+'s">'+CARDS.map(function(c,i){return'<div class="crd" data-k="'+c.k+'" style="--i:'+i+'"><div class="art">'+c.a+'</div><div class="tx"><div class="tag">טיפ</div><h3>'+c.t+'</h3><p>'+c.p+'</p></div></div>'}).join('')+'</div>'+
+   '<div class="dots" style="--n:'+n+';--s:'+SEC+'s;--off:'+off.toFixed(2)+'s">'+CARDS.map(function(c,i){return'<i style="--i:'+i+'"></i>'}).join('')+'</div>'}
+ function css(){if(document.getElementById('tcldCss'))return;var s=document.createElement('style');s.id='tcldCss';s.textContent=
+  '#tcldRoot{position:fixed;inset:0;z-index:9650;direction:rtl;color:#eef7ff;font:15px/1.5 '+FONT+';pointer-events:none;display:none;user-select:none}#tcldRoot.on{display:block}'+
+  '#tcldRoot.full{pointer-events:all;background:radial-gradient(ellipse 70% 60% at 50% 34%,#173a5c 0,#0b1a2b 55%,#03080e 100%)}#tcldRoot.out{opacity:0;transition:opacity .38s ease}'+
+  '#tcldRoot .ldSky{position:absolute;left:0;right:0;bottom:0;width:100%;height:min(30vh,240px);opacity:.9}#tcldRoot.boot .ldSky{opacity:.42}#tcldRoot.strip .ldSky{opacity:.5;height:min(20vh,160px)}#tcldRoot.strip.pics .ldSky{display:none}'+
+  '#tcldRoot .ldCar.a{animation:tcldDrive 11s linear infinite}#tcldRoot .ldCar.b{animation:tcldDrive2 8.5s linear -3s infinite}#tcldRoot .ldBus{animation:tcldDrive 17s linear -9s infinite}#tcldRoot .ldPlane{animation:tcldFly 21s linear -4s infinite}'+
+  '@keyframes tcldDrive{from{transform:translateX(-140px)}to{transform:translateX(1700px)}}@keyframes tcldDrive2{from{transform:translateX(1700px) scaleX(-1)}to{transform:translateX(-140px) scaleX(-1)}}@keyframes tcldFly{from{transform:translate(1700px,10px)}to{transform:translate(-200px,-14px)}}'+
+  '#tcldRoot .tw{animation:tcldTw var(--tw,3s) ease-in-out infinite alternate}@keyframes tcldTw{from{opacity:1}to{opacity:.35}}'+
+  '#tcldRoot .lg{position:absolute;top:2.5vh;left:50%;transform:translateX(-50%);width:min(620px,78vw,62vh);aspect-ratio:1536/1024;filter:drop-shadow(0 18px 30px rgba(0,0,0,.55))}#tcldRoot .lg .tx0{position:absolute;inset:28% 0 auto;text-align:center;font:900 clamp(34px,7vh,64px)/1 Arial,sans-serif;letter-spacing:2px;color:#ffd27a;text-shadow:0 0 22px rgba(255,176,32,.6)}'+
+  '#tcldRoot.boot .lg,#tcldRoot.strip .lg{display:none}'+
+  '#tcldRoot .pnl{position:absolute;left:50%;transform:translateX(-50%);bottom:max(4vh,22px);width:min(860px,94vw);border-radius:20px;padding:14px 16px 12px;background:linear-gradient(180deg,rgba(14,34,56,.93),rgba(6,15,27,.95));box-shadow:0 0 0 1px rgba(255,210,122,.3),0 0 50px rgba(31,133,204,.28),0 24px 60px rgba(0,0,0,.6)}'+
+  '#tcldRoot.full .pnl{bottom:max(9vh,40px)}#tcldRoot.strip .pnl{display:none}'+
+  '#tcldRoot .cds{position:relative;height:clamp(150px,27vh,236px)}#tcldRoot .crd{position:absolute;inset:0;display:flex;gap:18px;align-items:center;opacity:0;animation:tcldCyc calc(var(--n) * var(--s)) linear infinite;animation-delay:calc(var(--i) * var(--s) - var(--off));will-change:opacity,transform}'+
+  '#tcldRoot .crd .art{flex:0 0 auto;height:100%;aspect-ratio:320/200}#tcldRoot .crd .art svg{width:100%;height:100%;display:block;border-radius:14px;box-shadow:0 0 0 1px rgba(140,220,255,.25),0 10px 24px rgba(0,0,0,.45)}'+
+  '#tcldRoot .crd .tx{flex:1 1 auto;min-width:0}#tcldRoot .crd .tag{display:inline-block;font:800 12px '+FONT+';color:#2a1500;background:#ffd27a;border-radius:8px;padding:1px 9px;margin-bottom:6px}'+
+  '#tcldRoot .crd h3{margin:0 0 6px;font:800 clamp(18px,2.6vh,24px)/1.25 '+FONT+';color:#ffd27a;text-shadow:0 2px 10px rgba(0,0,0,.6)}#tcldRoot .crd p{margin:0;font:600 clamp(14px,2vh,17px)/1.55 '+FONT+';color:#d7e9f8}'+
+  '#tcldRoot kbd{display:inline-block;min-width:1.5em;text-align:center;font:800 .88em Arial,sans-serif;color:#2a1500;background:linear-gradient(180deg,#fff0b8,#ffb020);border-radius:6px;padding:0 .4em;margin:0 .1em;box-shadow:0 2px 0 #9a5200}'+
+  '#tcldRoot .dots{display:flex;gap:5px;justify-content:center;margin:8px 0 2px}#tcldRoot .dots i{display:block;height:7px;width:7px;border-radius:4px;background:rgba(255,255,255,.28);animation:tcldDot calc(var(--n) * var(--s)) linear infinite;animation-delay:calc(var(--i) * var(--s) - var(--off))}'+
+  '#tcldRoot .bar{position:relative;height:10px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:8px}#tcldRoot .bar>i{position:absolute;inset:0;transform-origin:100% 50%;transform:scaleX(0);background:linear-gradient(90deg,#ff970c,#ffd27a 60%,#fff0b8);transition:transform .3s ease-out;border-radius:inherit}'+
+  '#tcldRoot .bar>b{position:absolute;top:0;bottom:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:tcldSheen 1.6s linear infinite;display:none}#tcldRoot .bar.wait>b{display:block}@keyframes tcldSheen{from{right:-30%}to{right:100%}}'+
+  '#tcldRoot .ln{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-top:6px;font:700 13px/1.4 '+FONT+';color:#a9c6dd}#tcldRoot .ln .tt{color:#ffd27a;font-weight:800;white-space:nowrap}#tcldRoot .ln .st{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#tcldRoot .ln .pc{font-variant-numeric:tabular-nums;color:#eef7ff;font-weight:800}'+
+  '#tcldRoot .sp{position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:min(560px,86vw);display:none}#tcldRoot.strip .sp{display:block}#tcldRoot .sp .bar{height:5px;margin:0}#tcldRoot .sp .ln{margin-top:3px;font-size:12px;text-shadow:0 1px 4px #000}'+
+  'body.tcld-boot #tcoRoot .tcoLoad,body.tcld-boot #tcoRoot .menu,body.tcld-boot #tcoRoot .foot{visibility:hidden}body.tcld-boot #tcoRoot.boot>.tcoLogo{top:1.5vh;width:min(1020px,94vw,62vh)}body.tcld-boot #tcoRoot .hero{width:min(1020px,94vw,62vh)}'+
+  'body.tcld-strip #tcoRoot .foot{bottom:34px}body.tcld-strip #tcoRoot .menu{bottom:calc(max(5.5vh,46px) + 30px)}'+   /* the strip under the hint of the menu */
+  'body.tcld-full #c34b,body.tcld-full #toast,body.tcld-full #badge,body.tcld-full #f4Where{visibility:hidden}'+
+  '@media (max-width:700px){#tcldRoot .crd{flex-direction:column;gap:8px;align-items:stretch}#tcldRoot .crd .art{height:52%;align-self:center}#tcldRoot .cds{height:clamp(240px,42vh,340px)}#tcldRoot .crd h3{font-size:17px}#tcldRoot .crd p{font-size:13.5px}}'+
+  '@media (max-height:620px){#tcldRoot .cds{height:clamp(120px,30vh,170px)}#tcldRoot .crd p{font-size:13px}}'+
+  '@media (prefers-reduced-motion:reduce){#tcldRoot .ldCar,#tcldRoot .ldBus,#tcldRoot .ldPlane,#tcldRoot .tw,#tcldRoot .bar>b{animation:none!important}#tcldRoot .crd{animation-timing-function:steps(1,end)}}';
+  (document.head||document.documentElement).appendChild(s)}
+ /* ---------- the state ---------- */
+ var KIND={boot:'העיר מתעוררת',enter:'נכנסים לעיר',save:'טוען את השמירה',apt:'שדה התעופה ממשיך מהרגע שנשמר',zoom:'בונה את העיר לזום הרחוק',area:'בונה את האזור',strip:'העיר ממשיכה להיבנות ברקע'};
+ var STEPS=[['code','קוד המשחק',3],['save','השמירה',1],['map','מפת הבסיס',2],['tiles','אריחי העיר',3],['cars','כלי הרכב',1],['apt','שדה התעופה',2],['remap','עדכון המפה',0]];   /* remap: האפייה השנייה של מפת הבסיס (mapfix, ‏MAPBASE.rebake) — משקל 0: נראית בשורה, לא מזיזה את הפס ולא מחזיקה את המסך (התמונה הקודמת שלמה) */
+ var st={on:false,kind:'',view:'',t0:0,shownAt:0,first:0,off:0,steps:{},pct:0,hi:0,root:null,logoM:null,shows:[],n:0,err:null,hist:{},paint0:0};
+ function root(){if(st.root&&st.root.isConnected)return st.root;css();var d=document.getElementById('tcldRoot');if(!d){d=document.createElement('div');d.id='tcldRoot';d.setAttribute('role','status');d.setAttribute('aria-live','polite');d.setAttribute('lang','he');
+   d.innerHTML=ARR+skyline()+'<div class="lg"></div><div class="pnl">'+cardsHtml()+'<div class="bar wait"><i></i><b></b></div><div class="ln"><span class="tt"></span><span class="st"></span><span class="pc"></span></div></div>'+
+    '<div class="sp"><div class="bar wait"><i></i><b></b></div><div class="ln"><span class="tt"></span><span class="st"></span><span class="pc"></span></div></div>';
+   (document.body||document.documentElement).appendChild(d)}st.root=d;return d}
+ function now(){return performance.now()}
+ /* the steps: k → {f: 0…1 or null (unknown — the sheen), txt}; the weight of each step in STEPS; a step that is not part of this load is left out */
+ function reset(list){st.steps={};st.hi=0;(list||[]).forEach(function(k){st.steps[k]={f:0,txt:''}})}
+ function set(k,f,txt){var q=st.steps[k];if(!q){if(f==null&&!txt)return;q=st.steps[k]={f:0,txt:''}}q.f=f==null?null:Math.max(0,Math.min(1,+f||0));q.txt=txt||'';paint()}
+ function drop(k){delete st.steps[k];paint()}
+ function pct(){var a=0,w=0,unk=false;STEPS.forEach(function(s){var q=st.steps[s[0]];if(!q)return;w+=s[2];if(q.f==null)unk=true;else a+=s[2]*q.f});return{p:w?a/w:0,unk:unk}}
+ function line(){var out=[];STEPS.forEach(function(s){var q=st.steps[s[0]];if(!q)return;out.push(s[1]+(q.f===1?' ✓':q.txt?' '+q.txt:''))});return out.join(' · ')}
+ function paint(){if(!st.on||!st.root)return;var P=pct(),v=st.view==='strip'?'.sp':'.pnl',d=st.root.querySelector(v);if(!d)return;P.p=st.hi=Math.max(st.hi,P.p);st.pct=P.p;   /* הפס לא חוזר אחורה באותה טעינה (אריחים שהמצלמה של הרקע עוד לא ראתה, אפייה שנייה) — רק שלבים חדשים (reset) מתחילים מ-0 */
+  var bar=d.querySelector('.bar'),i=bar.querySelector('i');i.style.transform='scaleX('+P.p.toFixed(3)+')';var cur=STEPS.filter(function(s){var q=st.steps[s[0]];return q&&q.f!==1&&s[2]>0})[0],w=cur&&st.steps[cur[0]].f==null;bar.classList.toggle('wait',!!w);
+  d.querySelector('.tt').textContent=KIND[st.kind]||'';d.querySelector('.st').textContent=line();d.querySelector('.pc').textContent=Math.floor(P.p*100)+'%'}
+ function logo(on){var el=st.root&&st.root.querySelector('.lg');if(!el)return;if(!on){try{if(st.logoM)st.logoM.stop()}catch(e){}st.logoM=null;el.innerHTML='';return}
+  if(st.logoM||el.firstChild)return;try{if(window.TCLOGO&&TCLOGO.ok){st.logoM=TCLOGO.mount(el,{fps:function(){return st.on&&st.view==='full'?24:0},dpr:1.25});return}}catch(e){st.err='logo: '+(e&&e.message||e)}
+  el.innerHTML='<div class="tx0">TURBO CITY</div>';try{if(window.TCLOGO&&TCLOGO.ready)TCLOGO.ready.then(function(){if(st.on&&st.view==='full'&&!st.logoM&&TCLOGO.ok){el.innerHTML='';logo(true)}})}catch(e){}}
+ /* show: kind (KIND) · o.view 'boot' | 'strip' | 'full' · o.steps — the keys of the steps of this load */
+ function show(kind,o){o=o||{};if(SKIP&&!o.force)return false;var d=root(),v=o.view||'full',was=st.on;
+  if(!was||o.steps){reset(o.steps||['code','save','map','tiles','cars'])}
+  if(!was&&st.n){var n=CARDS.length,k=Math.floor(Math.random()*n);st.first=k;st.off=k*SEC+FADE+.05;var q=d.querySelectorAll('.cds,.dots');for(var i=0;i<q.length;i++)q[i].style.setProperty('--off',st.off.toFixed(2)+'s')}   /* every load starts from another card */
+  st.on=true;st.kind=kind;st.view=v;st.n++;if(!was)st.t0=now();st.shownAt=now();st.hist[kind]=(st.hist[kind]||0)+1;st.shows.push({kind:kind,view:v,at:Math.round(now())});if(st.shows.length>40)st.shows.shift();
+  d.className='on '+v;document.body&&document.body.classList.toggle('tcld-boot',v==='boot');document.body&&document.body.classList.toggle('tcld-strip',v==='strip');document.body&&document.body.classList.toggle('tcld-full',v==='full');
+  logo(v==='full');paint();return true}
+ function hide(why){if(!st.on)return false;var d=st.root;st.on=false;st.last={kind:st.kind,view:st.view,ms:Math.round(now()-st.t0),why:why||'',pct:Math.round(st.pct*100)};
+  if(document.body){document.body.classList.remove('tcld-boot');document.body.classList.remove('tcld-strip');document.body.classList.remove('tcld-full')}
+  if(d){if(st.view==='full'){d.classList.add('out');setTimeout(function(){if(!st.on){d.className='';logo(false)}},400)}else{d.className='';logo(false)}}st.view='';return true}
+ function view(v){if(!st.on||st.view===v)return;st.view=v;var d=root();d.className='on '+v;document.body.classList.toggle('tcld-boot',v==='boot');document.body.classList.toggle('tcld-strip',v==='strip');document.body.classList.toggle('tcld-full',v==='full');logo(v==='full');paint()}
+ function card(){if(!st.on)return-1;var n=CARDS.length,t=(now()-st.t0)/1000+st.off;return Math.floor(t/SEC)%n}
+ function state(){var s={};for(var k in st.steps)s[k]=st.steps[k].f==null?null:+st.steps[k].f.toFixed(3);return{on:st.on,kind:st.kind,view:st.view,ms:st.on?Math.round(now()-st.t0):0,pct:+st.pct.toFixed(3),steps:s,line:st.on?line():'',card:card(),cards:CARDS.length,first:st.first,n:st.n,hist:st.hist,last:st.last||null,err:st.err,skip:SKIP,force:FORCE}}
+ /* the keys: while the full screen is up in the game, the game does not get them (registered here, before every other listener) */
+ addEventListener('keydown',function(e){if(st.on&&st.view==='full'&&st.block){if(/^F(5|11|12)$/.test(e.key)||e.ctrlKey||e.metaKey)return;e.stopImmediatePropagation();e.preventDefault()}},true);
+ window.TCLD={show:show,hide:hide,set:set,drop:drop,view:view,state:state,paint:paint,cards:CARDS,steps:STEPS,kinds:KIND,skip:SKIP,force:FORCE,st:st,_skyline:skyline,_grad:grad,_cardsHtml:cardsHtml,_css:css};
+ if(SKIP||!document.body)return;
+ /* the first frame: the boot view under the logo of the opening (009b) — code: unknown until the big script has run (the sheen) */
+ try{root();show('boot',{view:'boot',steps:['code','save','map','tiles','cars']});set('code',null,'נטען');st.paint0=Math.round(now())}catch(e){st.err='boot: '+(e&&e.message||e)}
+ /* a safety net: if the hooks of the big script never ran (it failed), the boot view does not hide the page forever */
+ setTimeout(function(){if(st.on&&st.view==='boot'&&!window.TCLD.hooked){st.err='no-hooks';hide('no-hooks')}},90000);
+})();
+</script><script>
+(function(){var G=document.querySelector('.gal');TCLD._css();G.innerHTML='<svg width="0" height="0" style="position:absolute">'+TCLD._grad()+'<defs><marker id="ldArr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ffd27a"/></marker></defs></svg>'+TCLD.cards.map(function(c){return'<div class="gc">'+c.a+'<h3>'+c.t+'</h3><p>'+c.p+'</p></div>'}).join('');
+ var f={code:0,save:0,map:0,tiles:0,cars:0};function bump(){for(var k in f){if(f[k]<1){f[k]=Math.min(1,f[k]+.5);TCLD.set(k,f[k],f[k]<1?Math.round(f[k]*24)+'/24':'');return}}}
+ document.querySelector('.btns').addEventListener('click',function(e){var v=e.target.getAttribute('data-v');if(!v)return;if(v==='off'){TCLD.hide('demo');return}if(v==='go'){bump();return}
+  f={code:1,save:v==='boot'?0:1,map:.25,tiles:0,cars:0};TCLD.hide('demo');TCLD.show(v==='full'?'save':v==='strip'?'strip':'boot',{view:v,force:true,steps:['code','save','map','tiles','cars']});for(var k in f)TCLD.set(k,f[k],k==='map'?'6/24':'');if(v==='boot')TCLD.set('save',null,'נקראת');if(v!=='strip')document.getElementById('tcldRoot').style.pointerEvents='all';document.getElementById('tcldRoot').onclick=function(){TCLD.hide('demo')}});
+ addEventListener('keydown',function(e){if(e.key==='Escape')TCLD.hide('demo')})})();
+</script></body></html>

@@ -1,0 +1,8 @@
+16:39:14 start node deliver/2026-11-17/airfront/tools/exit_clear.js clean_r2b_025637/out/_try/try8331.html deliver/2026-11-17/airfront/qa/exit_clear_8331.json > deliver/2026-11-17/airfront/qa/exit_clear_8331.log 2>&1
+16:39:33 end rc=0 node deliver/2026-11-17/airfront/tools/exit_clear.js clean_r2b_025637/out/_try/try8331.html deliver/2026-11-17/airfront/qa/exit_clear_8331.json > deliver/2026-11-17/airfront/qa/exit_clear_8331.log 2>&1
+16:39:33 start node deliver/2026-11-17/airfront/tools/af_probe.js clean_r2b_025637/out/_try/try8331.html 300 deliver/2026-11-17/airfront/qa/fix8331_p1.json > deliver/2026-11-17/airfront/qa/fix8331_p1.log 2>&1
+16:46:52 end rc=0 node deliver/2026-11-17/airfront/tools/af_probe.js clean_r2b_025637/out/_try/try8331.html 300 deliver/2026-11-17/airfront/qa/fix8331_p1.json > deliver/2026-11-17/airfront/qa/fix8331_p1.log 2>&1
+17:10:56 start node deliver/2026-11-17/airfront/tools/exit_clear.js clean_r2b_025637/out/_try/try8332.html deliver/2026-11-17/airfront/qa/exit_clear_8332.json > deliver/2026-11-17/airfront/qa/exit_clear_8332.log 2>&1
+17:11:16 end rc=0 node deliver/2026-11-17/airfront/tools/exit_clear.js clean_r2b_025637/out/_try/try8332.html deliver/2026-11-17/airfront/qa/exit_clear_8332.json > deliver/2026-11-17/airfront/qa/exit_clear_8332.log 2>&1
+17:11:16 start node deliver/2026-11-17/airfront/tools/af_probe.js clean_r2b_025637/out/_try/try8332.html 300 deliver/2026-11-17/airfront/qa/fix8332_p1.json > deliver/2026-11-17/airfront/qa/fix8332_p1.log 2>&1
+17:18:16 end rc=0 node deliver/2026-11-17/airfront/tools/af_probe.js clean_r2b_025637/out/_try/try8332.html 300 deliver/2026-11-17/airfront/qa/fix8332_p1.json > deliver/2026-11-17/airfront/qa/fix8332_p1.log 2>&1

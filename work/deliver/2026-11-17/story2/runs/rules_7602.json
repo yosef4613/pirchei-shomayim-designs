@@ -1,0 +1,60 @@
+{
+ "ok": false,
+ "fails": [
+  "בדיקות העולם שנכשלו: phone_shell_reads_live_player_state, activity_core_career_shifts_reachable_v190"
+ ],
+ "notes": [
+  "R-54 (צייר אחד לחניות המיוחדות) ו-R-61 (המנחתים) — עוד לא בבדיקה; נכנסים עם התיקון"
+ ],
+ "data": {
+  "stopsNoBay": [],
+  "stopsNearJunction": [],
+  "mapChecks": [
+   {
+    "name": "map_bus_stops_in_built_zones",
+    "ok": true,
+    "detail": "כל 7 התחנות של המפה באזורים שנבנו — עד 12 מ׳ מהעמוד, באותו צד · מחכות: ST-04 מזרח (קו 1 בשדרת המערב רק דרומה), ST-16 ו-ST-18 (קו 6 עוד לא במשחק), ST-10 (עד S9 — אין קטע של שדרת המזרח בין שני צמתים שמח"
+   },
+   {
+    "name": "roads_match_map_in_built_zones",
+    "ok": true,
+    "detail": "53 קטעים באזורים שנבנו — באותו סוג כמו במפה (עורק ראשי 3+3, עורק 2+2, רחוב מקומי) · עוד לא כמו במפה: שדרת המרכז ב-C3 (AR-C/2, ‏1+1 רחב במקום 2+2) — עם C4"
+   },
+   {
+    "name": "map_uses_same_active_road_graph_registry",
+    "ok": true,
+    "detail": "141 exact B2+C2+B3+C3+D3+C4+D4 roads"
+   }
+  ],
+  "auditBad": [
+   "phone_shell_reads_live_player_state",
+   "activity_core_career_shifts_reachable_v190"
+  ],
+  "a4": {
+   "fireBays": 5,
+   "fireUnits": 4,
+   "emsBays": 5,
+   "emsUnits": 4
+  }
+ },
+ "baseline": {
+  "at": "2.11 08:32",
+  "why": "התחנות שעוד בלי מפרץ (R-63, בעבודה) — כל תחנה חדשה בלי מפרץ עוצרת את המסירה; הרשימה מתקצרת עד 0 · 07:20: BUS3-D4N יצאה עם ST-10 (עד S9, לאישורך) · 08:32: התחנות קרוב מ-20 מ׳ לצומת (כלל 10) — 4, כולן ב-D5 וב-E5 (אזורים שעוד לא נבנו לפי המפה: S6 ושלב E5); הרשימה מתקצרת עד 0",
+  "stopsNoBay": [
+   "BUS1-A3",
+   "BUS2-D2H",
+   "BUS2-D2W",
+   "BUS2-C2E",
+   "BUS3-D5",
+   "BUS3-E5P",
+   "BUS3-E5C",
+   "BUS3-E5S"
+  ],
+  "stopsNearJunction": [
+   "BUS3-D5",
+   "BUS3-E5P",
+   "BUS3-E5C",
+   "BUS3-E5S"
+  ]
+ }
+}

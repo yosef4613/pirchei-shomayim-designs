@@ -1,0 +1,9 @@
+posters try8169 /home/user/tc_root/tc/pkg/work/src_game_t17_posters s7f303 icon ingame rules
+opening try8168 /home/user/tc_root/tc/pkg/work/src_game_t17_opening s7f303 ofbusy stuck
+opening try8167 /home/user/tc_root/tc/pkg/work/src_game_t17_opening s7f303 ofbusy
+opening try8166 /home/user/tc_root/tc/pkg/work/src_game_t17_opening s7f303 ofbusy film tcofb tut ingame rules people stuck
+opening try8161 /home/user/tc_root/tc/pkg/work/src_game_t17_opening s7f303 film ofbusy tcofb tut ingame rules people stuck
+farm try8162 /home/user/tc_root/tc/pkg/work/src_game_t17_farm s7f303 farmq ingame rules people stuck
+posters try8163 /home/user/tc_root/tc/pkg/work/src_game_t17_posters s7f303 icon p11 ingame rules people stuck
+actions try8164 /home/user/tc_root/tc/pkg/work/src_game_t17_actions s7f303 sact ingame rules people stuck
+# carrier try8165 /home/user/tc_root/tc/pkg/work/src_game_t17_carrier s7f303 flow tugs ingame rules people stuck

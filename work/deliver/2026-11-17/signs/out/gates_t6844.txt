@@ -1,0 +1,8 @@
+signs12_kiosk rc=1
+q_ingame rc=0
+stuckmax rc=0
+signs12_probe rc=0
+rules_gate rc=1
+people_on_road rc=0
+rule30_gate rc=0
+DONE

@@ -1,0 +1,15 @@
+{
+ "url": "file:///home/user/pirchei-shomayim-designs/turbo-city-b4/index.html",
+ "tLoad": 9046,
+ "tReady": 13425,
+ "fps": {
+  "fps": 1.2,
+  "worstMs": 1383
+ },
+ "heapMB": 65,
+ "gl": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+ "imgs": 0,
+ "errs": [],
+ "reqs": [],
+ "extra": null
+}

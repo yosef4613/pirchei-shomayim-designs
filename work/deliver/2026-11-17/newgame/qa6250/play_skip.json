@@ -1,0 +1,235 @@
+{
+ "file": "try6250.html",
+ "skip": true,
+ "log": [
+  "26s מסך הפתיחה",
+  "43s משחק חדש · סיפור · \"דני\"",
+  "45s בתוך המשחק",
+  "46s הכרטיס של ההדרכה הופיע אחרי 1 שנ׳ · סרטון: לא · חפיפה: 0 · טעינה: false · {\"-\":2}",
+  "47s ההדרכה התחילה · 1נוסעיםדלג על ההדרכהברוך הבא לטורבו סיטי, דני! קודם — המקשים, בשבע פעולות קצרות.אתה ברכב, ",
+  "50s דילוג → skip",
+  "53s הסיפור: {\"ch\":\"O\",\"mi\":\"O-1\",\"step\":0,\"done\":[],\"rows\":[false,false,false,false,false,false],\"van\":false,\"soon\":false,\"err\":null · {\"mi\":\"O-1\",\"step\":0} · אזורים שהתחילו: []",
+  "57s אחרי 4 שנ׳: {\"mi\":\"O-1\",\"step\":0} · כרטיס: ",
+  "68s O‑1: הושלמה · 14 לחיצות · {\"ch\":\"O\",\"mi\":null,\"step\":0,\"done\":[\"O-1\"],\"rows\":[false,false,false,false,false,false],\"van\":false,\"soon\":false,\"err\":null,\"ticks\":62,\"msA · אזורים: []"
+ ],
+ "steps": {
+  "skip": "skip"
+ },
+ "ok": true,
+ "film": {
+  "seen": false,
+  "ms": 0,
+  "overlap": 0,
+  "loading": false,
+  "shownAt": 1,
+  "why": {
+   "-": 2
+  },
+  "auto": null,
+  "samples": 2,
+  "stepWhileFilm": false
+ },
+ "start": {
+  "tut": {
+   "on": true,
+   "i": 0,
+   "id": "drive",
+   "st": "run",
+   "replay": false,
+   "fin": null,
+   "err": null,
+   "errs": 0,
+   "ticks": 14,
+   "lastF": null,
+   "why": "",
+   "waitN": 1,
+   "shown": true
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2484,
+   "car": {
+    "x": 2958,
+    "y": 2484
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": null
+  },
+  "story": {
+   "none": true,
+   "err": null
+  },
+  "cur": null,
+  "card": "1נוסעיםדלג על ההדרכהברוך הבא לטורבו סיטי, דני! קודם — המקשים, בשבע פעולות קצרות.אתה ברכב, ליד הבית של סבא ב-C3. ‏W — גז · S — בלם ואחורה · A / D — הגה (גם החצים",
+  "zones": [],
+  "nm": false
+ },
+ "storyBefore": {
+  "none": true,
+  "err": null
+ },
+ "after": {
+  "tut": {
+   "on": false,
+   "i": 0,
+   "id": "drive",
+   "st": "skip",
+   "replay": false,
+   "fin": "ההדרכה דולגה",
+   "err": null,
+   "errs": 0,
+   "ticks": 25,
+   "lastF": null,
+   "why": "cutscene",
+   "waitN": 1,
+   "shown": false
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2484,
+   "car": {
+    "x": 2958,
+    "y": 2484
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": "PLAYER-HOME"
+  },
+  "story": {
+   "ch": "O",
+   "mi": "O-1",
+   "step": 0,
+   "done": [],
+   "rows": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "van": false,
+   "soon": false,
+   "err": null,
+   "ticks": 23,
+   "msAvg": 0.991,
+   "msMax": 8
+  },
+  "cur": {
+   "mi": "O-1",
+   "step": 0
+  },
+  "card": "",
+  "zones": [],
+  "nm": false
+ },
+ "after2": {
+  "tut": {
+   "on": false,
+   "i": 0,
+   "id": "drive",
+   "st": "skip",
+   "replay": false,
+   "fin": null,
+   "err": null,
+   "errs": 0,
+   "ticks": 39,
+   "lastF": null,
+   "why": "cutscene",
+   "waitN": 1,
+   "shown": false
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2484,
+   "car": {
+    "x": 2958,
+    "y": 2484
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": "PLAYER-HOME"
+  },
+  "story": {
+   "ch": "O",
+   "mi": "O-1",
+   "step": 0,
+   "done": [],
+   "rows": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "van": false,
+   "soon": false,
+   "err": null,
+   "ticks": 33,
+   "msAvg": 0.758,
+   "msMax": 8
+  },
+  "cur": {
+   "mi": "O-1",
+   "step": 0
+  },
+  "card": "",
+  "zones": [],
+  "nm": false
+ },
+ "o1": {
+  "ch": "O",
+  "mi": null,
+  "step": 0,
+  "done": [
+   "O-1"
+  ],
+  "rows": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "van": false,
+  "soon": false,
+  "err": null,
+  "ticks": 62,
+  "msAvg": 0.689,
+  "msMax": 9.8
+ },
+ "o1Done": true,
+ "o1Keys": 14,
+ "zonesAfterO1": [],
+ "storyBegan": true,
+ "noStoryBefore": true,
+ "zonesDuring": [],
+ "errs": []
+}

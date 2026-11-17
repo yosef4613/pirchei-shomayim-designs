@@ -1,0 +1,6 @@
+airlogos_probe rc=0 {"ok":true,"audit":true,"fail":[],"missing":[],"errs":0,"n":{"shop":2849,"air":1040,"plate":856,"band":2849,"s9":102,"tower":254,"gate":377,"e4":8470,"tail":20,"spr":63,"hooks":6},"err":null}
+q_ingame rc=0
+rules_gate rc=1
+people_on_road rc=0
+stuckmax rc=0 {"tag":"al_try7486","build":"try7486.html","secs":150,"over5":1,"busOver5":0,"long":[["car LOGI-TK-1:LV-TK-01",22.8,"C4-RC-N","",""]],"st":{"served":0,"rec":0,"owned":0},"pe":[]}
+done

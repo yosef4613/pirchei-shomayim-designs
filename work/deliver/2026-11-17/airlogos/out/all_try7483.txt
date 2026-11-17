@@ -1,0 +1,6 @@
+airlogos_probe rc=0 {"ok":false,"audit":false,"fail":[{"id":"hooks","ok":false,"det":"6"}],"missing":[],"errs":0,"n":{"shop":4971,"air":1294,"plate":1246,"band":5007,"s9":110,"tower":293,"gate":493,"e4":11193,"tail":29,"spr":63,"hooks":6},"err":null}
+q_ingame rc=0
+rules_gate rc=1
+people_on_road rc=0
+stuckmax rc=0 {"tag":"al_try7483","build":"try7483.html","secs":150,"over5":0,"busOver5":0,"long":[],"st":{"served":0,"rec":0,"owned":0},"pe":[]}
+done

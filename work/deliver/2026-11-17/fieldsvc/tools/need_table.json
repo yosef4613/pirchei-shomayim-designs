@@ -1,0 +1,1224 @@
+[
+{
+"m": "AC-PR-01",
+"code": "PR",
+"he": "פרטי קטן (מדחף)",
+"size": "S",
+"seats": 4,
+"fits": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"GA1",
+"GA2",
+"GA3",
+"GA4",
+"GA5",
+"GA6",
+"GA7",
+"R1",
+"R2",
+"R3"
+],
+"policy": [
+"GA1",
+"GA2",
+"GA3",
+"GA4",
+"GA5",
+"GA6",
+"GA7"
+],
+"not_policy": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"cells": [
+{
+"stand": "GA1",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA2",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA3",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA4",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA5",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA6",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA7",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+}
+]
+},
+{
+"m": "AC-LT-01",
+"code": "LT",
+"he": "פרטי דו-מנועי",
+"size": "S",
+"seats": 6,
+"fits": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"GA1",
+"GA2",
+"GA3",
+"GA4",
+"GA5",
+"GA6",
+"GA7",
+"R1",
+"R2",
+"R3"
+],
+"policy": [
+"GA1",
+"GA2",
+"GA3",
+"GA4",
+"GA5",
+"GA6",
+"GA7"
+],
+"not_policy": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"cells": [
+{
+"stand": "GA1",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA2",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA3",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA4",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA5",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA6",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+},
+{
+"stand": "GA7",
+"mode": "ga",
+"need": [
+"PT",
+"FT"
+]
+}
+]
+},
+{
+"m": "AC-BJ-01",
+"code": "BJ",
+"he": "מנהלים — סילון",
+"size": "S",
+"seats": 12,
+"fits": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"GA1",
+"R1",
+"R2",
+"R3"
+],
+"policy": [
+"GA1",
+"R1",
+"R3"
+],
+"not_policy": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R2"
+],
+"cells": [
+{
+"stand": "GA1",
+"mode": "ga",
+"need": [
+"PT",
+"FT",
+"GP",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "R1",
+"mode": "remote",
+"need": [
+"PT",
+"FT",
+"GP",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "R3",
+"mode": "remote",
+"need": [
+"PT",
+"FT",
+"GP",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+}
+]
+},
+{
+"m": "AC-CN-01",
+"code": "CN",
+"he": "מנהלים — קנרד",
+"size": "S",
+"seats": 6,
+"fits": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"GA1",
+"R1",
+"R2",
+"R3"
+],
+"policy": [
+"GA1",
+"R1",
+"R3"
+],
+"not_policy": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R2"
+],
+"cells": [
+{
+"stand": "GA1",
+"mode": "ga",
+"need": [
+"PT",
+"FT",
+"GP",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "R1",
+"mode": "remote",
+"need": [
+"PT",
+"FT",
+"GP",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "R3",
+"mode": "remote",
+"need": [
+"PT",
+"FT",
+"GP",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+}
+]
+},
+{
+"m": "AC-AM-01",
+"code": "AM",
+"he": "אמפיבי",
+"size": "S",
+"seats": 4,
+"fits": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"policy": [],
+"not_policy": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"cells": []
+},
+{
+"m": "AC-TB-01",
+"code": "TB",
+"he": "מטען קטן (זנב כפול)",
+"size": "M",
+"seats": 0,
+"fits": [
+"C1",
+"C2",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"policy": [
+"C1",
+"C2"
+],
+"not_policy": [
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"cells": [
+{
+"stand": "C1",
+"mode": "cargo",
+"need": [
+"PT",
+"GP",
+"FT",
+"HL|BL",
+"TG"
+]
+},
+{
+"stand": "C2",
+"mode": "cargo",
+"need": [
+"PT",
+"GP",
+"FT",
+"HL|BL",
+"TG"
+]
+}
+]
+},
+{
+"m": "AC-TP-01",
+"code": "TP",
+"he": "טורבו-פרופ אזורי",
+"size": "M",
+"seats": 70,
+"fits": [
+"C1",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"policy": [
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"not_policy": [
+"C1"
+],
+"cells": [
+{
+"stand": "P1",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P2",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P3",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P4",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P5",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P6",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "R1",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"GP",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+},
+{
+"stand": "R2",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"GP",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+},
+{
+"stand": "R3",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"GP",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+}
+]
+},
+{
+"m": "AC-RJ-01",
+"code": "RJ",
+"he": "סילון אזורי",
+"size": "M",
+"seats": 76,
+"fits": [
+"C1",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"policy": [
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R1",
+"R2",
+"R3"
+],
+"not_policy": [
+"C1"
+],
+"cells": [
+{
+"stand": "P1",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P2",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P3",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P4",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P5",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P6",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "R1",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"GP",
+"MS",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+},
+{
+"stand": "R2",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"GP",
+"MS",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+},
+{
+"stand": "R3",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"GP",
+"MS",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+}
+]
+},
+{
+"m": "AC-QJ-01",
+"code": "QJ",
+"he": "אזורי 4 מנועים",
+"size": "M",
+"seats": 100,
+"fits": [
+"C1",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R2"
+],
+"policy": [
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R2"
+],
+"not_policy": [
+"C1"
+],
+"cells": [
+{
+"stand": "P1",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P2",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P3",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P4",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P5",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P6",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "R2",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"FT",
+"CT",
+"SVC",
+"GP",
+"MS",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+}
+]
+},
+{
+"m": "AC-NB-01",
+"code": "NB",
+"he": "צר-גוף",
+"size": "M",
+"seats": 180,
+"fits": [
+"C1",
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R2"
+],
+"policy": [
+"P1",
+"P2",
+"P3",
+"P4",
+"P5",
+"P6",
+"R2"
+],
+"not_policy": [
+"C1"
+],
+"cells": [
+{
+"stand": "P1",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BL",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P2",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BL",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P3",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BL",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P4",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BL",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P5",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BL",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P6",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BL",
+"FT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "R2",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"BL",
+"FT",
+"CT",
+"SVC",
+"GP",
+"MS",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+}
+]
+},
+{
+"m": "AC-MW-01",
+"code": "MW",
+"he": "רחב-גוף 3 מנועים",
+"size": "L",
+"seats": 300,
+"fits": [
+"C1",
+"P1",
+"P6"
+],
+"policy": [
+"P1",
+"P6"
+],
+"not_policy": [
+"C1"
+],
+"cells": [
+{
+"stand": "P1",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BT",
+"BL",
+"BL",
+"FT",
+"CT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P6",
+"mode": "remote",
+"need": [
+"PT",
+"BT",
+"BT",
+"BL",
+"BL",
+"FT",
+"CT",
+"CT",
+"SVC",
+"GP",
+"MS",
+"MS",
+"AB",
+"AB",
+"WT",
+"LV",
+"AL"
+]
+}
+]
+},
+{
+"m": "AC-CG-01",
+"code": "CG",
+"he": "מטען סילון",
+"size": "L",
+"seats": 0,
+"fits": [
+"C1",
+"P1",
+"P6"
+],
+"policy": [
+"C1"
+],
+"not_policy": [
+"P1",
+"P6"
+],
+"cells": [
+{
+"stand": "C1",
+"mode": "cargo",
+"need": [
+"PT",
+"GP",
+"FT",
+"HL",
+"TG"
+]
+}
+]
+},
+{
+"m": "AC-LG-01",
+"code": "LG",
+"he": "נוסעים גדול",
+"size": "XL",
+"seats": 400,
+"fits": [
+"P1",
+"P6"
+],
+"policy": [
+"P1",
+"P6"
+],
+"not_policy": [],
+"cells": [
+{
+"stand": "P1",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BT",
+"BL",
+"BL",
+"FT",
+"CT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+},
+{
+"stand": "P6",
+"mode": "bridge",
+"need": [
+"PT",
+"BT",
+"BT",
+"BL",
+"BL",
+"FT",
+"CT",
+"CT",
+"SVC",
+"WT",
+"LV"
+]
+}
+]
+},
+{
+"m": "AC-HC-01",
+"code": "HC",
+"he": "מטען כבד",
+"size": "XL",
+"seats": 0,
+"fits": [],
+"policy": [
+"C1+C2"
+],
+"not_policy": [],
+"cells": [
+{
+"stand": "C1+C2",
+"mode": "cargo",
+"need": [
+"PT",
+"GP",
+"GP",
+"FT",
+"FT",
+"HL",
+"HL",
+"TG",
+"TG"
+]
+}
+]
+}
+]

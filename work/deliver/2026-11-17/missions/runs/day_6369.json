@@ -1,0 +1,5883 @@
+{
+ "summary": {
+  "file": "try6369.html",
+  "steps": 288,
+  "sec": 372,
+  "init": {
+   "mb": true,
+   "story": {
+    "ch": "1",
+    "mi": "1-3",
+    "step": 0,
+    "done": [
+     "O-1",
+     "1-1",
+     "1-2"
+    ],
+    "rows": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "van": false,
+    "soon": false,
+    "err": null,
+    "ticks": 2,
+    "msAvg": 0.2,
+    "msMax": 0.4
+   },
+   "msgs": 1,
+   "clock": {
+    "day": 2,
+    "hour": 6,
+    "minute": 0,
+    "min": 360,
+    "hhmm": "06:00",
+    "worldS": 6.06
+   }
+  },
+  "fin": {
+   "mb": {
+    "active": true,
+    "story": 1,
+    "storyOpen": 0,
+    "storyWait": true,
+    "side": 4,
+    "offer": null,
+    "running": 2,
+    "acc": 4,
+    "items": [
+     {
+      "key": "j:ACT-C5-SCAN",
+      "acc": true,
+      "src": "offer",
+      "run": false,
+      "poi": "C5-DISPATCH"
+     },
+     {
+      "key": "j:M-C4-01",
+      "acc": true,
+      "src": "player",
+      "run": true,
+      "poi": "C4-HARDWARE"
+     },
+     {
+      "key": "j:M-ROUTE-SHOP",
+      "acc": true,
+      "src": "offer",
+      "run": false,
+      "poi": "C2-MALL"
+     },
+     {
+      "key": "z:S11-ST-B6",
+      "acc": true,
+      "src": "offer",
+      "run": true,
+      "poi": "B6-MARKET"
+     }
+    ],
+    "n": {
+     "fill": 12,
+     "offer": 11,
+     "done": 15,
+     "evict": 0,
+     "player": 1,
+     "acc": 18
+    },
+    "err": null,
+    "errs": 0,
+    "ticks": 370,
+    "msAvg": 1.106,
+    "msMax": 27.4,
+    "autoBlocked": 49,
+    "parked": 0,
+    "groups": 6
+   },
+   "story": {
+    "ch": "2",
+    "mi": null,
+    "step": 0,
+    "done": [
+     "O-1",
+     "1-1",
+     "1-2",
+     "1-3",
+     "1-4",
+     "1-5",
+     "1-6",
+     "1-7"
+    ],
+    "rows": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "van": false,
+    "soon": false,
+    "err": null,
+    "ticks": 894,
+    "msAvg": 0.316,
+    "msMax": 26.7
+   },
+   "D": {
+    "m0": 1,
+    "lastDone": 0,
+    "offers": 11,
+    "acc": 6,
+    "later": 5,
+    "done": 15,
+    "skips": 23
+   },
+   "mbE": {
+    "err": null,
+    "log": [
+     "done z:ZS-B2",
+     "done z:ZS-C3",
+     "done z:ZS-B3",
+     "done z:ZS-B4",
+     "done z:ZS-C4",
+     "done z:ZS-C2",
+     "done z:ZS-D5",
+     "done z:ZS-B5",
+     "done z:ZS-D3",
+     "done z:ZS-A5",
+     "done z:S12-ST-C1",
+     "done z:S12-ST-B1",
+     "done z:ZS-A4",
+     "done j:M-E5-01",
+     "done z:ZS-D4"
+    ]
+   }
+  },
+  "errors": 0,
+  "errs": [],
+  "story": {
+   "min": 1,
+   "max": 3
+  },
+  "storyOpen": {
+   "min": 0,
+   "max": 3
+  },
+  "side": {
+   "min": 4,
+   "max": 5
+  },
+  "offer": {
+   "min": 0,
+   "max": 1
+  },
+  "zRun": {
+   "min": 0,
+   "max": 6
+  },
+  "msgs": {
+   "min": 6,
+   "max": 98
+  },
+  "markersMax": 9,
+  "badSteps": 0,
+  "badFirst": [],
+  "ok": true
+ },
+ "rows": [
+  {
+   "i": 0,
+   "hm": "06:00",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 1,
+   "hm": "06:05",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 2,
+   "hm": "06:10",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 3,
+   "hm": "06:15",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 4,
+   "hm": "06:20",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 5,
+   "hm": "06:25",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 6,
+   "hm": "06:30",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 7,
+   "hm": "06:35",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 8,
+   "hm": "06:40",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 9,
+   "hm": "06:45",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 10,
+   "hm": "06:50",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 11,
+   "hm": "06:55",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 12,
+   "hm": "07:00",
+   "zRun": 0,
+   "msgs": 6,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 3,
+   "story": 3,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 13,
+   "hm": "07:05",
+   "zRun": 0,
+   "msgs": 8,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 14,
+   "hm": "07:10",
+   "zRun": 0,
+   "msgs": 8,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 15,
+   "hm": "07:15",
+   "zRun": 0,
+   "msgs": 8,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 16,
+   "hm": "07:20",
+   "zRun": 0,
+   "msgs": 8,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 17,
+   "hm": "07:25",
+   "zRun": 0,
+   "msgs": 8,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 18,
+   "hm": "07:30",
+   "zRun": 0,
+   "msgs": 8,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": null,
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "did": "done z:ZS-B2",
+   "bad": []
+  },
+  {
+   "i": 19,
+   "hm": "07:35",
+   "zRun": 0,
+   "msgs": 13,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": "B2-CAFE",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 20,
+   "hm": "07:40",
+   "zRun": 0,
+   "msgs": 13,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": "B2-CAFE",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 21,
+   "hm": "07:45",
+   "zRun": 0,
+   "msgs": 13,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": "B2-CAFE",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 22,
+   "hm": "07:50",
+   "zRun": 0,
+   "msgs": 13,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": "B2-CAFE",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 23,
+   "hm": "07:55",
+   "zRun": 0,
+   "msgs": 13,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": "B2-CAFE",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 0,
+   "bad": []
+  },
+  {
+   "i": 24,
+   "hm": "08:00",
+   "zRun": 0,
+   "msgs": 14,
+   "mk": {
+    "story": 2,
+    "zone": 4
+   },
+   "nav": "B2-CAFE",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 4,
+   "offer": 1,
+   "run": 0,
+   "acc": 0,
+   "did": " acc j:M-E5-01",
+   "bad": []
+  },
+  {
+   "i": 25,
+   "hm": "08:05",
+   "zRun": 0,
+   "msgs": 14,
+   "mk": {
+    "story": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 26,
+   "hm": "08:10",
+   "zRun": 0,
+   "msgs": 14,
+   "mk": {
+    "story": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 27,
+   "hm": "08:15",
+   "zRun": 0,
+   "msgs": 14,
+   "mk": {
+    "story": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 28,
+   "hm": "08:20",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 29,
+   "hm": "08:25",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 30,
+   "hm": "08:30",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 31,
+   "hm": "08:35",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 32,
+   "hm": "08:40",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 33,
+   "hm": "08:45",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 34,
+   "hm": "08:50",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 35,
+   "hm": "08:55",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 36,
+   "hm": "09:00",
+   "zRun": 1,
+   "msgs": 15,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 4,
+    "side": 1
+   },
+   "nav": "D4-RAIL",
+   "storyOpen": 2,
+   "story": 2,
+   "side": 5,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "did": "done z:ZS-C3",
+   "bad": []
+  },
+  {
+   "i": 37,
+   "hm": "09:05",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 38,
+   "hm": "09:10",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 39,
+   "hm": "09:15",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 40,
+   "hm": "09:20",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 41,
+   "hm": "09:25",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 42,
+   "hm": "09:30",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 43,
+   "hm": "09:35",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 44,
+   "hm": "09:40",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 45,
+   "hm": "09:45",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 46,
+   "hm": "09:50",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 47,
+   "hm": "09:55",
+   "zRun": 1,
+   "msgs": 20,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 48,
+   "hm": "10:00",
+   "zRun": 1,
+   "msgs": 21,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-C3-V3",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 0,
+   "acc": 1,
+   "did": " later z:ZS-D3",
+   "bad": []
+  },
+  {
+   "i": 49,
+   "hm": "10:05",
+   "zRun": 1,
+   "msgs": 21,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "C2-MALL",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 50,
+   "hm": "10:10",
+   "zRun": 1,
+   "msgs": 21,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "C2-MALL",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 51,
+   "hm": "10:15",
+   "zRun": 1,
+   "msgs": 21,
+   "mk": {
+    "story": 1,
+    "friend": 1,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "C2-MALL",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 52,
+   "hm": "10:20",
+   "zRun": 2,
+   "msgs": 22,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "C2-MALL",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 53,
+   "hm": "10:25",
+   "zRun": 2,
+   "msgs": 22,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "C2-MALL",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 54,
+   "hm": "10:30",
+   "zRun": 2,
+   "msgs": 22,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "C2-MALL",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "did": "done z:ZS-B3",
+   "bad": []
+  },
+  {
+   "i": 55,
+   "hm": "10:35",
+   "zRun": 2,
+   "msgs": 27,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 56,
+   "hm": "10:40",
+   "zRun": 2,
+   "msgs": 27,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 57,
+   "hm": "10:45",
+   "zRun": 2,
+   "msgs": 27,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 58,
+   "hm": "10:50",
+   "zRun": 2,
+   "msgs": 27,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 59,
+   "hm": "10:55",
+   "zRun": 2,
+   "msgs": 27,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 60,
+   "hm": "11:00",
+   "zRun": 2,
+   "msgs": 27,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 61,
+   "hm": "11:05",
+   "zRun": 2,
+   "msgs": 28,
+   "mk": {
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 62,
+   "hm": "11:10",
+   "zRun": 2,
+   "msgs": 28,
+   "mk": {
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 63,
+   "hm": "11:15",
+   "zRun": 2,
+   "msgs": 28,
+   "mk": {
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 64,
+   "hm": "11:20",
+   "zRun": 2,
+   "msgs": 28,
+   "mk": {
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "ZS-B3-LN-C-END",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 65,
+   "hm": "11:25",
+   "zRun": 2,
+   "msgs": 29,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 66,
+   "hm": "11:30",
+   "zRun": 2,
+   "msgs": 29,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 67,
+   "hm": "11:35",
+   "zRun": 2,
+   "msgs": 29,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 68,
+   "hm": "11:40",
+   "zRun": 2,
+   "msgs": 29,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 69,
+   "hm": "11:45",
+   "zRun": 2,
+   "msgs": 29,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 70,
+   "hm": "11:50",
+   "zRun": 2,
+   "msgs": 29,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 71,
+   "hm": "11:55",
+   "zRun": 2,
+   "msgs": 29,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 1,
+   "bad": []
+  },
+  {
+   "i": 72,
+   "hm": "12:00",
+   "zRun": 2,
+   "msgs": 30,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 3,
+    "side": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 0,
+   "acc": 1,
+   "did": "done z:ZS-B4 acc j:ACT-C5-SCAN",
+   "bad": []
+  },
+  {
+   "i": 73,
+   "hm": "12:05",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 74,
+   "hm": "12:10",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 75,
+   "hm": "12:15",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 76,
+   "hm": "12:20",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 77,
+   "hm": "12:25",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 78,
+   "hm": "12:30",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 79,
+   "hm": "12:35",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 80,
+   "hm": "12:40",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 81,
+   "hm": "12:45",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 82,
+   "hm": "12:50",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 83,
+   "hm": "12:55",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 84,
+   "hm": "13:00",
+   "zRun": 2,
+   "msgs": 34,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 85,
+   "hm": "13:05",
+   "zRun": 2,
+   "msgs": 35,
+   "mk": {
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-POST",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 86,
+   "hm": "13:10",
+   "zRun": 2,
+   "msgs": 36,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-CINEMA",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 87,
+   "hm": "13:15",
+   "zRun": 2,
+   "msgs": 36,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-CINEMA",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 88,
+   "hm": "13:20",
+   "zRun": 2,
+   "msgs": 36,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-CINEMA",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 89,
+   "hm": "13:25",
+   "zRun": 2,
+   "msgs": 36,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-CINEMA",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "bad": []
+  },
+  {
+   "i": 90,
+   "hm": "13:30",
+   "zRun": 2,
+   "msgs": 36,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 2,
+    "side": 1,
+    "job": 1
+   },
+   "nav": "D2-CINEMA",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 0,
+   "acc": 2,
+   "did": "done z:ZS-C4",
+   "bad": []
+  },
+  {
+   "i": 91,
+   "hm": "13:35",
+   "zRun": 2,
+   "msgs": 41,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 92,
+   "hm": "13:40",
+   "zRun": 2,
+   "msgs": 41,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 93,
+   "hm": "13:45",
+   "zRun": 2,
+   "msgs": 41,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 94,
+   "hm": "13:50",
+   "zRun": 2,
+   "msgs": 41,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 95,
+   "hm": "13:55",
+   "zRun": 2,
+   "msgs": 41,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 96,
+   "hm": "14:00",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 1,
+   "acc": 3,
+   "did": " later z:ZS-A2",
+   "bad": []
+  },
+  {
+   "i": 97,
+   "hm": "14:05",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 98,
+   "hm": "14:10",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 99,
+   "hm": "14:15",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 100,
+   "hm": "14:20",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 101,
+   "hm": "14:25",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 102,
+   "hm": "14:30",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 103,
+   "hm": "14:35",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 104,
+   "hm": "14:40",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 105,
+   "hm": "14:45",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 106,
+   "hm": "14:50",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 107,
+   "hm": "14:55",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 108,
+   "hm": "15:00",
+   "zRun": 2,
+   "msgs": 42,
+   "mk": {
+    "story": 1,
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 1,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "did": "done z:ZS-C2",
+   "bad": []
+  },
+  {
+   "i": 109,
+   "hm": "15:05",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 110,
+   "hm": "15:10",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 111,
+   "hm": "15:15",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 112,
+   "hm": "15:20",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 113,
+   "hm": "15:25",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 114,
+   "hm": "15:30",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 115,
+   "hm": "15:35",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 116,
+   "hm": "15:40",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 117,
+   "hm": "15:45",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 118,
+   "hm": "15:50",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 119,
+   "hm": "15:55",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 120,
+   "hm": "16:00",
+   "zRun": 2,
+   "msgs": 49,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 121,
+   "hm": "16:05",
+   "zRun": 2,
+   "msgs": 50,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 1,
+   "acc": 3,
+   "did": " acc z:ZS-B5",
+   "bad": []
+  },
+  {
+   "i": 122,
+   "hm": "16:10",
+   "zRun": 3,
+   "msgs": 50,
+   "mk": {
+    "friend": 3,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 123,
+   "hm": "16:15",
+   "zRun": 3,
+   "msgs": 50,
+   "mk": {
+    "friend": 3,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 124,
+   "hm": "16:20",
+   "zRun": 3,
+   "msgs": 50,
+   "mk": {
+    "friend": 3,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 125,
+   "hm": "16:25",
+   "zRun": 3,
+   "msgs": 50,
+   "mk": {
+    "friend": 3,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 126,
+   "hm": "16:30",
+   "zRun": 3,
+   "msgs": 50,
+   "mk": {
+    "friend": 3,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "did": "done z:ZS-D5",
+   "bad": []
+  },
+  {
+   "i": 127,
+   "hm": "16:35",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 128,
+   "hm": "16:40",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 129,
+   "hm": "16:45",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 130,
+   "hm": "16:50",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 131,
+   "hm": "16:55",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 132,
+   "hm": "17:00",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 133,
+   "hm": "17:05",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 134,
+   "hm": "17:10",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 135,
+   "hm": "17:15",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 136,
+   "hm": "17:20",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 137,
+   "hm": "17:25",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 138,
+   "hm": "17:30",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 139,
+   "hm": "17:35",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 140,
+   "hm": "17:40",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 141,
+   "hm": "17:45",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 142,
+   "hm": "17:50",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 143,
+   "hm": "17:55",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 144,
+   "hm": "18:00",
+   "zRun": 3,
+   "msgs": 54,
+   "mk": {
+    "friend": 3,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "did": "done z:ZS-B5",
+   "bad": []
+  },
+  {
+   "i": 145,
+   "hm": "18:05",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 1,
+   "acc": 3,
+   "did": " later z:ZS-D2",
+   "bad": []
+  },
+  {
+   "i": 146,
+   "hm": "18:10",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 147,
+   "hm": "18:15",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 148,
+   "hm": "18:20",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 149,
+   "hm": "18:25",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 150,
+   "hm": "18:30",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 151,
+   "hm": "18:35",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 152,
+   "hm": "18:40",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 153,
+   "hm": "18:45",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 154,
+   "hm": "18:50",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 155,
+   "hm": "18:55",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 156,
+   "hm": "19:00",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 157,
+   "hm": "19:05",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 158,
+   "hm": "19:10",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 159,
+   "hm": "19:15",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 160,
+   "hm": "19:20",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 161,
+   "hm": "19:25",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 162,
+   "hm": "19:30",
+   "zRun": 2,
+   "msgs": 60,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "did": "done z:ZS-D3",
+   "bad": []
+  },
+  {
+   "i": 163,
+   "hm": "19:35",
+   "zRun": 2,
+   "msgs": 65,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 164,
+   "hm": "19:40",
+   "zRun": 2,
+   "msgs": 65,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 165,
+   "hm": "19:45",
+   "zRun": 2,
+   "msgs": 65,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 166,
+   "hm": "19:50",
+   "zRun": 2,
+   "msgs": 65,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 167,
+   "hm": "19:55",
+   "zRun": 2,
+   "msgs": 65,
+   "mk": {
+    "friend": 2,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 168,
+   "hm": "20:00",
+   "zRun": 3,
+   "msgs": 66,
+   "mk": {
+    "friend": 3,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 169,
+   "hm": "20:05",
+   "zRun": 3,
+   "msgs": 66,
+   "mk": {
+    "friend": 3,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 170,
+   "hm": "20:10",
+   "zRun": 3,
+   "msgs": 67,
+   "mk": {
+    "friend": 3,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 1,
+   "acc": 3,
+   "did": " acc z:S12-ST-C1",
+   "bad": []
+  },
+  {
+   "i": 171,
+   "hm": "20:15",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 172,
+   "hm": "20:20",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 173,
+   "hm": "20:25",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 174,
+   "hm": "20:30",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 175,
+   "hm": "20:35",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 176,
+   "hm": "20:40",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 177,
+   "hm": "20:45",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 178,
+   "hm": "20:50",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 179,
+   "hm": "20:55",
+   "zRun": 4,
+   "msgs": 67,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 180,
+   "hm": "21:00",
+   "zRun": 5,
+   "msgs": 68,
+   "mk": {
+    "friend": 5,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "did": "done z:ZS-A5",
+   "bad": []
+  },
+  {
+   "i": 181,
+   "hm": "21:05",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 182,
+   "hm": "21:10",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 183,
+   "hm": "21:15",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 184,
+   "hm": "21:20",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 185,
+   "hm": "21:25",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 186,
+   "hm": "21:30",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 187,
+   "hm": "21:35",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 188,
+   "hm": "21:40",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 189,
+   "hm": "21:45",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 190,
+   "hm": "21:50",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 191,
+   "hm": "21:55",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 192,
+   "hm": "22:00",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 193,
+   "hm": "22:05",
+   "zRun": 5,
+   "msgs": 73,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 194,
+   "hm": "22:10",
+   "zRun": 5,
+   "msgs": 74,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 2,
+   "acc": 4,
+   "did": " later z:ZS-A2",
+   "bad": []
+  },
+  {
+   "i": 195,
+   "hm": "22:15",
+   "zRun": 5,
+   "msgs": 74,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 196,
+   "hm": "22:20",
+   "zRun": 5,
+   "msgs": 74,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 197,
+   "hm": "22:25",
+   "zRun": 5,
+   "msgs": 74,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 198,
+   "hm": "22:30",
+   "zRun": 5,
+   "msgs": 74,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "did": "done z:S12-ST-C1",
+   "bad": []
+  },
+  {
+   "i": 199,
+   "hm": "22:35",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 200,
+   "hm": "22:40",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 201,
+   "hm": "22:45",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 202,
+   "hm": "22:50",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 203,
+   "hm": "22:55",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 204,
+   "hm": "23:00",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 205,
+   "hm": "23:05",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 206,
+   "hm": "23:10",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 207,
+   "hm": "23:15",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 208,
+   "hm": "23:20",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 209,
+   "hm": "23:25",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 210,
+   "hm": "23:30",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 211,
+   "hm": "23:35",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 212,
+   "hm": "23:40",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 213,
+   "hm": "23:45",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 214,
+   "hm": "23:50",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 215,
+   "hm": "23:55",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 216,
+   "hm": "00:00",
+   "zRun": 4,
+   "msgs": 79,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "did": "done z:S12-ST-B1",
+   "bad": []
+  },
+  {
+   "i": 217,
+   "hm": "00:05",
+   "zRun": 4,
+   "msgs": 84,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 218,
+   "hm": "00:10",
+   "zRun": 4,
+   "msgs": 84,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 219,
+   "hm": "00:15",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 1,
+   "acc": 3,
+   "did": " acc j:M-ROUTE-SHOP",
+   "bad": []
+  },
+  {
+   "i": 220,
+   "hm": "00:20",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 221,
+   "hm": "00:25",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 222,
+   "hm": "00:30",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 223,
+   "hm": "00:35",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 224,
+   "hm": "00:40",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 225,
+   "hm": "00:45",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 226,
+   "hm": "00:50",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 227,
+   "hm": "00:55",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 228,
+   "hm": "01:00",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 229,
+   "hm": "01:05",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 230,
+   "hm": "01:10",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 231,
+   "hm": "01:15",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 232,
+   "hm": "01:20",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 233,
+   "hm": "01:25",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 234,
+   "hm": "01:30",
+   "zRun": 4,
+   "msgs": 85,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "did": "done z:ZS-A4",
+   "bad": []
+  },
+  {
+   "i": 235,
+   "hm": "01:35",
+   "zRun": 4,
+   "msgs": 90,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 236,
+   "hm": "01:40",
+   "zRun": 4,
+   "msgs": 90,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 237,
+   "hm": "01:45",
+   "zRun": 4,
+   "msgs": 90,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 238,
+   "hm": "01:50",
+   "zRun": 4,
+   "msgs": 90,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 239,
+   "hm": "01:55",
+   "zRun": 4,
+   "msgs": 90,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 240,
+   "hm": "02:00",
+   "zRun": 4,
+   "msgs": 90,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 241,
+   "hm": "02:05",
+   "zRun": 4,
+   "msgs": 90,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 242,
+   "hm": "02:10",
+   "zRun": 4,
+   "msgs": 90,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 243,
+   "hm": "02:15",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 1,
+   "acc": 4,
+   "did": " later z:ZS-D2",
+   "bad": []
+  },
+  {
+   "i": 244,
+   "hm": "02:20",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 245,
+   "hm": "02:25",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 246,
+   "hm": "02:30",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 247,
+   "hm": "02:35",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 248,
+   "hm": "02:40",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 249,
+   "hm": "02:45",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 250,
+   "hm": "02:50",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 251,
+   "hm": "02:55",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 252,
+   "hm": "03:00",
+   "zRun": 4,
+   "msgs": 91,
+   "mk": {
+    "friend": 4,
+    "side": 3,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 4,
+   "did": "done j:M-E5-01",
+   "bad": []
+  },
+  {
+   "i": 253,
+   "hm": "03:05",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 254,
+   "hm": "03:10",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 255,
+   "hm": "03:15",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 256,
+   "hm": "03:20",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 257,
+   "hm": "03:25",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 258,
+   "hm": "03:30",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 259,
+   "hm": "03:35",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 260,
+   "hm": "03:40",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 261,
+   "hm": "03:45",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 262,
+   "hm": "03:50",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 263,
+   "hm": "03:55",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 264,
+   "hm": "04:00",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 265,
+   "hm": "04:05",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 266,
+   "hm": "04:10",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 267,
+   "hm": "04:15",
+   "zRun": 4,
+   "msgs": 92,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 1,
+   "acc": 3,
+   "bad": []
+  },
+  {
+   "i": 268,
+   "hm": "04:20",
+   "zRun": 4,
+   "msgs": 93,
+   "mk": {
+    "friend": 4,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 1,
+   "run": 1,
+   "acc": 3,
+   "did": " acc z:S11-ST-B6",
+   "bad": []
+  },
+  {
+   "i": 269,
+   "hm": "04:25",
+   "zRun": 5,
+   "msgs": 93,
+   "mk": {
+    "friend": 5,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 270,
+   "hm": "04:30",
+   "zRun": 5,
+   "msgs": 93,
+   "mk": {
+    "friend": 5,
+    "zone": 1,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 5,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "did": "done z:ZS-D4",
+   "bad": []
+  },
+  {
+   "i": 271,
+   "hm": "04:35",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 272,
+   "hm": "04:40",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 273,
+   "hm": "04:45",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 274,
+   "hm": "04:50",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 275,
+   "hm": "04:55",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 276,
+   "hm": "05:00",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 277,
+   "hm": "05:05",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 278,
+   "hm": "05:10",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 279,
+   "hm": "05:15",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 280,
+   "hm": "05:20",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 281,
+   "hm": "05:25",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 282,
+   "hm": "05:30",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 283,
+   "hm": "05:35",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 284,
+   "hm": "05:40",
+   "zRun": 5,
+   "msgs": 97,
+   "mk": {
+    "friend": 5,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 285,
+   "hm": "05:45",
+   "zRun": 6,
+   "msgs": 98,
+   "mk": {
+    "friend": 6,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 286,
+   "hm": "05:50",
+   "zRun": 6,
+   "msgs": 98,
+   "mk": {
+    "friend": 6,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  },
+  {
+   "i": 287,
+   "hm": "05:55",
+   "zRun": 6,
+   "msgs": 98,
+   "mk": {
+    "friend": 6,
+    "side": 2,
+    "job": 1
+   },
+   "nav": "C4-HARDWARE",
+   "storyOpen": 0,
+   "story": 1,
+   "side": 4,
+   "offer": 0,
+   "run": 2,
+   "acc": 4,
+   "bad": []
+  }
+ ]
+}

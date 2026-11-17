@@ -1,0 +1,8 @@
+start 17:00 try8257
+brandin_probe rc=0 ing":["terminal-cafe:logo","gate-cafe:logo"],"cityMissing":["D2-BARBER:face_01","D2-BOOKS:face_01","D2-OPTICS:face_01","D2-PHARMACY:face_01","D2-PHONES:face_01","D2-POST:face_01","E4-INVERTER:face_01","B5-THEATRE:face_02","B4-S1:face_01","B4-S1:face_02","B4-S1:face_03","B4-S1:face_04","B4-S1:face_06","C4-DEPOT:face_01","C4-DISPATCH:face_01","C5-DISPATCH:face_01","C5-DOCKS:face_01","C5-WORKSHOP:face_01","D4-DOCKS:face_01","D4-RAIL:face_01","D4-WH:face_01","E3-KIOSK:face_01","C4-DOCKS:face_01","D4-GATE:face_01","A2-HOSP:face_01","A2-HOSP:face_02","A2-CLINIC:face_01","A2-STORE:face_01","D5-01:face_01"],"cityNoPos":[],"place":{"n":250,"ok":250,"noScreen":0,"bad":[]},"errs":[],"n":{"way":8737,"fids":1939,"gate":1329,"rwy":510,"plate":10181,"s9":549,"e4":2941,"p":1275,"counter":758,"brief":11,"c2":6143,"d2":268,"b4":75,"f":253,"prop":135,"spr":278,"hooks":15,"rf":2449,"rfLogo":61},"err":null}
+rf_check rc=0 7856221792392,12.014222222222223,13.080892255892255,14.67405303030303,12.8025,13.072779072779072,14.827505827505828,9.642851851851852,17.920314253647586,21.08301767676768,13.671444444444445,15.429936621113091,18.739304812834224,13.330944444444444,21.25535113035113,23.726461038961038,12.468981481481482],"maxDay":47.06060606060606,"maxNight":45.97856221792392,"meanDay":19.077274999681805,"errs":[]}
+q_ingame rc=0
+rules_gate rc=1
+people_on_road rc=0
+stuckmax rc=0 {"tag":"bi_try8257","build":"try8257.html","secs":150,"over5":1,"busOver5":0,"long":[["car LOGI-TK-1:LV-TK-01",23.6,"C4-RC-N","",""]],"st":{"served":0,"rec":0,"owned":0},"pe":[]}
+done 17:17

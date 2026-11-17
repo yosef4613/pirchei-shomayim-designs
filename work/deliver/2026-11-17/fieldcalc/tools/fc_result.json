@@ -1,0 +1,4456 @@
+{
+ "T": 720,
+ "K": {
+  "roll": 6.9,
+  "climb": 5.7,
+  "lineup": 8.25,
+  "app": 10.8,
+  "roll_out": 10
+ },
+ "ROT": {
+  "A3": 15.5,
+  "A2": 10.1
+ },
+ "SEP": {
+  "AA": 2,
+  "AD": 2,
+  "DA": 3,
+  "DD": 4,
+  "wake": 8
+ },
+ "VIS": 5,
+ "matrix": {
+  "AC-PR-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 40,
+    "n": 1,
+    "veh": "PT",
+    "note": "גרר קטן (PT-GA); BJ / CN — גרר"
+   },
+   "fuel": {
+    "d": 40,
+    "n": 1,
+    "veh": "FTs",
+    "note": "FT-GA — 40 ש׳ (S15SIM)"
+   },
+   "pax_walk": {
+    "d": 60,
+    "n": 0,
+    "veh": null,
+    "note": "הנוסעים ברגל אל הטרקלין של ה-GA; מנהלים — לימוזינה עד המטוס: רכב של העיר דרך השער G-STAFF, ‏XC_E / ‏XC_W (fc_calc2.py)"
+   }
+  },
+  "AC-LT-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 40,
+    "n": 1,
+    "veh": "PT",
+    "note": "גרר קטן (PT-GA); BJ / CN — גרר"
+   },
+   "fuel": {
+    "d": 40,
+    "n": 1,
+    "veh": "FTs",
+    "note": "FT-GA — 40 ש׳ (S15SIM)"
+   },
+   "pax_walk": {
+    "d": 60,
+    "n": 0,
+    "veh": null,
+    "note": "הנוסעים ברגל אל הטרקלין של ה-GA; מנהלים — לימוזינה עד המטוס: רכב של העיר דרך השער G-STAFF, ‏XC_E / ‏XC_W (fc_calc2.py)"
+   }
+  },
+  "AC-BJ-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 40,
+    "n": 1,
+    "veh": "PT",
+    "note": "גרר קטן (PT-GA); BJ / CN — גרר"
+   },
+   "fuel": {
+    "d": 40,
+    "n": 1,
+    "veh": "FTs",
+    "note": "FT-GA — 40 ש׳ (S15SIM)"
+   },
+   "gpu": {
+    "d": 180,
+    "n": 1,
+    "veh": "GP",
+    "note": "מנהלים — מזגן בעמידה (הישן: BJ / CN עם קייטרינג ושירותים)"
+   },
+   "cater": {
+    "d": 60,
+    "n": 1,
+    "veh": "CT",
+    "note": "הישן: BJ 7 / CN 5 ביקורים בחצי שעה (svcQ)"
+   },
+   "lav": {
+    "d": 30,
+    "n": 1,
+    "veh": "LV",
+    "note": "הישן: BJ / CN — שירותים"
+   },
+   "clean": {
+    "d": 60,
+    "n": 1,
+    "veh": "SVC",
+    "note": "רכב ניקיון קטן"
+   },
+   "water": {
+    "d": 30,
+    "n": 1,
+    "veh": "WT",
+    "note": "מנהלים — מים (הבקר 17.11)"
+   },
+   "pax_walk": {
+    "d": 60,
+    "n": 0,
+    "veh": null,
+    "note": "הנוסעים ברגל אל הטרקלין של ה-GA; מנהלים — לימוזינה עד המטוס: רכב של העיר דרך השער G-STAFF, ‏XC_E / ‏XC_W (fc_calc2.py)"
+   }
+  },
+  "AC-CN-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 40,
+    "n": 1,
+    "veh": "PT",
+    "note": "גרר קטן (PT-GA); BJ / CN — גרר"
+   },
+   "fuel": {
+    "d": 40,
+    "n": 1,
+    "veh": "FTs",
+    "note": "FT-GA — 40 ש׳ (S15SIM)"
+   },
+   "gpu": {
+    "d": 180,
+    "n": 1,
+    "veh": "GP",
+    "note": "מנהלים — מזגן בעמידה (הישן: BJ / CN עם קייטרינג ושירותים)"
+   },
+   "cater": {
+    "d": 60,
+    "n": 1,
+    "veh": "CT",
+    "note": "הישן: BJ 7 / CN 5 ביקורים בחצי שעה (svcQ)"
+   },
+   "lav": {
+    "d": 30,
+    "n": 1,
+    "veh": "LV",
+    "note": "הישן: BJ / CN — שירותים"
+   },
+   "clean": {
+    "d": 60,
+    "n": 1,
+    "veh": "SVC",
+    "note": "רכב ניקיון קטן"
+   },
+   "water": {
+    "d": 30,
+    "n": 1,
+    "veh": "WT",
+    "note": "מנהלים — מים (הבקר 17.11)"
+   },
+   "pax_walk": {
+    "d": 60,
+    "n": 0,
+    "veh": null,
+    "note": "הנוסעים ברגל אל הטרקלין של ה-GA; מנהלים — לימוזינה עד המטוס: רכב של העיר דרך השער G-STAFF, ‏XC_E / ‏XC_W (fc_calc2.py)"
+   }
+  },
+  "AC-AM-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "dock": {
+    "d": 20,
+    "n": 0,
+    "veh": null,
+    "note": "קשירה למזח הצף — עובד המזח"
+   },
+   "fuel": {
+    "d": 40,
+    "n": 1,
+    "veh": "FTs",
+    "note": "משאבה במזח / מתדלק קטן"
+   },
+   "pax_walk": {
+    "d": 60,
+    "n": 0,
+    "veh": null,
+    "note": "על המזח אל החוף"
+   }
+  },
+  "AC-TP-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT: 7 ש׳ חיבור + 75 ש׳ דחיפה (S15SIM PT-P2 / P3)"
+   },
+   "bridge": {
+    "d": 20,
+    "n": 0,
+    "veh": null,
+    "note": "בעמדות P (שרוול; LG — 2 שרוולים בתכנון); בעמדה מרוחקת — מדרגות + אוטובוס"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "מרוחקות (R) ובלי שרוול; בשרוול — כוח מהשרוול (בלי רכב)",
+    "remote_only": true
+   },
+   "bus": {
+    "d": 165,
+    "n": 1,
+    "veh": "AB",
+    "note": "מרוחקות: אוטובוס לכל 60 מצוירים (AB-R1 ‏167 ש׳)",
+    "remote_only": true
+   },
+   "bags": {
+    "d": 120,
+    "n": 1,
+    "veh": "BT",
+    "note": "טעינה ביד (S6A_HAND: RJ / QJ / TP) — רכבת אחת, 2 עגלות"
+   },
+   "fuel": {
+    "d": 70,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-1 ליד P4 — 70 ש׳; רחב — כפול"
+   },
+   "cater": {
+    "d": 130,
+    "n": 1,
+    "veh": "CT",
+    "note": "CT-P3 ‏132 / CT-P1 ‏264 ש׳; הישן 130"
+   },
+   "lav": {
+    "d": 30,
+    "n": 1,
+    "veh": "LV",
+    "note": "LV-P5 ‏30 ש׳ (הישן 30)"
+   },
+   "clean": {
+    "d": 84,
+    "n": 1,
+    "veh": "SVC",
+    "note": "SVC-P2 / P3 ‏84 ש׳ (הישן 57–110)"
+   }
+  },
+  "AC-RJ-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT: 7 ש׳ חיבור + 75 ש׳ דחיפה (S15SIM PT-P2 / P3)"
+   },
+   "bridge": {
+    "d": 20,
+    "n": 0,
+    "veh": null,
+    "note": "בעמדות P (שרוול; LG — 2 שרוולים בתכנון); בעמדה מרוחקת — מדרגות + אוטובוס"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "מרוחקות (R) ובלי שרוול; בשרוול — כוח מהשרוול (בלי רכב)",
+    "remote_only": true
+   },
+   "stairs": {
+    "d": 200,
+    "n": 1,
+    "veh": "MS",
+    "note": "מרוחקות: 2 מדרגות לצר / רחב (קדמי + אחורי); TP / RJ — מדרגות מובנות",
+    "remote_only": true,
+    "skip": false
+   },
+   "bus": {
+    "d": 165,
+    "n": 1,
+    "veh": "AB",
+    "note": "מרוחקות: אוטובוס לכל 60 מצוירים (AB-R1 ‏167 ש׳)",
+    "remote_only": true
+   },
+   "bags": {
+    "d": 120,
+    "n": 1,
+    "veh": "BT",
+    "note": "טעינה ביד (S6A_HAND: RJ / QJ / TP) — רכבת אחת, 2 עגלות"
+   },
+   "fuel": {
+    "d": 70,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-1 ליד P4 — 70 ש׳; רחב — כפול"
+   },
+   "cater": {
+    "d": 130,
+    "n": 1,
+    "veh": "CT",
+    "note": "CT-P3 ‏132 / CT-P1 ‏264 ש׳; הישן 130"
+   },
+   "water": {
+    "d": 30,
+    "n": 1,
+    "veh": "WT",
+    "note": "WT-P4 ‏30 ש׳ (הישן 30)",
+    "skip": false
+   },
+   "lav": {
+    "d": 30,
+    "n": 1,
+    "veh": "LV",
+    "note": "LV-P5 ‏30 ש׳ (הישן 30)"
+   },
+   "clean": {
+    "d": 84,
+    "n": 1,
+    "veh": "SVC",
+    "note": "SVC-P2 / P3 ‏84 ש׳ (הישן 57–110)"
+   }
+  },
+  "AC-QJ-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT: 7 ש׳ חיבור + 75 ש׳ דחיפה (S15SIM PT-P2 / P3)"
+   },
+   "bridge": {
+    "d": 20,
+    "n": 0,
+    "veh": null,
+    "note": "בעמדות P (שרוול; LG — 2 שרוולים בתכנון); בעמדה מרוחקת — מדרגות + אוטובוס"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "מרוחקות (R) ובלי שרוול; בשרוול — כוח מהשרוול (בלי רכב)",
+    "remote_only": true
+   },
+   "stairs": {
+    "d": 200,
+    "n": 1,
+    "veh": "MS",
+    "note": "מרוחקות: 2 מדרגות לצר / רחב (קדמי + אחורי); TP / RJ — מדרגות מובנות",
+    "remote_only": true,
+    "skip": false
+   },
+   "bus": {
+    "d": 165,
+    "n": 1,
+    "veh": "AB",
+    "note": "מרוחקות: אוטובוס לכל 60 מצוירים (AB-R1 ‏167 ש׳)",
+    "remote_only": true
+   },
+   "bags": {
+    "d": 120,
+    "n": 1,
+    "veh": "BT",
+    "note": "טעינה ביד (S6A_HAND: RJ / QJ / TP) — רכבת אחת, 2 עגלות"
+   },
+   "fuel": {
+    "d": 70,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-1 ליד P4 — 70 ש׳; רחב — כפול"
+   },
+   "cater": {
+    "d": 130,
+    "n": 1,
+    "veh": "CT",
+    "note": "CT-P3 ‏132 / CT-P1 ‏264 ש׳; הישן 130"
+   },
+   "water": {
+    "d": 30,
+    "n": 1,
+    "veh": "WT",
+    "note": "WT-P4 ‏30 ש׳ (הישן 30)",
+    "skip": false
+   },
+   "lav": {
+    "d": 30,
+    "n": 1,
+    "veh": "LV",
+    "note": "LV-P5 ‏30 ש׳ (הישן 30)"
+   },
+   "clean": {
+    "d": 84,
+    "n": 1,
+    "veh": "SVC",
+    "note": "SVC-P2 / P3 ‏84 ש׳ (הישן 57–110)"
+   }
+  },
+  "AC-NB-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT: 7 ש׳ חיבור + 75 ש׳ דחיפה (S15SIM PT-P2 / P3)"
+   },
+   "bridge": {
+    "d": 20,
+    "n": 0,
+    "veh": null,
+    "note": "בעמדות P (שרוול; LG — 2 שרוולים בתכנון); בעמדה מרוחקת — מדרגות + אוטובוס"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "מרוחקות (R) ובלי שרוול; בשרוול — כוח מהשרוול (בלי רכב)",
+    "remote_only": true
+   },
+   "stairs": {
+    "d": 200,
+    "n": 2,
+    "veh": "MS",
+    "note": "מרוחקות: 2 מדרגות לצר / רחב (קדמי + אחורי); TP / RJ — מדרגות מובנות",
+    "remote_only": true,
+    "skip": false
+   },
+   "bus": {
+    "d": 165,
+    "n": 1,
+    "veh": "AB",
+    "note": "מרוחקות: אוטובוס לכל 60 מצוירים (AB-R1 ‏167 ש׳)",
+    "remote_only": true
+   },
+   "bags": {
+    "d": 230,
+    "n": 1,
+    "veh": "BT",
+    "note": "רכבת 2 עגלות ליד המטוס 208–230 ש׳ (S15SIM BT-P2 / P3 / P4)"
+   },
+   "belt": {
+    "d": 250,
+    "n": 1,
+    "veh": "BL",
+    "note": "מסוע 228–285 ש׳ (BL-P2 / P3); רחב — קדמי + אחורי"
+   },
+   "fuel": {
+    "d": 70,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-1 ליד P4 — 70 ש׳; רחב — כפול"
+   },
+   "cater": {
+    "d": 130,
+    "n": 1,
+    "veh": "CT",
+    "note": "CT-P3 ‏132 / CT-P1 ‏264 ש׳; הישן 130"
+   },
+   "water": {
+    "d": 30,
+    "n": 1,
+    "veh": "WT",
+    "note": "WT-P4 ‏30 ש׳ (הישן 30)",
+    "skip": false
+   },
+   "lav": {
+    "d": 30,
+    "n": 1,
+    "veh": "LV",
+    "note": "LV-P5 ‏30 ש׳ (הישן 30)"
+   },
+   "clean": {
+    "d": 84,
+    "n": 1,
+    "veh": "SVC",
+    "note": "SVC-P2 / P3 ‏84 ש׳ (הישן 57–110)"
+   }
+  },
+  "AC-MW-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT: 7 ש׳ חיבור + 75 ש׳ דחיפה (S15SIM PT-P2 / P3)"
+   },
+   "bridge": {
+    "d": 20,
+    "n": 0,
+    "veh": null,
+    "note": "בעמדות P (שרוול; LG — 2 שרוולים בתכנון); בעמדה מרוחקת — מדרגות + אוטובוס"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "מרוחקות (R) ובלי שרוול; בשרוול — כוח מהשרוול (בלי רכב)",
+    "remote_only": true
+   },
+   "stairs": {
+    "d": 200,
+    "n": 2,
+    "veh": "MS",
+    "note": "מרוחקות: 2 מדרגות לצר / רחב (קדמי + אחורי); TP / RJ — מדרגות מובנות",
+    "remote_only": true,
+    "skip": false
+   },
+   "bus": {
+    "d": 165,
+    "n": 2,
+    "veh": "AB",
+    "note": "מרוחקות: אוטובוס לכל 60 מצוירים (AB-R1 ‏167 ש׳)",
+    "remote_only": true
+   },
+   "bags": {
+    "d": 260,
+    "n": 2,
+    "veh": "BT",
+    "note": "רכבת 2 עגלות ליד המטוס 208–230 ש׳ (S15SIM BT-P2 / P3 / P4)"
+   },
+   "belt": {
+    "d": 280,
+    "n": 2,
+    "veh": "BL",
+    "note": "מסוע 228–285 ש׳ (BL-P2 / P3); רחב — קדמי + אחורי"
+   },
+   "fuel": {
+    "d": 140,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-1 ליד P4 — 70 ש׳; רחב — כפול"
+   },
+   "cater": {
+    "d": 260,
+    "n": 2,
+    "veh": "CT",
+    "note": "CT-P3 ‏132 / CT-P1 ‏264 ש׳; הישן 130"
+   },
+   "water": {
+    "d": 30,
+    "n": 1,
+    "veh": "WT",
+    "note": "WT-P4 ‏30 ש׳ (הישן 30)",
+    "skip": false
+   },
+   "lav": {
+    "d": 30,
+    "n": 1,
+    "veh": "LV",
+    "note": "LV-P5 ‏30 ש׳ (הישן 30)"
+   },
+   "clean": {
+    "d": 120,
+    "n": 1,
+    "veh": "SVC",
+    "note": "SVC-P2 / P3 ‏84 ש׳ (הישן 57–110)"
+   }
+  },
+  "AC-LG-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT: 7 ש׳ חיבור + 75 ש׳ דחיפה (S15SIM PT-P2 / P3)"
+   },
+   "bridge": {
+    "d": 20,
+    "n": 0,
+    "veh": null,
+    "note": "בעמדות P (שרוול; LG — 2 שרוולים בתכנון); בעמדה מרוחקת — מדרגות + אוטובוס"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "מרוחקות (R) ובלי שרוול; בשרוול — כוח מהשרוול (בלי רכב)",
+    "remote_only": true
+   },
+   "stairs": {
+    "d": 200,
+    "n": 2,
+    "veh": "MS",
+    "note": "מרוחקות: 2 מדרגות לצר / רחב (קדמי + אחורי); TP / RJ — מדרגות מובנות",
+    "remote_only": true,
+    "skip": false
+   },
+   "bus": {
+    "d": 165,
+    "n": 2,
+    "veh": "AB",
+    "note": "מרוחקות: אוטובוס לכל 60 מצוירים (AB-R1 ‏167 ש׳)",
+    "remote_only": true
+   },
+   "bags": {
+    "d": 260,
+    "n": 2,
+    "veh": "BT",
+    "note": "רכבת 2 עגלות ליד המטוס 208–230 ש׳ (S15SIM BT-P2 / P3 / P4)"
+   },
+   "belt": {
+    "d": 280,
+    "n": 2,
+    "veh": "BL",
+    "note": "מסוע 228–285 ש׳ (BL-P2 / P3); רחב — קדמי + אחורי"
+   },
+   "fuel": {
+    "d": 140,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-1 ליד P4 — 70 ש׳; רחב — כפול"
+   },
+   "cater": {
+    "d": 260,
+    "n": 2,
+    "veh": "CT",
+    "note": "CT-P3 ‏132 / CT-P1 ‏264 ש׳; הישן 130"
+   },
+   "water": {
+    "d": 30,
+    "n": 1,
+    "veh": "WT",
+    "note": "WT-P4 ‏30 ש׳ (הישן 30)",
+    "skip": false
+   },
+   "lav": {
+    "d": 30,
+    "n": 1,
+    "veh": "LV",
+    "note": "LV-P5 ‏30 ש׳ (הישן 30)"
+   },
+   "clean": {
+    "d": 120,
+    "n": 1,
+    "veh": "SVC",
+    "note": "SVC-P2 / P3 ‏84 ש׳ (הישן 57–110)"
+   }
+  },
+  "AC-TB-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT-C (S15SIM)"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "הישן: CG / TB — GPU (GC)"
+   },
+   "fuel": {
+    "d": 70,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-3 — \"משא\""
+   },
+   "uld": {
+    "d": 90,
+    "n": 1,
+    "veh": "HL",
+    "note": "HL-C1 ‏90 ש׳ (S15SIM); הישן CG ‏690 ש׳ — מקוצר ל-300 עם 2 גררי עגלות"
+   },
+   "uld2": {
+    "d": 45,
+    "n": 1,
+    "veh": "TG",
+    "note": "TG-C ‏40–50 ש׳ × 2 לכל ביקור (S15SIM)"
+   }
+  },
+  "AC-CG-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT-C (S15SIM)"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "הישן: CG / TB — GPU (GC)"
+   },
+   "fuel": {
+    "d": 140,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-3 — \"משא\""
+   },
+   "uld": {
+    "d": 300,
+    "n": 1,
+    "veh": "HL",
+    "note": "HL-C1 ‏90 ש׳ (S15SIM); הישן CG ‏690 ש׳ — מקוצר ל-300 עם 2 גררי עגלות"
+   },
+   "uld2": {
+    "d": 45,
+    "n": 2,
+    "veh": "TG",
+    "note": "TG-C ‏40–50 ש׳ × 2 לכל ביקור (S15SIM)"
+   }
+  },
+  "AC-HC-01": {
+   "marshal": {
+    "d": 30,
+    "n": 1,
+    "veh": null,
+    "note": "מכוון ברגל בכל עמדה; \"עקוב אחריי\" למרוחקות ול-GA"
+   },
+   "chocks": {
+    "d": 10,
+    "n": 0,
+    "veh": null,
+    "note": "העובד של הרחבה"
+   },
+   "push": {
+    "d": 75,
+    "n": 1,
+    "veh": "PT",
+    "note": "PT-C (S15SIM)"
+   },
+   "gpu": {
+    "d": 300,
+    "n": 1,
+    "veh": "GP",
+    "note": "הישן: CG / TB — GPU (GC)"
+   },
+   "fuel": {
+    "d": 140,
+    "n": 1,
+    "veh": "FT",
+    "note": "FT-3 — \"משא\""
+   },
+   "uld": {
+    "d": 300,
+    "n": 2,
+    "veh": "HL",
+    "note": "HL-C1 ‏90 ש׳ (S15SIM); הישן CG ‏690 ש׳ — מקוצר ל-300 עם 2 גררי עגלות"
+   },
+   "uld2": {
+    "d": 45,
+    "n": 2,
+    "veh": "TG",
+    "note": "TG-C ‏40–50 ש׳ × 2 לכל ביקור (S15SIM)"
+   }
+  }
+ },
+ "svc_he": {
+  "push": "גרירה לאחור",
+  "marshal": "מכוון / עקוב אחריי",
+  "chocks": "סדי גלגלים וקונוסים",
+  "gpu": "כוח קרקע",
+  "bridge": "שרוול",
+  "stairs": "מדרגות",
+  "bus": "אוטובוס רחבה",
+  "bags": "רכבת כבודה",
+  "belt": "מסוע",
+  "uld": "מכולות (מעמיס + עגלות)",
+  "fuel": "דלק",
+  "cater": "קייטרינג",
+  "water": "מים",
+  "lav": "שירותים",
+  "clean": "ניקיון",
+  "pax_walk": "הליכה ברגל / רכב לטרקלין",
+  "dock": "עגינה וקשירה",
+  "arff": "כבאות בהמתנה (תדלוק עם נוסעים)"
+ },
+ "veh_he": {
+  "PT": "גרר מטוסים",
+  "GP": "מחולל קרקע",
+  "MS": "מדרגות נעות",
+  "AB": "אוטובוס רחבה",
+  "BT": "טרקטור כבודה + עגלות",
+  "BL": "מסוע",
+  "HL": "מעמיס מכולות",
+  "TG": "גרר עגלות מכולות",
+  "FT": "מכלית דלק",
+  "FTs": "מתדלק קטן (GA / מסוקים / אמפיבי)",
+  "CT": "משאית קייטרינג",
+  "WT": "מכלית מים",
+  "LV": "רכב שירותים",
+  "SVC": "רכב ניקיון",
+  "SV": "רכב \"עקוב אחריי\"",
+  "SH": "הסעת צוות"
+ },
+ "ac": {
+  "AC-PR-01": {
+   "seats": 4,
+   "lf": 0.6,
+   "bag": 0,
+   "hand": true,
+   "cls": "GA",
+   "he": "מטוס קל",
+   "L": 8.3,
+   "span": 11.0,
+   "dwell": 170
+  },
+  "AC-LT-01": {
+   "seats": 6,
+   "lf": 0.6,
+   "bag": 0,
+   "hand": true,
+   "cls": "GA",
+   "he": "דו-מנועי קל",
+   "L": 9.1,
+   "span": 11.2,
+   "dwell": 180
+  },
+  "AC-BJ-01": {
+   "seats": 12,
+   "lf": 0.6,
+   "bag": 2,
+   "hand": true,
+   "cls": "EXEC",
+   "he": "מטוס עסקים",
+   "L": 14.4,
+   "span": 15.8,
+   "dwell": 260
+  },
+  "AC-CN-01": {
+   "seats": 6,
+   "lf": 0.6,
+   "bag": 1,
+   "hand": true,
+   "cls": "EXEC",
+   "he": "מטוס עסקים עם כנף קדמית",
+   "L": 14.4,
+   "span": 14.0,
+   "dwell": 240
+  },
+  "AC-AM-01": {
+   "seats": 4,
+   "lf": 0.6,
+   "bag": 0,
+   "hand": true,
+   "cls": "AMPH",
+   "he": "מטוס ים אמפיבי",
+   "L": 12.5,
+   "span": 15.0,
+   "dwell": null
+  },
+  "AC-TP-01": {
+   "seats": 70,
+   "lf": 0.8,
+   "bag": 6,
+   "hand": true,
+   "cls": "REG",
+   "he": "טורבו-פרופ אזורי",
+   "L": 27.2,
+   "span": 27.0,
+   "dwell": 300
+  },
+  "AC-RJ-01": {
+   "seats": 76,
+   "lf": 0.8,
+   "bag": 8,
+   "hand": true,
+   "cls": "REG",
+   "he": "סילון אזורי",
+   "L": 31.7,
+   "span": 26.0,
+   "dwell": 340
+  },
+  "AC-QJ-01": {
+   "seats": 100,
+   "lf": 0.8,
+   "bag": 8,
+   "hand": true,
+   "cls": "REG",
+   "he": "סילון ארבע-מנועי אזורי",
+   "L": 35.0,
+   "span": 31.0,
+   "dwell": 360
+  },
+  "AC-NB-01": {
+   "seats": 180,
+   "lf": 0.81,
+   "bag": 12,
+   "hand": false,
+   "cls": "NB",
+   "he": "צר-גוף",
+   "L": 37.6,
+   "span": 35.8,
+   "dwell": 400
+  },
+  "AC-MW-01": {
+   "seats": 300,
+   "lf": 0.8,
+   "bag": 24,
+   "hand": false,
+   "cls": "WIDE",
+   "he": "רחב-גוף תלת-מנועי",
+   "L": 55.0,
+   "span": 42.0,
+   "dwell": 450
+  },
+  "AC-LG-01": {
+   "seats": 400,
+   "lf": 0.8,
+   "bag": 32,
+   "hand": false,
+   "cls": "WIDE",
+   "he": "מטוס נוסעים גדול",
+   "L": 66.8,
+   "span": 64.8,
+   "dwell": 470
+  },
+  "AC-TB-01": {
+   "seats": 0,
+   "lf": 0,
+   "bag": 0,
+   "hand": false,
+   "cls": "CARGO",
+   "uld": 2,
+   "he": "משא קטן עם 2 קורות זנב",
+   "L": 12.0,
+   "span": 20.0,
+   "dwell": 300
+  },
+  "AC-CG-01": {
+   "seats": 0,
+   "lf": 0,
+   "bag": 0,
+   "hand": false,
+   "cls": "CARGO",
+   "uld": 8,
+   "he": "מטוס מטען",
+   "L": 54.9,
+   "span": 47.6,
+   "dwell": 440
+  },
+  "AC-HC-01": {
+   "seats": 0,
+   "lf": 0,
+   "bag": 0,
+   "hand": false,
+   "cls": "CARGO",
+   "uld": 14,
+   "he": "מטוס מטען כבד",
+   "L": 69.0,
+   "span": 73.0,
+   "dwell": 520
+  }
+ },
+ "old": {
+  "moves": [
+   45,
+   44,
+   44
+  ],
+  "land": [
+   24,
+   24,
+   22
+  ],
+  "to": [
+   21,
+   20,
+   22
+  ],
+  "heli": [
+   73,
+   71,
+   74
+  ],
+  "exec_to": [
+   2,
+   4,
+   5
+  ],
+  "stands": [
+   13,
+   15,
+   15
+  ],
+  "turn": [
+   {
+    "AC-TB-01": [
+     357,
+     384,
+     411,
+     2
+    ],
+    "AC-NB-01": [
+     503,
+     562,
+     788,
+     7
+    ],
+    "AC-PR-01": [
+     433,
+     510,
+     588,
+     2
+    ],
+    "AC-LT-01": [
+     572,
+     574,
+     575,
+     2
+    ],
+    "AC-CG-01": [
+     778,
+     874,
+     969,
+     2
+    ],
+    "AC-TP-01": [
+     421,
+     450,
+     788,
+     3
+    ],
+    "AC-MW-01": [
+     689,
+     711,
+     733,
+     2
+    ],
+    "AC-CN-01": [
+     421,
+     450,
+     479,
+     2
+    ],
+    "AC-BJ-01": [
+     545,
+     545,
+     545,
+     2
+    ],
+    "AC-AM-01": [
+     457,
+     457,
+     457,
+     1
+    ]
+   },
+   {
+    "AC-BJ-01": [
+     416,
+     416,
+     416,
+     1
+    ],
+    "AC-LT-01": [
+     381,
+     381,
+     381,
+     1
+    ],
+    "AC-CN-01": [
+     221,
+     562,
+     571,
+     3
+    ],
+    "AC-TP-01": [
+     379,
+     556,
+     785,
+     5
+    ],
+    "AC-NB-01": [
+     467,
+     479,
+     533,
+     3
+    ],
+    "AC-AM-01": [
+     401,
+     467,
+     554,
+     3
+    ],
+    "AC-QJ-01": [
+     481,
+     490,
+     498,
+     2
+    ],
+    "AC-PR-01": [
+     411,
+     411,
+     411,
+     1
+    ],
+    "AC-CG-01": [
+     959,
+     1030,
+     1100,
+     2
+    ],
+    "AC-MW-01": [
+     679,
+     679,
+     679,
+     1
+    ],
+    "AC-RJ-01": [
+     556,
+     556,
+     556,
+     1
+    ]
+   },
+   {
+    "AC-AM-01": [
+     295,
+     295,
+     295,
+     1
+    ],
+    "AC-TP-01": [
+     487,
+     686,
+     750,
+     3
+    ],
+    "AC-NB-01": [
+     390,
+     419,
+     614,
+     4
+    ],
+    "AC-BJ-01": [
+     350,
+     433,
+     487,
+     3
+    ],
+    "AC-CN-01": [
+     293,
+     321,
+     422,
+     4
+    ],
+    "AC-RJ-01": [
+     515,
+     572,
+     629,
+     2
+    ],
+    "AC-LT-01": [
+     444,
+     444,
+     444,
+     1
+    ],
+    "AC-CG-01": [
+     956,
+     962,
+     967,
+     2
+    ],
+    "AC-MW-01": [
+     659,
+     659,
+     659,
+     1
+    ],
+    "AC-QJ-01": [
+     676,
+     676,
+     676,
+     1
+    ]
+   }
+  ],
+  "rotA": [
+   7.3,
+   14.5,
+   17.4
+  ],
+  "rotD": [
+   9.7,
+   10.4,
+   23.2
+  ],
+  "gap": [
+   [
+    10.2,
+    29.5
+   ],
+   [
+    10.5,
+    27.9
+   ],
+   [
+    9.1,
+    27.2
+   ]
+  ],
+  "why": [
+   {
+    "no-baggage-vehicle": 14,
+    "stand-blocked-in-dwell": 156,
+    "no-nb-bus": 7,
+    "no-cargo-train": 1,
+    "no-arrival-slot": 21,
+    "no-gpu-vehicle": 28,
+    "no-departure-chain": 6,
+    "no-fuel-vehicle": 52,
+    "no-water-vehicle": 6,
+    "no-lavatory-vehicle": 8,
+    "no-cleaning-vehicle": 4,
+    "no-catering-vehicle": 11
+   },
+   {
+    "no-baggage-vehicle": 4,
+    "stand-blocked-in-dwell": 73,
+    "no-remote-ground-service": 40,
+    "no-gpu-vehicle": 25,
+    "no-arrival-slot": 48,
+    "no-departure-chain": 7,
+    "no-fuel-vehicle": 61,
+    "no-water-vehicle": 13,
+    "no-cleaning-vehicle": 9,
+    "no-catering-vehicle": 11,
+    "no-lavatory-vehicle": 3,
+    "no-nb-bus": 14,
+    "no-cargo-train": 38,
+    "no-baggage-vehicle-dep": 1
+   },
+   {
+    "no-nb-bus-dep": 3,
+    "stand-blocked-in-dwell": 35,
+    "no-remote-ground-service": 18,
+    "no-gpu-vehicle": 35,
+    "no-departure-chain": 1,
+    "no-arrival-slot": 40,
+    "no-baggage-vehicle": 2,
+    "no-lavatory-vehicle": 5,
+    "no-water-vehicle": 9,
+    "no-fuel-vehicle": 92,
+    "no-cleaning-vehicle": 14,
+    "no-catering-vehicle": 14,
+    "no-belt-vehicle": 1,
+    "no-cargo-train": 34,
+    "no-nb-bus": 4
+   }
+  ],
+  "fleet": {
+   "FT": {
+    "n": 5,
+    "used": 5,
+    "tasks": 18,
+    "busy": 2346
+   },
+   "SH": {
+    "n": 2,
+    "used": 2,
+    "tasks": 3,
+    "busy": 250
+   },
+   "SVC": {
+    "n": 3,
+    "used": 3,
+    "tasks": 10,
+    "busy": 1945
+   },
+   "CT": {
+    "n": 2,
+    "used": 2,
+    "tasks": 5,
+    "busy": 1490
+   },
+   "WT": {
+    "n": 1,
+    "used": 1,
+    "tasks": 2,
+    "busy": 347
+   },
+   "PT": {
+    "n": 5,
+    "used": 5,
+    "tasks": 15,
+    "busy": 1452
+   },
+   "GP": {
+    "n": 3,
+    "used": 3,
+    "tasks": 5,
+    "busy": 1435
+   },
+   "LV": {
+    "n": 2,
+    "used": 2,
+    "tasks": 3,
+    "busy": 559
+   },
+   "BL": {
+    "n": 4,
+    "used": 4,
+    "tasks": 9,
+    "busy": 3576
+   },
+   "MX": {
+    "n": 2,
+    "used": 1,
+    "tasks": 4,
+    "busy": 403
+   },
+   "BT": {
+    "n": 8,
+    "used": 8,
+    "tasks": 35,
+    "busy": 4618
+   },
+   "AB": {
+    "n": 3,
+    "used": 2,
+    "tasks": 10,
+    "busy": 2189
+   },
+   "MS": {
+    "n": 4,
+    "used": 3,
+    "tasks": 3,
+    "busy": 1231
+   },
+   "ARFF": {
+    "n": 3,
+    "used": 0,
+    "tasks": 0,
+    "busy": 0
+   },
+   "EMS": {
+    "n": 2,
+    "used": 1,
+    "tasks": 1,
+    "busy": 134
+   },
+   "POL": {
+    "n": 2,
+    "used": 0,
+    "tasks": 0,
+    "busy": 0
+   },
+   "CU": {
+    "n": 2,
+    "used": 2,
+    "tasks": 15,
+    "busy": 1507
+   },
+   "PW": {
+    "n": 1,
+    "used": 1,
+    "tasks": 3,
+    "busy": 252
+   },
+   "GC": {
+    "n": 1,
+    "used": 1,
+    "tasks": 4,
+    "busy": 1415
+   },
+   "HL": {
+    "n": 1,
+    "used": 1,
+    "tasks": 2,
+    "busy": 957
+   },
+   "FW": {
+    "n": 1,
+    "used": 1,
+    "tasks": 4,
+    "busy": 239
+   },
+   "CS": {
+    "n": 1,
+    "used": 1,
+    "tasks": 3,
+    "busy": 694
+   }
+  },
+  "mix": [
+   {
+    "AC-LT-01": 5,
+    "AC-TB-01": 2,
+    "AC-PR-01": 3,
+    "AC-NB-01": 5,
+    "AC-CG-01": 2,
+    "AC-TP-01": 2,
+    "AC-MW-01": 2,
+    "AC-CN-01": 2,
+    "AC-BJ-01": 1
+   },
+   {
+    "AC-BJ-01": 1,
+    "AC-PR-01": 4,
+    "AC-LT-01": 3,
+    "AC-CN-01": 2,
+    "AC-TP-01": 5,
+    "AC-NB-01": 2,
+    "AC-AM-01": 3,
+    "AC-QJ-01": 2,
+    "AC-CG-01": 1,
+    "AC-MW-01": 1
+   },
+   {
+    "AC-AM-01": 1,
+    "AC-PR-01": 2,
+    "AC-TP-01": 3,
+    "AC-NB-01": 3,
+    "AC-BJ-01": 3,
+    "AC-CN-01": 3,
+    "AC-RJ-01": 2,
+    "AC-LT-01": 2,
+    "AC-CG-01": 1,
+    "AC-MW-01": 1,
+    "AC-QJ-01": 1
+   }
+  ]
+ },
+ "new_today": {
+  "flights": 6,
+  "moves1800": 30.0,
+  "veh": 32,
+  "spots": 54,
+  "term": [
+   {
+    "code": "FL-P2",
+    "g": "P2",
+    "nA": 12,
+    "nD": 12,
+    "dur": 398.23
+   },
+   {
+    "code": "FL-P3",
+    "g": "P3",
+    "nA": 13,
+    "nD": 13,
+    "dur": 420.31
+   },
+   {
+    "code": "FL-P4",
+    "g": "P4",
+    "nA": 14,
+    "nD": 14,
+    "dur": 418.25
+   }
+  ],
+  "hall": [
+   "BT-P2 (עיכוב 0 ש׳, באולם 958–1034)",
+   "BT-P3 (עיכוב 0 ש׳, באולם 635–711)",
+   "BT-P4 (עיכוב 0 ש׳, באולם 1227–1303)"
+  ],
+  "sched": [
+   [
+    "P3",
+    "AC-NB-01",
+    "Tidewind Air",
+    204,
+    0
+   ],
+   [
+    "R2",
+    "AC-NB-01",
+    "Coral Coast",
+    432,
+    144
+   ],
+   [
+    "P2",
+    "AC-NB-01",
+    "Sunbeak",
+    516,
+    300
+   ],
+   [
+    "GA6",
+    "AC-LT-01",
+    "GA",
+    264,
+    504
+   ],
+   [
+    "P4",
+    "AC-RJ-01",
+    "Skyline Regional",
+    108,
+    612
+   ],
+   [
+    "C2",
+    "AC-TB-01",
+    "Turbo Cargo",
+    660,
+    456
+   ]
+  ]
+ },
+ "rwy_theory": {
+  "NB": {
+   "pair_s": 27.4,
+   "moves_per720": 52.6,
+   "moves_per1800": 131.4
+  },
+  "RJ": {
+   "pair_s": 22.0,
+   "moves_per720": 65.5,
+   "moves_per1800": 163.6
+  }
+ },
+ "scen": {
+  "base": {
+   "b2": false,
+   "flights": null,
+   "miss": [],
+   "rwy": {
+    "moves": 36,
+    "per1800": 90.0,
+    "occ": 492,
+    "util": 68.4,
+    "gap_min": 11.1,
+    "gap_max": 192.8
+   },
+   "link": {
+    "traversals": 20,
+    "busy": 564,
+    "util": 78.3
+   }
+  },
+  "b2": {
+   "b2": true,
+   "flights": null,
+   "miss": [],
+   "rwy": {
+    "moves": 36,
+    "per1800": 90.0,
+    "occ": 492,
+    "util": 68.4,
+    "gap_min": 11.3,
+    "gap_max": 61.6
+   },
+   "link": {
+    "traversals": 20,
+    "busy": 479,
+    "util": 66.6
+   }
+  },
+  "max": {
+   "b2": false,
+   "added": [],
+   "flights": null,
+   "miss": [],
+   "rwy": {
+    "moves": 36,
+    "per1800": 90.0,
+    "occ": 492,
+    "util": 68.4,
+    "gap_min": 11.1,
+    "gap_max": 192.8
+   },
+   "link": {
+    "traversals": 20,
+    "busy": 564,
+    "util": 78.3
+   }
+  }
+ },
+ "pick": "max",
+ "target1800": 90,
+ "schedule": [
+  {
+   "stand": "R2",
+   "model": "AC-NB-01",
+   "airline": "Coral Coast",
+   "i": 0,
+   "push": 0,
+   "roll": 169.9,
+   "lift": 176.8,
+   "hold_wait": 0,
+   "thr": 196.8,
+   "vac": 212.3,
+   "onblock": 303.6,
+   "dwell": 416.4,
+   "taxi_in": 91.3,
+   "taxi_out": 169.9,
+   "link_out": {
+    "B": [
+     56.0,
+     92.8
+    ],
+    "C": [
+     45.0,
+     56.0
+    ]
+   },
+   "link_in": {
+    "B": [
+     216.2,
+     264.9
+    ],
+    "C": [
+     264.9,
+     275.9
+    ]
+   }
+  },
+  {
+   "stand": "R1",
+   "model": "AC-RJ-01",
+   "airline": "Confetti Air",
+   "i": 0,
+   "push": 37,
+   "roll": 215.7,
+   "lift": 222.6,
+   "hold_wait": 6,
+   "thr": 242.6,
+   "vac": 252.7,
+   "onblock": 350.4,
+   "dwell": 406.6,
+   "taxi_in": 97.7,
+   "taxi_out": 172.7,
+   "link_out": {
+    "B": [
+     95.7,
+     132.5
+    ],
+    "C": [
+     78.3,
+     95.7
+    ]
+   },
+   "link_in": {
+    "B": [
+     256.5,
+     305.3
+    ],
+    "C": [
+     305.3,
+     322.7
+    ]
+   }
+  },
+  {
+   "stand": "R3",
+   "model": "AC-CN-01",
+   "airline": "Executive",
+   "i": 0,
+   "push": 74,
+   "roll": 227.0,
+   "lift": 233.9,
+   "hold_wait": 4,
+   "thr": 265.9,
+   "vac": 276.0,
+   "onblock": 360.8,
+   "dwell": 433.2,
+   "taxi_in": 84.8,
+   "taxi_out": 149.0,
+   "link_out": {
+    "B": [
+     109.1,
+     145.8
+    ],
+    "C": [
+     104.5,
+     109.1
+    ]
+   },
+   "link_in": {
+    "B": [
+     279.8,
+     328.6
+    ],
+    "C": [
+     328.6,
+     333.2
+    ]
+   }
+  },
+  {
+   "stand": "GA1",
+   "model": "AC-BJ-01",
+   "airline": "Executive",
+   "i": 0,
+   "push": 273,
+   "roll": 458.7,
+   "lift": 465.6,
+   "hold_wait": 0,
+   "thr": 485.6,
+   "vac": 495.7,
+   "onblock": 604.1,
+   "dwell": 388.9,
+   "taxi_in": 108.4,
+   "taxi_out": 185.7,
+   "link_out": {
+    "B": [
+     344.8,
+     381.6
+    ],
+    "C": [
+     303.5,
+     344.8
+    ]
+   },
+   "link_in": {
+    "B": [
+     499.5,
+     548.3
+    ],
+    "C": [
+     548.3,
+     589.6
+    ]
+   }
+  },
+  {
+   "stand": "GA2",
+   "model": "AC-LT-01",
+   "airline": "GA",
+   "i": 0,
+   "push": 290,
+   "roll": 471.6,
+   "lift": 478.5,
+   "hold_wait": 2,
+   "thr": 502.5,
+   "vac": 512.6,
+   "onblock": 615.5,
+   "dwell": 394.5,
+   "taxi_in": 102.9,
+   "taxi_out": 179.6,
+   "link_out": {
+    "B": [
+     355.6,
+     392.4
+    ],
+    "C": [
+     317.2,
+     355.6
+    ]
+   },
+   "link_in": {
+    "B": [
+     516.4,
+     565.1
+    ],
+    "C": [
+     565.1,
+     603.6
+    ]
+   }
+  },
+  {
+   "stand": "GA4",
+   "model": "AC-LT-01",
+   "airline": "GA",
+   "i": 0,
+   "push": 307,
+   "roll": 514.8,
+   "lift": 521.7,
+   "hold_wait": 34,
+   "thr": 541.7,
+   "vac": 551.8,
+   "onblock": 649.1,
+   "dwell": 377.9,
+   "taxi_in": 97.2,
+   "taxi_out": 173.8,
+   "link_out": {
+    "B": [
+     366.9,
+     403.7
+    ],
+    "C": [
+     334.2,
+     366.9
+    ]
+   },
+   "link_in": {
+    "B": [
+     555.7,
+     604.4
+    ],
+    "C": [
+     604.4,
+     637.1
+    ]
+   }
+  },
+  {
+   "stand": "GA6",
+   "model": "AC-LT-01",
+   "airline": "GA",
+   "i": 0,
+   "push": 324,
+   "roll": 526.9,
+   "lift": 533.8,
+   "hold_wait": 36,
+   "thr": 561.8,
+   "vac": 571.9,
+   "onblock": 662.2,
+   "dwell": 381.8,
+   "taxi_in": 90.3,
+   "taxi_out": 166.9,
+   "link_out": {
+    "B": [
+     376.9,
+     413.7
+    ],
+    "C": [
+     351.2,
+     376.9
+    ]
+   },
+   "link_in": {
+    "B": [
+     575.7,
+     624.5
+    ],
+    "C": [
+     624.5,
+     650.2
+    ]
+   }
+  },
+  {
+   "stand": "GA3",
+   "model": "AC-PR-01",
+   "airline": "GA",
+   "i": 0,
+   "push": 339,
+   "roll": 575.2,
+   "lift": 582.1,
+   "hold_wait": 60,
+   "thr": 602.1,
+   "vac": 612.2,
+   "onblock": 712.3,
+   "dwell": 346.7,
+   "taxi_in": 100.1,
+   "taxi_out": 176.2,
+   "link_out": {
+    "B": [
+     401.3,
+     438.0
+    ],
+    "C": [
+     365.7,
+     401.3
+    ]
+   },
+   "link_in": {
+    "B": [
+     616.0,
+     664.8
+    ],
+    "C": [
+     664.8,
+     700.4
+    ]
+   }
+  },
+  {
+   "stand": "GA5",
+   "model": "AC-PR-01",
+   "airline": "GA",
+   "i": 0,
+   "push": 358,
+   "roll": 588.1,
+   "lift": 595.0,
+   "hold_wait": 60,
+   "thr": 619.0,
+   "vac": 629.1,
+   "onblock": 3.0,
+   "dwell": 355.0,
+   "taxi_in": 94.0,
+   "taxi_out": 170.1,
+   "link_out": {
+    "B": [
+     414.1,
+     450.9
+    ],
+    "C": [
+     384.7,
+     414.1
+    ]
+   },
+   "link_in": {
+    "B": [
+     632.9,
+     681.7
+    ],
+    "C": [
+     681.7,
+     711.1
+    ]
+   }
+  },
+  {
+   "stand": "GA7",
+   "model": "AC-PR-01",
+   "airline": "GA",
+   "i": 0,
+   "push": 409,
+   "roll": 631.7,
+   "lift": 638.6,
+   "hold_wait": 60,
+   "thr": 658.6,
+   "vac": 668.7,
+   "onblock": 35.3,
+   "dwell": 373.7,
+   "taxi_in": 86.6,
+   "taxi_out": 162.7,
+   "link_out": {
+    "B": [
+     457.7,
+     494.5
+    ],
+    "C": [
+     435.7,
+     457.7
+    ]
+   },
+   "link_in": {
+    "B": [
+     672.5,
+     1.3
+    ],
+    "C": [
+     1.3,
+     23.3
+    ]
+   }
+  },
+  {
+   "stand": "P1",
+   "model": "AC-LG-01",
+   "airline": "Aurelia Air",
+   "i": 0,
+   "push": 526,
+   "roll": 644.4,
+   "lift": 651.3,
+   "hold_wait": 24,
+   "thr": 671.3,
+   "vac": 686.8,
+   "onblock": 54.7,
+   "dwell": 471.3,
+   "taxi_in": 87.9,
+   "taxi_out": 94.4,
+   "link_out": null,
+   "link_in": null
+  },
+  {
+   "stand": "P6",
+   "model": "AC-LG-01",
+   "airline": "Mirage Jet",
+   "i": 0,
+   "push": 527,
+   "roll": 688.8,
+   "lift": 695.7,
+   "hold_wait": 28,
+   "thr": 715.7,
+   "vac": 11.2,
+   "onblock": 56.1,
+   "dwell": 470.9,
+   "taxi_in": 44.9,
+   "taxi_out": 133.8,
+   "link_out": null,
+   "link_in": null
+  },
+  {
+   "stand": "C1",
+   "model": "AC-CG-01",
+   "airline": "Crateway Cargo",
+   "i": 0,
+   "push": 576,
+   "roll": 699.9,
+   "lift": 706.8,
+   "hold_wait": 54,
+   "thr": 14.8,
+   "vac": 30.3,
+   "onblock": 135.9,
+   "dwell": 440.1,
+   "taxi_in": 105.6,
+   "taxi_out": 69.9,
+   "link_out": null,
+   "link_in": null
+  },
+  {
+   "stand": "P2",
+   "model": "AC-NB-01",
+   "airline": "Sunbeak",
+   "i": 0,
+   "push": 607,
+   "roll": 32.8,
+   "lift": 39.7,
+   "hold_wait": 60,
+   "thr": 59.7,
+   "vac": 75.2,
+   "onblock": 148.9,
+   "dwell": 458.1,
+   "taxi_in": 73.7,
+   "taxi_out": 85.8,
+   "link_out": null,
+   "link_in": null
+  },
+  {
+   "stand": "P3",
+   "model": "AC-NB-01",
+   "airline": "Tidewind Air",
+   "i": 0,
+   "push": 612,
+   "roll": 44.5,
+   "lift": 51.4,
+   "hold_wait": 60,
+   "thr": 79.4,
+   "vac": 94.9,
+   "onblock": 161.3,
+   "dwell": 450.7,
+   "taxi_in": 66.4,
+   "taxi_out": 92.5,
+   "link_out": null,
+   "link_in": null
+  },
+  {
+   "stand": "P5",
+   "model": "AC-NB-01",
+   "airline": "Zebrano",
+   "i": 0,
+   "push": 651,
+   "roll": 96.9,
+   "lift": 103.8,
+   "hold_wait": 60,
+   "thr": 123.8,
+   "vac": 139.3,
+   "onblock": 191.0,
+   "dwell": 460.0,
+   "taxi_in": 51.7,
+   "taxi_out": 105.9,
+   "link_out": null,
+   "link_in": null
+  },
+  {
+   "stand": "P4",
+   "model": "AC-RJ-01",
+   "airline": "Skyline Regional",
+   "i": 0,
+   "push": 674,
+   "roll": 109.5,
+   "lift": 116.4,
+   "hold_wait": 60,
+   "thr": 144.4,
+   "vac": 154.5,
+   "onblock": 199.5,
+   "dwell": 474.5,
+   "taxi_in": 45.0,
+   "taxi_out": 95.5,
+   "link_out": null,
+   "link_in": null
+  },
+  {
+   "stand": "C2",
+   "model": "AC-TB-01",
+   "airline": "Turbo Cargo",
+   "i": 0,
+   "push": 51,
+   "roll": 156.8,
+   "lift": 163.7,
+   "hold_wait": 60,
+   "thr": 183.7,
+   "vac": 193.8,
+   "onblock": 254.8,
+   "dwell": 516.2,
+   "taxi_in": 61.0,
+   "taxi_out": 45.8,
+   "link_out": null,
+   "link_in": null
+  }
+ ],
+ "fleet": {
+  "AB": {
+   "he": "אוטובוס רחבה",
+   "trips": 4,
+   "busy_s": 779,
+   "util": 27,
+   "peak": 3,
+   "kmin": 3,
+   "need": 4,
+   "stands": [
+    "R1",
+    "R2"
+   ],
+   "today_spots": 2,
+   "old": 3
+  },
+  "BL": {
+   "he": "מסוע",
+   "trips": 16,
+   "busy_s": 2539,
+   "util": 35,
+   "peak": 7,
+   "kmin": 9,
+   "need": 10,
+   "stands": [
+    "P1",
+    "P2",
+    "P3",
+    "P5",
+    "P6",
+    "R2"
+   ],
+   "today_spots": 7,
+   "old": 4
+  },
+  "BT": {
+   "he": "טרקטור כבודה + עגלות",
+   "trips": 20,
+   "busy_s": 2729,
+   "util": 38,
+   "peak": 8,
+   "kmin": 9,
+   "need": 10,
+   "stands": [
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "R1",
+    "R2"
+   ],
+   "today_spots": 7,
+   "old": 8
+  },
+  "CT": {
+   "he": "משאית קייטרינג",
+   "trips": 12,
+   "busy_s": 2365,
+   "util": 55,
+   "peak": 8,
+   "kmin": 5,
+   "need": 6,
+   "stands": [
+    "GA1",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "today_spots": 3,
+   "old": 2
+  },
+  "FT": {
+   "he": "מכלית דלק",
+   "trips": 10,
+   "busy_s": 2043,
+   "util": 57,
+   "peak": 8,
+   "kmin": 4,
+   "need": 5,
+   "stands": [
+    "C1",
+    "C2",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "R1",
+    "R2"
+   ],
+   "today_spots": 4,
+   "old": 5
+  },
+  "FTs": {
+   "he": "מתדלק קטן (GA / מסוקים / אמפיבי)",
+   "trips": 8,
+   "busy_s": 1026,
+   "util": 36,
+   "peak": 6,
+   "kmin": 3,
+   "need": 4,
+   "stands": [
+    "GA1",
+    "GA2",
+    "GA3",
+    "GA4",
+    "GA5",
+    "GA6",
+    "GA7",
+    "R3"
+   ],
+   "today_spots": 4,
+   "old": 1
+  },
+  "GP": {
+   "he": "מחולל קרקע",
+   "trips": 6,
+   "busy_s": 2652,
+   "util": 53,
+   "peak": 6,
+   "kmin": 6,
+   "need": 7,
+   "stands": [
+    "C1",
+    "C2",
+    "GA1",
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "today_spots": 2,
+   "old": 3
+  },
+  "HL": {
+   "he": "מעמיס מכולות",
+   "trips": 2,
+   "busy_s": 460,
+   "util": 64,
+   "peak": 2,
+   "kmin": 1,
+   "need": 1,
+   "stands": [
+    "C1",
+    "C2"
+   ],
+   "today_spots": 1,
+   "old": 1
+  },
+  "LV": {
+   "he": "רכב שירותים",
+   "trips": 10,
+   "busy_s": 666,
+   "util": 46,
+   "peak": 4,
+   "kmin": 1,
+   "need": 2,
+   "stands": [
+    "GA1",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "today_spots": 1,
+   "old": 2
+  },
+  "MS": {
+   "he": "מדרגות נעות",
+   "trips": 3,
+   "busy_s": 1236,
+   "util": 43,
+   "peak": 3,
+   "kmin": 3,
+   "need": 4,
+   "stands": [
+    "R1",
+    "R2"
+   ],
+   "today_spots": 3,
+   "old": 4
+  },
+  "PT": {
+   "he": "גרר מטוסים",
+   "trips": 18,
+   "busy_s": 2052,
+   "util": 41,
+   "peak": 6,
+   "kmin": 6,
+   "need": 7,
+   "stands": [
+    "C1",
+    "C2",
+    "GA1",
+    "GA2",
+    "GA3",
+    "GA4",
+    "GA5",
+    "GA6",
+    "GA7",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "today_spots": 10,
+   "old": 5
+  },
+  "SVC": {
+   "he": "רכב ניקיון",
+   "trips": 10,
+   "busy_s": 1230,
+   "util": 57,
+   "peak": 6,
+   "kmin": 2,
+   "need": 3,
+   "stands": [
+    "GA1",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "today_spots": 2,
+   "old": 3
+  },
+  "TG": {
+   "he": "גרר עגלות מכולות",
+   "trips": 6,
+   "busy_s": 478,
+   "util": 66,
+   "peak": 2,
+   "kmin": 1,
+   "need": 1,
+   "stands": [
+    "C1",
+    "C2"
+   ],
+   "today_spots": 1,
+   "old": 2
+  },
+  "WT": {
+   "he": "מכלית מים",
+   "trips": 10,
+   "busy_s": 666,
+   "util": 46,
+   "peak": 4,
+   "kmin": 1,
+   "need": 2,
+   "stands": [
+    "GA1",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "today_spots": 1,
+   "old": 1
+  }
+ },
+ "fleet_dedicated": {},
+ "halls": [
+  {
+   "stations": 1,
+   "visits": 20,
+   "units_cycle": 256,
+   "units_hour": 1280,
+   "util": 150.4,
+   "wait_mean": 843.3,
+   "wait_max": 1183.2,
+   "late": 36
+  },
+  {
+   "stations": 2,
+   "visits": 20,
+   "units_cycle": 256,
+   "units_hour": 1280,
+   "util": 75.2,
+   "wait_mean": 34.9,
+   "wait_max": 97.4,
+   "late": 16
+  },
+  {
+   "stations": 3,
+   "visits": 20,
+   "units_cycle": 256,
+   "units_hour": 1280,
+   "util": 50.1,
+   "wait_mean": 9.2,
+   "wait_max": 53.8,
+   "late": 7
+  },
+  {
+   "stations": 4,
+   "visits": 20,
+   "units_cycle": 256,
+   "units_hour": 1280,
+   "util": 37.6,
+   "wait_mean": 2.3,
+   "wait_max": 41.0,
+   "late": 2
+  },
+  {
+   "stations": 5,
+   "visits": 20,
+   "units_cycle": 256,
+   "units_hour": 1280,
+   "util": 30.1,
+   "wait_mean": 0.0,
+   "wait_max": 0.0,
+   "late": 0
+  }
+ ],
+ "pax": {
+  "flights": [
+   [
+    "R2",
+    "AC-NB-01",
+    146,
+    30
+   ],
+   [
+    "R1",
+    "AC-RJ-01",
+    61,
+    13
+   ],
+   [
+    "P1",
+    "AC-LG-01",
+    320,
+    64
+   ],
+   [
+    "P6",
+    "AC-LG-01",
+    320,
+    64
+   ],
+   [
+    "P2",
+    "AC-NB-01",
+    146,
+    30
+   ],
+   [
+    "P3",
+    "AC-NB-01",
+    146,
+    30
+   ],
+   [
+    "P5",
+    "AC-NB-01",
+    146,
+    30
+   ],
+   [
+    "P4",
+    "AC-RJ-01",
+    61,
+    13
+   ]
+  ],
+  "gates": {
+   "R": {
+    "seats": 24,
+    "peak": 43,
+    "avg": 17.3,
+    "ok": false
+   },
+   "P1": {
+    "seats": 46,
+    "peak": 64,
+    "avg": 25.8,
+    "ok": false
+   },
+   "P6": {
+    "seats": 17,
+    "peak": 64,
+    "avg": 25.8,
+    "ok": false
+   },
+   "P2": {
+    "seats": 67,
+    "peak": 30,
+    "avg": 12.1,
+    "ok": true
+   },
+   "P3": {
+    "seats": 64,
+    "peak": 30,
+    "avg": 12.1,
+    "ok": true
+   },
+   "P5": {
+    "seats": 40,
+    "peak": 30,
+    "avg": 12.1,
+    "ok": true
+   },
+   "P4": {
+    "seats": 54,
+    "peak": 13,
+    "avg": 5.2,
+    "ok": true
+   }
+  },
+  "nominal_cycle": 2692,
+  "visual_cycle": 548
+ },
+ "crew": {
+  "vehicles": 108,
+  "marshal": 6,
+  "hall": 10,
+  "tower": 3,
+  "arff_standby": 9,
+  "peak": 124,
+  "roster": 155
+ },
+ "heli_plan": {
+  "pads": [
+   "H2",
+   "H3",
+   "H4",
+   "O2",
+   "O1"
+  ],
+  "sorties720": {
+   "H2": 4,
+   "H3": 4,
+   "H4": 3,
+   "O2": 2,
+   "O1": 1.5
+  },
+  "moves1800": 72.5,
+  "old": [
+   73,
+   71,
+   74
+  ]
+ },
+ "selftest": {
+  "fails": 4,
+  "ids": [
+   "stand-in-GA5",
+   "BAD-1-stairs-7105",
+   "BAD-1-train-fits",
+   "halls-BH-2-BAD-1"
+  ]
+ },
+ "clear": {
+  "checks": 190,
+  "fails": 0,
+  "ok": true,
+  "list": [
+   {
+    "id": "stand-in-R2",
+    "ok": true,
+    "det": "R2 צר-גוף — המעטפת [8836, 2124, 9194, 2500] בתוך [8814, 2034, 9216, 2500]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-R1",
+    "ok": true,
+    "det": "R1 סילון אזורי — המעטפת [8531, 2183, 8791, 2500] בתוך [8508, 2093, 8814, 2500]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-R3",
+    "ok": true,
+    "det": "R3 מטוס עסקים עם כנף קדמית — המעטפת [9299, 2356, 9439, 2500] בתוך [9216, 2093, 9544, 2500]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-GA1",
+    "ok": true,
+    "det": "GA1 מטוס עסקים — המעטפת [7271, 1962, 7429, 2106] בתוך [7249, 1925, 7428, 2106]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-GA2",
+    "ok": true,
+    "det": "GA2 דו-מנועי קל — המעטפת [7451, 1937, 7563, 2028] בתוך [7428, 1925, 7586, 2106]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-GA4",
+    "ok": true,
+    "det": "GA4 דו-מנועי קל — המעטפת [7765, 1937, 7877, 2028] בתוך [7742, 1925, 7900, 2106]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-GA6",
+    "ok": true,
+    "det": "GA6 דו-מנועי קל — המעטפת [8148, 1937, 8260, 2028] בתוך [8102, 1925, 8306, 2159]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-GA3",
+    "ok": true,
+    "det": "GA3 מטוס קל — המעטפת [7609, 1945, 7719, 2028] בתוך [7586, 1925, 7742, 2106]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-GA5",
+    "ok": true,
+    "det": "GA5 מטוס קל — המעטפת [7946, 1945, 8056, 2028] בתוך [7900, 1925, 8102, 2159]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-GA7",
+    "ok": true,
+    "det": "GA7 מטוס קל — המעטפת [8352, 1945, 8462, 2028] בתוך [8306, 1925, 8508, 2159]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-P1",
+    "ok": true,
+    "det": "P1 מטוס נוסעים גדול — המעטפת [6075, 247, 6723, 915] בתוך [6000, 207, 6760, 1033]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-P6",
+    "ok": true,
+    "det": "P6 מטוס נוסעים גדול — המעטפת [8440, 247, 9088, 915] בתוך [8402, 207, 9163, 1033]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-C1",
+    "ok": true,
+    "det": "C1 מטוס מטען — המעטפת [4885, 147, 5361, 696] בתוך [4810, 57, 5398, 696]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-P2",
+    "ok": true,
+    "det": "P2 צר-גוף — המעטפת [6798, 392, 7156, 768] בתוך [6760, 352, 7178, 886]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-P3",
+    "ok": true,
+    "det": "P3 צר-גוף — המעטפת [7201, 392, 7559, 768] בתוך [7178, 352, 7582, 886]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-P5",
+    "ok": true,
+    "det": "P5 צר-גוף — המעטפת [8007, 392, 8365, 768] בתוך [7984, 352, 8402, 886]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-P4",
+    "ok": true,
+    "det": "P4 סילון אזורי — המעטפת [7653, 451, 7913, 768] בתוך [7582, 352, 7984, 886]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "stand-in-C2",
+    "ok": true,
+    "det": "C2 משא קטן עם 2 קורות זנב — המעטפת [5436, 576, 5636, 696] בתוך [5398, 486, 5681, 696]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-R2-R1",
+    "ok": true,
+    "det": "R2 ↔ R1: מרווח 45 פיקס׳ (4.5 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-R2-R3",
+    "ok": true,
+    "det": "R2 ↔ R3: מרווח 105 פיקס׳ (10.5 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-R2-GA7",
+    "ok": true,
+    "det": "R2 ↔ GA7: מרווח 386 פיקס׳ (38.6 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-R1-GA6",
+    "ok": true,
+    "det": "R1 ↔ GA6: מרווח 312 פיקס׳ (31.2 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-R1-GA7",
+    "ok": true,
+    "det": "R1 ↔ GA7: מרווח 170 פיקס׳ (17.0 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA1-GA2",
+    "ok": true,
+    "det": "GA1 ↔ GA2: מרווח 22 פיקס׳ (2.2 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA1-GA4",
+    "ok": true,
+    "det": "GA1 ↔ GA4: מרווח 336 פיקס׳ (33.6 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA1-GA3",
+    "ok": true,
+    "det": "GA1 ↔ GA3: מרווח 180 פיקס׳ (18.0 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA2-GA4",
+    "ok": true,
+    "det": "GA2 ↔ GA4: מרווח 202 פיקס׳ (20.2 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA2-GA3",
+    "ok": true,
+    "det": "GA2 ↔ GA3: מרווח 46 פיקס׳ (4.6 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA2-GA5",
+    "ok": true,
+    "det": "GA2 ↔ GA5: מרווח 383 פיקס׳ (38.3 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA4-GA6",
+    "ok": true,
+    "det": "GA4 ↔ GA6: מרווח 271 פיקס׳ (27.1 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA4-GA3",
+    "ok": true,
+    "det": "GA4 ↔ GA3: מרווח 46 פיקס׳ (4.6 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA4-GA5",
+    "ok": true,
+    "det": "GA4 ↔ GA5: מרווח 69 פיקס׳ (6.9 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA6-GA5",
+    "ok": true,
+    "det": "GA6 ↔ GA5: מרווח 92 פיקס׳ (9.2 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA6-GA7",
+    "ok": true,
+    "det": "GA6 ↔ GA7: מרווח 92 פיקס׳ (9.2 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA3-GA5",
+    "ok": true,
+    "det": "GA3 ↔ GA5: מרווח 227 פיקס׳ (22.7 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-GA5-GA7",
+    "ok": true,
+    "det": "GA5 ↔ GA7: מרווח 296 פיקס׳ (29.6 מ׳), נדרש 20",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-P1-P2",
+    "ok": true,
+    "det": "P1 ↔ P2: מרווח 75 פיקס׳ (7.5 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-P6-P5",
+    "ok": true,
+    "det": "P6 ↔ P5: מרווח 75 פיקס׳ (7.5 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-C1-C2",
+    "ok": true,
+    "det": "C1 ↔ C2: מרווח 75 פיקס׳ (7.5 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-P2-P3",
+    "ok": true,
+    "det": "P2 ↔ P3: מרווח 45 פיקס׳ (4.5 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-P3-P4",
+    "ok": true,
+    "det": "P3 ↔ P4: מרווח 94 פיקס׳ (9.4 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "wingtip-P5-P4",
+    "ok": true,
+    "det": "P5 ↔ P4: מרווח 94 פיקס׳ (9.4 מ׳), נדרש 30",
+    "kind": "FAIL"
+   },
+   {
+    "id": "pocket-AIR-GSE-P1W-P1",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P1W בתוך מלבן המוטה של P1 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P1|P2-w-P1",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P1|P2-w בתוך מלבן המוטה של P1 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P1|P2-P2",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P1|P2 בתוך מלבן המוטה של P2 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P2|P3-P2",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P2|P3 בתוך מלבן המוטה של P2 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P2|P3-P3",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P2|P3 בתוך מלבן המוטה של P3 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P3|P4-P3",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P3|P4 בתוך מלבן המוטה של P3 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P3|P4-P4",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P3|P4 בתוך מלבן המוטה של P4 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P4|P5-P5",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P4|P5 בתוך מלבן המוטה של P5 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P4|P5-P4",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P4|P5 בתוך מלבן המוטה של P4 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P5|P6-P5",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P5|P6 בתוך מלבן המוטה של P5 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P6W-P6",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P6W בתוך מלבן המוטה של P6 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-P6E-P6",
+    "ok": true,
+    "det": "הכיס AIR-GSE-P6E בתוך מלבן המוטה של P6 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-R1|R2-R2",
+    "ok": true,
+    "det": "הכיס AIR-GSE-R1|R2 בתוך מלבן המוטה של R2 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-R1|R2-R1",
+    "ok": true,
+    "det": "הכיס AIR-GSE-R1|R2 בתוך מלבן המוטה של R1 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "pocket-AIR-GSE-R2|R3-R2",
+    "ok": true,
+    "det": "הכיס AIR-GSE-R2|R3 בתוך מלבן המוטה של R2 — לפני הכנף, ליד הגוף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "BH-1-in-core",
+    "ok": true,
+    "det": "BH-1 [6812, 905, 7016, 945] בתוך אגף השערים [6760, 886, 8402, 1033]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-visible",
+    "ok": true,
+    "det": "BH-1: הנתיב y 932 והמסוע y 905 — צפונית לקו ההסתרה של 3/4 (y 950)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-stairs-7105",
+    "ok": true,
+    "det": "BH-1 מול המדרגות [7105, 888, 7150, 964] — מרווח 89",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-stairs-7508",
+    "ok": true,
+    "det": "BH-1 מול המדרגות [7508, 888, 7553, 964] — מרווח 492",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-stairs-8264",
+    "ok": true,
+    "det": "BH-1 מול המדרגות [8264, 888, 8309, 964] — מרווח 1248",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-stairs-6762",
+    "ok": true,
+    "det": "BH-1 מול המדרגות [6762, 940, 6807, 1031] — מרווח 5",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-stairs-8852",
+    "ok": true,
+    "det": "BH-1 מול המדרגות [8852, 1035, 8897, 1111] — מרווח 1838",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-stairs-7536",
+    "ok": true,
+    "det": "BH-1 מול המדרגות [7536, 1012, 7598, 1031] — מרווח 524",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-stairs-7956",
+    "ok": true,
+    "det": "BH-1 מול המדרגות [7956, 909, 7996, 968] — מרווח 940",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-doorout-root7041",
+    "ok": true,
+    "det": "BH-1 דלת out [6975, 7011] מול שורש השרוול x 7041 — 30 פיקס׳ (נדרש 25)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-train-fits",
+    "ok": true,
+    "det": "BH-1: בין הרגליים 132 מול אורך הרכבת 119; המסוע 106",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-lane-depth",
+    "ok": true,
+    "det": "BH-1: הנתיב ב-y 932 (עומק 46)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-in-core",
+    "ok": true,
+    "det": "BH-2 [7165, 905, 7400, 961] בתוך אגף השערים [6760, 886, 8402, 1033]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-visible",
+    "ok": true,
+    "det": "BH-2: הנתיב y 945 והמסוע y 923 — צפונית לקו ההסתרה של 3/4 (y 950)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-stairs-7105",
+    "ok": true,
+    "det": "BH-2 מול המדרגות [7105, 888, 7150, 964] — מרווח 15",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-stairs-7508",
+    "ok": true,
+    "det": "BH-2 מול המדרגות [7508, 888, 7553, 964] — מרווח 108",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-stairs-8264",
+    "ok": true,
+    "det": "BH-2 מול המדרגות [8264, 888, 8309, 964] — מרווח 864",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-stairs-6762",
+    "ok": true,
+    "det": "BH-2 מול המדרגות [6762, 940, 6807, 1031] — מרווח 358",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-stairs-8852",
+    "ok": true,
+    "det": "BH-2 מול המדרגות [8852, 1035, 8897, 1111] — מרווח 1454",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-stairs-7536",
+    "ok": true,
+    "det": "BH-2 מול המדרגות [7536, 1012, 7598, 1031] — מרווח 145",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-stairs-7956",
+    "ok": true,
+    "det": "BH-2 מול המדרגות [7956, 909, 7996, 968] — מרווח 556",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-doorout-root7444",
+    "ok": true,
+    "det": "BH-2 דלת out [7350, 7390] מול שורש השרוול x 7444 — 54 פיקס׳ (נדרש 25)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-train-fits",
+    "ok": true,
+    "det": "BH-2: בין הרגליים 149 מול אורך הרכבת 119; המסוע 125",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-2-lane-depth",
+    "ok": true,
+    "det": "BH-2: הנתיב ב-y 945 (עומק 59)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-in-core",
+    "ok": true,
+    "det": "BH-3 [7600, 905, 7820, 1015] בתוך אגף השערים [6760, 886, 8402, 1033]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-visible",
+    "ok": true,
+    "det": "BH-3: הנתיב y 948 והמסוע y 921 — צפונית לקו ההסתרה של 3/4 (y 950)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-stairs-7105",
+    "ok": true,
+    "det": "BH-3 מול המדרגות [7105, 888, 7150, 964] — מרווח 450",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-stairs-7508",
+    "ok": true,
+    "det": "BH-3 מול המדרגות [7508, 888, 7553, 964] — מרווח 47",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-stairs-8264",
+    "ok": true,
+    "det": "BH-3 מול המדרגות [8264, 888, 8309, 964] — מרווח 444",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-stairs-6762",
+    "ok": true,
+    "det": "BH-3 מול המדרגות [6762, 940, 6807, 1031] — מרווח 793",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-stairs-8852",
+    "ok": true,
+    "det": "BH-3 מול המדרגות [8852, 1035, 8897, 1111] — מרווח 1032",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-stairs-7536",
+    "ok": true,
+    "det": "BH-3 מול המדרגות [7536, 1012, 7598, 1031] — מרווח 2 (קיים היום — BAG5 והמדרגות הנעות P3E; לא שונה)",
+    "kind": "INFO"
+   },
+   {
+    "id": "BH-3-stairs-7956",
+    "ok": true,
+    "det": "BH-3 מול המדרגות [7956, 909, 7996, 968] — מרווח 136",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-doorout-root7847",
+    "ok": true,
+    "det": "BH-3 דלת out [7780, 7818] מול שורש השרוול x 7847 — 29 פיקס׳ (נדרש 25)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-train-fits",
+    "ok": true,
+    "det": "BH-3: בין הרגליים 133 מול אורך הרכבת 119; המסוע 120",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-3-lane-depth",
+    "ok": true,
+    "det": "BH-3: הנתיב ב-y 948 (עומק 62)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-in-core",
+    "ok": true,
+    "det": "BH-4 [8002, 905, 8235, 961] בתוך אגף השערים [6760, 886, 8402, 1033]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-visible",
+    "ok": true,
+    "det": "BH-4: הנתיב y 945 והמסוע y 923 — צפונית לקו ההסתרה של 3/4 (y 950)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-stairs-7105",
+    "ok": true,
+    "det": "BH-4 מול המדרגות [7105, 888, 7150, 964] — מרווח 852",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-stairs-7508",
+    "ok": true,
+    "det": "BH-4 מול המדרגות [7508, 888, 7553, 964] — מרווח 449",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-stairs-8264",
+    "ok": true,
+    "det": "BH-4 מול המדרגות [8264, 888, 8309, 964] — מרווח 29",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-stairs-6762",
+    "ok": true,
+    "det": "BH-4 מול המדרגות [6762, 940, 6807, 1031] — מרווח 1195",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-stairs-8852",
+    "ok": true,
+    "det": "BH-4 מול המדרגות [8852, 1035, 8897, 1111] — מרווח 621",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-stairs-7536",
+    "ok": true,
+    "det": "BH-4 מול המדרגות [7536, 1012, 7598, 1031] — מרווח 407",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-stairs-7956",
+    "ok": true,
+    "det": "BH-4 מול המדרגות [7956, 909, 7996, 968] — מרווח 6",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-doorout-root8250",
+    "ok": true,
+    "det": "BH-4 דלת out [8180, 8216] מול שורש השרוול x 8250 — 34 פיקס׳ (נדרש 25)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-train-fits",
+    "ok": true,
+    "det": "BH-4: בין הרגליים 146 מול אורך הרכבת 119; המסוע 120",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-4-lane-depth",
+    "ok": true,
+    "det": "BH-4: הנתיב ב-y 945 (עומק 59)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-in-core",
+    "ok": true,
+    "det": "BH-5 [8314, 905, 8505, 961]: בתוך אגף השערים עד x 8402 ובתוך התוספת [8402, 886, 8508, 961]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-visible",
+    "ok": true,
+    "det": "BH-5: הנתיב y 948 והמסוע y 921 — צפונית לקו ההסתרה של 3/4 (y 950)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-stairs-7105",
+    "ok": true,
+    "det": "BH-5 מול המדרגות [7105, 888, 7150, 964] — מרווח 1164",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-stairs-7508",
+    "ok": true,
+    "det": "BH-5 מול המדרגות [7508, 888, 7553, 964] — מרווח 761",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-stairs-8264",
+    "ok": true,
+    "det": "BH-5 מול המדרגות [8264, 888, 8309, 964] — מרווח 5",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-stairs-6762",
+    "ok": true,
+    "det": "BH-5 מול המדרגות [6762, 940, 6807, 1031] — מרווח 1507",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-stairs-8852",
+    "ok": true,
+    "det": "BH-5 מול המדרגות [8852, 1035, 8897, 1111] — מרווח 355",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-stairs-7536",
+    "ok": true,
+    "det": "BH-5 מול המדרגות [7536, 1012, 7598, 1031] — מרווח 718",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-stairs-7956",
+    "ok": true,
+    "det": "BH-5 מול המדרגות [7956, 909, 7996, 968] — מרווח 318",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-train-fits",
+    "ok": true,
+    "det": "BH-5: בין הרגליים 124 מול אורך הרכבת 119; המסוע 102",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-5-lane-depth",
+    "ok": true,
+    "det": "BH-5: הנתיב ב-y 948 (עומק 62)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "BH-1-seats",
+    "ok": false,
+    "det": "BH-1: מעל העמדה, בקומת השערים — 36 מושבים (P1 36) צריכים לזוז מהרצועה (רצפת זכוכית מעל העמדה, כמו מעל BAG5)",
+    "kind": "CHANGE"
+   },
+   {
+    "id": "BH-2-seats",
+    "ok": false,
+    "det": "BH-2: מעל העמדה, בקומת השערים — 75 מושבים (P2 54, P3 21) צריכים לזוז מהרצועה (רצפת זכוכית מעל העמדה, כמו מעל BAG5)",
+    "kind": "CHANGE"
+   },
+   {
+    "id": "BH-4-seats",
+    "ok": false,
+    "det": "BH-4: מעל העמדה, בקומת השערים — 66 מושבים (P4 54, P5 12) צריכים לזוז מהרצועה (רצפת זכוכית מעל העמדה, כמו מעל BAG5)",
+    "kind": "CHANGE"
+   },
+   {
+    "id": "BH-5-seats",
+    "ok": false,
+    "det": "BH-5: מעל העמדה, בקומת השערים — 20 מושבים (P5 20) צריכים לזוז מהרצועה (רצפת זכוכית מעל העמדה, כמו מעל BAG5)",
+    "kind": "CHANGE"
+   },
+   {
+    "id": "halls-BH-1-BH-2",
+    "ok": true,
+    "det": "מרווח 149",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-1-BH-3",
+    "ok": true,
+    "det": "מרווח 584",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-1-BH-4",
+    "ok": true,
+    "det": "מרווח 986",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-1-BH-5",
+    "ok": true,
+    "det": "מרווח 1298",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-2-BH-3",
+    "ok": true,
+    "det": "מרווח 200",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-2-BH-4",
+    "ok": true,
+    "det": "מרווח 602",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-2-BH-5",
+    "ok": true,
+    "det": "מרווח 914",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-3-BH-4",
+    "ok": true,
+    "det": "מרווח 182",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-3-BH-5",
+    "ok": true,
+    "det": "מרווח 494",
+    "kind": "FAIL"
+   },
+   {
+    "id": "halls-BH-4-BH-5",
+    "ok": true,
+    "det": "מרווח 79",
+    "kind": "FAIL"
+   },
+   {
+    "id": "B2-option",
+    "ok": false,
+    "det": "B2 (אפשרות): קצה הכנף 9540 ± 56 — 4 פיקס׳ מהגדר, 5 ממטוס מנהלים ב-B (נדרש 30 לכל צד)",
+    "kind": "OPTION"
+   },
+   {
+    "id": "BH-5-accessout-P6",
+    "ok": true,
+    "det": "BH-5: הגישה לדלת out בתוך מלבן המוטה של P6 — ליד האף, רחוק מהכנף (מותר)",
+    "kind": "INFO"
+   },
+   {
+    "id": "exp-boatshop",
+    "ok": true,
+    "det": "ההרחבה [8480, 2550, 9600, 2830] מול המספנה [7200, 2552, 8046, 2800] — מרווח 434 (נדרש 40)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "exp-boatlane",
+    "ok": true,
+    "det": "ההרחבה מול נתיב הסירות של המספנה — 97 פיקס׳ (נדרש 60)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "exp-world",
+    "ok": true,
+    "det": "בתוך העולם (x ≤ 9600)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "exp-heli-H2",
+    "ok": true,
+    "det": "ההרחבה מול שטח הבטיחות של H2",
+    "kind": "FAIL"
+   },
+   {
+    "id": "exp-heli-H3",
+    "ok": true,
+    "det": "ההרחבה מול שטח הבטיחות של H3",
+    "kind": "FAIL"
+   },
+   {
+    "id": "exp-heli-H4",
+    "ok": true,
+    "det": "ההרחבה מול שטח הבטיחות של H4",
+    "kind": "FAIL"
+   },
+   {
+    "id": "exp-heli-O2",
+    "ok": true,
+    "det": "ההרחבה מול שטח הבטיחות של O2",
+    "kind": "FAIL"
+   },
+   {
+    "id": "exp-heli-O1",
+    "ok": true,
+    "det": "ההרחבה מול שטח הבטיחות של O1",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-PT1",
+    "ok": true,
+    "det": "S-PT1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-PT1",
+    "ok": true,
+    "det": "S-PT1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-PT2",
+    "ok": true,
+    "det": "S-PT2 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-PT2",
+    "ok": true,
+    "det": "S-PT2 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-BT1",
+    "ok": true,
+    "det": "S-BT1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-BT1",
+    "ok": true,
+    "det": "S-BT1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-BT2",
+    "ok": true,
+    "det": "S-BT2 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-BT2",
+    "ok": true,
+    "det": "S-BT2 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-BL1",
+    "ok": true,
+    "det": "S-BL1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-BL1",
+    "ok": true,
+    "det": "S-BL1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-GP1",
+    "ok": true,
+    "det": "S-GP1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-GP1",
+    "ok": true,
+    "det": "S-GP1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-GP2",
+    "ok": true,
+    "det": "S-GP2 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-GP2",
+    "ok": true,
+    "det": "S-GP2 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-MS1",
+    "ok": true,
+    "det": "S-MS1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-MS1",
+    "ok": true,
+    "det": "S-MS1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-AB1",
+    "ok": true,
+    "det": "S-AB1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-AB1",
+    "ok": true,
+    "det": "S-AB1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-FT1",
+    "ok": true,
+    "det": "S-FT1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-FT1",
+    "ok": true,
+    "det": "S-FT1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-CT1",
+    "ok": true,
+    "det": "S-CT1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-CT1",
+    "ok": true,
+    "det": "S-CT1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-SVC1",
+    "ok": true,
+    "det": "S-SVC1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-SVC1",
+    "ok": true,
+    "det": "S-SVC1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-WT1",
+    "ok": true,
+    "det": "S-WT1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-WT1",
+    "ok": true,
+    "det": "S-WT1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-LV1",
+    "ok": true,
+    "det": "S-LV1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-LV1",
+    "ok": true,
+    "det": "S-LV1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-SV1",
+    "ok": true,
+    "det": "S-SV1 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-SV1",
+    "ok": true,
+    "det": "S-SV1 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-BT3",
+    "ok": true,
+    "det": "S-BT3 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-BT3",
+    "ok": true,
+    "det": "S-BT3 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-PT3",
+    "ok": true,
+    "det": "S-PT3 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-PT3",
+    "ok": true,
+    "det": "S-PT3 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-in-exp-S-GP3",
+    "ok": true,
+    "det": "S-GP3 בתוך ההרחבה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "gse-road-S-GP3",
+    "ok": true,
+    "det": "S-GP3 מול דרך הבסיס הדרומי",
+    "kind": "FAIL"
+   },
+   {
+    "id": "amph-dock-boatshop",
+    "ok": true,
+    "det": "המזח הצף [8180, 2600, 8470, 2640] מול המספנה — מרווח 134",
+    "kind": "FAIL"
+   },
+   {
+    "id": "amph-lane-water",
+    "ok": true,
+    "det": "מסלול המים [7300, 3480, 9450, 3580] — 650 פיקס׳ דרומית ליבשה",
+    "kind": "FAIL"
+   },
+   {
+    "id": "amph-lane-boatlane",
+    "ok": true,
+    "det": "מסלול המים מול נתיב הסירות — 520 פיקס׳",
+    "kind": "FAIL"
+   },
+   {
+    "id": "amph-lane-trawl",
+    "ok": true,
+    "det": "מסלול המים מול שטח הדיג של TRAWL-1 (הגוף עד y 3365) — 115 פיקס׳ (נדרש ≥ 60: חצי מוטה + מרווח)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "amph-lane-ships",
+    "ok": true,
+    "det": "מסלול המים מול נתיב האוניות LANE-L1 (המצופים ב-y 3620) — 40 פיקס׳",
+    "kind": "FAIL"
+   },
+   {
+    "id": "amph-lane-len",
+    "ok": true,
+    "det": "אורך מסלול המים 2150 (נדרש ≥ 1500 — ‏ICON A5 של 074zm)",
+    "kind": "FAIL"
+   },
+   {
+    "id": "R3-runup",
+    "ok": true,
+    "det": "ההרצה (TP) [9234, 2140, 9504, 2412] בתוך המקום [9236, 2140, 9524, 2480]",
+    "kind": "FAIL"
+   },
+   {
+    "id": "lounge-P1",
+    "ok": true,
+    "kind": "FAIL",
+    "det": "הטרקלין P1: 100 מושבים (היום 46) מול שיא 64"
+   },
+   {
+    "id": "lounge-P2",
+    "ok": true,
+    "kind": "FAIL",
+    "det": "הטרקלין P2: 48 מושבים (היום 67) מול שיא 30"
+   },
+   {
+    "id": "lounge-P3",
+    "ok": true,
+    "kind": "FAIL",
+    "det": "הטרקלין P3: 46 מושבים (היום 64) מול שיא 30"
+   },
+   {
+    "id": "lounge-stairs-P3",
+    "ok": true,
+    "kind": "INFO",
+    "det": "הטרקלין P3 ליד המדרגות [7536, 1012, 7598, 1031] — המדרגות נשארות, המושבים סביבן"
+   },
+   {
+    "id": "lounge-P4",
+    "ok": true,
+    "kind": "FAIL",
+    "det": "הטרקלין P4: 36 מושבים (היום 54) מול שיא 13"
+   },
+   {
+    "id": "lounge-stairs-P4",
+    "ok": true,
+    "kind": "INFO",
+    "det": "הטרקלין P4 ליד המדרגות [7956, 909, 7996, 968] — המדרגות נשארות, המושבים סביבן"
+   },
+   {
+    "id": "lounge-P5",
+    "ok": true,
+    "kind": "FAIL",
+    "det": "הטרקלין P5: 40 מושבים (היום 40) מול שיא 30"
+   },
+   {
+    "id": "lounge-P6",
+    "ok": true,
+    "kind": "FAIL",
+    "det": "הטרקלין P6: 89 מושבים (היום 17) מול שיא 64"
+   },
+   {
+    "id": "lounge-R",
+    "ok": true,
+    "kind": "FAIL",
+    "det": "הטרקלין R: 56 מושבים (היום 24) מול שיא 43"
+   }
+  ],
+  "options": [
+   {
+    "id": "B2-option",
+    "ok": false,
+    "det": "B2 (אפשרות): קצה הכנף 9540 ± 56 — 4 פיקס׳ מהגדר, 5 ממטוס מנהלים ב-B (נדרש 30 לכל צד)",
+    "kind": "OPTION"
+   }
+  ],
+  "changes": [
+   {
+    "id": "BH-1-seats",
+    "ok": false,
+    "det": "BH-1: מעל העמדה, בקומת השערים — 36 מושבים (P1 36) צריכים לזוז מהרצועה (רצפת זכוכית מעל העמדה, כמו מעל BAG5)",
+    "kind": "CHANGE"
+   },
+   {
+    "id": "BH-2-seats",
+    "ok": false,
+    "det": "BH-2: מעל העמדה, בקומת השערים — 75 מושבים (P2 54, P3 21) צריכים לזוז מהרצועה (רצפת זכוכית מעל העמדה, כמו מעל BAG5)",
+    "kind": "CHANGE"
+   },
+   {
+    "id": "BH-4-seats",
+    "ok": false,
+    "det": "BH-4: מעל העמדה, בקומת השערים — 66 מושבים (P4 54, P5 12) צריכים לזוז מהרצועה (רצפת זכוכית מעל העמדה, כמו מעל BAG5)",
+    "kind": "CHANGE"
+   },
+   {
+    "id": "BH-5-seats",
+    "ok": false,
+    "det": "BH-5: מעל העמדה, בקומת השערים — 20 מושבים (P5 20) צריכים לזוז מהרצועה (רצפת זכוכית מעל העמדה, כמו מעל BAG5)",
+    "kind": "CHANGE"
+   }
+  ]
+ },
+ "lounges": [
+  {
+   "g": "P1",
+   "r": [
+    6815,
+    955,
+    7060,
+    1028
+   ],
+   "note": "במקום הדיוטי פרי (CW-DF), שעובר לצד הדרומי של המסדרון",
+   "cap": 100,
+   "gen": true,
+   "need": 64,
+   "today": 46
+  },
+  {
+   "g": "P2",
+   "r": [
+    7065,
+    966,
+    7330,
+    1028
+   ],
+   "cap": 48,
+   "gen": true,
+   "need": 30,
+   "today": 67
+  },
+  {
+   "g": "P3",
+   "r": [
+    7340,
+    966,
+    7598,
+    1028
+   ],
+   "cap": 46,
+   "gen": true,
+   "need": 30,
+   "today": 64
+  },
+  {
+   "g": "P4",
+   "r": [
+    7960,
+    966,
+    8170,
+    1028
+   ],
+   "cap": 36,
+   "gen": true,
+   "need": 13,
+   "today": 54
+  },
+  {
+   "g": "P5",
+   "r": [
+    8180,
+    966,
+    8398,
+    1028
+   ],
+   "cap": 40,
+   "gen": true,
+   "need": 30,
+   "today": 40
+  },
+  {
+   "g": "P6",
+   "r": [
+    8900,
+    1038,
+    9062,
+    1140
+   ],
+   "note": "שער P6 במערב הטרקלין (4 שורות, ליד המדרגות) + 17 המושבים של היום במזנונים; טרקלין העסקים — x 9066–9158",
+   "cap": 89,
+   "gen": true,
+   "need": 64,
+   "today": 17
+  },
+  {
+   "g": "R",
+   "r": [
+    8900,
+    1150,
+    9158,
+    1206
+   ],
+   "note": "שער ההסעות (TE-BUS) — מתרחב מערבה עד החנויות (x 8900)",
+   "cap": 56,
+   "gen": true,
+   "need": 43,
+   "today": 24
+  }
+ ],
+ "layout": {
+  "stairs": [
+   [
+    7105,
+    888,
+    7150,
+    964
+   ],
+   [
+    7508,
+    888,
+    7553,
+    964
+   ],
+   [
+    8264,
+    888,
+    8309,
+    964
+   ],
+   [
+    6762,
+    940,
+    6807,
+    1031
+   ],
+   [
+    8852,
+    1035,
+    8897,
+    1111
+   ],
+   [
+    7536,
+    1012,
+    7598,
+    1031
+   ],
+   [
+    7956,
+    909,
+    7996,
+    968
+   ]
+  ],
+  "p1_stairs_new": [
+   6762,
+   975,
+   6807,
+   1031
+  ],
+  "p1_land_new": [
+   6762,
+   940,
+   6807,
+   975
+  ],
+  "halls": [
+   {
+    "id": "BH-1",
+    "he": "עמדת כבודה 1 — P1 / P2 (חדשה; המדרגות של P1 עוברות לקיר המערבי ויורדות דרומה)",
+    "r": [
+     6812,
+     905,
+     7016,
+     945
+    ],
+    "din": [
+     6817,
+     6853
+    ],
+    "dout": [
+     6975,
+     7011
+    ],
+    "lane": 932,
+    "belt": [
+     6860,
+     6966,
+     905
+    ],
+    "serves": [
+     "P1",
+     "P2"
+    ],
+    "needs": "המדרגות של P1 → משטח [6762, 940, 6807, 975], מדרגות [6762, 975, 6807, 1031]"
+   },
+   {
+    "id": "BH-2",
+    "he": "עמדת כבודה 2 — P2 / P3 (חדשה)",
+    "r": [
+     7165,
+     905,
+     7400,
+     961
+    ],
+    "din": [
+     7175,
+     7215
+    ],
+    "dout": [
+     7350,
+     7390
+    ],
+    "lane": 945,
+    "belt": [
+     7220,
+     7345,
+     923
+    ],
+    "serves": [
+     "P2",
+     "P3"
+    ]
+   },
+   {
+    "id": "BH-3",
+    "he": "עמדת כבודה 3 — P3 / P4 (האולם של היום, BAG5 — נשאר כמו שהוא)",
+    "r": [
+     7600,
+     905,
+     7820,
+     1015
+    ],
+    "din": [
+     7620,
+     7660
+    ],
+    "dout": [
+     7780,
+     7818
+    ],
+    "lane": 948,
+    "belt": [
+     7655,
+     7775,
+     921
+    ],
+    "serves": [
+     "P3",
+     "P4"
+    ],
+    "today": true
+   },
+   {
+    "id": "BH-4",
+    "he": "עמדת כבודה 4 — P4 / P5 (חדשה, מתחת ל-CE, ממזרח למדרגות הנעות של P4)",
+    "r": [
+     8002,
+     905,
+     8235,
+     961
+    ],
+    "din": [
+     8008,
+     8044
+    ],
+    "dout": [
+     8180,
+     8216
+    ],
+    "lane": 945,
+    "belt": [
+     8050,
+     8170,
+     923
+    ],
+    "serves": [
+     "P4",
+     "P5"
+    ]
+   },
+   {
+    "id": "BH-5",
+    "he": "עמדת כבודה 5 — P5 / P6 / R (חדשה: הקצה המזרחי של CE ותוספת עם גג שקוף עד שביל השירות SR_E)",
+    "r": [
+     8314,
+     905,
+     8505,
+     961
+    ],
+    "din": [
+     8318,
+     8352
+    ],
+    "dout": [
+     8468,
+     8502
+    ],
+    "lane": 948,
+    "belt": [
+     8360,
+     8462,
+     921
+    ],
+    "serves": [
+     "P5",
+     "P6",
+     "R"
+    ],
+    "annex": [
+     8402,
+     886,
+     8508,
+     961
+    ]
+   }
+  ],
+  "exp": {
+   "rect": [
+    8480,
+    2550,
+    9600,
+    2830
+   ],
+   "he": "ההרחבה הדרומית־מזרחית — חצי אזור (H4)"
+  },
+  "gse_s": [
+   {
+    "id": "S-PT1",
+    "t": "PT",
+    "r": [
+     8500,
+     2600,
+     8522,
+     2660
+    ]
+   },
+   {
+    "id": "S-PT2",
+    "t": "PT",
+    "r": [
+     8544,
+     2600,
+     8566,
+     2660
+    ]
+   },
+   {
+    "id": "S-BT1",
+    "t": "BT",
+    "r": [
+     8588,
+     2600,
+     8610,
+     2660
+    ]
+   },
+   {
+    "id": "S-BT2",
+    "t": "BT",
+    "r": [
+     8632,
+     2600,
+     8654,
+     2660
+    ]
+   },
+   {
+    "id": "S-BL1",
+    "t": "BL",
+    "r": [
+     8676,
+     2600,
+     8698,
+     2675
+    ]
+   },
+   {
+    "id": "S-GP1",
+    "t": "GP",
+    "r": [
+     8720,
+     2600,
+     8742,
+     2660
+    ]
+   },
+   {
+    "id": "S-GP2",
+    "t": "GP",
+    "r": [
+     8764,
+     2600,
+     8786,
+     2660
+    ]
+   },
+   {
+    "id": "S-MS1",
+    "t": "MS",
+    "r": [
+     8808,
+     2600,
+     8836,
+     2675
+    ]
+   },
+   {
+    "id": "S-AB1",
+    "t": "AB",
+    "r": [
+     8852,
+     2600,
+     8880,
+     2700
+    ]
+   },
+   {
+    "id": "S-FT1",
+    "t": "FT",
+    "r": [
+     8896,
+     2600,
+     8924,
+     2700
+    ]
+   },
+   {
+    "id": "S-CT1",
+    "t": "CT",
+    "r": [
+     8940,
+     2600,
+     8968,
+     2700
+    ]
+   },
+   {
+    "id": "S-SVC1",
+    "t": "SVC",
+    "r": [
+     8984,
+     2600,
+     9006,
+     2660
+    ]
+   },
+   {
+    "id": "S-WT1",
+    "t": "WT",
+    "r": [
+     9028,
+     2600,
+     9050,
+     2660
+    ]
+   },
+   {
+    "id": "S-LV1",
+    "t": "LV",
+    "r": [
+     9072,
+     2600,
+     9094,
+     2660
+    ]
+   },
+   {
+    "id": "S-SV1",
+    "t": "SV",
+    "r": [
+     9116,
+     2600,
+     9138,
+     2660
+    ]
+   },
+   {
+    "id": "S-BT3",
+    "t": "BT",
+    "r": [
+     9160,
+     2600,
+     9182,
+     2660
+    ]
+   },
+   {
+    "id": "S-PT3",
+    "t": "PT",
+    "r": [
+     9204,
+     2600,
+     9226,
+     2660
+    ]
+   },
+   {
+    "id": "S-GP3",
+    "t": "GP",
+    "r": [
+     9248,
+     2600,
+     9270,
+     2660
+    ]
+   }
+  ],
+  "gse_road": {
+   "id": "AIR-S-BASE",
+   "he": "דרך הבסיס הדרומי (חדש)",
+   "r": [
+    8480,
+    2700,
+    9580,
+    2744
+   ]
+  },
+  "amph": {
+   "dock": [
+    8180,
+    2600,
+    8470,
+    2640
+   ],
+   "ramp": [
+    8433,
+    2548,
+    8463,
+    2602
+   ],
+   "lane": [
+    7300,
+    3480,
+    9450,
+    3580
+   ],
+   "taxi": [
+    [
+     8300,
+     2662
+    ],
+    [
+     8300,
+     3480
+    ]
+   ],
+   "trawl": [
+    7531,
+    3035,
+    9454,
+    3365
+   ],
+   "ship_lane_y": 3620,
+   "he": "מזח צף ומסלול מים לאמפיבי (נוחת מערבה, מסיע צפונה, נקשר)"
+  },
+  "bshop": {
+   "act": [
+    7200,
+    2552,
+    8046,
+    2800
+   ],
+   "wharf": [
+    7776,
+    2552,
+    8040,
+    2792
+   ],
+   "lane": [
+    [
+     7120,
+     2880
+    ],
+    [
+     9420,
+     2960
+    ]
+   ]
+  },
+  "train": {
+   "W": 26,
+   "L": 119.0
+  }
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "url": "file:///home/user/pirchei-shomayim-designs/turbo-city-three-small/index.html",
+ "tLoad": 4013,
+ "tReady": 8625,
+ "fps": {
+  "fps": 1,
+  "worstMs": 1533
+ },
+ "heapMB": 10,
+ "gl": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+ "imgs": 0,
+ "errs": [],
+ "reqs": [],
+ "extra": null
+}

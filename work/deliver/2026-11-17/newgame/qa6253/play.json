@@ -1,0 +1,252 @@
+{
+ "file": "try6253.html",
+ "skip": false,
+ "log": [
+  "17s מסך הפתיחה",
+  "28s משחק חדש · סיפור · \"דני\"",
+  "30s בתוך המשחק",
+  "32s סרטון הפתיחה רץ · ההדרכה: on=true shown=false why=film",
+  "119s הסרטון נגמר אחרי 87 שנ׳ · null",
+  "119s הכרטיס של ההדרכה הופיע אחרי 89 שנ׳ · סרטון: כן · חפיפה: 0 · טעינה: false · {\"film\":187,\"-\":1}",
+  "119s ההדרכה התחילה · 1נוסעיםדלג על ההדרכהברוך הבא לטורבו סיטי, דני! קודם — המקשים, בשבע פעולות קצרות.אתה ברכב, ",
+  "134s נהיגה → exit · 2עוצרים ויוצאיםדלג על ההדרכהעצור (S או Space), ואז E — יוצאי",
+  "135s E → walk · מצב walk · ניווט PLAYER-HOME",
+  "175s הליכה → door · {\"mode\":\"walk\",\"x\":2884,\"y\":2402,\"car\":{\"x\":2958,\"y\":2330},\"door\":{\"x\":2812,\"y\":2406},\"kmh\":0,\"phone\":false,\"map\":false,",
+  "176s F → PLAYER-HOME · טלפון true",
+  "177s F שוב → phone",
+  "179s T, T → map",
+  "180s M, M → enter",
+  "182s E → done · מצב vehicle",
+  "185s הסיפור: {\"ch\":\"O\",\"mi\":\"O-1\",\"step\":0,\"done\":[],\"rows\":[false,false,false,false,false,false],\"van\":false,\"soon\":false,\"err\":null · {\"mi\":\"O-1\",\"step\":0} · אזורים שהתחילו: []",
+  "189s אחרי 4 שנ׳: {\"mi\":\"O-1\",\"step\":0} · כרטיס: ",
+  "199s O‑1: הושלמה · 14 לחיצות · {\"ch\":\"1\",\"mi\":null,\"step\":0,\"done\":[\"O-1\"],\"rows\":[false,false,false,false,false,false],\"van\":false,\"soon\":false,\"err\":null,\"ticks\":415,\"ms · אזורים: []"
+ ],
+ "steps": {
+  "drive": "exit",
+  "exit": "walk",
+  "walk": "door",
+  "fOpen": "PLAYER-HOME",
+  "door": "phone",
+  "phone": "map",
+  "map": "enter",
+  "enter": "done"
+ },
+ "ok": true,
+ "film": {
+  "seen": true,
+  "ms": 87229,
+  "overlap": 0,
+  "loading": false,
+  "shownAt": 89,
+  "why": {
+   "film": 187,
+   "-": 1
+  },
+  "auto": null,
+  "samples": 188,
+  "stepWhileFilm": false
+ },
+ "start": {
+  "tut": {
+   "on": true,
+   "i": 0,
+   "id": "drive",
+   "st": "run",
+   "replay": false,
+   "fin": null,
+   "err": null,
+   "errs": 0,
+   "ticks": 318,
+   "lastF": null,
+   "why": "",
+   "waitN": 306,
+   "shown": true
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2484,
+   "car": {
+    "x": 2958,
+    "y": 2484
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": null
+  },
+  "story": {
+   "none": true,
+   "err": null
+  },
+  "cur": null,
+  "card": "1נוסעיםדלג על ההדרכהברוך הבא לטורבו סיטי, דני! קודם — המקשים, בשבע פעולות קצרות.אתה ברכב, ליד הבית של סבא ב-C3. ‏W — גז · S — בלם ואחורה · A / D — הגה (גם החצים",
+  "zones": [],
+  "nm": false
+ },
+ "storyBefore": {
+  "none": true,
+  "err": null
+ },
+ "after": {
+  "tut": {
+   "on": false,
+   "i": 7,
+   "id": null,
+   "st": "done",
+   "replay": false,
+   "fin": "ההדרכה הושלמה — כל הכבוד!",
+   "err": null,
+   "errs": 0,
+   "ticks": 576,
+   "lastF": "PLAYER-HOME",
+   "why": "busy:cutscene",
+   "waitN": 306,
+   "shown": false
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2330,
+   "car": {
+    "x": 2958,
+    "y": 2330
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": "PLAYER-HOME"
+  },
+  "story": {
+   "ch": "O",
+   "mi": "O-1",
+   "step": 0,
+   "done": [],
+   "rows": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "van": false,
+   "soon": false,
+   "err": null,
+   "ticks": 379,
+   "msAvg": 0.373,
+   "msMax": 35.7
+  },
+  "cur": {
+   "mi": "O-1",
+   "step": 0
+  },
+  "card": "",
+  "zones": [],
+  "nm": false
+ },
+ "after2": {
+  "tut": {
+   "on": false,
+   "i": 7,
+   "id": null,
+   "st": "done",
+   "replay": false,
+   "fin": "ההדרכה הושלמה — כל הכבוד!",
+   "err": null,
+   "errs": 0,
+   "ticks": 593,
+   "lastF": "PLAYER-HOME",
+   "why": "busy:cutscene",
+   "waitN": 306,
+   "shown": false
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2330,
+   "car": {
+    "x": 2958,
+    "y": 2330
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": "PLAYER-HOME"
+  },
+  "story": {
+   "ch": "O",
+   "mi": "O-1",
+   "step": 0,
+   "done": [],
+   "rows": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "van": false,
+   "soon": false,
+   "err": null,
+   "ticks": 390,
+   "msAvg": 0.367,
+   "msMax": 35.7
+  },
+  "cur": {
+   "mi": "O-1",
+   "step": 0
+  },
+  "card": "",
+  "zones": [],
+  "nm": false
+ },
+ "o1": {
+  "ch": "1",
+  "mi": null,
+  "step": 0,
+  "done": [
+   "O-1"
+  ],
+  "rows": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "van": false,
+  "soon": false,
+  "err": null,
+  "ticks": 415,
+  "msAvg": 0.374,
+  "msMax": 35.7
+ },
+ "o1Done": true,
+ "o1Keys": 14,
+ "zonesAfterO1": [],
+ "storyBegan": true,
+ "noStoryBefore": true,
+ "zonesDuring": [],
+ "errs": []
+}

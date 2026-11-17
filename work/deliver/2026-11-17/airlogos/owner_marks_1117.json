@@ -1,0 +1,4470 @@
+{
+ "version": 1,
+ "source": "Brand signs review + airlogos · S7F301",
+ "updatedAt": 1794921004651,
+ "reviews": {
+  "airport:terminal-cafe": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:gate-cafe": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:juice": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:pizza": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:shawarma": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:salads": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:bakery": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:dutyfree": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:books": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:toys": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:pharmacy": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:gifts": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:electronics": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:hotel": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:rental": {
+   "parts": {
+    "logo": "keep",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:sunbeak": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:aurelia": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:skyline": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:coral": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:tidewind": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:zebrano": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:mirage": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:confetti": {
+   "parts": {
+    "logo": "redo",
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:terminal-east": {
+   "parts": {
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "airport:terminal-west": {
+   "parts": {
+    "airlogos-sign": "redo"
+   },
+   "note": ""
+  },
+  "city:city-apt-rent": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-cargo": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-ra-office": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-term": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-tower": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-hangars": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-heli": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e2w-cafe": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e2w-garage": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e2w-ops": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-maint": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-fuel": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-short": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-drop": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-cargo-gate": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-taxi": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-apt-bus": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-long": {
+   "parts": {
+    "proposal": "keep",
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-plaza": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-staff-gate": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-long-stop": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e2w-park-n": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e2w-park": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-fids-2": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-fids-1": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-drop-pick": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-fids-3": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-bus-g2": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-apt-taxi-pick": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s15-spot-w": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s15-fence-twa": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-s15-gate-cargo": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s15-fence-cargo": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-s15-fence-p1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-s15-gate-staff": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s15-fence-heli": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-s15-fence-ga": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-s16-hotel": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s16-rent": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s16-cargo-gate": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s16-pax-gate": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s16-air1": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s15-core-w": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s16-rent-kiosk": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-s16-cargo-booth": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "library:shibolet": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:cafe": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:fishing": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:mall": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:sole": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:flowers": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:antenna": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:books": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:eyes": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:dept": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:market": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:icecream": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:restaurant": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:tools": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:pharmacy": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:fuel": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:bank": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:cellar": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:post": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:barber": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:cinema": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:hotel": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:sportsclub": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:lakec": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:coastcafe": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:coastfishing": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:depot": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:driverscafe": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:hotel2": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:farmmarket": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:theatre": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:hq": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:tech": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:dealer": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:garage": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:rental": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:seahotel": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:plant": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:power": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:museum": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:library": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:university": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:customs": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:ferry": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:community": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:court": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:distribution": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:metal": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:marina": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:cable": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:fishmarket": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:boatrental": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:hostel": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:squaretower": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:rail": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:airport": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:cityhall": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:hospital": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:police": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:fire": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:ems": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "library:port": {
+   "parts": {
+    "logo": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-club": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a5-hotel": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep",
+    "face_02": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-market": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b2-cafe": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b5-theatre": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep",
+    "face_02": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b6-cafe": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-office-1": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-office-2": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d3-dealer": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d3-garage": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-f3-hotel": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b4-s1": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep",
+    "face_02": "keep",
+    "face_03": "keep",
+    "face_04": "keep",
+    "face_05": "keep",
+    "face_06": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-bank": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-cafe": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-fish": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-flowers": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-icecream": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-mall": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-mini": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-restaurant": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-sole": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-super": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep",
+    "face_02": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c2-wine": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c4-hardware": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-barber": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-books": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-cinema": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-hotel-1": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-optics": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-pharmacy": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-phones": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d2-post": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d3-fuel": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b6-tackle": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c4-fuel-shop": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-ems": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-fire": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-hall": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a5-police": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep",
+    "face_02": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-ferry": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b5-cityhall": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b5-community": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b5-court": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b5-library": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b5-museum": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b5-university": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c4-depot": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c4-dispatch": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c4-fab": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-dispatch": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-docks": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-gate": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-plant": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-workshop": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d4-dc": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d4-docks": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d4-rail": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d5-customs": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d5-dispatch": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e3-parcels": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e3-station": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e3-terminal": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-control": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-power": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-rail-ctrl": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-st-coast-hall": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e5-depot": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e5-dispatch": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e5-freight": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-f3-club": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-cafe": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b2-kiosk": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b6-lifeguard": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b6-market": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b6-pavilion": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-cafe": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-warehouse": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-wc": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d4-wh": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e3-kiosk": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-city-ws": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-pump": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-rail-ws": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e5-parcels": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e5-signal": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-f4-lifeguard": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-f4-wc": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-f3-fuel-kiosk": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a2-hospital": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-g8-island-marina": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b7-fishbay": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c7-anchorage": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d7-ships": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-g3-apron": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-g9-island-w": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-h1-airside": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-h2-maint": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-h3-apron": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-h9-island": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a0-mountain": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a9-shore": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b0-wild": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c0-fields": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d0-fields": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-h0-safety": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a6-house": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-barn": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-cowshed": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-shed": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-green-1": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-green-2": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-ferry-office": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-wc": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a6-boat-service": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-park": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-cargo": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-veg": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-wheat": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-corn": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a6-apple": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b6-wc": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-pier-head": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-pier2-head": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-service": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-substation": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-park": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-cargo": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-stock": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c5-bays": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-run": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-penalty": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-basket": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-tennis": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b7-pier1-head": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b7-pier2-head": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b7-sort": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b7-nets": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b2-fish-spot-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b2-fish-spot-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b2-fish-spot-3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b2-fish-spot-4": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-fish-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-fish-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-fish-3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-fish-4": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-fish-5": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-fish-6": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-fish-7": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-fish-8": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-shop": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-fuel": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c1-garden": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-h1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-h2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-h3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-h4": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-barn": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-yard": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-workshop": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-st19": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d1-pack": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d1-gh-w-n": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d1-gh-w-s": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d1-gh-e-n": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d1-gh-e-s": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d1-field": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b1-rent": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b1-pier-n": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b1-picnic": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b1-hill": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a1-th": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a1-mark-e": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a1-mark-w": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a1-pond": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a0-summit": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a0-peak": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a0-west": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a0-east": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a0-ne": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a0-spring": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b0-landing": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b0-hill": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b0-edge": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c0-gate-e": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c0-wheat": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c0-gate-w": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d0-gate-w": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d0-melon": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d0-gate-e": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-player-home": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c4-docks": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e3-taxi": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-e3-parking": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-water": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-sub": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-solar": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e5-staff": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e5-rail-wh": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d5-gate": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d5-wh": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d4-gate": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-taxi": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c5-staff": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-run-nw": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-run-ne": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-run-se": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-fire-hydrant": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-fire-bays": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-fire-gear": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-ems-bays": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-ems-gear": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-training": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-park-w": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a4-park-s": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b5-campus-parking": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-beach": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-parking": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-pier": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b6-pier2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d5-fk-p1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d5-fk-d1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d5-fk-p2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d5-fk-d2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d5-fk-p3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d5-fk-d3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-c5-p1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-c5-d1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-c5-p2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-c5-d2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-c5-p3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-c5-d3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-3-p1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-3-d1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-3-p2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-3-d2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-3-p3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-3-d3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-5-p1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-5-d1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-5-p2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-5-d2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-5-p3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-5-d3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-5-p4": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-act-fk-5-d4": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b2-lake": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a2-pharmacy": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b4-s2": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b4-s3": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo",
+    "face_02": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus1-d2n": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus1-b3n": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus1-a3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus1-b3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus1-d2s": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus1-d3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus2-d3c": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus2-d2n": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus2-c3r": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus2-c5": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus2-d5": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus3-d5": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus1-e3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus2-e3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-bus3-e3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-fuel-dock": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-pr-f3": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-f4-volley": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-lk-f5": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-g-f6-pocket": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-pl-f6-brh": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f6-lx-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f6-lx-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-br-head": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-br-wind": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-lb-joint": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-lb-house": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-spot-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-spot-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-spot-3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-spot-4": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-spot-5": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-board-f3-rb-a": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-board-f3-rb-b": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-board-f3-sb-x": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-fish-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-fish-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f5-fish-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f5-fish-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f5-fish-3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-f3-boatshop": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-g4-mymarina": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-g4-shipyard": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b4-n1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b4-n0": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b4-n2": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b4-n3": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-e3-wc": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-e3-bus-terminal": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-e4-sub-kiosk": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c1-silo-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-silo-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-pump-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-pump-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-hay": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-diesel": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c1-pylon": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a6-shop": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a6-farmhouse": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h1": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h2": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h3": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h4": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h5": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h6": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h7": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h8": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h9": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h10": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h11": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h12": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h13": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h14": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-h15": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-b3-b1": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo",
+    "face_02": "redo",
+    "face_03": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d3-dealer-show": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d3-fuel-shop": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d3-garage-ws": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c4-fire2": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-b3-b2": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c3-v1": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c3-v2": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c3-v3": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c3-v4": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c3-v5": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d3-v1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d3-v2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d3-v3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d3-v4": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d3-v5": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-d3-v6": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-a5-office": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a2-hosp": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep",
+    "face_02": "keep",
+    "face_03": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a2-clinic": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-a2-store": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d5-01": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-g4-workshop": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-surface-100db8e8e8": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-surface-bd264995db": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-up-coast": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-surface-db3e4e4a11": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-surface-9608839f65": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-e4-solar-panels": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e4-inverter": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-hostel": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-g8-ferry": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-ferry-quay": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-boats": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-wait": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-harbor-office": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-beach": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-olive": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-st22": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-village": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-cable-top": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-summit": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-station": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-shop": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-cable-low": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-heli": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-light-house": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-lighthouse": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-st21": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-station-hall": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-shop-b": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-cable-low-b": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-cable-top-b": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-vh-1": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-vh-2": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-vh-3": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-vh-4": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-vh-5": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-hostel-b": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-light-h": {
+   "parts": {
+    "logo": "redo",
+    "face_01": "redo"
+   },
+   "note": ""
+  },
+  "city:city-is-wait-booth": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-is-light-t": {
+   "parts": {
+    "logo": "redo",
+    "proposal": "redo"
+   },
+   "note": ""
+  },
+  "city:city-c6-customs": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-dispatch": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-office": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-oil": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-ops": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-station": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep",
+    "face_02": "keep",
+    "face_03": "keep",
+    "face_04": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-terminal": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-office": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-wh1": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-wh2": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e5-port-wh": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-workshop": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-fuel-kiosk": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-tug-pier-head": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-gate": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-berth": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-sts-1": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-sts-2": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-yard": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-e6-sub": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-gate-w": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-xray": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-oil-ctrl": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-oil-fire": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-gate-e": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-workshop": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-admin": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-store": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-depot": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-gate-e": {
+   "parts": {
+    "logo": "keep",
+    "face_01": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-block-4": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-sts-2": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-berth": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-c6-oil-pier": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-ln-d6-ramp": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-p-d6-im": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-dw-d6-carrier": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-berth": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-service": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-d6-helipad": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "city:city-pg-chk-q4": {
+   "parts": {
+    "logo": "keep",
+    "proposal": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-01": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-02": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-03": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-04": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-05": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-06": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-07": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-09": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-10": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-11": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-12": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-13": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-14": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-15": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-16": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-17": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-18": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-19": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-20": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-21": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-22": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-23": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-WAY-24": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-01": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-02": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-03": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-04": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-05": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-06": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-07": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-08": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-09": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-10": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-FIDS-11": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15GR-BRIDGE-01": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15GR-BRIDGE-02": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15GR-BRIDGE-03": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15GR-BRIDGE-04": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15GR-BRIDGE-05": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15GR-BRIDGE-06": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-01": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-02": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-03": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-04": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-05": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-06": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-07": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-08": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-09": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-10": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-11": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-12": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-13": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-14": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-15": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-16": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-RWY-17": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-AIR-BASE-1": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-AIR-BASE-2": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-AIR-BASE-3": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-FUEL": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-POLICE-EMS": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-WORKSHOP": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-FIRE": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-GATE-WING": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-TERMINAL-ARR": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-TERMINAL-CHECKIN": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-PLATE-TERMINAL-BAGS": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16-CARGO-BOOTH-SIGN": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:G2-STAFF-GATEHOUSE-SIGN": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-KIOSK-SIGN": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-GATE-STAFF": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15-GATE-CARGO": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16-PAX-GATE": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16-AIR1": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-ENTRY": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-EXIT": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-STAFF": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-AP3": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-FREE": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-SHUTTLE": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:RA-RMG": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-P-ENTRY": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-P-STAFF": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S16P-P-ROOF": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-COUNTER-1": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-COUNTER-2": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-COUNTER-3": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "ops:S15J-CREW-BRIEFING": {
+   "parts": {
+    "sign": "keep"
+   },
+   "note": ""
+  },
+  "poster:night-train": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:beyond-bridge": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:last-harbor": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:born-of-sea": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:city": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:coast": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:community": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:campus": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:sea-to-city": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  },
+  "poster:nature-collection": {
+   "parts": {
+    "facade": "keep",
+    "screen": "keep"
+   },
+   "note": ""
+  }
+ }
+}

@@ -1,0 +1,2 @@
+[bslot] מקום 3 אחרי 1868 שנ׳
+{"qa":true,"why":[],"contacts":104,"faces":97,"things":7,"msgs":{"svgs":6,"places":1,"img":0},"thread":{"head":true},"calls":{"rows":2,"grid":8,"text":true},"jobs":{"cards":42,"fam":42,"icons":42,"heads":10,"fams":["taxi","delivery","errand","route","bus","warehouse","logistics","sports","municipal","airport"]},"ring":{"shown":true,"svg":true},"dlg":{"svg":true},"dataImage":0,"errs":0,"errs0":[]}

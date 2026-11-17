@@ -1,0 +1,5 @@
+q_ingame rc=0
+rules_gate rc=1
+people_on_road rc=0
+stuckmax rc=0
+done

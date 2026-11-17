@@ -1,0 +1,9 @@
+start 16:10 try8254
+brandin_probe rc=0 T:face_01","C4-DISPATCH:face_01","C5-DOCKS:face_01","C5-WORKSHOP:face_01","D4-DOCKS:face_01","D4-RAIL:face_01","D4-WH:face_01","E3-KIOSK:face_01","C4-DOCKS:face_01","D4-GATE:face_01","A2-HOSP:face_01","A2-HOSP:face_02"],"cityNoPos":["E4-SOLAR-PANELS:face_01","E4-INVERTER:face_01","A2-CLINIC:face_01","A2-STORE:face_01","D5-01:face_01"],"place":{"n":250,"ok":250,"noScreen":0,"bad":[]},"errs":[],"n":{"way":5578,"fids":1389,"gate":932,"rwy":496,"plate":6313,"s9":417,"e4":2196,"p":985,"counter":409,"brief":15,"c2":3349,"d2":276,"b4":11676,"f":253,"prop":135,"spr":11037,"hooks":13},"err":"b4: RangeError: Maximum call stack size exceeded\n    at g.fillText (file:///home/user/tc_root/tc/pkg/work/clean_r2b_025637/out/_try/try8254.html:68486:159)\n    at text (file:///home/user/tc_root/tc/pkg/work/clean_r2b_025637/out/_try/try8254.html:68386:403)\n    at wrapped (file:///home/user/tc_root/tc/pk"}
+q_ingame rc=0
+rules_gate rc=1
+people_on_road rc=0
+stuckmax rc=0 {"tag":"bi_try8254","build":"try8254.html","secs":150,"over5":1,"busOver5":0,"long":[["car AI-CAR-19:VS-AM-01",53.4,"AIR-FRONT","",""]],"st":{"served":0,"rec":0,"owned":0},"pe":[]}
+people_on_road rc=127
+stuckmax rc=0 {"tag":"bi_try8254","build":"try8254.html","secs":150,"over5":0,"busOver5":0,"long":[],"st":{"served":0,"rec":0,"owned":0},"pe":[]}
+done 16:36

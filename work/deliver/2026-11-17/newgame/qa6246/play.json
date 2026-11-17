@@ -1,0 +1,226 @@
+{
+ "file": "try6246.html",
+ "skip": false,
+ "log": [
+  "20s מסך הפתיחה",
+  "54s משחק חדש · סיפור · \"דני\"",
+  "57s בתוך המשחק",
+  "57s ההדרכה התחילה · 1נוסעיםדלג על ההדרכהברוך הבא לטורבו סיטי, דני! קודם — המקשים, בשבע פעולות קצרות.אתה ברכב, ",
+  "84s נהיגה → exit · 2עוצרים ויוצאיםדלג על ההדרכהעצור (S או Space), ואז E — יוצאי",
+  "86s E → walk · מצב walk · ניווט PLAYER-HOME",
+  "94s הליכה → door · {\"mode\":\"walk\",\"x\":2815,\"y\":2420,\"car\":{\"x\":2958,\"y\":2548},\"door\":{\"x\":2812,\"y\":2406},\"kmh\":0,\"phone\":false,\"map\":false,",
+  "96s F → PLAYER-HOME · טלפון true",
+  "97s F שוב → phone",
+  "99s T, T → map",
+  "101s M, M → enter",
+  "107s E → done · מצב vehicle",
+  "110s הסיפור: {\"ch\":\"O\",\"mi\":\"O-1\",\"step\":0,\"done\":[],\"rows\":[false,false,false,false,false,false],\"van\":false,\"soon\":false,\"err\":null · {\"mi\":\"O-1\",\"step\":0} · אזורים שהתחילו: []",
+  "114s אחרי 4 שנ׳: {\"mi\":\"O-1\",\"step\":0} · כרטיס: ✓ההדרכה הושלמה — כל הכבוד!עכשיו הסיפור: שמעון מחכה לך ליד הב",
+  "125s O‑1: הושלמה · 14 לחיצות · {\"ch\":\"1\",\"mi\":null,\"step\":0,\"done\":[\"O-1\"],\"rows\":[false,false,false,false,false,false],\"van\":false,\"soon\":false,\"err\":null,\"ticks\":176,\"ms · אזורים: []"
+ ],
+ "steps": {
+  "drive": "exit",
+  "exit": "walk",
+  "walk": "door",
+  "fOpen": "PLAYER-HOME",
+  "door": "phone",
+  "phone": "map",
+  "map": "enter",
+  "enter": "done"
+ },
+ "ok": true,
+ "start": {
+  "tut": {
+   "on": true,
+   "i": 0,
+   "id": "drive",
+   "st": "run",
+   "replay": false,
+   "fin": null,
+   "err": null,
+   "errs": 0,
+   "ticks": 13,
+   "lastF": null
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2484,
+   "car": {
+    "x": 2958,
+    "y": 2484
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": null
+  },
+  "story": {
+   "none": true,
+   "err": null
+  },
+  "cur": null,
+  "card": "1נוסעיםדלג על ההדרכהברוך הבא לטורבו סיטי, דני! קודם — המקשים, בשבע פעולות קצרות.אתה ברכב, ליד הבית של סבא ב-C3. ‏W — גז · S — בלם ואחורה · A / D — הגה (גם החצים",
+  "zones": [],
+  "nm": false
+ },
+ "storyBefore": {
+  "none": true,
+  "err": null
+ },
+ "after": {
+  "tut": {
+   "on": false,
+   "i": 7,
+   "id": null,
+   "st": "done",
+   "replay": false,
+   "fin": "ההדרכה הושלמה — כל הכבוד!",
+   "err": null,
+   "errs": 0,
+   "ticks": 193,
+   "lastF": "PLAYER-HOME"
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2548,
+   "car": {
+    "x": 2958,
+    "y": 2548
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": "PLAYER-HOME"
+  },
+  "story": {
+   "ch": "O",
+   "mi": "O-1",
+   "step": 0,
+   "done": [],
+   "rows": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "van": false,
+   "soon": false,
+   "err": null,
+   "ticks": 138,
+   "msAvg": 0.264,
+   "msMax": 10.1
+  },
+  "cur": {
+   "mi": "O-1",
+   "step": 0
+  },
+  "card": "✓ההדרכה הושלמה — כל הכבוד!עכשיו הסיפור: שמעון מחכה לך ליד הבית של סבא — זה הבית שלך בעיר. היומן (T) אומר תמיד מה עכשיו.",
+  "zones": [],
+  "nm": false
+ },
+ "after2": {
+  "tut": {
+   "on": false,
+   "i": 7,
+   "id": null,
+   "st": "done",
+   "replay": false,
+   "fin": "ההדרכה הושלמה — כל הכבוד!",
+   "err": null,
+   "errs": 0,
+   "ticks": 209,
+   "lastF": "PLAYER-HOME"
+  },
+  "pos": {
+   "mode": "vehicle",
+   "x": 2958,
+   "y": 2548,
+   "car": {
+    "x": 2958,
+    "y": 2548
+   },
+   "door": {
+    "x": 2812,
+    "y": 2406
+   },
+   "kmh": 0,
+   "phone": false,
+   "map": false,
+   "iid": null,
+   "chunk": "C3",
+   "nav": "PLAYER-HOME"
+  },
+  "story": {
+   "ch": "O",
+   "mi": "O-1",
+   "step": 0,
+   "done": [],
+   "rows": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "van": false,
+   "soon": false,
+   "err": null,
+   "ticks": 148,
+   "msAvg": 0.265,
+   "msMax": 10.1
+  },
+  "cur": {
+   "mi": "O-1",
+   "step": 0
+  },
+  "card": "✓ההדרכה הושלמה — כל הכבוד!עכשיו הסיפור: שמעון מחכה לך ליד הבית של סבא — זה הבית שלך בעיר. היומן (T) אומר תמיד מה עכשיו.",
+  "zones": [],
+  "nm": false
+ },
+ "o1": {
+  "ch": "1",
+  "mi": null,
+  "step": 0,
+  "done": [
+   "O-1"
+  ],
+  "rows": [
+   false,
+   false,
+   false,
+   false,
+   false,
+   false
+  ],
+  "van": false,
+  "soon": false,
+  "err": null,
+  "ticks": 176,
+  "msAvg": 0.328,
+  "msMax": 12.2
+ },
+ "o1Done": true,
+ "o1Keys": 14,
+ "zonesAfterO1": [],
+ "storyBegan": true,
+ "noStoryBefore": true,
+ "zonesDuring": [],
+ "errs": []
+}

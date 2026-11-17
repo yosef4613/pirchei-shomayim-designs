@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>הירוק בזומים — הציור</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1f2a33;--mute:#5b6770;--line:#c9c2b4;--grass:#6f9f55;--road:#5c6065;--house:#c9653f;--water:#3d8fc4;--map:#9fb8a0;--card:#fffdf8;--bad:#c0392b;--ok:#2e7d4f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151a1e;--ink:#e8edf0;--mute:#9aa7b0;--line:#38424a;--card:#1d2328}}
+:root[data-theme="dark"]{--bg:#151a1e;--ink:#e8edf0;--mute:#9aa7b0;--line:#38424a;--card:#1d2328}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:26px 0 6px}
+p{margin:6px 0;color:var(--mute)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:700px){.row{grid-template-columns:1fr}}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+figcaption{font-size:14px;margin-top:6px}
+svg{width:100%;height:auto;display:block}
+.bad{color:var(--bad);font-weight:600}.ok{color:var(--ok);font-weight:600}
+</style>
+</head>
+<body><main>
+<h1>"הכול נעלם ונשאר ירוק" — מה קורה לאריח שחסר, לפני ואחרי</h1>
+<p>העולם מצויר מאריחים שמורים (062: wtcPass0). אריח שעוד לא נבנה מכוסה — מהזום הקודם, מהרמה המלאה, או מהמפה האפויה (MAPBASE). שלושה מקרים השאירו חור. אין כאן שינוי בדרכים, במבנים או בכיוונים — רק מה שמצויר בפריימים עד שהאריח נבנה.</p>
+
+<h2>א. תא שיש בו מים (האגם של B2, החוף, הנמל, B6)</h2>
+<div class="row">
+<figure><svg viewBox="0 0 320 170" role="img" aria-label="לפני: רק הקרקע">
+ <rect x="10" y="10" width="300" height="150" rx="6" fill="var(--grass)"/>
+ <path d="M10 120 Q90 95 170 125 T310 118 V160 H10Z" fill="var(--water)"/>
+ <g fill="none" stroke="#fff" stroke-dasharray="5 5" opacity=".7"><rect x="12" y="12" width="296" height="146"/></g>
+ <text x="160" y="70" text-anchor="middle" font-size="15" fill="#fff">L0 בנוי · L1 חסר</text>
+ <text x="160" y="92" text-anchor="middle" font-size="13" fill="#fff">"מכוסה" בלי ציור → אין כביש, אין בתים</text>
+</svg><figcaption><span class="bad">לפני:</span> wtcMapCover מחזיר "מכוסה" ל-L1 בלי לצייר — נשאר הירוק, עד שה-L1 נבנה (אחרון).</figcaption></figure>
+<figure><svg viewBox="0 0 320 170" role="img" aria-label="אחרי: מהמפה האפויה">
+ <rect x="10" y="10" width="300" height="150" rx="6" fill="var(--grass)"/>
+ <path d="M10 120 Q90 95 170 125 T310 118 V160 H10Z" fill="var(--water)"/>
+ <rect x="10" y="58" width="300" height="16" fill="var(--road)"/><rect x="150" y="10" width="16" height="110" fill="var(--road)"/>
+ <g fill="var(--house)"><rect x="40" y="22" width="34" height="26"/><rect x="92" y="22" width="34" height="26"/><rect x="196" y="22" width="34" height="26"/><rect x="40" y="82" width="34" height="22"/><rect x="220" y="82" width="40" height="22"/></g>
+ <text x="160" y="148" text-anchor="middle" font-size="13" fill="#fff">L1 חסר → המפה האפויה של התא</text>
+</svg><figcaption><span class="ok">אחרי:</span> כמו אריח M שחסר — התמונה האפויה של אותו תא, עד שה-L1 נבנה (אם ה-L0 כבר מהמפה — אין צורך).</figcaption></figure>
+</div>
+
+<h2>ב. אריח שנזרק באמצע (הצמחייה מצאה תמונה חדשה, C3, היום / הלילה, העונה)</h2>
+<div class="row">
+<figure><svg viewBox="0 0 320 120" role="img" aria-label="לפני: חור">
+ <g font-size="12" text-anchor="middle">
+ <rect x="10" y="20" width="90" height="70" fill="var(--grass)"/><rect x="10" y="50" width="90" height="12" fill="var(--road)"/><rect x="30" y="26" width="24" height="18" fill="var(--house)"/>
+ <text x="55" y="108" fill="var(--ink)">פריים 1</text>
+ <rect x="115" y="20" width="90" height="70" fill="var(--map)"/><text x="160" y="60" fill="var(--ink)">חור / ירוק</text><text x="160" y="108" fill="var(--ink)">פריים 2 — נזרק</text>
+ <rect x="220" y="20" width="90" height="70" fill="var(--grass)"/><rect x="220" y="50" width="90" height="12" fill="var(--road)"/><rect x="240" y="26" width="24" height="18" fill="var(--house)"/><circle cx="290" cy="34" r="8" fill="#2f6b34"/>
+ <text x="265" y="108" fill="var(--ink)">פריים 3+ — נבנה</text></g>
+</svg><figcaption><span class="bad">לפני:</span> wtcDirty / wtcInvalidate זורקים מיד גם את מה שבמסך.</figcaption></figure>
+<figure><svg viewBox="0 0 320 120" role="img" aria-label="אחרי: העותק הישן">
+ <g font-size="12" text-anchor="middle">
+ <rect x="10" y="20" width="90" height="70" fill="var(--grass)"/><rect x="10" y="50" width="90" height="12" fill="var(--road)"/><rect x="30" y="26" width="24" height="18" fill="var(--house)"/>
+ <text x="55" y="108" fill="var(--ink)">פריים 1</text>
+ <rect x="115" y="20" width="90" height="70" fill="var(--grass)"/><rect x="115" y="50" width="90" height="12" fill="var(--road)"/><rect x="135" y="26" width="24" height="18" fill="var(--house)"/>
+ <text x="160" y="108" fill="var(--ink)">פריים 2 — העותק הישן</text>
+ <rect x="220" y="20" width="90" height="70" fill="var(--grass)"/><rect x="220" y="50" width="90" height="12" fill="var(--road)"/><rect x="240" y="26" width="24" height="18" fill="var(--house)"/><circle cx="290" cy="34" r="8" fill="#2f6b34"/>
+ <text x="265" y="108" fill="var(--ink)">פריים 3+ — החדש</text></g>
+</svg><figcaption><span class="ok">אחרי:</span> האריח שבמסך נשאר כעותק ישן עד שהחדש מוכן (עד 40 אריחים, עד 15 שנ׳). בבדיקות שמכריחות בנייה מלאה — כמו קודם.</figcaption></figure>
+</div>
+
+<h2>ג. סדר הבנייה</h2>
+<div class="row">
+<figure><svg viewBox="0 0 320 170" role="img" aria-label="לפני: מהפינה">
+ <g font-size="11" text-anchor="middle" fill="var(--ink)">
+ <g stroke="var(--line)" fill="none"><rect x="20" y="15" width="280" height="140"/></g>
+ <text x="45" y="45">1</text><text x="100" y="45">2</text><text x="155" y="45">3</text><text x="210" y="45">4</text><text x="265" y="45">5</text>
+ <text x="45" y="95">6</text><text x="100" y="95">7</text><text x="155" y="95">8</text><text x="210" y="95">9</text><text x="265" y="95">10</text>
+ <text x="160" y="140">כל ה-L0 קודם → אחר כך כל ה-L1 → אחר כך העצים</text></g>
+</svg><figcaption><span class="bad">לפני:</span> שורה אחרי שורה מהפינה; השכבות של אותו תא — בסבבים נפרדים.</figcaption></figure>
+<figure><svg viewBox="0 0 320 170" role="img" aria-label="אחרי: מהמרכז">
+ <g font-size="11" text-anchor="middle" fill="var(--ink)">
+ <g stroke="var(--line)" fill="none"><rect x="20" y="15" width="280" height="140"/></g>
+ <text x="45" y="45">9</text><text x="100" y="45">5</text><text x="155" y="45">2</text><text x="210" y="45">4</text><text x="265" y="45">8</text>
+ <text x="45" y="95">7</text><text x="100" y="95">3</text><text x="155" y="95">1</text><text x="210" y="95">3</text><text x="265" y="95">6</text>
+ <circle cx="155" cy="90" r="14" fill="none" stroke="var(--ok)"/>
+ <text x="160" y="140">כל תא — L0 → L1 → העצים, ואז התא הבא</text></g>
+</svg><figcaption><span class="ok">אחרי:</span> מהמרכז החוצה (איפה שהשחקן מסתכל), וכל תא נגמר בבת אחת.</figcaption></figure>
+</div>
+<p>המתג לבדיקה: ‎#perf17=0 — בדיוק כמו קודם. המונים: window.__TC_PERF17.n</p>
+</main></body></html>

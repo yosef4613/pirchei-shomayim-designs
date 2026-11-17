@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>הסיפור חי וברור</title>
+<style>
+:root{--bg:#0c1419;--card:#13212a;--ink:#eef5fa;--mut:#9fb6c4;--line:#2a4150;--gold:#ffd23f;--green:#4fdc78;--amber:#ffb347;--blue:#6cb6ff;--red:#ff6b6b;--lock:#2b2f36}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f7f9;--card:#ffffff;--ink:#14212b;--mut:#4d6474;--line:#c9d6de;--gold:#b88a00;--green:#1f9a4a;--amber:#c26a00;--blue:#1f6fbf;--red:#c0392b;--lock:#cfd5db}}
+:root[data-theme="light"]{--bg:#f4f7f9;--card:#ffffff;--ink:#14212b;--mut:#4d6474;--line:#c9d6de;--gold:#b88a00;--green:#1f9a4a;--amber:#c26a00;--blue:#1f6fbf;--red:#c0392b;--lock:#cfd5db}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:26px;margin:4px 0 2px}h2{font-size:19px;margin:28px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.sub{color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.q{border-right:4px solid var(--gold);padding-right:10px;color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid var(--line);padding:6px 8px;text-align:right;vertical-align:top}th{background:rgba(127,127,127,.08)}
+.row{display:flex;gap:16px;flex-wrap:wrap}.row>*{flex:1 1 320px;min-width:0}
+svg{max-width:100%;height:auto;display:block}
+code{font-family:Consolas,monospace;font-size:13px;background:rgba(127,127,127,.12);padding:0 4px;border-radius:4px}
+.ok{color:var(--green)}.bad{color:var(--red)}
+small{color:var(--mut)}
+</style>
+</head>
+<body>
+<main>
+<h1>הסיפור חי וברור</h1>
+<div class="sub">story2 · 17.11 · הציור לפני הבנייה (כלל 13) — "המפה שלי" בטלפון, מגבלה אחת שכוללת הצעות, תזכורת, והבירור למה הסיפור לא מסתיים</div>
+
+<div class="card q">"ומה נסגר למה הסיפור לא מסתים … הצעות העבודות שלא קיבל לא נחשב זה לא הגיוני … הסיפור עדיין לא מספיק חי ומידי לא ברור איך להמשיך / אולי איקון בטלפון פתיחת מפה שיתן את המשימות סיפור הפעילות האפשריות לבחירה / וגם אותו דבר בחירה במפה למשימות עבודה וסיפורי צד / לא יותר מהמגבלה כולל לא להציע / מידי פעם ולא יותר מידי יקפוץ שוב הצעה שכבר קימת להזכיר את האופציה להמשיך"</div>
+
+<h2>1. מה כבר קיים (כלל 19 / 19א) — ומה משדרגים</h2>
+<table>
+<tr><th>מה</th><th>איפה</th><th>מה חסר / שבור</th><th>השדרוג</th></tr>
+<tr><td>לוח המשימות — ספירה אחת (D‑693)</td><td><code>074zu_mission_board.js</code> · MBOARD (step, pool, put, announce, showCard, counts)</td><td>הצעה (ה-5 / ה-6) "לא נספרת עד קבל" — אפשר 6 על המפה + הצעה = 7; הכרטיס כותב "לא נספרת"</td><td>הספירה = על המפה + הצעות; תקרה 6 לשתיהן; הצעה נוצרת רק כשיש מקום, ויוצאת כשהמקום נגמר</td></tr>
+<tr><td>הסיפור — 1–3 פתוחות בכל סדר</td><td><code>074ze_story_engine.js</code> · TCSTORY.open / next / focus</td><td>—</td><td>המפה שואלת אותו (קריאה בלבד); "בחר" = focus + ניווט</td></tr>
+<tr><td>הנקודות במפות</td><td><code>074zn_map_missions.js</code> · MMIS (mapOk של הלוח)</td><td>אין בחירה בלחיצה — רק נקודות</td><td>לא משתנה; המפה החדשה משתמשת באותו ציור בסיס</td></tr>
+<tr><td>מפת הטלפון</td><td><code>028</code> · phoneMap / drawPhoneMap / PHONEMAP (הזזה, זום, פגיעה בסיכה)</td><td>מראה את כל העיר וכל הסיכות — לא "מה אפשר לעשות עכשיו"</td><td>אפליקציה חדשה "המפה שלי" מעל אותו בסיס (drawMapBase / drawMapZones / drawNavigationMap / drawPlayerMap)</td></tr>
+<tr><td>סדר השכבות</td><td><code>009_tcbusy.js</code> · TCBUSY ('card')</td><td>—</td><td>התזכורת עולה רק כש-TCBUSY.blocks('card') = false</td></tr>
+<tr><td>השטח הפתוח והמחובר</td><td><code>074zu_locks_phys.js</code> · TCLOCK (lockedAt; ptReach כשנכנס)</td><td>—</td><td>המפה מחשיכה את הנעול; כל נקודה — רק אם פתוחה ומחוברת</td></tr>
+</table>
+
+<h2>2. "המפה שלי" — אייקון חדש בטלפון</h2>
+<div class="row">
+<div class="card">
+<svg viewBox="0 0 300 560" role="img" aria-label="מסך הבית של הטלפון עם האייקון החדש">
+ <rect x="10" y="6" width="280" height="548" rx="34" fill="#0b1116" stroke="#3a4d5a" stroke-width="3"/>
+ <rect x="24" y="40" width="252" height="490" rx="18" fill="#132029"/>
+ <text x="150" y="70" fill="#e8f2f6" font-size="15" text-anchor="middle" font-weight="700">הטלפון</text>
+ <g font-size="10.5" fill="#dfe9ef" text-anchor="middle">
+  <!-- the grid: 4 per row -->
+  <g transform="translate(222,92)"><rect width="44" height="44" rx="11" fill="#2f8f6b"/><path d="M14 16h16v12H18l-4 4z" fill="none" stroke="#fff" stroke-width="2"/><text x="22" y="60">שיחות</text></g>
+  <g transform="translate(164,92)"><rect width="44" height="44" rx="11" fill="#3a7bd5"/><rect x="12" y="13" width="20" height="16" rx="3" fill="none" stroke="#fff" stroke-width="2"/><text x="22" y="60">הודעות</text></g>
+  <g transform="translate(106,92)"><rect width="44" height="44" rx="11" fill="#b0702f"/><path d="M14 12h16v20H14z M18 18h8 M18 23h8" fill="none" stroke="#fff" stroke-width="2"/><text x="22" y="60">יומן</text></g>
+  <!-- the new icon -->
+  <g transform="translate(48,92)">
+   <rect x="-4" y="-4" width="52" height="52" rx="14" fill="none" stroke="#ffd23f" stroke-width="2.5" stroke-dasharray="4 3"/>
+   <rect width="44" height="44" rx="11" fill="#1d6f8f"/>
+   <path d="M8 13l9-3 10 3 9-3v21l-9 3-10-3-9 3z" fill="#2a8fb3" stroke="#fff" stroke-width="1.6"/>
+   <circle cx="17" cy="20" r="3.2" fill="#ffd23f"/><circle cx="28" cy="25" r="2.6" fill="#4fdc78"/><circle cx="22" cy="30" r="2.4" fill="#ffb347"/>
+   <text x="22" y="60" font-weight="700" fill="#ffd23f">המפה שלי</text>
+  </g>
+  <g transform="translate(222,170)"><rect width="44" height="44" rx="11" fill="#e0a43a"/><text x="22" y="60">עבודות</text></g>
+  <g transform="translate(164,170)"><rect width="44" height="44" rx="11" fill="#32a56b"/><text x="22" y="60">מפה</text></g>
+  <g transform="translate(106,170)"><rect width="44" height="44" rx="11" fill="#2f8fd6"/><text x="22" y="60">ניווט</text></g>
+  <g transform="translate(48,170)"><rect width="44" height="44" rx="11" fill="#e0bd32"/><text x="22" y="60">מונית</text></g>
+ </g>
+ <text x="150" y="280" fill="#9fb6c4" font-size="11.5" text-anchor="middle">מראה רק מה שאפשר לבחור עכשיו</text>
+ <text x="150" y="298" fill="#9fb6c4" font-size="11.5" text-anchor="middle">(סיפור ≤ 3 · צד + הצעות ≤ 6)</text>
+ <g transform="translate(40,320)" font-size="11.5" fill="#dfe9ef">
+  <rect width="220" height="170" rx="12" fill="#0f1a21" stroke="#2a4150"/>
+  <text x="208" y="24" text-anchor="end" font-weight="700" fill="#ffd23f">גם מקש: J (פתיחה ישירה)</text>
+  <text x="208" y="48" text-anchor="end">וגם מהכרטיס של משימה:</text>
+  <text x="208" y="66" text-anchor="end">"במפה שלי"</text>
+  <text x="208" y="94" text-anchor="end">והיומן (T) — כפתור למעלה:</text>
+  <text x="208" y="112" text-anchor="end">"המפה שלי — לבחור"</text>
+  <text x="208" y="142" text-anchor="end" fill="#9fb6c4">האפליקציה הראשונה בשורה —</text>
+  <text x="208" y="160" text-anchor="end" fill="#9fb6c4">אחרי שיחות / הודעות / יומן</text>
+ </g>
+</svg>
+</div>
+<div class="card">
+<svg viewBox="0 0 300 560" role="img" aria-label="המסך של המפה שלי">
+ <rect x="10" y="6" width="280" height="548" rx="34" fill="#0b1116" stroke="#3a4d5a" stroke-width="3"/>
+ <rect x="24" y="40" width="252" height="490" rx="18" fill="#132029"/>
+ <text x="262" y="66" fill="#ffd23f" font-size="14" text-anchor="end" font-weight="800">המפה שלי</text>
+ <text x="38" y="66" fill="#9fb6c4" font-size="10.5">סיפור 2/3 · צד 5/6</text>
+ <!-- tabs -->
+ <g font-size="11" text-anchor="middle">
+  <rect x="190" y="76" width="74" height="22" rx="11" fill="#ffd23f"/><text x="227" y="91" fill="#1a1400" font-weight="800">הכול</text>
+  <rect x="112" y="76" width="74" height="22" rx="11" fill="#22323d"/><text x="149" y="91" fill="#e8f2f6">הסיפור</text>
+  <rect x="34" y="76" width="74" height="22" rx="11" fill="#22323d"/><text x="71" y="91" fill="#e8f2f6">עבודות וצד</text>
+ </g>
+ <!-- the map: the 80 zones, the open area lit, the locked dark -->
+ <g transform="translate(34,106)">
+  <rect width="232" height="190" rx="8" fill="#0d2a38"/>
+  <g stroke="#0d2a38" stroke-width="1.5">
+   <!-- 8 columns × 6 rows (part of the city) -->
+   <g fill="#2b2f36"><rect x="0" y="0" width="29" height="31"/><rect x="29" y="0" width="29" height="31"/><rect x="58" y="0" width="29" height="31"/><rect x="87" y="0" width="29" height="31"/><rect x="116" y="0" width="29" height="31"/><rect x="145" y="0" width="29" height="31"/><rect x="174" y="0" width="29" height="31"/><rect x="203" y="0" width="29" height="31"/></g>
+   <g fill="#2f4a3a"><rect x="58" y="31" width="29" height="31"/><rect x="87" y="31" width="29" height="31"/><rect x="58" y="62" width="29" height="31"/><rect x="87" y="62" width="29" height="31"/><rect x="116" y="62" width="29" height="31"/><rect x="58" y="93" width="29" height="31"/><rect x="87" y="93" width="29" height="31"/><rect x="116" y="93" width="29" height="31"/><rect x="29" y="62" width="29" height="31"/><rect x="29" y="93" width="29" height="31"/></g>
+   <g fill="#2b2f36"><rect x="0" y="31" width="29" height="31"/><rect x="29" y="31" width="29" height="31"/><rect x="116" y="31" width="29" height="31"/><rect x="145" y="31" width="29" height="31"/><rect x="174" y="31" width="29" height="31"/><rect x="203" y="31" width="29" height="31"/><rect x="0" y="62" width="29" height="31"/><rect x="145" y="62" width="29" height="31"/><rect x="174" y="62" width="29" height="31"/><rect x="203" y="62" width="29" height="31"/><rect x="0" y="93" width="29" height="31"/><rect x="145" y="93" width="29" height="31"/><rect x="174" y="93" width="29" height="31"/><rect x="203" y="93" width="29" height="31"/></g>
+   <g fill="#24394a"><rect x="0" y="124" width="232" height="66"/></g>
+  </g>
+  <g stroke="#ff9f3a" stroke-width="1.6" stroke-dasharray="4 3" fill="none"><path d="M29 62V31h87v31h29v93H29z"/></g>
+  <!-- roads in the open area -->
+  <g stroke="#55656f" stroke-width="2.2" fill="none"><path d="M36 108h100M72 40v80M101 70v50M130 70v40"/></g>
+  <!-- the navigation line -->
+  <path d="M84 110 L84 86 L101 86 L101 46" stroke="#43a8ff" stroke-width="3" fill="none"/>
+  <!-- markers: story (gold, numbered), side (green), offer (amber dashed ring) -->
+  <g font-size="9.5" font-weight="800" text-anchor="middle">
+   <g transform="translate(101,46)"><circle r="10" fill="#ffd23f" stroke="#fff" stroke-width="2"/><text y="3.5" fill="#1a1400">1</text><circle r="15" fill="none" stroke="#fff" stroke-width="1.4" opacity=".7"/></g>
+   <g transform="translate(128,82)"><circle r="9" fill="#ffd23f" stroke="#7a5a00" stroke-width="1.6"/><text y="3.5" fill="#1a1400">2</text></g>
+   <g transform="translate(44,78)"><circle r="8" fill="#4fdc78" stroke="#081018" stroke-width="1.6"/><text y="3.2" fill="#062010">ע</text></g>
+   <g transform="translate(66,116)"><path d="M0-10L9 0 0 10-9 0z" fill="#ff8a4c" stroke="#081018" stroke-width="1.4"/></g>
+   <g transform="translate(118,112)"><circle r="8" fill="#4fdc78" stroke="#081018" stroke-width="1.6"/><text y="3.2" fill="#062010">ע</text></g>
+   <g transform="translate(94,64)"><path d="M0-10L9 0 0 10-9 0z" fill="#ff8a4c" stroke="#081018" stroke-width="1.4"/></g>
+   <g transform="translate(40,104)"><circle r="8" fill="#1d2a33" stroke="#ffb347" stroke-width="2" stroke-dasharray="3 2"/><text y="3.2" fill="#ffb347">?</text></g>
+  </g>
+  <!-- the player -->
+  <g transform="translate(84,110)"><circle r="5.5" fill="#fff"/><circle r="3" fill="#2f6fd0"/></g>
+  <text x="196" y="20" fill="#8b95a0" font-size="10" text-anchor="middle">נעול</text>
+  <text x="196" y="160" fill="#7fa6bd" font-size="10" text-anchor="middle">ים</text>
+ </g>
+ <!-- the selected row -->
+ <g transform="translate(34,304)">
+  <rect width="232" height="54" rx="10" fill="#2a2410" stroke="#ffd23f"/>
+  <text x="222" y="19" fill="#ffd23f" font-size="11.5" text-anchor="end" font-weight="800">1 · הסיפור — המגדל (פרק 3)</text>
+  <text x="222" y="35" fill="#dfe9ef" font-size="10.5" text-anchor="end">אליהו מחכה בחניון הקצר · 640 מ׳ ממך</text>
+  <rect x="8" y="10" width="62" height="34" rx="8" fill="#2f8f6b"/><text x="39" y="31" fill="#fff" font-size="11" text-anchor="middle" font-weight="800">בחר</text>
+ </g>
+ <!-- the list -->
+ <g transform="translate(34,366)" font-size="10.5">
+  <text x="232" y="10" fill="#9fb6c4" text-anchor="end">כל מה שאפשר עכשיו — אותה ספירה של הלוח</text>
+  <g transform="translate(0,18)"><rect width="232" height="26" rx="7" fill="#1a2832"/><circle cx="220" cy="13" r="6" fill="#ffd23f"/><text x="208" y="17" fill="#e8f2f6" text-anchor="end">2 · הסיפור — המזוודות של טיסה 12</text><text x="10" y="17" fill="#4fdc78">בחר</text></g>
+  <g transform="translate(0,48)"><rect width="232" height="26" rx="7" fill="#1a2832"/><circle cx="220" cy="13" r="6" fill="#4fdc78"/><text x="208" y="17" fill="#e8f2f6" text-anchor="end">עבודה · משלוח לקניון · 1.2 ק"מ</text><text x="10" y="17" fill="#4fdc78">בחר</text></g>
+  <g transform="translate(0,78)"><rect width="232" height="26" rx="7" fill="#1a2832"/><path d="M220 6l6 7-6 7-6-7z" fill="#ff8a4c"/><text x="208" y="17" fill="#e8f2f6" text-anchor="end">סיפור צד · הקרון שהלך לאיבוד</text><text x="10" y="17" fill="#4fdc78">בחר</text></g>
+  <g transform="translate(0,108)"><rect width="232" height="26" rx="7" fill="#1a2832" stroke="#ffb347" stroke-dasharray="4 3"/><circle cx="220" cy="13" r="6" fill="none" stroke="#ffb347" stroke-width="2"/><text x="208" y="17" fill="#ffb347" text-anchor="end">הצעה · גרירה לחניון (נספרת: 5/6)</text><text x="10" y="17" fill="#ffb347">קבל</text></g>
+ </g>
+</svg>
+</div>
+</div>
+<div class="card">
+<b>בחירה = ניווט + כרטיס.</b> נגיעה בסימון במפה או בשורה ברשימה — מסמנת (השורה הצהובה למעלה). "בחר" → הטלפון נסגר, הניווט ליעד של המשימה (הקו הכחול), והכרטיס של המשימה קופץ (אותו כרטיס של הלוח — קבל / נווט / התקשר / אחר כך). משימת סיפור — "בחר" גם מעביר אליה את הפוקוס (TCSTORY.focus), כמו "לעבור אליה". הצעה — "קבל" (נכנסת ללוח) או "אחר כך".
+<br><b>רק מה שמותר:</b> רק מה שעל הלוח (סיפור 1–3 · צד + הצעות ≤ 6) — ורק נקודה בשטח הפתוח והמחובר מהבית (TCLOCK). אזור נעול — כהה עם הקו הכתום, בלי סימון בתוכו. במצב "הכול פתוח" — אין אזורים כהים.
+<br><b>הכרטיס של משימה</b> מקבל כפתור "במפה שלי" (פותח את האפליקציה על הסימון שלה).
+</div>
+
+<h2>3. מגבלה אחת — כולל הצעות שלא התקבלו (D‑693)</h2>
+<div class="row">
+<div class="card">
+<svg viewBox="0 0 520 250" role="img" aria-label="שישה מקומות של משימות צד">
+ <text x="510" y="22" fill="currentColor" font-size="14" text-anchor="end" font-weight="700">משימות צד — 6 מקומות, כולל הצעות</text>
+ <g transform="translate(20,40)">
+  <g font-size="12" text-anchor="middle">
+   <rect x="400" y="0" width="76" height="56" rx="10" fill="#1f6b3f"/><text x="438" y="25" fill="#fff" font-weight="700">על המפה</text><text x="438" y="43" fill="#d6ffe4">1</text>
+   <rect x="320" y="0" width="76" height="56" rx="10" fill="#1f6b3f"/><text x="358" y="25" fill="#fff" font-weight="700">על המפה</text><text x="358" y="43" fill="#d6ffe4">2</text>
+   <rect x="240" y="0" width="76" height="56" rx="10" fill="#1f6b3f"/><text x="278" y="25" fill="#fff" font-weight="700">על המפה</text><text x="278" y="43" fill="#d6ffe4">3</text>
+   <rect x="160" y="0" width="76" height="56" rx="10" fill="#1f6b3f"/><text x="198" y="25" fill="#fff" font-weight="700">על המפה</text><text x="198" y="43" fill="#d6ffe4">4 (הרצפה)</text>
+   <rect x="80" y="0" width="76" height="56" rx="10" fill="#4a3a10" stroke="#ffb347" stroke-width="2" stroke-dasharray="5 4"/><text x="118" y="25" fill="#ffb347" font-weight="700">הצעה</text><text x="118" y="43" fill="#ffd9a0">5 — נספרת</text>
+   <rect x="0" y="0" width="76" height="56" rx="10" fill="none" stroke="#5a6a76" stroke-width="2" stroke-dasharray="3 4"/><text x="38" y="33" fill="#8aa0ae">פנוי</text>
+  </g>
+  <text x="476" y="86" fill="currentColor" font-size="12.5" text-anchor="end">הספירה = על המפה + הצעות פתוחות · ‏4 ≤ על המפה · ‏על המפה + הצעות ≤ 6</text>
+  <text x="476" y="110" fill="currentColor" font-size="12.5" text-anchor="end">הצעה חדשה — רק כשהספירה &lt; 6 (ואחרי 120 דק׳ משחק מהקודמת, כמו היום)</text>
+  <text x="476" y="134" fill="currentColor" font-size="12.5" text-anchor="end">השחקן מתחיל עבודה / סיפור בעצמו כשמלא → קודם יוצאת ההצעה, אחר כך משימה שלא התחילה</text>
+  <text x="476" y="158" fill="currentColor" font-size="12.5" text-anchor="end">כשכל 6 בביצוע — לא מתחילים חדשה ("סיים אחת קודם"), ולא מציעים</text>
+  <text x="476" y="182" fill="currentColor" font-size="12.5" text-anchor="end">הכרטיס: "הצעה · 5/6" (לא "לא נספרת"); היומן: "משימות צד · 4 על המפה + 1 הצעה = 5 / 6"</text>
+  <text x="476" y="206" fill="currentColor" font-size="12.5" text-anchor="end">הסיפור: פתוחות + הבאה + משימת ההמשך — בין 1 ל-3 (כמו היום, נבדק)</text>
+ </g>
+</svg>
+</div>
+</div>
+
+<h2>4. התזכורת — "מדי פעם, לא יותר מדי"</h2>
+<div class="card">
+<svg viewBox="0 0 1000 170" role="img" aria-label="ציר הזמן של התזכורת">
+ <line x1="30" y1="80" x2="970" y2="80" stroke="#5a6a76" stroke-width="3"/>
+ <g font-size="12" text-anchor="middle" fill="currentColor">
+  <text x="30" y="110">0</text><text x="218" y="110">5 דק׳</text><text x="405" y="110">10 דק׳</text><text x="593" y="110">15 דק׳</text><text x="780" y="110">20 דק׳</text><text x="968" y="110">25 דק׳</text>
+ </g>
+ <rect x="30" y="64" width="225" height="32" fill="rgba(127,127,127,.15)"/><text x="142" y="56" font-size="12" text-anchor="middle" fill="currentColor">שקט (לפחות 6 דק׳ משחק פעיל)</text>
+ <g><circle cx="310" cy="80" r="11" fill="#ffd23f"/><text x="310" y="140" font-size="12.5" text-anchor="middle" fill="currentColor">תזכורת: הסיפור (המשימה בפוקוס)</text></g>
+ <rect x="440" y="64" width="60" height="32" fill="rgba(229,72,77,.25)"/><text x="470" y="56" font-size="12" text-anchor="middle" fill="#e5484d">סצנה (TCBUSY)</text>
+ <g><circle cx="560" cy="80" r="11" fill="#ffb347"/><text x="560" y="140" font-size="12.5" text-anchor="middle" fill="currentColor">דחויה עד שהסצנה נגמרה → הצעה שלא התקבלה</text></g>
+ <g><circle cx="860" cy="80" r="11" fill="#4fdc78"/><text x="860" y="140" font-size="12.5" text-anchor="middle" fill="currentColor">משימת צד שעוד לא התחילה</text></g>
+ <text x="970" y="30" font-size="12" text-anchor="end" fill="currentColor">כל תזכורת — כרטיס אחד של מה שכבר קיים ("תזכורת · …"), בלי הודעה חדשה ובלי משימה חדשה</text>
+</svg>
+<ul>
+<li><b>התדירות:</b> לכל היותר פעם ב-6 דקות של משחק פעיל (הזמן לא רץ כשהמשחק עצור, בטלפון / במפה, בסצנה או בכל שכבה של TCBUSY מעל 'card'); בפועל — אקראי בין 6 ל-9 דקות. לא בזמן נהיגה מהירה (מחכה לעצירה / האטה), ולא כשכרטיס אחר על המסך.</li>
+<li><b>מה קופץ (לפי הסדר):</b> (1) משימת סיפור שלא זזה לפחות 5 דקות; (2) הצעה שעוד לא התקבלה; (3) משימת צד שעוד לא התחילה — הוותיקה. אותה משימה — לא יותר מפעם ב-20 דקות. "אחר כך" בתזכורת — אותה משימה לא חוזרת 30 דקות.</li>
+<li><b>לא:</b> בזמן משימה פעילה (נהיגה במשימה / מבחן), בפתיחה (פרק O — ההדרכה), כשאין שום דבר פתוח.</li>
+</ul>
+</div>
+
+<h2>5. הבירור — למה הסיפור לא מסתיים</h2>
+<div class="card" id="find"><b>מצאתי:</b> <code>074ze_story_engine.js:chapterEnd</code> — אחרי פרק 4 הסיפור עובר לפרק 5, ושם אין משימות (<code>074zd_story_data.js</code>: פרקים 5 ו-6 — <code>soon</code> בלבד). <code>step()</code> קורא ל-chapterEnd רק כשלפרק יש משימות — ולכן הסיפור נעצר בפרק 5 לתמיד: ביומן "בקרוב", ובלוח — "משימת ההמשך" (סיפור אזור / עבודה) במקום סיפור. פרקים O ו-1–4 עוברים מקצה לקצה (TCSTORY.qa — 38 שלבים).<br><b>ההבהרה של הבעלים (~13:30):</b> "מסתיים" = להמשיך לפרקים 5 ו-6, משחק גמור, והתחלה ברורה — זה של הסוכן story56. <b>המפה שלי כללית, לפי הנתונים:</b> כל משימה פתוחה של הסיפור — המקום של השלב שלה (at / nav / go; סיפור אזור — המקום של השלב שלו; מבחן — "מכל מקום", ברשימה בלבד), ולכן פרקים 5–6 יופיעו בה לבד כשייכתבו. הכלי tools/story_full.js (כל הסיפור משמירה נקייה, מצב "סיפור", שלב אחרי שלב עם האבחון של כל תקיעה) — מוכן ל-story56.</div>
+
+<h2>6. הבדיקות</h2>
+<table>
+<tr><th>בדיקה</th><th>מה</th></tr>
+<tr><td>story2 (בתוך roadAudit)</td><td>הספירה כולל הצעות: אף פעם לא מעל 6 / 3, לא מתחת ל-4 / 1; הצעה לא נוצרת כשמלא ויוצאת כשהשחקן מתחיל משימה כשמלא; המפה שלי — רק פריטים של הלוח, רק בשטח הפתוח; "בחר" → ניווט + כרטיס; התזכורת — לא לפני 6 דקות, לא בזמן שכבה, אותה משימה לא פעמיים ב-20 דק׳ — בלי עקבות</td></tr>
+<tr><td>יום משחק (s2_day.js)</td><td>288 צעדים של 5 דק׳ — בכל צעד: סיפור 1–3, על המפה 4–6, על המפה + הצעות ≤ 6, ספירת התזכורות ≤ הזמן / 6 דק׳, המפה = הלוח</td></tr>
+<tr><td>story_full.js</td><td>כל הסיפור מקצה לקצה — 0 שלבים תקועים (או: כל תקיעה עם הסיבה)</td></tr>
+<tr><td>הסט החוסם</td><td>q_ingame · rules_gate · stuckmax 150 · people_on_road · 0 שגיאות · 0 תמונות · release_strip</td></tr>
+</table>
+</main>
+</body>
+</html>

@@ -1,0 +1,1 @@
+return (()=>{try{vegInit();vegFurnInit()}catch(e){}const s=window.__TC_SEATREES.stats(),a=window.__TC_SEATREES.audit();return {stats:s,audit:{ok:a.ok,water:a.water,zones:a.zones,sources:a.sources,listsOnWater:a.listsOnWater,n:a.n}}})()

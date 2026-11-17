@@ -1,0 +1,8 @@
+fieldcalc|/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/fieldcalc/Stands_matrix.html
+airlogos|/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/airlogos/draw/Brand_signs_review.html
+closezoom|/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/closezoom/Closezoom_lab.html
+fieldsvc|/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/fieldsvc/Fieldsvc_plan.html
+fieldthru2|/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/fieldthru2/Fieldthru2_plan.html
+home|/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/home/Home_interiors_plan.html
+rails|/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/rails/Rails_junctions_plan.html
+fieldexit|/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/fieldexit/Fieldexit_plan.html

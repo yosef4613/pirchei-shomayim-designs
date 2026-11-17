@@ -1,0 +1,2 @@
+// בדיקת האייקון (17.11, החלטת המתאם): קישור icon אחד, מהקנבס ב-toDataURL (png), בלי blob:; data:image רק ב-href של הקישור הזה
+return (function(){var l=document.querySelector('link[rel~="icon"]');var h=l?l.getAttribute('href')||'':'';var html=document.documentElement.innerHTML,k='data:'+'image',n=html.split(k).length-1;return {icon:window.__TC_ICON||null,link:!!l,id:l&&l.id,png:h.slice(0,14)===k+'/png',blob:h.slice(0,5)==='blob:',links:document.querySelectorAll('link[rel~="icon"]').length,domDataImage:n,onlyInIcon:n===(h.indexOf(k)===0?1:0)};})();

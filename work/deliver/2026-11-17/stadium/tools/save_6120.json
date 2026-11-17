@@ -1,0 +1,88 @@
+{
+ "a_start": {
+  "day": 1,
+  "hhmm": "07:01",
+  "season": 1,
+  "round": 0,
+  "lastDay": 0,
+  "res": [],
+  "sign": "הבא: טורבו — הגבעה",
+  "next": 2,
+  "err": null,
+  "bench": false
+ },
+ "b_day8": {
+  "day": 8,
+  "hhmm": "07:16",
+  "season": 1,
+  "round": 2,
+  "lastDay": 5,
+  "res": [
+   2,
+   5
+  ],
+  "sign": "הבא: הגבעה — הנמל",
+  "next": 8,
+  "err": null,
+  "bench": false
+ },
+ "save": {
+  "ok": true,
+  "clock": {
+   "v": 1,
+   "base": 10498.5478,
+   "rate": 0.5
+  }
+ },
+ "c_reload": {
+  "day": 8,
+  "hhmm": "07:17",
+  "season": 1,
+  "round": 2,
+  "lastDay": 5,
+  "res": [
+   2,
+   5
+  ],
+  "sign": "הבא: הגבעה — הנמל",
+  "next": 8,
+  "err": null,
+  "bench": false
+ },
+ "load": {
+  "ok": true,
+  "src": "PRIMARY"
+ },
+ "d_loaded": {
+  "day": 8,
+  "hhmm": "07:16",
+  "season": 1,
+  "round": 2,
+  "lastDay": 5,
+  "res": [
+   2,
+   5
+  ],
+  "sign": "הבא: הגבעה — הנמל",
+  "next": 8,
+  "err": null,
+  "bench": false
+ },
+ "e_plus3": {
+  "day": 11,
+  "hhmm": "07:24",
+  "season": 1,
+  "round": 3,
+  "lastDay": 8,
+  "res": [
+   2,
+   5,
+   8
+  ],
+  "sign": "הבא: החוף — טורבו",
+  "next": 11,
+  "err": null,
+  "bench": false
+ },
+ "errs": []
+}

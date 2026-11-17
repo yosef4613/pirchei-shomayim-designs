@@ -1,0 +1,529 @@
+{
+  "port_platforms": {
+    "old": {
+      "x": 5826,
+      "y": 4470,
+      "w": 48,
+      "h": 220
+    },
+    "activeStation": {
+      "id": "E6-STATION",
+      "platform": {
+        "id": "ST-PORT",
+        "rect": [
+          5826,
+          4470,
+          5874,
+          4690
+        ],
+        "label": "רציף הנמל — בין שני הפסים",
+        "len_m": 22
+      },
+      "footbridge": {
+        "id": "FB-E6",
+        "rect": [
+          5596,
+          4570,
+          5932,
+          4592
+        ],
+        "spec_rect": [
+          5874,
+          4570,
+          5932,
+          4592
+        ],
+        "z_m": 7.6,
+        "stairs": [
+          {
+            "id": "FB-E6-ST-P",
+            "rect": [
+              5838,
+              4592,
+              5862,
+              4652
+            ],
+            "label": "המדרגות והמעלית אל רציף הנמל"
+          },
+          {
+            "id": "FB-E6-ST-W",
+            "rect": [
+              5578,
+              4592,
+              5600,
+              4652
+            ],
+            "label": "המדרגות אל צד הנמל (חצר המוסך)"
+          }
+        ],
+        "label": "גשר הולכי הרגל — מהאולם של תחנת הנמל מעל פס ב׳ אל הרציף, וממשיך מעל פס א׳, השלוחה ופסי החצר אל צד הנמל"
+      },
+      "roof": "LIKE-02 — גג זכוכית שקוף על קורות פלדה, כמו התחנה המרכזית (E3)"
+    },
+    "boarding": [
+      [
+        5826,
+        4470
+      ],
+      [
+        5874,
+        4470
+      ],
+      [
+        5874,
+        4690
+      ],
+      [
+        5826,
+        4690
+      ]
+    ],
+    "trainLengths": [
+      {
+        "id": "RL-PS-01",
+        "L": 675.4458000000001,
+        "cars": [
+          {
+            "id": "C1",
+            "asset": "RL-PS-01",
+            "variant": 1,
+            "label": "רכבת הנוסעים · קרון 1 (קבינה)",
+            "len": 164.36145000000002
+          },
+          {
+            "id": "C2",
+            "asset": "RL-PS-01",
+            "variant": 1,
+            "label": "רכבת הנוסעים · קרון 2",
+            "len": 164.36145000000002
+          },
+          {
+            "id": "C3",
+            "asset": "RL-PS-01",
+            "variant": 1,
+            "label": "רכבת הנוסעים · קרון 3",
+            "len": 164.36145000000002
+          },
+          {
+            "id": "C4",
+            "asset": "RL-PS-01",
+            "variant": 1,
+            "label": "רכבת הנוסעים · קרון 4 (קבינה)",
+            "len": 164.36145000000002
+          }
+        ]
+      },
+      {
+        "id": "RL-PS-02",
+        "L": 164.36145000000002,
+        "cars": [
+          {
+            "id": "C1",
+            "asset": "RL-PS-01",
+            "variant": 1,
+            "label": "רכבת האי · קרון נוסעים עם שתי קבינות",
+            "len": 164.36145000000002
+          }
+        ]
+      }
+    ]
+  },
+  "water_details": [
+    {
+      "zone": "E0",
+      "item": [
+        "E0-L7",
+        "מים",
+        "מים זורמים בתעלת הניקוז שבשולי מסלול ההסעה A",
+        "water:ditch",
+        [
+          4900,
+          -304,
+          6000,
+          -293
+        ]
+      ]
+    },
+    {
+      "zone": "F0",
+      "item": [
+        "F0-L8",
+        "מים",
+        "מים זורמים בתעלת הניקוז שבשולי A",
+        "water:ditch",
+        [
+          6000,
+          -304,
+          7200,
+          -293
+        ]
+      ]
+    },
+    {
+      "zone": "G0",
+      "item": [
+        "G0-L8",
+        "מים",
+        "מים זורמים בתעלת הניקוז",
+        "water:ditch",
+        [
+          7200,
+          -304,
+          8400,
+          -293
+        ]
+      ]
+    },
+    {
+      "zone": "H0",
+      "item": [
+        "H0-L7",
+        "מים",
+        "מים זורמים בתעלת הניקוז",
+        "water:ditch",
+        [
+          8400,
+          -304,
+          9300,
+          -293
+        ]
+      ]
+    },
+    {
+      "zone": "H2",
+      "item": [
+        "H2-L7",
+        "מים",
+        "סילון המים של הכבאית בתרגיל",
+        "water:jet",
+        [
+          8820,
+          1216,
+          9000,
+          1300
+        ]
+      ]
+    },
+    {
+      "zone": "G3",
+      "item": [
+        "G3-L8",
+        "מים",
+        "גלים קטנים בים מעבר לגדר הדרומית",
+        "water:sea",
+        [
+          7200,
+          2530,
+          8400,
+          2550
+        ]
+      ]
+    },
+    {
+      "zone": "H3",
+      "item": [
+        "H3-L8",
+        "מים",
+        "גלים קטנים בים מעבר לקיר ההדף",
+        "water:sea",
+        [
+          8400,
+          2530,
+          9600,
+          2550
+        ]
+      ]
+    }
+  ],
+  "runway": {
+    "rwy": [
+      5000,
+      -810,
+      9300,
+      -570
+    ],
+    "links": [
+      {
+        "id": "A1",
+        "cx": 5250,
+        "why": "חלק ו2: המטוס הכבד יורד מהמסלול ב-x 5250 (heavyPath.turnX) — הקצה המערבי, ליד סף 09",
+        "rect": [
+          5150,
+          -570,
+          5350,
+          -285
+        ],
+        "hold_y": -470
+      },
+      {
+        "id": "A2",
+        "cx": 7150,
+        "why": "תוכנית האב F0: \"מרכז המסלול, A2\" — יציאה מהירה באמצע",
+        "rect": [
+          7050,
+          -570,
+          7250,
+          -285
+        ],
+        "hold_y": -470
+      },
+      {
+        "id": "A3",
+        "cx": 9190,
+        "why": "תוכנית האב G0: \"סף 27, A3\" — הקצה המזרחי, ליד סף 27 (x 9300)",
+        "rect": [
+          9090,
+          -570,
+          9290,
+          -285
+        ],
+        "hold_y": -470
+      }
+    ],
+    "cycle": 720,
+    "sched": [
+      [
+        "P3",
+        "AC-NB-01",
+        "Tidewind Air",
+        204,
+        0
+      ],
+      [
+        "R2",
+        "AC-NB-01",
+        "Coral Coast",
+        432,
+        144
+      ],
+      [
+        "P2",
+        "AC-NB-01",
+        "Sunbeak",
+        516,
+        300
+      ],
+      [
+        "GA6",
+        "AC-LT-01",
+        "GA",
+        264,
+        504
+      ],
+      [
+        "P4",
+        "AC-RJ-01",
+        "Skyline Regional",
+        108,
+        612
+      ],
+      [
+        "C2",
+        "AC-TB-01",
+        "Turbo Cargo",
+        660,
+        456
+      ]
+    ]
+  },
+  "boat_api": [
+    "HOOK",
+    "anchorDrop",
+    "anchorUp",
+    "anchorDraw",
+    "anchorOf",
+    "hullPush",
+    "hullPushX",
+    "mtv",
+    "calmAt",
+    "physics",
+    "take",
+    "go",
+    "pivot",
+    "obb",
+    "sat",
+    "rectP",
+    "seaLine",
+    "clockNow",
+    "inBasin",
+    "autopilot",
+    "legsDock",
+    "inBerth",
+    "placePed",
+    "save",
+    "clearFishState",
+    "stepAshore",
+    "GAP",
+    "dockAudit",
+    "examMapSvg",
+    "examCard",
+    "examRoute",
+    "examText",
+    "overlapAudit",
+    "hullHit",
+    "examStart",
+    "examRun",
+    "examRec",
+    "EXAM",
+    "rateSim",
+    "TUNE",
+    "leave",
+    "setPainter",
+    "PAINTER",
+    "BOATS",
+    "SPOTS",
+    "SEA",
+    "RODS3",
+    "BAITS3",
+    "WEIGHTS3",
+    "TOOLS3",
+    "S",
+    "P",
+    "init",
+    "stepAll",
+    "stepAboard",
+    "rent",
+    "board",
+    "tryLeave",
+    "seaAction",
+    "openMenu",
+    "closeMenu",
+    "renderMenu",
+    "hud",
+    "clubHtml",
+    "clubAct",
+    "paintClub",
+    "drawBoat",
+    "spotsWater",
+    "spotsBirds",
+    "oldMan",
+    "audit",
+    "scene",
+    "ff",
+    "depthAt",
+    "seaNow",
+    "odds",
+    "legsHome",
+    "legsOut",
+    "ERR",
+    "boatById",
+    "nearSpot",
+    "ensureDom"
+  ],
+  "boats": [
+    {
+      "id": "F3-RB-A",
+      "name": "שחף",
+      "mode": "moored",
+      "owned": null,
+      "school": null,
+      "L": 60,
+      "B": 24,
+      "be": {
+        "i": 17,
+        "n": 18,
+        "pier": "PIER-2",
+        "cx": 6724,
+        "cy": 2340,
+        "h": 1.5707963267948966,
+        "board": [
+          6704,
+          2370
+        ],
+        "rect": [
+          6704,
+          2280,
+          6744,
+          2400
+        ]
+      }
+    },
+    {
+      "id": "F3-RB-B",
+      "name": "אלבטרוס",
+      "mode": "moored",
+      "owned": null,
+      "school": null,
+      "L": 74,
+      "B": 28,
+      "be": {
+        "i": 9,
+        "n": 10,
+        "pier": "PIER-1",
+        "cx": 6680,
+        "cy": 2148,
+        "h": -1.5707963267948966,
+        "board": [
+          6660,
+          2118
+        ],
+        "rect": [
+          6660,
+          2088,
+          6700,
+          2208
+        ]
+      }
+    },
+    {
+      "id": "F3-SB-X",
+      "name": "סירת המבחן",
+      "mode": "moored",
+      "owned": null,
+      "school": true,
+      "L": 58,
+      "B": 23,
+      "be": {
+        "i": 3,
+        "n": 4,
+        "pier": "PIER-1",
+        "cx": 6724,
+        "cy": 2000,
+        "h": 1.5707963267948966,
+        "board": [
+          6704,
+          2030
+        ],
+        "rect": [
+          6704,
+          1940,
+          6744,
+          2060
+        ]
+      }
+    }
+  ],
+  "boat_hooks": {
+    "hit": "function(b,x,y,h){const r=pH?pH.apply(this,arguments):null;if(r)return r;\n  try{const n=AMPH.nowS(),p=AMPH.poseAt(n.s,n.d);if(p.z>0||Math.abs(p.x-x)>160||Math.abs(p.y-y)>160)return null;const H=FISH3.obb(x,y,h,b.L*.97,b.B*.92),c=Math.cos(p.h),sn=Math.sin(p.h);\n   const R=(l,w,ox)=>FISH3.obb(p.x+c*ox,p.y+sn*ox,p.h,l,w);if(FISH3.sat(H,R(AMPH.L,30,0))||FISH3.sat(H,R(16,AMPH.WS,AMPH.L*.08)))return 'המטוס האמפיבי'}catch(e){}return null}",
+    "sync": "function sync(){const B=F.BOATS;for(let i=B.length-1;i>=0;i--)if(B[i].owned)B.splice(i,1);OWN.length=0;for(const r of P().boats){const b=mk(r);if(b){B.push(b);OWN.push(b)}}}",
+    "after": "function after(){const st=P(),J=st.job,fp=F.P();for(const b of OWN){const r=b.rec,sv=fp.boats[b.id];\n   if(r.st==='in'){b.mode='yard';if(!(sv&&Number.isFinite(sv.x))){b.x=G.edge[0];b.y=G.edge[1];b.h=Math.PI}b.legs=rHome(b);b.onArrive=arrived}\n   else if(r.st==='out'){b.mode='yard';b.legs=rAway(b);b.onArrive=gone}\n   if(J&&J.boat===b.id){if(J.phase==='sail'){b.mode='yard';b.legs=rYard(b);b.onArrive=docked}else if(J.phase==='back'){b.mode='yard';b.legs=rHome(b);b.onArrive=backHome}else{b.mode='dock';b.x=DKX;b.y=dockY(b);b.h=-Math.PI/2;b.legs=[];b.u=0}}}\n  if(J&&!byId(J.boat))st.job=null}",
+    "calm": "(x,y)=>x>CALM[0]&&x<CALM[2]&&y>CALM[1]&&y<CALM[3]",
+    "dock": "function hDock(b){const q=nearMouth(b);if(!q)return false;if(!q.ok){toast(Math.abs(b.u)>14?'מאטים לפני הקשירה':'מיישרים את הסירה מול המקום '+b.be.slot+' — ואז E');return true}\n  const be=b.be,h=q.bowS?Math.PI/2:-Math.PI/2,ey=q.mouth+b.L/2+2,L=[];if(b.y>ey+4)L.push(F.go(be.cx,ey,16,{rev:q.bowS,tol:3}));\n  L.push(F.go(be.cx,be.cy,11,{rev:q.bowS,tol:2,end:true}),{k:'settle',x:be.cx,y:be.cy,h,T:.9});b.mode='moor';b.moorH=h;b.legs=L;F.S.mooring=true;\n  toast('איש המעגן זורק לך חבל ומושך את \"'+b.name+'\" למקום '+be.slot+'…');try{SaveManager.log('boatshop','dock_assist',{boat:b.id,slot:be.slot})}catch(e){}return true}",
+    "board": "function hBoard(b){const J=P().job;if(J&&J.boat===b.id)return toast('\"'+b.name+'\" במספנה — העבודה עוד לא הסתיימה'),false;if(b.mode!=='moored')return toast('\"'+b.name+'\" עוד לא קשורה במקום שלה'),false;\n  if(F.S.exam)return toast('קודם מסיימים את מבחן הסירה'),false;\n  if(!licenseOwned('LIC-10')){toast('כדי לשוט לבד צריך רישיון סירה — המבחן בבית הספר לשייט, במועדון השייט (F במועדון)');try{setNavigationTarget('F3-CLUB',{silent:true})}catch(e){}return false}\n  F.take(b);b.trip=0;b.towed=0;toast('עלית ל\"'+b.name+'\" · W ו-S מצערת · A ו-D הגה · רווח — עצירה · E — קשירה במקום שלך'+(b.rec.fuel<b.tankMax*.15?' · מעט דלק — מתדלקים במסך \"המעגן שלי\"':''));try{SaveManager.log('boatshop','board',{boat:b.id})}catch(e){}return true}",
+    "ashore": "function hAshore(b,why){const st=P();if((b.trip||0)>260){st.stats.sails++;b.trip=0}try{F.save(b)}catch(e){}toast('\"'+b.name+'\" קשורה במקום '+b.be.slot+(b.towed?' · הגרירה: '+g77CoinsHtml(g77Coins(b.towed)):''));b.towed=0;save('boat-moor')}",
+    "left": "function hLeft(b,why){msg('pl-boatshop','השארת את \"'+b.name+'\" — איש המעגן מחזיר אותה בשיט למקום '+b.be.slot+'.')}",
+    "thr": "function hThr(b,thr,dt){const r=b.rec;if(b.mode!=='player')return thr;const d=Math.hypot(b.x-b.be.cx,b.y-b.be.cy);if(d>(b.trip||0))b.trip=d;\n  if(r.fuel<=0){if(d>120&&!b.towed){const fee=150+Math.round(d/40)*5;b.towed=fee;PlayerProfile.money=Math.max(0,PlayerProfile.money-fee);try{recordTransaction('boat-tow',-fee,{boat:b.id})}catch(e){}b.mode='moor';b.legs=rHome(b);toast('נגמר הדלק — סירת השירות של המעגן גוררת אותך למקום שלך')}\n   else if(NOW()-(b.dryT||0)>5000){b.dryT=NOW();toast('המיכל ריק — מתדלקים במסך \"המעגן שלי\" (F בשער המעגן)')}return 0}\n  const a=Math.abs(thr);if(a>0){r.fuel=Math.max(0,r.fuel-(.06+.94*Math.min(1,a))*b.burn*dt);if(r.fuel<b.tankMax*.12&&NOW()-(b.lowT||0)>40000){b.lowT=NOW();toast('מעט דלק ב\"'+b.name+'\" — חוזרים למעגן')}}return thr}",
+    "canFish": "function hCanFish(b){if(!b.rods.length)return b.model.type==='jet'?'מאופנוע ים לא דגים':'ב\"'+b.name+'\" אין ציוד דיג — מתקינים במספנה';if(!licenseOwned('LIC-12'))return 'לדיג העמוק צריך רישיון דיג עמוק — '+(typeof LIC570!=='undefined'?LIC570.missingText():'15 תפיסות באגם ו-10 בחוף');if(keep(b.x,b.y))return 'ליד המעגן לא דגים — יוצאים לים הפתוח';return null}",
+    "hud": "function hHud(b){const r=b.rec,pc=Math.round(100*r.fuel/b.tankMax);let h='<span style=\"color:'+(pc<15?'#ff8a80':'inherit')+'\">דלק '+pc+'% · '+Math.round(r.fuel)+' ל׳</span>';\n  if(calm(b.x,b.y)){h+='<span>המעגן — מים שקטים, עד 5 קשר</span>';if(F.inBerth(b))h+='<span style=\"color:#ffe08a\">E — קשירה במקום '+b.be.slot+'</span>';else{const q=nearMouth(b);if(q)h+='<span style=\"color:#ffe08a\">'+(q.ok?'E — איש המעגן מושך אותך למקום '+b.be.slot:'מיישרים מול המקום '+b.be.slot+', ואז E')+'</span>'}}\n  if((r.up.elec||0)>=1){const s=F.nearSpot(b.x,b.y,150);h+='<span>מאתר דגים: '+(s?'להקה מתחת לסירה':'אין להקה')+'</span>'}\n  if((r.up.elec||0)>=2){let best=null,bd=1e9;for(const s of F.SPOTS){const d=Math.hypot(s.x-b.x,s.y-b.y);if(d<bd){bd=d;best=s}}const far=Math.hypot(b.x-b.be.cx,b.y-b.be.cy)>600,tx=far?b.be.cx:best.x,ty=far?LY:best.y,d=Math.hypot(tx-b.x,ty-b.y),a=Math.round(((Math.atan2(ty-b.y,tx-b.x)+TAU)%TAU)/(Math.PI/4))%8;\n   h+='<span>מכ״ם: '+(far?'המעגן שלך':best.name)+' '+Math.round(d/10)+' מ׳ '+ARROW[a]+'</span>'}return h}",
+    "decks": "()=>DECKS",
+    "keep": "(x,y)=>x>7170&&x<8052&&y>2540&&y<2890",
+    "step": "dt=>{try{yardStep(dt)}catch(e){er('yard',e)}}",
+    "runs": "b=>[['yard-in',{x:b.be.cx,y:b.be.cy,h:b.be.h},c=>rYard(c)],['yard-out',{x:DKX,y:dockY(b),h:-Math.PI/2},c=>rHome(c)],['home-gap',{x:F.GAP.OUT[0],y:F.GAP.OUT[1],h:Math.PI/2},c=>rHome(c)],['away',{x:b.be.cx,y:b.be.cy,h:b.be.h},c=>rAway(c)]]"
+  },
+  "functions": {
+    "s15Details": "function s15Details(c,now,N,only){if(!S15X.on)return;const t=now/1000,D=S15D;let i=0;\n for(const [z,L] of Object.entries(D.live)){if(only&&z!==only)continue;for(const [id,kind,txt,rk,b] of L){i++;if(!e3InView(b[0],b[1]-60,b[2]-b[0],b[3]-b[1]+60,30))continue;const cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2;\n  try{\n  if(rk==='man'){const role=/כבאים/.test(txt)?'fire':/שומר/.test(txt)?'guard':/טייס/.test(txt)?'pilot':/נוסעים|מנקי/.test(txt)?'x':/מפקח/.test(txt)?'ground':'ground';const q=s15Walk(b,t,/נוסעים/.test(txt)?20:14,i);\n   s15Man(c,q.x,q.y,s15Look(role,300+i,role==='pilot'?{a:i%8}:undefined),q.mv?'walk':'stand',q.h,q.ph);if(/נוסעים/.test(txt)){const q2=s15Walk(b,t+2.2,20,i+1);s15Man(c,q2.x+8,q2.y,s15Look('x',340+i),q2.mv?'walk':'stand',q2.h,q2.ph)}}\n  else if(rk.startsWith('marshal')){const x=cx,y=b[3]-4,a=Math.sin(t*3.2+i)*.9;s15Man(c,x,y,s15Look('ground',380+i),'stand',-Math.PI/2,0);c.strokeStyle='#ff7a1a';c.lineWidth=3;c.lineCap='round';for(const s of [-1,1]){c.beginPath();c.moveTo(x+s*5,y-20);c.lineTo(x+s*(8+8*Math.cos(a)),y-28-10*Math.sin(a*s));c.stroke()}}\n  else if(rk==='grass'){c.strokeStyle=N?'rgba(70,110,60,.55)':'rgba(150,190,110,.7)';c.lineWidth=1.4;c.beginPath();const rg=s15Rng(i*97);for(let k=0;k<60;k++){const x=b[0]+rg()*(b[2]-b[0]),y=b[1]+rg()*(b[3]-b[1]),sw=Math.sin(t*2+x*.02)*4;c.moveTo(x,y);c.quadraticCurveTo(x+sw*.5,y-5,x+sw,y-10)}c.stroke()}\n  else if(rk==='flag'){const x=b[0]+6,y=b[3]-2,H=Math.min(30,b[3]-b[1]),f=Math.sin(t*5+i)*3;c.fillStyle='#5d666c';c.fillRect(x-1,y-H,2,H);c.fillStyle=i%2?'#ff7a1a':'#e8262a';c.beginPath();c.moveTo(x+1,y-H);c.quadraticCurveTo(x+9,y-H+f,x+18,y-H+2+f);c.lineTo(x+18,y-H+8+f);c.quadraticCurveTo(x+9,y-H+8-f,x+1,y-H+8);c.closePath();c.fill()}\n  else if(rk==='water:ditch'){c.fillStyle=N?'#1d3442':'#4f86a8';c.fillRect(b[0],b[1]+2,b[2]-b[0],b[3]-b[1]-4);c.fillStyle=N?'rgba(160,200,230,.35)':'rgba(230,245,255,.75)';const o=(t*30)%40;for(let x=b[0]-40+o;x<b[2];x+=40)if(x>b[0])c.fillRect(x,cy-1,Math.min(14,b[2]-x),2)}\n  else if(rk==='water:hose'){const x=b[0]+16,y=b[3]-6;s15Man(c,x,y,s15Look('janitor',400+i),'stand',0,0);c.fillStyle=N?'rgba(160,210,240,.55)':'rgba(120,190,235,.85)';for(let k=0;k<14;k++){const u=((t*1.6+k/14)%1),px=x+8+u*(b[2]-b[0]-30),py=y-14+u*u*18-Math.sin(u*3)*6;c.beginPath();c.arc(px,py,1.6+u*1.6,0,6.2832);c.fill()}c.fillStyle='rgba(60,110,150,.25)';c.beginPath();c.ellipse(b[2]-14,y-2,16,6,0,0,6.2832);c.fill()}\n  else if(rk==='water:sea'){c.strokeStyle=N?'rgba(150,190,220,.35)':'rgba(240,250,255,.85)';c.lineWidth=1.6;c.beginPath();const o=(t*18)%60;for(let x=b[0]-60+o;x<b[2];x+=60){c.moveTo(x,b[3]-6);c.quadraticCurveTo(x+10,b[3]-11,x+22,b[3]-6)}c.stroke()}\n  else if(rk==='water:jet'){const v=S15SIM.veh.find(q=>q.id==='AR-1'),P=v&&s15PoseAt(v,s15TcOf(now));if(P&&P[4]===8){c.fillStyle='rgba(160,210,240,.8)';for(let k=0;k<26;k++){const u=((t*1.3+k/26)%1),px=P[0]+50+u*120,py=P[1]-20-Math.sin(u*Math.PI)*60+u*30;c.beginPath();c.arc(px,py,2+u*2,0,6.2832);c.fill()}}}\n  else if(rk==='beacon:FUEL'||rk==='beacon:EMS'){const on=Math.floor(t*2.5+i)%2,col=rk==='beacon:EMS'?(on?'rgba(60,120,255,.95)':'rgba(255,40,40,.9)'):(on?'rgba(255,60,40,.95)':'rgba(120,30,20,.6)');const pts=rk==='beacon:EMS'?[[8378,1320],[8440,1320]]:[[7998,1420],[8058,1420],[8108,1440],[8028,1465]];for(const [x,y] of pts){c.fillStyle=col;c.beginPath();c.arc(x,y-(rk==='beacon:EMS'?6:54),on?4:2.5,0,6.2832);c.fill()}}\n  }catch(e){s15Err('det '+id,e)}}}}",
+    "s15Live": "function(now,layer){if(layer==='ground'&&S15SB.on&&S15X.on&&WTC_LP!==1){ctx.save();try{s15sbDraw(now)}catch(e){S15SB.err=S15SB.err||String(e&&e.stack||e).slice(0,300)}finally{ctx.restore()}}return sl.apply(this,arguments)}",
+    "s15Over": "function(now){const c=ctx,N=s9Night(),D=S15D;if(WTC_MODE!==1&&c.canvas===cv)S15B.ord.shell=S15B.ord.seq++;\n if(S15B.on){const t0=performance.now();try{s15bShells(now)}catch(e){s15bErr('shells',e)}S15B.ms.shell+=performance.now()-t0}\n c.save();\n for(const b of D.bridges){const bb=b.stand==='P1'?{root:[7222-462,956],door:b.door,stand:'P1'}:b;s15Bridge(c,bb,N)}\n try{s15bTower(c,N)}catch(e){s15bErr('tower',e)}\n for(const [id,x,y,hm] of D.poles){const H=S15_K*hm*10;if(!e3InView(x-30,y-H-30,60,H+40,10))continue;c.fillStyle='rgba(8,18,26,.18)';c.fillRect(x+2,y,S9_SUN.dx*hm*10,3);c.fillStyle='#5d666c';c.fillRect(x-2,y-H,4,H);c.fillStyle=N?'#fff3c8':'#c9cfd2';c.fillRect(x-14,y-H-6,28,8);\n  if(N){c.fillStyle='rgba(255,243,200,.16)';c.beginPath();c.arc(x,y-H+40,70,0,6.2832);c.fill()}}\n c.restore()}",
+    "s15FlightTimes": "function s15FlightTimes(){if(S15_FT)return S15_FT;const R=S15D.rwy,T=S15SIM.T,out=[];\n for(const a of S15SIM.flights){const L=a.legs.filter(g=>!g.att);let st=null;for(const g of L)if(g.h!=null&&g.f===0&&(!st||g.t1-g.t0>st.t1-st.t0))st=g;\n  // הנגיעה — המעבר מאוויר (z > 2) לקרקע; ההינתקות — מקרקע לאוויר (פעם אחת בכל מחזור)\n  let land=null,off=null,pz=null;for(let t=L[0].t0;t<=L[L.length-1].t1;t+=.25){let q=null;for(const g of L)if(t>=g.t0&&t<=g.t1){q=s15PoseLeg(g,t);break}if(!q){pz=null;continue}if(pz!=null){if(pz>2&&q[3]<=2&&land==null)land=t;if(pz<=2&&q[3]>2&&off==null)off=t}pz=q[3]}\n  out.push({id:a.id,stand:a.home,airline:a.airline,model:a.model,land:land%T,onBlock:st?st.t0%T:null,push:st?st.t1%T:null,takeoff:off!=null?off%T:null})}\n return S15_FT=out}",
+    "s15Clock": "function s15Clock(){try{const C=G84_CLOCK,w=g84WorldS();if(C.base==null)gameClock();const m=C.base+w*C.rate;return{abs:m*2,min:((m%1440)+1440)%1440}}catch(e){const s=performance.now()/1000;return{abs:s,min:(420+s*.5)%1440}}}",
+    "s15SimAudit": "function(dt){const r=a0.apply(this,arguments);try{if(!r||!r.issues||!r.issues.length||!window.S15DOOR)return r;const keep=[];let ex=0;\n  for(const it of r.issues){const m=String(it).match(/^([\\d.]+): (\\S+) × (\\S+)$/);if(!m){keep.push(it);continue}const t=+m[1],ids=[m[2],m[3]],vid=ids.find(i=>{const sp=(S15D.spots||{})[i];return sp&&DT[sp.t]}),pid=ids.find(i=>/^FL-|^PK-/.test(i));\n   if(!vid||!pid){keep.push(it);continue}const v=S15SIM.veh.find(q=>q.id===vid),q=v&&s15PoseAt(v,t);let near=false;if(q){const ov=S15X.ovr;S15X.ovr={tc:t,min:600};try{for(const dr of ['L1','L2','R2','FH','AH']){const d=S15DOOR.pos(pid.replace(/^PK-/,''),dr);if(d&&Math.hypot(d.x-q[0],d.y-q[1])<75){near=true;break}}}finally{S15X.ovr=ov}}\n   if(near)ex++;else keep.push(it)}\n  r.issues=keep;r.doorTouch=ex;r.ok=!keep.length&&r.cycles===S15SIM.flights.length}catch(e){s15eErr('simAudit',e)}return r}",
+    "s15CycleAudit": "function s15CycleAudit(dt=.1){const R=S15D.rwy,RC=S15D.rcy,TY=S15D.tacy,issues=[],per=[];let W={rwy:0,air:0,twa:0,turn:0,jump:0};\n for(const a of S15SIM.flights){const L=a.legs.filter(g=>!g.att);if(!L.length)continue;const t0=L[0].t0,t1=L[L.length-1].t1;\n  let p=null,acc=0,sg=0,sd=0,mx=0,mxAt=null,dR=0,dAir=0,dA=0,lift=null,jump=0,west=0;\n  for(let t=t0;t<=t1+1e-9;t+=dt){let q=null;for(const g of L)if(t>=g.t0-1e-6&&t<=g.t1+1e-6){q=s15PoseLeg(g,t);break}if(!q){p=null;continue}\n   const [x,y,h,z]=q,inR=z<=2&&x>=R[0]&&x<=R[2]&&y>=R[1]&&y<=R[3],st=Math.abs(Math.sin(h))<.035;\n   if(p){const ds=Math.hypot(x-p[0],y-p[1]),v=ds/dt,dh=Math.atan2(Math.sin(h-p[2]),Math.cos(h-p[2]));\n    if(v>.5){if(Math.abs(dh)>Math.PI/6)jump=Math.max(jump,Math.abs(dh));\n     if(Math.abs(dh)<1e-4){sd+=ds;if(sd>40){acc=0;sg=0}}else{const s=Math.sign(dh);if(s!==sg){acc=0;sg=s}acc+=dh;sd=0;if(Math.abs(acc)>mx){mx=Math.abs(acc);mxAt=[Math.round(x),Math.round(y)]}}\n     if(inR&&st&&v>30){dR=Math.max(dR,Math.abs(y-RC));if(Math.cos(h)<0)west++}\n     if(!inR&&z<=2&&st&&v>5&&Math.abs(y-TY)<60&&x>R[0]&&x<R[2])dA=Math.max(dA,Math.abs(y-TY))}\n    if(z>2&&z<=600&&x>-200&&x<9800)dAir=Math.max(dAir,Math.abs(y-RC));\n    if(p[3]<=2&&z>2&&lift==null)lift=[Math.round(x),Math.round(y-RC)]}\n   p=[x,y,h,z]}\n  const T=Math.round(mx*180/Math.PI),J=Math.round(jump*180/Math.PI);per.push({id:a.id,ac:a.model,rwy:+dR.toFixed(1),air:+dAir.toFixed(1),twa:+dA.toFixed(1),lift,turn:T,turnAt:mxAt,jump:J,west});\n  W.rwy=Math.max(W.rwy,dR);W.air=Math.max(W.air,dAir);W.twa=Math.max(W.twa,dA);W.turn=Math.max(W.turn,T);W.jump=Math.max(W.jump,J);\n  if(dR>3)issues.push(a.id+' סוטה '+dR.toFixed(1)+' פיקס׳ מהקו האמצעי בגלגול');if(dAir>3)issues.push(a.id+' סוטה '+dAir.toFixed(1)+' באוויר');if(!lift||Math.abs(lift[1])>3)issues.push(a.id+' מתנתק '+(lift?lift[1]+' פיקס׳ מהקו האמצעי':'— אין המראה'));\n  if(west)issues.push(a.id+' נוסע על המסלול מערבה ('+west+' דגימות)');if(T>185)issues.push(a.id+' מסתובב '+T+'° ברצף ב-'+mxAt);if(J>0)issues.push(a.id+' האף מתהפך '+J+'° בבת אחת');if(dA>3)issues.push(a.id+' סוטה '+dA.toFixed(1)+' מהקו של A')}\n return{ok:!issues.length,issues,worst:{rwy:+W.rwy.toFixed(1),air:+W.air.toFixed(1),twa:+W.twa.toFixed(1),turn:W.turn,jump:W.jump},per}}",
+    "rliPlatPoly": "function rliPlatPoly(at){if(at==='port')return[[5826,4470],[5874,4470],[5874,4690],[5826,4690]];try{return S13_PLAT}catch(e){return null}}",
+    "FISH3.board": "function board(b){const p=P();if(b.owned)return HOOK.board?HOOK.board(b):false;if(b.school){if(!S.exam||S.exam.phase!=='board')return toast('סירת המבחן של בית הספר לשייט — עולים עליה רק במבחן לרישיון סירה (במועדון השייט)');if(b.mode!=='moored')return toast('הסירה עוד לא במעגן');\n   clearFishState();S.aboard=b.id;p.aboard=b.id;b.mode='player';b.u=0;b.r=0;placePed(b);S.exam.phase='run';S.exam.t0=NOW();S.exam.hit0=b.hitT||0;S.exam.hitN0=b.hitN||0;S.exam.px=b.x;S.exam.py=b.y;toast('המבחן התחיל! יציאה מהמעגן, 4 שערים בין המצופים — דרומה, וחזרה למעגן '+b.be.n+'. באגן עד 5 קשר, בלי פגיעה, עד 4 דקות');return true}\n  if(!p.rental||p.rental.boat!==b.id)return toast('הסירה \"'+b.name+'\" להשכרה — שוכרים במועדון השייט (F במועדון)');if(b.mode!=='moored')return toast('הסירה עוד לא במעגן');\n  clearFishState();S.aboard=b.id;p.aboard=b.id;p.rental.boarded=1;b.mode='player';b.u=0;b.r=0;placePed(b);try{State.navigation=null}catch(e){}\n  toast('עלית לסירה \"'+b.name+'\" · W ו-S מצערת · A ו-D הגה · רווח — עצירה · באגן עד 5 קשר · היציאה לים דרך הפתח שליד הפנס הירוק');SaveManager.log('fishing','boat_board',{boat:b.id});return true}",
+    "FISH3.tryLeave": "function tryLeave(){const b=boatById(S.aboard);if(!b)return false;if(S.f&&S.f.phase!=='idle')return toast('קודם מרימים את החכה (F)');const be=b.be,d=Math.hypot(b.x-be.cx,b.y-be.cy);\n  if(Math.abs(b.u)>14)return toast('מאטים לפני הקשירה');\n  if(inBerth(b)){b.mode='moor';b.legs=legsDock(b);S.mooring=true;toast('קושרים את \"'+b.name+'\" במעגן '+be.n+'…');return true}\n  if(b.owned&&HOOK.dock){const r=HOOK.dock(b);if(r)return true}\n  if(d<90)return toast('התקרב למעגן '+be.n+' — היכנס לתוך המקום, ואז E');\n  if(b.school&&S.exam&&S.exam.phase==='run')return toast('במבחן — חוזרים למעגן '+be.n+' וקושרים (E ליד המעגן)');\n  const dk=nearDeck(b.x,b.y,30);if(dk){clearFishState();S.aboard=null;P().aboard=null;PlayerPed.x=dk[0];PlayerPed.y=dk[1];PlayerPed.pose='idle';b.mode='return';b.legs=legsHome(b);if(b.owned){if(HOOK.left)HOOK.left(b,'deck')}else closeRental('deck');return true}\n  return toast(inBasin(b.x,b.y)?'אי אפשר לרדת כאן — מתקרבים למזח או למעגן '+be.n:'אי אפשר לרדת מהסירה בים — חוזרים למרינה')}",
+    "FISH3.stepAshore": "function stepAshore(b,why){clearFishState();b.anchor=null;S.aboard=null;S.mooring=false;P().aboard=null;const [bx,by]=b.be.board;PlayerPed.x=bx;PlayerPed.y=by;PlayerPed.pose='idle';PlayerPed.moving=false;if(b.school){examFinish(b);return}if(b.owned){if(HOOK.ashore)HOOK.ashore(b,why);return}closeRental(why)}",
+    "FISH3.save": "function save(b){const p=P();p.boats[b.id]={x:+b.x.toFixed(1),y:+b.y.toFixed(1),h:+b.h.toFixed(3),mode:b.mode==='moored'?'moored':'away'}}",
+    "FISH3.init": "function init(){const p=P();if(S.lastP===p)return;S.lastP=p;S.f=null;if(HOOK.sync)try{HOOK.sync(p)}catch(e){er('sync',e)}\n  for(const b of BOATS){const st=p.boats[b.id];b.trail=[];b.u=0;b.vl=0;b.r=0;b.hitT=0;b.legs=[];\n   if(st&&Number.isFinite(st.x)&&Number.isFinite(st.y)){b.x=st.x;b.y=st.y;b.h=st.h||0;b.mode=st.mode==='moored'?'moored':'return'}else{b.x=b.be.cx;b.y=b.be.cy;b.h=b.be.h;b.mode='moored'}}\n  S.aboard=null;const a=p.aboard&&boatById(p.aboard);\n  if(a&&PlayerProfile.mode==='walk'&&Math.hypot(PlayerPed.x-a.x,PlayerPed.y-a.y)<60){S.aboard=a.id;a.mode='player';placePed(a)}else{p.aboard=null;for(const b of BOATS)if(b.mode==='return')b.legs=legsHome(b)}if(HOOK.after)try{HOOK.after(p)}catch(e){er('after',e)}}",
+    "FISH3.stepAll": "function stepAll(dt){try{init();if(S.aboard){const b=boatById(S.aboard);if(PlayerProfile.mode!=='walk'||State.taxiRide||State.ferryRide||Math.hypot(PlayerPed.x-S.pedX,PlayerPed.y-S.pedY)>40){leaveBoat(b,'away');if(!b.owned)try{g77MsgIn('pl-club','השארת את \"'+b.name+'\" — אני מחזיר אותה למעגן.')}catch(e){}}}\n   for(const b of BOATS){if(b.id===S.aboard&&(b.mode==='player'||b.mode==='moor'||b.mode==='auto'))continue;   /* D‑569: הסירה שהשחקן עליה מתקדמת ב-stepAboard בלבד — קודם הטייס (עגינה, הדגמה) רץ פעמיים בכל פריים, והסירה שטה במהירות כפולה */\n   if(b.mode==='return'||b.mode==='moor'||b.mode==='auto'||b.mode==='yard')autopilot(b,dt);if(b.mode!=='moored'||!b.saved){save(b);b.saved=b.mode==='moored'}}\n   if(HOOK.step)HOOK.step(dt);rentalTick()}catch(e){er('step',e)}}"
+  }
+}

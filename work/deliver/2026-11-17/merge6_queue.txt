@@ -1,0 +1,17 @@
+# גל 6 → S7F305 (מעל master S7F304 אחרי המסירה)
+farm 6a8c477 · try8162 77ee2cea47f6 · מעל S7F303 · כל החוסם עבר
+opening 354266d · try8166 3e7934b83a36 / try8168 c200a52cf2f9 · מעל S7F303 · film_flow 11/11, TCBUSY ✓, q_tut ✓, q_of_tile 9/10, q_ingame 346/346, rules ok, people ok, stuckmax 0 (try8168) · הערה: פתיחה מהאריח — חימום 7 הצילומים תוקע 13–28 שנ׳ (029c warmQ) → perf
+story2 abbe4fd · try7606 a60ca12213d9 · מעל S7F302 · q_ingame 344/344, rules ok, stuckmax 0, people ok · (697fac2 אחרי S7F303 — rules_gate נכשל ב-s15j_terminal / fieldfix_r3, בבירור) · המפה שלי (074zu_story_map, J), מגבלה כוללת הצעות, תזכורות
+perf 94554b2 · try7167 426d8c5e1c2a · מעל S7F302 · מחליף את aff09a7: startMission 4.4/3.1 מ"ש (היה ~300), מנוע הקול אחרי מגע בזמן פנוי, 029a הד/רעשים עצלים; NPR כבוי כברירת מחדל (#npr=1) — חשד ל-AIR-FRONT 3/8; q_voiceint 10/10, q_nv 467/467, q_ingame 342/343, people ok, stuckmax 3×0 (try7165)
+posters 013c9f7 · try8169 02a56cb6df49 · מעל S7F303 · q_icon, q_ingame 346/346, rules ok; try8163: p11, people ok, stuckmax 0
+actions 5737e75 · try8164 77a42935b729 · מעל S7F303 · q_actions 140/140, q_ingame 346/346, rules ok, people ok, stuckmax 0
+terminal 3a0836f · try7968 114c3acace69 · מעל S7F302 · term_bags, q_ingame 343/344 (build_texts), people ok, stuckmax 0 · 3 מסועים מאורכים + לוחות, שרשרת רציפה, 74 מושבים + לוח הסעה; השאטל כבוי (TMNL_SH.on)
+actions2 9768fa8 · try7653 49542f5688f1 · מעל S7F304 · 148/148 לא מתקדם בלי F + אנימציה, 77/77 כרטיס, 44/44 סיפור, e2e 6/6, q_ingame 348/348, rules ok, people ok, stuckmax 0
+buses 867f30e · try6937 a532946940bf · מעל S7F304 · q_ingame 348/348, rules ok, stuckmax 0, people ok · עצירת bend רק בסכנה אמיתית; אוטובוס לא עובר דרך מכונית; התור ההוגן בכיכרות — כבוי (RBF.on)
+airfront d3127b3 (או השורה המעודכנת עם S16C / S16R) · try8331 1484a5b24d86 · מעל S7F303 · af_probe 300 שנ׳ — 0 · החוסם — על המועמד
+story56 5d7a49e · try7805 9ff0eb28c68e · מעל S7F304 · story_full56 49/49 O→6→הסוף, story_main O→F 67, story56 44, cutscenes, locks, vrec 61/61
+arena 432e107 (t17_arena_bk) · try7540 9cdfd7de6041 · מעל S7F303 · q_bkleague, q_arena, q_ingame 345/346, rules, stadium3, people, stuckmax 0 · האולם לא מוצק (AR.solid)
+home df5f891 (או ca20778 / try8137 אם יגיע) · try8136 df7e4485a2c4 · מעל S7F304 · home_in_q 8 רמות, 320 נקודות F, q_ingame 347/348, rules, people, stuckmax 0
+closezoom 3eff5d7 · try7891 1bb56556b863 · ברגל עד 11 · q_ingame 342/343, rules, people, stuckmax 0, zoom ×20 0 · 065 / 066 שורות בודדות (התנגשות אפשרית עם actions2 — P34)
+rails f6104e8 · try8221 3ab945ecbc93 · מעל S7F304 · rails_check, q_ingame 347/348, rules, people, stuckmax
+brandin 61f7993 · try8258 19ff3b59b3fa · מעל S7F303 + airlogos · 488 keep + חידוש 01 · brandin_probe 697/0, q_ingame, rules, people, stuckmax 0, nf_score 41.9/3.1

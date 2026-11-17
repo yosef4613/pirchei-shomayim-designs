@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>פריקת המוביל ב-D3</title>
+<style>
+:root{--bg:#f4f1ea;--ink:#1d232b;--mut:#5b6470;--asph:#565d66;--lawn:#8fb06b;--line:#fff;--red:#d23b2f;--grn:#1f9d47;--bay:#e3b341;--ora:#e8892b;--card:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181c;--ink:#e8eaed;--mut:#a2a9b3;--asph:#3d434b;--lawn:#3f5a32;--card:#1e2227}}
+:root[data-theme="dark"]{--bg:#15181c;--ink:#e8eaed;--mut:#a2a9b3;--asph:#3d434b;--lawn:#3f5a32;--card:#1e2227}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,"Segoe UI",Arial,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:.2em 0}.sub{color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-top:12px}
+.card{background:var(--card);border-radius:10px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.card h2{font-size:17px;margin:.1em 0 .4em}
+svg{width:100%;height:auto;display:block}
+ol,ul{padding-inline-start:1.3em;margin:.3em 0}
+.k{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:middle;margin-inline-end:4px}
+</style></head><body><main>
+<h1>פריקת מוביל הרכב בסוכנות D3 — היה ← צריך</h1>
+<div class="sub">סבב 17.11 · הסוכן carrier · לפי הציור של הבעלים (12.11 בלילה) וההבהרה שלו · מבט מלמעלה, הצפון למעלה · הקואורדינטות — של העולם</div>
+<div class="grid">
+<div class="card"><h2>היה (באדום)</h2><svg id="a" viewBox="4170 2150 360 470"></svg>
+<ul><li>המכונית יורדת ברוורס מערבה רק 80 פיקס׳, פונה קדימה דרומה, ונוסעת ישר דרומה ב-x ‏4301 — דרך החניות של הסוכנות ודרך רחבת המוסך — עד רחוב המוסכים.</li></ul></div>
+<div class="card"><h2>צריך (בירוק)</h2><svg id="b" viewBox="4170 2150 360 470"></svg>
+<ol><li>יורדת מהסיפון ברוורס מערבה (הרמפה מאחור — בלי שינוי בפריקה).</li>
+<li>ממשיכה ברוורס מערבה לאורך המעבר, עד הנתיב השמאלי (הדו־כיווני, x ‏4226), ומסתובבת ברוורס כשהזנב פונה צפונה — כדי להתיישר בנתיב.</li>
+<li>קדימה דרומה בנתיב השמאלי, ושמאלה (מזרחה) אל רחוב המוסכים אחרי פער — כמו היום, לא אל השדרה.</li>
+<li>(או, בקו ירוק מקווקו) צפונה לשורת התצוגה — פעם בביקור של המוביל, הרכב הראשון: ברוורס מערבה, הזנב דרומה אל ראש הנתיב, וקדימה צפונה וימינה אל המקום הראשון בשורה. קודם מכונית התצוגה שעומדת שם "נמכרת" (בכתום מנוקד): קדימה, ימינה דרומה אל הנתיב השמאלי, ולרחוב המוסכים — רכב של הסימולציה, אותו דגם וצבע.</li></ol></div>
+</div>
+<div class="card" style="margin-top:16px"><h2>מלאי — מה כבר קיים (כלל 16 / 19)</h2>
+<ul>
+<li>הירידה מהסיפון: <b>021w_s10c_import.js</b> — d3Legs / deckPose (הקומה, הגובה, ההתעלמות מהמוביל), והצעד stepLegs / drive (בדיקת גוף מול כל רכב).</li>
+<li>הדרך של הירידה כשהחזית מזרחה: <b>074p_linesE.js</b> — S10CI.d3E בתוך leD3Init (מ-11.11): רוורס אל (4275, 2252), קשת קדימה דרומה, ישר דרומה ב-x ‏4301 — זה הקו האדום.</li>
+<li>הכניסה של המוביל: אותה דרך פנימית (x ‏4226) צפונה, ומזרחה במעבר אל המפרץ (4355, 2252); היציאה — קדימה לנתיב הימני של השדרה (outWatch). לא משתנה.</li>
+<li>המגרש: D3ND (032) — המעבר [4205–4412 × 2226–2300], הנתיב השמאלי [4205–4247 × 2300–2482], שורת התצוגה showStalls [4210–4351 × 2194–2218] עם 3 מכוניות קבועות (display_cars), החניות [4247–4320 × 2312–2412], רחבת המוסך.</li>
+<li>השדרוג (כלל 19א): רק הדרך שבתוך S10CI.d3E מוחלפת — בחלק חדש 074p1_carrier_d3.js שעוטף את leD3Init; הכול השאר (העלייה, הספירה, הפער ברחוב, ההמשך לעיר) — אותו קוד.</li>
+</ul></div>
+<div class="card" style="margin-top:16px"><h2>מקרים ובדיקות</h2>
+<ul><li>הנתיב השמאלי דו־כיווני: לפני הנסיעה דרומה — ממתינים שאין בו רכב אחר שנוסע (כדי לא להיפגש חזית מול חזית).</li>
+<li>הזנב בסיבוב לא נוגע במכונית הקבועה הראשונה בשורת התצוגה (y ‏2218): הסיבוב מתחיל קצת דרומה במעבר.</li>
+<li>הבדיקות: q_import_flow (כל מה שירד — הגיע, 0 אבדו, אף רכב לא עמד מעל 20 שנ׳), ‏0 עמידה על יותר מנתיב אחד (המוביל והמכוניות), 0 מעבר ב-x ‏4301 (החניות), הבדיקות החוסמות.</li></ul></div>
+<div class="card" style="margin-top:16px"><h2>המכונית הנמכרת — קו-קו (הערה 1 של הבקר) · המעבר · המעטפת</h2><svg id="c" viewBox="4195 2185 120 135"></svg>
+<ol><li><b>החניה:</b> המקום הראשון מערבה בשורה (4210–4257), המרכז (4233.5, 2206), <b>האף מזרחה</b> (חץ כתום).</li>
+<li><b>היציאה:</b> מיד בקשת קדימה ימינה (רדיוס 16) — יוצאת מהשורה ב-(4249.5, 2222) עם האף דרומה. הקצה המזרחי של הגוף ~4261; הזנב של המוביל ב-4275 (קו כחול מקווקו) — מרווח ~1.4 מ׳.</li>
+<li><b>במעבר:</b> דרומה ב-x ‏4249.5 עד y ~2262, ובקשת אל מרכז הנתיב השמאלי (4226, 2306) — ומשם דרומה לרחוב המוסכים, כמו כל מי שיורד.</li>
+<li><b>מי מחכה למי:</b> הנמכרת יוצאת רק כשהמעבר פנוי; המכונית החדשה מחכה על הסיפון עד שהנמכרת עברה את y ‏2312 — הן לא נפגשות. מי שבמעבר (המוביל בכניסה, לקוחות, רחבת המוסך) לא מחכה להן — הן מחכות לו, במקום בטוח (הסיפון / המקום בשורה).</li>
+<li><b>המעטפת של הסיבוב ברוורס</b> (ירוק): המרכז עוצר ב-y ‏2246 (הזנב של המכונית הארוכה — ‏~2219, השורה ב-2218: האזור האדום). הסיבוב כולו בתוך ~4 מ׳, ולכן הוא "קרס" — הרדיוס הקטן ביותר של הדרך ~1 מ׳ (מכונית אמיתית צריכה ~5 מ׳). הבדיקה מודדת את הגוף בכל דגימה: לא נכנס לשורה, לא לחניות, לא נוגע במוביל.</li>
+<li><b>ביקור חוזר:</b> מוביל אחד (LOGI-CC-1); מכונית אחת בכל פעם, והמוביל יוצא רק כשהאחרונה הגיעה לרחוב — בביקור הבא אין אף אחת מהקודם.</li></ol></div>
+</main>
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+function el(p,n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e}
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function base(s){
+ el(s,'rect',{x:4170,y:2150,width:360,height:470,fill:css('--lawn')});
+ const A=[[4203,1764,4459,1984],[4205,2176,4404,2226],[4205,2226,4412,2300],[4205,2300,4247,2482],[4247,2312,4320,2412],[4247,2412,4459,2482],[4205,2482,4290,2502],[4300,2482,4370,2502],[4412,2236,4459,2310],[4459,2232,4484,2310]];
+ for(const r of A)el(s,'rect',{x:r[0],y:r[1],width:r[2]-r[0],height:r[3]-r[1],fill:css('--asph')});
+ el(s,'rect',{x:4170,y:2502,width:300,height:96,fill:css('--asph')});           // רחוב המוסכים
+ el(s,'rect',{x:4484,y:2150,width:46,height:470,fill:css('--asph')});           // השדרה
+ el(s,'line',{x1:4170,y1:2550,x2:4470,y2:2550,stroke:'#f2c230','stroke-width':1.5,'stroke-dasharray':'8 6'});
+ for(const r of [[4210,2194,4257,2218],[4257,2194,4304,2218],[4304,2194,4351,2218]])el(s,'rect',{x:r[0]+.6,y:r[1]+.6,width:r[2]-r[0]-1.2,height:r[3]-r[1]-1.2,fill:'none',stroke:'#fff','stroke-width':1});
+ for(const c of [[4233.5,2206],[4280.5,2206],[4327.5,2206]])el(s,'rect',{x:c[0]-19,y:c[1]-9,width:38,height:18,rx:5,fill:'#9aa3ad'});
+ el(s,'rect',{x:4305,y:2239,width:100,height:26,fill:'none',stroke:css('--bay'),'stroke-width':1.6,'stroke-dasharray':'5 4'});
+ el(s,'rect',{x:4300,y:2240,width:110,height:24,rx:3,fill:'#2f6fb0',opacity:.85});      // המוביל, החזית מזרחה
+ el(s,'polygon',{points:'4410,2244 4418,2252 4410,2260',fill:'#2f6fb0'});
+ for(let y=2320;y<2400;y+=25)el(s,'rect',{x:4250,y:y,width:66,height:22,fill:'none',stroke:'#fff','stroke-width':.8});
+ for(const x of [4315,4360,4405])el(s,'rect',{x:x,y:2414,width:44,height:62,fill:'none',stroke:'#f2c230','stroke-width':.9});
+ const T=(x,y,t,sz)=>{const e=el(s,'text',{x:x,y:y,'font-size':sz||10,fill:'#fff','text-anchor':'middle','font-family':'system-ui'});e.textContent=t};
+ T(4280,2188,'שורת התצוגה',9);T(4355,2256,'מוביל רכב',9);T(4284,2365,'חניות',9);T(4385,2448,'רחבת המוסך',9);T(4320,2575,'רחוב המוסכים',11);T(4226,2395,'↓↑',12);
+ const t2=el(s,'text',{x:4507,y:2380,'font-size':11,fill:'#fff','text-anchor':'middle',transform:'rotate(-90 4507 2380)'});t2.textContent='שדרת המזרח';
+}
+function path(s,d,c,dash){el(s,'path',{d:d,fill:'none',stroke:c,'stroke-width':4,'stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':dash||'none',opacity:.95})}
+function arrowAt(s,x,y,a,c){el(s,'polygon',{points:'-7,-5 6,0 -7,5',fill:c,transform:'translate('+x+' '+y+') rotate('+a+')'})}
+const a=document.getElementById('a'),b=document.getElementById('b');base(a);base(b);
+const R=css('--red'),G=css('--grn');
+path(a,'M4355 2252 L4275 2252 Q4301 2252 4301 2278 L4301 2534 Q4301 2564 4331 2564 L4440 2564',R);arrowAt(a,4301,2440,90,R);arrowAt(a,4300,2252,180,R);
+path(b,'M4355 2252 L4275 2252 C4254 2252 4248 2262 4244 2262 C4232 2262 4226 2256 4226 2246',G);arrowAt(b,4290,2252,180,G);
+path(b,'M4226 2246 L4226 2534 Q4226 2564 4256 2564 L4440 2564',G);arrowAt(b,4226,2400,90,G);arrowAt(b,4400,2564,0,G);
+path(b,'M4275 2252 C4246 2252 4226 2256 4226 2282',G,'6 5');path(b,'M4226 2282 C4226 2262 4213 2250 4213 2232 L4213 2226 A20.5 20.5 0 0 1 4233.5 2206',G,'6 5');
+path(b,'M4233.5 2206 A16 16 0 0 1 4249.5 2222 C4249.5 2262 4226 2266 4226 2306',css('--ora')||'#e8892b','2 5');
+const c=document.getElementById('c');base(c);
+el(c,'rect',{x:4210,y:2210,width:141,height:8,fill:css('--red'),opacity:.45});
+el(c,'line',{x1:4275,y1:2226,x2:4275,y2:2300,stroke:'#2f6fb0','stroke-width':1.2,'stroke-dasharray':'3 2'});
+el(c,'line',{x1:4195,y1:2312,x2:4315,y2:2312,stroke:'#fff','stroke-width':.6,'stroke-dasharray':'2 2'});
+path(c,'M4233.5 2206 A16 16 0 0 1 4249.5 2222 C4249.5 2262 4226 2266 4226 2306',css('--ora')||'#e8892b','2 3');
+arrowAt(c,4240,2206,0,css('--ora')||'#e8892b');arrowAt(c,4249.5,2236,90,css('--ora')||'#e8892b');arrowAt(c,4226,2300,90,css('--ora')||'#e8892b');
+path(c,'M4275 2252 C4264 2252 4226 2275 4226 2246',G);
+el(c,'rect',{x:4217,y:2219,width:18,height:54,rx:4,fill:'none',stroke:G,'stroke-width':1});
+const tt=(x,y,s)=>{const e=el(c,'text',{x:x,y:y,'font-size':5,fill:'#fff','text-anchor':'middle'});e.textContent=s};
+tt(4290,2232,'הזנב של המוביל 4275');tt(4262,2309,'y 2312');tt(4300,2216,'השורה 2218');
+const n=el(b,'text',{x:4180,y:2270,'font-size':8,fill:'#fff'});n.textContent='רוורס';
+})();
+</script></body></html>

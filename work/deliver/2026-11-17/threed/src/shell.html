@@ -1,0 +1,40 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>טורבו סיטי · B4 בתלת־ממד</title><link rel="icon" href="data:,">
+<style>
+:root{--navy:#1b2b45;--navy2:#0f1b2e;--gold:#d4af37;--ink:#f2efe6;--mut:#a9b4c6}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#0f1b2e;color:var(--ink);font:14px/1.5 Arial,"Segoe UI",sans-serif}
+#view{display:block;width:100%;height:100%;outline:none;touch-action:none}
+.pn{position:absolute;background:linear-gradient(180deg,#1b2b45f2,#0f1b2ef2);border:1px solid #d4af3755;border-radius:12px;box-shadow:0 6px 24px #0007}
+#top{top:12px;right:12px;padding:10px 14px;display:flex;gap:12px;align-items:center}
+.logo{width:40px;height:40px;border-radius:9px;background:var(--gold);color:var(--navy);display:grid;place-items:center;font:900 18px Arial;direction:ltr}
+h1{margin:0;font-size:17px}.sub{font-size:12px;color:var(--mut)}
+#stats{top:12px;left:12px;padding:8px 12px;display:flex;gap:14px;direction:ltr;font-size:11px;color:var(--mut);text-align:center}#stats b{display:block;color:var(--gold);font-size:18px}
+#tools{top:78px;right:12px;display:flex;gap:6px;background:none;border:0;box-shadow:none}
+button{font:inherit;cursor:pointer;color:var(--ink);background:#1b2b45;border:1px solid #d4af3766;border-radius:8px;padding:8px 11px}button:hover{background:#26406a}button.on{background:var(--gold);color:var(--navy);font-weight:bold}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+#modes{bottom:14px;left:50%;transform:translateX(-50%);padding:6px;display:flex;gap:6px;white-space:nowrap}
+#modes kbd{font-size:10px;opacity:.7;margin-inline-start:5px}
+#modeText{position:absolute;bottom:72px;left:50%;transform:translateX(-50%);font-size:12px;color:#fff;text-shadow:0 1px 3px #000;max-width:92vw;text-align:center}
+#hud{bottom:14px;left:12px;padding:8px 14px;direction:ltr;text-align:center}#hud b{font-size:26px;color:var(--gold)}#hud small{color:var(--mut)}
+#info{bottom:14px;right:12px;padding:10px 14px;font-size:12px;max-width:300px;color:var(--mut)}#info b{color:var(--ink);display:block;font-size:13px}
+#mini{bottom:120px;right:12px;padding:0;width:220px;height:150px}
+#clockBox{top:78px;left:12px;padding:6px 12px;font-weight:bold;color:var(--gold);direction:ltr}
+.touch{position:absolute;bottom:80px;left:12px;display:none;grid-template-columns:repeat(3,48px);gap:5px}.touch button{height:48px;padding:0}
+#loading{position:absolute;inset:0;display:grid;place-content:center;text-align:center;background:var(--navy2);z-index:5}#loading b{font:900 40px Arial;color:var(--gold);letter-spacing:2px;direction:ltr}#loading[hidden]{display:none}
+@media (max-width:720px){#info,#mini{bottom:120px;right:12px;padding:0;width:220px;height:150px}
+#clockBox{display:none}#top{left:12px}#tools{top:auto;bottom:70px;right:12px}#stats{top:auto;bottom:126px}.touch{display:grid;bottom:130px;right:12px;left:auto}#hud{bottom:70px}#modes button{padding:8px 7px}}
+</style></head><body>
+<canvas id="view" tabindex="0" aria-label="שכונת B4 בתלת־ממד — נהיגה בחצים או WASD"></canvas>
+<div id="top" class="pn"><div class="logo">TC</div><div><h1>B4 — השכונה, בתלת־ממד</h1><div class="sub">ניסוי Three.js · לפי המפה של טורבו סיטי · הכול בקוד</div></div></div>
+<div id="stats" class="pn"><div><b id="fps">—</b>FPS</div><div><b id="calls">—</b>ציורים</div><div><b id="tris">—</b>משולשים</div></div>
+<div id="clockBox" class="pn"><span id="clock">16:20</span></div>
+<div id="tools" class="pn"><button id="nightBtn">☾ לילה</button><button id="qualBtn">איכות: מלאה</button></div>
+<div id="modeText"></div>
+<nav id="modes" class="pn" aria-label="מצלמה"><button data-mode="game"><kbd>1</kbd>מבט המשחק</button><button data-mode="chase"><kbd>2</kbd>מעקב</button><button data-mode="free"><kbd>3</kbd>חופשי</button></nav>
+<div id="hud" class="pn"><b id="speed">0</b> <small>קמ״ש</small></div>
+<canvas id="mini" class="pn" width="220" height="150" aria-label="מפה קטנה — אותם נתונים, מצייר 2D"></canvas>
+<div id="info" class="pn"><b>B4 · שכונה צפופה ושירותים</b>שדרת המערב · רחוב בית הספר · רחוב השכונה · שדרת המרכז. נהיגה: חצים / WASD, רווח — בלם, N — לילה.</div>
+<div class="touch"><span></span><button data-key="KeyW" aria-label="קדימה">▲</button><span></span><button data-key="KeyA" aria-label="שמאלה">◀</button><button data-key="KeyS" aria-label="אחורה">▼</button><button data-key="KeyD" aria-label="ימינה">▶</button></div>
+<div id="loading"><div><b>TURBO CITY</b><p>בונים את B4 בתלת־ממד…</p></div></div>
+<script>addEventListener("error",e=>{const l=document.getElementById("loading");l.hidden=false;l.querySelector("p").textContent="הטעינה נעצרה: "+e.message});</script>
+<script>/*@@APP@@*/</script>
+</body></html>

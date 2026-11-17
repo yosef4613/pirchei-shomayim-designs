@@ -1,0 +1,6 @@
+airlogos_probe rc=0 {"ok":true,"audit":true,"fail":[],"missing":[],"errs":0,"n":{"shop":3435,"air":1078,"plate":1055,"band":3773,"s9":101,"tower":296,"gate":487,"e4":9690,"tail":20,"spr":63,"hooks":6},"err":null}
+q_ingame rc=0
+rules_gate rc=1
+people_on_road rc=0
+stuckmax rc=0 {"tag":"al_try7484","build":"try7484.html","secs":150,"over5":1,"busOver5":0,"long":[["car AI-CAR-12:VH-WG-01",14,"D2-ARN","",""]],"st":{"served":0,"rec":0,"owned":0},"pe":[]}
+done

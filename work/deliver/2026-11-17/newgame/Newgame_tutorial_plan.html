@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>שמירה חדשה והדרכה</title>
+<style>
+:root{--bg:#0f1a24;--pan:#16283a;--ink:#eef5fa;--mut:#9fb4c4;--gold:#ffd36a;--line:#2f4a60;--ok:#4fbf7a;--bad:#ff8f7a;--blue:#2f6f9f}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f7fa;--pan:#ffffff;--ink:#13212d;--mut:#4f6475;--gold:#9a6400;--line:#c6d3de;--ok:#1f8a4c;--bad:#b3402c;--blue:#2f6f9f}}
+:root[data-theme="dark"]{--bg:#0f1a24;--pan:#16283a;--ink:#eef5fa;--mut:#9fb4c4;--gold:#ffd36a;--line:#2f4a60;--ok:#4fbf7a;--bad:#ff8f7a;--blue:#2f6f9f}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Segoe UI","Noto Sans Hebrew",Arial,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:26px 0 8px;color:var(--gold)}
+.mut{color:var(--mut)}
+.card{background:var(--pan);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:10px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;vertical-align:top}th{color:var(--mut);font-weight:600}
+.bad{color:var(--bad);font-weight:700}.ok{color:var(--ok);font-weight:700}
+svg{width:100%;height:auto;display:block}
+code{font-family:Consolas,monospace;font-size:13px;direction:ltr;unicode-bidi:embed}
+</style>
+</head>
+<body>
+<main>
+<h1>שמירה חדשה נפתחת נקי + הדרכה מובנית</h1>
+<p class="mut">סוכן newgame · סבב 17.11 · הציור לפני הבנייה (כלל 13). הבנייה מתחילה מיד (כלל 20).</p>
+
+<h2>המלאי — מה קיים היום (כלל 16 / 19)</h2>
+<div class="card"><table>
+<tr><th>מה</th><th>איפה</th><th>המצב</th></tr>
+<tr><td>תנאי הדילוג של מצב בדיקה</td><td><code>055:g77NmSkip</code></td><td class="bad">שבור: <code>G77_OT.on</code> הוא תמיד true (רק "היכולת" של בדיקת הבעלים) — ולכן גם במשחק רגיל אין חלון שם ואין התחלה של הסיפור</td></tr>
+<tr><td>ההתחלה האוטומטית של הסיפור</td><td><code>074ze:autoBegin</code></td><td>קיים ותקין — נחסם רק בגלל g77NmSkip. מחכה לשם, ואז begin()</td></tr>
+<tr><td>חלון "איך קוראים לך?"</td><td><code>055:g77NmBoot / g77NmOpen</code></td><td class="bad">אחרי התיקון — עלול להיפתח מאחורי מסך הפתיחה (z‑index 70 מול 9600) ולבלוע מקשים; צריך לחכות למשחק</td></tr>
+<tr><td>הפתיחה בסיפור — O‑1 "שמעון מחכה ליד הבית"</td><td><code>074zd:TC_STORY.chapters[0]</code></td><td>קיים — שתי שיחות ליד הבית. אין בו לימוד של המקשים</td></tr>
+<tr><td>רשימת המקשים</td><td><code>shell:#help</code>, <code>074zb:KEYS</code>, "איך משחקים" (<code>074zc:sHowto</code>)</td><td>טקסט בלבד — אין שום דבר שמוודא שהשחקן עשה</td></tr>
+<tr><td>"בית השחקן" במפה ובניווט</td><td><code>039:navPoiRegistry</code>, <code>028:MAP_MAJOR_PINS / POI_NAMES</code></td><td class="bad">הסיפור אומר "הבית של סבא", המפה — "בית השחקן" (סעיף 27)</td></tr>
+<tr><td>משחק חדש מהתפריט</td><td><code>074zf:TCSAVE.startNew</code> → <code>074zc:enter('new')</code></td><td>תקין — מקום, שם, "סיפור" / "הכול פתוח"</td></tr>
+</table></div>
+
+<h2>הזרימה של משחק חדש — אחרי התיקון</h2>
+<svg viewBox="0 0 1060 250" role="img" aria-label="הזרימה">
+ <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8fb0c6"/></marker></defs>
+ <g font-family="Segoe UI,Arial" font-size="14" text-anchor="middle">
+  <rect x="900" y="30" width="150" height="70" rx="10" fill="#1b3042" stroke="#3a5a74"/><text x="975" y="58" fill="#eef5fa" font-weight="700">מסך הפתיחה</text><text x="975" y="80" fill="#9fb4c4" font-size="12">משחק חדש ← מקום ← שם</text>
+  <rect x="720" y="30" width="150" height="70" rx="10" fill="#1b3042" stroke="#3a5a74"/><text x="795" y="58" fill="#eef5fa" font-weight="700">השם</text><text x="795" y="80" fill="#9fb4c4" font-size="12">מהטופס, או "איך קוראים לך?"</text>
+  <rect x="470" y="20" width="220" height="90" rx="10" fill="#2a2410" stroke="#8a5a12" stroke-width="2"/><text x="580" y="52" fill="#ffd36a" font-weight="700">ההדרכה (חדש)</text><text x="580" y="74" fill="#d8e4ec" font-size="12">7 צעדים · כל צעד נבדק בפעולה אמיתית</text><text x="580" y="94" fill="#d8e4ec" font-size="12">"דלג על ההדרכה" — בכל רגע</text>
+  <rect x="270" y="30" width="170" height="70" rx="10" fill="#1b3042" stroke="#3a5a74"/><text x="355" y="58" fill="#eef5fa" font-weight="700">הסיפור מתחיל</text><text x="355" y="80" fill="#9fb4c4" font-size="12">autoBegin ← פתיחה</text>
+  <rect x="40" y="30" width="200" height="70" rx="10" fill="#1b3042" stroke="#3a5a74"/><text x="140" y="58" fill="#eef5fa" font-weight="700">O‑1: שמעון ליד הבית</text><text x="140" y="80" fill="#9fb4c4" font-size="12">השחקן כבר ליד הבית של סבא</text>
+  <path d="M898 65H874" stroke="#8fb0c6" stroke-width="2" marker-end="url(#ar)"/><path d="M718 65H694" stroke="#8fb0c6" stroke-width="2" marker-end="url(#ar)"/><path d="M468 65H444" stroke="#8fb0c6" stroke-width="2" marker-end="url(#ar)"/><path d="M268 65H244" stroke="#8fb0c6" stroke-width="2" marker-end="url(#ar)"/>
+  <rect x="470" y="140" width="220" height="80" rx="10" fill="#14261a" stroke="#2f7a4a"/><text x="580" y="168" fill="#8fe0aa" font-weight="700">בזמן ההדרכה — שקט</text><text x="580" y="190" fill="#d8e4ec" font-size="12">סיפורי האזורים לא מתחילים לבד</text><text x="580" y="208" fill="#d8e4ec" font-size="12">(כמו הסימון "asked" של הנעילה, ומשתחרר בסוף)</text>
+  <path d="M580 112V138" stroke="#2f7a4a" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="975" y="140" fill="#9fb4c4" font-size="12">שמירה קיימת ("המשך"):</text><text x="975" y="158" fill="#9fb4c4" font-size="12">בלי הדרכה — כמו שתוכנן</text><text x="975" y="176" fill="#9fb4c4" font-size="12">הדרכה באמצע — ממשיכה מאותו צעד</text>
+ </g>
+</svg>
+
+<h2>הסדר המלא — עם מסך הטעינה, סרטון הפתיחה והשכבות (17.11, החלק השני)</h2>
+<svg viewBox="0 0 1060 300" role="img" aria-label="הסדר המלא של משחק חדש">
+ <g font-family="Segoe UI,Arial" font-size="13" text-anchor="middle">
+  <text x="1040" y="22" fill="#9fb4c4" text-anchor="end">הזמן במשחק חדש (משמאל לימין בציור — מימין לשמאל בזמן)</text>
+  <rect x="890" y="40" width="160" height="62" rx="9" fill="#1b3042" stroke="#3a5a74"/><text x="970" y="64" fill="#eef5fa" font-weight="700">"מתחילים"</text><text x="970" y="84" fill="#9fb4c4" font-size="12">מקום · שם · סיפור / הכול פתוח</text>
+  <rect x="660" y="40" width="210" height="62" rx="9" fill="#2a1b30" stroke="#7a4a8a"/><text x="765" y="64" fill="#e8c8f5" font-weight="700">מסך הטעינה + סרטון הפתיחה</text><text x="765" y="84" fill="#cdb6d8" font-size="12">loading 60 · opening 50 (73 שנ׳, אפשר לדלג)</text>
+  <rect x="480" y="40" width="160" height="62" rx="9" fill="#1b3042" stroke="#3a5a74"/><text x="560" y="64" fill="#eef5fa" font-weight="700">"איך קוראים לך?"</text><text x="560" y="84" fill="#9fb4c4" font-size="12">רק אם אין שם מהטופס</text>
+  <rect x="270" y="34" width="190" height="74" rx="9" fill="#2a2410" stroke="#8a5a12" stroke-width="2"/><text x="365" y="62" fill="#ffd36a" font-weight="700">ההדרכה — tutorial 30</text><text x="365" y="84" fill="#d8e4ec" font-size="12">7 צעדים · "דלג" בכל רגע</text>
+  <rect x="40" y="40" width="210" height="62" rx="9" fill="#1b3042" stroke="#3a5a74"/><text x="145" y="64" fill="#eef5fa" font-weight="700">הסיפור: O‑1</text><text x="145" y="84" fill="#9fb4c4" font-size="12">שמעון ליד הבית של סבא</text>
+  <path d="M888 71H874M658 71H644M478 71H464M268 71H254" stroke="#8fb0c6" stroke-width="2"/>
+  <path d="M874 66l-8 5 8 5zM644 66l-8 5 8 5zM464 66l-8 5 8 5zM254 66l-8 5 8 5z" fill="#8fb0c6"/>
+  <rect x="40" y="140" width="1010" height="140" rx="10" fill="#132231" stroke="#2f4a60"/>
+  <text x="1030" y="166" fill="#ffd36a" font-weight="700" text-anchor="end">מתי ההדרכה מחכה (074zu: wait) — הכרטיס מוסתר והצעדים לא נספרים</text>
+  <text x="1030" y="192" fill="#d8e4ec" text-anchor="end">• TCBUSY.blocks('tutorial') — שכבה גבוהה על המסך (loading / opening / cutscene), כשהמנגנון של missions נכנס</text>
+  <text x="1030" y="214" fill="#d8e4ec" text-anchor="end">• וגם בלעדיו: TCLD (מסך הטעינה) · TCSHOW.on (הסרטון) · TCCUT (סצנה) · חלון השם · תפריט / מסך הפתיחה</text>
+  <text x="1030" y="236" fill="#d8e4ec" text-anchor="end">• 'film-soon': הסרטון מתחיל 420 מ"ש אחרי משחק חדש — עד שהוא מתחיל (או 2.5 שנ׳) ההדרכה לא מתחילה לספור</text>
+  <text x="1030" y="258" fill="#d8e4ec" text-anchor="end">• מתחת להדרכה: אירוע 20 · כרטיס משימה 10 — מחכים לה (השקט); חלון השם מחכה באותו תנאי (g77NmBoot)</text>
+ </g>
+</svg>
+<div class="card">מסך F בבית (צעד 4): המסך המלא של המקום — הכותרת "הבית של סבא" (לא "בית השחקן"), הרכבים, השמירה, חדר ההלבשה והשדרוגים. בזמן ההדרכה בלי הצעות "להתחיל את הסיפור" של סיפורי אזורים (השקט).</div>
+
+<h2>שבעת הצעדים — כל אחד נבדק במצב האמיתי של המשחק</h2>
+<svg viewBox="0 0 1060 330" role="img" aria-label="הצעדים">
+ <g font-family="Segoe UI,Arial" text-anchor="middle">
+  <!-- row 1 (right to left) -->
+  <g transform="translate(800,10)"><rect width="240" height="140" rx="12" fill="#1b3042" stroke="#3a5a74"/><circle cx="214" cy="26" r="16" fill="#ffd36a"/><text x="214" y="31" font-size="15" font-weight="900" fill="#2a1500">1</text><text x="110" y="32" fill="#eef5fa" font-size="16" font-weight="700">נוסעים</text>
+   <g transform="translate(70,48)"><rect x="34" y="0" width="30" height="26" rx="5" fill="#e08300"/><text x="49" y="18" font-size="13" font-weight="900" fill="#2a1500">W</text><rect x="0" y="30" width="30" height="26" rx="5" fill="#e08300"/><text x="15" y="48" font-size="13" font-weight="900" fill="#2a1500">A</text><rect x="34" y="30" width="30" height="26" rx="5" fill="#e08300"/><text x="49" y="48" font-size="13" font-weight="900" fill="#2a1500">S</text><rect x="68" y="30" width="30" height="26" rx="5" fill="#e08300"/><text x="83" y="48" font-size="13" font-weight="900" fill="#2a1500">D</text></g>
+   <text x="120" y="128" fill="#9fb4c4" font-size="12">נבדק: הרכב עבר 30 מ׳</text></g>
+  <g transform="translate(540,10)"><rect width="240" height="140" rx="12" fill="#1b3042" stroke="#3a5a74"/><circle cx="214" cy="26" r="16" fill="#ffd36a"/><text x="214" y="31" font-size="15" font-weight="900" fill="#2a1500">2</text><text x="110" y="32" fill="#eef5fa" font-size="16" font-weight="700">עוצרים ויוצאים</text>
+   <rect x="100" y="56" width="40" height="36" rx="7" fill="#e08300"/><text x="120" y="81" font-size="18" font-weight="900" fill="#2a1500">E</text>
+   <text x="120" y="128" fill="#9fb4c4" font-size="12">נבדק: השחקן ברגל</text></g>
+  <g transform="translate(280,10)"><rect width="240" height="140" rx="12" fill="#1b3042" stroke="#3a5a74"/><circle cx="214" cy="26" r="16" fill="#ffd36a"/><text x="214" y="31" font-size="15" font-weight="900" fill="#2a1500">3</text><text x="110" y="32" fill="#eef5fa" font-size="16" font-weight="700">הולכים לבית של סבא</text>
+   <rect x="58" y="62" width="52" height="28" rx="6" fill="#e08300"/><text x="84" y="81" font-size="12" font-weight="900" fill="#2a1500">Shift</text><text x="140" y="82" fill="#d8e4ec" font-size="12">ריצה</text>
+   <text x="120" y="128" fill="#9fb4c4" font-size="12">נבדק: ברגל, ליד הדלת</text></g>
+  <g transform="translate(20,10)"><rect width="240" height="140" rx="12" fill="#1b3042" stroke="#3a5a74"/><circle cx="214" cy="26" r="16" fill="#ffd36a"/><text x="214" y="31" font-size="15" font-weight="900" fill="#2a1500">4</text><text x="110" y="32" fill="#eef5fa" font-size="16" font-weight="700">F — נכנסים לבית</text>
+   <rect x="100" y="56" width="40" height="36" rx="7" fill="#e08300"/><text x="120" y="81" font-size="18" font-weight="900" fill="#2a1500">F</text>
+   <text x="120" y="128" fill="#9fb4c4" font-size="12">נבדק: מסך הבית נפתח ונסגר</text></g>
+  <!-- row 2 -->
+  <g transform="translate(800,180)"><rect width="240" height="140" rx="12" fill="#1b3042" stroke="#3a5a74"/><circle cx="214" cy="26" r="16" fill="#ffd36a"/><text x="214" y="31" font-size="15" font-weight="900" fill="#2a1500">5</text><text x="110" y="32" fill="#eef5fa" font-size="16" font-weight="700">T — הטלפון</text>
+   <rect x="100" y="56" width="40" height="36" rx="7" fill="#e08300"/><text x="120" y="81" font-size="18" font-weight="900" fill="#2a1500">T</text>
+   <text x="120" y="128" fill="#9fb4c4" font-size="12">נבדק: הטלפון נפתח ונסגר</text></g>
+  <g transform="translate(540,180)"><rect width="240" height="140" rx="12" fill="#1b3042" stroke="#3a5a74"/><circle cx="214" cy="26" r="16" fill="#ffd36a"/><text x="214" y="31" font-size="15" font-weight="900" fill="#2a1500">6</text><text x="110" y="32" fill="#eef5fa" font-size="16" font-weight="700">M — המפה הגדולה</text>
+   <rect x="100" y="56" width="40" height="36" rx="7" fill="#e08300"/><text x="120" y="81" font-size="18" font-weight="900" fill="#2a1500">M</text>
+   <text x="120" y="128" fill="#9fb4c4" font-size="12">נבדק: המפה נפתחה ונסגרה</text></g>
+  <g transform="translate(280,180)"><rect width="240" height="140" rx="12" fill="#1b3042" stroke="#3a5a74"/><circle cx="214" cy="26" r="16" fill="#ffd36a"/><text x="214" y="31" font-size="15" font-weight="900" fill="#2a1500">7</text><text x="110" y="32" fill="#eef5fa" font-size="16" font-weight="700">E — חוזרים לרכב</text>
+   <rect x="100" y="56" width="40" height="36" rx="7" fill="#e08300"/><text x="120" y="81" font-size="18" font-weight="900" fill="#2a1500">E</text>
+   <text x="120" y="128" fill="#9fb4c4" font-size="12">נבדק: השחקן ברכב</text></g>
+  <g transform="translate(20,180)"><rect width="240" height="140" rx="12" fill="#14261a" stroke="#2f7a4a"/><circle cx="214" cy="26" r="16" fill="#8fe0aa"/><text x="214" y="31" font-size="15" font-weight="900" fill="#0f2a18">8</text><text x="110" y="32" fill="#eef5fa" font-size="16" font-weight="700">מוכן — שמעון מחכה</text>
+   <text x="120" y="74" fill="#d8e4ec" font-size="12">הסיפור מתחיל: הפתיחה</text><text x="120" y="94" fill="#d8e4ec" font-size="12">"הבית של סבא — זה הבית שלך"</text>
+   <text x="120" y="128" fill="#9fb4c4" font-size="12">נבדק: הסיפור התחיל, O‑1</text></g>
+ </g>
+</svg>
+
+<h2>מה משתנה בקוד</h2>
+<div class="card"><table>
+<tr><th>שינוי</th><th>קובץ</th><th>למה</th></tr>
+<tr><td>הדילוג — רק בבדיקה שרצה באמת (<code>G77_OT.lock</code>), לא בדגל היכולת (<code>G77_OT.on</code>). ‏<code>#real</code> — מתנהג כמו שחקן גם בכלי בדיקה</td><td><code>055:g77NmSkip</code> (שורה אחת)</td><td>סעיף 1 / 18 — החוסם</td></tr>
+<tr><td>חלון השם — רק כשהמשחק עצמו פתוח (לא מאחורי מסך הפתיחה)</td><td><code>055:g77NmBoot</code></td><td>אחרי התיקון הוא היה נפתח מאחור ובולע מקשים</td></tr>
+<tr><td>הסיפור מחכה להדרכה (וו אחד: <code>TCTUT.hold()</code>)</td><td><code>074ze:autoBegin</code> (שורה אחת)</td><td>קודם לומדים את המקשים, ואז שמעון</td></tr>
+<tr><td>ההדרכה עצמה: כרטיס, 8 צעדים, דילוג, שמירה, השקט בזמן ההדרכה, "הבית של סבא" במפה ובניווט, בדיקה ב‑roadAudit</td><td><code>074zu_newgame_tut.js</code> (חלק חדש)</td><td>סעיפים 5, 19, 27; בלי לגעת בחלקים של אחרים</td></tr>
+</table></div>
+
+<h2>הדלג והשמירה</h2>
+<div class="card">
+<p>• בכל צעד — כפתור "דלג על ההדרכה" בכרטיס. דילוג = הסיפור מתחיל מיד, כמו בסוף ההדרכה.</p>
+<p>• ההדרכה נשמרת בתוך השמירה (הסיפור): <code>flags['tut:…']</code>. טעינה באמצע — ממשיכה מאותו צעד. שמירה ישנה / "המשך" — בלי הדרכה.</p>
+<p>• "הכול פתוח" — גם שם ההדרכה רצה במשחק חדש (המקשים זהים), ואפשר לדלג.</p>
+<p>• ‏‎#dev / ‏#qa / ‏#bench / בדיקת הבעלים — בלי הדרכה ובלי התחלה אוטומטית, כמו היום.</p>
+</div>
+
+<h2>לאישורך</h2>
+<div class="card">
+<p>1. השקט בזמן ההדרכה — רק עד סוף ההדרכה (לא עד סוף O‑1), כדי לא להתנגש בכלל "לפחות 4 משימות צד" (D‑693). אפשר להאריך עד סוף הפתיחה.</p>
+<p>2. השם במפה ובניווט: "הבית של סבא" במקום "בית השחקן" — בכל המצבים.</p>
+<p>3. ההדרכה רצה גם ב"הכול פתוח" במשחק חדש.</p>
+</div>
+</main>
+</body>
+</html>

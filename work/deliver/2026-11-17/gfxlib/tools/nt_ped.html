@@ -1,0 +1,20 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#9aa58c">
+<canvas id="c" width="1600" height="1000"></canvas>
+<script>window.TurboCity={get:()=>null};</script>
+<script src="../src/old_libs.js"></script><script src="../src/g2_core.js"></script><script src="../src/g2_car.js"></script><script src="../src/g2_plane.js"></script><script src="../src/g2_ped.js"></script>
+<script>
+const errs=[];window.onerror=(m,a,b,c,e)=>errs.push(m+' '+(e&&e.stack));
+const q=new URLSearchParams(location.search),what='ped';
+c34LibInit();p34LibInit();a34LibInit();
+const cv=document.getElementById('c'),g=cv.getContext('2d');g.fillStyle='#9aa58c';g.fillRect(0,0,1600,1000);
+const dr=(e,x,y,R)=>g.drawImage(e.cv,x-e.ox/R,y-e.oy/R,e.cv.width/R,e.cv.height/R);
+try{
+if(what==='car'){const H=[0,0.785,1.57,2.36,3.14,3.93,4.71,5.5];
+ H.forEach((h,i)=>{const e=G2.car.sprite('VH-SD-02','#2f6fd0',h,60,1,16);dr(e,200+(i%4)*390,200+Math.floor(i/4)*330,1)});}
+if(what==='ped'){for(let L=0;L<6;L++){for(let i=0;i<4;i++){const e=G2.ped.sprite(L,'walk',[0,1.57,3.14,4.71][i],i/4+.1,60,1,16);dr(e,80+L*250+i*55,250,1)}
+ for(let f=0;f<6;f++){const e=G2.ped.sprite(L,f<3?'walk':'run',1.57*(L%2?0:1),f/6,60,1,16);dr(e,80+L*250+(f%3)*70,450+(f<3?0:200),1)}}
+ for(let i=0;i<4;i++)P34.draw(g,100+i*60,900,{},{k:'walk'},[0,1.57,3.14,4.71][i],.3,5.3);}
+if(what==='plane'){const H=[0.39,2.75,4.32,5.9];H.forEach((h,i)=>{const e=G2.plane.sprite('AC-NB-01',h,9,1,16);dr(e,380+(i%2)*800,250+Math.floor(i/2)*480,1)});}
+}catch(e){errs.push(e.message+' '+e.stack)}
+window.__res={errs,st:G2.stats()};
+</script>

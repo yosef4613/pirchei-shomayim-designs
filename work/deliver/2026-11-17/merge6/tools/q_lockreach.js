@@ -1,0 +1,3 @@
+// q_lockreach.js — merge6 (גל 6ב): הפירוט של הבדיקה lock_reach (locks 074zu_locks_phys:reachQa) — ‏3 פעמים: why / async (פרוסות, p99, over50) / ms. הרצה: node W/qa_tools/probe_c2.js <build> q_lockreach.js <out.json>
+return (async()=>{const out=[];for(let i=0;i<3;i++){await new Promise(r=>setTimeout(r,1500));let r=null;try{const a=roadAudit();const L=a.checks||a.results||[];const c=L.find(x=>x&&x.name==='lock_reach');r={ok:c&&c.ok,detail:c&&String(c.detail).slice(0,900)}}catch(e){r={err:String(e).slice(0,200)}}out.push(r)}
+ return{build:(window.TC_BUILD_ID||document.title||'').toString().slice(0,60),runs:out}})()

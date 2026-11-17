@@ -1,0 +1,1 @@
+return (()=>{const t0=performance.now();const a=roadAudit(false);const c=(a.checks||[]).find(x=>x.name==='f9_panel');return{ok:a.ok,total:(a.checks||[]).length,failed:(a.checks||[]).filter(x=>!x.ok).map(x=>x.name),f9:c,raw:window.__TC_F9AUDIT(),ms:Math.round(performance.now()-t0)}})()

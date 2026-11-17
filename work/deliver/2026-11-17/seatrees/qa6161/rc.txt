@@ -1,0 +1,4 @@
+ingame rc=0
+rules rc=1
+stuck rc=0
+people rc=0

@@ -1,0 +1,2 @@
+[bslot] מקום 4 אחרי 278 שנ׳
+{"tag":"por6442","build":"try6442.html","secs":150,"over5":0,"busOver5":0,"long":[],"st":{"served":0,"rec":0,"owned":0},"pe":[]}

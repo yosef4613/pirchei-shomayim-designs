@@ -1,0 +1,240 @@
+{
+ "file": "try6240.html",
+ "hash": "",
+ "mode": "story",
+ "steps": [
+  "8s מסך הפתיחה מוכן",
+  "25s מקום 1",
+  "30s מתחילים · story",
+  "31s בתוך המשחק"
+ ],
+ "samples": [
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 31
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 36
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 41
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 46
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 51
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 56
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 61
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 66
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 71
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 76
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 81
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 86
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 91
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 96
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [],
+   "nm": null,
+   "hud": "",
+   "toast": "",
+   "tut": "",
+   "t": 102
+  },
+  {
+   "story": {
+    "none": true,
+    "err": null
+   },
+   "cur": null,
+   "zoneStarted": [
+    "S14-ST-D7"
+   ],
+   "nm": null,
+   "hud": "",
+   "toast": "הודעה חדשה משלמה · T — טלפוןיומן: משימה חדשה — הגוררת של הבוקרסיפור חדש: הגוררת של הבוקר",
+   "tut": "",
+   "t": 107
+  }
+ ],
+ "errs": [],
+ "cons": [],
+ "last": {
+  "story": {
+   "none": true,
+   "err": null
+  },
+  "cur": null,
+  "zoneStarted": [
+   "S14-ST-D7"
+  ],
+  "nm": null,
+  "hud": "",
+  "toast": "הודעה חדשה משלמה · T — טלפוןיומן: משימה חדשה — הגוררת של הבוקרסיפור חדש: הגוררת של הבוקר",
+  "tut": "",
+  "t": 107
+ }
+}

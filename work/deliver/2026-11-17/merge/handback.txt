@@ -1,0 +1,77 @@
+מועמד מוכן: W/clean_r2b_025637/out/_try/cand299x.html · sha1 14a90a1cffb9 (14a90a1cffb92999d6ea9935fe1280d4a82b4fbd) · 21,094,749 בתים · int299 930919a · 268 חלקים · BUILD_SUFFIX=-s7f299 (המזהה turbo-city-v1.96-s7f299)
+הסט החוסם על cand299x — עבר כולו: q_ingame ‏330/330, 0 שגיאות · rules_gate ok, 0 כישלונות · stuckmax 150 — 0 מעל 5 שנ׳ (0 אוטובוסים, 0 שגיאות דף) · people_on_road ‏ok (601 דגימות, 16 מעברי ציור, 0 על נתיב) · q_stadium3 ok (3 ימי משחק → מחזור 1, בלי תאריך אמיתי) · 0 שגיאות בדף · data:image ‏0, ‏new Image( ‏0 · בדיקה בעין — עברה (למטה).
+מצאתי: 15 שורות "מוכן למיזוג" ב-W/deliver/2026-11-17/*/handback.txt עד 06:47 (14 ענפים של המשחק + gfxlib). כולם מעל master 7c2d0be. התנגשויות: ב-manifest.json — בכל ענף כמעט (בכלי בלבד); מחוץ ל-manifest — רק במיזוג של missions: שלוש שורות, כל אחת עם שני שינויים בלתי תלויים באותה שורה (פירוט ב"לאישורך").
+
+=== "המיזוג 17.11" — ההחזרה (המתאם: merge, ‏06:41–07:01) ===
+לא נגעתי ב-master, בתגיות, בפרסום ובגיטהב. כל דפדפן — דרך התור (BSLOT_MERGE=1). העותק: W/src_game_int299 (הענף int299 מ-master 7c2d0be = S7F298).
+
+== מה נכנס (לפי הסדר; ענף · commit מהשורה "מוכן למיזוג" → commit המיזוג ב-int299 · מה) ==
+1. f9fix ‏ee28b07 → ffba0fc — F9: האירועים והאזורים עובדים (074_F9, ‏074zz9_f9_audit).
+2. stadium ‏0930a29 → f8aa2b9 — תוצאות האצטדיון לפי שעון המשחק (השלט, הטלפון, F9, לוח הטיסות).
+3. posters ‏399a801 → 56980bb — האייקון (favicon בקנבס, ‏blob — לא data:image) + סט 11 (074n3s_posters_set11).
+4. seatrees ‏a8af042 → f8fa5b6 — בלי עצים בים / במגרשים / במנחת (074zh2_seatrees).
+5. mapfix ‏8c44dc4 → c1e5fb3 — המפות: השדה, האסדה, היער, המקרא, משימות השדה (028, ‏074zn, ‏074zp_mapfix).
+6. garage ‏50a79cb → 0e5c055 — מסך F של המוסך עם הבמה המסתובבת (074zz2_garage_studio).
+7. portraits ‏10b5ff5 → 88a16e6 — דיוקן לכל איש קשר + צבע וסמל לכרטיסים (074zp_portraits).
+8. pier ‏fb8e925 → 7d642de — המזח, ‏M-F2-PICKUP, ‏F מתוך רכב (074zp_pier_pickup).
+9. loading ‏e4f9770 → fa57eac — מסך הטעינה (009c_loading, ‏074zf9_loading_hooks).
+10. locks ‏f4ce996 → 8d81687 — נעילה פיזית + ניווט חוקי (074zu_locks_phys; ‏074ze, ‏038a).
+11. newgame ‏91e3441 → 91169b0 — שמירה חדשה + הדרכה (074zu_newgame_tut; ‏055, ‏074ze).
+12. cutscenes ‏8be721d → f575a49 — סרטוני הסיפור במנוע (074zu_cutscenes; ‏074ze).
+13. missions ‏ac952fd → 511520e, ואחר כך ‏97301f9 → 468f8ce (השורה "מוכן למיזוג" עודכנה ל-97301f9 ב-06:43; ההפרש — רק 074zu_mission_board.js) — D‑693: הלוח, ההודעה-כרטיס-סמן-ניווט.
+14. fieldcalc ‏928fdfd → 3fca510 — חלק קריאה בלבד (074zq_fieldcalc: window.__TC_FC). בדקתי שהוא בטוח: רק פונקציות מדידה, ואין בו שום פעולה בזמן הטעינה (בלי טיימר, בלי עטיפה ובלי כתיבה למצב).
+15. fieldfix ‏12e026a → 930919a (השורה הופיעה ב-06:44) — הצבעים במבט 3/4 (068:liveryFns), ‏R3 ומחזור ההאנגרים, ‏s15pax (074x3_S15pax, ‏074zo_fieldfix).
+ה-manifest — 268 חלקים (master: 252). בדקתי שכל חלק חדש יושב אחרי החלק שלפניו בענף שלו ולפני החלק שאחריו: 16 / 16 תקינים.
+נקודות חזרה (ענפים): int299_pre_missions = f575a49 (בלי missions ו-fieldcalc), ‏int299_pre_fieldfix = 468f8ce (בלי fieldfix).
+
+== מה בחוץ ולמה ==
+- gfxlib ‏b526ce7 — לפי ההנחיה (רק lab/, לא נוגע במשחק). לא נכנס.
+- actions, events, signs, buses, opening, island — אין שורת "מוכן למיזוג" (בבדיקה האחרונה, 06:47). השורה של actions היא רק "READY_HERE".
+- carrier, police, w17, voiceint, sealife, farm, perf, threed — עדיין אין handback.txt.
+- אף ענף לא יצא בגלל שבירה.
+- הערה לגבי loading ו-pier: בהחזרות שלהם יש commits חדשים יותר (loading ‏db999f9 / try6566, ‏pier ‏6bab6c9 / try6324 — "בבדיקה"). נכנס מה שכתוב בשורת "מוכן למיזוג" (e4f9770, ‏fb8e925). השאר — לגל הבא.
+
+== לאישורך ==
+1. ההתנגשויות של missions (מחוץ ל-manifest) — פתרתי אותן ולא הוצאתי את הענף. בכל אחת משלוש השורות שני הצדדים שינו דברים שונים, ולכן הפתרון הוא איחוד שלהם, ונבדק בסקריפט (assert) שכל צד נשאר:
+   · 074zn_map_missions.js (שורה אחת ב-collect): mapfix — ‏poi('E2W-OPS') להכשרה של שירותי הקרקע; ‏missions — ‏MB.onBoard (עבודה שחזרה ללוח).
+   · 038a_E4E5_s9_live.js (ה-setInterval של השעה): locks — ‏&&!lkArea(id); ‏missions — ‏S9STORY.start במקום start.
+   · 074ze_story_engine.js (ה-api): locks — ‏lockCard; ‏missions — ‏open / next / focus / MAXOPEN.
+   ברירת המחדל — האיחוד. החלופה: מועמד בלי missions (הענף int299_pre_missions, ובלי fieldcalc ו-fieldfix) — לא נבנה ולא נבדק.
+2. fieldfix נכנס, אף שהשורה שלו הופיעה אחרי שכבר התחלתי לבדוק (06:44). בגללו הפסקתי את הבדיקה של המועמד הראשון (3fca510) ובניתי מחדש. stuckmax אצלם: AI-CAR-2 ב-AIR-FRONT ‏29.8 שנ׳. במועמד — 0 מעל 5 שנ׳.
+
+== הבדיקות ==
+המועמד — W/deliver/2026-11-17/merge/qa/cand299x/ (runs.tsv, ‏ingame.json, ‏rules.json, ‏people.json, ‏stuck.log, ‏stadium3.json, ‏img.txt):
+- q_ingame: roadAudit 330/330, ‏errors [] (המזהה s7f299 — build_texts עוברת).
+- rules_gate: ok, ‏fails [].
+- stuckmax 150: over5 0, ‏busOver5 0, ‏pe [] (‏served 0 — כמו בבסיס S7F298 באותו כלי).
+- people_on_road: ok — 601 דגימות, 279 אנשים, 18,645 אנשים מצוירים, 0 על נתיב, ‏errs [].
+- q_stadium3: ok — ימים 1→4, מחזור 1, השלט "הבא: הגבעה — המסילה · יום 5 (מחר)", הטלפון "יום 4 · 07:14", לוח הטיסות לפי שעון המשחק.
+- data:image ‏0 · ‏new Image( ‏0 · ‏"<img" ‏3. שניים מהם כמו ב-master, והשלישי הוא רק בתוך ביטוי רגולרי של הבדיקה של portraits (‎/data:|<image|<img|url\(/‎ — בודק שאין). זו לא טעינה של תמונה.
+בדיקות מהירות בדרך (q_ingame + rules_gate): try7320 (גל א׳: f9fix, ‏stadium, ‏posters, ‏seatrees, ‏mapfix) — ‏324/324, ‏rules ok. ‏try7321 (+ garage, ‏portraits, ‏pier, ‏loading) — ‏324/324, ‏rules ok. try7322 ו-try7323 לא נבדקו לחוד — המועמד המלא נבדק מעליהם.
+הבדיקות של הענפים עצמם, על המועמד (הכלים שלהם, בלי שינוי) — qa/cand299x/extras/:
+- f9fix q_f9_quick: ‏58 כפתורי אירועים, ‏58 אזורים, 0 תקולים, 0 שגיאות ✓
+- missions q_mb_smoke: הלוח ok, הסיפור ok (38 צעדים), הנעילות ok, ‏zs ok ✓
+- newgame q_tut: ok (7 צעדים, "הבית של סבא") ✓
+- posters p11_check: סט 11 דולק, ‏miss 0 ✓ · ‏q_icon: בהרצה הראשונה (תחת עומס) ‏__TC_ICON={ok:false,pending:true}, בלי קישור. בהרצה חוזרת — ‏ok, ‏blob, קישור אחד ✓. כלומר toBlob לא החזיר תשובה תחת עומס (ראו "תלות").
+- seatrees tree_sweep: 0 גזעים על מים, 0 במנחת, 0 במגרש הבית — אבל במגרש B4 נמצאו 3 עצים (אצלם, על try6161 / try6162 — 0). ראו "תלות". לא חוסם לדעתי (לא בים): VEG_D.t ב-(2228,3414), ‏(2308,3421), ‏(2084,3425) — בשולי הבדיקה (+50 מתחת למגרש), מחוץ למלבן של השומר.
+- garage gst_probe: ok (המוסך / הבית, הסל, קנה, 0 שגיאות) ✓
+- cutscenes cut_check: ok (17 סצנות, הפתיחה, הטנדר, הנחיתה, Esc) ✓
+- portraits por_check: ok (104 אנשי קשר, 0 data:image, 0 שגיאות) ✓
+- fieldfix probe_liv: s15pax_board / ‏flow / ‏remote / ‏dress — ok ✓; צילומי הצבעים במבט 3/4 (P1 קונפטי, ‏P5, ‏P6, ‏C1, ‏R1).
+- pier q_all: הליכה רציפה מהיבשה לכל 5 המקומות במזחים (pierWalk ok, ‏bad []); ‏F מתוך רכב נפתח ב-13 מתוך 23 מקומות — כמו אצלם ("13 מקומות נפתחים") ✓
+בדיקה בעין (צילומים לעצמי בלבד, qa/cand299x/eye/, ‏eye2/, ‏liv/): השלט באצטדיון ("הבא: טורבו — הגבעה · מחר · 19:30"). המפה M — 80 אזורים, השדה והאסדה מופיעים, המקרא בשוליים. כשהלוח דולק — 4 סיפורי אזור במפה, והכרטיס עם הדיוקן וכפתורי קבל / נווט / התקשר / אחר כך. ההודעות בטלפון עם דיוקנאות. היומן: "משימות צד על המפה · 4 / 6 (לפחות 4)". לוח F9 עם השורות "סצנות הסיפור" ו"ההדרכה". מסך המוסך עם רכב על הבמה. C8 בזום 0.44 — ים בלי עצים. הסצנה "הטנדר של סבא" — פסים שחורים, כתובית, "דלג (Esc)". מסך הפתיחה בלי ‎#dev — התפריט ופס "העיר ממשיכה להיבנות ברקע". המטוסים בשדה במבט 3/4 — הקונפטי של P1. 0 שגיאות דף בכל הצילומים.
+מה לא בדקתי: הסט המלא (full_set.sh — ‏live_audit, ‏xw, ‏rule30, ‏a4fleet, ‏vinv, ‏zoneaudit), ‏tcld_test של loading (אצלם הוא נגמר בזמן, 1801 שנ׳), ‏ng_play של newgame (מקצה לקצה) ויום המשחק של missions (mb_day).
+
+== commit וניסיון אחרונים ==
+int299 ‏930919a (העותק W/src_game_int299). ניסיונות: try7320 – try7324 (try7320–7322 דחוסים ב-gzip), ‏cand299x. הכלים: W/deliver/2026-11-17/merge/tools/ (merge_one.sh, ‏quick.sh, ‏blocking.sh, ‏extras.sh, ‏eye.js, ‏eye2.js).
+
+== תלות (הודעות לסוכנים — לא נגעתי בענפים שלהם) ==
+- seatrees + mapfix: במועמד, tree_sweep מוצא 3 עצים של VEG_D בשולי מגרש B4 (+50 מתחת). אצל seatrees — 0. לא מצאתי עדיין את המקור. הכיוון שאני רואה (לא מוכח): mapfix מצייר עכשיו את העצים במפה (vegFarTrees בזמן האפייה), והשומר של seatrees מסנן רק את המלבן המדויק של המגרש, בלי השוליים של הבדיקה. לבדוק אחרי המיזוג.
+- loading + mapfix: האפייה השנייה של mapfix (B.rebake) מאפסת את MAPBASE.next. בגלל זה הפס במסך הפתיחה יורד (צולם: ‏87% ‏"מפת הבסיס 11/24" ב-8 שנ׳ ← ‏82% ‏"10/24" ב-53 שנ׳). לא שובר; צריך שהפס יספור את האפייה השנייה כשלב נפרד.
+- missions + cutscenes: כשהלוח דולק, הכרטיס של הלוח (#tcMbCard) מופיע מעל סצנה שמתנגנת (צולם: "1-van"). להסתיר את הכרטיס כש-TCCUT.playing().
+- posters: האייקון נבנה ב-toBlob פעם אחת. אם ההמרה לא חוזרת (עומס, b ריק) — אין אייקון ואין ניסיון חוזר. כדאי ניסיון חוזר או מעבר ל-toDataURL על blob.
+
+== מה נשאר ==
+- הגל הבא (~11:00, אותו עותק, int300): actions, events, signs, buses, opening, island, carrier, police, w17, voiceint, sealife, farm, perf, threed — כשתהיה להם שורת "מוכן למיזוג"; וגם ה-commits החדשים יותר של loading (db999f9) ו-pier (6bab6c9), אם יעברו.
+- הסט המלא (full_set.sh) על cand299x — לא הורץ. המתאם מחליט אם להריץ לפני המסירה.
+- לא מסרתי ולא פרסמתי (deliver_1110.sh — של המתאם).

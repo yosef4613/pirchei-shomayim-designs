@@ -1,0 +1,11 @@
+== הבנייה try8252.html: 192 חתיכות · ציון: מינימום 0.0 · חציון 3.1 · מקסימום 41.9
+  g2_4      161,221 ב׳   41.9  חוף:74 hot:29 club:17 מועדון:10 strip:5 ים:37 רחצה:7 pool:8
+           «קרה','בקרת המסילה: הקו הראשי, מסילת העקיפה ותחנת החוף'],['שער','נתיב השער מרחבת הסיום אל חצר המסילה']], 'ST-C»
+  g9_2      160,199 ב׳   31.8  slot:72 body:34 wine:8 love:3 model:9 dress:5 חוף:2 בר:2
+           «#c9a23f'],lime:['צהוב זוהר','#d3ec1e']}; const SLOTS=['top','legs','shoes','hat','eyes','bag','neck','wrist»
+  g8_5      164,472 ב׳   30.8  club:35 מועדון:17 swim:14 ים:51 body:9 חוף:8 בר:7 model:7
+           «its:{...b.baits},at:isoNow()}; try{g77MsgIn('pl-club','"'+b.name+'" מחכה לך במעגן '+b.be.n+' ('+(b.be.pier==»
+  g17_3     152,867 ב׳   30.0  swim:33 body:50 female:11 bar:16 slot:7 חוף:6 ים:9 בר:2
+           «ly=pose==='fly'||pose==='glide'||pose==='takeoff',swim=pose==='swim'||pose==='dabble',sit=pose==='sit',L=S.len»
+  g3_6      163,083 ב׳   29.0  wine:12 body:22 יין:6 love:4 disco:4 beach:7 bar:16 בר:8
+           «2-MINI':'כלבו השדרה','C2-FISH':'חנות הדיג C2','C2-WINE':'מרתף הכרם','C2-BANK':'בנק C2','C2-CAFE':'בית הקפה C2'»

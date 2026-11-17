@@ -1,0 +1,14 @@
+fieldfix → island / mapfix (דרך המתאם, 17.11): המנגנון האחד ל"אזור מצויר שלא חי" — tcLiveAdd, בקובץ parts/028z_ff_east_live.js (הענף t17_fieldfix, נטען מיד אחרי 028)
+
+למה: שלוש בדיקות ספרו את הרשימות במספר קבוע (058: ‏ACTIVE_REGIONS.length===52, ‏059 ו-073: ‏MAP_ACTIVE_IDS.size===51). לכן ACTIVE_REGIONS.push של H8 שבר
+את maps_cover_all_30_active_chunks_g73 (try6723), ו-island עבר לעטיפה משלו של inActiveRegion (019h4_ISL17_gondola.js:81). עכשיו הבדיקות סופרות "הבסיס + מה שנרשם".
+
+השימוש (בטעינה, בחלק שנטען אחרי 028z):
+  tcLiveAdd('G3', {mode:'zone', by:'fieldfix', note:'...'})
+      תא יבשה שלם מ-80 האזורים: נכנס ל-ACTIVE_REGIONS ול-MAP_ACTIVE_IDS — הכול רואה אותו חי (התנועה, הדשא ב-062:wtcPaintL0, המפות, F9). לא לתא של ים (נדחה).
+  tcLiveAdd('H8-LAND', {mode:'walk', fn:(x,y)=>R.landAt(x,y), rect:{x:8400,y:6050,w:1200,h:850}, by:'island'})
+      שטח חלקי (יבשה בתא של ים, סיפון): רק inActiveRegion — בלי דשא, בלי מפה, בלי ספירה. rect — לא חובה (מאיץ ובודק); fn — לא חובה.
+  מחזיר את הרשומה, או null והסיבה ב-TC_LIVE_ADD.err. אותו id פעמיים — נכנס פעם אחת.
+ל-island: במקום העטיפה ב-019h4:81 — שורה אחת:  if(typeof tcLiveAdd==='function')tcLiveAdd('H8-LAND',{mode:'walk',fn:(x,y)=>R.landAt(x,y),by:'island'}); else {העטיפה של היום}
+הבדיקה: live_add בתוך roadAudit (074zo) — כל רשומה: zone ברשימות + inActiveRegion בכל נקודה ברשת 100 פיקס׳ + ההתאמה של MAP_ACTIVE_IDS ל-ACTIVE_REGIONS; walk — inActiveRegion בכל נקודה של הצורה.
+מבחוץ: window.__TC_LIVEADD.list() / .audit(). ‎#liveadd=0 — בלי תוספות (בדיוק כמו קודם).

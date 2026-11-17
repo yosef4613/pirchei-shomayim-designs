@@ -1,0 +1,103 @@
+{
+ "build": "try6844.html",
+ "kiosks": [
+  {
+   "id": "B2-KIOSK",
+   "g7": "lakek",
+   "tcb": "lakec",
+   "key": "lakec"
+  },
+  {
+   "id": "E3-KIOSK",
+   "g7": "stationk",
+   "tcb": "cafe",
+   "key": "cafe"
+  }
+ ],
+ "rows": [
+  {
+   "id": "B2-KIOSK",
+   "g7": "lakek",
+   "tcb": "lakec",
+   "key": "lakec",
+   "sign": null,
+   "bannerTok": "tcp:g7|lakek|44",
+   "drawn": {
+    "sign": 0,
+    "tile": 32,
+    "lit": 0,
+    "wrap": 0,
+    "plaque": 0,
+    "rear": 0,
+    "poster": 0
+   },
+   "f": {
+    "err": "Cannot read properties of undefined (reading 'x')"
+   },
+   "label": "none",
+   "before": {
+    "sign": 0,
+    "tile": 11,
+    "lit": 0,
+    "wrap": 0,
+    "plaque": 0,
+    "rear": 0,
+    "poster": 0
+   }
+  },
+  {
+   "id": "E3-KIOSK",
+   "g7": "stationk",
+   "tcb": "cafe",
+   "key": "cafe",
+   "sign": null,
+   "bannerTok": "tcp:g7|stationk|44",
+   "drawn": {
+    "sign": 9,
+    "tile": 0,
+    "lit": 0,
+    "wrap": 0,
+    "plaque": 0,
+    "rear": 0,
+    "poster": 0
+   },
+   "f": {
+    "open": true,
+    "id": "E3-KIOSK",
+    "tcb": "cafe",
+    "h1": "קיוסק התחנה",
+    "small": "קיוסק",
+    "banner": false,
+    "bannerTok": null
+   },
+   "label": "קיוסק התחנה",
+   "before": {
+    "sign": 8,
+    "tile": 0,
+    "lit": 0,
+    "wrap": 0,
+    "plaque": 0,
+    "rear": 0,
+    "poster": 0
+   }
+  }
+ ],
+ "stats": {
+  "n": {
+   "title": 0,
+   "meta": 1,
+   "tcb": 1,
+   "mono": 0,
+   "name": 0,
+   "hookS9": 1,
+   "bld": 3,
+   "kiosk": 3,
+   "band": 362
+  },
+  "err": null,
+  "rows": 471,
+  "brands": 256
+ },
+ "pageErrors": [],
+ "ok": false
+}

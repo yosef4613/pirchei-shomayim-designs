@@ -1,0 +1,217 @@
+{
+ "cases": [
+  {
+   "id": "O-1 talk",
+   "setup": {
+    "b": true,
+    "mode": "vehicle",
+    "cur": "d-O-shimon"
+   },
+   "wait": {
+    "open": false,
+    "armed": "talk",
+    "reached": true,
+    "hud": "F · לצאת מהרכב ולגשת ולדבר עם שמעון",
+    "mode": "vehicle"
+   },
+   "mid": {
+    "ps": false,
+    "step": null,
+    "mode": "walk",
+    "hud": "F · הבית של סבא · בית / שדרוג"
+   },
+   "after": {
+    "open": "d-O-shimon",
+    "mode": "walk",
+    "ps": false,
+    "last": {
+     "tag": "ms:talk",
+     "seen": [
+      "exit",
+      "walk",
+      "saShake",
+      "saTalk",
+      "fn"
+     ],
+     "dist": 0,
+     "ms": 2756
+    },
+    "err": null
+   },
+   "ok": true
+  },
+  {
+   "id": "S9-ST-E4",
+   "n": 2,
+   "setup": {
+    "opened": true,
+    "phone": true
+   },
+   "btn": "לקחת את המפסק ← במשחק",
+   "armed": {
+    "k": "take",
+    "phase": "go",
+    "phone": false,
+    "step": 2
+   },
+   "still": {
+    "step": 2,
+    "phase": "go"
+   },
+   "mid": {
+    "ps": true,
+    "step": "saUp",
+    "phase": "work",
+    "story": 2
+   },
+   "after": {
+    "step": 3,
+    "carry": "המפסק החלופי",
+    "last": {
+     "tag": "S9-ST-E4#2",
+     "seen": [
+      "walk",
+      "saDn",
+      "saUp"
+     ],
+     "dist": 0,
+     "ms": 1435
+    },
+    "err": null
+   },
+   "ok": true
+  },
+  {
+   "id": "S12-ST-C1",
+   "n": 2,
+   "setup": {
+    "opened": true,
+    "phone": true
+   },
+   "btn": "הלאה ← במשחק",
+   "armed": {
+    "k": "pick",
+    "phase": "go",
+    "phone": false,
+    "step": 2
+   },
+   "still": {
+    "step": 2,
+    "phase": "go"
+   },
+   "mid": {
+    "ps": true,
+    "step": "saPick",
+    "phase": "work",
+    "story": 2
+   },
+   "after": {
+    "step": 3,
+    "carry": "סל העגבניות",
+    "last": {
+     "tag": "S12-ST-C1#2",
+     "seen": [
+      "walk",
+      "saPick"
+     ],
+     "dist": 7,
+     "ms": 3155
+    },
+    "err": null
+   },
+   "ok": true
+  },
+  {
+   "id": "S9-ST-E4",
+   "n": 1,
+   "plain": 1,
+   "setup": {
+    "opened": true
+   },
+   "btn": "קיבלתי — לסדנת הצי ← במשחק",
+   "mid": {
+    "ps": true,
+    "step": "saTalk",
+    "story": 1,
+    "phone": false
+   },
+   "after": {
+    "step": 2,
+    "last": {
+     "tag": "card:S9-ST-E4#1",
+     "seen": [
+      "walk",
+      "saWave",
+      "saTalk",
+      "fn"
+     ],
+     "dist": 0,
+     "ms": 3209
+    },
+    "err": null
+   },
+   "ok": true
+  },
+  {
+   "id": "ZS-D3",
+   "n": 3,
+   "car": 1,
+   "setup": {
+    "d": [
+     3899,
+     1880,
+     85
+    ],
+    "r": 0,
+    "car": [
+     3899,
+     1880
+    ],
+    "dist": 0
+   },
+   "wait": {
+    "step": 3,
+    "armed": "meet",
+    "hud": "F · לצאת מהרכב ולגשת — נחום"
+   },
+   "mid": {
+    "mode": "walk",
+    "ps": true,
+    "step": 3
+   },
+   "after": {
+    "step": 4,
+    "mode": "walk",
+    "last": {
+     "tag": "ZS-D3#3",
+     "seen": [
+      "exit",
+      "walk",
+      "saWave",
+      "saTalk",
+      "fn"
+     ],
+     "dist": 0,
+     "ms": 3032
+    },
+    "err": null
+   },
+   "ok": true
+  },
+  {
+   "id": "S9-ST-E4",
+   "n": 2,
+   "cancel": 1,
+   "after": {
+    "ps": false,
+    "phase": "go",
+    "step": 2,
+    "why": "key"
+   },
+   "ok": true
+  }
+ ],
+ "pe": [],
+ "ok": true,
+ "pass": "6 / 6"
+}

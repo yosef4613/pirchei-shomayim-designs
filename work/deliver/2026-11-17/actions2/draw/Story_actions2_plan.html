@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>השחקן מפעיל ועושה</title>
+<style>
+:root{--bg:#f6f4ef;--fg:#1d2630;--mut:#5b6672;--card:#fff;--line:#d9d4c8;--acc:#2f7d5a;--acc2:#d0702a;--blue:#2f5fa0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151a20;--fg:#e8ecf0;--mut:#9aa6b2;--card:#1e252d;--line:#333d48;--acc:#54d696;--acc2:#f0a060;--blue:#8ab4f0}}
+:root[data-theme="dark"]{--bg:#151a20;--fg:#e8ecf0;--mut:#9aa6b2;--card:#1e252d;--line:#333d48;--acc:#54d696;--acc2:#f0a060;--blue:#8ab4f0}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 "Segoe UI",Arial,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:28px 0 8px;border-bottom:2px solid var(--line);padding-bottom:4px}
+.sub{color:var(--mut);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;vertical-align:top}th{color:var(--mut);font-weight:600}
+.tag{display:inline-block;border-radius:6px;padding:0 6px;font-size:12px;background:rgba(47,125,90,.14);color:var(--acc)}
+.bad{background:rgba(208,112,42,.15);color:var(--acc2)}
+svg{max-width:100%;height:auto;display:block}
+.poses{display:flex;flex-wrap:wrap;gap:8px}.pose{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;width:118px;text-align:center;font-size:13px}
+.wrap{overflow-x:auto}
+</style></head><body><main>
+<h1>השחקן מפעיל, ורואים אותו עושה</h1>
+<p class="sub">actions2 · 17.11 · הבעלים (~12:55): "רואים אותו ממתין לי אבל בשניה שאני מגיע זה מתחיל ללא לחיצה שלי / הייתי ברכב / צריך שאני יפעיל ואז נראה אותי הולך לוחץ יד מדבר קונה לוקח מרים". שדרוג של 074zu_story_actions (SACT, ‏tcStepFig) — לא מנגנון חדש.</p>
+
+<h2>המלאי — מה מתחיל היום לבד כשמגיעים (נמדד בקוד של S7F302)</h2>
+<div class="card wrap"><table>
+<tr><th>איפה</th><th>מה קורה כשמגיעים</th><th>כמה</th><th>מעכשיו</th></tr>
+<tr><td>074ze:runStep — שיחה (talk)</td><td>עוצרים ליד (גם ברכב, מתחת ל-4 קמ"ש) — השיחה נפתחת מיד</td><td>15</td><td><span class="tag">F</span> ליד הדמות (ברכב — F מוציא) → הולך, לוחץ יד, מדבר → השיחה</td></tr>
+<tr><td>074ze:runStep — עבודה (job)</td><td>עוצרים ליד — המשימה מתחילה (startMission)</td><td>6</td><td><span class="tag">F</span> → יוצא, הולך לנותן, לוחץ יד, לוקח את המסמכים, חוזר לרכב → המשימה</td></tr>
+<tr><td>074ze:runStep — סרט (show)</td><td>עוצרים ליד הקולנוע — הסרט נפתח</td><td>1</td><td><span class="tag">F</span> → הולך לקופה, קונה כרטיס (משלם) → הסרט</td></tr>
+<tr><td>038a / 074zs — שלבי נסיעה (drive)</td><td>קרבה בלבד — השלב מתקדם (גם 5 ה"ברכב")</td><td>8 מתוך 22</td><td><span class="tag">F</span> בטבעת (ברכב — חייבים להגיע ברכב; F מוציא) → הולך לדמות / למקום, לוחץ יד / מוסר</td></tr>
+<tr><td>074zu:tick — "להמשיך עם החפץ" (via)</td><td>מגיעים ברגל עם החפץ — מתקדם</td><td>1</td><td><span class="tag">F</span> → מניח / מראה את החפץ</td></tr>
+<tr><td>074zu:F — 140 הפעולות</td><td>F מפעיל, אבל הדמות עומדת במקום (עד 13 מ׳ מהחפץ) ורק תנוחה</td><td>140</td><td>אחרי F: הולך אל החפץ, מתכופף / מרים / נושא / מניח / מושיט — ורק בסוף ההתקדמות</td></tr>
+<tr><td>הכרטיס (data-s9-step) — שלב שיחה</td><td>הכפתור מקדם מיד, בלי שום דבר בעולם</td><td>~70</td><td>הכפתור → הטלפון נסגר → הולך לדמות של השלב, לוחץ יד, מדבר (בועה) → ואז ההתקדמות</td></tr>
+<tr><td>074zu:drawWho — הדמות שמחכה</td><td>'stand' קפוא כשהשחקן רחוק; פונה רק מ-9 מ׳</td><td>כל דמות</td><td>המתנה חיה (משקל, שעון, מבט), פונה לשחקן מ-30 מ׳, מנופף כשמתקרבים</td></tr>
+</table></div>
+
+<h2>הזרימה של כל שלב</h2>
+<div class="card wrap"><svg viewBox="0 0 1040 190" role="img" aria-label="הזרימה">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+<g font-size="13" text-anchor="middle" fill="currentColor" style="color:var(--fg)">
+<g transform="translate(940,20)"><rect width="90" height="120" rx="10" fill="none" stroke="currentColor" opacity=".5"/><text x="45" y="22" font-weight="700">מגיעים</text><text x="45" y="44">הטבעת + F</text><text x="45" y="64">הדמות מחכה</text><text x="45" y="84">ומנופפת</text><text x="45" y="108" fill="#d0702a">לא מתחיל לבד</text></g>
+<g transform="translate(810,20)"><rect width="100" height="120" rx="10" fill="none" stroke="#2f7d5a" stroke-width="2"/><text x="50" y="22" font-weight="700">F</text><text x="50" y="44">ברגל — מתחיל</text><text x="50" y="64">ברכב — F מוציא</text><text x="50" y="84">ומיד ממשיך</text><text x="50" y="108">(או כפתור בכרטיס)</text></g>
+<g transform="translate(680,20)"><rect width="100" height="120" rx="10" fill="none" stroke="currentColor" opacity=".5"/><text x="50" y="22" font-weight="700">הולך</text><text x="50" y="44">P34, במהירות</text><text x="50" y="64">של המשחק, עד</text><text x="50" y="84">מטר מהדמות /</text><text x="50" y="104">מהחפץ</text></g>
+<g transform="translate(520,20)"><rect width="130" height="120" rx="10" fill="none" stroke="currentColor" opacity=".5"/><text x="65" y="22" font-weight="700">עושה</text><text x="65" y="44">לוחץ יד · מדבר (בועה)</text><text x="65" y="64">מתכופף · מרים · נושא</text><text x="65" y="84">מניח · מושיט · משלם</text><text x="65" y="104">כותב · מצלם · מתקן</text></g>
+<g transform="translate(380,20)"><rect width="110" height="120" rx="10" fill="none" stroke="currentColor" opacity=".5"/><text x="55" y="22" font-weight="700">התוצאה</text><text x="55" y="44">בעולם (✓, החפץ</text><text x="55" y="64">במקום, ביד)</text></g>
+<g transform="translate(240,20)"><rect width="110" height="120" rx="10" fill="none" stroke="#2f7d5a" stroke-width="2"/><text x="55" y="22" font-weight="700">ההתקדמות</text><text x="55" y="44">S9STORY.advance /</text><text x="55" y="64">השיחה נפתחת /</text><text x="55" y="84">המשימה / הסרט</text></g>
+<g transform="translate(20,20)"><rect width="190" height="120" rx="10" fill="none" stroke="#d0702a" stroke-dasharray="5 4"/><text x="95" y="22" font-weight="700">באמצע</text><text x="95" y="44">חץ / WASD / E — עוצר</text><text x="95" y="64">("F כדי להתחיל שוב")</text><text x="95" y="84">שכבה מעל המשחק (TCBUSY)</text><text x="95" y="104">— F לא מתחיל</text></g>
+<g stroke="currentColor" stroke-width="1.6" fill="none" marker-end="url(#ar)"><path d="M938 80h-24"/><path d="M808 80h-24"/><path d="M678 80h-24"/><path d="M518 80h-24"/><path d="M378 80h-24"/></g>
+<text x="520" y="172" fill="var(--mut)">כל ההתקדמות — רק בסוף; לפני F אף שלב לא מתקדם ולא נפתח (גם לא ברכב)</text>
+</g></svg></div>
+
+<h2>התנוחות החדשות (P34 — אותו צייר, P34X.pose בשרשור כמו W17 / s15bag)</h2>
+<div class="poses" id="poses"></div>
+
+<h2>לכל סוג שלב — מה רואים</h2>
+<div class="card wrap"><table>
+<tr><th>סוג</th><th>אחרי F</th><th>הדמות השנייה</th></tr>
+<tr><td>שיחה (talk / כרטיס)</td><td>הולך עד הדמות · לוחץ יד (1.2 שנ׳) · מדבר — בועה ("שלום, …") · ואז השיחה / ההתקדמות</td><td>פונה, לוחצת יד, עונה בבועה (עם קול כשיש הקלטה)</td></tr>
+<tr><td>עבודה (job)</td><td>יוצא מהרכב · הולך לנותן · לוחץ יד · מקבל את המסמכים (ביד) · חוזר ונכנס לרכב · המשימה מתחילה</td><td>מושיט את המסמכים</td></tr>
+<tr><td>סרט (show)</td><td>הולך לקופה · משלם (יד מושטת) · ✓ כרטיס · הסרט</td><td>—</td></tr>
+<tr><td>הרמה / חיפוש</td><td>הולך לחפץ · מתכופף · מרים לחזה · נושא</td><td>—</td></tr>
+<tr><td>מסירה</td><td>הולך · מניח / מושיט · ✓ (ואם הדמות שם — לוחץ יד)</td><td>מקבלת</td></tr>
+<tr><td>מיון / העמסה</td><td>לכל ארגז: הולך למקור · מתכופף · מרים · נושא ליעד · מניח</td><td>—</td></tr>
+<tr><td>קטיף / שתילה</td><td>מתכופף ומתיישר לסירוגין — הפירות לסל / השתילים לקרקע</td><td>—</td></tr>
+<tr><td>עבודה / תיקון</td><td>הולך · ידיים על הדבר (ניצוצות / צבע / חותמת) · נורה אדומה ← ירוקה</td><td>—</td></tr>
+<tr><td>בדיקה / רישום</td><td>הולך · לוח ביד, כותב · ✓ מעל כל נקודה</td><td>—</td></tr>
+<tr><td>צילום / תצפית</td><td>הולך · שתי ידיים לפנים (מצלמה / משקפת) · הבזק / העדשה</td><td>—</td></tr>
+<tr><td>קשר / טלפון</td><td>יד לאוזן · גלי קשר</td><td>—</td></tr>
+<tr><td>נסיעה (drive)</td><td>מגיעים (ברכב כשהשלב "ברכב") · F · יוצא · הולך לדמות / למקום · לוחץ יד · מוסר</td><td>מחכה ליד</td></tr>
+</table></div>
+
+<h2>הבדיקה</h2>
+<div class="card"><ul>
+<li>__TC_SACT.check(): לכל 140 השלבים — לפני F: 40 פעימות של הקוד + הבדיקה של המנועים (038a / 074zs: הקרבה ברגל וברכב) — השלב לא זז; אחרי F — הליכה (אם רחוק) ותנוחה של פעולה לפחות אחת, ורק בסוף ההתקדמות.</li>
+<li>22 שלבי הנסיעה — המנועים לא מקדמים בקרבה (ברגל וברכב); 15 שיחות, 6 עבודות והסרט של הסיפור הראשי — TCSTORY.tick ליד ועצור (ברכב וברגל) לא פותח; F — פותח אחרי הרצף.</li>
+<li>כמו קודם: q_ingame, ‏rules_gate, ‏stuckmax 150, ‏people_on_road, ‏0 שגיאות בדף, 0 data:image.</li>
+</ul></div>
+<p class="sub">ברירות מחדל (לאישורך): ההליכה עד 45 מ׳ (רחוק יותר — בלי הליכה); לחיצת יד בכל מפגש של שיחה; שלב נסיעה "ברכב" — הטבעת רק כשהרכב שלך בטבעת.</p>
+</main>
+<script>
+// figures drawn in code (SVG): side view stick figures, one per pose
+const P={
+ 'לוחץ יד':{a:[[-10,8],[ -24,4]],b:[[10,10],[14,24]],pair:1},
+ 'מדבר':{a:[[-8,10],[-20,-2]],b:[[8,12],[10,26]],bub:1},
+ 'מתכופף':{bend:1,a:[[-12,14],[-20,30]],b:[[-8,14],[-14,30]]},
+ 'מרים לחזה':{a:[[-10,8],[-18,2]],b:[[-8,8],[-16,2]],box:[-20,-4]},
+ 'מושיט / משלם':{a:[[-12,6],[-26,4]],b:[[8,12],[10,26]],coin:1},
+ 'מניח':{bend:1,a:[[-14,12],[-22,26]],b:[[-10,12],[-18,26]],box:[-24,22]},
+ 'יד לאוזן':{a:[[-4,10],[-2,-6]],b:[[8,12],[10,26]]},
+ 'מנופף':{a:[[-6,-6],[-12,-22]],b:[[8,12],[10,26]]},
+ 'מצלם':{a:[[-10,4],[-16,-6]],b:[[-8,4],[-14,-6]],cam:1},
+ 'כותב':{a:[[-10,8],[-16,0]],b:[[-6,10],[-12,4]],board:1},
+ 'נושא':{walk:1,a:[[-8,8],[-14,2]],b:[[-6,8],[-12,2]],box:[-16,-4]},
+ 'מחכה (חי)':{a:[[-4,12],[-2,26]],b:[[6,10],[0,4]],watch:1}};
+const host=document.getElementById('poses');
+for(const [n,p] of Object.entries(P)){const hip=p.bend?[6,58]:[0,62],sh=p.bend?[-10,40]:[0,30],head=p.bend?[-18,32]:[0,18];
+ const L=(x1,y1,x2,y2,c,w)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c||'currentColor'}" stroke-width="${w||4}" stroke-linecap="round"/>`;
+ let s=`<svg viewBox="-50 0 100 104" width="96" height="100" style="color:var(--fg)"><ellipse cx="0" cy="98" rx="24" ry="4" fill="currentColor" opacity=".15"/>`;
+ const knee=p.bend?[-6,74]:p.walk?[-6,78]:[0,80];
+ s+=L(hip[0],hip[1],knee[0],knee[1],'#2b3038')+L(knee[0],knee[1],p.walk?-12:-2,96,'#2b3038')+L(hip[0],hip[1],p.bend?14:p.walk?8:4,80,'#2b3038')+L(p.bend?14:p.walk?8:4,80,p.bend?10:p.walk?12:4,96,'#2b3038');
+ s+=L(hip[0],hip[1],sh[0],sh[1],'#3d7fc4',7);
+ for(const [k,arm] of [['b',p.b],['a',p.a]]){const e=[sh[0]+arm[0][0],sh[1]+arm[0][1]],h=[sh[0]+arm[1][0],sh[1]+arm[1][1]];s+=L(sh[0],sh[1],e[0],e[1],'#3d7fc4',4)+L(e[0],e[1],h[0],h[1],'#d9a57f',3.5)}
+ s+=`<circle cx="${head[0]}" cy="${head[1]}" r="8" fill="#d9a57f"/><path d="M${head[0]-8} ${head[1]-2}a8 8 0 0 1 16 0z" fill="#3b2a1f"/>`;
+ if(p.box)s+=`<rect x="${sh[0]+p.box[0]-6}" y="${sh[1]+p.box[1]}" width="13" height="10" fill="#c9a46a" stroke="#6b4a2a"/>`;
+ if(p.coin)s+=`<circle cx="${sh[0]-28}" cy="${sh[1]+3}" r="3" fill="#f2c230"/>`;
+ if(p.cam)s+=`<rect x="${sh[0]-22}" y="${sh[1]-12}" width="10" height="7" fill="#222"/>`;
+ if(p.board)s+=`<rect x="${sh[0]-22}" y="${sh[1]-4}" width="8" height="11" fill="#f1ece0" stroke="#555"/>`;
+ if(p.watch)s+=`<circle cx="${sh[0]+6}" cy="${sh[1]+4}" r="2" fill="#f2c230"/>`;
+ if(p.bub)s+=`<rect x="-46" y="0" width="30" height="14" rx="6" fill="#fff" stroke="#999"/><text x="-31" y="11" font-size="9" text-anchor="middle" fill="#13202b">שלום</text>`;
+ if(p.pair){s+=L(34,62,34,80,'#2b3038')+L(34,80,34,96,'#2b3038')+L(34,62,34,30,'#2f6b45',7)+L(34,30,24,38,'#2f6b45',4)+L(24,38,12,34,'#d9a57f',3.5)+`<circle cx="34" cy="18" r="8" fill="#b97c56"/>`}
+ s+='</svg>';const d=document.createElement('div');d.className='pose';d.innerHTML=s+'<div>'+n+'</div>';host.appendChild(d)}
+</script></body></html>

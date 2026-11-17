@@ -1,0 +1,98 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>סט 12 — זהות ושילוט</title>
+<style>
+:root{--bg:#f6f4ee;--ink:#1d2730;--mut:#5b6670;--card:#fff;--line:#d9d4c7;--ok:#2f7d4f;--bad:#b3412e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12171c;--ink:#e9ecef;--mut:#9aa6b0;--card:#1b232b;--line:#2c3742;--ok:#6cc08e;--bad:#e7826f}}
+:root[data-theme="dark"]{--bg:#12171c;--ink:#e9ecef;--mut:#9aa6b0;--card:#1b232b;--line:#2c3742;--ok:#6cc08e;--bad:#e7826f}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Arial,"Noto Sans Hebrew",sans-serif}
+main{max-width:1040px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:26px;margin:0 0 6px}h2{font-size:19px;margin:28px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:720px){.grid{grid-template-columns:1fr}}
+small,.mut{color:var(--mut)}svg{width:100%;height:auto;display:block}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:5px 6px;text-align:right;vertical-align:top}
+.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:700}
+</style></head><body><main>
+<h1>סט 12 — זהות ושילוט לכל העיר · הציור לפני הבנייה</h1>
+<p class="mut">17.11.2026 · הסוכן signs · ציור בקוד בלבד (SVG), בלי תמונות. מה שמסומן "שלב 1" נבנה עכשיו; "שלב 2" — אחרי בקר התוכניות, בגל הבא.</p>
+
+<h2>המלאי — מה כבר קיים (כלל 16 / 19)</h2>
+<div class="card"><table>
+<tr><th>מה</th><th>איפה</th><th>מה חסר</th></tr>
+<tr><td>טבלת המותגים האחת — 62 לוגואים מאושרים (סטים 1–10)</td><td>074m_brands_data.js, ‏074m6_brands6_data.js (TC_BRANDS, הצייר TCB)</td><td>מחוברת רק למקום הראשי של כל מותג ולרשימת at שלו</td></tr>
+<tr><td>השלטים על החזיתות — רצועה בצבע המותג + לוגו, מואר בלילה</td><td>074n_brands_game.js (tcbrSign, ‏c2Sign / d2Sign, ‏TCBR_S9)</td><td>184 משטחים שמופו בסט 12 — רובם כבר מצוירים; 313 "משטח מוצע" — אין שלט</td></tr>
+<tr><td>מסך המקום (כלל 30) — שם, סוג, לוגו, סלוגן</td><td>029: placeMeta / placeApply; ‏074v_econ: הלוגו בקנבס</td><td class="bad">153 מסכים: "עסקי תעשייה קלה", הסוג "עסק", הסימן "ע׳"</td></tr>
+<tr><td>הכותרת של הטלפון</td><td>058: renderPhone — ברירת המחדל 'עסקי C4', ו-g7Ui הופך C4 ל"תעשייה קלה"</td><td class="bad">כל מקום בלי מותג ישן ב-E3 / E4 / E5 / הנמל / D4 / D5 / S15 / S16</td></tr>
+<tr><td>השמות של המקומות</td><td>039: navPoiRegistry — אותו מקור של המפה והניווט</td><td>לא היה מחובר לכותרת</td></tr>
+<tr><td>הקטלוג של המעצב — 471 מקומות במשחק, שם + מותג + צבע + סיווג</td><td>deliver/2026-11-14/city_signs/city-signs/catalog.js</td><td>"inGameInstalled: false"</td></tr>
+</table></div>
+
+<h2>שלב 1 — מסך ה-F של כל מקום: שם נכון, סוג נכון, לוגו מהטבלה</h2>
+<div class="grid">
+<div class="card"><b class="bad">היום</b><small> · מסוף חבילות E3</small>
+<svg viewBox="0 0 480 150" role="img" aria-label="מסך המקום היום">
+<rect x="0" y="0" width="480" height="150" rx="14" fill="#16324f"/>
+<rect x="374" y="22" width="88" height="88" rx="22" fill="#16324f" stroke="#9ad1ff" stroke-width="5"/>
+<text x="418" y="80" text-anchor="middle" font-size="50" font-weight="800" fill="#9ad1ff" font-family="Arial">ע</text>
+<text x="356" y="48" text-anchor="end" font-size="15" fill="#9ad1ff" font-family="Arial">עסק</text>
+<text x="356" y="84" text-anchor="end" font-size="27" font-weight="800" fill="#fff" font-family="Arial">עסקי תעשייה קלה</text>
+<rect x="18" y="22" width="110" height="40" rx="8" fill="#ffffff22"/><text x="73" y="48" text-anchor="middle" font-size="15" fill="#fff" font-family="Arial">יתרה</text>
+<rect x="0" y="128" width="480" height="22" fill="#9ad1ff"/>
+</svg></div>
+<div class="card"><b class="ok">שלב 1</b><small> · אותו מקום</small>
+<svg viewBox="0 0 480 150" role="img" aria-label="מסך המקום אחרי">
+<rect x="0" y="0" width="480" height="150" rx="14" fill="#1f3f6b"/>
+<rect x="330" y="22" width="132" height="88" rx="14" fill="#f2f1eb"/>
+<rect x="346" y="40" width="40" height="52" rx="6" fill="#d8a531"/><path d="M352 52 L380 52 L366 68 Z" fill="#1f3f6b"/>
+<text x="452" y="62" text-anchor="end" font-size="16" font-weight="800" fill="#1f3f6b" font-family="Arial">דואר</text>
+<text x="452" y="84" text-anchor="end" font-size="16" font-weight="800" fill="#1f3f6b" font-family="Arial">טורבו</text>
+<text x="314" y="48" text-anchor="end" font-size="15" fill="#d8a531" font-family="Arial">דואר טורבו</text>
+<text x="314" y="84" text-anchor="end" font-size="27" font-weight="800" fill="#fff" font-family="Arial">מסוף חבילות E3</text>
+<rect x="18" y="22" width="110" height="40" rx="8" fill="#ffffff22"/><text x="73" y="48" text-anchor="middle" font-size="15" fill="#fff" font-family="Arial">יתרה</text>
+<rect x="0" y="128" width="480" height="22" fill="#d8a531"/>
+</svg><small>הלוגו — הלוגו המאושר מהטבלה (TCB), כאן רק סימן מקום שלו.</small></div>
+<div class="card"><b class="ok">שלב 1 — מקום בלי מותג</b><small> · תצפית הפסגה, בית כפר, הגדר מול ה-GA</small>
+<svg viewBox="0 0 480 150" role="img" aria-label="מקום בלי מותג">
+<rect x="0" y="0" width="480" height="150" rx="14" fill="#3d5144"/>
+<rect x="374" y="22" width="88" height="88" rx="22" fill="#3d5144" stroke="#f2e6c4" stroke-width="5"/>
+<text x="418" y="80" text-anchor="middle" font-size="50" font-weight="800" fill="#f2e6c4" font-family="Arial">ה</text>
+<text x="356" y="48" text-anchor="end" font-size="15" fill="#f2e6c4" font-family="Arial">פארק ונוף</text>
+<text x="356" y="84" text-anchor="end" font-size="27" font-weight="800" fill="#fff" font-family="Arial">הפסגה</text>
+<rect x="0" y="128" width="480" height="22" fill="#f2e6c4"/>
+</svg><small>בית מגורים ונקודת נוף לא מקבלים לוגו עסקי (Review_part2) — רק הסימן של המקום, בצבע מהקטלוג, והסוג שלו.</small></div>
+<div class="card"><b>מה בדיוק משתנה</b>
+<ol style="margin:6px 0 0;padding-inline-start:20px">
+<li>השם: הלוגו הישן ← השם של הניווט (navPoiRegistry) ← השם בקטלוג — רק כשהכותרת היא ברירת מחדל.</li>
+<li>הסוג: שם המותג (רכבת טורבו סיטי, נמל טורבו סיטי, דלק טורבו…) או סוג המקום (מגורים, פארק ונוף, חקלאות, תצפית על השדה…).</li>
+<li>הלוגו: המותג מהקטלוג של סט 12, מהטבלה האחת — גם S16‑RENT (השכרת הרכב — rental), ‏B2‑KIOSK (קפה האגם) ו-E3‑KIOSK (קפה טורבו).</li>
+<li>בלי שינוי: מקום שכבר יש לו מותג ושם (C2 / D2 וכו׳), התיאטרון והמונית.</li></ol></div>
+</div>
+
+<h2>שלב 2 — שלט לכל חזית (הגל הבא)</h2>
+<div class="card">
+<svg viewBox="0 0 960 300" role="img" aria-label="שלט על חזית במבט שלוש רבעים">
+<rect x="0" y="0" width="960" height="300" fill="#8fa07a"/>
+<rect x="0" y="230" width="960" height="70" fill="#5d6670"/><rect x="0" y="262" width="960" height="4" fill="#e8e2c8"/>
+<!-- building 3/4: roof top, front face -->
+<polygon points="120,40 520,40 560,80 160,80" fill="#c9c2b2"/>
+<rect x="160" y="80" width="400" height="150" fill="#e6e0d2"/>
+<polygon points="520,40 560,80 560,230 520,190" fill="#b9b2a2"/>
+<rect x="190" y="92" width="340" height="34" rx="4" fill="#1f3f6b"/>
+<rect x="196" y="96" width="52" height="26" rx="3" fill="#f2f1eb"/><rect x="204" y="101" width="14" height="16" fill="#d8a531"/>
+<text x="520" y="116" text-anchor="end" font-size="20" font-weight="800" fill="#fff" font-family="Arial">מסוף חבילות E3</text>
+<rect x="190" y="148" width="70" height="82" fill="#7b8a96"/><rect x="290" y="148" width="70" height="50" fill="#9fb4c4"/><rect x="390" y="148" width="70" height="50" fill="#9fb4c4"/>
+<!-- night glow example -->
+<polygon points="640,60 900,60 930,90 670,90" fill="#3a3f46"/><rect x="670" y="90" width="260" height="140" fill="#4a5058"/>
+<rect x="690" y="100" width="220" height="28" rx="4" fill="#245548"/><rect x="684" y="96" width="232" height="36" rx="6" fill="none" stroke="#ffe9a8" stroke-opacity=".55" stroke-width="4"/>
+<text x="900" y="120" text-anchor="end" font-size="17" font-weight="800" fill="#fff" font-family="Arial">מועדון הספורט</text>
+<text x="800" y="290" text-anchor="middle" font-size="14" fill="#fff" font-family="Arial">בלילה — מואר (המנגנון של 074n)</text>
+<text x="360" y="290" text-anchor="middle" font-size="14" fill="#fff" font-family="Arial">ביום — רצועה בצבע המותג + הלוגו, על הפאה שפונה לכביש</text>
+</svg>
+<p>הרצועה והצייר — tcbrSign הקיים (074n), לא צייר חדש. המקור: 313 "משטחים מוצעים" בקטלוג (120×24 יחידות), על הפאה של הבניין שפונה לכניסה. מקום בלי מבנה (תצפית, שער, גדר) — בלי שלט, רק F. לאישורך: הגובה (עד 1/4 מגובה החזית) ושהשלט לא מכסה חלונות או דלת.</p>
+</div>
+
+<h2>מה לא בתחום הזה (תלות)</h2>
+<div class="card"><ul style="margin:0;padding-inline-start:20px">
+<li>הפעולות במסכים (F‑01 השכרה, F‑03 תדלוק, F‑04 מלון, F‑05 קנייה באי, F‑06 רכבל, F‑07 מסוק, F‑08 מיון ורשתות) — actions / pier / island.</li>
+<li>האייקון של העיר (favicon-code.js) — posters.</li></ul></div>
+</main></body></html>

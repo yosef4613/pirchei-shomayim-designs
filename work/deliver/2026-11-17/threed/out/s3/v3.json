@@ -1,0 +1,43 @@
+{
+ "ready": 11792,
+ "errs": [
+  "warning: [.WebGL-0x25340016d400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x25340016d400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x25340016d400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x25340016d400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+ ],
+ "reqs": [],
+ "shots": [
+  "/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/threed/out/s3/v3_game_full.png",
+  "/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/threed/out/s3/v3_game_car.png",
+  "/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/threed/out/s3/v3_game_sig.png",
+  "/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/threed/out/s3/v3_chase.png",
+  "/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/threed/out/s3/v3_free.png",
+  "/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/threed/out/s3/v3_night.png",
+  "/home/user/tc_root/tc/pkg/work/deliver/2026-11-17/threed/out/s3/v3_low.png"
+ ],
+ "fps": 1.6,
+ "stats": {
+  "ready": true,
+  "buildMs": 1859,
+  "calls": 67,
+  "tris": 39318,
+  "geos": 104,
+  "tex": 12,
+  "lamps": 61,
+  "trees": 55,
+  "palms": 18,
+  "signals": 9,
+  "litWindows": 184,
+  "car": {
+   "x": 65,
+   "y": 42,
+   "v": 0
+  },
+  "mode": "game",
+  "night": false,
+  "low": false
+ },
+ "heapMB": 10,
+ "imgs": 0
+}

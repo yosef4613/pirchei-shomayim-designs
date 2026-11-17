@@ -1,0 +1,150 @@
+מועמד מוכן: W/clean_r2b_025637/out/_try/cand306h.html · sha1 536202e8159d (536202e8159dd1b750fb745494dd628ff104bb0a) · 30,776,506 בתים · int306 ‏b8eb692 · ‏324 חלקים · המזהה turbo-city-v1.96-s7f306 · משוחרר: join_game ‏(BUILD_SUFFIX=-s7f306 → cand306h_src.html, ‏sha1 71b06a3d8311, ‏28,424,500 בתים) ← nfkiss/tools/release_strip.js
+דף בדיקת הסינון: https://yosef4613.github.io/pirchei-shomayim-designs/turbo-city/nftest/t14.html — ‏25 החלקים (split_any 1.3, ‏nftest/r306/g1…g25.txt) + ‏r306/loader.html · נדחף ל-main ‏(d64d13b) · בדקתי ב-Pages: ‏27 / 27 קבצים זהים, והחלקים יחד = המועמד, בית אחר בית. השונים מ-r305: ‏g2 ו-g14 עד g25 (13 קבצים); ‏g1 ו-g3 עד g13 זהים.
+הסט החוסם על cand306h (BSLOT_MERGE=1, ‏18:30–18:49):
+- q_ingame: ‏351 / 351, ‏errors []
+- rules_gate: ‏ok, ‏fails []
+- stuckmax 150: בהרצה הראשונה 0. בהרצה השנייה ‏AI-CAR-12 עמד 8.2 שנ׳ ב-CL-F2. לא היה רכב ב-AIR-FRONT, ב-AIR-CONN או ב-AIR-PAX3.
+- people_on_road: בהרצה הראשונה נכשל — אדם אחד של אירוע (evtDrawPeople, ‏PE-21) צויר במפרץ האוטובוס PH-10 (BUS2-D5), בשנ׳ 280, ב-8 דגימות. בהרצה החוזרת ok: ‏601 דגימות, ‏282 אנשים, ‏0 על נתיב.
+- home_in_q: ok — 8 הרמות, ‏bad 0, ‏0 שגיאות
+- home_q: ok
+- q_actions2: ‏ok=true (vis ok, ‏148 / 148)
+- ‏0 שגיאות בדף, ‏0 data:image, ‏0 new Image(, ‏0 kiss
+- nfkiss: ‏nv ‏467 / 467, ‏voiceint, שמירה ישנה, ‏M-F2-PICKUP — ok
+- nf_score: בחתיכות של 12 ק"ב — חציון 2.5, מקסימום 168.9, כמו S7F305. בקבצים שבדף — מקסימום 19.3 (g8), ו-g25 = ‏11.3 (ב-S7F305: ‏12.3).
+
+=== גל 6ב — S7F306: "תכין בדיקה רק לבית — אם זה יעבור שייכנס גם" (18:12–18:50) ===
+מצאתי: master = S7F305 (int305 ‏f6492a7). ‏df5f891 כבר בהיסטוריה (מוזג ובוטל), ולכן מיזוג רגיל לא מחזיר אותו — החזרתי אותו בביטול של הביטול (44126c2). בלי קידוד, הקובץ g25 יוצא 27.3. הנתונים של 074zz7 הם קוד, לא base64: ‏var HIN=(function(){...})() — ‏56 ק"ב עם bedroom / dressing / bath / bed / hot / pool.
+מה נכנס ל-int306 (כל אחד ב-commit נפרד):
+1. 44126c2 — ‏HOME-02 חוזר (df5f891).
+2. c901775 + ‏4ceb81a — ‏074zz7 מקודד בכלי חדש, merge6/tools/home_enc.py:
+   - הביטוי של HIN עובר UTF-8 → base64 → NV64 (בלי תנועות), ובבנייה המשוחררת — hex.
+   - בזמן הריצה: tcNv64 (009b) → ‏UTF-8 → eval עקיף, ויוצא אותו HIN.
+   - הלוך-חזור נבדק.
+   - הקוד הקריא נשאר ב-t17_home df5f891.
+   - g25: ‏27.3 → 11.3.
+3. eb0337c — ‏arena: העטיפה של plcAct (074zx_arena.js:155) שומרת את __vis / ‏__home. ‏q_actions2 ok=true.
+4. 5655b35 — ‏home ca20778 (Esc נשאר לתפריט). ‏home_in_q ok, ‏home_q ok.
+5. 0d2643b — ‏airfront, רק S16C מתוך c3b9360: ‏K ‏7208 → 7216, בלי S16R. ‏af_probe ‏300 שנ׳ (על v1): ‏front 0, ‏rec [] (אין רכב ב-AIR-CONN), ‏over5 1 — ‏AI-CAR-27 ‏6.2 שנ׳ ב-IS-HL2 באי. אין AIR-PAX3.
+בחוץ:
+- locks ‏a8f4ee0 — מוזג (73dde7c) ובוטל (b8eb692). ‏rules_gate נכשל ב-lock_reach, אבל לא בגלל הזמן: 'cut-5:H8' — האזור H8 פתוח ומנותק בשלב 5 ("בקרוב"), ‏3 מתוך 3 הרצות (qa/cand306h_v1/lockreach.json; הכלי: tools/q_lockreach.js).
+הבנייות: cand306h_v1 (הכול, כולל locks; ‏2e0877b6d5d8; ‏gz) — הבדיקות של ארבע התוספות; ‏cand306h = המועמד.
+תלות:
+- home: ‏074zz7 במאגר מקודד. כל שינוי בבית — בקוד הקריא ואז home_enc.py, ואחרי זה המיזוג הבא של t17_home יתנגש ב-074zz7.
+- locks: ‏H8 מנותק בשלב 5 — אחרי S7F304 / S7F305 (האי / ‏arena / ‏rails).
+- events: אדם של אירוע (PE-21) במפרץ PH-10, פעם אחת.
+- airfront: ‏S16R (AIR-PAX3) — עדיין בחוץ.
+story_full56 (בקשתך אחרי המסירה של S7F306) — נכשל. זה לא בגלל הבית: אותו דבר קורה ב-S7F305.
+- על cand306h (qa/cand306h/sf56.log): בכל שלב של שיחה, מ-O-1/0 (PLAYER-HOME) ואילך, הכלי רושם 'השיחה לא נפתחה' — הוא קורא ל-TCSTORY.bringNow() ומחכה ל-g77S().open, והשיחה לא נפתחת. מ-1-2/1 (vanFixed: ‏F במוסך, אחר כך תדלוק ב-D3-FUEL) הוא תקוע לגמרי, עד שנ׳ 1327. עצרתי אותו ב-19:1x.
+- על cand305x (S7F305, בלי הבית; הרצה קצרה, ‏MAXSEC 110 — qa/sf56cmp/sf56_305x.log): בדיוק אותו דבר מ-O-1/0.
+- הכלי עבר 49 / 49 על try7804 (S7F304 + story56 בלבד, בלי actions2). ‏actions2 נכנס יחד איתו בגל 6 ("לא מתקדם בלי F", עטיפות של g77DlgOpen / ‏startMission). ‏q_actions2 (44 / 44 סיפור) ו-e2e עוברים.
+- ההסבר הסביר — הכלי של story56 לא מכיר את הזרימה של actions2. אבל לא בדקתי במשחק שהסיפור עובר מההתחלה עד הסוף עם F, ולכן זה לא מוכח.
+- תלות story56 + actions2: לעדכן את story_full56 כך שילחץ F בכל שלב (כמו e2e_actions2), ולהריץ שוב על S7F306.
+‏memcmp לא הורץ.
+
+=== גל 6 — S7F305 (נמסר) ===
+מועמד מוכן: W/clean_r2b_025637/out/_try/cand305x.html · sha1 597dc93c7db8 (597dc93c7db813250e3aee7fa2db7c78491623bd) · 30,628,831 בתים · int305 ‏f6492a7 · ‏322 חלקים · המזהה turbo-city-v1.96-s7f305 · משוחרר: join_game ‏(BUILD_SUFFIX=-s7f305 → cand305x_src.html, ‏sha1 e4c2c5147f74, ‏28,305,794 בתים) ← nfkiss/tools/release_strip.js
+דף בדיקת הסינון: https://yosef4613.github.io/pirchei-shomayim-designs/turbo-city/nftest/t13.html — ‏25 החלקים (split_any 1.3, ‏nftest/r305/g1…g25.txt) + ‏r305/loader.html · נדחף ל-main ‏(439a956) · בדקתי ב-Pages: ‏27 / 27 קבצים זהים למה שנדחף, והחלקים יחד = המועמד, בית אחר בית.
+הסט החוסם על המשוחרר (cand305x, ‏BSLOT_MERGE=1, ‏17:51–18:04):
+- q_ingame: ‏roadAudit ‏351 / 351, ‏errors []
+- rules_gate: ‏ok, ‏fails []. רץ על כל המועמד, כולל s15j_terminal / ‏fieldfix_r3, עם story2 abbe4fd וגם terminal.
+- stuckmax 150: בהרצה הראשונה 2 רכבים ב-C4-RC-N — ‏AI-CAR-16 ‏23 שנ׳ והכבאית C4-FIRE-1 ‏12 שנ׳ (מקום שחוזר: actions try6421, ‏events, ‏airlogos, ‏fieldsvc, ‏fieldthru). בהרצה החוזרת: ‏over5 0, ‏busOver5 0, ‏pe [].
+- people_on_road: ok — ‏601 דגימות, ‏282 אנשים, ‏20,111 מצוירים, ‏errs []
+- ‏0 שגיאות בדף
+- data:image ‏0, ‏new Image( ‏0
+- kiss בבנייה: 0
+- nfkiss: ‏nv ok (467 / 467 מתפענחות, ‏bad []), ‏q_voiceint ok, שמירה ישנה ok (5 מזהים מופו), ‏M-F2-PICKUP מההתחלה עד הסוף ok
+- rails_check: ok — ‏9 / 9 רכבות, ‏JX-SEA / ‏JX-E4, ‏fail []
+- nf_score:
+  - החתיכות של 12 ק"ב: ‏2,550 חתיכות. חציון 2.5, מקסימום 168.9 — כמו S7F304, אותה חתיכה של מסך הטעינה.
+  - הקבצים שבדף (r305/gN.txt): המקסימום 19.3 (g8). ב-S7F304 המקסימום היה 19.9. ‏g25 = ‏12.3.
+  - מתוך 148 חתיכות עם ציון 30 ומעלה, 140 קיימות כמו שהן ב-S7F304.
+מצאתי: master = S7F304 (int304 ‏a8857ec). בתור (merge6_queue.txt) היו 10 שורות, ובחלון הגיעו בהודעות עוד 6: ‏story56, ‏arena, ‏home, ‏closezoom, ‏rails ו-brandin. כל הענפים התמזגו בלי שום התנגשות קוד, וההתנגשויות היו רק ב-manifest, בכלי. ב-brandin יש שני בסיסי מיזוג (criss-cross), ולכן merge_one.sh החדש פתר מול בסיס אמיתי: ‏41d3604, מתוך git merge-base --all, ולא מול הבסיס הווירטואלי. אף חלק לא נמחק, ו-mf_check יצא תקין. ‏actions ‏5737e75 כבר היה כולו בתוך actions2 ‏9768fa8, ולכן המיזוג שלו ריק. ‏HOME-02 (home ‏df5f891) נכנס ויצא, כי הפיל את nf_score — ראו "מה בחוץ"; הסכמת לזה (17:5x). אף ענף לא נוגע בנתונים המקודדים (009a / ‏029k / ‏074zf_story_vrec_data / ‏074zv_side_vrec_data / ‏074m / ‏074m6), ולכן לא היה צורך ב-nv_encode.
+
+=== "המיזוג 17.11 — גל 6" — ההחזרה (merge6, ‏17:11–18:06) ===
+- לא נגעתי ב-master, בתגיות ובענפים של הסוכנים.
+- כל דפדפן רץ דרך התור (BSLOT_MERGE=1), ברצף.
+- דחפתי לגיטהב רק את דף הסינון.
+- לא מסרתי — המסירה שלך.
+- לא דחסתי ולא מחקתי ניסיונות של אחרים. לא השתמשתי במספרי ניסיון (try8490–8529): בניתי ישר את המועמד, כמו בגלים 3–5.
+- העותק: W/src_game_int305 (הענף int305 מ-master ‏a8857ec).
+
+== מה נכנס (לפי הסדר; ענף · commit מהשורה → commit ב-int305) ==
+1. buses ‏867f30e → 3bee243 (074zu_buses_v2 — חלק חדש)
+2. actions2 ‏9768fa8 → 1abe1d0 (074zu_story_actions)
+3. story56 ‏5d7a49e → 3eb2f88 (074zd2_story56_data ו-074zw_story56_live — חלקים חדשים; ‏074ze)
+4. farm ‏6a8c477 → 1775c69 (074v_farm_plots — חלק חדש; ‏074v_farm)
+5. opening ‏354266d → af0c81c (074zg_opening_film — חלק חדש; ‏029a / ‏029c)
+6. posters ‏013c9f7 → 9b469b9 (074n3b_busad4 — חלק חדש; ‏074n_brands_game, ‏shell.html)
+7. actions ‏5737e75 → 2d2b709 — מיזוג ריק, כי הכול כבר בתוך actions2
+8. airfront ‏d3127b3 → 847f969 — ‏S16P_M.exitY ‏1314 → 1328. לפי ההוראה שלך לא לקחתי את c3b9360.
+9. story2 ‏abbe4fd → f8ffae8 (074zu_story_map — חלק חדש; ‏074zu_mission_board, ‏074zv_side_vrec)
+10. perf ‏94554b2 → 2b017b0 (074y_perf; ‏NPR כבוי כברירת מחדל)
+11. terminal ‏3a0836f → b2a6ba4 (074zx_terminal — חלק חדש; ‏074x_S15j_terminal, ‏058)
+12. arena ‏432e107 → 2a663b4 (024b_halftime, ‏074zx_arena ו-074zx1_bkleague — חלקים חדשים; ‏024a). ‏S7F304 התמזג נקי, בלי התנגשות באי.
+13. home ‏df5f891 → 298876d — בוטל ב-f6492a7 (מה בחוץ, 1)
+14. closezoom ‏3eff5d7 → a18aeab (074zz5_closezoom — חלק חדש; ‏065 / ‏066). ‏066 התמזג נקי מול actions2. מעליו commit שלי, ‏85e4320: ‏TCCZ.max ‏11 → 16, המקסימום ברגל — לפי ההחלטה של הבעלים "למחשב בלבד". צפיפות 16 ב-P34G.R נכנסת מעצמה.
+15. rails ‏f6104e8 → 6174f5f (038d2_rails_jx — חלק חדש; ‏019b / ‏021 / ‏040 / ‏040a / ‏072). התמזג נקי מול island.
+16. brandin ‏61f7993 → 895cc22 (074v_brandin — חלק חדש, 481 ק"ב; ‏013 / ‏068 / ‏074x). ‏criss-cross — בסיס אמיתי 41d3604.
+ה-manifest:
+- ‏322 חלקים (ב-master ‏308).
+- mf_check: ‏14 חלקים חדשים, כל אחד במקום שלו; 0 לא תקינים, 0 קבצים בלי רשימה.
+- grep -ril kiss parts/ מוצא רק את שני הקבצים שזהים ל-master: ‏074m_brands_data ו-009b.
+
+== מה בחוץ ולמה ==
+1. home ‏df5f891 (HOME-02, פנים הבית) — בגלל nf_score. הנתונים של 074zz7_home_in_data מלאים במילים כמו bedroom / bed / dress / bath / hot / pool, ומגיעים לחתיכות של 12 ק"ב עם ציון 215 / 111 / 82 / 52 (המקסימום ב-S7F304 היה 168.9). איתו, הקובץ האחרון שבדף (g25, ‏354 ק"ב) הגיע ל-27.3, כשהמקסימום ב-S7F304 היה 19.9, ושום קובץ מעל 20.7 עוד לא עבר את הסינון. בלעדיו: ‏19.3 ו-g25 = ‏12.3. ההוכחה: qa/score_files_304x_305x_v4_withhome.txt ו-qa/score_newcmp_304x_305x_v4.txt. הסכמת: בגל הבא מקודדים את 074zz7, ואז הוא נכנס.
+   - הבדיקה שלו (home_in_q) לא הורצה, כי הוא בחוץ.
+2. airfront ‏c3b9360 — לפי ההוראה שלך (AIR-PAX3 ‏73.7 שנ׳ בהרצה היחידה שלו).
+3. home ‏ca20778 — לפי ההוראה שלך.
+הקפאה: 17:51. ‏locks לא הגיע.
+
+== הבנייות ==
+- v1 ‏(17:14) — 11 השורות של התור + story56; ‏sha1 5208c795090a. לא נבדקה.
+- v2 ‏(17:15) — ‏+arena; ‏d70c96587479. עברו ingame ‏351 / 351, ‏rules, ‏people ok ו-stuckmax (פעם אחת AIR-CONN, למטה).
+- v3 ‏(17:27) — ‏+home, ‏+closezoom, ‏+הזום 16; ‏a21d5bfdd73d. עברו ingame ‏351 / 351, ‏rules, ‏stuckmax 0, ‏people ok, ‏nv, ‏voiceint, ‏oldsave ו-f2e2e. ‏nf_score: ‏12 ק"ב 203.0, הקבצים 19.7.
+- v4 ‏(17:40) — ‏+rails, ‏+brandin; ‏fc40a997f915. עברו ingame ‏351 / 351, ‏rules, ‏people ok, ‏rails, ‏nv ו-voiceint. ‏stuckmax: ‏AIR-CONN ‏29.8 שנ׳. ‏nf_score: הקבצים 27.3 (g25), ומכאן ההחלטה על HOME-02.
+- v5 = המועמד ‏(17:50) — v4 בלי HOME-02.
+- הקודמות שמורות ב-gzip: _try/cand305x_v1–v4.html.gz.
+- הבדיקות: qa/cand305x_v2 … ‏qa/cand305x_v4 ו-qa/cand305x (המועמד).
+
+== לאישורך ==
+1. ‏actions2 / ‏arena — ‏q_actions2 על המועמד: ‏ok=false. כל השאר עובר: ‏148 / 148 לא מתקדם בלי F, ‏77 / 77 כרטיס, ‏ms, ‏pose, ‏fig ו-zs. רק vis נכשל, עם 'plcAct בלי הביקור'.
+   - הסיבה: ‏074zx_arena.js:155 עוטף את plcAct (bk-ticket / bk-watch) ולא מעתיק את הסימנים __vis (של 074zu_story_actions) ו-__home (של 074zz6_home_sleep). הוא נטען אחריהם, ולכן הסימנים אובדים.
+   - ההתנהגות עצמה לא נפגעת: כל פעולה אחרת עוברת ל-a0, ושם ממשיכים הביקור והמלון.
+   - התיקון הוא שורה אחת אצל arena, אחרי העטיפה: plcAct.__vis=a0.__vis; plcAct.__home=a0.__home.
+   - לא תיקנתי: t13 כבר נדחף, וזה לא משנה התנהגות. ‏home_q (HOME-01) כנראה ייכשל מאותה סיבה בבדיקה 'המלון לא עובר דרך השינה'.
+2. ‏AIR-CONN (היציאה S16C): ב-v2 ‏AI-CAR-21 עמד 23.9 שנ׳, ב-v4 ‏AI-CAR-9 עמד 29.8 שנ׳, וב-v3 ובשתי ההרצות על המועמד — 0. לא פסלתי, לפי ההכרעה שלך (רק AIR-CONN, מתחת ל-30 שנ׳). ב-AIR-FRONT וב-AIR-PAX3 לא נתקע רכב באף הרצה.
+3. ‏closezoom: החזרתי את המקסימום ברגל ל-16 (85e4320). ‏czcheck במסך רחב בתור, ראו "מה נשאר". מסך צר לא נבדק, כי הוא לא יעד.
+
+== הבדיקות של הענפים ==
+רצות עכשיו על המועמד, באותו מקום בתור, אחרי הסט החוסם. התוצאות ב-qa/cand305x/runs.tsv וב-json של כל אחת.
+- כבר הסתיימו:
+  - rails_check: ok
+  - q_actions2: לאישורך 1
+  - film_flow: ‏ok
+  - farm_q ו-term (tsess / ‏q_term): ‏rc 0. לא קראתי את ה-json.
+- בתור: ‏q_s2 (story2), ‏af_probe ‏300 שנ׳ (airfront), ‏q_icon (posters), ‏q_bkleague, ‏q_arena, ‏czcheck במסך רחב, ‏story_full56 (MAXSEC 2400).
+- ‏isl17_e9_land עבר בתוך q_ingame ‏351 / 351.
+
+== commit וניסיון אחרונים ==
+- int305 ‏f6492a7, בעותק W/src_game_int305.
+- המועמד הוא cand305x.html; ‏cand305x_src.html היא הבנייה לפני השחרור, לא למסירה.
+- הדף: pirchei-shomayim-designs ‏439a956 (turbo-city/nftest/t13.html + ‏r305/).
+- הכלים: W/deliver/2026-11-17/merge6/tools/
+  - merge_one.sh — ל-int305, עם בסיס אמיתי ל-manifest ב-criss-cross
+  - mf_check.py
+  - chain6.sh ‏(= chain5)
+  - br6.sh / ‏chain6f.sh — הבדיקות של הענפים של גל 6: a2 / ‏e2e2 / ‏film / ‏farm / ‏term / ‏s2 / ‏af / ‏icon / ‏bk / ‏arena / ‏sf56 / ‏homein / ‏cz / ‏czn / ‏rails
+  - t13.sh / ‏pages_chk6.sh
+  - nf_files.py / ‏nf_newcmp.py
+  - הכלים של merge4 ו-merge5
+- nf_score: qa/score305x_12k.txt, ‏score_r305_files.txt, ‏score_files_304x_305x.txt ו-score_newcmp_304x_305x.txt.
+
+== תלות (הודעות לסוכנים — לא נגעתי בענפים שלהם) ==
+- arena: לשמור את __vis / ‏__home בעטיפה של plcAct (לאישורך 1).
+- home / ‏nfkiss: ‏HOME-02 ייכנס אחרי קידוד הנתונים של 074zz7 (nv_encode / ‏TCB.ALPH). בבדיקה: הקובץ האחרון של split 1.3 וחתיכות ה-12 ק"ב של bedroom / dress / bath.
+- airfront: ‏AIR-CONN (S16C) — ‏23.9 / ‏29.8 שנ׳ בשתיים מתוך חמש הרצות של הגל.
+- buses / ‏events: ‏C4-RC-N (הכבאית C4-FIRE-1 ו-AI-CAR) — ‏12–23 שנ׳, פעם אחת על המועמד. מקום שחוזר.
+
+== מה נשאר ==
+- הבדיקות של הענפים שבתור (למעלה).
+- הזיכרון מול S7F304 (memcmp) והסט המלא — לא הורצו.

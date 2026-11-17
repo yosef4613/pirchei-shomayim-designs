@@ -1,0 +1,803 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מה נכנס למשחק</title><style>
+:root{--bg:#f4f1ea;--fg:#1c2628;--muted:#5b6869;--card:#fff;--line:#d9d4c8;--had:#1e7a46;--now:#2a6fc4;--left:#b0541a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111a1c;--fg:#e8ede9;--muted:#9aa7a6;--card:#1a2427;--line:#2c3a3d;--had:#4cc483;--now:#6aa8f0;--left:#f0a06a}}
+:root[data-theme="dark"]{--bg:#111a1c;--fg:#e8ede9;--muted:#9aa7a6;--card:#1a2427;--line:#2c3a3d;--had:#4cc483;--now:#6aa8f0;--left:#f0a06a}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 Arial,"Noto Sans Hebrew",sans-serif}main{max-width:1100px;margin:auto;padding:16px}
+h1{font-size:25px;margin:.3em 0}h2{font-size:19px;margin:1.4em 0 .4em}.muted{color:var(--muted)}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;font-size:14px}
+td,th{border-bottom:1px solid var(--line);padding:7px 8px;text-align:right;vertical-align:top}th{font-weight:700;background:color-mix(in srgb,var(--line) 35%,transparent)}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}.had{color:var(--had);font-weight:700}.now{color:var(--now);font-weight:700}.left{color:var(--left);font-weight:700}
+.sum{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}.sum div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 14px}.sum b{font-size:22px;display:block}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;margin:8px 0;padding:6px 10px}summary{cursor:pointer;font-weight:700}
+ul{margin:.3em 0;padding-inline-start:1.2em}li{margin:.2em 0}
+</style></head><body><main>
+<h1>מה שסימנת "טוב — לשמור" — מה נכנס למשחק</h1>
+<p class="muted">לפי הקובץ שסימנת (owner_marks_1117.json): 686 חלקים מסומנים "לשמור" ו-492 "לעצב מחדש". מה שסומן "לעצב מחדש" — לא נגעתי בו; הוא נשאר כמו שהוא עד שתשלח עיצוב חדש. הניסיון: try8258 · הענף t17_brandin 61f7993 · 17.11.2026.</p>
+<div class="sum"><div><b>686</b>חלקים "לשמור"</div><div><b class="had">164</b>כבר היו במשחק</div><div><b class="now">488</b>נכנסו עכשיו</div><div><b class="left">34</b>נשארו</div></div>
+<h2>לפי אזור</h2><div class="tw"><table><thead><tr><th>אזור</th><th>"לשמור"</th><th>כבר במשחק</th><th>נכנס עכשיו</th><th>נשאר</th></tr></thead><tbody>
+<tr><td>השדה</td><td class="n">168</td><td class="n had">1</td><td class="n now">163</td><td class="n left">4</td></tr>
+<tr><td>העיר</td><td class="n">325</td><td class="n had">51</td><td class="n now">244</td><td class="n left">30</td></tr>
+<tr><td>האי</td><td class="n">26</td><td class="n had">7</td><td class="n now">19</td><td class="n left">0</td></tr>
+<tr><td>הנמל</td><td class="n">85</td><td class="n had">23</td><td class="n now">62</td><td class="n left">0</td></tr>
+<tr><td>62 הזהויות</td><td class="n">62</td><td class="n had">62</td><td class="n now">0</td><td class="n left">0</td></tr>
+<tr><td>פוסטרים</td><td class="n">20</td><td class="n had">20</td><td class="n now">0</td><td class="n left">0</td></tr>
+</tbody></table></div>
+<h2>לפי סוג</h2><div class="tw"><table><thead><tr><th>אזור</th><th>סוג</th><th>"לשמור"</th><th>כבר במשחק</th><th>נכנס עכשיו</th><th>נשאר</th></tr></thead><tbody>
+<tr><td>השדה</td><td>הצעת שלט (120×24)</td><td class="n">39</td><td class="n had">0</td><td class="n now">39</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>זהות מקומית (900×600)</td><td class="n">39</td><td class="n had">0</td><td class="n now">39</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>לוגו ההשכרה בשדה (900×600)</td><td class="n">1</td><td class="n had">1</td><td class="n now">0</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — הלוחות התפעוליים (שערים, חניונים, הסעה)</td><td class="n">11</td><td class="n had">0</td><td class="n now">11</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — השלטים התלויים בטרמינל</td><td class="n">23</td><td class="n had">0</td><td class="n now">23</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — לוח התדריך של הצוות</td><td class="n">1</td><td class="n had">0</td><td class="n now">1</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — לוחות הזהות של המבנים</td><td class="n">11</td><td class="n had">0</td><td class="n now">11</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — לוחות הטיסות בפנים</td><td class="n">11</td><td class="n had">0</td><td class="n now">7</td><td class="n left">4</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — מסכי השערים על השרוולים</td><td class="n">6</td><td class="n had">0</td><td class="n now">6</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — סימני P</td><td class="n">3</td><td class="n had">0</td><td class="n now">3</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — שלטי המסלול והמסלולונים</td><td class="n">17</td><td class="n had">0</td><td class="n now">17</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — שלטי הצד היבשתי</td><td class="n">3</td><td class="n had">0</td><td class="n now">3</td><td class="n left">0</td></tr>
+<tr><td>השדה</td><td>שילוט תפעולי — תוויות הדלפקים</td><td class="n">3</td><td class="n had">0</td><td class="n now">3</td><td class="n left">0</td></tr>
+<tr><td>העיר</td><td>הצעת שלט (120×24)</td><td class="n">69</td><td class="n had">0</td><td class="n now">69</td><td class="n left">0</td></tr>
+<tr><td>העיר</td><td>זהות מקומית (900×600)</td><td class="n">157</td><td class="n had">0</td><td class="n now">157</td><td class="n left">0</td></tr>
+<tr><td>העיר</td><td>שלט על משטח קיים — 019:d2Sign</td><td class="n">10</td><td class="n had">1</td><td class="n now">3</td><td class="n left">6</td></tr>
+<tr><td>העיר</td><td>שלט על משטח קיים — 019b:e4Plate</td><td class="n">2</td><td class="n had">0</td><td class="n now">0</td><td class="n left">2</td></tr>
+<tr><td>העיר</td><td>שלט על משטח קיים — 019b:s9Sign</td><td class="n">31</td><td class="n had">29</td><td class="n now">1</td><td class="n left">1</td></tr>
+<tr><td>העיר</td><td>שלט על משטח קיים — 060:c2Sign</td><td class="n">12</td><td class="n had">0</td><td class="n now">12</td><td class="n left">0</td></tr>
+<tr><td>העיר</td><td>שלט על משטח קיים — BLD40</td><td class="n">43</td><td class="n had">21</td><td class="n now">2</td><td class="n left">20</td></tr>
+<tr><td>העיר</td><td>שלט על משטח קיים — BLD40 B5THEA — המרקיזה</td><td class="n">1</td><td class="n had">0</td><td class="n now">0</td><td class="n left">1</td></tr>
+<tr><td>האי</td><td>הצעת שלט (120×24)</td><td class="n">6</td><td class="n had">0</td><td class="n now">6</td><td class="n left">0</td></tr>
+<tr><td>האי</td><td>זהות מקומית (900×600)</td><td class="n">13</td><td class="n had">0</td><td class="n now">13</td><td class="n left">0</td></tr>
+<tr><td>האי</td><td>שלט על משטח קיים — 019b:s9Sign</td><td class="n">7</td><td class="n had">7</td><td class="n now">0</td><td class="n left">0</td></tr>
+<tr><td>הנמל</td><td>הצעת שלט (120×24)</td><td class="n">19</td><td class="n had">0</td><td class="n now">19</td><td class="n left">0</td></tr>
+<tr><td>הנמל</td><td>זהות מקומית (900×600)</td><td class="n">41</td><td class="n had">0</td><td class="n now">41</td><td class="n left">0</td></tr>
+<tr><td>הנמל</td><td>שלט על משטח קיים — 019b:e4Plate</td><td class="n">1</td><td class="n had">0</td><td class="n now">1</td><td class="n left">0</td></tr>
+<tr><td>הנמל</td><td>שלט על משטח קיים — 019b:s9Sign</td><td class="n">24</td><td class="n had">23</td><td class="n now">1</td><td class="n left">0</td></tr>
+<tr><td>62 הזהויות</td><td>לוגו מקורי (62 הזהויות)</td><td class="n">62</td><td class="n had">62</td><td class="n now">0</td><td class="n left">0</td></tr>
+<tr><td>פוסטרים</td><td>פוסטר אירוע — לחזית 600×900</td><td class="n">10</td><td class="n had">10</td><td class="n now">0</td><td class="n left">0</td></tr>
+<tr><td>פוסטרים</td><td>פוסטר אירוע — למסך 960×600</td><td class="n">10</td><td class="n had">10</td><td class="n now">0</td><td class="n left">0</td></tr>
+</tbody></table></div>
+<h2>איך זה נכנס</h2><ul>
+<li><b>השילוט התפעולי של השדה (89):</b> הציור של המעצב (airport-ops) על אותם משטחים, באותו מקום ובאותו גודל — השלטים התלויים, לוחות הטיסות ומסכי השערים (עם הטיסות החיות), שלטי המסלול, לוחות המבנים, הלוחות התפעוליים, סימני P, הדלפקים ולוח התדריך.</li>
+<li><b>שלטי העיר על משטח קיים:</b> הלוח של המעצב במקום הלוח הישן — החזיתות של C2 ו-D2, השלטים על הפאה, לוחות המתקנים, והשלטים שבתוך ציור הבניין (השוק, בית החולים, המחסנים, המרקיזה של התיאטרון עם ההצגה של הערב).</li>
+<li><b>הזהות המקומית (900×600):</b> הלוגו בכותרת של מסך המקום (F).</li>
+<li><b>הצעת השלט (120×24):</b> למקום שאין בו היום משטח לשלט — לפי D‑631 לא מוסיפים שלט חדש על המבנה; ההצעה מוצגת במסך המקום (F), מתחת לכותרת. לאישורך: אם תרצה — משטח חדש בעולם, מקום אחר מקום.</li>
+<li><b>62 הזהויות, הלוגו של ההשכרה והפוסטרים:</b> כבר היו במשחק (טבלת המותגים, ‏074n3s) — נבדק שכל אחד מצויר בלי שגיאה.</li>
+<li><b>חידוש 01 · מזנוני השדה (אישרת ב-19:00):</b> ששת המזנונים — השלט והלוגו המאוירים החדשים במקום הזמניים של airlogos: השלט התלוי של המזנון, והלוגו במרכז לוח התפריט מעל הדלפק. הציור מוקטן לגודל של השלט במשחק (כ-60 ק״ב למזנון במקום 470–720). בדיקת לפני / אחרי: Refined_check.html.</li>
+<li><b>מה שסומן "לעצב מחדש":</b> לא נגעתי. שלטי השדה של airlogos (החנויות, המזנונים, חברות התעופה, חזיתות הטרמינל) נשארים במשחק כזמניים — יוחלפו כשיגיע העיצוב החדש.</li></ul>
+<h2>מה נשאר ולמה (34)</h2>
+<div class="tw"><table><thead><tr><th>אזור</th><th>מקום</th><th>חלק</th><th>למה</th></tr></thead><tbody>
+<tr><td>העיר</td><td>התיאטרון העירוני · B5-THEATRE</td><td>face_02</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>שוק העיר · B4-S1</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>שוק העיר · B4-S1</td><td>face_02</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>שוק העיר · B4-S1</td><td>face_03</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>שוק העיר · B4-S1</td><td>face_04</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>שוק העיר · B4-S1</td><td>face_06</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>מספרת השדרה · D2-BARBER</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>דף ועט · D2-BOOKS</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>משקפי המגדלים · D2-OPTICS</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>בית מרקחת הגפן · D2-PHARMACY</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>אנטנה · D2-PHONES</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>דואר טורבו · D2-POST</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>משרד שילוח C4 · C4-DISPATCH</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>משרד השילוח · C5-DISPATCH</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>מסוף טעינה C5 · C5-DOCKS</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>סדנת תחזוקת משאיות · C5-WORKSHOP</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>מסוף רציפי משא · D4-DOCKS</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>מחסן מטענים ברכבת · D4-RAIL</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>מחסן גדול · D4-WH</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>קיוסק התחנה · E3-KIOSK</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>מבנה שירותי החוף · F4-WC</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>מסוף רציפי משאיות · C4-DOCKS</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>שער לוגיסטיקה D4 · D4-GATE</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>בית החולים העירוני · A2-HOSP</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>בית החולים העירוני · A2-HOSP</td><td>face_02</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>אגף המרפאה הקהילתית · A2-CLINIC</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>המחסן של בית החולים — רציף פריקה וטעינה · A2-STORE</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>שילוח ומטען רכבת D5 · D5-01</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>שדה סולארי · E4-SOLAR-PANELS</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>העיר</td><td>ממיר · E4-INVERTER</td><td>face_01</td><td>נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>השדה</td><td>יציאות · נחיתות</td><td>sign</td><td>לוח טיסות גדול: של המעצב — 2 טיסות לכל רשימה, של היום (074x3) — עד 8. לא הוחלף כדי לא לאבד טיסות — לאישורך (מוכן בדגל TCBI.bigFids)</td></tr>
+<tr><td>השדה</td><td>נחיתות</td><td>sign</td><td>לוח טיסות גדול: של המעצב — 2 טיסות לכל רשימה, של היום (074x3) — עד 8. לא הוחלף כדי לא לאבד טיסות — לאישורך (מוכן בדגל TCBI.bigFids)</td></tr>
+<tr><td>השדה</td><td>יציאות</td><td>sign</td><td>לוח טיסות גדול: של המעצב — 2 טיסות לכל רשימה, של היום (074x3) — עד 8. לא הוחלף כדי לא לאבד טיסות — לאישורך (מוכן בדגל TCBI.bigFids)</td></tr>
+<tr><td>השדה</td><td>יציאות</td><td>sign</td><td>לוח טיסות גדול: של המעצב — 2 טיסות לכל רשימה, של היום (074x3) — עד 8. לא הוחלף כדי לא לאבד טיסות — לאישורך (מוכן בדגל TCBI.bigFids)</td></tr>
+</tbody></table></div>
+<h2>כל הפריטים, לפי אזור</h2>
+<details><summary>השדה — 168</summary><div class="tw"><table><thead><tr><th>פריט</th><th>חלק</th><th>גודל</th><th>מצב</th></tr></thead><tbody>
+<tr><td>rental</td><td>logo</td><td class="n">900×600</td><td class="had">הלוגו המאושר המקורי — כבר במשחק (TC_BRANDS.rental)</td></tr>
+<tr><td>מתחם השכרת הרכב · APT-RENT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מתחם השכרת הרכב · APT-RENT</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף המטען האווירי · APT-CARGO</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף המטען האווירי · APT-CARGO</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף רכבת–אוויר · RA-OFFICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף רכבת–אוויר · RA-OFFICE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>טרמינל הנוסעים · APT-TERM</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>טרמינל הנוסעים · APT-TERM</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מגדל הפיקוח · APT-TOWER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מגדל הפיקוח · APT-TOWER</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>האנגרים ותעופה כללית · APT-HANGARS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>האנגרים ותעופה כללית · APT-HANGARS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מנחת המסוקים · APT-HELI</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מנחת המסוקים · APT-HELI</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>קפה השדה · E2W-CAFE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קפה השדה · E2W-CAFE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מוסך שירותי השדה · E2W-GARAGE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מוסך שירותי השדה · E2W-GARAGE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מרכז שירותי קרקע · E2W-OPS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מרכז שירותי קרקע · E2W-OPS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחזוקת מטוסים · APT-MAINT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחזוקת מטוסים · APT-MAINT</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>דלק ושירותי קרקע · APT-FUEL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>דלק ושירותי קרקע · APT-FUEL</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חניה קצרה P-TERM · APT-SHORT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניה קצרה P-TERM · APT-SHORT</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>הורד ואסוף — מפרץ הטרמינל · APT-KISS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הורד ואסוף — מפרץ הטרמינל · APT-KISS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בקרת שער המטען · APT-CARGO-GATE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בקרת שער המטען · APT-CARGO-GATE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>רחבת אוטובוסים ושאטלים · APT-BUS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>רחבת אוטובוסים ושאטלים · APT-BUS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חניון ארוך P-LONG · APT-LONG</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חניון ארוך P-LONG · APT-LONG</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניה קצרה בכיכר הטרמינל · APT-PLAZA</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניה קצרה בכיכר הטרמינל · APT-PLAZA</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שער צוות G2 · מרכז שירותי הקרקע · APT-STAFF-GATE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שער צוות G2 · מרכז שירותי הקרקע · APT-STAFF-GATE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת השאטל — חניון ארוך · APT-LONG-STOP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת השאטל — חניון ארוך · APT-LONG-STOP</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חניון P-WEST-N · השכרה וחניה · E2W-PARK-N</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניון P-WEST-N · השכרה וחניה · E2W-PARK-N</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חניון מערב P-WEST · E2W-PARK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניון מערב P-WEST · E2W-PARK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף הטיסות 2 · FIDS-2</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף הטיסות 2 · FIDS-2</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף הטיסות 1 · FIDS-1</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף הטיסות 1 · FIDS-1</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מפרץ הורד ואסוף · APT-KISS-PICK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מפרץ הורד ואסוף · APT-KISS-PICK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף הטיסות 3 · FIDS-3</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף הטיסות 3 · FIDS-3</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>רחבת האוטובוסים — עצירת שאטל P-LONG · APT-BUS-G2</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>רחבת האוטובוסים — עצירת שאטל P-LONG · APT-BUS-G2</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>איסוף מוניות בטרמינל · APT-TAXI-PICK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>איסוף מוניות בטרמינל · APT-TAXI-PICK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>פינת הצופים — הפינה המערבית של הגדר · S15-SPOT-W</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>פינת הצופים — הפינה המערבית של הגדר · S15-SPOT-W</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שער המטען · S15-GATE-CARGO</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שער המטען · S15-GATE-CARGO</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שער הצד האווירי — עובדים ושירות · S15-GATE-STAFF</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שער הצד האווירי — עובדים ושירות · S15-GATE-STAFF</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מלון השדה — הקבלה · S16-HOTEL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מלון השדה — הקבלה · S16-HOTEL</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>השכרת הרכב — הדלפק · S16-RENT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>השכרת הרכב — הדלפק · S16-RENT</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>ביתן שער המטען · S16-CARGO-GATE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ביתן שער המטען · S16-CARGO-GATE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>ביתן שער הנוסעים · S16-PAX-GATE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ביתן שער הנוסעים · S16-PAX-GATE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>גשר הולכי הרגל AIR‑1 · S16-AIR1</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>גשר הולכי הרגל AIR‑1 · S16-AIR1</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>אגף השערים — מערב · S15-CORE-W</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אגף השערים — מערב · S15-CORE-W</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>דלפק השכרת הרכב (P‑RENT) · S16-RENT-KIOSK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>דלפק השכרת הרכב (P‑RENT) · S16-RENT-KIOSK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>ביתן שער המטען · S16-CARGO-BOOTH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ביתן שער המטען · S16-CARGO-BOOTH</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שירותים</td><td>sign</td><td class="n">32×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>צ׳ק-אין A</td><td>sign</td><td class="n">36×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>צ׳ק-אין B</td><td>sign</td><td class="n">36×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>צ׳ק-אין C</td><td>sign</td><td class="n">36×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>מודיעין</td><td>sign</td><td class="n">29×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>בידוק ביטחוני · שערים P1–P6 ↑</td><td>sign</td><td class="n">95×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>יציאה · מוניות · אוטובוסים · רכבת</td><td>sign</td><td class="n">101×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>מעבר לאגף מזרח ⟷</td><td>sign</td><td class="n">63×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>שירותים</td><td>sign</td><td class="n">32×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>נחיתות · ביקורת גבולות ↓</td><td>sign</td><td class="n">78×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>ביקורת גבולות · דרכונים</td><td>sign</td><td class="n">75×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>שירותים</td><td>sign</td><td class="n">32×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>אין מה להצהיר</td><td>sign</td><td class="n">50×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>יש מה להצהיר</td><td>sign</td><td class="n">49×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>עובדים בלבד</td><td>sign</td><td class="n">45×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>שירותים</td><td>sign</td><td class="n">32×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>חדר תפילה</td><td>sign</td><td class="n">40×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>צ׳ק-אין A–C · מסירת מזוודות</td><td>sign</td><td class="n">88×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>שערים P1–P2 ←  ·  P3–P6 →</td><td>sign</td><td class="n">90×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>P4 · P5 · P6 · מזנונים — במדרגות ↗</td><td>sign</td><td class="n">107×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>מזנונים · חנויות · P6 →</td><td>sign</td><td class="n">72×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>מסוע המזוודות · סרט 1</td><td>sign</td><td class="n">72×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>טרקלין עסקים →</td><td>sign</td><td class="n">56×11</td><td class="now">נכנס: s15jSignSprite / S15J_SIGNS / s15jTop</td></tr>
+<tr><td>יציאות · נחיתות</td><td>sign</td><td class="n">200×58</td><td class="left">לוח טיסות גדול: של המעצב — 2 טיסות לכל רשימה, של היום (074x3) — עד 8. לא הוחלף כדי לא לאבד טיסות — לאישורך (מוכן בדגל TCBI.bigFids)</td></tr>
+<tr><td>שער P1</td><td>sign</td><td class="n">50×25</td><td class="now">נכנס: s15jTop -&gt; s15grBoard</td></tr>
+<tr><td>שער P2</td><td>sign</td><td class="n">50×25</td><td class="now">נכנס: s15jTop -&gt; s15grBoard</td></tr>
+<tr><td>שער P3</td><td>sign</td><td class="n">50×25</td><td class="now">נכנס: s15jTop -&gt; s15grBoard</td></tr>
+<tr><td>שער P4</td><td>sign</td><td class="n">50×25</td><td class="now">נכנס: s15jTop -&gt; s15grBoard</td></tr>
+<tr><td>שער P5</td><td>sign</td><td class="n">50×25</td><td class="now">נכנס: s15jTop -&gt; s15grBoard</td></tr>
+<tr><td>סרט 1</td><td>sign</td><td class="n">54×27</td><td class="now">נכנס: s15jTop -&gt; s15grBoard</td></tr>
+<tr><td>הסעה · R1–R3</td><td>sign</td><td class="n">50×25</td><td class="now">נכנס: s15jTop -&gt; s15grBoard</td></tr>
+<tr><td>נחיתות</td><td>sign</td><td class="n">110×37.4</td><td class="left">לוח טיסות גדול: של המעצב — 2 טיסות לכל רשימה, של היום (074x3) — עד 8. לא הוחלף כדי לא לאבד טיסות — לאישורך (מוכן בדגל TCBI.bigFids)</td></tr>
+<tr><td>יציאות</td><td>sign</td><td class="n">180×52.2</td><td class="left">לוח טיסות גדול: של המעצב — 2 טיסות לכל רשימה, של היום (074x3) — עד 8. לא הוחלף כדי לא לאבד טיסות — לאישורך (מוכן בדגל TCBI.bigFids)</td></tr>
+<tr><td>יציאות</td><td>sign</td><td class="n">110×31.9</td><td class="left">לוח טיסות גדול: של המעצב — 2 טיסות לכל רשימה, של היום (074x3) — עד 8. לא הוחלף כדי לא לאבד טיסות — לאישורך (מוכן בדגל TCBI.bigFids)</td></tr>
+<tr><td>שער P1</td><td>sign</td><td class="n">44×14</td><td class="now">נכנס: s15grFids -&gt; s15grGate</td></tr>
+<tr><td>שער P2</td><td>sign</td><td class="n">44×14</td><td class="now">נכנס: s15grFids -&gt; s15grGate</td></tr>
+<tr><td>שער P3</td><td>sign</td><td class="n">44×14</td><td class="now">נכנס: s15grFids -&gt; s15grGate</td></tr>
+<tr><td>שער P4</td><td>sign</td><td class="n">44×14</td><td class="now">נכנס: s15grFids -&gt; s15grGate</td></tr>
+<tr><td>שער P5</td><td>sign</td><td class="n">44×14</td><td class="now">נכנס: s15grFids -&gt; s15grGate</td></tr>
+<tr><td>שער P6</td><td>sign</td><td class="n">44×14</td><td class="now">נכנס: s15grFids -&gt; s15grGate</td></tr>
+<tr><td>09-27</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>09-27</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>A1</td><td>sign</td><td class="n">42×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>← A →</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>09-27</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>09-27</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>A2</td><td>sign</td><td class="n">42×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>← A →</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>09-27</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>09-27</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>A3</td><td>sign</td><td class="n">42×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>← A →</td><td>sign</td><td class="n">78×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>B ↓</td><td>sign</td><td class="n">54×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>C ←</td><td>sign</td><td class="n">54×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>B</td><td>sign</td><td class="n">30×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>C</td><td>sign</td><td class="n">30×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>A →</td><td>sign</td><td class="n">54×20</td><td class="now">נכנס: s15bProps</td></tr>
+<tr><td>האנגר א׳</td><td>sign</td><td class="n">56.1×15</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>האנגר ב׳</td><td>sign</td><td class="n">55.68×15</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>האנגר ג׳</td><td>sign</td><td class="n">54.07×15</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>חוות הדלק</td><td>sign</td><td class="n">55.56×13.5</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>משטרה · מד״א</td><td>sign</td><td class="n">66.68×12</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>סדנת רכבי השירות</td><td>sign</td><td class="n">88.24×13.5</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>כבאות והצלה — השדה</td><td>sign</td><td class="n">99.04×12.75</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>אגף השערים P1–P6</td><td>sign</td><td class="n">104.71×15</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>נחיתות ↓</td><td>sign</td><td class="n">53.28×15</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>צ׳ק-אין A–C</td><td>sign</td><td class="n">69.28×15</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>נחיתות · כבודה · מכס</td><td>sign</td><td class="n">88.23×12</td><td class="now">נכנס: s15bPlate</td></tr>
+<tr><td>שער המטען</td><td>sign</td><td class="n">48×11</td><td class="now">נכנס: s9Face -&gt; s9Sign</td></tr>
+<tr><td>שער עובדים</td><td>sign</td><td class="n">34×11</td><td class="now">נכנס: s9Face -&gt; s9Sign</td></tr>
+<tr><td>מודיעין</td><td>sign</td><td class="n">56×11</td><td class="now">נכנס: s9Face -&gt; s9Sign</td></tr>
+<tr><td>שער הצד האווירי — עובדים ושירות · ההמשך ב-S16</td><td>sign</td><td class="n">231.67×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>שער המטען · ההמשך ב-S16</td><td>sign</td><td class="n">134.23×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>שער הנוסעים · עצור לבדיקה</td><td>sign</td><td class="n">150×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>גשר AIR‑1 · אל הרכבת</td><td>sign</td><td class="n">111.15×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>חניון רב-קומתי · כניסה</td><td>sign</td><td class="n">109.51×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>יציאה · חזית הטרמינל</td><td>sign</td><td class="n">106.37×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>חניון הצוות והעובדים · כרטיס עובד</td><td>sign</td><td class="n">160.54×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>AP3 · שער הדרום · החניון הארוך</td><td>sign</td><td class="n">153.25×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>חניון ארוך · פנויים: ק1 64 · ק2 64 · גג 64</td><td>sign</td><td class="n">184.66×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>הסעת העובדים · 06 / 14 / 22</td><td>sign</td><td class="n">134.65×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>מסוף רכבת–אוויר · RMG</td><td>sign</td><td class="n">119.24×16</td><td class="now">נכנס: e4Plate</td></tr>
+<tr><td>P</td><td>sign</td><td class="n">14×14</td><td class="now">נכנס: s16pP</td></tr>
+<tr><td>P</td><td>sign</td><td class="n">12×12</td><td class="now">נכנס: s16pP</td></tr>
+<tr><td>P</td><td>sign</td><td class="n">20×20</td><td class="now">נכנס: s16pP</td></tr>
+<tr><td>השכרת רכב · מוניות</td><td>sign</td><td class="n">120×18</td><td class="now">נכנס: s15jItem counter / s15jText</td></tr>
+<tr><td>אבידות ומציאות</td><td>sign</td><td class="n">120×18</td><td class="now">נכנס: s15jItem counter / s15jText</td></tr>
+<tr><td>מטבחון</td><td>sign</td><td class="n">120×18</td><td class="now">נכנס: s15jItem counter / s15jText</td></tr>
+<tr><td>מזג אוויר · נתיבים · NOTAM</td><td>sign</td><td class="n">58×10</td><td class="now">נכנס: s15jItem briefing</td></tr>
+</tbody></table></div></details>
+<details><summary>העיר — 325</summary><div class="tw"><table><thead><tr><th>פריט</th><th>חלק</th><th>גודל</th><th>מצב</th></tr></thead><tbody>
+<tr><td>מועדון הספורט · A4-CLUB</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מועדון הספורט · A4-CLUB</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>המלון השני · A5-HOTEL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>המלון השני · A5-HOTEL · מלון הכיכר</td><td>face_01</td><td class="n">25.7×8.7</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>המלון השני · A5-HOTEL · מלון הכיכר</td><td>face_02</td><td class="n">48.4×17.1</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>חנות התוצרת של החווה · A6-MARKET</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חנות התוצרת של החווה · A6-MARKET</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>קפה האגם · B2-CAFE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קפה האגם · B2-CAFE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>התיאטרון העירוני · B5-THEATRE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>התיאטרון העירוני · B5-THEATRE</td><td>face_01</td><td class="n">59.7×13.3</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>התיאטרון העירוני · B5-THEATRE · הערב: המופע החדש</td><td>face_02</td><td class="n">112×7.2</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>בית קפה החוף · B6-CAFE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית קפה החוף · B6-CAFE · קפה החוף</td><td>face_01</td><td class="n">74.8×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מגדל המטה · D2-OFFICE-1</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מגדל המטה · D2-OFFICE-1</td><td>face_01</td><td class="n">94×5.7</td><td class="now">נכנס: 019:d2Sign (חזית D2)</td></tr>
+<tr><td>אופק טכנולוגיות · D2-OFFICE-2</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אופק טכנולוגיות · D2-OFFICE-2</td><td>face_01</td><td class="n">130×9.6</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>סוכנות הרכב · D3-DEALER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>סוכנות הרכב · D3-DEALER</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>המוסך העירוני · D3-GARAGE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>המוסך העירוני · D3-GARAGE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מלון הים · F3-HOTEL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מלון הים · F3-HOTEL</td><td>face_01</td><td class="n">74.8×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>שוק העיר · B4-S1</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שוק העיר · B4-S1 · מבצע!</td><td>face_01</td><td class="n">19.3×7.5</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>שוק העיר · B4-S1 · פירות וירקות טריים</td><td>face_02</td><td class="n">34.2×5.4</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>שוק העיר · B4-S1 · כניסה</td><td>face_03</td><td class="n">11.4×4.8</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>שוק העיר · B4-S1</td><td>face_04</td><td class="n">83.7×20.2</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>שוק העיר · B4-S1</td><td>face_05</td><td class="n">45.1×10.8</td><td class="now">נכנס: BLD40 (ציור הבניין)</td></tr>
+<tr><td>שוק העיר · B4-S1 · מחזור</td><td>face_06</td><td class="n">7.9×3.3</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>בנק המפרץ · C2-BANK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בנק המפרץ · C2-BANK</td><td>face_01</td><td class="n">47×10.2</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>קפה טורבו · C2-CAFE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קפה טורבו · C2-CAFE</td><td>face_01</td><td class="n">46×10.2</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>קרס וחכה · C2-FISH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קרס וחכה · C2-FISH</td><td>face_01</td><td class="n">47×10.2</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>פרחי השדה · C2-FLOWERS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>פרחי השדה · C2-FLOWERS</td><td>face_01</td><td class="n">46×10.2</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>גלידת הכפר · C2-ICECREAM</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>גלידת הכפר · C2-ICECREAM</td><td>face_01</td><td class="n">40×10.8</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>קניון טורבו · C2-MALL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קניון טורבו · C2-MALL</td><td>face_01</td><td class="n">72×18.4</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>כלבו השדרה · C2-MINI</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>כלבו השדרה · C2-MINI</td><td>face_01</td><td class="n">146×10.2</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>שולחן העיר · C2-RESTAURANT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שולחן העיר · C2-RESTAURANT</td><td>face_01</td><td class="n">47×10.2</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>סוליה · C2-SOLE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>סוליה · C2-SOLE</td><td>face_01</td><td class="n">47×10.2</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>שיבולת · C2-SUPER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שיבולת · C2-SUPER</td><td>face_01</td><td class="n">138×15.6</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>שיבולת · C2-SUPER</td><td>face_02</td><td class="n">76×9.6</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>מרתף הכרם · C2-WINE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מרתף הכרם · C2-WINE</td><td>face_01</td><td class="n">64×10.8</td><td class="now">נכנס: 060:c2Sign (חזית C2)</td></tr>
+<tr><td>ארגז הכלים · C4-HARDWARE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ארגז הכלים · C4-HARDWARE</td><td>face_01</td><td class="n">61.5×12.8</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מספרת השדרה · D2-BARBER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מספרת השדרה · D2-BARBER</td><td>face_01</td><td class="n">57×10.4</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>דף ועט · D2-BOOKS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>דף ועט · D2-BOOKS</td><td>face_01</td><td class="n">67×10.4</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>קולנוע השדרה · D2-CINEMA</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קולנוע השדרה · D2-CINEMA</td><td>face_01</td><td class="n">132×13.2</td><td class="now">נכנס: 019:d2Sign (חזית D2)</td></tr>
+<tr><td>המלון הגדול · D2-HOTEL-1</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>המלון הגדול · D2-HOTEL-1</td><td>face_01</td><td class="n">122×10.2</td><td class="now">נכנס: 019:d2Sign (חזית D2)</td></tr>
+<tr><td>משקפי המגדלים · D2-OPTICS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>משקפי המגדלים · D2-OPTICS</td><td>face_01</td><td class="n">57×10.4</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>בית מרקחת הגפן · D2-PHARMACY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית מרקחת הגפן · D2-PHARMACY</td><td>face_01</td><td class="n">67×10.4</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>אנטנה · D2-PHONES</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אנטנה · D2-PHONES</td><td>face_01</td><td class="n">57×10.4</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>דואר טורבו · D2-POST</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>דואר טורבו · D2-POST</td><td>face_01</td><td class="n">97×10.4</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>דלק טורבו · D3-FUEL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>דלק טורבו · D3-FUEL</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חנות דיג החוף · B6-TACKLE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חנות דיג החוף · B6-TACKLE · חנות הדיג</td><td>face_01</td><td class="n">81.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>דלק טורבו 2 · C4-FUEL-SHOP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>דלק טורבו 2 · C4-FUEL-SHOP · דלק טורבו</td><td>face_01</td><td class="n">39.2×8.8</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>בסיס האמבולנסים · A4-EMS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בסיס האמבולנסים · A4-EMS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת הכיבוי · A4-FIRE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת הכיבוי · A4-FIRE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>האולם המקורה וחדר הכושר · A4-HALL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>האולם המקורה וחדר הכושר · A4-HALL</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת המשטרה · A5-POLICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת המשטרה · A5-POLICE · משטרה</td><td>face_01</td><td class="n">14.7×5.1</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>תחנת המשטרה · A5-POLICE</td><td>face_02</td><td class="n">64.6×16.1</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מסוף המעבורת לאי · A6-FERRY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף המעבורת לאי · A6-FERRY</td><td>face_01</td><td class="n">127.6×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>עיריית טורבו סיטי · B5-CITYHALL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>עיריית טורבו סיטי · B5-CITYHALL</td><td>face_01</td><td class="n">61.3×14.2</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>המרכז הקהילתי · B5-COMMUNITY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>המרכז הקהילתי · B5-COMMUNITY · המתנ״ס · מרכז קהילתי</td><td>face_01</td><td class="n">76.5×13.3</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>בית המשפט · B5-COURT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית המשפט · B5-COURT</td><td>face_01</td><td class="n">40.4×13.3</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>הספרייה העירונית · B5-LIBRARY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הספרייה העירונית · B5-LIBRARY</td><td>face_01</td><td class="n">61.4×13.3</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מוזיאון העיר · B5-MUSEUM</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מוזיאון העיר · B5-MUSEUM</td><td>face_01</td><td class="n">44.3×13.3</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>האוניברסיטה · B5-UNIVERSITY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>האוניברסיטה · B5-UNIVERSITY · אוניברסיטת טורבו סיטי</td><td>face_01</td><td class="n">76.3×13.3</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מחסן הובלה קלה · C4-DEPOT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן הובלה קלה · C4-DEPOT</td><td>face_01</td><td class="n">54.8×12.3</td><td class="now">נכנס: BLD40 (ציור הבניין)</td></tr>
+<tr><td>משרד שילוח C4 · C4-DISPATCH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>משרד שילוח C4 · C4-DISPATCH</td><td>face_01</td><td class="n">48.6×9</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>מטרו עבודות מתכת · C4-FAB</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מטרו עבודות מתכת · C4-FAB</td><td>face_01</td><td class="n">61.3×12.3</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>משרד השילוח · C5-DISPATCH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>משרד השילוח · C5-DISPATCH · משרד שילוח C5</td><td>face_01</td><td class="n">48.6×9</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>מסוף טעינה C5 · C5-DOCKS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף טעינה C5 · C5-DOCKS · מסוף רציפים</td><td>face_01</td><td class="n">36.7×8.2</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>חניון המשאיות · C5-GATE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניון המשאיות · C5-GATE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בית הזיקוק · C5-PLANT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית הזיקוק · C5-PLANT</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>סדנת תחזוקת משאיות · C5-WORKSHOP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>סדנת תחזוקת משאיות · C5-WORKSHOP · מוסך הצי</td><td>face_01</td><td class="n">27.9×8.2</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>מרכז הפצה · D4-DC</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מרכז הפצה · D4-DC</td><td>face_01</td><td class="n">31.6×10.4</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מסוף רציפי משא · D4-DOCKS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף רציפי משא · D4-DOCKS · מסוף רציפי משאיות D4</td><td>face_01</td><td class="n">62.5×8.2</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>מחסן מטענים ברכבת · D4-RAIL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן מטענים ברכבת · D4-RAIL · מטען רכבת</td><td>face_01</td><td class="n">33×8.2</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>מכס ושילוח D5 · D5-CUSTOMS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מכס ושילוח D5 · D5-CUSTOMS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שילוח ומטען רכבת D5 · D5-DISPATCH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שילוח ומטען רכבת D5 · D5-DISPATCH</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף חבילות הרכבת · E3-PARCELS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף חבילות הרכבת · E3-PARCELS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת הרכבת המרכזית · E3-STATION</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת הרכבת המרכזית · E3-STATION</td><td>face_01</td><td class="n">64.4×11.4</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מסוף וחניון אוטובוסים E3 · E3-TERMINAL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף וחניון אוטובוסים E3 · E3-TERMINAL</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מרכז הבקרה העירוני · E4-CONTROL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מרכז הבקרה העירוני · E4-CONTROL</td><td>face_01</td><td class="n">140.8×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>תחנת הכוח · E4-POWER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת הכוח · E4-POWER</td><td>face_01</td><td class="n">81.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>בקרת המסילה · E4-RAIL-CTRL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בקרת המסילה · E4-RAIL-CTRL</td><td>face_01</td><td class="n">94×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>תחנת הרכבת החופית · ST-COAST-HALL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת הרכבת החופית · ST-COAST-HALL · תחנת החוף</td><td>face_01</td><td class="n">81.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מוסך הרכבות · E5-DEPOT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מוסך הרכבות · E5-DEPOT</td><td>face_01</td><td class="n">86×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>משרד השילוח · E5-DISPATCH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>משרד השילוח · E5-DISPATCH</td><td>face_01</td><td class="n">94.6×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מסוף המטען של הרכבת · E5-FREIGHT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף המטען של הרכבת · E5-FREIGHT · מסוף המטען</td><td>face_01</td><td class="n">88×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מועדון המרינה · F3-CLUB</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מועדון המרינה · F3-CLUB · מועדון השייט</td><td>face_01</td><td class="n">101.2×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>פינת הקפה · A6-CAFE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>פינת הקפה · A6-CAFE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>קיוסק האגם · B2-KIOSK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קיוסק האגם · B2-KIOSK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת ההצלה · B6-LIFEGUARD</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת ההצלה · B6-LIFEGUARD</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שוק הדגים · B6-MARKET</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שוק הדגים · B6-MARKET</td><td>face_01</td><td class="n">81.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>ביתן החוף · B6-PAVILION</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ביתן החוף · B6-PAVILION</td><td>face_01</td><td class="n">81.4×11</td><td class="now">נכנס: 019b:s9Sign (שלט על הפאה)</td></tr>
+<tr><td>בית קפה לנהגים · C5-CAFE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית קפה לנהגים · C5-CAFE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חוות המכלים של בית הזיקוק · C5-WAREHOUSE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חוות המכלים של בית הזיקוק · C5-WAREHOUSE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שירותים ומלתחות לנהגים · C5-WC</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שירותים ומלתחות לנהגים · C5-WC</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מחסן גדול · D4-WH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן גדול · D4-WH</td><td>face_01</td><td class="n">36.2×9.8</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>קיוסק התחנה · E3-KIOSK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קיוסק התחנה · E3-KIOSK · קיוסק</td><td>face_01</td><td class="n">21.9×9</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>סדנת הצי של העירייה · E4-CITY-WS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>סדנת הצי של העירייה · E4-CITY-WS</td><td>face_01</td><td class="n">147.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>בית המשאבות של מי הקירור · E4-PUMP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית המשאבות של מי הקירור · E4-PUMP · בית המשאבות</td><td>face_01</td><td class="n">80×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מוסך ותחזוקת המסילה · E4-RAIL-WS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מוסך ותחזוקת המסילה · E4-RAIL-WS · מוסך המסילה</td><td>face_01</td><td class="n">94.6×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מחסן החבילות · E5-PARCELS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן החבילות · E5-PARCELS</td><td>face_01</td><td class="n">101.2×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מגדל האיתות · E5-SIGNAL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מגדל האיתות · E5-SIGNAL</td><td>face_01</td><td class="n">60×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>שירותי הצלה בחוף המזרחי · F4-LIFEGUARD</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שירותי הצלה בחוף המזרחי · F4-LIFEGUARD · מציל</td><td>face_01</td><td class="n">30×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מבנה שירותי החוף · F4-WC · שירותים ומקלחות</td><td>face_01</td><td class="n">121×11</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>קיוסק התדלוק במרינה · F3-FUEL-KIOSK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קיוסק התדלוק במרינה · F3-FUEL-KIOSK · דלק ימי</td><td>face_01</td><td class="n">24×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>בית החווה · A6-HOUSE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית החווה · A6-HOUSE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>האסם — תוצרת החווה · A6-BARN</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>האסם — תוצרת החווה · A6-BARN · האסם</td><td>face_01</td><td class="n">56×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>הרפת — מבנה המשק · A6-COWSHED</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הרפת — מבנה המשק · A6-COWSHED · הרפת</td><td>face_01</td><td class="n">56×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>סדנת הציוד החקלאי · A6-SHED</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>סדנת הציוד החקלאי · A6-SHED · סדנת הציוד</td><td>face_01</td><td class="n">88×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>החממה המערבית · A6-GREEN-1</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>החממה המערבית · A6-GREEN-1</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>החממה המזרחית · A6-GREEN-2</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>החממה המזרחית · A6-GREEN-2</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף המעבורת — הקופה · A6-FERRY-OFFICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף המעבורת — הקופה · A6-FERRY-OFFICE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>סדנת המעבורת · A6-BOAT-SERVICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>סדנת המעבורת · A6-BOAT-SERVICE</td><td>face_01</td><td class="n">96×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>חניון החווה · 14 מקומות · A6-PARK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניון החווה · 14 מקומות · A6-PARK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>איסוף תוצרת החווה · A6-CARGO</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>איסוף תוצרת החווה · A6-CARGO</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>ערוגות השתילה והקציר · A6-VEG</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ערוגות השתילה והקציר · A6-VEG</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שדה החיטה · A6-WHEAT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שדה החיטה · A6-WHEAT</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שדה התירס · A6-CORN</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שדה התירס · A6-CORN</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מטע התפוחים · A6-APPLE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מטע התפוחים · A6-APPLE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת הדלק D3 · עמדת שירות (עד תחנת הדלק של C4, D‑326) · B3-SERVICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת הדלק D3 · עמדת שירות (עד תחנת הדלק של C4, D‑326) · B3-SERVICE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת המשנה של המפעל · C5-SUBSTATION</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת המשנה של המפעל · C5-SUBSTATION</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חניון משאיות C5 · 3 רציפים ישרים · 8 חניות עובדים · C5-PARK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניון משאיות C5 · 3 רציפים ישרים · 8 חניות עובדים · C5-PARK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>איסוף מטען C5 · C5-CARGO</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>איסוף מטען C5 · C5-CARGO</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בדיקת מלאי המחסן · C5-STOCK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בדיקת מלאי המחסן · C5-STOCK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בדיקת עמדות הטעינה · C5-BAYS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בדיקת עמדות הטעינה · C5-BAYS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>הקפה מתוזמנת · קו הזינוק · A4-RUN</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הקפה מתוזמנת · קו הזינוק · A4-RUN</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>אימון פנדלים · A4-PENALTY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אימון פנדלים · A4-PENALTY</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>אימון קליעות לסל · A4-BASKET</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אימון קליעות לסל · A4-BASKET</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>אימון תגובה בטניס · A4-TENNIS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אימון תגובה בטניס · A4-TENNIS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>חנות הכפר — שוק העיר · C1-SHOP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>דלק טורבו 3 — המשאבות · C1-FUEL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>דלק טורבו 3 — המשאבות · C1-FUEL</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בית האריזה · D1-PACK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית האריזה · D1-PACK</td><td>face_01</td><td class="n">88×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>החממה המערבית — עגבניות · D1-GH-W-N</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>החממה המערבית — עגבניות · D1-GH-W-N</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>החממה המערבית — מלפפונים · D1-GH-W-S</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>החממה המערבית — מלפפונים · D1-GH-W-S</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>החממה המזרחית — פלפלים · D1-GH-E-N</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>החממה המזרחית — פלפלים · D1-GH-E-N</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>החממה המזרחית — תותים · D1-GH-E-S</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>החממה המזרחית — תותים · D1-GH-E-S</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>השדה הצפוני — תירס · D1-FIELD</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>השדה הצפוני — תירס · D1-FIELD</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>ביתן השכרת הסירות · B1-RENT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ביתן השכרת הסירות · B1-RENT · השכרת סירות</td><td>face_01</td><td class="n">26×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מסוף רציפי משאיות · C4-DOCKS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף רציפי משאיות · C4-DOCKS · מסוף רציפים</td><td>face_01</td><td class="n">36.7×8.2</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>חניוני התחנה E3 · E3-PARKING</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניוני התחנה E3 · E3-PARKING</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בית המשאבות של מי הקירור · E4-WATER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית המשאבות של מי הקירור · E4-WATER</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מבנה הבקרה של תחנת המשנה · E4-SUB</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מבנה הבקרה של תחנת המשנה · E4-SUB</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>השדה הסולרי · ביתן הממיר · E4-SOLAR</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>השדה הסולרי · ביתן הממיר · E4-SOLAR</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת עובדי החצר — חדר העובדים · E5-STAFF</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת עובדי החצר — חדר העובדים · E5-STAFF · חדר עובדי החצר</td><td>face_01</td><td class="n">114.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מחסן המטען של הרכבת · E5-RAIL-WH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן המטען של הרכבת · E5-RAIL-WH</td><td>face_01</td><td class="n">147.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>הכניסה לחניון הלילה — מהשדרה המזרחית · D5-GATE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הכניסה לחניון הלילה — מהשדרה המזרחית · D5-GATE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מחסן השילוח D5 · רציף הסמי · D5-WH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן השילוח D5 · רציף הסמי · D5-WH</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>שער לוגיסטיקה D4 · D4-GATE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שער לוגיסטיקה D4 · D4-GATE · שער</td><td>face_01</td><td class="n">11.8×6</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>חניון העובדים C5 · 8 חניות, נגישה וטעינה · C5-STAFF</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>חניון העובדים C5 · 8 חניות, נגישה וטעינה · C5-STAFF</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>הקפה · פינה צפון־מערבית · A4-RUN-NW</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הקפה · פינה צפון־מערבית · A4-RUN-NW</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>הקפה · פינה צפון־מזרחית · A4-RUN-NE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הקפה · פינה צפון־מזרחית · A4-RUN-NE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>הקפה · פינה דרום־מזרחית · A4-RUN-SE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הקפה · פינה דרום־מזרחית · A4-RUN-SE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בדיקת עמדת מים · A4-FIRE-HYDRANT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בדיקת עמדת מים · A4-FIRE-HYDRANT</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בדיקת רחבת הכבאיות · A4-FIRE-BAYS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בדיקת רחבת הכבאיות · A4-FIRE-BAYS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בדיקת ציוד הכיבוי · A4-FIRE-GEAR</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בדיקת ציוד הכיבוי · A4-FIRE-GEAR</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בדיקת רחבת האמבולנסים · A4-EMS-BAYS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בדיקת רחבת האמבולנסים · A4-EMS-BAYS</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בדיקת ציוד הצוות · A4-EMS-GEAR</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בדיקת ציוד הצוות · A4-EMS-GEAR</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>רחבת תרגול צוותים · A4-TRAINING</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>רחבת תרגול צוותים · A4-TRAINING</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>החניון של קריית הספורט (A3) · A4-PARK-W</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>החניון של קריית הספורט (A3) · A4-PARK-W</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>קריית הספורט · רחוב הדאונטאון · A4-PARK-S</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קריית הספורט · רחוב הדאונטאון · A4-PARK-S</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>בית המרקחת של בית החולים · A2-PHARMACY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית המרקחת של בית החולים · A2-PHARMACY</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מזח הדלק — המשאבה והצינור · F3-FUEL-DOCK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מזח הדלק — המשאבה והצינור · F3-FUEL-DOCK</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>הטיילת של המרינה · PR-F3</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הטיילת של המרינה · PR-F3</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מבנה הבקרה של תחנת המשנה · E4-SUB-KIOSK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מבנה הבקרה של תחנת המשנה · E4-SUB-KIOSK · בקרת תחנת המשנה</td><td>face_01</td><td class="n">46×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>אולם התצוגה של הסוכנות · D3-DEALER-SHOW</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אולם התצוגה של הסוכנות · D3-DEALER-SHOW · סוכנות הרכב</td><td>face_01</td><td class="n">16.6×4.9</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>החנות של תחנת הדלק · D3-FUEL-SHOP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>החנות של תחנת הדלק · D3-FUEL-SHOP</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>המוסך · D3-GARAGE-WS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>המוסך · D3-GARAGE-WS</td><td>face_01</td><td class="n">8.9×4.6</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>תחנת כיבוי 2 · C4-FIRE2</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת כיבוי 2 · C4-FIRE2</td><td>face_01</td><td class="n">39×11.4</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מגדל המשרדים · מגדל הכיכר · A5-OFFICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מגדל המשרדים · מגדל הכיכר · A5-OFFICE · מגדל הכיכר</td><td>face_01</td><td class="n">44.1×14.2</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>בית החולים העירוני · A2-HOSP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בית החולים העירוני · A2-HOSP · כניסה</td><td>face_01</td><td class="n">15.7×6.6</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>בית החולים העירוני · A2-HOSP · מיון</td><td>face_02</td><td class="n">17.7×9.8</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>בית החולים העירוני · A2-HOSP</td><td>face_03</td><td class="n">80×16.1</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>אגף המרפאה הקהילתית · A2-CLINIC</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אגף המרפאה הקהילתית · A2-CLINIC · מרפאה קהילתית</td><td>face_01</td><td class="n">43.5×7.8</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>המחסן של בית החולים — רציף פריקה וטעינה · A2-STORE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>המחסן של בית החולים — רציף פריקה וטעינה · A2-STORE · מחסן · מטבח</td><td>face_01</td><td class="n">25×5.4</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>שילוח ומטען רכבת D5 · D5-01</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שילוח ומטען רכבת D5 · D5-01 · שילוח ומטען רכבת</td><td>face_01</td><td class="n">48.3×7.8</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>שדה סולארי · E4-SOLAR-PANELS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שדה סולארי · E4-SOLAR-PANELS</td><td>face_01</td><td class="n">70×16</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+<tr><td>ממיר · E4-INVERTER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ממיר · E4-INVERTER</td><td>face_01</td><td class="n">36×11</td><td class="left">נבנה, אבל בבדיקה לא נמצא מצויר בעולם — לבירור</td></tr>
+</tbody></table></div></details>
+<details><summary>האי — 26</summary><div class="tw"><table><thead><tr><th>פריט</th><th>חלק</th><th>גודל</th><th>מצב</th></tr></thead><tbody>
+<tr><td>אכסניית ההר · IS-HOSTEL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אכסניית ההר · IS-HOSTEL</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מעבורת חזרה ל-A6 · נמל האי · G8-FERRY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מעבורת חזרה ל-A6 · נמל האי · G8-FERRY</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>הרציף שבין האגנים — המעבורת והסירות · IS-FERRY-QUAY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הרציף שבין האגנים — המעבורת והסירות · IS-FERRY-QUAY</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>קופת המעבורת ונתיבי ההמתנה · IS-WAIT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קופת המעבורת ונתיבי ההמתנה · IS-WAIT</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>משרד הנמל ומחסן הדייגים · IS-HARBOR-OFFICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>משרד הנמל ומחסן הדייגים · IS-HARBOR-OFFICE · משרד הנמל</td><td>face_01</td><td class="n">50×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>התחנה העליונה של הרכבל וקפה הפסגה · IS-CABLE-TOP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>התחנה העליונה של הרכבל וקפה הפסגה · IS-CABLE-TOP</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת האי · IS-STATION</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת האי · IS-STATION</td><td>face_01</td><td class="n">66×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>התחנה התחתונה של הרכבל · IS-CABLE-LOW</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>התחנה התחתונה של הרכבל · IS-CABLE-LOW</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>אולם תחנת האי — 2 קומות, אבן וזכוכית, שעון · IS-STATION-HALL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אולם תחנת האי — 2 קומות, אבן וזכוכית, שעון · IS-STATION-HALL · תחנת האי</td><td>face_01</td><td class="n">74.8×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>התחנה התחתונה של הרכבל — גלגל ההנעה, 2 תאים · IS-CABLE-LOW-B</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>התחנה התחתונה של הרכבל — גלגל ההנעה, 2 תאים · IS-CABLE-LOW-B · הרכבל</td><td>face_01</td><td class="n">56×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>התחנה העליונה וקפה הפסגה — מרפסת תצפית · IS-CABLE-TOP-B</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>התחנה העליונה וקפה הפסגה — מרפסת תצפית · IS-CABLE-TOP-B · קפה הפסגה</td><td>face_01</td><td class="n">81.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>אכסניית ההר — 2 קומות, 22 × 13.2 מ׳ (R-65) · IS-HOSTEL-B</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>אכסניית ההר — 2 קומות, 22 × 13.2 מ׳ (R-65) · IS-HOSTEL-B · אכסניית ההר</td><td>face_01</td><td class="n">94.6×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>קופת המעבורת · IS-WAIT-BOOTH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>קופת המעבורת · IS-WAIT-BOOTH · קופה</td><td>face_01</td><td class="n">30×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+</tbody></table></div></details>
+<details><summary>הנמל — 85</summary><div class="tw"><table><thead><tr><th>פריט</th><th>חלק</th><th>גודל</th><th>מצב</th></tr></thead><tbody>
+<tr><td>בדיקות המכס · C6-CUSTOMS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בדיקות המכס · C6-CUSTOMS · משרד המכס</td><td>face_01</td><td class="n">81.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מרכז שילוח מכולות · C6-DISPATCH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מרכז שילוח מכולות · C6-DISPATCH</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מנהלת הנמל ומסוף המכולות · C6-OFFICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מנהלת הנמל ומסוף המכולות · C6-OFFICE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף הנפט · C6-OIL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף הנפט · C6-OIL</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מנהלת תפעול הנמל · E6-OPS</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מנהלת תפעול הנמל · E6-OPS · מנהלת התפעול</td><td>face_01</td><td class="n">101.2×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>תחנת הנמל · E6-STATION</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת הנמל · E6-STATION</td><td>face_01</td><td class="n">54×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>תחנת הנמל · E6-STATION · רציף הנמל</td><td>face_02</td><td class="n">46×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>תחנת הנמל · E6-STATION · אל רציף הנמל</td><td>face_03</td><td class="n">52×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>תחנת הנמל · E6-STATION · צד הנמל ⇦</td><td>face_04</td><td class="n">46×11</td><td class="now">נכנס: 019b:s9Sign (שלט על הפאה)</td></tr>
+<tr><td>מסוף המשאיות בנמל · E6-TERMINAL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף המשאיות בנמל · E6-TERMINAL · מסוף רציפי המשאיות</td><td>face_01</td><td class="n">140.8×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>משרד מסוף היבוא · D6-OFFICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>משרד מסוף היבוא · D6-OFFICE · מסוף היבוא</td><td>face_01</td><td class="n">67×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מחסן רציף מערב · D6-WH1</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן רציף מערב · D6-WH1 · מחסן הנמל 1</td><td>face_01</td><td class="n">94.6×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מחסן רציף מזרח · D6-WH2</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן רציף מזרח · D6-WH2 · מחסן הנמל 2</td><td>face_01</td><td class="n">94.6×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מחסן הנמל · E5-PORT-WH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן הנמל · E5-PORT-WH</td><td>face_01</td><td class="n">81.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מוסך ציוד הנמל · E6-WORKSHOP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מוסך ציוד הנמל · E6-WORKSHOP</td><td>face_01</td><td class="n">114.4×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>נקודת הדלק של הנמל · D6-FUEL-KIOSK</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>נקודת הדלק של הנמל · D6-FUEL-KIOSK · דלק הנמל</td><td>face_01</td><td class="n">74×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מזח הגוררות · TUG-PIER-HEAD</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מזח הגוררות · TUG-PIER-HEAD</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>ביתן השער של מסוף המשאיות · E6-GATE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>ביתן השער של מסוף המשאיות · E6-GATE · מסוף המשאיות · E6</td><td>face_01</td><td class="n">74×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>רציף המים העמוקים — האונייה &quot;שחר הים&quot; · E6-BERTH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>רציף המים העמוקים — האונייה &quot;שחר הים&quot; · E6-BERTH</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מנוף המים העמוקים 1 — תא המפעיל · E6-STS-1</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מנוף המים העמוקים 1 — תא המפעיל · E6-STS-1</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מנוף המים העמוקים 2 · E6-STS-2</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מנוף המים העמוקים 2 · E6-STS-2</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>פסי החצר 2 ו-3 — הקצה הדרומי · E6-YARD</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>פסי החצר 2 ו-3 — הקצה הדרומי · E6-YARD</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>תחנת המשנה של הנמל · E6-SUB</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>תחנת המשנה של הנמל · E6-SUB</td><td>face_01</td><td class="n">113.5×16</td><td class="now">נכנס: 019b:e4Plate (לוח מתקן)</td></tr>
+<tr><td>השער המערבי — גגון על שני נתיבים ושני ביתני בדיקה · C6-GATE-W</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>השער המערבי — גגון על שני נתיבים ושני ביתני בדיקה · C6-GATE-W · השער המערבי</td><td>face_01</td><td class="n">74×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>עמדת השיקוף של המכס — שער שיקוף למשאית · C6-XRAY</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>עמדת השיקוף של המכס — שער שיקוף למשאית · C6-XRAY · שיקוף מכס</td><td>face_01</td><td class="n">62×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מסוף הנפט — חדר הבקרה · C6-OIL-CTRL</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף הנפט — חדר הבקרה · C6-OIL-CTRL · בקרת מסוף הנפט</td><td>face_01</td><td class="n">75×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מסוף הנפט — בית משאבות הכיבוי · C6-OIL-FIRE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף הנפט — בית משאבות הכיבוי · C6-OIL-FIRE · משאבות כיבוי</td><td>face_01</td><td class="n">101.2×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>שער החצר — בקצה דרך החצר (PT-Y1) · C6-GATE-E</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>שער החצר — בקצה דרך החצר (PT-Y1) · C6-GATE-E · שער החצר</td><td>face_01</td><td class="n">74×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מוסך המלגזות ומעמיסי המכולות · C6-WORKSHOP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מוסך המלגזות ומעמיסי המכולות · C6-WORKSHOP · מוסך המלגזות</td><td>face_01</td><td class="n">101.2×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מנהלת הנמל, המכס ומסוף המכולות — עם המנחת (H130) על הגג · D6-ADMIN</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מנהלת הנמל, המכס ומסוף המכולות — עם המנחת (H130) על הגג · D6-ADMIN · מנהלת הנמל והמכס</td><td>face_01</td><td class="n">127.6×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מחסן הציוד של הנמל · D6-STORE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסן הציוד של הנמל · D6-STORE · מחסן הציוד</td><td>face_01</td><td class="n">60×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>מוסך רכבי הנמל · D6-DEPOT</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מוסך רכבי הנמל · D6-DEPOT</td><td>face_01</td><td class="n">90×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>השער המזרחי — שער ראשי של מסוף היבוא ורציפי D6 (מדרך שער המזרח) · D6-GATE-E</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>השער המזרחי — שער ראשי של מסוף היבוא ורציפי D6 (מדרך שער המזרח) · D6-GATE-E · השער המזרחי</td><td>face_01</td><td class="n">74×11</td><td class="had">כבר במשחק — הפס של המשחק עם הלוגו המאושר (אפשר להחליף בעיצוב של המעצב: __TC_BRANDIN.TCBI.okToo)</td></tr>
+<tr><td>בלוק 4 — שורת הייצוא · C6-BLOCK-4</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>בלוק 4 — שורת הייצוא · C6-BLOCK-4</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מנוף הרציף 2 — תא המפעיל · C6-STS-2</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מנוף הרציף 2 — תא המפעיל · C6-STS-2</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>רציף המכולות — אוניית המכולות &quot;נשר הים&quot; · C6-BERTH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>רציף המכולות — אוניית המכולות &quot;נשר הים&quot; · C6-BERTH</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מזח הנפט והצינור PIPE-REF · C6-OIL-PIER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מזח הנפט והצינור PIPE-REF · C6-OIL-PIER</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>הרמפה של אוניית הרכבים &quot;גלי הכרמל&quot; · LN-D6-RAMP</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>הרמפה של אוניית הרכבים &quot;גלי הכרמל&quot; · LN-D6-RAMP</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מסוף יבוא הרכבים — השורות ועמדת הבדיקה · P-D6-IM</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מסוף יבוא הרכבים — השורות ועמדת הבדיקה · P-D6-IM</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>עמדת מוביל הרכב — ליד השער המזרחי · DW-D6-CARRIER</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>עמדת מוביל הרכב — ליד השער המזרחי · DW-D6-CARRIER</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>רציף התפזורת — המשפך והמנוף הנייד · D6-BERTH</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>רציף התפזורת — המשפך והמנוף הנייד · D6-BERTH</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>רציף הגוררות — הגוררות וסירת הנתב · D6-SERVICE</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>רציף הגוררות — הגוררות וסירת הנתב · D6-SERVICE</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מנחת הגג של מנהלת הנמל — H130 של רשות הנמל · D6-HELIPAD</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מנחת הגג של מנהלת הנמל — H130 של רשות הנמל · D6-HELIPAD</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+<tr><td>מחסום הנמל העמוק על דרך הרציף (גבול D6 / E6) · PG-CHK-Q4</td><td>logo</td><td class="n">900×600</td><td class="now">נכנס: מסך המקום (F) — הלוגו בכותרת</td></tr>
+<tr><td>מחסום הנמל העמוק על דרך הרציף (גבול D6 / E6) · PG-CHK-Q4</td><td>proposal</td><td class="n">120×24</td><td class="now">נכנס: מסך המקום (F) — שלט מתחת לכותרת (D‑631: לא מוסיפים שלט על מבנה בלי משטח)</td></tr>
+</tbody></table></div></details>
+<details><summary>62 הזהויות — 62</summary><div class="tw"><table><thead><tr><th>פריט</th><th>חלק</th><th>גודל</th><th>מצב</th></tr></thead><tbody>
+<tr><td>shibolet</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>cafe</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>fishing</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>mall</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>sole</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>flowers</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>antenna</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>books</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>eyes</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>dept</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>market</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>icecream</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>restaurant</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>tools</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>pharmacy</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>fuel</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>bank</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>cellar</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>post</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>barber</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>cinema</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>hotel</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>sportsclub</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>lakec</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>coastcafe</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>coastfishing</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>depot</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>driverscafe</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>hotel2</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>farmmarket</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>theatre</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>hq</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>tech</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>dealer</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>garage</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>rental</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>seahotel</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>plant</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>power</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>museum</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>library</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>university</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>customs</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>ferry</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>community</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>court</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>distribution</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>metal</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>marina</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>cable</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>fishmarket</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>boatrental</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>hostel</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>squaretower</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>rail</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>airport</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>cityhall</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>hospital</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>police</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>fire</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>ems</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>port</td><td>logo</td><td class="n">לוגו</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+</tbody></table></div></details>
+<details><summary>פוסטרים — 20</summary><div class="tw"><table><thead><tr><th>פריט</th><th>חלק</th><th>גודל</th><th>מצב</th></tr></thead><tbody>
+<tr><td>night-train</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>night-train</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>beyond-bridge</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>beyond-bridge</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>last-harbor</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>last-harbor</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>born-of-sea</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>born-of-sea</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>city</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>city</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>coast</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>coast</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>community</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>community</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>campus</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>campus</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>sea-to-city</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>sea-to-city</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>nature-collection</td><td>facade</td><td class="n">600×900</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+<tr><td>nature-collection</td><td>screen</td><td class="n">960×600</td><td class="had">כבר במשחק (נבדק: מצויר בלי שגיאה)</td></tr>
+</tbody></table></div></details>
+<p class="muted">הציור של כל פריט — בדף הסקירה (Brand_signs_review.html). בדיקה במשחק: window.__TC_BRANDIN (audit, stats).</p></main></body></html>

@@ -1,0 +1,115 @@
+{
+ "n": 675,
+ "by": {
+  "TC_CITY": {
+   "full": 259,
+   "mid": 212,
+   "simple": 0
+  },
+  "TC_AIRPORT_LOGOS": {
+   "full": 1,
+   "mid": 22,
+   "simple": 0
+  },
+  "TC_AIRPORT": {
+   "full": 2,
+   "mid": 20,
+   "simple": 1,
+   "na": null
+  },
+  "TC_AIRPORT_OPS": {
+   "full": 2,
+   "mid": 43,
+   "simple": 44
+  },
+  "BRANDAPI": {
+   "full": 0,
+   "mid": 0,
+   "simple": 0,
+   "na": null
+  }
+ },
+ "ex": {
+  "TC_CITY:full": [
+   "city-a4-club",
+   "city-a5-hotel",
+   "city-a6-market",
+   "city-b2-cafe",
+   "city-b5-theatre",
+   "city-b6-cafe"
+  ],
+  "TC_CITY:mid": [
+   "city-b6-pavilion",
+   "city-c5-wc",
+   "city-f4-wc",
+   "city-a2-hospital",
+   "city-g8-island-marina",
+   "city-b7-fishbay"
+  ],
+  "TC_AIRPORT_LOGOS:mid": [
+   "terminal-cafe",
+   "gate-cafe",
+   "juice",
+   "pizza",
+   "shawarma",
+   "salads"
+  ],
+  "TC_AIRPORT_LOGOS:full": [
+   "rental"
+  ],
+  "TC_AIRPORT:na": [
+   "departure",
+   "arrival",
+   "city",
+   "mirage",
+   "confetti",
+   "cargo"
+  ],
+  "TC_AIRPORT:mid": [
+   "terminal-cafe",
+   "gate-cafe",
+   "juice",
+   "pizza",
+   "shawarma",
+   "salads"
+  ],
+  "TC_AIRPORT:simple": [
+   "rental"
+  ],
+  "TC_AIRPORT:full": [
+   "terminal-east",
+   "terminal-west"
+  ],
+  "TC_AIRPORT_OPS:mid": [
+   "S15J-WAY-01",
+   "S15J-WAY-02",
+   "S15J-WAY-03",
+   "S15J-WAY-04",
+   "S15J-WAY-05",
+   "S15J-WAY-06"
+  ],
+  "TC_AIRPORT_OPS:simple": [
+   "S15J-WAY-19",
+   "S15J-FIDS-01",
+   "S15J-FIDS-02",
+   "S15J-FIDS-03",
+   "S15J-FIDS-04",
+   "S15J-FIDS-05"
+  ],
+  "TC_AIRPORT_OPS:full": [
+   "S15-PLATE-POLICE-EMS",
+   "S15-PLATE-FIRE"
+  ],
+  "BRANDAPI:na": [
+   "shibolet",
+   "cafe",
+   "fishing",
+   "mall",
+   "sole",
+   "flowers"
+  ]
+ },
+ "fail": 0,
+ "secs": 10.202,
+ "errs": []
+}

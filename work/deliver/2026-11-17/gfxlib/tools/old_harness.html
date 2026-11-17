@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#8a9a7a">
+<canvas id="c" width="1600" height="900"></canvas>
+<script>window.TurboCity={get:()=>null};</script>
+<script src="../src/old_libs.js"></script><script src="../src/g2_core.js"></script><script src="../src/g2_car.js"></script>
+<script>
+const errs=[];window.onerror=(m)=>errs.push(m);
+const ok={c:c34LibInit(),p:p34LibInit(),a:a34LibInit()};
+const cv=document.getElementById('c'),g=cv.getContext('2d');g.fillStyle='#9aa58c';g.fillRect(0,0,1600,900);
+const R=2;g.save();g.scale(R,R);
+for(let i=0;i<16;i++){const h=i/16*Math.PI*2,s=C34.sprite('VH-SD-02','#2f6fd0',h,R,16);const x=50+i*48,y=60;
+ g.drawImage(s.cv,x-s.ox/R,y-s.oy/R,s.cv.width/R,s.cv.height/R);try{C34.wheels(g,'VH-SD-02',x,y,s.k,16,0,-1,1)}catch(e){errs.push('wh '+e.message)}}
+const L=P34.DEF;
+for(let i=0;i<16;i++){const h=i/16*Math.PI*2;P34.draw(g,50+i*48,190,{},{k:'walk'},h,0.25,R)}
+for(let i=0;i<8;i++){P34.draw(g,50+i*30,250,{},{k:'walk'},0,i/8,R)}
+let ne=null;try{const sc=C34.len('VH-SD-02')/G2.car.len('VH-SD-02');for(let i=0;i<16;i++){const h=i/16*Math.PI*2,e=G2.car.sprite('VH-SD-02','#2f6fd0',h,sc,R,16);const x=50+i*48,y=120;g.drawImage(e.cv,x-e.ox/R,y-e.oy/R,e.cv.width/R,e.cv.height/R)}
+ g.save();g.translate(0,0);for(let i=0;i<4;i++){const h=[0.39,2.75,4.32,5.9][i];const e=G2.car.sprite('VH-SD-02','#2f6fd0',h,sc*4,R,16),o=C34.sprite('VH-SD-02','#2f6fd0',h,R*4,16);
+ g.drawImage(o.cv,40+i*190-o.ox/R,330-o.oy/R,o.cv.width/R,o.cv.height/R);try{g.save();g.translate(40+i*190,330);g.scale(4,4);C34.wheels(g,'VH-SD-02',0,0,o.k,16,0,-1,1);g.restore()}catch(e){}
+ g.drawImage(e.cv,40+i*190-e.ox/R,400-e.oy/R,e.cv.width/R,e.cv.height/R)}g.restore();ne=G2.stats()}catch(e){errs.push('new '+e.message+' '+e.stack)}
+g.restore();
+window.__res={ok,errs,ne,len:C34.len('VH-SD-02'),wid:C34.wid('VH-SD-02'),typesA:Object.keys(A34.TYPES).length};
+</script>

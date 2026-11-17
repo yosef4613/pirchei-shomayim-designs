@@ -1,0 +1,615 @@
+{
+ "flights": [
+  {
+   "id": "FL-P3",
+   "model": "AC-NB-01",
+   "al": "Tidewind Air",
+   "home": "P3",
+   "kind": "ac",
+   "n": 16
+  },
+  {
+   "id": "FL-R2",
+   "model": "AC-NB-01",
+   "al": "Coral Coast",
+   "home": "R2",
+   "kind": "ac",
+   "n": 18
+  },
+  {
+   "id": "FL-P2",
+   "model": "AC-NB-01",
+   "al": "Sunbeak",
+   "home": "P2",
+   "kind": "ac",
+   "n": 16
+  },
+  {
+   "id": "FL-GA6",
+   "model": "AC-LT-01",
+   "al": "GA",
+   "home": "GA6",
+   "kind": "ac",
+   "n": 18
+  },
+  {
+   "id": "FL-P4",
+   "model": "AC-RJ-01",
+   "al": "Skyline Regional",
+   "home": "P4",
+   "kind": "ac",
+   "n": 16
+  },
+  {
+   "id": "FL-C2",
+   "model": "AC-TB-01",
+   "al": "Turbo Cargo",
+   "home": "C2",
+   "kind": "ac",
+   "n": 17
+  }
+ ],
+ "sched": [
+  [
+   "P3",
+   "AC-NB-01",
+   "Tidewind Air",
+   204,
+   0
+  ],
+  [
+   "R2",
+   "AC-NB-01",
+   "Coral Coast",
+   432,
+   144
+  ],
+  [
+   "P2",
+   "AC-NB-01",
+   "Sunbeak",
+   516,
+   300
+  ],
+  [
+   "GA6",
+   "AC-LT-01",
+   "GA",
+   264,
+   504
+  ],
+  [
+   "P4",
+   "AC-RJ-01",
+   "Skyline Regional",
+   108,
+   612
+  ],
+  [
+   "C2",
+   "AC-TB-01",
+   "Turbo Cargo",
+   660,
+   456
+  ]
+ ],
+ "parked": {
+  "CH": null,
+  "C1": "AC-CG-01",
+  "C2": "AC-TB-01",
+  "P1": "AC-LG-01",
+  "P2": "AC-NB-01",
+  "P3": "AC-NB-01",
+  "P4": "AC-RJ-01",
+  "P5": "AC-NB-01",
+  "P6": "AC-LG-01",
+  "GA1": "AC-BJ-01",
+  "GA2": "AC-LT-01",
+  "GA3": "AC-PR-01",
+  "GA4": "AC-LT-01",
+  "GA5": "AC-PR-01",
+  "GA6": "AC-LT-01",
+  "GA7": "AC-LT-01",
+  "R1": "AC-RJ-01",
+  "R2": "AC-NB-01",
+  "R3": null
+ },
+ "stands": [
+  "CH",
+  "C1",
+  "C2",
+  "P1",
+  "P2",
+  "P3",
+  "P4",
+  "P5",
+  "P6",
+  "GA1",
+  "GA2",
+  "GA3",
+  "GA4",
+  "GA5",
+  "GA6",
+  "GA7",
+  "R1",
+  "R2",
+  "R3"
+ ],
+ "stat": [
+  [
+   "PK-C1",
+   "AC-CG-01",
+   "Crateway Cargo",
+   8,
+   "C1"
+  ],
+  [
+   "PK-P1",
+   "AC-LG-01",
+   "Confetti Air",
+   6,
+   "P1"
+  ],
+  [
+   "PK-P5",
+   "AC-NB-01",
+   "Confetti Air",
+   6,
+   "P5"
+  ],
+  [
+   "PK-P6",
+   "AC-LG-01",
+   "Aurelia Air",
+   0,
+   "P6"
+  ],
+  [
+   "PK-GA1",
+   "AC-BJ-01",
+   "GA",
+   12,
+   "GA1"
+  ],
+  [
+   "PK-GA2",
+   "AC-LT-01",
+   "GA",
+   12,
+   "GA2"
+  ],
+  [
+   "PK-GA3",
+   "AC-PR-01",
+   "GA",
+   12,
+   "GA3"
+  ],
+  [
+   "PK-GA4",
+   "AC-LT-01",
+   "GA",
+   12,
+   "GA4"
+  ],
+  [
+   "PK-GA5",
+   "AC-PR-01",
+   "GA",
+   12,
+   "GA5"
+  ],
+  [
+   "PK-GA7",
+   "AC-LT-01",
+   "GA",
+   12,
+   "GA7"
+  ],
+  [
+   "PK-R1",
+   "AC-RJ-01",
+   "Zebrano",
+   2,
+   "R1"
+  ],
+  [
+   "PKH-H2",
+   "AC-HL-01",
+   null,
+   null,
+   null
+  ],
+  [
+   "PKH-H4",
+   "AC-HL-05",
+   null,
+   null,
+   null
+  ],
+  [
+   "PKH-O2",
+   "AC-HL-02",
+   null,
+   null,
+   null
+  ],
+  [
+   "PKH-O1",
+   "AC-HL-04",
+   null,
+   null,
+   null
+  ],
+  [
+   "HAP3",
+   "AC-LT-01",
+   "GA",
+   12,
+   null
+  ]
+ ],
+ "hgr": {
+  "ac": "AC-TP-01",
+  "day": [
+   9200,
+   1466,
+   3.141592653589793
+  ],
+  "r3": [
+   9369,
+   2180,
+   -1.5707963267948966
+  ],
+  "tows": [
+   "HGR-OUT",
+   "HGR-BACK"
+  ]
+ },
+ "heli": [
+  "HL-H3:AC-HL-06"
+ ],
+ "cmp": [
+  {
+   "key": "FL-P3",
+   "id": "AC-NB-01",
+   "al": "Tidewind Air",
+   "lvTop": 4,
+   "fLv": 4,
+   "a34key": "p4",
+   "top": "Tidewind Air swoosh #f3f5f7 #13294b #13294b",
+   "a34": "רוח הגאות swoosh #f3f5f7 #13294b #13294b",
+   "mty": ""
+  },
+  {
+   "key": "FL-R2",
+   "id": "AC-NB-01",
+   "al": "Coral Coast",
+   "lvTop": 3,
+   "fLv": 3,
+   "a34key": "p3",
+   "top": "Coral Coast split #fbfaf7 #ff9a3c #e2563f",
+   "a34": "חוף האלמוגים split #fbfaf7 #ff9a3c #e2563f",
+   "mty": ""
+  },
+  {
+   "key": "FL-P2",
+   "id": "AC-NB-01",
+   "al": "Sunbeak",
+   "lvTop": 1,
+   "fLv": 1,
+   "a34key": "p1",
+   "top": "Sunbeak allover #f6c518 #1d1d1f #1d1d1f",
+   "a34": "מקור השמש allover #f6c518 #1d1d1f #1d1d1f",
+   "mty": ""
+  },
+  {
+   "key": "FL-GA6",
+   "id": "AC-LT-01",
+   "al": "GA",
+   "lvTop": 12,
+   "fLv": 5,
+   "a34key": "g5",
+   "top": "GA classic #f5f6f7 #c2333a #c2333a",
+   "a34": " split #fbf8f1 #e8742a #e8742a",
+   "mty": ""
+  },
+  {
+   "key": "FL-P4",
+   "id": "AC-RJ-01",
+   "al": "Skyline Regional",
+   "lvTop": 7,
+   "fLv": 7,
+   "a34key": "p7",
+   "top": "Skyline Regional spine #eef2f6 #3a3f8f #3a3f8f",
+   "a34": "קו הרקיע spine #eef2f6 #3a3f8f #3a3f8f",
+   "mty": ""
+  },
+  {
+   "key": "FL-C2",
+   "id": "AC-TB-01",
+   "al": "Turbo Cargo",
+   "lvTop": 7,
+   "fLv": 7,
+   "a34key": "c7",
+   "top": "Pelicarga spine #eceae4 #3c3c3c #e45b2b",
+   "a34": "שקנאי המטען spine #eceae4 #3c3c3c #e45b2b",
+   "mty": ""
+  },
+  {
+   "key": "PK-C1",
+   "id": "AC-CG-01",
+   "al": "Crateway Cargo",
+   "lvTop": 8,
+   "fLv": 8,
+   "a34key": "c0",
+   "top": "Crateway Cargo split #e9ecef #2b2f34 #e07a1a",
+   "a34": "ארגזי הדרך split #e9ecef #2b2f34 #e07a1a",
+   "mty": ""
+  },
+  {
+   "key": "PK-P1",
+   "id": "AC-LG-01",
+   "al": "Confetti Air",
+   "lvTop": 6,
+   "fLv": 6,
+   "a34key": "p6",
+   "top": "Confetti Air dots #ffffff #ff4d6d #3a86ff",
+   "a34": "קונפטי dots #ffffff #ff4d6d #3a86ff",
+   "mty": ""
+  },
+  {
+   "key": "PK-P5",
+   "id": "AC-NB-01",
+   "al": "Confetti Air",
+   "lvTop": 6,
+   "fLv": 6,
+   "a34key": "p6",
+   "top": "Confetti Air dots #ffffff #ff4d6d #3a86ff",
+   "a34": "קונפטי dots #ffffff #ff4d6d #3a86ff",
+   "mty": ""
+  },
+  {
+   "key": "PK-P6",
+   "id": "AC-LG-01",
+   "al": "Aurelia Air",
+   "lvTop": 0,
+   "fLv": 0,
+   "a34key": "p0",
+   "top": "Aurelia Air classic #f4f6f8 #1f5aa6 #1f5aa6",
+   "a34": "אורליה classic #f4f6f8 #1f5aa6 #1f5aa6",
+   "mty": ""
+  },
+  {
+   "key": "PK-GA1",
+   "id": "AC-BJ-01",
+   "al": "GA",
+   "lvTop": 12,
+   "fLv": 0,
+   "a34key": "g0",
+   "top": "GA classic #f5f6f7 #c2333a #c2333a",
+   "a34": " classic #f5f6f7 #c2333a #c2333a",
+   "mty": ""
+  },
+  {
+   "key": "PK-GA2",
+   "id": "AC-LT-01",
+   "al": "GA",
+   "lvTop": 12,
+   "fLv": 1,
+   "a34key": "g1",
+   "top": "GA classic #f5f6f7 #c2333a #c2333a",
+   "a34": " nose #f2f4f6 #23395d #23395d",
+   "mty": ""
+  },
+  {
+   "key": "PK-GA3",
+   "id": "AC-PR-01",
+   "al": "GA",
+   "lvTop": 12,
+   "fLv": 2,
+   "a34key": "g2",
+   "top": "GA classic #f5f6f7 #c2333a #c2333a",
+   "a34": " spine #d6dbe0 #127a7a #127a7a",
+   "mty": ""
+  },
+  {
+   "key": "PK-GA4",
+   "id": "AC-LT-01",
+   "al": "GA",
+   "lvTop": 12,
+   "fLv": 3,
+   "a34key": "g3",
+   "top": "GA classic #f5f6f7 #c2333a #c2333a",
+   "a34": " allover #7c2433 #d9b25c #d9b25c",
+   "mty": ""
+  },
+  {
+   "key": "PK-GA5",
+   "id": "AC-PR-01",
+   "al": "GA",
+   "lvTop": 12,
+   "fLv": 4,
+   "a34key": "g4",
+   "top": "GA classic #f5f6f7 #c2333a #c2333a",
+   "a34": " swoosh #f5f7f6 #1f8a4c #1f8a4c",
+   "mty": ""
+  },
+  {
+   "key": "PK-GA7",
+   "id": "AC-LT-01",
+   "al": "GA",
+   "lvTop": 12,
+   "fLv": 6,
+   "a34key": "g6",
+   "top": "GA classic #f5f6f7 #c2333a #c2333a",
+   "a34": " allover #3d8fd6 #ffffff #1b3a63",
+   "mty": ""
+  },
+  {
+   "key": "PK-R1",
+   "id": "AC-RJ-01",
+   "al": "Zebrano",
+   "lvTop": 2,
+   "fLv": 2,
+   "a34key": "p2",
+   "top": "Zebrano bands #fbfbfa #18181a #18181a",
+   "a34": "זברנו bands #fbfbfa #18181a #18181a",
+   "mty": ""
+  },
+  {
+   "key": "HAP3",
+   "id": "AC-LT-01",
+   "al": "GA",
+   "lvTop": 12,
+   "fLv": 8,
+   "a34key": "g8",
+   "top": "GA classic #f5f6f7 #c2333a #c2333a",
+   "a34": " bands #f4f6f8 #d99a00 #2a2d31",
+   "mty": ""
+  },
+  {
+   "key": "HGR",
+   "id": "AC-TP-01",
+   "al": "Skyline Regional",
+   "lvTop": 7,
+   "fLv": 7,
+   "a34key": "p7",
+   "top": "Skyline Regional spine #eef2f6 #3a3f8f #3a3f8f",
+   "a34": "קו הרקיע spine #eef2f6 #3a3f8f #3a3f8f",
+   "mty": ""
+  }
+ ],
+ "A3F": [
+  [
+   "FL-P3",
+   4,
+   "P3"
+  ],
+  [
+   "FL-R2",
+   3,
+   "R2"
+  ],
+  [
+   "FL-P2",
+   1,
+   "P2"
+  ],
+  [
+   "FL-GA6",
+   5,
+   "GA6"
+  ],
+  [
+   "FL-P4",
+   7,
+   "P4"
+  ],
+  [
+   "FL-C2",
+   7,
+   "C2"
+  ],
+  [
+   "PK-C1",
+   8,
+   "C1"
+  ],
+  [
+   "PK-P1",
+   6,
+   "P1"
+  ],
+  [
+   "PK-P5",
+   6,
+   "P5"
+  ],
+  [
+   "PK-P6",
+   0,
+   "P6"
+  ],
+  [
+   "PK-GA1",
+   0,
+   "GA1"
+  ],
+  [
+   "PK-GA2",
+   1,
+   "GA2"
+  ],
+  [
+   "PK-GA3",
+   2,
+   "GA3"
+  ],
+  [
+   "PK-GA4",
+   3,
+   "GA4"
+  ],
+  [
+   "PK-GA5",
+   4,
+   "GA5"
+  ],
+  [
+   "PK-GA7",
+   6,
+   "GA7"
+  ],
+  [
+   "PK-R1",
+   2,
+   "R1"
+  ],
+  [
+   "HAP3",
+   8,
+   ""
+  ],
+  [
+   "HGR",
+   7,
+   ""
+  ]
+ ],
+ "a3": {
+  "on": true,
+  "c34": true,
+  "armed": true,
+  "ok": false
+ },
+ "lots": [
+  "at",
+  "pax_y",
+  "zones",
+  "land",
+  "hotel",
+  "cargo",
+  "yard",
+  "pwest",
+  "prent",
+  "stalls",
+  "aisles",
+  "drives",
+  "rent_kiosk",
+  "semis",
+  "docks",
+  "booth",
+  "cargo_bar",
+  "hotel_canopy",
+  "hotel_door",
+  "hotel_garden",
+  "foot",
+  "gate",
+  "trees",
+  "pois",
+  "live",
+  "stories"
+ ],
+ "s16fn": []
+}

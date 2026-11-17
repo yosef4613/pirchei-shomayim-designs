@@ -1,0 +1,115 @@
+{
+ "mx": {
+  "maint": {
+   "on": true,
+   "N": 3,
+   "n": {
+    "commit": 0,
+    "defer": 0,
+    "work": 3
+   },
+   "log": [],
+   "err": "",
+   "pairs": [
+    {
+     "hgr": "AIR-BASE-1",
+     "ac": "AC-RJ-01",
+     "fl": "FL-P4",
+     "hAl": "Skyline Regional",
+     "fAl": "Skyline Regional",
+     "swapped": false,
+     "now": {
+      "hgr": "Skyline Regional",
+      "fl": "Skyline Regional"
+     }
+    },
+    {
+     "hgr": "AIR-BASE-2",
+     "ac": "AC-BJ-01",
+     "fl": "FL-GA1",
+     "hAl": "GA",
+     "fAl": "GA",
+     "swapped": false,
+     "now": {
+      "hgr": "GA",
+      "fl": "GA"
+     }
+    },
+    {
+     "hgr": "AIR-BASE-3",
+     "ac": "AC-LT-01",
+     "fl": "FL-GA6",
+     "hAl": "GA",
+     "fAl": "GA",
+     "swapped": false,
+     "now": {
+      "hgr": "GA",
+      "fl": "GA"
+     }
+    }
+   ]
+  },
+  "audit": {
+   "ok": true,
+   "issues": [],
+   "pairs": [
+    "AIR-BASE-1 (AC-RJ-01, Skyline Regional) ⇄ FL-P4 (Skyline Regional) — אותה חברה · 3 החלפות ב-12 ימים · מחוץ לעולם 10 ש׳ במחזור",
+    "AIR-BASE-2 (AC-BJ-01, GA) ⇄ FL-GA1 (GA) — אותה חברה · 4 החלפות ב-12 ימים · מחוץ לעולם 10 ש׳ במחזור",
+    "AIR-BASE-3 (AC-LT-01, GA) ⇄ FL-GA6 (GA) — אותה חברה · 4 החלפות ב-12 ימים · מחוץ לעולם 220 ש׳ במחזור"
+   ]
+  },
+  "r3": true,
+  "live": {
+   "ok": true,
+   "issues": [],
+   "zones": [
+    "G3",
+    "H0",
+    "H1",
+    "H2",
+    "H3"
+   ],
+   "walk": [],
+   "pts": 480,
+   "regions": 57,
+   "ids": 56
+  },
+  "hg": [
+   [
+    "AIR-BASE-1",
+    "AC-RJ-01",
+    "MX-AIR-BASE-1",
+    8770,
+    1466
+   ],
+   [
+    "AIR-BASE-2",
+    "AC-BJ-01",
+    "MX-AIR-BASE-2",
+    8450,
+    1531
+   ],
+   [
+    "AIR-BASE-3",
+    "AC-LT-01",
+    "HAP3",
+    8243,
+    1696
+   ]
+  ],
+  "fl": {
+   "n": 1,
+   "err": "",
+   "add": [
+    [
+     "GA1",
+     "AC-BJ-01",
+     "GA",
+     330,
+     24
+    ]
+   ]
+  }
+ },
+ "errs": []
+}

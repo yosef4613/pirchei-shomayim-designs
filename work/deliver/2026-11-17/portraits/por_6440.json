@@ -1,0 +1,2121 @@
+{
+ "errs": [],
+ "qa": {
+  "why": [],
+  "ok": true,
+  "contacts": 104,
+  "faces": 97,
+  "things": 7,
+  "hooks": {
+   "av": true,
+   "ring": true,
+   "dlg": true,
+   "calls": true,
+   "card": true,
+   "group": true,
+   "s9": true,
+   "jr": true
+  },
+  "fams": {
+   "airport": 10,
+   "warehouse": 7,
+   "delivery": 8,
+   "sports": 1,
+   "municipal": 2,
+   "route": 12,
+   "taxi": 3,
+   "errand": 8,
+   "logistics": 14,
+   "bus": 2
+  },
+  "cache": 104
+ },
+ "all": [
+  {
+   "id": "s9-shai",
+   "name": "שי מזרחי",
+   "color": "#3f6f96",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#8d5b38",
+    "hair": "bald",
+    "hairCol": "#bdbdbd",
+    "beardCol": "#bdbdbd",
+    "beard": "mustache",
+    "hat": "kippah",
+    "hatCol": "#1f2a44",
+    "glasses": true,
+    "shirt": "#3f6f96",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-yossi",
+   "name": "יוסף דהן",
+   "color": "#2f6b45",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "buzz",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "hard",
+    "hatCol": "#f2c230",
+    "glasses": false,
+    "shirt": "#2f6b45",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-rami",
+   "name": "רמי אזולאי",
+   "color": "#7a1f2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "bald",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "goatee",
+    "hat": "none",
+    "hatCol": "#681a28",
+    "glasses": true,
+    "shirt": "#7a1f2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-omer",
+   "name": "עומר",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#8d5b38",
+    "hair": "bald",
+    "hairCol": "#e4e4e4",
+    "beardCol": "#f2f2f2",
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#be6928",
+    "glasses": false,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-avi",
+   "name": "אברהם לוי",
+   "color": "#4aa3c7",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#dfab83",
+    "hair": "short",
+    "hairCol": "#5a3b22",
+    "beardCol": null,
+    "beard": "goatee",
+    "hat": "bucket",
+    "hatCol": "#4aa3c7",
+    "glasses": false,
+    "shirt": "#4aa3c7",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-ronen",
+   "name": "רונן",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "curly",
+    "hairCol": "#5a3b22",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "kippah",
+    "hatCol": "#ffffff",
+    "glasses": true,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-dani",
+   "name": "דני ברק",
+   "color": "#d42a2a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "buzz",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#b42424",
+    "glasses": true,
+    "shirt": "#d42a2a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-itai",
+   "name": "איתי",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "side",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#be6928",
+    "glasses": false,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-moshe",
+   "name": "משה",
+   "color": "#2f6b45",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#b07a50",
+    "hair": "short",
+    "hairCol": "#cfcfcf",
+    "beardCol": "#e4e4e4",
+    "beard": "full",
+    "hat": "bucket",
+    "hatCol": "#2f6b45",
+    "glasses": true,
+    "shirt": "#2f6b45",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-portctl",
+   "name": "בקרת הנמל",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "thing": "port",
+    "color": "#1d4f91"
+   }
+  },
+  {
+   "id": "s9-benny",
+   "name": "בני",
+   "color": "#7a1f2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#dfab83",
+    "hair": "side",
+    "hairCol": "#bdbdbd",
+    "beardCol": "#e4e4e4",
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#1f2a44",
+    "glasses": true,
+    "shirt": "#7a1f2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "s9-frt3",
+   "name": "הנהג של רכבת הים",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "short",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "bucket",
+    "hatCol": "#be6928",
+    "glasses": true,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "s14-aharon",
+   "name": "אהרון",
+   "color": "#2f6b45",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "side",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#285b3b",
+    "glasses": false,
+    "shirt": "#2f6b45",
+    "grey": false
+   }
+  },
+  {
+   "id": "s14-zaki",
+   "name": "זכי",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "side",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "kippah",
+    "hatCol": "#3a3f8f",
+    "glasses": false,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "s14-shlomo",
+   "name": "שלמה",
+   "color": "#7a1f2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "bald",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": false,
+    "shirt": "#7a1f2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "s13-ido",
+   "name": "עידו",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "buzz",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#19437b",
+    "glasses": false,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "s13-avi",
+   "name": "אבי",
+   "color": "#2f6b45",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "bald",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "kippah",
+    "hatCol": "#6b2a2a",
+    "glasses": true,
+    "shirt": "#2f6b45",
+    "grey": false
+   }
+  },
+  {
+   "id": "s13-itzik",
+   "name": "איציק",
+   "color": "#c27a1a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#dfab83",
+    "hair": "wavy",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "kippah",
+    "hatCol": "#6b2a2a",
+    "glasses": false,
+    "shirt": "#c27a1a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s13-yonatan",
+   "name": "יונתן",
+   "color": "#7a3fb0",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#dfab83",
+    "hair": "buzz",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "kippah",
+    "hatCol": "#ffffff",
+    "glasses": false,
+    "shirt": "#7a3fb0",
+    "grey": false
+   }
+  },
+  {
+   "id": "s13-shlomo",
+   "name": "שלמה",
+   "color": "#a33a2a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#cc9468",
+    "hair": "curly",
+    "hairCol": "#4a3626",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#ffffff",
+    "glasses": false,
+    "shirt": "#a33a2a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s12-yaakov",
+   "name": "יעקב",
+   "color": "#f5953a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "short",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "none",
+    "hatCol": "#d07f31",
+    "glasses": false,
+    "shirt": "#f5953a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s12-haim",
+   "name": "חיים",
+   "color": "#2f6b45",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "bald",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "bucket",
+    "hatCol": "#285b3b",
+    "glasses": false,
+    "shirt": "#2f6b45",
+    "grey": false
+   }
+  },
+  {
+   "id": "s12-dudu",
+   "name": "דודו",
+   "color": "#1d6f9e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#b07a50",
+    "hair": "short",
+    "hairCol": "#f2f2f2",
+    "beardCol": "#bdbdbd",
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#195e86",
+    "glasses": true,
+    "shirt": "#1d6f9e",
+    "grey": false
+   }
+  },
+  {
+   "id": "s12-alon",
+   "name": "אלון",
+   "color": "#3f6b2e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "wavy",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "none",
+    "hatCol": "#365b27",
+    "glasses": false,
+    "shirt": "#3f6b2e",
+    "grey": false
+   }
+  },
+  {
+   "id": "s12-nir",
+   "name": "ניר",
+   "color": "#7a3fb0",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "bald",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "none",
+    "hatCol": "#683696",
+    "glasses": true,
+    "shirt": "#7a3fb0",
+    "grey": false
+   }
+  },
+  {
+   "id": "s12-yossi",
+   "name": "יוסי",
+   "color": "#8a6440",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "buzz",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "none",
+    "hatCol": "#755536",
+    "glasses": false,
+    "shirt": "#8a6440",
+    "grey": false
+   }
+  },
+  {
+   "id": "s12-moshe",
+   "name": "משה",
+   "color": "#c27a1a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#8d5b38",
+    "hair": "short",
+    "hairCol": "#cfcfcf",
+    "beardCol": "#f2f2f2",
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#a56816",
+    "glasses": true,
+    "shirt": "#c27a1a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s12-shimon",
+   "name": "שמעון",
+   "color": "#a33a2a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#ebc19c",
+    "hair": "side",
+    "hairCol": "#cfcfcf",
+    "beardCol": "#bdbdbd",
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#8b3124",
+    "glasses": false,
+    "shirt": "#a33a2a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s11-avner",
+   "name": "אבנר",
+   "color": "#6b8e23",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "side",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "none",
+    "hatCol": "#5b791e",
+    "glasses": false,
+    "shirt": "#6b8e23",
+    "grey": false
+   }
+  },
+  {
+   "id": "s11-tal",
+   "name": "טל",
+   "color": "#1d6f9e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "wavy",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "kippah",
+    "hatCol": "#3a3f8f",
+    "glasses": false,
+    "shirt": "#1d6f9e",
+    "grey": false
+   }
+  },
+  {
+   "id": "s11-shimon",
+   "name": "שמעון",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "buzz",
+    "hairCol": "#5a3b22",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": false,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "s11-chef",
+   "name": "גיל",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#cc9468",
+    "hair": "short",
+    "hairCol": "#4a3626",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#be6928",
+    "glasses": false,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-test",
+   "name": "בודק המערכת",
+   "color": "#4f7be0",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "short",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#4369be",
+    "glasses": true,
+    "shirt": "#4f7be0",
+    "grey": false
+   }
+  },
+  {
+   "id": "f3-nissim",
+   "name": "נסים אלמליח",
+   "color": "#2b6f8f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "bald",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "bucket",
+    "hatCol": "#255e7a",
+    "glasses": false,
+    "shirt": "#2b6f8f",
+    "grey": false
+   }
+  },
+  {
+   "id": "f3-uri",
+   "name": "אורי מהמועדון",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#ebc19c",
+    "hair": "bald",
+    "hairCol": "#e4e4e4",
+    "beardCol": "#cfcfcf",
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#6b2a2a",
+    "glasses": true,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "s10e-shlomo",
+   "name": "שלמה",
+   "color": "#2f7d86",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "short",
+    "hairCol": "#4a3626",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "kippah",
+    "hatCol": "#ffffff",
+    "glasses": false,
+    "shirt": "#2f7d86",
+    "grey": false
+   }
+  },
+  {
+   "id": "s10e-david",
+   "name": "דוד אוחיון",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "bald",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "goatee",
+    "hat": "none",
+    "hatCol": "#be6928",
+    "glasses": true,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "s10-alon",
+   "name": "אלון פרץ",
+   "color": "#2f7d86",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "short",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#286a72",
+    "glasses": false,
+    "shirt": "#2f7d86",
+    "grey": false
+   }
+  },
+  {
+   "id": "s10-natan",
+   "name": "נתן גבאי",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#dfab83",
+    "hair": "bald",
+    "hairCol": "#4a3626",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "kippah",
+    "hatCol": "#1f2a44",
+    "glasses": true,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "s10-roi",
+   "name": "רועי שמעוני",
+   "color": "#2f7d86",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "buzz",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#286a72",
+    "glasses": false,
+    "shirt": "#2f7d86",
+    "grey": false
+   }
+  },
+  {
+   "id": "s10-meir",
+   "name": "מאיר",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#ebc19c",
+    "hair": "short",
+    "hairCol": "#e4e4e4",
+    "beardCol": "#e4e4e4",
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#ffffff",
+    "glasses": true,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "s10-gil",
+   "name": "גיל",
+   "color": "#7a5aaa",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "curly",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "goatee",
+    "hat": "none",
+    "hatCol": "#684d91",
+    "glasses": true,
+    "shirt": "#7a5aaa",
+    "grey": false
+   }
+  },
+  {
+   "id": "s15-ilan",
+   "name": "אילן",
+   "color": "#3f6b2e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#dfab83",
+    "hair": "bald",
+    "hairCol": "#4a3626",
+    "beardCol": null,
+    "beard": "goatee",
+    "hat": "kippah",
+    "hatCol": "#6b2a2a",
+    "glasses": false,
+    "shirt": "#3f6b2e",
+    "grey": false
+   }
+  },
+  {
+   "id": "s15-avi",
+   "name": "אבי",
+   "color": "#7a5a1a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#dfab83",
+    "hair": "bald",
+    "hairCol": "#cfcfcf",
+    "beardCol": "#f2f2f2",
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#684d16",
+    "glasses": true,
+    "shirt": "#7a5a1a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s15-ronen",
+   "name": "רונן",
+   "color": "#c27a1a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "short",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#3a3f8f",
+    "glasses": false,
+    "shirt": "#c27a1a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s15-yoni",
+   "name": "יוני",
+   "color": "#1d6f9e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "short",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "none",
+    "hatCol": "#195e86",
+    "glasses": false,
+    "shirt": "#1d6f9e",
+    "grey": false
+   }
+  },
+  {
+   "id": "s15-moti",
+   "name": "מוטי",
+   "color": "#6b3fd1",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#ebc19c",
+    "hair": "short",
+    "hairCol": "#cfcfcf",
+    "beardCol": "#cfcfcf",
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#ffffff",
+    "glasses": true,
+    "shirt": "#6b3fd1",
+    "grey": false
+   }
+  },
+  {
+   "id": "s15-shlomi",
+   "name": "שלומי",
+   "color": "#a33a2a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#8d5b38",
+    "hair": "short",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#ffffff",
+    "glasses": false,
+    "shirt": "#a33a2a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s15-gil",
+   "name": "גיל",
+   "color": "#0f8f8a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "bald",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": false,
+    "shirt": "#0f8f8a",
+    "grey": false
+   }
+  },
+  {
+   "id": "s16guard",
+   "name": "יונתן — השומר של שער הנוסעים",
+   "color": "#2f6fd0",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#f3d3b5",
+    "hair": "short",
+    "hairCol": "#e4e4e4",
+    "beardCol": "#cfcfcf",
+    "beard": "full",
+    "hat": "pilot",
+    "hatCol": "#1a2440",
+    "glasses": false,
+    "shirt": "#2f6fd0",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b4-mordechai",
+   "name": "מרדכי",
+   "color": "#2f6b45",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "bald",
+    "hairCol": "#4a3626",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "none",
+    "hatCol": "#285b3b",
+    "glasses": false,
+    "shirt": "#2f6b45",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b4-ezra",
+   "name": "עזרא",
+   "color": "#c27a1a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "side",
+    "hairCol": "#5a3b22",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#a56816",
+    "glasses": false,
+    "shirt": "#c27a1a",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b4-refael",
+   "name": "רפאל",
+   "color": "#1d6f9e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "bald",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "kippah",
+    "hatCol": "#6b2a2a",
+    "glasses": false,
+    "shirt": "#1d6f9e",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b3-shmuel",
+   "name": "שמואל",
+   "color": "#7a1f2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "curly",
+    "hairCol": "#5a3b22",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#681a28",
+    "glasses": true,
+    "shirt": "#7a1f2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b3-netanel",
+   "name": "נתנאל",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#dfab83",
+    "hair": "short",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#1f2a44",
+    "glasses": true,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a3-zeev",
+   "name": "זאב",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "buzz",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#19437b",
+    "glasses": false,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a3-elchanan",
+   "name": "אלחנן",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "curly",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "none",
+    "hatCol": "#be6928",
+    "glasses": false,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a4-tzvi",
+   "name": "צבי",
+   "color": "#b23a2a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "curly",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "goatee",
+    "hat": "none",
+    "hatCol": "#973124",
+    "glasses": false,
+    "shirt": "#b23a2a",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a4-nachman",
+   "name": "נחמן",
+   "color": "#1d6f9e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "short",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "kippah",
+    "hatCol": "#ffffff",
+    "glasses": false,
+    "shirt": "#1d6f9e",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a5-elazar",
+   "name": "אלעזר",
+   "color": "#4a1d5c",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "side",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "none",
+    "hatCol": "#3f194e",
+    "glasses": false,
+    "shirt": "#4a1d5c",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a5-shalom",
+   "name": "שלום",
+   "color": "#7a3fb0",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#f3d3b5",
+    "hair": "short",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": false,
+    "shirt": "#7a3fb0",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a5-amram",
+   "name": "עמרם",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "curly",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "none",
+    "hatCol": "#19437b",
+    "glasses": false,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-c3-menachem",
+   "name": "מנחם",
+   "color": "#2f7d86",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "buzz",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "kippah",
+    "hatCol": "#1f2a44",
+    "glasses": false,
+    "shirt": "#2f7d86",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-d3-nachum",
+   "name": "נחום",
+   "color": "#c27a1a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "short",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#a56816",
+    "glasses": false,
+    "shirt": "#c27a1a",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-c4-efraim",
+   "name": "אפרים",
+   "color": "#3d4650",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#ebc19c",
+    "hair": "side",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "bucket",
+    "hatCol": "#343c44",
+    "glasses": false,
+    "shirt": "#3d4650",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-c4-yechiel",
+   "name": "יחיאל",
+   "color": "#e0a43a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "buzz",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#3a3f8f",
+    "glasses": false,
+    "shirt": "#e0a43a",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-d4-gershon",
+   "name": "גרשון",
+   "color": "#2f7d86",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#dfab83",
+    "hair": "short",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#286a72",
+    "glasses": false,
+    "shirt": "#2f7d86",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-d4-zechariah",
+   "name": "זכריה",
+   "color": "#7a5aaa",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "wavy",
+    "hairCol": "#4a3626",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "kippah",
+    "hatCol": "#1f2a44",
+    "glasses": false,
+    "shirt": "#7a5aaa",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-c5-ovadia",
+   "name": "עובדיה",
+   "color": "#e0a43a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#dfab83",
+    "hair": "side",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": false,
+    "shirt": "#e0a43a",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-c5-yitzchak",
+   "name": "יצחק",
+   "color": "#3d4650",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "curly",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "none",
+    "hatCol": "#343c44",
+    "glasses": true,
+    "shirt": "#3d4650",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-d5-binyamin",
+   "name": "בנימין",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#dfab83",
+    "hair": "short",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#1f2a44",
+    "glasses": false,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-d5-arye",
+   "name": "אריה",
+   "color": "#6b8e23",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "bald",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#5b791e",
+    "glasses": false,
+    "shirt": "#6b8e23",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-d5-yoel",
+   "name": "יואל",
+   "color": "#7a5aaa",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "short",
+    "hairCol": "#5a3b22",
+    "beardCol": null,
+    "beard": "goatee",
+    "hat": "none",
+    "hatCol": "#684d91",
+    "glasses": false,
+    "shirt": "#7a5aaa",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b5-yehuda",
+   "name": "יהודה",
+   "color": "#4a1d5c",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "wavy",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": true,
+    "shirt": "#4a1d5c",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b5-hillel",
+   "name": "הלל",
+   "color": "#1d6f9e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#8d5b38",
+    "hair": "curly",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "goatee",
+    "hat": "kippah",
+    "hatCol": "#6b2a2a",
+    "glasses": false,
+    "shirt": "#1d6f9e",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a2-pinchas",
+   "name": "פנחס",
+   "color": "#2f6b45",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "bald",
+    "hairCol": "#3b2a1e",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#285b3b",
+    "glasses": false,
+    "shirt": "#2f6b45",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-a2-chanoch",
+   "name": "חנוך",
+   "color": "#1d6f9e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "bald",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "mustache",
+    "hat": "none",
+    "hatCol": "#195e86",
+    "glasses": false,
+    "shirt": "#1d6f9e",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b2-yisrael",
+   "name": "ישראל",
+   "color": "#c27a1a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#dfab83",
+    "hair": "short",
+    "hairCol": "#cfcfcf",
+    "beardCol": "#cfcfcf",
+    "beard": "full",
+    "hat": "none",
+    "hatCol": "#a56816",
+    "glasses": false,
+    "shirt": "#c27a1a",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b2-azriel",
+   "name": "עזריאל",
+   "color": "#3f6b2e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "buzz",
+    "hairCol": "#5a3b22",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#365b27",
+    "glasses": false,
+    "shirt": "#3f6b2e",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-b2-simcha",
+   "name": "שמחה",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "buzz",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": false,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-c2-eliezer",
+   "name": "אליעזר",
+   "color": "#16324f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "side",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#132b43",
+    "glasses": false,
+    "shirt": "#16324f",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-c2-akiva",
+   "name": "עקיבא",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#dfab83",
+    "hair": "short",
+    "hairCol": "#cfcfcf",
+    "beardCol": "#e4e4e4",
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#6b2a2a",
+    "glasses": true,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-d2-zalman",
+   "name": "זלמן",
+   "color": "#d42a2a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#8d5b38",
+    "hair": "short",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#b42424",
+    "glasses": true,
+    "shirt": "#d42a2a",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-d2-gavriel",
+   "name": "גבריאל",
+   "color": "#7a3fb0",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#ebc19c",
+    "hair": "short",
+    "hairCol": "#bdbdbd",
+    "beardCol": "#f2f2f2",
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#683696",
+    "glasses": true,
+    "shirt": "#7a3fb0",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-e3-reuven",
+   "name": "ראובן",
+   "color": "#1d4f91",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "buzz",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": false,
+    "shirt": "#1d4f91",
+    "grey": false
+   }
+  },
+  {
+   "id": "zs-e3-asher",
+   "name": "אשר",
+   "color": "#2f6b45",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#cc9468",
+    "hair": "side",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#285b3b",
+    "glasses": false,
+    "shirt": "#2f6b45",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-aharon",
+   "name": "סבא אהרן",
+   "color": "#8a5a12",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#ebc19c",
+    "hair": "bald",
+    "hairCol": "#bdbdbd",
+    "beardCol": "#cfcfcf",
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#111418",
+    "glasses": true,
+    "shirt": "#8a5a12",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-shimon",
+   "name": "שמעון",
+   "color": "#1f7a8a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#dfab83",
+    "hair": "short",
+    "hairCol": "#3b2a1e",
+    "beardCol": "#8a8580",
+    "beard": "mustache",
+    "hat": "cap",
+    "hatCol": "#f2b705",
+    "glasses": false,
+    "shirt": "#1f7a8a",
+    "grey": true
+   }
+  },
+  {
+   "id": "st-shmulik",
+   "name": "שמוליק",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#f3d3b5",
+    "hair": "curly",
+    "hairCol": "#7a4f2a",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#3a3f8f",
+    "glasses": false,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-david",
+   "name": "דוד",
+   "color": "#2f5fa0",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "side",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "kippah",
+    "hatCol": "#111418",
+    "glasses": false,
+    "shirt": "#2f5fa0",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-naftali",
+   "name": "נפתלי",
+   "color": "#6a3fb5",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#ebc19c",
+    "hair": "side",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "kippah",
+    "hatCol": "#2f5f3a",
+    "glasses": true,
+    "shirt": "#6a3fb5",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-letter",
+   "name": "המכתב של סבא",
+   "color": "#a5600b",
+   "place": false,
+   "icon": "",
+   "look": {
+    "thing": "letter",
+    "color": "#a5600b"
+   }
+  },
+  {
+   "id": "st-post",
+   "name": "הדואר של טורבו",
+   "color": "#b23b3b",
+   "place": false,
+   "icon": "",
+   "look": {
+    "thing": "post",
+    "color": "#b23b3b"
+   }
+  },
+  {
+   "id": "st-mall",
+   "name": "המוכר בקניון",
+   "color": "#2e7d4f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#ebc19c",
+    "hair": "side",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "none",
+    "hatCol": "#276a43",
+    "glasses": true,
+    "shirt": "#2e7d4f",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-mech",
+   "name": "המכונאי במוסך",
+   "color": "#55606b",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "short",
+    "hairCol": "#8b5a2b",
+    "beardCol": null,
+    "beard": "stubble",
+    "hat": "cap",
+    "hatCol": "#55606b",
+    "glasses": false,
+    "shirt": "#55606b",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-wh",
+   "name": "מנהל המחסן הגדול",
+   "color": "#7a5230",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#b07a50",
+    "hair": "bald",
+    "hairCol": "#2a1d14",
+    "beardCol": null,
+    "beard": "short",
+    "hat": "hard",
+    "hatCol": "#f2c230",
+    "glasses": false,
+    "shirt": "#7a5230",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-refinery",
+   "name": "בית הזיקוק",
+   "color": "#a5600b",
+   "place": false,
+   "icon": "",
+   "look": {
+    "thing": "factory",
+    "color": "#a5600b"
+   }
+  },
+  {
+   "id": "st-dealer",
+   "name": "סוכנות הרכב",
+   "color": "#2f5fa0",
+   "place": false,
+   "icon": "",
+   "look": {
+    "thing": "car",
+    "color": "#2f5fa0"
+   }
+  },
+  {
+   "id": "st-lot",
+   "name": "חניון המשאיות",
+   "color": "#55606b",
+   "place": false,
+   "icon": "",
+   "look": {
+    "thing": "truck",
+    "color": "#55606b"
+   }
+  },
+  {
+   "id": "st-eliyahu",
+   "name": "אליהו",
+   "color": "#127a8a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#cc9468",
+    "hair": "short",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "full",
+    "hat": "kippah",
+    "hatCol": "#111418",
+    "glasses": true,
+    "shirt": "#127a8a",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-mendi",
+   "name": "מנדי",
+   "color": "#e07b2f",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "boy",
+    "skin": "#dfab83",
+    "hair": "wavy",
+    "hairCol": "#5a3b22",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "cap",
+    "hatCol": "#e07b2f",
+    "glasses": false,
+    "shirt": "#e07b2f",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-tourist",
+   "name": "התייר בטרמינל",
+   "color": "#8a7a5a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "man",
+    "skin": "#f3d3b5",
+    "hair": "short",
+    "hairCol": "#161616",
+    "beardCol": null,
+    "beard": "none",
+    "hat": "straw",
+    "hatCol": "#8a7a5a",
+    "glasses": true,
+    "shirt": "#8a7a5a",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-farmer",
+   "name": "החקלאי של הכפר",
+   "color": "#5a7a2e",
+   "place": false,
+   "icon": "",
+   "look": {
+    "age": "elder",
+    "skin": "#b07a50",
+    "hair": "short",
+    "hairCol": "#e4e4e4",
+    "beardCol": "#cfcfcf",
+    "beard": "stubble",
+    "hat": "straw",
+    "hatCol": "#5a7a2e",
+    "glasses": true,
+    "shirt": "#5a7a2e",
+    "grey": false
+   }
+  },
+  {
+   "id": "st-hadassah",
+   "name": "הדסה",
+   "color": "#d0508a",
+   "place": false,
+   "icon": "",
+   "look": {
+    "thing": "voice",
+    "color": "#d0508a"
+   }
+  }
+ ],
+ "msgs": {
+  "svgs": 6,
+  "places": 1,
+  "img": 0
+ },
+ "thread": {
+  "head": true
+ },
+ "calls": {
+  "rows": 2,
+  "grid": 8,
+  "text": true
+ },
+ "jobs": {
+  "cards": 42,
+  "fam": 42,
+  "icons": 42,
+  "heads": 10,
+  "fams": [
+   "taxi",
+   "delivery",
+   "errand",
+   "route",
+   "bus",
+   "warehouse",
+   "logistics",
+   "sports",
+   "municipal",
+   "airport"
+  ]
+ },
+ "ring": {
+  "shown": true,
+  "svg": true
+ },
+ "dlg": {
+  "svg": true
+ },
+ "dataImage": 1,
+ "qa2": {
+  "why": [],
+  "ok": true,
+  "contacts": 110,
+  "faces": 97,
+  "things": 13,
+  "hooks": {
+   "av": true,
+   "ring": true,
+   "dlg": true,
+   "calls": true,
+   "card": true,
+   "group": true,
+   "s9": true,
+   "jr": true
+  },
+  "fams": {
+   "airport": 10,
+   "warehouse": 7,
+   "delivery": 8,
+   "sports": 1,
+   "municipal": 2,
+   "route": 12,
+   "taxi": 3,
+   "errand": 8,
+   "logistics": 14,
+   "bus": 2
+  },
+  "cache": 111
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "url": "http://127.0.0.1:8765/turbo-city-downtown/index.html",
+ "tLoad": 1843,
+ "tReady": 15307,
+ "fps": {
+  "fps": 0.6,
+  "worstMs": 2333
+ },
+ "heapMB": 65,
+ "gl": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+ "imgs": 0,
+ "errs": [],
+ "reqs": [],
+ "extra": null
+}

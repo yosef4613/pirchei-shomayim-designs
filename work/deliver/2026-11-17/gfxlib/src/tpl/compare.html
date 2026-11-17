@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ניסוי ספריות הגרפיקה</title>
+<style>
+:root{--bg:#f4f5f2;--fg:#1d232b;--mut:#5b6470;--card:#ffffff;--line:#d9ddd4;--acc:#1f5aa6;--ground:#9aa58c;--good:#1d7a46;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181c;--fg:#e8ebee;--mut:#9aa4af;--card:#1e2329;--line:#333a42;--acc:#7fb0ff;--ground:#7d8872;--good:#5fd08f;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#15181c;--fg:#e8ebee;--mut:#9aa4af;--card:#1e2329;--line:#333a42;--acc:#7fb0ff;--ground:#7d8872;--good:#5fd08f;--bad:#ff8a80}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+main{max-width:1140px;margin:0 auto;padding:16px}
+h1{font-size:24px;margin:8px 0 4px}h2{font-size:19px;margin:28px 0 8px;border-bottom:2px solid var(--line);padding-bottom:4px}h3{font-size:16px;margin:16px 0 6px}
+.lead{color:var(--mut);margin:0 0 12px}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 0;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.bar label{display:flex;gap:6px;align-items:center;white-space:nowrap}
+canvas{display:block;max-width:100%;border-radius:8px;margin:6px 0;direction:ltr}
+.note{color:var(--mut);font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid var(--line);padding:5px 8px;text-align:right;vertical-align:top}th{background:color-mix(in srgb,var(--line) 40%,transparent)}
+.ok{color:var(--good);font-weight:600}.no{color:var(--bad);font-weight:600}
+.scroll{overflow-x:auto}
+button{font:inherit;padding:6px 14px;border-radius:8px;border:1px solid var(--acc);background:var(--acc);color:#fff;cursor:pointer}
+ul{margin:4px 0;padding-inline-start:22px}
+#errs{color:var(--bad);font-size:13px}
+</style></head><body><main>
+<h1>ניסוי ספריות הגרפיקה — ישן מול חדש</h1>
+<p class="lead">משימת הבעלים 15.11 · סבב 17.11 · עותק נפרד, המשחק הראשי לא השתנה. כל ציור בדף הזה הוא קוד (קנבס) — בלי תמונות ובלי משאבים חיצוניים. "ישן" = הקוד של המשחק היום (S7F298), מועתק מילה במילה; "חדש" = הצייר G2 שנבנה בניסוי; "Zdog" = אותו דגם בספרייה.</p>
+<div class="card"><b>בקצרה:</b> השיפור הגדול לא מגיע מספרייה אלא משיטת הציור: דגם תלת־ממדי אחד לכל כלי (במידות אמיתיות) שמסובב ל-16 כיוונים מדויקים, הצללה חלקה עם חומרים (צבע מבריק, זכוכית, גומי, מתכת), צל רך מאוחד, והליכה / ריצה עם שלד ומפרקים. SVG.js ו-Paper.js הן ספריות דו־ממדיות — לא נותנות זווית 3/4, תאורה או 16 כיוונים; Zdog כן מסובבת דגם, אבל בצבעים שטוחים. ההמלצה: לשדרג את הציירים הקיימים (C34 / A34 / P34) בשיטה של G2 — קוד שלנו, בלי תלות בספרייה. <span id="sizes"></span></div>
+<div class="bar">
+<label>זום <input id="zoom" type="range" min="1" max="4" step="0.5" value="2"> <span id="zoomV">×2</span></label>
+<label>כיוונים <select id="dirs"><option value="8">8</option><option value="16" selected>16</option><option value="32">32</option></select></label>
+<label>צבע <select id="carCol"></select></label>
+<label><input id="wide" type="checkbox"> רוחב המשחק (×1.25)</label>
+<label><input id="anim" type="checkbox" checked> תנועה</label>
+</div>
+<div id="errs"></div>
+
+<h2>סצנה חיה — אותו כיוון תנועה, ישן ומשמאלו חדש</h2>
+<p class="note">מכונית בסיבוב (כל הכיוונים ברצף) ושלושה הולכי רגל (אחד רץ — בישן אין ריצה, אז הוא הולך), הצעדים לפי המרחק שעברו. בגודל המשחק.</p>
+<div class="scroll"><canvas id="cvLive"></canvas></div>
+
+<h2>ניסוי 1 · מכונית פרטית (סדאן VH-SD-02)</h2>
+<p class="note">אותו אורך בפיקסלים לשניהם (האורך של הישן במשחק). הישן — רוחב "חוזה המשחק" ×1.25; החדש — הפרופורציות האמיתיות (4.85 × 1.84 × 1.45 מ׳), ואפשר לסמן "רוחב המשחק" כדי להשוות באותו רוחב.</p>
+<div class="scroll"><canvas id="cvCars"></canvas></div><div class="note" id="tCars"></div>
+<h3>אותו כיוון, זה לצד זה (מסתובב)</h3>
+<div class="scroll"><canvas id="cvPair"></canvas></div>
+
+<h2>ניסוי 2 · מטוס (צר־גוף AC-NB-01 · A320)</h2>
+<p class="note">אותו קנה מידה של השדה (7.47 פיקס׳ למטר × הזום). למעלה הישן (A34), למטה החדש (G2), באותם כיוונים.</p>
+<div class="scroll"><canvas id="cvPlanes"></canvas></div><div class="note" id="tPlanes"></div>
+<h3>מטוס אחד, כל 16 הכיוונים <input id="planeDir" type="range" min="0" max="15" value="3"></h3>
+<div class="scroll"><canvas id="cvPlaneBig"></canvas></div>
+
+<h2>ניסוי 3 · הולך רגל</h2>
+<p class="note">הישן (P34): 8 כיוונים, הליכה בלבד (אין ריצה). החדש (G2): 16 כיוונים, הליכה וריצה, כף רגל נטועה (IK), אגן וכתפיים מסתובבים. Zdog: אותו שלד ואותה תנועה בקווים עגולים.</p>
+<div class="bar" style="position:static"><label>פעולה <select id="pedAct"><option value="walk">הליכה</option><option value="run">ריצה</option><option value="stand">עמידה</option></select></label>
+<label>דמות <select id="pedLook"></select></label><label>כיוון השורה התחתונה <input id="pedDir" type="range" min="0" max="15" value="6"></label></div>
+<div class="scroll"><canvas id="cvPeds"></canvas></div>
+<h3>מגוון הדמויות — ישן מול חדש</h3>
+<div class="scroll"><canvas id="cvLineup"></canvas></div>
+
+<h2>ביצועים וגודל</h2>
+<div class="card"><button id="benchBtn">למדוד עכשיו (בדפדפן הזה)</button><div id="benchOut" class="scroll" style="margin-top:8px"></div>
+<p class="note">"יצירה" = הזמן לבנות את התמונות של כל הכיוונים (פעם אחת, הן נשמרות במטמון). "פריים" = הציור של 300 תמונות מוכנות — זה מה שהמשחק עושה בכל פריים. השורה של SVG.js — אותן 300 מכוניות כרכיבי SVG בדף.</p>
+<div id="sizeTable"></div></div>
+
+<h2>המחקר — הספריות</h2>
+<div class="scroll"><table>
+<tr><th>ספרייה</th><th>מה היא עושה</th><th>רישיון</th><th>גודל (מכווץ / gzip)</th><th>התאמה לטורבו סיטי</th></tr>
+<tr><td><b>SVG.js</b> 3.2.8</td><td>יצירה, הרכבה והנפשה של רכיבי SVG בדף (Runner / Timeline, מעברים, קבוצות, מעברי צבע)</td><td>MIT</td><td>93.5 / 30.0 ק"ב</td><td><span class="no">לא לזמן ריצה.</span> דו־ממד בלבד — אין הטלה 3/4, אין תאורה, אין סיבוב דגם; כל מכונית = רכיבי DOM, ומאות כלים זזים כבדים (ראו המדידה). מתאים לדפי עיצוב / ממשק, לא לספרייטים.</td></tr>
+<tr><td><b>Paper.js</b> 0.17.0</td><td>גאומטריה וקטורית: עקומות בזייה, פעולות בוליאניות (איחוד / חיסור / חיתוך), החלקה, בדיקת פגיעה, יבוא / יצוא SVG; גם ב-Node</td><td>MIT</td><td>311.8 / 105.4 ק"ב</td><td><span class="no">לא לזמן ריצה.</span> דו־ממד בלבד. שימושי <i>מחוץ למשחק</i>: מחולל שמחשב קו מתאר מורכב (לוגו, שלט, סמל) ופולט נתיבים פשוטים לקוד — בלי תלות קבועה.</td></tr>
+<tr><td><b>Zdog</b> 1.1.3</td><td>"פסאודו־תלת־ממד": דגם אחד מצורות עגולות שמסתובב לכל זווית, בקנבס או SVG</td><td>MIT</td><td>29.7 / 7.3 ק"ב</td><td><span class="ok">חלקית.</span> נותן 16 כיוונים מדגם אחד, וגם את זווית המשחק בדיוק (הטיה 31° + מתיחה ×1.166). אבל צבעים שטוחים בלבד — בלי מעברי אור, בלי ברק, ומיון עומק לפי צורה שלמה. האיכות נמוכה מהישן ומהחדש (ראו השורה "Zdog").</td></tr>
+<tr><td><b>Two.js</b> 0.8.24</td><td>גרף סצנה דו־ממדי (SVG / קנבס / WebGL)</td><td>MIT</td><td>205.4 / 49.7 ק"ב</td><td>לא — אין תלת־ממד, וכל מה שהיא נותנת קיים כבר בקנבס.</td></tr>
+<tr><td><b>anime.js</b> 4.5.0</td><td>מעברים ולוחות זמנים לאנימציה</td><td>MIT</td><td>118.0 / 40.6 ק"ב</td><td>לא — התנועה במשחק מחושבת בכל פריים מהסימולציה; אין צורך במנוע מעברים.</td></tr>
+<tr><td><b>GSAP</b> 3.15</td><td>מנוע אנימציה מקצועי</td><td>"Standard no-charge" — חינמי אבל <b>לא קוד פתוח</b>, עם מגבלות</td><td>~70 ק"ב</td><td>לא — רישיון, ואותה סיבה כמו anime.js.</td></tr>
+<tr><td><b>Spine</b> (spine-canvas 4.3)</td><td>שלד ומפרקים לדמויות, עורך מקצועי</td><td>זמן הריצה דורש <b>רישיון עורך בתשלום</b></td><td>—</td><td>לא — רישיון, ותלות בעורך ובקובצי שלד + תמונות.</td></tr>
+<tr><td><b>DragonBones</b> / <b>Rive</b> / <b>Lottie</b></td><td>שלד / אנימציה וקטורית מעורך חיצוני</td><td>זמני ריצה MIT; העורכים — נטוש (DragonBones), סגור בענן (Rive), After Effects (Lottie)</td><td>Rive ‏~1 מ"ב (wasm); ‏lottie-web ‏~250 ק"ב</td><td>לא — כל אחת דורשת עורך חיצוני וקובצי נכסים (JSON, לפעמים תמונות) — סוג משאב חדש (כלל 17ב). השלד שנכתב כאן (IK של שתי עצמות, ~150 שורות) נותן הליכה וריצה טבעיות בלי עורך.</td></tr>
+<tr><td><b>Three.js</b> r187</td><td>תלת־ממד אמיתי (WebGL), תאורה, חומרים</td><td>MIT</td><td>~700 ק"ב</td><td>אפשרי רק כמחולל ספרייטים (מצלמה אורתוגרפית + מתיחה = זווית המשחק בדיוק). כבד ותלוי WebGL — זה התחום של ניסוי התלת־ממד (threed).</td></tr>
+</table></div>
+
+<h2>התשובות לשאלות של הבעלים</h2>
+<div class="card"><ul>
+<li><b>שיפור חזותי משמעותי?</b> במכונית ובמטוס — כן: הצללה חלקה במקום פאות, השתקפות שמיים על הצבע והזכוכית, חלונות וזכוכית אמיתיים, גלגלים עם דופן וחישוק, קשתות גלגלים, צל רך מאוחד וצל מגע. בהולך הרגל — תנועת מפרקים מלאה, ריצה (שאין בישן), 16 כיוונים במקום 8. הישן חזק בפרטים קטנים שצוירו ביד (פנסים, גריל, מנורות) — אותם להעביר לחדש בשלב היישום.</li>
+<li><b>פרופורציות ופרטים מדויקים יותר?</b> כן — הכול במידות אמיתיות במטרים (סדאן 4.85 מ׳, A320 37.57 מ׳ וכו׳), ממקור אחד שמשמש את כל 16 הכיוונים. במכוניות יש לשאלה צד של המשחק: הישן מצויר ברוחב ×1.25 (חוזה הנתיבים) — <b>לאישורך</b> איזה רוחב.</li>
+<li><b>האם הספריות חוסכות זמן פיתוח?</b> לא כאן. מה שקשה במשחק — המצלמה האלכסונית, השמש, 16 כיוונים, המטמון, המידות, ההליכה בלי החלקה — לא נמצא באף אחת מהן. SVG.js ו-Paper.js דו־ממדיות; Zdog נותנת סיבוב אבל לא תאורה; כלי השלד דורשים עורך חיצוני ונכסים.</li>
+<li><b>פוגע בביצועים או מגדיל את הקובץ?</b> ראו המדידה למעלה. החדש בונה כל תמונה פעם אחת (מטמון, כמו הישן); בפריים עצמו העלות זהה — ציור של תמונה מוכנה. בגודל: הקוד החדש קטן בהרבה מהישן (ראו הטבלה), ובלי ספרייה.</li>
+<li><b>אפשר בלי תלות קבועה?</b> כן — G2 הוא קוד שלנו. גם Paper.js, אם תידרש, — רק במחולל מחוץ למשחק.</li>
+</ul></div>
+
+<h2>התוכנית (אם השיטה מאושרת)</h2>
+<div class="card"><ol>
+<li><b>מכונית אחת במשחק, מאחורי מתג</b> (F9): G2 כחלק חדש שעוטף את C34 באותו ממשק (cv / ox / oy / k), כך ש-c34Draw / c34Pick / המטמון / התור / האורות נשארים כמו שהם (כלל 19א). השוואה בעין במשחק עצמו.</li>
+<li><b>כל המכוניות</b>: הטבלאות של היום (VM: אורך, רוחב, תא, גלגלים; VD_T / VD_M: פנסים, גריל, מכסה מנוע, תוספות) מזינות את המחולל של G2 — מחולל אחד ל-~45 דגמים, כולל מונית, משטרה, אמבולנס, משאיות (KIT34).</li>
+<li><b>כל המטוסים</b>: A34.TYPES כבר מחזיק את כל המידות — G2.plane כללי ל-14 הסוגים, המסוקים ו-16 צבעי החברות.</li>
+<li><b>כל האנשים</b>: השלד של G2 עם המלתחה של P34 (כל הבגדים, הכובעים, הפעולות: המתנה, נשיאה, גרירה, ספסל, מכוון, דיג) — ובתוספת ריצה ו-16 כיוונים.</li>
+<li><b>אוניות ורכבות</b>: אותו מנוע לופט — גוף אונייה מקווי שרטוט, קרונות עם בוגים, גלגלים ופנטוגרף.</li>
+<li><b>ביצועים</b>: אותו תקציב זיכרון ואותו תור יצירה של היום; מדידה במחשב חלש לפני כל שלב.</li>
+</ol>
+<p class="note">לאישורך: (1) הכיוון — G2 בלי ספרייה; (2) רוחב המכוניות — אמיתי או ×1.25; (3) עומק כפות הרגליים של האנשים — 0.62 (פשרה בין דמות נקייה לבין רגל שלא מחליקה).</p></div>
+<p class="note" id="foot"></p>
+</main>
+/*@@SCRIPTS@@*/
+</body></html>

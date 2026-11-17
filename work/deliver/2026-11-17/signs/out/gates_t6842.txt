@@ -1,0 +1,3 @@
+q_ingame rc=0
+stuckmax rc=0
+signs12_probe rc=0

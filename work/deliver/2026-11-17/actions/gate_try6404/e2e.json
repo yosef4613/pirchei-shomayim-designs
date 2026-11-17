@@ -1,0 +1,258 @@
+{
+ "cases": [
+  {
+   "id": "S9-ST-E4",
+   "n": 2,
+   "setup": {
+    "poi": "E4-CITY-WS",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "E4-CITY-WS"
+   },
+   "btn": "לקחת את המפסק ← במשחק",
+   "armed": {
+    "k": "take",
+    "phase": "go",
+    "R": 46,
+    "d": 10.77032961426901,
+    "phone": false,
+    "hud": "F · להרים — המפסק החלופי"
+   },
+   "work": {
+    "phase": "work",
+    "prog": -8.33,
+    "hud": "להרים… -833%"
+   },
+   "after": {
+    "step": 2,
+    "done": false,
+    "cur": "work",
+    "carry": null,
+    "wear": false,
+    "res": 0,
+    "err": null,
+    "hud": "להרים… -594%"
+   },
+   "ok": false
+  },
+  {
+   "id": "S9-ST-F3",
+   "n": 4,
+   "setup": {
+    "poi": "F3-HOTEL",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "F3-HOTEL"
+   },
+   "btn": "למסור את הארגז ← במשחק",
+   "armed": {
+    "k": "give",
+    "phase": "go",
+    "R": 46,
+    "d": 10.77032961426901,
+    "phone": false,
+    "hud": "F · למסור — ארגז הקרח"
+   },
+   "work": {
+    "phase": "work",
+    "prog": -12.6,
+    "hud": "למסור… -1260%"
+   },
+   "after": {
+    "step": 4,
+    "done": false,
+    "cur": "work",
+    "carry": "בדיקה",
+    "wear": false,
+    "res": 0,
+    "err": null,
+    "hud": "למסור… -966%"
+   },
+   "ok": false
+  },
+  {
+   "id": "S12-ST-C1",
+   "n": 2,
+   "setup": {
+    "poi": "C1-GARDEN",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "C1-GARDEN"
+   },
+   "btn": "הלאה ← במשחק",
+   "armed": {
+    "k": "pick",
+    "phase": "go",
+    "R": 46,
+    "d": 10.77032961426901,
+    "phone": false,
+    "hud": "F · לקטוף — סל העגבניות"
+   },
+   "work": {
+    "phase": "work",
+    "prog": -6.8,
+    "hud": "לקטוף… -680%"
+   },
+   "after": {
+    "step": 2,
+    "done": false,
+    "cur": "work",
+    "carry": "בדיקה",
+    "wear": false,
+    "res": 0,
+    "err": null,
+    "hud": "לקטוף… -557%"
+   },
+   "ok": false
+  },
+  {
+   "id": "S13-ST-F8",
+   "n": 3,
+   "setup": {
+    "poi": "BR-WIND",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "BR-WIND"
+   },
+   "btn": "לסיים ← במשחק",
+   "armed": {
+    "k": "work",
+    "phase": "go",
+    "R": 46,
+    "d": 10.77032961426901,
+    "phone": false,
+    "hud": "F · להחליף — הנתיך בקופסה"
+   },
+   "work": {
+    "phase": "work",
+    "prog": -8.1,
+    "hud": "להחליף… -810%"
+   },
+   "after": {
+    "step": 3,
+    "done": false,
+    "cur": "work",
+    "carry": "בדיקה",
+    "wear": false,
+    "res": 0,
+    "err": null,
+    "hud": "להחליף… -699%"
+   },
+   "ok": false
+  },
+  {
+   "id": "S9-ST-E5",
+   "n": 1,
+   "setup": {
+    "poi": "E5-STAFF",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "E5-STAFF"
+   },
+   "btn": "ללבוש את האפוד ← במשחק",
+   "armed": {
+    "k": "wear",
+    "phase": "go",
+    "R": 46,
+    "d": 10.77032961426901,
+    "phone": false,
+    "hud": "F · ללבוש — האפוד הזוהר"
+   },
+   "work": {
+    "phase": "work",
+    "prog": -17.37,
+    "hud": "ללבוש… -1737%"
+   },
+   "after": {
+    "step": 1,
+    "done": false,
+    "cur": "work",
+    "carry": "בדיקה",
+    "wear": false,
+    "res": 0,
+    "err": null,
+    "hud": "ללבוש… -1488%"
+   },
+   "ok": false
+  },
+  {
+   "id": "S14-ST-B7",
+   "n": 2,
+   "setup": {
+    "poi": "B7-SORT",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "B7-SORT"
+   },
+   "btn": "למיין ולכסות בקרח ← במשחק",
+   "armed": {
+    "k": "sort",
+    "phase": "go",
+    "R": 46,
+    "d": 10.77032961426901,
+    "phone": false,
+    "hud": "F · למיין ולכסות בקרח — ארגזי הדגים (0 מתוך 3)"
+   },
+   "work": {
+    "phase": "work",
+    "prog": -26.81,
+    "hud": "למיין ולכסות בקרח… -2681% · 1 מתוך 3"
+   },
+   "after": {
+    "step": 2,
+    "done": false,
+    "cur": "work",
+    "carry": "בדיקה",
+    "wear": false,
+    "res": 0,
+    "err": null,
+    "hud": "למיין ולכסות בקרח… -1720% · 1 מתוך 3"
+   },
+   "ok": false
+  },
+  {
+   "id": "S9-ST-E5",
+   "n": 3,
+   "setup": {
+    "poi": "E5-FREIGHT",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "E5-FREIGHT"
+   },
+   "btn": "לצלם את הלוחית ← במשחק",
+   "armed": {
+    "k": "photo",
+    "phase": "go",
+    "R": 46,
+    "d": 10.77032961426901,
+    "phone": false,
+    "hud": "F · לצלם — הלוחית של 4-17"
+   },
+   "work": {
+    "phase": "work",
+    "prog": -32.32,
+    "hud": "לצלם… -3232%"
+   },
+   "after": {
+    "step": 3,
+    "done": false,
+    "cur": "work",
+    "carry": "בדיקה",
+    "wear": false,
+    "res": 0,
+    "err": null,
+    "hud": "לצלם… -2837%"
+   },
+   "ok": false
+  }
+ ],
+ "pe": [],
+ "ok": false
+}

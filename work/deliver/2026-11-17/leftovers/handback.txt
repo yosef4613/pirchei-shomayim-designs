@@ -1,0 +1,65 @@
+leftovers · 17.11 · ההחזרה (סופי, 16:5x)
+מוכן למיזוג: t17_opening 354266d · try8166 sha1 3e7934b83a36 (+ try8168 sha1 c200a52cf2f9 — אותו עץ 7d521f0ae965) · מעל master S7F303 (41d3604) · נבדק: film_flow 11/11, ‏TCBUSY בזמן הסרטון (q_of_busy) ✓, ‏q_tut ✓, האריח במסך הפתיחה (q_of_tile) 9/10, ‏q_ingame 346/346, ‏rules_gate ok, ‏people_on_road ok, ‏stuckmax 150 — 0 (try8168), ‏0 שגיאות, ‏0 data:image
+מוכן למיזוג: t17_farm 6a8c477 · try8162 sha1 77ee2cea47f6 · מעל master S7F303 (41d3604) · נבדק: farm_q ✓, ‏q_ingame 346/346, ‏rules_gate ok, ‏people_on_road ok, ‏stuckmax 150 — ‏over5 0, ‏0 שגיאות, ‏0 data:image
+מוכן למיזוג: t17_posters 013c9f7 · try8169 sha1 02a56cb6df49 · מעל master S7F303 · נבדק: q_icon ✓, ‏q_ingame 346/346, ‏rules_gate ok (על try8169); ‏p11 ✓, ‏people_on_road ok, ‏stuckmax 150 — 0 (על try8163 — אותו קוד חוץ משורת ההחרגה ב-058), ‏0 data:image
+מוכן למיזוג: t17_actions 5737e75 · try8164 sha1 77a42935b729 · מעל master S7F303 · נבדק: q_actions ok (140, 0 חסומים), ‏q_ingame 346/346, ‏rules_gate ok, ‏people_on_road ok, ‏stuckmax 150 — 0, ‏0 data:image
+carrier: לא הורץ (הנחיית המתאם — המכסה). הענף t17_carrier a577f47 מעל S7F303, עם dfb3b57 (termGate) — לבדיקה בגל הבא (ראו למטה).
+מצאתי: חמשת הענפים של הבוקר שלא נכנסו — opening ‏e204422 (על S7F298; במיזוג יבש — רק manifest), ‏farm ‏aa7b244 (stuckmax אצלם: 2 מכוניות מעל 5 שנ׳ — LC-E3N ‏12.5, ‏D2-MALL ‏6.8, לא באזור החווה), ‏posters ‏b7faaf4 (no_embedded_raster_game_assets ב-058_D3_C3_D4_p470.js:roadAudit סורקת את כל ה-DOM, והאייקון ב-toDataURL נכשל בה; הסוכן כבר הוסיף את ההחרגה לפי הכרעת המתאם ב-33fa368, אבל היא לא נבדקה — try6889 ריק), ‏carrier (‏d434db3 כבר ב-master; ‏473ed9e + ‏dfb3b57 לא — וב-try6804 של 473ed9e הבדיקה q_import_flow_d3 נכשלה: S10C-CAR-22 ↔ ‏CAR-23 מחכים זה לזה 422 שנ׳ בחצר היבוא ב-D6, y ‏4682; ‏dfb3b57 (021w:termGate) נכתב בדיוק לזה, והבדיקה שלו (try6805) נקטעה), ‏actions (‏6dc5501 כבר ב-master; ‏094ff39 נשאר בחוץ כי stuckmax ב-try6421 הראה 2 מעל 5 שנ׳ — C4-FIRE-1 / ‏AI-CAR-44 ב-C4-RC-N; ‏094ff39 כבר נמצא גם בתוך t17_actions2).
+תוספת המתאם (carrier): ההמתנה ההדדית שמצא merge4 ב-S7F302 / ‏S7F303 (S10C-CAR-6 ‏(4110, 4682) ↔ ‏CAR-7 ‏(4160, 4682), ‏left 0, ‏pool 0 → "גלי הכרמל" לא חוזרת, sl_tugs ‏arr 0) — זו אותה המתנה ש-carrier מדד ב-try6804, והקוד ב-master (021w:inLegs) הוא עדיין בלי termGate. התיקון: dfb3b57 שבענף (מי שנכנס מחכה לפני המעבר, ב-(GATE_X, ENTRY_Y), כשרכב שלפניו עוד יהיה ברוורס אל המקום שלו כשהוא יגיע לשם). הבדיקה: q_import_flow_d3 + ‏sl_tugs של sealife על הענף.
+
+== מה נעשה ==
+0. המיזוגים (W/deliver/2026-11-17/leftovers/tools/merge_br.sh — התנגשות רק ב-manifest, בכלי manifest_tool merge; בכל ענף אחרי המיזוג: kiss בקבצים רק 074m_brands_data ו-009b, זהים ל-master; בבנייה הגולמית 3 — כמו cand303x_src):
+   S7F302 → opening 7139de2, ‏farm 0a8f828, ‏posters 5eb7279, ‏carrier bd2c217, ‏actions 66e4d37; ‏S7F303 (התגית הופיעה 14:4x = int303 41d3604) → opening c4e7456, ‏farm 6a8c477, ‏posters b63fe58, ‏carrier a577f47, ‏actions 5737e75.
+   כדי לא לחכות לתגית, בדקתי מראש על עותקים זמניים (detached, בתיקיית העבודה שלי — לא ענפים): t17_<שם> + ‏int303 41d3604. אחרי שהתגית הופיעה — העץ של כל ענף אחרי המיזוג זהה בדיוק לעץ שנבדק (git rev-parse HEAD^{tree}), והבדיקות רצו על הענפים עצמם.
+1. opening — בלי שינוי במה שהסוכן בנה, ועוד שני תיקונים:
+   א. TCBUSY (354266d, ‏parts/074zg_opening_film.js בלבד): מצאתי — 009_tcbusy.js (גוף 9) רושם probe('opening', ()=>typeof TCSHOW!=='undefined'&&TCSHOW.on), אבל TCSHOW (029c) הוא var בתוך ה-IIFE של גוף 12 ולא נראה מגוף 9. נמדד ב-try8161 (q_of_busy): בזמן הסרטון TCSHOW.on=true אבל TCBUSY.top()='' , ‏blocks('card')=false, ו-when('card') רץ מיד — כלומר כרטיס של הלוח / אירוע יכלו לקפוץ מעל הסרטון. התיקון: TCOF רושם את אותו תנאי מתוך גוף 12 — TCBUSY.probe('opening', ()=>!!TCSHOW.on). ב-try8166: ‏top 'opening', כרטיס / הדרכה / אירוע חסומים, ‏when מחכה ורץ אחרי הסוף, ו-'opening' יורד כשהסרטון נגמר.
+   ב. דף הציור (opening/draw/Opening_film_plan.html) — לפי הערת הבקר (planrev/opening.txt סעיף 1): הורדתי את שתי השורות שהבקר סימן לפי כלל 7, וניסחתי "בלי תמונות מוטמעות" במקום המחרוזת שהבודק האוטומטי מוצא. העותק הקודם — W/_to_delete/Opening_film_plan_before_leftovers_1117.html.
+2. farm — בלי שינוי קוד, רק המיזוג. ה-stuckmax של הבוקר (LC-E3N ‏12.5, ‏D2-MALL ‏6.8) לא חזר: על try8162 — ‏over5 0.
+3. posters — המיזוג, ועוד תיקון אחד בשורה שהסוכן כבר הוסיף לפי ההכרעה (058_D3_C3_D4_p470.js:roadAudit, ‏no_embedded_raster_game_assets):
+   מצאתי — ב-try8163 (הענף אחרי המיזוג, עם 33fa368 של הסוכן) rules_gate עדיין נכשל ב-no_embedded_raster_game_assets, אף ש-q_icon מראה קישור אחד ו-data:image רק בו. הסיבה: ההחרגה לקחה את document.getElementById('tc-icon'), אבל ב-shell.html גם הסקריפט שמצייר את האייקון הוא <script id="tc-icon">, והוא בא לפני הקישור — כך שהוצא מהסריקה הסקריפט, לא הקישור. התיקון (00b9fa3 + ‏013c9f7 ה-manifest בכלי): document.querySelector('link#tc-icon'). כל השאר נסרק כמו קודם.
+4. actions — בלי שינוי קוד; 094ff39 + המיזוגים. (094ff39 כבר נמצא גם בתוך t17_actions2 — אם actions2 נכנס, הוא נכנס איתו.)
+5. carrier — לא הורץ (הנחיית המתאם 16:3x: המכסה — carrier ו-actions לא עכשיו). מה שמצאתי — בסעיף "carrier והחצר ב-D6" למטה.
+
+== carrier והחצר ב-D6 (מה שמצאתי, בלי הרצה) ==
+- ההמתנה ההדדית ש-merge4 מצא ב-S7F302 / ‏S7F303 (S10C-CAR-6 ‏(4110, 4682) ↔ ‏CAR-7 ‏(4160, 4682) מ-t≈100 שנ׳, ‏left 0, ‏pool 0 → "גלי הכרמל" לא חוזרת, sl_tugs ‏arr 0) היא אותה תקלה ש-carrier עצמו מדד בבוקר ב-try6804 (q_import_flow_d3: ‏S10C-CAR-22 ↔ ‏CAR-23 באותה שורה, y ‏4682, ‏422 שנ׳, 9 רכבים של הקריאה נעצרו — flow נכשל "רכב עמד יותר מ-20 שנ׳").
+- המקור: 021w_s10c_import.js:inLegs — רכב שנכנס לחצר נוסע במעבר AY מערבה עד cx−R ואז ברוורס אל המקום (R2 / R3e). כשהרכב שאחריו צמוד מאחוריו במעבר, הראשון לא יכול לסגת (הגוף של השני מאחוריו — 021w:blk) והשני לא יכול להתקדם (הראשון לפניו) — כל אחד מחכה לשני לנצח.
+- התיקון כבר כתוב בענף: t17_carrier dfb3b57 (021w:termGate) — הקטע הראשון של הכניסה נגמר לפני המעבר (GATE_X, ‏ENTRY_Y), ושם מי שנכנס מחכה כשרכב שלפניו עוד יהיה ברוורס אל המקום שלו כשהוא יגיע לשם (לפי האורך שנשאר והמהירויות 26 / 12), ורק אם הדרך שלו עוברת שם. ב-master אין termGate (grep: 0) — לכן התקלה שם.
+- הענף מוכן לבדיקה: t17_carrier a577f47 (מעל S7F303; העץ 5579856d567d), ניסיון עוד לא נבנה (try8165 שמור). מה שצריך להריץ: q_import_flow_d3 ‏3300 (כ-31 דק׳ בתור), ‏sl_tugs ‏6000 של sealife (כ-20 דק׳), והסט החוסם. השורה בתור: W/deliver/2026-11-17/leftovers/tools/jobs.txt (מסומנת #) — להוריד את ה-# ולהריץ lo_chain.sh.
+- לא נבדק עדיין: האם dfb3b57 סוגר גם את המקרה של CAR-6 / CAR-7 (ה-try6805 של carrier נקטע, ואני לא הרצתי). זו התלות לגל הבא.
+
+== לאישורך ==
+1. opening: בפתיחה מהאריח במסך הפתיחה, במכונת הבדיקה, התהליכון הראשי נתקע 13–28 שנ׳ בתחילת הסרטון (q_of_diag על try8167: פער של 12.9 שנ׳ מיד אחרי הלחיצה, משימה ארוכה של 10 שנ׳, ‏TCCITY.grab קר אחד של 7.8 שנ׳). זה החימום של 7 הצילומים החיים — 029c:open (S.warmQ, כל מצלמה 3 פעמים, אחת בכל פריים) — המנגנון הקיים של הקולנוע, לא קוד חדש. במשחק חדש (film_flow, ‏q_of_busy) — בלי תקיעה כזו. בגלל זה tcofb_test.js של loading נופל ב-page.click (‏30 שנ׳), ולכן בדקתי את האריח בתוך הדף (q_of_tile: 9/10 — הנכשלת היחידה "הסרטון מתקדם" 8 שנ׳ אחרי הלחיצה, באותה תקיעה). אצל הבעלים (מחשב מהיר יותר, בלי 5 דפדפנים לצד) — כנראה כמה שניות. ברירת המחדל: נשאר; הצעה ל-perf: לחמם את המצלמות של הסרטון בזמן שמסך הפתיחה פנוי, או לפצל את הרינדור הקר.
+2. opening: ה-probe של TCBUSY ל-'opening' עכשיו חוסם בזמן כל סרט של הנגן 029c (גם בקולנוע / בתיאטרון) — זה מה ש-missions כתב שהוא רוצה (009_tcbusy: "סרטון הפתיחה והסרטים וההצגות של העיר"), אבל קודם זה לא עבד בפועל.
+
+== הבדיקות (W/deliver/2026-11-17/leftovers/qa/<ניסיון>/ — build.txt, ‏runs.tsv, ‏*.json, ‏*.log) ==
+- try8161 (opening c4e7456): film 11/11 · ‏of_busy ✗ (top '' בזמן הסרטון — הממצא) · ‏tcofb ✗ (page.click) · ‏tut ✓ · ‏ingame 346 ✓ · ‏rules ✓ · ‏people ✓ · ‏stuck 0.
+- try8166 (opening 354266d): of_busy ✓ · ‏film 11/11 · ‏tcofb ✗ (page.click) · ‏tut ✓ · ‏ingame 346 ✓ · ‏rules ✓ · ‏people ✓ · ‏stuck over5 1 (AI-CAR-13 ‏42.8 שנ׳ ב-AIR-FRONT — הנקודה הידועה, גם אצל locks / ‏perf / ‏loading / ‏fieldfix).
+- try8167 (אותו עץ): q_of_diag — המדידה של התקיעה (למעלה).
+- try8168 (אותו עץ): q_of_tile 9/10 · ‏stuck 0.
+- try8162 (farm 6a8c477): farm_q ✓ · ‏ingame 346 ✓ · ‏rules ✓ · ‏people ✓ · ‏stuck 0.
+- try8163 (posters b63fe58): q_icon ✓ · ‏p11 ✓ · ‏ingame — no_embedded_raster_game_assets ✗ · ‏rules ✗ (אותה) · ‏people ✓ · ‏stuck 0.
+- try8169 (posters 013c9f7): q_icon ✓ · ‏ingame 346 ✓ · ‏rules ✓.
+- try8164 (actions 5737e75): q_actions ✓ · ‏ingame 346 ✓ · ‏rules ✓ · ‏people ✓ · ‏stuck 0.
+בכל הניסיונות: 0 data:image, ‏0 new Image(, ‏kiss 3 בבנייה הגולמית — כמו cand303x_src (השחרור מוחק). כל הדפדפנים — דרך התור, בכרטיס אחד (bslot.sh bash lo_chain.sh, ‏15:20–16:45).
+
+== commit וניסיון אחרונים ==
+opening 354266d / try8166 + try8168 · ‏farm 6a8c477 / try8162 · ‏posters 013c9f7 / try8169 · ‏actions 5737e75 / try8164 · ‏carrier a577f47 (בלי ניסיון). ‏try8160 (opening על S7F302, לא נבדק) — gzip; את השאר דוחסת השרשרת (רק 3 האחרונים כ-html): try8163 / ‏8164 / ‏8169 — html; ‏try8161 / ‏8162 / ‏8166 / ‏8167 / ‏8168 — ‎.html.gz (gunzip -k לפני שימוש).
+
+== נגעתי בקבצים משותפים ==
+- parts/058_D3_C3_D4_p470.js:roadAudit — רק בתוך השורה של ההחרגה שהסוכן posters כבר הוסיף (getElementById → querySelector('link#tc-icon')).
+- manifest.json — רק דרך manifest_tool (merge / refresh).
+- deliver/2026-11-17/opening/draw/Opening_film_plan.html — שתי שורות לפי הערת הבקר.
+
+== הכלים שלי (W/deliver/2026-11-17/leftovers/tools/) ==
+merge_br.sh (מיזוג לענף / לעותק זמני — LO_DIR), ‏lo_chain.sh + jobs.txt + done.txt (שרשרת במקום אחד בתור, שבונה כל ניסיון לפני הבדיקות), ‏q_of_busy.js, ‏q_of_tile.js, ‏q_of_diag.js, ‏summ.py.
+העותקים הזמניים (detached, לא ענפים) — בתיקיית העבודה שלי (scratchpad/lo303_<שם>), רשומים ב-git worktree list; אפשר להסיר עם git worktree prune אחרי שהתיקייה תימחק.
+
+== מה נשאר ==
+- carrier: לבנות try8165 מ-t17_carrier a577f47 ולהריץ q_import_flow_d3 ‏3300, ‏sl_tugs ‏6000 והסט החוסם (השורה ב-jobs.txt — להוריד את ה-#). אם termGate לא סוגר את CAR-6 / CAR-7 — לבדוק את המקרה שבו שני הרכבים כבר במעבר (השער לא נבדק שם).
+- opening: התקיעה בפתיחה מהאריח (לאישורך 1).
+
+== תלות ==
+- perf: החימום של הצילומים החיים בנגן 029c (לאישורך 1).
+- missions: ב-009_tcbusy גם ה-probe של 'loading' (TCO ב-'boot' / ‏'open') ושל 'tutorial' (TCTUT) בודקים typeof של משתנים שחיים בתוך ה-IIFE של גוף 12 (TCO, ‏TCTUT, וגם TCCUT — שם יש גיבוי של class על body) — לפי הקוד הם לא רואים אותם, כמו שקרה עם TCSHOW. לא בדקתי בדפדפן ולא נגעתי. התיקון כמו כאן: כל אחד רושם את ה-probe שלו מתוך גוף 12.
+- loading: tcofb_test.js — page.click נתקע כשהסרטון מחמם את הצילומים; כדאי לחיצה דרך evaluate וזמן המתנה ארוך יותר.
+- carrier / ‏sealife: החצר ב-D6 (למעלה).

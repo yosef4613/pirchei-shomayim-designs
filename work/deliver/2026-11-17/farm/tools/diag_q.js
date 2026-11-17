@@ -1,0 +1,2 @@
+return (async()=>{const T=ms=>new Promise(r=>setTimeout(r,ms)),F=window.__TC_FARM,o={};const c0=a6FarmPersistent().clock;F.demo.at('A6-VEG');setPhoneOpen(false);o.held=a6Held('A6-VEG');o.paused=State.paused;o.mapQa=State.mapQa;
+ o.start=F.start('A6-VEG','hand');o.work=JSON.stringify(State.farmWork);await T(2500);o.work2=JSON.stringify(State.farmWork);o.held2=a6Held('A6-VEG');o.ped=[PlayerPed.x,PlayerPed.y,PlayerProfile.mode];o.dclock=a6FarmPersistent().clock-c0;await T(3000);o.work3=JSON.stringify(State.farmWork);o.state=F.state('A6-VEG');o.err=FARM.err;return o})()

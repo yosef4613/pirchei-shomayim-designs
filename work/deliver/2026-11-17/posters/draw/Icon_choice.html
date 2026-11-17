@@ -1,0 +1,84 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>האייקון — הבחירה</title>
+<style>:root{--bg:#f4f1ea;--fg:#1d2430;--mut:#5b6472;--card:#fff;--line:#d8d2c4}
+@media (prefers-color-scheme:dark){:root{--bg:#141820;--fg:#e8ecf2;--mut:#9aa4b4;--card:#1d2330;--line:#2e3646}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif;padding:16px}
+h1{font-size:22px;margin:0 0 6px}p{color:var(--mut);margin:0 0 14px;max-width:720px}
+.row{display:flex;flex-wrap:wrap;gap:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;flex:1 1 300px}
+.card h2{font-size:17px;margin:0 0 4px}.sz{display:flex;align-items:flex-end;gap:14px;margin:10px 0}.sz span{display:block;font-size:12px;color:var(--mut);text-align:center}
+.tab{display:inline-flex;align-items:center;gap:6px;background:#dee1e6;color:#202124;border-radius:8px 8px 0 0;padding:6px 12px;font-size:13px;margin-top:6px}
+.pick{color:#0a7d3c;font-weight:700}</style></head><body>
+<h1>האייקון של טורבו סיטי — שתי האפשרויות</h1>
+<p>כל ציור כאן מצויר בקנבס בקוד, בלי קובץ תמונה. בלשונית של הדפדפן האייקון קטן מאוד (16–32 נקודות) — לכן הגדלים הקטנים קובעים.</p>
+<div class="row">
+<div class="card"><h2>א. "TC" — של הבודק <span class="pick">· נבחר</span></h2><p>T בטורקיז ו-C בכתום־זהב, עם צל, על רקע כחול כהה. נקרא כ-TC גם ב-16 נקודות, וזה מה שביקשו לבדוק ("הלשונית מראה TC").</p><div class="sz" id="a"></div><div class="tab" id="ta"></div></div>
+<div class="card"><h2>ב. קו רקיע ודרך — של המעצב</h2><p>שלושה בניינים בשנהב וקשת דרך זהובה, על ירוק כהה. יפה בגדול, אבל בלי אותיות ופחות מזוהה כ"טורבו סיטי" בלשונית; בהיר פחות על רקע כהה.</p><div class="sz" id="b"></div><div class="tab" id="tb"></div></div>
+</div>
+<script>
+/* Turbo City city-and-route mark. Original Canvas code; no image or SVG inputs. */
+(function(root){
+const PALETTE={base:'#10251e',top:'#315343',bottom:'#0b1c18',ivory:'#f6f1dd',ivoryShade:'#d2dbc6',gold:'#e9c57a',lime:'#d8e69c'};
+
+function rounded(c,x,y,w,h,r){c.beginPath();c.roundRect(x,y,w,h,r);}
+function drawTiny(c,n,opaque){
+  const k=n/16;
+  c.save();c.scale(k,k);
+  if(opaque){c.fillStyle=PALETTE.base;c.fillRect(0,0,16,16);}
+  const bg=c.createLinearGradient(0,0,16,16);bg.addColorStop(0,'#315343');bg.addColorStop(1,PALETTE.bottom);
+  rounded(c,0,0,16,16,3.7);c.fillStyle=bg;c.fill();
+  c.fillStyle=PALETTE.ivory;
+  c.fillRect(3,6,2,4);c.fillRect(6,3,3,7);c.fillRect(10,5,3,5);
+  if(n>=32){
+    c.fillStyle='#17352a';
+    for(const [x,y] of [[6.75,4.3],[6.75,6.15],[6.75,8],[10.8,6.3],[10.8,8.15]])c.fillRect(x,y,.7,.7);
+  }
+  c.strokeStyle=PALETTE.gold;c.lineWidth=2;c.lineCap='round';
+  c.beginPath();c.moveTo(2.8,12);c.bezierCurveTo(6.4,14.3,11.1,12.8,13.35,10.4);c.stroke();
+  c.restore();
+}
+function drawMark(c,size,{opaque=false}={}){
+  c.clearRect(0,0,size,size);
+  if(size<=32){drawTiny(c,size,opaque);return;}
+  const u=size/512;c.save();c.scale(u,u);
+  if(opaque){c.fillStyle=PALETTE.base;c.fillRect(0,0,512,512);}
+  const bg=c.createLinearGradient(30,0,460,512);bg.addColorStop(0,PALETTE.top);bg.addColorStop(.6,PALETTE.base);bg.addColorStop(1,PALETTE.bottom);
+  rounded(c,0,0,512,512,112);c.fillStyle=bg;c.fill();
+  rounded(c,9,9,494,494,104);c.strokeStyle='#58765b66';c.lineWidth=2;c.stroke();
+  const buildings=[{x:106,y:186,w:76,h:144},{x:214,y:98,w:91,h:232},{x:336,y:150,w:78,h:180}];
+  for(const b of buildings){
+    c.fillStyle='#06140f66';rounded(c,b.x+7,b.y+8,b.w,b.h,5);c.fill();
+    const front=c.createLinearGradient(b.x,b.y,b.x+b.w,b.y+b.h);front.addColorStop(0,'#fff8e4');front.addColorStop(1,PALETTE.ivoryShade);
+    c.fillStyle=front;rounded(c,b.x,b.y,b.w,b.h,5);c.fill();
+  }
+  c.fillStyle='#1b3a2d';
+  for(const b of buildings){
+    const count=b.h>200?4:b.h>160?3:2;
+    for(let i=0;i<count;i++)c.fillRect(b.x+b.w*.34,b.y+24+i*43,b.w*.23,14);
+  }
+  // A single swept road ties the skyline together; it remains a clear gold arc at16px.
+  c.lineCap='round';c.lineJoin='round';
+  const road=c.createLinearGradient(80,410,435,330);road.addColorStop(0,'#d3a24d');road.addColorStop(.45,PALETTE.gold);road.addColorStop(1,PALETTE.lime);
+  c.strokeStyle='#04110a88';c.lineWidth=43;c.beginPath();c.moveTo(87,389);c.bezierCurveTo(206,456,369,410,430,321);c.stroke();
+  c.strokeStyle=road;c.lineWidth=37;c.beginPath();c.moveTo(83,382);c.bezierCurveTo(202,449,365,403,426,314);c.stroke();
+  c.strokeStyle='#fff4c044';c.lineWidth=7;c.beginPath();c.moveTo(86,375);c.bezierCurveTo(202,439,360,394,419,310);c.stroke();
+  c.restore();
+}
+
+var api={draw:drawMark,palette:PALETTE};root.TURBO_CITY_FAVICON=api;if(typeof module!=="undefined"&&module.exports)module.exports=api;
+})(typeof window!=="undefined"?window:globalThis);
+
+</script><script>
+function drawTC(c,S){var k=S/64;c.save();c.scale(k,k);
+function lg(x0,y0,x1,y1,st){var g=c.createLinearGradient(x0,y0,x1,y1);for(var i=0;i<st.length;i+=2)g.addColorStop(st[i],st[i+1]);return g;}
+var bg=new Path2D('M15 1.5H49C56.456 1.5 62.5 7.544 62.5 15V49C62.5 56.456 56.456 62.5 49 62.5H15C7.544 62.5 1.5 56.456 1.5 49V15C1.5 7.544 7.544 1.5 15 1.5Z');
+var T=new Path2D('M10 13H36L33 22H25L18 50H8L15 22H7Z'),C=new Path2D('M57 13H41L31 22L24 42L29 51H46L55 42H44L41 45H35L33 42L39 25L43 22H49L48 27H57L61 18Z');
+c.fillStyle=lg(1.5,1.5,62.5,62.5,[0,'#1c3e5b',1,'#071326']);c.fill(bg);c.strokeStyle='#50768a';c.lineWidth=1.5;c.stroke(bg);
+c.lineJoin='round';c.save();c.translate(.7,2.3);c.fillStyle=c.strokeStyle='#020d20';c.lineWidth=2;c.fill(T);c.stroke(T);c.fill(C);c.stroke(C);c.restore();
+c.strokeStyle='#e3f8ff';c.lineWidth=1.6;
+c.fillStyle=lg(0,13,0,50,[0,'#e5ffff',.24,'#48f0ff',.55,'#00cce8',1,'#0078b8']);c.fill(T);c.stroke(T);
+c.fillStyle=lg(0,13,0,51,[0,'#fff2a1',.24,'#ffd228',.6,'#ff9700',1,'#f45b08']);c.fill(C);c.stroke(C);c.restore();}
+function put(id,fn,sizes){var box=document.getElementById(id);sizes.forEach(function(s){var w=document.createElement('div');var cv=document.createElement('canvas');var d=window.devicePixelRatio||1;cv.width=cv.height=s*d;cv.style.width=cv.style.height=s+'px';var c=cv.getContext('2d');c.scale(d,d);fn(c,s);w.appendChild(cv);var sp=document.createElement('span');sp.textContent=s;w.appendChild(sp);box.appendChild(w);});}
+put('a',drawTC,[16,32,64,128]);put('b',function(c,s){TURBO_CITY_FAVICON.draw(c,s);},[16,32,64,128]);
+function tab(id,fn){var t=document.getElementById(id);var cv=document.createElement('canvas');var d=window.devicePixelRatio||1;cv.width=cv.height=16*d;cv.style.width=cv.style.height='16px';var c=cv.getContext('2d');c.scale(d,d);fn(c,16);t.appendChild(cv);t.appendChild(document.createTextNode('טורבו סיטי'));}
+tab('ta',drawTC);tab('tb',function(c,s){TURBO_CITY_FAVICON.draw(c,s);});
+</script></body></html>

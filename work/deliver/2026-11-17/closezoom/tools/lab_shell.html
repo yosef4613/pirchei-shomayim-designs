@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>זום קרוב ברגל</title>
+<style>
+:root{--bg:#f4f1ea;--card:#ffffff;--ink:#1d232b;--mute:#5b6570;--line:#d9d3c7;--acc:#2f6fd0;--good:#2f8a4a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161a1f;--card:#20262d;--ink:#eef1f4;--mute:#a3adb8;--line:#38414b;--acc:#6ea2f0;--good:#5cc07a}}
+:root[data-theme="dark"]{--bg:#161a1f;--card:#20262d;--ink:#eef1f4;--mute:#a3adb8;--line:#38414b;--acc:#6ea2f0;--good:#5cc07a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Segoe UI",Arial,sans-serif}
+header{padding:20px 16px 8px;max-width:1180px;margin:0 auto}
+h1{font-size:22px;margin:0 0 6px}
+header p{margin:4px 0;color:var(--mute);max-width:900px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px}
+.ctl button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;cursor:pointer}
+.ctl button.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+main{max-width:1180px;margin:0 auto;padding:0 16px 32px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:14px 0}
+.head{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.por{width:84px;height:84px;border-radius:50%;overflow:hidden;flex:0 0 auto;border:2px solid var(--line)}
+.head h2{margin:0;font-size:18px}
+.head .sub{color:var(--mute);font-size:13px}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cell{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#0000}
+.cell canvas{display:block;width:100%;height:340px}
+.cap{padding:6px 10px;font-size:13px;color:var(--mute);border-top:1px solid var(--line)}
+.cap b{color:var(--ink)}
+.cap.new b{color:var(--good)}
+.notes{margin:8px 0 0;padding:0 18px;color:var(--mute);font-size:13.5px}
+.notes li{margin:2px 0}
+@media (max-width:760px){.row{grid-template-columns:1fr}.cell canvas{height:300px}}
+</style>
+</head>
+<body>
+<header>
+<h1>זום קרוב ברגל — האנשים בסגנון הדיוקן שלהם</h1>
+<p>ניסוי נפרד, לא המשחק. מצויר בקוד של המשחק עצמו: צייר האנשים של 3/4, הדיוקן של הטלפון, והתוספת החדשה. אותו אדם בשלוש עמודות: הזום של היום (5.5 — המקסימום), וזום חדש קרוב יותר — 8 ו-11, רק כשהשחקן ברגל. המצלמה הולכת עם האיש, כמו במשחק.</p>
+<p>בזום החדש: הפנים כמו בדיוקן (עיניים עם אישון וברק, גבות בצבע השיער, אף, חיוך, סומק, קמטים), הכיפה / הכובע, המשקפיים, השפם או הזקן — והחולצה בצבע של הדמות.</p>
+<div class="ctl" id="ctl">
+ <button data-m="walk" class="on">הליכה ופניות</button>
+ <button data-m="front">עמידה מול המצלמה</button>
+ <button data-m="turn">סיבוב במקום</button>
+ <button data-m="pause">עצירה</button>
+</div>
+</header>
+<main id="main"></main>
+<script>
+/*@@LIB@@*/
+</script>
+<script>
+'use strict';
+/*@@POR@@*/
+/*@@CZ@@*/
+const TC_CUTS={looks:/*@@LOOKS@@*/};
+(function(){
+const ZS=[5.5,8,11];
+P34.budgetMB=96;tcczWrapP34();
+/* the look of a story figure in the game today (074zu_story_actions:porLook, as is) */
+const SKIN=['#f1c7a5','#e2b08a','#d39a72','#b97c56','#8d5a3b'],HAIR=['#1e1712','#3b2a1f','#5a3d26','#15110e','#8a8a86'],TOPS=['#2f6fd0','#2f8a4a','#7a1f2f','#e07b2f','#3f6f96','#5b2a86','#c0392b'];
+const hsh=t=>{let h=7;for(const ch of String(t))h=(h*31+ch.charCodeAt(0))>>>0;return h};
+function todayLook(id,C){const P=tcPorLook(id,C);const h=hsh(id),H={elder:1.7,boy:1.46,man:1.76}[P.age]||1.74,boy=P.age==='boy';
+ return{h:+(H+((h%7)-3)/100).toFixed(2),skin:P.skin||SKIN[h%5],hair:{t:{bald:'bald',curly:'curly',wavy:'curly',side:'side'}[P.hair]||'short',c:P.hairCol||HAIR[(h>>3)%5]},
+  beard:P.beard&&P.beard!=='none'&&P.beard!=='stubble'?{c:P.beardCol||P.hairCol||'#3b2a1f'}:null,glasses:!!P.glasses,hat:P.hat==='cap'?{t:'cap',c:P.hatCol}:P.hat==='hard'?{t:'helmet',c:P.hatCol}:null,
+  top:{t:boy?'tee':(h>>3)%2?'polo':'shirt',c:P.shirt||TOPS[(h>>7)%7]},legs:{t:boy?'shorts':'trousers',c:boy?'#2f4a6b':'#2b3038'},shoes:{t:boy?'sneaker':'leather',c:boy?'#f2f2f2':'#24262a'}}}
+/* the player on foot: the look of the wardrobe (P34G.player); the portrait — made from the same look (the player has none in the game) */
+const PL={h:1.78,w:1.02,skin:'#d9a57f',hair:{t:'side',c:'#3b2a1f'},top:{t:'polo',c:'#2f6fd0'},legs:{t:'jeans',c:'#3b5a85'},shoes:{t:'sneaker',c:'#f2f2f2',c2:'#d8452f'}};
+const PLP={age:'man',skin:'#d9a57f',hair:'side',hairCol:'#3b2a1f',beard:'none',hat:'none',hatCol:'#2f6fd0',glasses:false,shirt:'#2f6fd0'};
+const CH=[
+ {key:'pl',name:'השחקן',sub:'ברגל · המראה מהמלתחה',por:PLP,today:PL,now:PL},
+ {key:'st-aharon',name:'סבא אהרן',C:{name:'סבא אהרן',color:'#8a5a12'}},
+ {key:'st-shimon',name:'שמעון',C:{name:'שמעון',color:'#1f7a8a'}}];
+for(const c of CH)if(c.C){c.por=tcPorLook(c.key,c.C);c.today=todayLook(c.key,c.C);c.now=tcczLook34(c.key,c.C,TC_CUTS.looks[c.key]);
+ const P=c.por,T={kippah:'כיפה',cap:'כובע מצחייה',hard:'קסדה',bucket:'כובע דייג',straw:'כובע קש',police:'כובע שוטר',pilot:'כובע טייס',chef:'כובע שף',none:''}[P.hat]||'',Bd={full:'זקן מלא',short:'זקן קצר',mustache:'שפם',goatee:'זקנקן',stubble:'זיפים',none:''}[P.beard]||'';
+ c.sub=[{elder:'מבוגר',man:'גבר',boy:'נער'}[P.age],T,Bd,P.glasses?'משקפיים':''].filter(Boolean).join(' · ')}
+const main=document.getElementById('main'),cells=[];
+for(const c of CH){const card=document.createElement('section');card.className='card';
+ card.innerHTML='<div class="head"><div class="por"><svg viewBox="0 0 64 64" style="width:100%;height:100%;display:block">'+tcPorDraw(c.por)+'</svg></div><div><h2>'+c.name+'</h2><div class="sub">'+c.sub+'</div></div></div><div class="row"></div>';
+ const row=card.querySelector('.row');
+ ZS.forEach((z,i)=>{const d=document.createElement('div');d.className='cell';const cv=document.createElement('canvas');d.appendChild(cv);const cap=document.createElement('div');cap.className='cap'+(i?' new':'');
+  cap.innerHTML=i?'<b>חדש · זום '+z+'</b> · רק ברגל':'<b>היום · זום 5.5</b> · המקסימום היום';d.appendChild(cap);row.appendChild(d);
+  cells.push({cv,z,look:i?c.now:c.today,ch:c})});
+ main.appendChild(card)}
+const notes=document.createElement('section');notes.className='card';
+notes.innerHTML='<h2 style="margin:0 0 6px;font-size:16px">מה משתנה במשחק</h2><ul class="notes">'+
+ '<li>הגלגלת ממשיכה להתקרב מעבר ל-5.5 עד 11 — רק כשהשחקן ברגל. ברכב, במונית ובמפה (F4) — כמו היום; מי שעולה לרכב בזום קרוב — המצלמה חוזרת לאט ל-5.5.</li>'+
+ '<li>הפנים בסגנון הדיוקן מצוירות רק כשהראש גדול על המסך (הזום החדש), ורק לאנשים שבמסך. בזום של היום — הציור של היום.</li>'+
+ '<li>כל אדם עם דיוקן (אנשי הסיפור) נראה בעולם כמו בטלפון: אותה כיפה או כובע, משקפיים, שפם / זקן, צבע חולצה.</li>'+
+ '<li>גם עוברי האורח והשחקן מקבלים את הפנים החדשות בזום הקרוב (בלי דיוקן — לפי המראה שלהם).</li></ul>';
+main.appendChild(notes);
+let mode='walk',paused=false;
+document.getElementById('ctl').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const m=b.dataset.m;if(m==='pause'){paused=!paused;b.classList.toggle('on',paused);return}
+ mode=m;for(const x of document.querySelectorAll('#ctl button'))if(x.dataset.m!=='pause')x.classList.toggle('on',x.dataset.m===m)});
+/* the ground (world px; 10 px = 1 m): the paving of a sidewalk, a kerb, a strip of grass, the road beyond — so the zoom reads */
+function ground(g,cx,cy,hw,hh){const x0=cx-hw,x1=cx+hw,y0=cy-hh,y1=cy+hh;
+ g.fillStyle='#cfc8bb';g.fillRect(x0,y0,x1-x0,y1-y0);
+ const S=12;g.fillStyle='#d9d3c7';for(let i=Math.floor(x0/S);i*S<x1;i++)for(let j=Math.floor(y0/S);j*S<y1;j++)if((i+j)&1)g.fillRect(i*S+.4,j*S+.4,S-.8,S-.8);
+ g.strokeStyle='rgba(90,80,66,.35)';g.lineWidth=.35;g.beginPath();for(let i=Math.floor(x0/S);i*S<x1;i++){g.moveTo(i*S,y0);g.lineTo(i*S,y1)}for(let j=Math.floor(y0/S);j*S<y1;j++){g.moveTo(x0,j*S);g.lineTo(x1,j*S)}g.stroke();
+ const band=(yy,h,col)=>{for(let k=Math.floor((y0-yy)/120)-1;k*120+yy<y1+120;k++){g.fillStyle=col;g.fillRect(x0,k*120+yy,x1-x0,h)}};
+ band(-60,10,'#7fa65a');band(-50,3,'#9a958c');band(-47,20,'#4a4f55');
+ g.fillStyle='rgba(255,255,255,.75)';for(let k=Math.floor((y0+37)/120)-1;k*120-37<y1+120;k++)for(let i=Math.floor(x0/30);i*30<x1;i++)g.fillRect(i*30,k*120-37.6,14,1.2)}
+/* the walk: the camera follows the man (as in the game); east, stop facing the camera, west, toward the camera, away */
+const PATH=[['walk',0,3.2],['stand',Math.PI/2,1.6],['walk',Math.PI,3.2],['walk',Math.PI/2,2.2],['wait',Math.PI/2,1.4],['walk',-Math.PI/2,2.2]];const PT=PATH.reduce((s,p)=>s+p[2],0);
+const st={t:0,x:0,y:0,d:0},spd=13.5;let last=performance.now();
+function pose(t){if(mode==='front')return{k:'stand',h:Math.PI/2,mv:0};if(mode==='turn')return{k:'stand',h:(Math.floor(t/1.1)%8)*Math.PI/4,mv:0};let u=t%PT;for(const p of PATH){if(u<p[2])return{k:p[0],h:p[1],mv:p[0]==='walk'?1:0};u-=p[2]}return{k:'stand',h:Math.PI/2,mv:0}}
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!paused){st.t+=dt;const p=pose(st.t);if(p.mv){st.x+=Math.cos(p.h)*spd*dt;st.y+=Math.sin(p.h)*spd*dt;st.d+=spd*dt}}
+ const p=pose(st.t),dpr=Math.min(2,window.devicePixelRatio||1);
+ for(const c of cells){const r=c.cv.getBoundingClientRect(),W=Math.max(2,Math.round(r.width*dpr)),H=Math.max(2,Math.round(r.height*dpr));if(c.cv.width!==W||c.cv.height!==H){c.cv.width=W;c.cv.height=H}
+  const g=c.cv.getContext('2d'),z=c.z,s=z*dpr,cy=st.y-((H*.18)/s);g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  g.setTransform(s,0,0,s,W/2-st.x*s,H/2-cy*s);ground(g,st.x,cy,W/2/s+2,H/2/s+2);
+  const cyc=P34.cycle(c.look),ph=p.mv?(st.d/(10*cyc))%1:(st.t/2.4)%1;
+  try{P34.draw(g,st.x,st.y,c.look,{k:p.k},p.h,ph,s)}catch(e){g.setTransform(1,0,0,1,0,0);g.fillStyle='#c0392b';g.font='12px Arial';g.fillText(String(e&&e.message||e).slice(0,60),8,20)}}
+ requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+window.__LAB={TCCZ,P34,CH,cells,st};
+})();
+</script>
+</body>
+</html>

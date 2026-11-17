@@ -1,0 +1,307 @@
+{
+ "cases": [
+  {
+   "id": "S9-ST-E4",
+   "n": 2,
+   "setup": {
+    "poi": "E4-CITY-WS",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "E4-CITY-WS"
+   },
+   "btn": "לקחת את המפסק ← במשחק",
+   "armed": {
+    "k": "take",
+    "phase": "go",
+    "R": 46,
+    "d": 14,
+    "phone": false,
+    "hud": "F · להרים — המפסק החלופי"
+   },
+   "work": {
+    "phase": "work",
+    "prog": 0.52,
+    "hud": "להרים… 52%"
+   },
+   "after": {
+    "step": 3,
+    "done": false,
+    "cur": null,
+    "carry": "המפסק החלופי",
+    "wear": false,
+    "res": 0,
+    "err": null,
+    "hud": "F · סדנת הצי של העירייה · ביד: המפסק החלופי"
+   },
+   "ok": true
+  },
+  {
+   "id": "S9-ST-F3",
+   "n": 4,
+   "setup": {
+    "poi": "F3-HOTEL",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "F3-HOTEL"
+   },
+   "btn": "למסור את הארגז ← במשחק",
+   "armed": {
+    "k": "give",
+    "phase": "go",
+    "R": 46,
+    "d": 14,
+    "phone": false,
+    "hud": "F · למסור — ארגז הקרח"
+   },
+   "work": {
+    "phase": "work",
+    "prog": 0.49,
+    "hud": "למסור… 49%"
+   },
+   "after": {
+    "step": 0,
+    "done": true,
+    "cur": null,
+    "carry": null,
+    "wear": false,
+    "res": 1,
+    "err": null,
+    "hud": "F · מלון הים — 8 קומות, כ-120 חדרים"
+   },
+   "ok": true
+  },
+  {
+   "id": "S12-ST-C1",
+   "n": 2,
+   "setup": {
+    "poi": "C1-GARDEN",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "C1-GARDEN"
+   },
+   "btn": "הלאה ← במשחק",
+   "armed": {
+    "k": "pick",
+    "phase": "go",
+    "R": 46,
+    "d": 14,
+    "phone": false,
+    "hud": "F · לקטוף — סל העגבניות"
+   },
+   "work": {
+    "phase": "work",
+    "prog": 0.16,
+    "hud": "לקטוף… 16%"
+   },
+   "after": {
+    "step": 3,
+    "done": false,
+    "cur": null,
+    "carry": "סל העגבניות",
+    "wear": false,
+    "res": 2,
+    "err": null,
+    "hud": "F · גינת הכפר · ביד: סל העגבניות"
+   },
+   "ok": true
+  },
+  {
+   "id": "S13-ST-F8",
+   "n": 3,
+   "setup": {
+    "poi": "BR-WIND",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "BR-WIND"
+   },
+   "btn": "לסיים ← במשחק",
+   "armed": {
+    "k": "work",
+    "phase": "go",
+    "R": 46,
+    "d": 14,
+    "phone": false,
+    "hud": "F · להחליף — הנתיך בקופסה"
+   },
+   "work": {
+    "phase": "work",
+    "prog": 0.18,
+    "hud": "להחליף… 18%"
+   },
+   "after": {
+    "step": 0,
+    "done": true,
+    "cur": null,
+    "carry": null,
+    "wear": false,
+    "res": 3,
+    "err": null,
+    "hud": "F · המפרק המערבי של המפתח ומד הרוח"
+   },
+   "ok": true
+  },
+  {
+   "id": "S9-ST-E5",
+   "n": 1,
+   "setup": {
+    "poi": "E5-STAFF",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "E5-STAFF"
+   },
+   "btn": "ללבוש את האפוד ← במשחק",
+   "armed": {
+    "k": "wear",
+    "phase": "go",
+    "R": 46,
+    "d": 14,
+    "phone": false,
+    "hud": "F · ללבוש — האפוד הזוהר"
+   },
+   "work": {
+    "phase": "work",
+    "prog": 0.38,
+    "hud": "ללבוש… 38%"
+   },
+   "after": {
+    "step": 2,
+    "done": false,
+    "cur": null,
+    "carry": null,
+    "wear": true,
+    "res": 3,
+    "err": null,
+    "hud": "יעד: מגדל האיתות ובקרת החצר · 56 מ׳"
+   },
+   "ok": true
+  },
+  {
+   "id": "S14-ST-B7",
+   "n": 2,
+   "setup": {
+    "poi": "B7-SORT",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "B7-SORT"
+   },
+   "btn": "למיין ולכסות בקרח ← במשחק",
+   "armed": {
+    "k": "sort",
+    "phase": "go",
+    "R": 46,
+    "d": 14,
+    "phone": false,
+    "hud": "F · למיין ולכסות בקרח — ארגזי הדגים (0 מתוך 3)"
+   },
+   "work": {
+    "phase": "work",
+    "prog": 0.5,
+    "hud": "למיין ולכסות בקרח… 50% · 1 מתוך 3"
+   },
+   "after": {
+    "step": 3,
+    "done": false,
+    "cur": null,
+    "carry": null,
+    "wear": true,
+    "res": 4,
+    "err": null,
+    "hud": "F · שולחן המיון והקרח — מזח 2"
+   },
+   "ok": true
+  },
+  {
+   "id": "S9-ST-E5",
+   "n": 3,
+   "setup": {
+    "poi": "E5-FREIGHT",
+    "opened": true,
+    "phone": true,
+    "app": "business",
+    "iid": "E5-FREIGHT"
+   },
+   "btn": "לצלם את הלוחית ← במשחק",
+   "armed": {
+    "k": "photo",
+    "phase": "go",
+    "R": 46,
+    "d": 14,
+    "phone": false,
+    "hud": "F · לצלם — הלוחית של 4-17"
+   },
+   "work": {
+    "phase": "work",
+    "prog": 0.55,
+    "hud": "לצלם… 55%"
+   },
+   "after": {
+    "step": 4,
+    "done": false,
+    "cur": null,
+    "carry": null,
+    "wear": true,
+    "res": 4,
+    "err": null,
+    "hud": "יעד: מחסן החבילות · 167 מ׳"
+   },
+   "ok": true
+  },
+  {
+   "id": "ZS-A5",
+   "n": 2,
+   "drive": 1,
+   "setup": {
+    "d": [
+     541,
+     3576,
+     65
+    ],
+    "r": 0.001
+   },
+   "armed": {
+    "id": "ZS-A5",
+    "k": "give",
+    "phase": "go"
+   },
+   "after": {
+    "step": 3,
+    "err": null
+   },
+   "ok": true
+  },
+  {
+   "id": "ZS-D3",
+   "n": 3,
+   "car": 85,
+   "walk": {
+    "d": [
+     3899,
+     1880,
+     85
+    ],
+    "r": 0.001
+   },
+   "walkStep": {
+    "step": 4,
+    "hud": "יעד: המוסך העירוני · 81 מ׳ · ביד: שלוש המעטפות"
+   },
+   "carStep": 4,
+   "ok": false
+  }
+ ],
+ "pe": [],
+ "saveFlag": {
+  "carry": null,
+  "wear": {
+   "id": "S9-ST-E5",
+   "vest": "#d8f23a"
+  }
+ },
+ "ok": false
+}

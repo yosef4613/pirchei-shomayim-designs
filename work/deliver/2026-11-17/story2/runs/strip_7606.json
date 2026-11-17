@@ -1,0 +1,28 @@
+{
+ "renamed": {
+  "cum": 263,
+  "g2SExit": 3,
+  "noseX": 7,
+  "visExit": 6
+ },
+ "scripts": 6,
+ "parsed": 6,
+ "failed": [],
+ "jsComments": 13851,
+ "jsCommentChars": 1519957,
+ "cssComments": 13,
+ "cssCommentChars": 516,
+ "htmlComments": 0,
+ "htmlCommentChars": 0,
+ "shortened": 322,
+ "shortChars": 55349,
+ "hex": {
+  "strings": 468,
+  "b64chars": 8950080,
+  "hexchars": 13423252
+ },
+ "inBytes": 31518282,
+ "outBytes": 29553335,
+ "syntax": "OK",
+ "sha1": "a60ca12213d9d16c5cd76f0c481580d60f64a83b"
+}

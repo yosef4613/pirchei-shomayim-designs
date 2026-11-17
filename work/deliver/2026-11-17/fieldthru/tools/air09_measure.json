@@ -1,0 +1,42 @@
+{
+ "09": {
+  "flights": 13,
+  "moves1800": 65.0,
+  "new": [
+   "FL-GA2",
+   "FL-GA3",
+   "FL-GA4",
+   "FL-P1",
+   "FL-P5",
+   "FL-C1"
+  ],
+  "rwy_busy_pct": 56.4,
+  "log": [
+   "GA5 AC-PR-01 GA אין זמן פנוי (79 אפשרויות יציאה, 0 נבדקו; נחיתה: {'pre': 25117, 'rwy': 27949, 'walk': 468, 'park': 0}) גרר PT-GA None 8.3 ש׳",
+   "GA7 AC-LT-01 GA אין זמן פנוי (82 אפשרויות יציאה, 0 נבדקו; נחיתה: {'pre': 25985, 'rwy': 30127, 'walk': 846, 'park': 0}) גרר PT-GA None 7.4 ש׳",
+   "P6 AC-LG-01 Mirage Jet אין זמן פנוי (0 אפשרויות יציאה, 0 נבדקו; נחיתה: {'pre': 0, 'rwy': 0, 'walk': 0, 'park': 0}) גרר PT-P6 None 28.6 ש׳",
+   "R1 AC-RJ-01 Confetti Air נוגע במה שחונה קבוע (dep A1, dep A2) גרר PT-R None 7.5 ש׳",
+   "C1: אין זמן ל-TG-C"
+  ]
+ },
+ "09+27": {
+  "flights": 13,
+  "moves1800": 65.0,
+  "new": [
+   "FL-GA2",
+   "FL-GA3",
+   "FL-GA4",
+   "FL-P1",
+   "FL-P5",
+   "FL-C1"
+  ],
+  "rwy_busy_pct": 56.4,
+  "log": [
+   "GA5 AC-PR-01 GA אין זמן פנוי (79 אפשרויות יציאה, 0 נבדקו; נחיתה: {'pre': 69945, 'rwy': 37792, 'walk': 516, 'park': 0}) גרר PT-GA None 8.4 ש׳",
+   "GA7 AC-LT-01 GA אין זמן פנוי (82 אפשרויות יציאה, 0 נבדקו; נחיתה: {'pre': 73433, 'rwy': 40773, 'walk': 940, 'park': 0}) גרר PT-GA None 5.7 ש׳",
+   "P6 AC-LG-01 Mirage Jet אין זמן פנוי (0 אפשרויות יציאה, 0 נבדקו; נחיתה: {'pre': 0, 'rwy': 0, 'walk': 0, 'park': 0}) גרר PT-P6 None 24.7 ש׳",
+   "R1 AC-RJ-01 Confetti Air נוגע במה שחונה קבוע (dep A1, dep A2, dep A3) גרר PT-R None 7.6 ש׳",
+   "C1: אין זמן ל-TG-C"
+  ]
+ }
+}
