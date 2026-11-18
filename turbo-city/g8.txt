@@ -1,4 +1,12 @@
-+ 1]) i++;
+5, -.82, -.9, -.975], hw: [0, .3, .55, .74, .82, .92, .975],
+    cab: { zs: .55, h: .3, vd: .3, lean: .18, ls: .55, lr: .4, sb: .25, pil: .08 }, door: 3.8 },
+  'AC-AM-01': { src: 'ICON A5', x: [0, .4, 1.0, 1.5, 2.3, 3.0, 3.6, 4.3, 5.2, 6.1, 6.93], top: [-.25, -.02, .12, .18, .6, .62, .56, .42, .4, .44, .5], bot: [-.25, -.48, -.6, -.62, -.65, -.65, -.6, -.3, -.05, .12, .3], hw: [0, .3, .55, .63, .65, .65, .6, .32, .22, .16, .06],
+    cab: { zs: .16, h: .42, vd: .3, lean: .12, ls: .7, n: 1, sb: -.1, pil: .06 }, door: 2.0 },
+  'AC-TB-01': { src: 'Cessna 408 SkyCourier', x: [0, .4, 1.0, 1.6, 2.4, 3.0], top: [-.3, .1, .4, .55, 1.0, 1.05], bot: [-.3, -.6, -.85, -.98, -1.05, -1.05], hw: [0, .45, .8, .98, 1.05, 1.05],
+    cab: { zs: .55, h: .38, vd: .45, lean: .2, ls: .7, lr: .5, sb: -.2, pil: .1 }, door: 3.4 }
+};
+
+function tab(X, Y, x) { const n = X.length; if (x <= X[0]) return Y[0]; if (x >= X[n - 1]) return Y[n - 1]; let i = 0; while (x > X[i + 1]) i++;
   const t = (x - X[i]) / (X[i + 1] - X[i]), y0 = Y[Math.max(0, i - 1)], y1 = Y[i], y2 = Y[i + 1], y3 = Y[Math.min(n - 1, i + 2)], m1 = (y2 - y0) / 2, m2 = (y3 - y1) / 2;
   return (2 * t * t * t - 3 * t * t + 1) * y1 + (t * t * t - 2 * t * t + t) * m1 + (-2 * t * t * t + 3 * t * t) * y2 + (t * t * t - t * t) * m2 }
 const TYPES = {
@@ -95,7 +103,8 @@ function nosePt(F, yN, phi, z, sd) {
 
 function liveryFns(t, lv, F) {
   const L = t.L, nl = F.nl, tl = t.tl * L, tail0 = L - 1.35 * tl;
-  const tailAt = th => tail0 + .14 * tl * Math.max(0, Math.sin(th));   
+  const tailAt = th => tail0 + .14 * tl * Math.max(0, Math.sin(th));
+  if (lv.rf && typeof TC_LIV3 !== 'undefined' && TC_LIV3.on) return TC_LIV3.fns(t, lv, tailAt);   
   const w = lv.w, bA0 = 1.1 * nl, bP = (tail0 - bA0) / 8, beak = w === 'allover' ? mixC(lv.s, lv.b, .42) : lv.s;
   
   
@@ -805,7 +814,7 @@ function a34Ok(layer){try{return A34G.on&&typeof c34Live==='function'&&(layer===
 
 function a34Liv(id,f){const L=window.__A34LIV;if(!L)return{key:'0',lv:null};const S={c:g77Livery(f)%16,k:f&&/^C[123]$/.test(f.stand||'')?1:0},q=L.livOf({id,ty:A34_CARGO.has(id)?'c':''},S);
  if(!q)return{key:'0',lv:null};const g=L.LIV.cargo.includes(q)?'c':L.LIV.ga.includes(q)?'g':'p';
- return{key:g+(g==='c'?L.LIV.cargo:g==='g'?L.LIV.ga:L.LIV.pax).indexOf(q),lv:{n:q.n==='GA'?'':(L.MK_HE[q.n]||q.n),w:q.w,k:q.k,b:q.b,u:q.u,s:q.s,t:q.t,m:q.m,eng:q.eng,d:q.d}}}
+ return{key:g+(g==='c'?L.LIV.cargo:g==='g'?L.LIV.ga:L.LIV.pax).indexOf(q),lv:{n:q.n==='GA'?'':(L.MK_HE[q.n]||q.n),w:q.w,k:q.k,b:q.b,u:q.u,s:q.s,t:q.t,m:q.m,eng:q.eng,d:q.d,rf:q.rf}}}
 
 function a34Rot(p,phi){const c=Math.cos(phi),sn=Math.sin(phi),R=q=>[q[0]*c-q[1]*sn,q[0]*sn+q[1]*c,q[2]];
  const rf=f=>{const g=Object.assign({},f);if(f.P)g.P=f.P.map(R);if(f.n)g.n=R(f.n);if(f.g)g.g=f.g.map(R);if(f.at)g.at=R(f.at);if(f.gax)g.gax=f.gax.map(R);if(f.g4)g.g4=f.g4.map(R);return g};
@@ -9978,9 +9987,4 @@ var BSHOP=(function(){
  function hAshore(b,why){const st=P();if((b.trip||0)>260){st.stats.sails++;b.trip=0}try{F.save(b)}catch(e){}toast('"'+b.name+'" קשורה במקום '+b.be.slot+(b.towed?' · הגרירה: '+g77CoinsHtml(g77Coins(b.towed)):''));b.towed=0;save('boat-moor')}
  function hLeft(b,why){msg('pl-boatshop','השארת את "'+b.name+'" — איש המעגן מחזיר אותה בשיט למקום '+b.be.slot+'.')}
  function hThr(b,thr,dt){const r=b.rec;if(b.mode!=='player')return thr;const d=Math.hypot(b.x-b.be.cx,b.y-b.be.cy);if(d>(b.trip||0))b.trip=d;
-  if(r.fuel<=0){if(d>120&&!b.towed){const fee=150+Math.round(d/40)*5;b.towed=fee;PlayerProfile.money=Math.max(0,PlayerProfile.money-fee);try{recordTransaction('boat-tow',-fee,{boat:b.id})}catch(e){}b.mode='moor';b.legs=rHome(b);toast('נגמר הדלק — סירת השירות של המעגן גוררת אותך למקום שלך')}
-   else if(NOW()-(b.dryT||0)>5000){b.dryT=NOW();toast('המיכל ריק — מתדלקים במסך "המעגן שלי" (F בשער המעגן)')}return 0}
-  const a=Math.abs(thr);if(a>0){r.fuel=Math.max(0,r.fuel-(.06+.94*Math.min(1,a))*b.burn*dt);if(r.fuel<b.tankMax*.12&&NOW()-(b.lowT||0)>40000){b.lowT=NOW();toast('מעט דלק ב"'+b.name+'" — חוזרים למעגן')}}return thr}
- function hCanFish(b){if(!b.rods.length)return b.model.type==='jet'?'מאופנוע ים לא דגים':'ב"'+b.name+'" אין ציוד דיג — מתקינים במספנה';if(!licenseOwned('LIC-12'))return 'לדיג העמוק צריך רישיון דיג עמוק — '+(typeof LIC570!=='undefined'?LIC570.missingText():'15 תפיסות באגם ו-10 בחוף');if(keep(b.x,b.y))return 'ליד המעגן לא דגים — יוצאים לים הפתוח';return null}
- const ARROW=['→','↘','↓','↙','←','↖','↑','↗'];
- function hHud(b){const r=b.rec,pc=Math.round(100*r.fuel/b.tankMax);let h='<span style="color:'+(pc<15?'#ff8a80':'inherit')+'">דלק '+pc+'% 
+  if(r.fuel<=0){if(d>120&&!b.towed){const fee=150+Math.round(d/40)*5;b.towed=fee;PlayerProfile.money=Math.max(0,Pla
