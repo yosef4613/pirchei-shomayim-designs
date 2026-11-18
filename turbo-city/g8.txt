@@ -1,4 +1,4 @@
-Y[0]; if (x >= X[n - 1]) return Y[n - 1]; let i = 0; while (x > X[i + 1]) i++;
++ 1]) i++;
   const t = (x - X[i]) / (X[i + 1] - X[i]), y0 = Y[Math.max(0, i - 1)], y1 = Y[i], y2 = Y[i + 1], y3 = Y[Math.min(n - 1, i + 2)], m1 = (y2 - y0) / 2, m2 = (y3 - y1) / 2;
   return (2 * t * t * t - 3 * t * t + 1) * y1 + (t * t * t - 2 * t * t + t) * m1 + (-2 * t * t * t + 3 * t * t) * y2 + (t * t * t - t * t) * m2 }
 const TYPES = {
@@ -9983,4 +9983,4 @@ var BSHOP=(function(){
   const a=Math.abs(thr);if(a>0){r.fuel=Math.max(0,r.fuel-(.06+.94*Math.min(1,a))*b.burn*dt);if(r.fuel<b.tankMax*.12&&NOW()-(b.lowT||0)>40000){b.lowT=NOW();toast('מעט דלק ב"'+b.name+'" — חוזרים למעגן')}}return thr}
  function hCanFish(b){if(!b.rods.length)return b.model.type==='jet'?'מאופנוע ים לא דגים':'ב"'+b.name+'" אין ציוד דיג — מתקינים במספנה';if(!licenseOwned('LIC-12'))return 'לדיג העמוק צריך רישיון דיג עמוק — '+(typeof LIC570!=='undefined'?LIC570.missingText():'15 תפיסות באגם ו-10 בחוף');if(keep(b.x,b.y))return 'ליד המעגן לא דגים — יוצאים לים הפתוח';return null}
  const ARROW=['→','↘','↓','↙','←','↖','↑','↗'];
- function hHud(b){const r=b.rec,pc=Math.round(100*r.fuel/b.tankMax);let
+ function hHud(b){const r=b.rec,pc=Math.round(100*r.fuel/b.tankMax);let h='<span style="color:'+(pc<15?'#ff8a80':'inherit')+'">דלק '+pc+'% 

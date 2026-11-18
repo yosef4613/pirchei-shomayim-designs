@@ -1,4 +1,18 @@
-at===undefined)return figsNow().find(f=>f.id===pid)||null;
+m);q=WHO[k]={pt,look:f.look,name:f.name,fig:f};return q}
+  
+ 
+
+ function moveTo(f,pt){if(!pt){f.pt=null;return}if(!f.pt||Math.hypot(f.pt.x-pt.x,f.pt.y-pt.y)>30){f.arrived=false;f.arr=null}f.pt=pt}
+ function arrFrom(f,m){const a0=Math.atan2(f.pt.y-m.y,f.pt.x-m.x);for(const d of[90,62])for(const da of[0,.79,-.79,1.57,-1.57]){const a=a0+da,q={x:f.pt.x+Math.cos(a)*d,y:f.pt.y+Math.sin(a)*d};let ok=true;
+   try{for(const s of[1,.75,.5,.25]){const x=f.pt.x+(q.x-f.pt.x)*s,y=f.pt.y+(q.y-f.pt.y)*s;if(personBlockedAt(x,y,3)||onRoad(x,y)){ok=false;break}}}catch(e){}if(ok)return q}return null}
+ function figsNow(){const L=[],seen=new Set(),T=pnow();
+  for(const w of whoNow()){const q=whoPt(w),f=q.fig;if(seen.has(f.id))continue;seen.add(f.id);if(!f.hold)moveTo(f,q.pt);f.src=w.id+'#'+w.n;L.push(f)}
+  for(const [pid,e] of Object.entries(EXT)){if(e.until&&T>e.until){delete EXT[pid];continue}if(seen.has(pid))continue;seen.add(pid);const f=FIG[pid];if(!f)continue;if(!f.hold)moveTo(f,e.pt);f.src=e.src;L.push(f)}
+  return L}
+ 
+
+ function tcStepFig(id,at,o){try{o=o||{};if(!id)return null;const pid=pidOf(id,o.name);
+   if(at===undefined)return figsNow().find(f=>f.id===pid)||null;
    if(at===null){delete EXT[pid];return null}
    const f=figOf(pid,o.name),pt=o.exact?{x:at.x,y:at.y}:spotNear(at,o.r||8)||{x:at.x,y:at.y};
    EXT[pid]={pt,until:o.until?pnow()+o.until:0,src:o.src||'ext'};if(!f.hold&&!figsNow().some(q=>q===f&&q.src!==EXT[pid].src))f.pt=pt;if(!f.arr)f.arrived=true;return f}    catch(e){err('fig',e);return null}}
@@ -2212,6 +2226,38 @@ try{const __rbfY=rbYield2;rbYield2=function(v,mv,node){const r=__rbfY.apply(this
   if(r!=='rb-yield'||!RBF.dn||!mv||!mv.rb||!node||!node.rb||!RBF.dnNodes[node.id])return r;
   try{if(rbSibYield3(v,mv,node))return r;const r2=rbYieldDnLoose(v,mv,node);if(r2!=='rb-yield'){RBF.dnFree++;RBF.dnBy=RBF.dnBy||{};RBF.dnBy[node.id]=(RBF.dnBy[node.id]||0)+1;return r2}}catch(e){RBF.err=RBF.err||'dn '+String(e&&e.message||e)}
   return r}}catch(e){RBF.err=RBF.err||'dn-wrap '+String(e&&e.message||e)}
+
+
+var FSVB={block:false,on:!/[#&]fsvb=0/.test(String((typeof location!=='undefined'&&location.hash)||'')),max:30,err:'',nErr:0,n:{plan:0}};
+function fsvbErr(w,e){FSVB.nErr++;if(!FSVB.err)FSVB.err=w+': '+String(e&&e.message||e).slice(0,200)}
+function fsvbN(v,q,n0){const B=S15I_BW,d=q&&q.d;if(!(d>0))return n0;const N=Math.floor((d/2-B.E-B.belt-2)/B.cad)-1;return Math.max(n0,Math.min(160,N))}
+(function(){try{if(typeof s15iBagPlan!=='function'||typeof s15iBagN!=='function')return;const b0=s15iBagPlan;
+ s15iBagPlan=function(v,q){if(!FSVB.on)return b0.apply(this,arguments);const n0f=s15iBagN;let N=null;try{N=fsvbN(v,q,n0f(v))}catch(e){fsvbErr('n',e)}
+  if(N==null)return b0.apply(this,arguments);s15iBagN=function(){return N};try{FSVB.n.plan++;return b0.apply(this,arguments)}finally{s15iBagN=n0f}};
+ if(typeof s15grLoad==='function'){const g0=s15grLoad;s15grLoad=function(){const r=g0.apply(this,arguments);if(!FSVB.on||!r)return r;return[Math.max(0,Math.min(1,r[0])),Math.max(0,Math.min(1,r[1]))]}}
+}catch(e){fsvbErr('wrap',e)}})();
+ 
+function fsvbBagAct(BP,u){try{return!!(BP.active(u)||(BP.belt(u)||[]).length||BP.hand(u))}catch(e){return false}}
+function fsvbStops(){const T=S15SIM.T,out=[],near=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1])<2;
+ for(const v of S15SIM.veh){const L=v.legs;if(!L||!L.length)continue;const code=String(v.id).split('-')[0];
+  for(let i=0;i<L.length;i++){const g=L[i];if(g.f!==8||g.h==null||g.hall||g.att)continue;const p=g.p[0];
+   
+   let pre=0,post=0;for(let j=i-1;j>=0;j--){const h=L[j];if(h.h==null||h.att||!near(h.p[0],p)||h.f===8)break;if(h.f===0&&h.t1-h.t0>T*.4)break;pre+=h.t1-h.t0}
+   for(let j=i+1;j<L.length;j++){const h=L[j];if(h.h==null||h.att||!near(h.p[0],p)||h.f===8)break;if(h.f===0&&h.t1-h.t0>T*.4)break;post+=h.t1-h.t0}
+   const d=g.t1-g.t0;let idle=0,run=0,act=null;
+   if(/^(BT|BL)$/.test(code)&&typeof s15iBagPlan==='function'){let bt=v,q={g,d,u:0};
+    if(code==='BL'){const sid=s15iStand(v),tc=((g.t0+d/2)%T+T)%T;bt=sid&&S15SIM.veh.find(w=>/^BT/.test(w.id)&&s15iStand(w)===sid&&s15iSvcLeg(w,tc));q=bt?s15iSvcLeg(bt,tc):null}
+    if(q){const BP=s15iBagPlan(bt,{g:q.g,d:q.d,u:0}),off=code==='BL'?(((q.g.t0-g.t0)%T)+T)%T:0;act=0;
+     for(let u=0;u<=d;u+=.5){const ub=u-(code==='BL'?(off>T/2?off-T:off):0),a=ub>=0&&ub<=q.d&&fsvbBagAct(BP,ub);if(a){act+=.5;run=0}else{run+=.5;if(run>idle)idle=run}}}
+    else{idle=d}}
+   out.push({id:v.id,code,t0:+g.t0.toFixed(1),d:+d.toFixed(1),pre:+pre.toFixed(1),post:+post.toFixed(1),idle:+idle.toFixed(1),act:act==null?null:+act.toFixed(1),worst:+Math.max(pre,post,idle).toFixed(1)})}}
+ return out}
+function fsvbAudit(){const S=fsvbStops(),bad=S.filter(s=>s.worst>FSVB.max).sort((a,b)=>b.worst-a.worst),mx=S.reduce((m,s)=>Math.max(m,s.worst),0);
+ return{ok:!bad.length&&!FSVB.err,stops:S.length,max:mx,bad:bad.map(s=>s.id+' '+s.worst+' ש׳ (לפני '+s.pre+' · בתוך '+s.idle+' · אחרי '+s.post+')'),rows:S}}
+(function(){try{if(typeof roadAudit!=='function')return;const base=roadAudit;roadAudit=function(){const r=base.apply(this,arguments);try{const L=r.checks||r.results;if(!Array.isArray(L))return r;
+  const A=fsvbAudit(),ok=FSVB.block?A.ok:!FSVB.err,det=(FSVB.block?'':'(מדווח — חוסם כשכל העצירות עוברות) ')+'המתנת סרק של רכב שירות בעמדה: הכי ארוכה '+A.max+' ש׳ (סף '+FSVB.max+') · '+A.stops+' עצירות'+(A.bad.length?' · '+A.bad.slice(0,5).join(' | '):'')+(FSVB.err?' · שגיאה: '+FSVB.err:'');
+  L.push({name:'fieldsvc_idle',id:'fieldsvc_idle',ok,pass:ok,detail:det});if(!ok){r.ok=false;(r.issues||(r.issues=[])).push('fieldsvc_idle: '+det.slice(0,220))}}catch(e){fsvbErr('audit',e)}return r}}catch(e){fsvbErr('hook',e)}})();
+try{if(window.__TC_FS){__TC_FS.idle=()=>fsvbAudit()}else window.__TC_FS={idle:()=>fsvbAudit()}}catch(e){}
 
 function tcF9Time() { const p = tcF9P('time'); if (!p.dataset.built) { p.dataset.built = 1; const hm = [[6, 0], [9, 0], [12, 0], [17, 0], [19, 0], [19, 30], [22, 0], [0, 0]];
     p.innerHTML = '<div class="tcF9Card"><h4>השעה במשחק</h4><div id="tcF9Clock" style="font-size:18px;font-weight:800"></div></div>' +
