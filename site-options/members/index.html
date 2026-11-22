@@ -9,7 +9,7 @@
   <meta name="description" content="המחשה של אתר ומועדון עדכונים למקהלת פרחי שמיים בעיצוב היכל האור.">
   <link rel="icon" href="../../assets/brand-icon.png">
   <link rel="alternate" hreflang="en" href="en/">
-  <link rel="stylesheet" href="../options.css?v=8">
+  <link rel="stylesheet" href="../options.css?v=9">
   <script defer src="../options.js?v=6"></script>
   <script defer src="../choir-media.js?v=1"></script>
   <script defer src="../editor.js?v=1"></script>
@@ -31,6 +31,8 @@
   <main id="main">
 
   <section class="hero" id="home" aria-labelledby="main-title">
+    <div class="hero-art" aria-hidden="true"><img id="hero-image" src="../../assets/covers/s_CNJzzsA8g.jpg" alt="" fetchpriority="high"></div>
+    <div class="hero-spotlights" aria-hidden="true"></div>
     <div class="wrap hero-inner">
       <div class="hero-copy">
         <div class="kicker">מקהלת הילדים בניצוחו של מרדכי גורדון</div>
@@ -41,7 +43,6 @@
           <a class="button ghost" href="#music">המוזיקה שלנו</a>
         </div>
       </div>
-      <div class="hero-art" aria-hidden="true"><img id="hero-image" src="../../assets/covers/s_CNJzzsA8g.jpg" alt="" fetchpriority="high"></div>
       <div class="hero-foot">
         <p>חוגי מקהלה בבית שמש ובירושלים</p>
       <div class="gallery-controls" aria-label="תמונות המקהלה">
@@ -146,8 +147,15 @@
     <div class="wrap story-grid">
       <figure class="story-photo"><img src="../../assets/channel-portrait.jpg" width="800" height="800" alt="ילדי פרחי שמיים עם מנצח המקהלה מרדכי גורדון, מתוך תמונת הערוץ" loading="lazy"></figure>
       <div>
-        <p class="kicker">בניצוחו של ר׳ מרדכי גורדון</p>
-        <h2 id="about-title">אודות מקהלת פרחי שמיים</h2>
+        <div class="story-heading">
+          <div class="story-brand">
+            <img src="../../assets/brand-transparent.webp" width="1920" height="1354" alt="לוגו מקהלת הילדים פרחי שמיים" loading="lazy">
+          </div>
+          <div class="story-heading-copy">
+            <p class="kicker">בניצוחו של ר׳ מרדכי גורדון</p>
+            <h2 id="about-title">אודות מקהלת פרחי שמיים</h2>
+          </div>
+        </div>
         <p class="story-lead">פרחי שמיים היא מקהלת ילדים וחוג מוזיקלי הפועל בכמה ערים, ובהן ירושלים, בית שמש וביתר עילית. המקהלה נותנת לילדים שאוהבים לשיר מקום לפתח את הכישרון שלהם, לצבור ביטחון וליצור יחד.</p>
         <dl class="story-facts">
             <div><dt>מה לומדים בחוג</dt><dd>פיתוח קול, יסודות המוזיקה ושירה בהרמוניה. בחוגי המקהלה משלבים גם התנסות בכתיבה, בהלחנה ובהקלטה באולפן.</dd></div>
