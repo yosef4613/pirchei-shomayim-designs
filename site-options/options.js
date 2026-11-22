@@ -14,6 +14,7 @@ const get = (id) => document.getElementById(id);
 const management = get('management-dialog');
 const applicationForm = get('application-form');
 const clubForm = get('club-form');
+const english = document.documentElement.lang === 'en';
 
 function cell(content) {
   const td = document.createElement('td');
@@ -140,7 +141,6 @@ if (applicationForm) {
   const fields = applicationForm.elements;
   const result = get('application-result');
   const inbox = get('view-inbox');
-  const english = document.documentElement.lang === 'en';
   applicationForm.querySelector('[type="submit"]').disabled = false;
   for (const card of document.querySelectorAll('[data-branch]')) {
     card.addEventListener('click', () => {
@@ -181,6 +181,25 @@ for (const link of document.querySelectorAll('[data-language-switch]')) {
 }
 
 function setupClub() {
+  const messages = english ? {
+    applicationPending: 'Demo inquiry received. Verify the email address to activate your account.',
+    signupPending: 'Verify your email address to finish signing up in the demo.',
+    accountActive: 'Your demo account is active. You can choose email updates in your account.',
+    mailingActive: 'Your demo account is active and your mailing list subscription is confirmed.',
+    selectTopics: 'Choose at least one type of update to subscribe.',
+    changeTopics: 'Choose at least one type of update or select Unsubscribe.',
+    preferencesSaved: 'Your preferences have been saved in the demo.',
+    unsubscribed: 'You have been unsubscribed from the demo mailing list.',
+  } : {
+    applicationPending: 'הפנייה לחוג נוספה בהדגמה. כעת יש לאמת את המייל להפעלת החשבון.',
+    signupPending: 'ההרשמה לדוגמה ממתינה לאימות הכתובת.',
+    accountActive: 'החשבון הופעל בהדגמה. אפשר לבחור לקבל עדכונים מתוך החשבון.',
+    mailingActive: 'החשבון הופעל וההצטרפות לרשימת התפוצה אושרה בהדגמה.',
+    selectTopics: 'כדי להצטרף בחרו לפחות סוג אחד של עדכונים.',
+    changeTopics: 'בחרו סוג עדכון אחד לפחות, או לחצו על הסרה.',
+    preferencesSaved: 'ההעדפות נשמרו בהדגמה.',
+    unsubscribed: 'הכתובת הוסרה מרשימת הדיוור בהדגמה.',
+  };
   const clubResult = get('club-result');
   const preferences = get('preferences');
   const preferenceResult = get('preference-result');
@@ -213,9 +232,9 @@ function setupClub() {
       verifiedEmail = pending.email;
       if (pending.topics.length) {
         saveSubscription(verifiedEmail, pending.topics, 'אושר');
-        feedback.textContent = 'החשבון הופעל וההצטרפות לרשימת התפוצה אושרה בהדגמה.';
+        feedback.textContent = messages.mailingActive;
       } else {
-        feedback.textContent = 'החשבון הופעל בהדגמה. אפשר לבחור לקבל עדכונים מתוך החשבון.';
+        feedback.textContent = messages.accountActive;
       }
       pending = undefined;
       confirmation.hidden = true;
@@ -249,32 +268,32 @@ function setupClub() {
     const formData = new FormData(clubForm);
     const topics = formData.getAll('topics');
     if (!topics.length) {
-      clubResult.textContent = 'כדי להצטרף בחרו לפחות סוג אחד של עדכונים.';
+      clubResult.textContent = messages.selectTopics;
       return;
     }
-    previewClub(formData.get('email'), topics, 'ההרשמה לדוגמה ממתינה לאימות הכתובת.');
+    previewClub(formData.get('email'), topics, messages.signupPending);
     clubForm.reset();
   });
   preferences.addEventListener('submit', (event) => {
     event.preventDefault();
     const topics = new FormData(preferences).getAll('topics');
     if (!topics.length) {
-      preferenceResult.textContent = 'בחרו סוג עדכון אחד לפחות, או לחצו על הסרה.';
+      preferenceResult.textContent = messages.changeTopics;
       return;
     }
     saveSubscription(activeEmail, topics, 'אושר');
     showPreferences();
-    preferenceResult.textContent = 'ההעדפות נשמרו בהדגמה.';
+    preferenceResult.textContent = messages.preferencesSaved;
   });
   unsubscribe.addEventListener('click', () => {
     saveSubscription(activeEmail, [], 'הוסר');
     showPreferences();
-    preferenceResult.textContent = 'הכתובת הוסרה מרשימת הדיוור בהדגמה.';
+    preferenceResult.textContent = messages.unsubscribed;
   });
 
   return (email, consent) => {
     const topics = consent ? topicInputs.map(({value}) => value) : [];
-    previewApplication(email, topics, 'הפנייה לחוג נוספה בהדגמה. כעת יש לאמת את המייל להפעלת החשבון.');
+    previewApplication(email, topics, messages.applicationPending);
   };
 }
 

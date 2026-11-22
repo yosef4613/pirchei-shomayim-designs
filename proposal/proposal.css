@@ -161,6 +161,7 @@ h3 { font-size: 1.37rem; }
 .plan-actions { margin-top: auto; display: grid; gap: 7px; }
 .language-price { padding: 8px 10px; background: #edf8f4; border-radius: 5px; color: #2f574a; font-size: .86rem; line-height: 1.5; }
 .language-price p { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-weight: 700; }
+.language-details { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 3px 10px; margin-top: 3px; }
 .language-price small { font-size: .96em; }
 .choose { padding: 7px; min-height: 39px; border: 0; background: transparent; color: #5e3c7c; text-decoration: underline; text-underline-offset: .24em; font-size: .89rem; }
 .choose:hover { background: #f5eff9; border-radius: 5px; }

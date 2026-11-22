@@ -8,8 +8,9 @@
   <title>אתר ומועדון עדכונים · הדגמה לפרחי שמיים</title>
   <meta name="description" content="המחשה של אתר ומועדון עדכונים למקהלת פרחי שמיים בעיצוב היכל האור.">
   <link rel="icon" href="../../assets/brand-icon.png">
-  <link rel="stylesheet" href="../options.css?v=5">
-  <script defer src="../options.js?v=5"></script>
+  <link rel="alternate" hreflang="en" href="en/">
+  <link rel="stylesheet" href="../options.css?v=6">
+  <script defer src="../options.js?v=6"></script>
   <script defer src="../editor.js?v=1"></script>
 </head>
 <body data-mode="members" data-assets="../../assets">
@@ -23,7 +24,7 @@
         <img src="../../assets/brand-icon.png" width="43" height="43" alt=""><span><b>פרחי שמיים</b><small>מקהלת הילדים</small></span>
       </a>
       <nav aria-label="ניווט באתר"><a href="#classes">חוגים</a><a href="#music">שירים</a><a href="#about">אודות</a><a href="#club">מועדון עדכונים</a></nav>
-      <button class="manager" type="button" data-manage>ניהול לדוגמה</button>
+      <div class="nav-actions"><a class="language-switch" href="en/" hreflang="en" lang="en" data-language-switch>English</a><button class="manager" type="button" data-manage>ניהול לדוגמה</button></div>
     </div>
   </header>
   <main id="main">
@@ -100,7 +101,7 @@
         </div>
         <div class="application-membership">
           <p class="small">חשבון ההורה יופעל לאחר אימות כתובת המייל.</p>
-          <label class="check"><input type="checkbox" name="consent"> <span>אני רוצה לקבל עדכונים במייל על שירים, חוגים והופעות. אפשר לשנות העדפות או להסיר את ההרשמה בכל עת.</span></label>
+          <label class="check"><input type="checkbox" name="consent"> <span>אני רוצה לקבל עדכונים במייל על שירים, חוגים והופעות. אפשר לשנות העדפות או להפסיק לקבל עדכונים בכל עת.</span></label>
         </div>
         <button class="button dark" type="submit" disabled aria-describedby="apply-note">שליחת פנייה והרשמה לדוגמה</button>
         <div id="application-result" class="form-result" role="status"></div>
