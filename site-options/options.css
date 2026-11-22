@@ -324,7 +324,10 @@ select {
 .note-body details p { margin-block: 7px 0; }
 .makhalolam { background: radial-gradient(ellipse at 75% 45%, #2c1c43, transparent 68%), #160e1e; }
 .makhalolam-grid { display: grid; grid-template-columns: minmax(0, .83fr) minmax(0, 1.17fr); gap: clamp(22px, 6vw, 70px); align-items: center; }
-.makhalolam-copy h2 { margin-block: 8px 13px; }
+.makhalolam-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 13px 20px; }
+.makhalolam-heading h2 { margin-top: 5px; }
+.makhalolam-mark { width: clamp(125px, 15vw, 190px); background: #fff; }
+.makhalolam-mark img { inset: 56.2% auto auto 46.4%; width: 170%; }
 .makhalolam-copy > p:not(.kicker) { margin-top: 9px; color: var(--muted); }
 .makhalolam-player { min-width: 0; }
 .makhalolam-player .player-screen { border: 1px solid #dbc4ef48; border-radius: 10px; }
@@ -335,16 +338,16 @@ select {
 .story-photo img { width: 100%; }
 .story-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 13px 20px; }
 .story-heading-copy { flex: 1 1 180px; }
-.story-brand {
+.story-brand, .makhalolam-mark {
   position: relative;
   overflow: hidden;
-  flex: 0 0 clamp(118px, 13vw, 171px);
   aspect-ratio: 1;
   border: 1px solid #d9eee7;
   border-radius: 9px;
-  background: #f6faf9;
 }
-.story-brand img { position: absolute; inset: 50% auto auto 50%; width: 132%; max-width: none; transform: translate(-50%, -50%); }
+.story-brand { flex: 0 0 clamp(118px, 13vw, 171px); background: #f6faf9; }
+.story-brand img, .makhalolam-mark img { position: absolute; max-width: none; transform: translate(-50%, -50%); }
+.story-brand img { inset: 50% auto auto 50%; width: 132%; }
 .story p, .club-story p { margin: 20px 0; }
 .story p.kicker { margin: 0; color: var(--mint); }
 
