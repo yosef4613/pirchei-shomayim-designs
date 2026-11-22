@@ -1,10 +1,14 @@
 {
   "file": "haneviim-family.html",
-  "bytes": 5490108,
-  "sha256": "0d0207344792e531e466a19675e130a4148c1e9495d77e5ffd129bdd10bb1007",
+  "bytes": 5510661,
+  "sha256": "c0360e2186a9818e9e1f57d77049d93aa24024ce7ee5859a9fbe83e2c1481d97",
   "floors": [
     "ground",
     "basement"
   ],
-  "revision": "family-v3"
+  "revision": "family-v4",
+  "kitchenPalettes": 9,
+  "countertopOptions": 8,
+  "bathroomWallStyles": 18,
+  "bathroomFloorStyles": 12
 }

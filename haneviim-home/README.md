@@ -1,13 +1,15 @@
-# הנביאים — בית למשפחה
+# הנביאים — בית למשפחה, גרסה 4
 
-Standalone offline 3D viewer, ground and basement only.
+הדמיית עיצוב עצמאית של קומת הקרקע והמרתף בלבד, לפי HomeByMe והתכנון שנבחר למטבח.
 
-Based on the current HomeByMe project 16444505 with its revised basement family/guest/storage layout. Source walls and positions are retained, and configurable opening dimensions are applied.
+- התכנון המקורי הוא ברירת המחדל; תכנון מקביל חדש זמין לבדיקה בלבד.
+- תשעה שילובי צבעים למטבח, בחירה נפרדת של גמר הארונות הגבוהים והעץ, ושמונה סוגי משטחי מטבח.
+- 18 סגנונות חיפוי ו־12 רצפות לכל אחד מששת חדרי הרחצה, שילוב חומרים ובחירת קיר דומיננטי.
+- כיור נטילת הידיים משולב בהמשך הספרייה; כיור הכניסה נשמר. כיסאות פינת האוכל פונים לשולחן והריצוף הוא ריצוף פנים.
+- מטבח עליון קומפקטי, ספה במיקום המקור, מהלך מדרגות חוזר קצר יותר ומעבר רציף בפרוזדור.
+- שולחן הפינג־פונג סובב ב־90° אל הקיר שמול הספה; כיסא משרד בחדר הצר.
+- הקירות ונתוני המקור, שתי הקומות בלבד, כיוון הצפון, הפרגולות ורצועת השתילה נשמרו. מידות המדרגות הן הצעת המחשה לאימות לפני ביצוע.
 
-The interior and finish proposals include no TV/screens, six independently selectable bathroom schemes, three kitchen compositions, five kitchen finishes, source-aligned library/hand-washing niche, a children's climbing/soft-play alcove, an optional compact folding ping-pong table, concrete/marble U stairs, separate interior/exterior flooring, a courtyard-bound pergola and a 45cm planted strip.
+`index.html` ו־`haneviim-family.html` מכילים אותו קובץ מלא, כולל קוד, נתונים וחומרים לצפייה ללא אינטרנט. `download.html` מאפשר להורידו ישירות. `integrity.json` רושם את הגודל והחתימה.
 
-This is a design visualization. Stair and final millwork dimensions require on-site verification.
-
-The Download HTML button downloads haneviim-family.html directly from the same GitHub Pages origin. integrity.json records exact file size and SHA256.
-
-Three.js: MIT. Photographic texture maps and HDR environment: Poly Haven CC0.
+אימות: בדיקות גאומטריה וממשק עם Three.js ו־DOM, בדיקת סדר מעברי העיבוד, ואימות סידור ופרטי חומרים ברינדורי Blender. בדיקת אינטראקציה בדפדפן אינה זמינה בסביבה.
