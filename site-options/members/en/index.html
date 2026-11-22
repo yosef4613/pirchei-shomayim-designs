@@ -9,8 +9,9 @@
   <meta name="description" content="An English preview of class inquiries, parent accounts and email updates from the Pirchei Shomayim Boys’ Choir.">
   <link rel="icon" href="../../../assets/brand-icon.png">
   <link rel="alternate" hreflang="he" href="../">
-  <link rel="stylesheet" href="../../options.css?v=6">
+  <link rel="stylesheet" href="../../options.css?v=7">
   <script defer src="../../options.js?v=6"></script>
+  <script defer src="../../choir-media.js?v=1"></script>
 </head>
 <body data-mode="members" data-assets="../../../assets">
   <a class="skip" href="#main">Skip to content</a>
@@ -25,13 +26,12 @@
       <a class="brand" href="#home" aria-label="Pirchei Shomayim home">
         <img src="../../../assets/brand-icon.png" width="43" height="43" alt=""><span><b>Pirchei Shomayim</b><small>Boys’ Choir</small></span>
       </a>
-      <nav aria-label="Main navigation"><a href="#classes">Classes</a><a href="#music">Music</a><a href="#about">About</a><a href="#club">Email updates</a></nav>
+      <nav aria-label="Main navigation"><a href="#classes">Classes</a><a href="#music">Music</a><a href="#about">About</a><a href="#behind-the-scenes">Behind the scenes</a><a href="#makhalolam">Makhalolam</a><a href="#club">Email updates</a></nav>
       <div class="nav-actions"><a class="language-switch" href="../" hreflang="he" lang="he" data-language-switch>עברית</a></div>
     </div>
   </header>
   <main id="main">
     <section class="hero" id="home" aria-labelledby="main-title">
-      <div class="hero-art" aria-hidden="true"><img id="hero-image" src="../../../assets/covers/s_CNJzzsA8g.jpg" alt="" fetchpriority="high"></div>
       <div class="lights" aria-hidden="true"><i></i><i></i></div>
       <div class="wrap hero-inner">
         <div class="hero-copy">
@@ -43,6 +43,7 @@
             <a class="button ghost" href="#music">Listen to the choir</a>
           </div>
         </div>
+        <div class="hero-art" aria-hidden="true"><img id="hero-image" src="../../../assets/covers/s_CNJzzsA8g.jpg" alt="" fetchpriority="high"></div>
         <div class="hero-foot">
           <p>Choir classes in Beit Shemesh and Jerusalem</p>
           <div class="gallery-controls" aria-label="Choir photos">
@@ -106,27 +107,106 @@
       </div>
     </section>
 
-    <section class="band music" id="music">
-      <div class="wrap">
-        <div class="section-head"><div><div class="kicker">From the choir’s YouTube channel</div><h2>Songs we grew up with.</h2></div>
-          <a class="text-link" href="https://www.youtube.com/@-pircheishomayimboyschoir7232/videos" target="_blank" rel="noopener noreferrer">See all videos on YouTube</a>
+  <section class="band music" id="music" aria-labelledby="music-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div><p class="kicker">Music from Pirchei Shomayim</p><h2 id="music-title">Songs, music videos and performances</h2></div>
+        <a class="text-link" href="https://www.youtube.com/@-pircheishomayimboyschoir7232/videos" target="_blank" rel="noopener noreferrer">All videos on YouTube</a>
+      </div>
+      <div class="music-feature" data-player data-music-player>
+        <div class="player-screen">
+          <a class="player-poster" href="https://www.youtube.com/watch?v=-4sE-rfQI1k" aria-label="Play Ata Bechartanu" data-play-video>
+            <img src="../../../assets/covers/-4sE-rfQI1k.jpg" alt="" width="1280" height="720" loading="lazy">
+            <span class="poster-play" aria-hidden="true"></span>
+          </a>
         </div>
-        <div class="song-grid">
-          <a class="song" href="https://www.youtube.com/watch?v=-4sE-rfQI1k" target="_blank" rel="noopener noreferrer">
-            <div class="song-image"><img src="../../../assets/covers/-4sE-rfQI1k.jpg" alt="" width="1280" height="720" loading="lazy"><span class="play" aria-hidden="true">▶</span></div>
-            <div class="song-caption"><div><h3>Ata Bechartanu</h3><p>The Beitar Illit choir</p></div><time>4:10</time></div>
-          </a>
-          <a class="song" href="https://www.youtube.com/watch?v=rWHE6woblu4" target="_blank" rel="noopener noreferrer">
-            <div class="song-image"><img src="../../../assets/covers/rWHE6woblu4.jpg" alt="" width="1280" height="720" loading="lazy"><span class="play" aria-hidden="true">▶</span></div>
-            <div class="song-caption"><div><h3>Or Chadash</h3><p>A new performance of the Tzlil V’Zemer song</p></div><time>6:20</time></div>
-          </a>
-          <a class="song" href="https://www.youtube.com/watch?v=aFhQjhm1if8" target="_blank" rel="noopener noreferrer">
-            <div class="song-image"><img src="../../../assets/covers/aFhQjhm1if8.jpg" alt="" width="1280" height="720" loading="lazy"><span class="play" aria-hidden="true">▶</span></div>
-            <div class="song-caption"><div><h3>Petach Libi</h3><p>A music video by the Ramat Eshkol choir</p></div><time>5:45</time></div>
-          </a>
+        <div class="featured-info">
+          <p class="kicker" data-track-credit>Beitar Illit choir · 4:10</p>
+          <h3 data-track-title>Ata Bechartanu</h3>
+          <p data-track-description>The boys sing words from the Rosh Hashanah Mussaf prayer, set to music by Mordechai and Yisrael Meir Gordon.</p>
+          <div class="player-actions">
+          <button class="button ghost" type="button" data-stop-video hidden>Close player</button>
+          <a class="text-link" href="https://www.youtube.com/watch?v=-4sE-rfQI1k" data-watch-video target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+        </div>
         </div>
       </div>
-    </section>
+      <h3 class="track-heading" hidden>Choose a song</h3>
+      <div class="track-grid" data-track-list></div>
+    </div>
+  </section>
+
+  <section id="about" class="story band" aria-labelledby="about-title">
+    <div class="wrap story-grid">
+      <figure class="story-photo"><img src="../../../assets/channel-portrait.jpg" width="800" height="800" alt="Pirchei Shomayim choir members with conductor Mordechai Gordon, from the choir’s channel" loading="lazy"></figure>
+      <div>
+        <p class="kicker">Directed by Rabbi Mordechai Gordon</p>
+        <h2 id="about-title">About Pirchei Shomayim</h2>
+        <p class="story-lead">Pirchei Shomayim is a boys’ choir and music program with groups in Jerusalem, Beit Shemesh and Beitar Illit. It gives boys who love to sing a place to develop their talent, build confidence and make music together.</p>
+        <dl class="story-facts">
+            <div><dt>What the boys learn</dt><dd>Voice technique, musical foundations and singing in harmony. The program also gives boys a chance to try writing, composing and recording in a studio.</dd></div>
+            <div><dt>From rehearsal to the stage</dt><dd>The boys record songs, make music videos and perform from time to time. Singing together teaches them to listen to one another and gives each boy a chance to be heard.</dd></div>
+            <div><dt>Music and Torah learning</dt><dd>The choir encourages musical growth alongside the boys’ studies in cheder. The songs are shared to bring joy and support listeners in their avodat Hashem.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="behind-the-scenes" class="choir-notes band" aria-labelledby="behind-title">
+    <div class="wrap">
+      <div class="section-head">
+        <div><p class="kicker">From rehearsal to filming</p><h2 id="behind-title">Behind the scenes</h2></div>
+        <p>Where the choir filmed, who wrote the music and how each song came together, drawn from the production notes the choir shared with its videos.</p>
+      </div>
+      <div class="notes-grid">
+        <article class="choir-note">
+          <img src="../../../assets/covers/-4sE-rfQI1k.jpg" alt="" width="1280" height="720" loading="lazy">
+          <div class="note-body">
+            <p class="kicker">Beitar Illit</p>
+            <h3>Ata Bechartanu · Inside the filming</h3>
+            <p>The Beitar Illit choir filmed its setting of the Rosh Hashanah Mussaf prayer at the Oderberg family home. Mordechai and Yisrael Meir Gordon wrote the melody.</p>
+            <details><summary>Production notes and credits</summary><p>Mordechai Gordon conducted and arranged the vocals. Avi Hess arranged the instrumental music.</p></details>
+            <a class="text-link" href="https://www.youtube.com/watch?v=-4sE-rfQI1k" data-story-track="-4sE-rfQI1k">Play the music video</a>
+          </div>
+        </article>
+        <article class="choir-note">
+          <img src="../../../assets/covers/aFhQjhm1if8.jpg" alt="" width="1280" height="720" loading="lazy">
+          <div class="note-body">
+            <p class="kicker">Jerusalem</p>
+            <h3>Petach Libi · At the Kotel and in the study hall</h3>
+            <p>The Ramat Eshkol group spent the year working on the song and video. The filming includes prayers at the Western Wall and boys learning in pairs at Yeshivat Aish HaTorah in the Old City.</p>
+            <details><summary>Production notes and credits</summary><p>Mordechai Gordon composed and conducted the piece. Avi Deutsch arranged the music. The video is dedicated to Torah learners.</p></details>
+            <a class="text-link" href="https://www.youtube.com/watch?v=aFhQjhm1if8" data-story-track="aFhQjhm1if8">Play the music video</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="makhalolam" class="makhalolam band" aria-labelledby="makhalolam-title">
+    <div class="wrap makhalolam-grid">
+      <div class="makhalolam-copy">
+        <p class="kicker">The choir teaches the audience</p>
+        <h2 id="makhalolam-title">Makhalolam</h2>
+        <p>At Makhalolam the audience joins in. The choir, Mordechai Gordon and Moishy Roth teach the audience their parts before everyone sings together.</p>
+        <p>Shema Kolinu is performed by the Jerusalem Pirchei Shomayim choir and the audience, with music by Rabbi Chaim Bennett and an arrangement by Moishy Roth.</p>
+      </div>
+      <figure class="makhalolam-player" data-player>
+        <div class="player-screen">
+          <a class="player-poster" href="https://www.youtube.com/watch?v=n6tLDS_ioYk" aria-label="Play Makhalolam · Shema Kolinu" data-play-video>
+            <img src="../../../assets/covers/n6tLDS_ioYk.jpg" alt="" width="1280" height="720" loading="lazy">
+            <span class="poster-play" aria-hidden="true"></span>
+          </a>
+        </div>
+        <figcaption class="player-actions">
+          <strong>Makhalolam · Shema Kolinu</strong>
+          <div class="player-actions">
+            <button class="button ghost" type="button" data-stop-video hidden>Close player</button>
+            <a class="text-link" href="https://www.youtube.com/watch?v=n6tLDS_ioYk" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
 
     <section class="band club" id="club">
       <div class="wrap club-grid">
@@ -152,16 +232,6 @@
           <button class="button ghost" type="button" id="confirm-club" hidden>Simulate email verification</button>
           <button class="button ghost" type="button" id="member-view" hidden>View my account</button>
         </form>
-      </div>
-    </section>
-
-    <section id="about" class="story band">
-      <div class="wrap story-grid">
-        <div class="story-photo"><img src="../../../assets/channel-portrait.jpg" width="800" height="800" alt="Pirchei Shomayim choir members with conductor Mordechai Gordon" loading="lazy"></div>
-        <div><div class="kicker">About Pirchei Shomayim</div><h2>Find your voice.<br>Grow together.</h2>
-          <p>Our classes help boys develop their musical skills, build confidence and learn to listen to one another alongside their studies in cheder. From the first rehearsal to the stage, every boy has a voice.</p>
-          <a class="text-link" href="https://www.youtube.com/watch?v=n6tLDS_ioYk" target="_blank" rel="noopener noreferrer">Watch Makhelolam with Moishy Roth</a>
-        </div>
       </div>
     </section>
   </main>
