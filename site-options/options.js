@@ -14,8 +14,6 @@ const get = (id) => document.getElementById(id);
 const management = get('management-dialog');
 const applicationForm = get('application-form');
 const clubForm = get('club-form');
-let pendingSubscriber;
-let currentSubscriber;
 
 function cell(content) {
   const td = document.createElement('td');
@@ -136,8 +134,11 @@ if (management) {
   }
 }
 
+const previewApplicantAccount = clubForm ? setupClub() : null;
+
 if (applicationForm) {
   const fields = applicationForm.elements;
+  const result = get('application-result');
   const inbox = get('view-inbox');
   const english = document.documentElement.lang === 'en';
   applicationForm.querySelector('[type="submit"]').disabled = false;
@@ -156,17 +157,21 @@ if (applicationForm) {
   });
   applicationForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    const info = Object.fromEntries(new FormData(applicationForm));
+    const {consent, ...info} = Object.fromEntries(new FormData(applicationForm));
     for (const key of Object.keys(info)) info[key] = info[key].trim();
     if (!info.parent || !info.child) {
-      get('application-result').textContent = english
+      result.textContent = english
         ? 'Please enter sample names for the parent and child.'
         : 'יש למלא שם הורה ושם ילד בדויים.';
       return;
     }
     applications.unshift({...info, status: 'חדשה'});
     applicationForm.reset();
-    get('application-result').textContent = english ? 'Demo inquiry complete.' : 'הפנייה נוספה לרשימה בהדגמה.';
+    if (previewApplicantAccount) {
+      previewApplicantAccount(info.email, Boolean(consent));
+    } else {
+      result.textContent = english ? 'Demo inquiry complete.' : 'הפנייה נוספה לרשימה בהדגמה.';
+    }
     if (inbox) inbox.hidden = false;
   });
 }
@@ -175,12 +180,65 @@ for (const link of document.querySelectorAll('[data-language-switch]')) {
   link.addEventListener('click', () => { link.hash = location.hash; });
 }
 
-if (clubForm) {
+function setupClub() {
   const clubResult = get('club-result');
-  const confirmation = get('confirm-club');
-  const memberView = get('member-view');
   const preferences = get('preferences');
   const preferenceResult = get('preference-result');
+  const unsubscribe = get('unsubscribe');
+  const topicInputs = [...preferences.elements.topics];
+  let activeEmail;
+
+  function saveSubscription(email, topics, status) {
+    const existing = subscribers.find((entry) => entry.email === email);
+    if (existing) {
+      Object.assign(existing, {topics, status});
+    } else {
+      subscribers.unshift({email, topics, status});
+    }
+  }
+
+  function showPreferences() {
+    const subscription = subscribers.find((entry) => entry.email === activeEmail);
+    for (const input of topicInputs) {
+      input.checked = subscription?.topics.includes(input.value) ?? false;
+    }
+    unsubscribe.disabled = subscription?.status !== 'אושר';
+  }
+
+  function setupVerification(confirmation, view, feedback) {
+    let pending;
+    let verifiedEmail;
+    confirmation.addEventListener('click', () => {
+      if (!pending) return;
+      verifiedEmail = pending.email;
+      if (pending.topics.length) {
+        saveSubscription(verifiedEmail, pending.topics, 'אושר');
+        feedback.textContent = 'החשבון הופעל וההצטרפות לרשימת התפוצה אושרה בהדגמה.';
+      } else {
+        feedback.textContent = 'החשבון הופעל בהדגמה. אפשר לבחור לקבל עדכונים מתוך החשבון.';
+      }
+      pending = undefined;
+      confirmation.hidden = true;
+      view.hidden = false;
+      view.focus();
+    });
+    view.addEventListener('click', () => {
+      activeEmail = verifiedEmail;
+      get('member-email').textContent = activeEmail;
+      showPreferences();
+      preferenceResult.textContent = '';
+      get('member-dialog').showModal();
+    });
+    return (email, topics, message) => {
+      pending = {email: email.trim().toLowerCase(), topics};
+      feedback.textContent = message;
+      confirmation.hidden = false;
+      view.hidden = true;
+    };
+  }
+
+  const previewClub = setupVerification(get('confirm-club'), get('member-view'), clubResult);
+  const previewApplication = setupVerification(get('confirm-application'), get('view-application-account'), get('application-result'));
   clubForm.querySelector('[type="submit"]').disabled = false;
 
   document.querySelector('[data-fill-club]').addEventListener('click', () => {
@@ -194,33 +252,8 @@ if (clubForm) {
       clubResult.textContent = 'כדי להצטרף בחרו לפחות סוג אחד של עדכונים.';
       return;
     }
-    const email = formData.get('email').trim().toLowerCase();
-    pendingSubscriber = {email, topics};
-    clubResult.textContent = 'ההרשמה לדוגמה ממתינה לאישור הכתובת.';
-    confirmation.hidden = false;
-    memberView.hidden = true;
-  });
-  confirmation.addEventListener('click', () => {
-    const existing = subscribers.find(({email}) => email === pendingSubscriber.email);
-    if (existing) {
-      Object.assign(existing, pendingSubscriber, {status: 'אושר'});
-      currentSubscriber = existing;
-    } else {
-      currentSubscriber = {...pendingSubscriber, status: 'אושר'};
-      subscribers.unshift(currentSubscriber);
-    }
-    pendingSubscriber = undefined;
-    confirmation.hidden = true;
-    memberView.hidden = false;
+    previewClub(formData.get('email'), topics, 'ההרשמה לדוגמה ממתינה לאימות הכתובת.');
     clubForm.reset();
-    clubResult.textContent = 'הכתובת אושרה בהדגמה. כעת אפשר לראות את החשבון וההעדפות.';
-  });
-  memberView.addEventListener('click', () => {
-    for (const input of preferences.querySelectorAll('input')) {
-      input.checked = currentSubscriber.topics.includes(input.value);
-    }
-    preferenceResult.textContent = '';
-    get('member-dialog').showModal();
   });
   preferences.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -229,16 +262,20 @@ if (clubForm) {
       preferenceResult.textContent = 'בחרו סוג עדכון אחד לפחות, או לחצו על הסרה.';
       return;
     }
-    currentSubscriber.topics = topics;
+    saveSubscription(activeEmail, topics, 'אושר');
+    showPreferences();
     preferenceResult.textContent = 'ההעדפות נשמרו בהדגמה.';
   });
-  get('unsubscribe').addEventListener('click', () => {
-    currentSubscriber.topics = [];
-    currentSubscriber.status = 'הוסר';
-    memberView.hidden = true;
-    get('member-dialog').close();
-    clubResult.textContent = 'הכתובת הוסרה מרשימת הדיוור בהדגמה.';
+  unsubscribe.addEventListener('click', () => {
+    saveSubscription(activeEmail, [], 'הוסר');
+    showPreferences();
+    preferenceResult.textContent = 'הכתובת הוסרה מרשימת הדיוור בהדגמה.';
   });
+
+  return (email, consent) => {
+    const topics = consent ? topicInputs.map(({value}) => value) : [];
+    previewApplication(email, topics, 'הפנייה לחוג נוספה בהדגמה. כעת יש לאמת את המייל להפעלת החשבון.');
+  };
 }
 
 const photos = ['covers/s_CNJzzsA8g.jpg', 'channel-banner.jpg', 'covers/_eX_k4H5WHo.jpg'];

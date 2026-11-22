@@ -225,6 +225,9 @@ select {
 }
 .form-result { color: #246655; font-size: .92rem; font-weight: 700; margin-top: 12px; }
 .form-result:empty { margin: 0; }
+.application-membership { padding: 10px 13px 12px; margin-block-end: 16px; background: #edf7f3; border: 1px solid #c2dcd2; color: #285a4b; }
+.application-membership p.small { margin: 0 0 7px; color: inherit; }
+.form-result:not(:empty) + .application-actions { margin-block-start: 9px; }
 #view-inbox { margin-top: 10px; }
 
 .music { border-top: 1px solid var(--line); }

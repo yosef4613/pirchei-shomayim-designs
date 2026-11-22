@@ -8,8 +8,8 @@
   <title>אתר ומועדון עדכונים · הדגמה לפרחי שמיים</title>
   <meta name="description" content="המחשה של אתר ומועדון עדכונים למקהלת פרחי שמיים בעיצוב היכל האור.">
   <link rel="icon" href="../../assets/brand-icon.png">
-  <link rel="stylesheet" href="../options.css?v=4">
-  <script defer src="../options.js?v=4"></script>
+  <link rel="stylesheet" href="../options.css?v=5">
+  <script defer src="../options.js?v=5"></script>
   <script defer src="../editor.js?v=1"></script>
 </head>
 <body data-mode="members" data-assets="../../assets">
@@ -85,22 +85,30 @@
       <div class="apply-intro">
         <div class="kicker">הצעד הראשון לחוג</div>
         <h2>נעים להכיר.</h2>
-        <p>בוחרים חוג, משאירים פנייה והצוות חוזר אליכם לתיאום. אפשר לקבל פרטים על המבדק ועל הרישום דרך המתנ״ס.</p>
+        <p>בוחרים חוג ופותחים חשבון באתר באותו טופס. צוות המקהלה חוזר אליכם לתיאום המבדק והרישום דרך המתנ״ס.</p>
         <ol><li>פנייה ראשונית</li><li>שיחת היכרות ומבדק</li><li>תשובה והנחיות לרישום</li></ol>
       </div>
       <form id="application-form" class="form">
-        <div class="form-head"><h3>פנייה לחוג</h3><button type="button" class="text-button" data-fill-application>מילוי פרטי דוגמה</button></div>
+        <div class="form-head"><h3>פנייה לחוג ופתיחת חשבון</h3><button type="button" class="text-button" data-fill-application>מילוי פרטי דוגמה</button></div>
         <p id="apply-note" class="small">טופס הדגמה. הזינו פרטים בדויים בלבד.</p>
         <div class="fields">
           <label>שם ההורה<input name="parent" required maxlength="70" placeholder="שם מלא לדוגמה"></label>
-          <label>מייל לחזרה<input name="email" type="email" dir="ltr" required maxlength="120" placeholder="parent@example.com"></label>
+          <label>מייל לחזרה ולחשבון<input name="email" type="email" dir="ltr" required maxlength="120" placeholder="parent@example.com"></label>
           <label>שם הילד<input name="child" required maxlength="60" placeholder="שם בדוי"></label>
           <label>גיל הילד<input name="age" required type="number" inputmode="numeric" min="4" max="18"></label>
           <label class="wide">החוג שמעניין אתכם<select name="branch" required><option value="">לבחירת חוג</option><option>בית שמש · רמה א׳</option><option>בית שמש · רמה ד׳</option><option>ירושלים · רמת אשכול</option><option>ירושלים · נווה יעקב</option></select></label>
         </div>
-        <button class="button dark" type="submit" disabled aria-describedby="apply-note">הצגת הפנייה לדוגמה</button>
+        <div class="application-membership">
+          <p class="small">חשבון ההורה יופעל לאחר אימות כתובת המייל.</p>
+          <label class="check"><input type="checkbox" name="consent"> <span>אני רוצה לקבל עדכונים במייל על שירים, חוגים והופעות. אפשר לשנות העדפות או להסיר את ההרשמה בכל עת.</span></label>
+        </div>
+        <button class="button dark" type="submit" disabled aria-describedby="apply-note">שליחת פנייה והרשמה לדוגמה</button>
         <div id="application-result" class="form-result" role="status"></div>
-        <button type="button" class="text-button" data-manage hidden id="view-inbox">לצפייה בפנייה באזור הניהול</button>
+        <div class="actions application-actions">
+          <button class="button dark" type="button" id="confirm-application" hidden>הדמיית אימות המייל</button>
+          <button class="text-button" type="button" id="view-application-account" hidden>לצפייה בחשבון שלי</button>
+          <button type="button" class="text-button" data-manage hidden id="view-inbox">לצפייה בפנייה באזור הניהול</button>
+        </div>
       </form>
     </div>
   </section>
@@ -229,7 +237,8 @@
 
   <dialog id="member-dialog" class="dialog member-dialog" aria-labelledby="member-title">
     <div class="dialog-body"><div class="panel-head"><h2 id="member-title">החשבון שלי</h2><button class="close" type="button" data-close aria-label="סגירת חשבון לדוגמה">×</button></div>
-      <p>אישור כתובת התקבל בהדגמה. כאן אפשר לבחור מה יגיע למייל או להפסיק לקבל עדכונים.</p>
+      <p class="small"><bdi id="member-email"></bdi> · כתובת מאומתת בהדגמה</p>
+      <p>כאן אפשר לבחור מה יגיע למייל או להפסיק לקבל עדכונים.</p>
       <form id="preferences"><label class="check"><input type="checkbox" name="topics" value="שירים חדשים ביוטיוב"> שירים חדשים ביוטיוב</label>
         <label class="check"><input type="checkbox" name="topics" value="חוגים חדשים והרשמה"> חוגים חדשים והרשמה</label>
         <label class="check"><input type="checkbox" name="topics" value="הופעות ופתיחת הרשמה"> הופעות ופתיחת הרשמה</label>
