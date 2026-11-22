@@ -6,8 +6,8 @@ const applications = [
   {parent: 'הורה לדוגמה ב׳', child: 'ילד לדוגמה ב׳', age: '11', branch: 'בית שמש · רמה א׳', email: 'family-b@example.com', status: 'נקבע מבדק'},
 ];
 const subscribers = [
-  {email: 'listener-a@example.com', topics: ['שירים ומילים'], status: 'אושר'},
-  {email: 'listener-b@example.com', topics: ['מאחורי הקלעים והופעות'], status: 'ממתין לאישור'},
+  {email: 'listener-a@example.com', topics: ['שירים חדשים ביוטיוב'], status: 'אושר'},
+  {email: 'listener-b@example.com', topics: ['הופעות ופתיחת הרשמה'], status: 'ממתין לאישור'},
 ];
 
 const get = (id) => document.getElementById(id);
@@ -124,10 +124,22 @@ if (management) {
   }
   get('lead-filter').addEventListener('change', showApplications);
   get('export').addEventListener('click', exportExample);
+
+  const requestedPanel = new URLSearchParams(location.search).get('view');
+  if (requestedPanel === 'content' || requestedPanel === 'campaign') {
+    const entry = [...management.querySelectorAll('[data-panel]')]
+      .find((button) => button.dataset.panel === requestedPanel);
+    if (entry) {
+      displayPanel(requestedPanel);
+      management.showModal();
+    }
+  }
 }
 
 if (applicationForm) {
   const fields = applicationForm.elements;
+  const inbox = get('view-inbox');
+  const english = document.documentElement.lang === 'en';
   applicationForm.querySelector('[type="submit"]').disabled = false;
   for (const card of document.querySelectorAll('[data-branch]')) {
     card.addEventListener('click', () => {
@@ -136,25 +148,31 @@ if (applicationForm) {
     });
   }
   document.querySelector('[data-fill-application]').addEventListener('click', () => {
-    fields.parent.value = 'הורה לדוגמה ג׳';
+    fields.parent.value = english ? 'Sample Parent' : 'הורה לדוגמה ג׳';
     fields.email.value = 'parent@example.com';
-    fields.child.value = 'ילד דוגמה';
+    fields.child.value = english ? 'Sample Child' : 'ילד דוגמה';
     fields.age.value = '10';
-    if (!fields.branch.value) fields.branch.value = 'ירושלים · רמת אשכול';
+    if (!fields.branch.value) fields.branch.value = english ? 'Jerusalem · Ramat Eshkol' : 'ירושלים · רמת אשכול';
   });
   applicationForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const info = Object.fromEntries(new FormData(applicationForm));
     for (const key of Object.keys(info)) info[key] = info[key].trim();
     if (!info.parent || !info.child) {
-      get('application-result').textContent = 'יש למלא שם הורה ושם ילד בדויים.';
+      get('application-result').textContent = english
+        ? 'Please enter sample names for the parent and child.'
+        : 'יש למלא שם הורה ושם ילד בדויים.';
       return;
     }
     applications.unshift({...info, status: 'חדשה'});
     applicationForm.reset();
-    get('application-result').textContent = 'הפנייה נוספה לרשימה בהדגמה.';
-    get('view-inbox').hidden = false;
+    get('application-result').textContent = english ? 'Demo inquiry complete.' : 'הפנייה נוספה לרשימה בהדגמה.';
+    if (inbox) inbox.hidden = false;
   });
+}
+
+for (const link of document.querySelectorAll('[data-language-switch]')) {
+  link.addEventListener('click', () => { link.hash = location.hash; });
 }
 
 if (clubForm) {

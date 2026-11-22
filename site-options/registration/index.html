@@ -8,8 +8,10 @@
   <title>אתר והרשמה לחוגים · הדגמה לפרחי שמיים</title>
   <meta name="description" content="המחשה של אתר והרשמה לחוגים למקהלת פרחי שמיים בעיצוב היכל האור.">
   <link rel="icon" href="../../assets/brand-icon.png">
-  <link rel="stylesheet" href="../options.css?v=1">
-  <script defer src="../options.js?v=1"></script>
+  <link rel="alternate" hreflang="en" href="en/">
+  <link rel="stylesheet" href="../options.css?v=4">
+  <script defer src="../options.js?v=4"></script>
+  <script defer src="../editor.js?v=1"></script>
 </head>
 <body data-mode="registration" data-assets="../../assets">
   <a class="skip" href="#main">דילוג לתוכן</a>
@@ -22,7 +24,7 @@
         <img src="../../assets/brand-icon.png" width="43" height="43" alt=""><span><b>פרחי שמיים</b><small>מקהלת הילדים</small></span>
       </a>
       <nav aria-label="ניווט באתר"><a href="#classes">חוגים</a><a href="#music">שירים</a><a href="#about">אודות</a></nav>
-      <button class="manager" type="button" data-manage>ניהול לדוגמה</button>
+      <div class="nav-actions"><a class="language-switch" href="en/" hreflang="en" lang="en" data-language-switch>English</a><button class="manager" type="button" data-manage>ניהול לדוגמה</button></div>
     </div>
   </header>
   <main id="main">
@@ -71,6 +73,11 @@
           <span>ירושלים</span><strong>נווה יעקב</strong><span class="class-cta">בחירת החוג</span>
         </a>
       </div>
+      <aside class="class-flyer" aria-label="מודעות החוג בירושלים">
+        <p>מודעת החוג בירושלים · PDF</p>
+        <a class="text-link" href="../../assets/jerusalem-hebrew.pdf" target="_blank" rel="noopener">עברית</a>
+        <a class="text-link" href="../../assets/jerusalem-english.pdf" lang="en" target="_blank" rel="noopener">English</a>
+      </aside>
     </div>
   </section>
 
@@ -145,6 +152,7 @@
       <p class="small">נתוני דוגמה. בפועל הכניסה לאזור הזה מיועדת לצוות המורשה.</p>
       <div class="panel-tabs" aria-label="תצוגות ניהול">
         <button type="button" data-panel="applications" aria-pressed="true">פניות לחוגים</button>
+        <button type="button" data-panel="content" aria-pressed="false">עדכון תוכן</button>
 
       </div>
       <section data-managed-panel="applications">
@@ -154,7 +162,29 @@
         </div>
         <div class="table-scroll"><table><thead><tr><th scope="col">הורה וילד</th><th scope="col">חוג</th><th scope="col">מייל לחזרה</th><th scope="col">סטטוס</th></tr></thead><tbody id="leads"></tbody></table></div>
       </section>
-
+      <section data-managed-panel="content" hidden>
+        <div class="panel-head"><div><h3>עדכון תוכן באתר</h3><p class="small">עורך מטעם המקהלה יכול להכין פרסום ולבדוק את התוצאה.</p></div></div>
+        <div class="playlist-preview"><strong>שירים מפלייליסט רשמי</strong><p>באתר הפעיל, שירים חדשים יופיעו לאחר סנכרון הפלייליסט שנבחר. כאן אפשר לדמות השלמת פרטים לשיר שהופיע באתר.</p></div>
+        <div class="content-workspace">
+          <form id="editor-form" class="content-fields">
+            <label>סוג פרסום<select id="editor-type"><option value="story">מאחורי הקלעים</option><option value="song">שיר חדש</option><option value="class">חוג חדש</option><option value="show">הופעה</option></select></label>
+            <label>כותרת<input id="editor-title" required maxlength="100"></label>
+            <label>תקציר ותיאור<textarea id="editor-description" rows="3" required maxlength="600"></textarea></label>
+            <label><span id="editor-timing-label">מועד התיעוד</span><input id="editor-timing" maxlength="100"></label>
+            <label><span id="editor-details-label">קרדיט ותוכן</span><input id="editor-details" maxlength="160"></label>
+            <label><span id="editor-link-label">קישור לתיעוד</span><input id="editor-link" inputmode="url" dir="ltr" maxlength="500"></label>
+            <label>מסמך PDF <small>רשות</small><input id="editor-file" type="file" accept=".pdf,application/pdf"></label>
+            <p class="small" id="editor-filename"></p>
+            <button type="button" class="text-button" id="editor-remove-file" hidden>הסרת המסמך</button>
+            <button type="submit" class="button dark" disabled>עדכון הדוגמה</button>
+            <p class="small" id="editor-status" role="status">התוכן והקובץ מוצגים כאן לשם המחשה.</p>
+          </form>
+          <section class="content-result" aria-label="תצוגה מקדימה באתר">
+            <div class="kicker">תצוגה מקדימה באתר</div>
+            <div id="content-preview" class="publishing-preview"></div>
+          </section>
+        </div>
+      </section>
     </div>
   </dialog>
 

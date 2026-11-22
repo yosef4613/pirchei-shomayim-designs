@@ -8,8 +8,9 @@
   <title>אתר ומועדון עדכונים · הדגמה לפרחי שמיים</title>
   <meta name="description" content="המחשה של אתר ומועדון עדכונים למקהלת פרחי שמיים בעיצוב היכל האור.">
   <link rel="icon" href="../../assets/brand-icon.png">
-  <link rel="stylesheet" href="../options.css?v=1">
-  <script defer src="../options.js?v=1"></script>
+  <link rel="stylesheet" href="../options.css?v=4">
+  <script defer src="../options.js?v=4"></script>
+  <script defer src="../editor.js?v=1"></script>
 </head>
 <body data-mode="members" data-assets="../../assets">
   <a class="skip" href="#main">דילוג לתוכן</a>
@@ -71,6 +72,11 @@
           <span>ירושלים</span><strong>נווה יעקב</strong><span class="class-cta">בחירת החוג</span>
         </a>
       </div>
+      <aside class="class-flyer" aria-label="מודעות החוג בירושלים">
+        <p>מודעת החוג בירושלים · PDF</p>
+        <a class="text-link" href="../../assets/jerusalem-hebrew.pdf" target="_blank" rel="noopener">עברית</a>
+        <a class="text-link" href="../../assets/jerusalem-english.pdf" lang="en" target="_blank" rel="noopener">English</a>
+      </aside>
     </div>
   </section>
 
@@ -125,8 +131,8 @@
     <div class="wrap club-grid">
       <div class="club-story">
         <div class="kicker">מועדון פרחי שמיים</div>
-        <h2>שיר חדש.<br>ישירות למייל.</h2>
-        <p>מצטרפים לעדכונים ובוחרים מה לקבל. שירים חדשים עם קישור להאזנה, מילים כשהן זמינות וטעימות ממאחורי הקלעים.</p>
+        <h2>עדכוני המקהלה.<br>ישירות למייל.</h2>
+        <p>מצטרפים ובוחרים מה לקבל: שירים חדשים ביוטיוב, חוגים שנפתחים והופעות קרובות עם קישור להרשמה.</p>
         <figure><img src="../../assets/covers/n6tLDS_ioYk.jpg" alt="רגע מתוך מקהלולם בערוץ פרחי שמיים" width="1280" height="720" loading="lazy">
           <figcaption>מתוך מקהלולם · דוגמה לכתבה במועדון</figcaption></figure>
       </div>
@@ -135,8 +141,9 @@
         <p class="small">הדגמה של הרשמה, אישור מייל ובחירת סוגי עדכונים.</p>
         <label>כתובת מייל<input name="email" type="email" dir="ltr" required maxlength="120" placeholder="listener@example.com"></label>
         <fieldset><legend>מה מעניין אתכם?</legend>
-          <label class="check"><input type="checkbox" name="topics" value="שירים ומילים" checked> שירים ומילים</label>
-          <label class="check"><input type="checkbox" name="topics" value="מאחורי הקלעים והופעות"> מאחורי הקלעים והופעות</label>
+          <label class="check"><input type="checkbox" name="topics" value="שירים חדשים ביוטיוב" checked> שירים חדשים ביוטיוב</label>
+          <label class="check"><input type="checkbox" name="topics" value="חוגים חדשים והרשמה"> חוגים חדשים והרשמה</label>
+          <label class="check"><input type="checkbox" name="topics" value="הופעות ופתיחת הרשמה"> הופעות ופתיחת הרשמה</label>
         </fieldset>
         <label class="check consent"><input type="checkbox" name="consent" required> אני מאשר/ת קבלת עדכונים במייל, עם אפשרות הסרה בכל עת</label>
         <div class="actions"><button class="button primary" type="submit" disabled>הצטרפות לדוגמה</button><button class="text-button" type="button" data-fill-club>מילוי כתובת דוגמה</button></div>
@@ -170,8 +177,9 @@
       <p class="small">נתוני דוגמה. בפועל הכניסה לאזור הזה מיועדת לצוות המורשה.</p>
       <div class="panel-tabs" aria-label="תצוגות ניהול">
         <button type="button" data-panel="applications" aria-pressed="true">פניות לחוגים</button>
+        <button type="button" data-panel="content" aria-pressed="false">עדכון תוכן</button>
         <button type="button" data-panel="subscribers" aria-pressed="false">מנויים</button>
-        <button type="button" data-panel="campaign" aria-pressed="false">תצוגת מייל</button>
+        <button type="button" data-panel="campaign" aria-pressed="false">תבניות דיוור</button>
       </div>
       <section data-managed-panel="applications">
         <div class="panel-head dashboard-controls">
@@ -181,18 +189,40 @@
         <div class="table-scroll"><table><thead><tr><th scope="col">הורה וילד</th><th scope="col">חוג</th><th scope="col">מייל לחזרה</th><th scope="col">סטטוס</th></tr></thead><tbody id="leads"></tbody></table></div>
       </section>
 
+      <section data-managed-panel="content" hidden>
+        <div class="panel-head"><div><h3>עדכון תוכן באתר</h3><p class="small">עורך מטעם המקהלה יכול להכין פרסום ולבדוק את התוצאה.</p></div></div>
+        <div class="playlist-preview"><strong>שירים מפלייליסט רשמי</strong><p>באתר הפעיל, שירים חדשים יופיעו לאחר סנכרון הפלייליסט שנבחר. כאן אפשר לדמות השלמת פרטים לשיר שהופיע באתר.</p></div>
+        <div class="content-workspace">
+          <form id="editor-form" class="content-fields">
+            <label>סוג פרסום<select id="editor-type"><option value="story">מאחורי הקלעים</option><option value="song">שיר חדש</option><option value="class">חוג חדש</option><option value="show">הופעה</option></select></label>
+            <label>כותרת<input id="editor-title" required maxlength="100"></label>
+            <label>תקציר ותיאור<textarea id="editor-description" rows="3" required maxlength="600"></textarea></label>
+            <label><span id="editor-timing-label">מועד התיעוד</span><input id="editor-timing" maxlength="100"></label>
+            <label><span id="editor-details-label">קרדיט ותוכן</span><input id="editor-details" maxlength="160"></label>
+            <label><span id="editor-link-label">קישור לתיעוד</span><input id="editor-link" inputmode="url" dir="ltr" maxlength="500"></label>
+            <label>מסמך PDF <small>רשות</small><input id="editor-file" type="file" accept=".pdf,application/pdf"></label>
+            <p class="small" id="editor-filename"></p>
+            <button type="button" class="text-button" id="editor-remove-file" hidden>הסרת המסמך</button>
+            <button type="submit" class="button dark" disabled>עדכון הדוגמה</button>
+            <p class="small" id="editor-status" role="status">התוכן והקובץ מוצגים כאן לשם המחשה.</p>
+          </form>
+          <section class="content-result" aria-label="תצוגה מקדימה באתר">
+            <div class="kicker">תצוגה מקדימה באתר</div>
+            <div id="content-preview" class="publishing-preview"></div>
+          </section>
+        </div>
+      </section>
       <section data-managed-panel="subscribers" hidden>
         <div class="panel-head"><div><h3>מנויים לדוגמה</h3><p class="small">העדפות תפוצה ומצב אישור כתובת.</p></div></div>
         <div class="table-scroll"><table><thead><tr><th scope="col">כתובת מייל</th><th scope="col">העדפות</th><th scope="col">מצב</th></tr></thead><tbody id="subscribers"></tbody></table></div>
       </section>
       <section data-managed-panel="campaign" hidden>
-        <div class="email-preview">
-          <span class="kicker">טיוטת מייל לשיר חדש</span><h3>פרחי שמיים · אתה בחרתנו</h3>
-          <img src="../../assets/covers/-4sE-rfQI1k.jpg" width="1280" height="720" alt="עטיפת אתה בחרתנו" loading="lazy">
-          <p>מקהלת פרחי שמיים ביתר עילית שרה את מילות תפילת מוסף של ראש השנה. לחן של מרדכי וישראל מאיר גורדון.</p>
-          <div class="actions"><a class="button dark" href="https://www.youtube.com/watch?v=-4sE-rfQI1k" target="_blank" rel="noopener noreferrer">לצפייה בשיר</a><a class="text-link" href="https://www.youtube.com/watch?v=-4sE-rfQI1k" target="_blank" rel="noopener noreferrer">מילים ופרטים בתיאור הערוץ</a></div>
-          <p class="small">במייל שיישלח יופיע קישור להסרה ולעדכון העדפות.</p>
+        <div class="campaign-controls">
+          <div><h3>תבניות הדיוור</h3><p class="small">התבנית משתמשת בפרטים שמופיעים בעדכון התוכן.</p></div>
+          <label>סוג עדכון<select id="campaign-type"><option value="song">שיר חדש</option><option value="class">חוג חדש</option><option value="show">הופעה</option></select></label>
+          <button type="button" class="button dark" data-edit-campaign>לעריכת הפרטים</button>
         </div>
+        <div class="email-preview publishing-preview" id="campaign-preview"></div>
       </section>
     </div>
   </dialog>
@@ -200,8 +230,9 @@
   <dialog id="member-dialog" class="dialog member-dialog" aria-labelledby="member-title">
     <div class="dialog-body"><div class="panel-head"><h2 id="member-title">החשבון שלי</h2><button class="close" type="button" data-close aria-label="סגירת חשבון לדוגמה">×</button></div>
       <p>אישור כתובת התקבל בהדגמה. כאן אפשר לבחור מה יגיע למייל או להפסיק לקבל עדכונים.</p>
-      <form id="preferences"><label class="check"><input type="checkbox" name="topics" value="שירים ומילים"> שירים ומילים</label>
-        <label class="check"><input type="checkbox" name="topics" value="מאחורי הקלעים והופעות"> מאחורי הקלעים והופעות</label>
+      <form id="preferences"><label class="check"><input type="checkbox" name="topics" value="שירים חדשים ביוטיוב"> שירים חדשים ביוטיוב</label>
+        <label class="check"><input type="checkbox" name="topics" value="חוגים חדשים והרשמה"> חוגים חדשים והרשמה</label>
+        <label class="check"><input type="checkbox" name="topics" value="הופעות ופתיחת הרשמה"> הופעות ופתיחת הרשמה</label>
         <div class="actions"><button type="submit" class="button dark">שמירת העדפות לדוגמה</button><button type="button" class="text-button" id="unsubscribe">הסרה לדוגמה</button></div>
         <p class="form-result" id="preference-result" role="status"></p></form>
     </div>
