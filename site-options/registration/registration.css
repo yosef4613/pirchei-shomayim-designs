@@ -1,0 +1,93 @@
+.registration-hero .kicker,
+body[data-mode="registration"] :is(.music, .story, .choir-notes, .makhalolam) .kicker { color: var(--purple); }
+
+.registration-hero .hero-inner { padding-block-start: clamp(46px, 7vw, 95px); padding-block-end: 62px; }
+.registration-hero .hero-copy { animation: none; max-width: 640px; padding-block-end: clamp(28px, 5vw, 65px); }
+.registration-hero .hero-copy h1 { font-size: clamp(3rem, 6.3vw, 6.1rem); line-height: 1.04; }
+html[lang="en"] .registration-hero .hero-copy h1 { font-size: clamp(2.6rem, 5.7vw, 5.4rem); }
+.registration-hero .hero-copy p { max-width: 432px; }
+.registration-hero .find-class { min-height: 52px; box-shadow: 0 11px 35px #091c1ca0, 0 0 20px #a9eddf2d; }
+.registration-hero .hero-listen { color: var(--ink); padding: 5px 4px; }
+.registration-hero .hero-listen:hover { color: var(--mint); }
+.registration-hero .hero-foot { gap: 8px 16px; }
+.stage-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.stage-motion { color: var(--muted); font-size: .79rem; padding: 5px 0; }
+.stage-motion:hover { color: var(--ink); }
+.registration-hero[data-spotlights-paused] .hero-spotlights::before,
+.registration-hero[data-spotlights-paused] .hero-spotlights::after { animation-play-state: paused; }
+
+.class-finder {
+  position: relative;
+  margin-block-start: -32px;
+  padding-block: 0 clamp(52px, 7vw, 85px);
+}
+.finder-panel {
+  border: 1px solid #ecdfef;
+  border-radius: 12px;
+  padding: clamp(21px, 4vw, 49px);
+  background: #f8f3fa;
+  color-scheme: light;
+  color: var(--paper-ink);
+  box-shadow: 0 25px 58px #09050e8c;
+}
+.finder-panel .section-head { margin-bottom: clamp(17px, 3vw, 26px); }
+.finder-panel .section-head p { color: #62516c; }
+.finder-panel p.kicker { color: #684582; }
+.area-filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 17px; }
+.area-filters button {
+  min-height: 39px;
+  padding: 6px 12px;
+  border: 1px solid #d6c6de;
+  border-radius: 5px;
+  background: #fff;
+  color: #483352;
+  font-size: .91rem;
+  font-weight: 700;
+}
+.area-filters button[aria-pressed="true"] { background: #4d3064; border-color: #4d3064; color: #fff; }
+.area-filters button[aria-pressed="false"]:hover { background: #f2e8f8; }
+.class-count { color: #615169; font-size: .86rem; margin-inline-start: auto; }
+.finder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 208px), 1fr)); gap: 12px; }
+.finder-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 15px 17px;
+  border: 1px solid #e3d5e9;
+  border-radius: 7px;
+  background: #fff;
+}
+.finder-card > span { color: #685669; font-size: .84rem; }
+.finder-card h3 { margin-block: 3px 5px; font-size: 1.34rem; }
+.finder-card p { margin-block-end: 13px; color: #63536a; font-size: .92rem; }
+.finder-links { display: flex; flex-wrap: wrap; gap: 5px 14px; margin-block-start: auto; }
+.finder-links a, .finder-panel .text-link { color: #5b3574; font-size: .87rem; font-weight: 700; text-underline-offset: 4px; }
+.finder-panel .class-flyer { padding: 9px 12px; background: #eee4f3; border-inline-color: #775394; }
+.finder-panel .class-flyer p { color: #5b4965; }
+.class-example {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 17px;
+  padding-top: 17px;
+  border-top: 1px solid #decfe6;
+}
+.class-example img { width: 105px; border-radius: 4px; }
+.class-example figcaption { flex: 1 1 200px; }
+.class-example strong { display: block; color: #4e3462; }
+.class-example a { display: inline-block; }
+
+body[data-mode="registration"] .poster-play { background: #e5d5f6; color: #3e2750; box-shadow: 0 0 0 8px #dec5f43d; }
+
+@media (max-width: 620px) {
+  .registration-hero .hero-inner { padding-block-start: 36px; padding-block-end: 51px; }
+  .registration-hero .hero-copy { padding-block-end: 22px; }
+  .registration-hero .hero-copy h1 { font-size: clamp(2.55rem, 10vw, 3.4rem); }
+  html[lang="en"] .registration-hero .hero-copy h1 { font-size: clamp(2.25rem, 8.8vw, 3.18rem); }
+  .class-finder { margin-block-start: -25px; }
+  .class-count { margin-inline-start: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage-motion { display: none; }
+}

@@ -144,6 +144,10 @@ if (applicationForm) {
   applicationForm.querySelector('[type="submit"]').disabled = false;
   for (const card of document.querySelectorAll('[data-branch]')) {
     card.addEventListener('click', () => {
+      if (card.dataset.branch) {
+        fields.branch.value = card.dataset.branch;
+        return;
+      }
       const [city, area] = card.children;
       fields.branch.value = city.textContent + ' · ' + area.textContent;
     });

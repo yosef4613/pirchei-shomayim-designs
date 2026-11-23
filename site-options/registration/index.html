@@ -10,7 +10,9 @@
   <link rel="icon" href="../../assets/brand-icon.png">
   <link rel="alternate" hreflang="en" href="en/">
   <link rel="stylesheet" href="../options.css?v=10">
-  <script defer src="../options.js?v=6"></script>
+  <link rel="stylesheet" href="registration.css?v=1">
+  <script defer src="../options.js?v=7"></script>
+  <script defer src="registration.js?v=1"></script>
   <script defer src="../choir-media.js?v=1"></script>
   <script defer src="../editor.js?v=1"></script>
 </head>
@@ -30,55 +32,97 @@
   </header>
   <main id="main">
 
-  <section class="hero" id="home" aria-labelledby="main-title">
+  <section class="hero registration-hero" id="home" aria-labelledby="main-title">
     <div class="hero-art" aria-hidden="true"><img id="hero-image" src="../../assets/covers/s_CNJzzsA8g.jpg" alt="" fetchpriority="high"></div>
     <div class="hero-spotlights" aria-hidden="true"></div>
     <div class="wrap hero-inner">
       <div class="hero-copy">
-        <div class="kicker">מקהלת הילדים בניצוחו של מרדכי גורדון</div>
-        <h1 id="main-title"><span>מקהלה.</span><span>מקצועיות.</span><span>חוויה.</span></h1>
-        <p>מקום לילדים שאוהבים לשיר, לגלות את הכישרון שלהם ולגדול מתוך מוזיקה, ביטחון ואהבת תורה.</p>
+        <div class="kicker">מקהלת פרחי שמיים · מקהלה. מקצועיות. חוויה.</div>
+        <h1 id="main-title"><span>הילד אוהב לשיר?</span><span>תנו לו מקום לפתח את הקול.</span></h1>
+        <p>חוגי מקהלת פרחי שמיים משלבים פיתוח קול מקצועי, שירה בהרמוניה ויחס אישי לכל ילד.</p>
         <div class="actions">
-          <a class="button primary" href="#application">להשארת פנייה לחוג</a>
-          <a class="button ghost" href="#music">המוזיקה שלנו</a>
+          <a class="button primary find-class" href="#classes">מצאו חוג באזור שלכם</a>
+          <a class="text-link hero-listen" href="#music">האזינו למקהלה</a>
         </div>
       </div>
       <div class="hero-foot">
         <p>חוגי מקהלה בבית שמש ובירושלים</p>
-      <div class="gallery-controls" aria-label="תמונות המקהלה">
-        <button type="button" data-photo="0" aria-pressed="true">על הבמה</button>
-        <button type="button" data-photo="1" aria-pressed="false">נפגשים לשיר</button>
-        <button type="button" data-photo="2" aria-pressed="false">מתוך הקליפים</button>
+      <div class="stage-controls">
+  <div class="gallery-controls" aria-label="תמונות המקהלה">
+          <button type="button" data-photo="0" aria-pressed="true">על הבמה</button>
+          <button type="button" data-photo="1" aria-pressed="false">נפגשים לשיר</button>
+          <button type="button" data-photo="2" aria-pressed="false">מתוך הקליפים</button>
+        </div>
+        <button class="text-button stage-motion" type="button" data-toggle-spotlights data-pause="השהיית הזרקורים" data-resume="הפעלת הזרקורים" hidden>השהיית הזרקורים</button>
       </div>
       </div>
     </div>
   </section>
 
-  <section class="band classes" id="classes">
+  <section class="class-finder" id="classes" aria-labelledby="finder-title">
     <div class="wrap">
-      <div class="section-head">
-        <div><div class="kicker">חוגי פרחי שמיים</div><h2>לתת לכישרון מקום.</h2></div>
-        <p>פיתוח קול, יסודות המוזיקה, שירה בהרמוניה והתנסות באולפן. ההצטרפות בתיאום עם המקהלה ובכפוף למבדק התאמה.</p>
+      <div class="finder-panel">
+        <div class="section-head">
+          <div><p class="kicker">חוגי מקהלת פרחי שמיים</p><h2 id="finder-title">מצאו חוג באזור שלכם</h2></div>
+          <p>בחרו עיר כדי לראות את קבוצות המקהלה ואת דרכי הקשר לבירור מועדים ומבדק התאמה.</p>
+        </div>
+        <div class="area-filters" role="group" aria-label="סינון חוגים לפי עיר" data-area-filters hidden>
+          <button type="button" data-filter-area="all" aria-controls="choir-groups" aria-pressed="true">כל הקבוצות</button>
+          <button type="button" data-filter-area="beit-shemesh" aria-controls="choir-groups" aria-pressed="false">בית שמש</button>
+          <button type="button" data-filter-area="jerusalem" aria-controls="choir-groups" aria-pressed="false">ירושלים</button>
+          <p class="class-count" role="status" data-class-count></p>
+        </div>
+        <div class="finder-grid" id="choir-groups">
+          <article class="finder-card" data-class-area="beit-shemesh">
+            <span>בית שמש</span>
+            <h3>רמה א׳</h3>
+            <p>מתנ״ס גוונים</p>
+            <div class="finder-links">
+              <a href="mailto:chugim.g@bs.matnasim.co.il">מייל למתנ״ס</a>
+              <a href="#application" data-branch="בית שמש · רמה א׳" aria-label="פנייה לחוג רמה א׳">פנייה לחוג</a>
+            </div>
+          </article>
+          <article class="finder-card" data-class-area="beit-shemesh">
+            <span>בית שמש</span>
+            <h3>רמה ד׳</h3>
+            <p>מרכז קהילתי דורות</p>
+            <div class="finder-links">
+              <a href="mailto:officed@bs.matnasim.co.il">מייל למתנ״ס</a>
+              <a href="#application" data-branch="בית שמש · רמה ד׳" aria-label="פנייה לחוג רמה ד׳">פנייה לחוג</a>
+            </div>
+          </article>
+          <article class="finder-card" data-class-area="jerusalem">
+            <span>ירושלים</span>
+            <h3>רמת אשכול</h3>
+            <p>בירור מול צוות המקהלה</p>
+            <div class="finder-links">
+              <a href="mailto:mordi.gordon@gmail.com">מייל לצוות המקהלה</a>
+              <a href="#application" data-branch="ירושלים · רמת אשכול" aria-label="פנייה לחוג רמת אשכול">פנייה לחוג</a>
+            </div>
+          </article>
+          <article class="finder-card" data-class-area="jerusalem">
+            <span>ירושלים</span>
+            <h3>נווה יעקב</h3>
+            <p>מינהל קהילתי נווה יעקב</p>
+            <div class="finder-links">
+              <a href="mailto:neveyak@matnasim.org.il">מייל למינהל הקהילתי</a>
+              <a href="#application" data-branch="ירושלים · נווה יעקב" aria-label="פנייה לחוג נווה יעקב">פנייה לחוג</a>
+            </div>
+          </article>
+        </div>
+        <aside class="class-flyer" aria-label="מודעת חוגי המקהלה בירושלים" data-jerusalem-flyer>
+          <p>במודעת ירושלים מופיעים גילאי 8–12 ומבדק קבלה.</p>
+          <a class="text-link" href="../../assets/jerusalem-hebrew.pdf" lang="he" target="_blank" rel="noopener">מודעה בעברית</a>
+          <a class="text-link" href="../../assets/jerusalem-english.pdf" lang="en" target="_blank" rel="noopener">English flyer</a>
+        </aside>
+        <figure class="class-example">
+          <img src="../../assets/covers/aFhQjhm1if8.jpg" width="1280" height="720" alt="" loading="lazy">
+          <figcaption>
+            <strong>הכירו את ילדי מקהלת רמת אשכול</strong>
+            <a class="text-link" href="https://www.youtube.com/watch?v=aFhQjhm1if8" data-story-track="aFhQjhm1if8">צפו בקליפ ״פתח ליבי״</a>
+          </figcaption>
+        </figure>
       </div>
-      <div class="class-grid">
-        <a href="#application" data-branch class="class-card">
-          <span>בית שמש</span><strong>רמה א׳</strong><span class="class-cta">בחירת החוג</span>
-        </a>
-        <a href="#application" data-branch class="class-card">
-          <span>בית שמש</span><strong>רמה ד׳</strong><span class="class-cta">בחירת החוג</span>
-        </a>
-        <a href="#application" data-branch class="class-card">
-          <span>ירושלים</span><strong>רמת אשכול</strong><span class="class-cta">בחירת החוג</span>
-        </a>
-        <a href="#application" data-branch class="class-card">
-          <span>ירושלים</span><strong>נווה יעקב</strong><span class="class-cta">בחירת החוג</span>
-        </a>
-      </div>
-      <aside class="class-flyer" aria-label="מודעות החוג בירושלים">
-        <p>מודעת החוג בירושלים · PDF</p>
-        <a class="text-link" href="../../assets/jerusalem-hebrew.pdf" target="_blank" rel="noopener">עברית</a>
-        <a class="text-link" href="../../assets/jerusalem-english.pdf" lang="en" target="_blank" rel="noopener">English</a>
-      </aside>
     </div>
   </section>
 
@@ -86,8 +130,8 @@
     <div class="wrap apply-grid">
       <div class="apply-intro">
         <div class="kicker">הצעד הראשון לחוג</div>
-        <h2>נעים להכיר.</h2>
-        <p>בוחרים חוג, משאירים פנייה והצוות חוזר אליכם לתיאום. אפשר לקבל פרטים על המבדק ועל הרישום דרך המתנ״ס.</p>
+        <h2>מבקשים פרטים על החוג</h2>
+        <p>בחרתם קבוצה? שלחו פנייה לצוות המקהלה לבירור מועדים ולתיאום מבדק התאמה. את הרישום משלימים מול המסגרת המקומית לפי הנחיות הצוות.</p>
         <ol><li>פנייה ראשונית</li><li>שיחת היכרות ומבדק</li><li>תשובה והנחיות לרישום</li></ol>
       </div>
       <form id="application-form" class="form">
