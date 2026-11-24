@@ -118,6 +118,12 @@
     setTimeout(() => $('#f-parent').focus({ preventScroll: true }), motionOn() ? 450 : 0);
   }));
   branchSelect.addEventListener('change', () => { markSelected(branchSelect.value); clearError(branchSelect); });
+  // הגעה מעמוד החוגים (‎?branch=…) — החוג כבר נבחר בטופס
+  const qBranch = new URLSearchParams(location.search).get('branch');
+  if (qBranch && data.branches.some((x) => x.id === qBranch)) {
+    branchSelect.value = qBranch; markSelected(qBranch);
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (err) { /* לא קריטי */ }
+  }
 
   /* ---------- בדיקת גיל מהירה: תשובה מיידית, עוד לפני שמשאירים פרטים ---------- */
   const fitBtns = $$('.fit-age');

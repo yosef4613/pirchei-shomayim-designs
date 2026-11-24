@@ -44,12 +44,18 @@ function ps_serve_static() {
 	}
 	$path = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/', PHP_URL_PATH);
 	$path = $path ? $path : '/';
+	$map = [
+		'/' => 'he.html', '/en/' => 'en.html',
+		'/classes/' => 'classes-he.html', '/en/classes/' => 'classes-en.html',
+		'/songs/' => 'songs-he.html', '/en/songs/' => 'songs-en.html',
+		'/privacy/' => 'privacy-he.html', '/en/privacy/' => 'privacy-en.html',
+	];
 	// כתובת בלי לוכסן בסוף — הפניה קבועה לגרסה עם לוכסן
-	if (in_array($path, ['/en', '/privacy', '/en/privacy'], true)) {
-		header('Location: ' . $path . '/', true, 301);
+	if (substr($path, -1) !== '/' && isset($map[$path . '/'])) {
+		$q = isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '';
+		header('Location: ' . $path . '/' . $q, true, 301);
 		exit;
 	}
-	$map = ['/' => 'he.html', '/en/' => 'en.html', '/privacy/' => 'privacy-he.html', '/en/privacy/' => 'privacy-en.html'];
 	if (!isset($map[$path])) {
 		return;
 	}
@@ -83,6 +89,13 @@ ps_serve_static();
  * 2. כתובות ישנות שגוגל מכיר — הפניה קבועה למקום המתאים באתר החדש
  * ------------------------------------------------------------------ */
 add_filter('wp_sitemaps_enabled', '__return_false');
+
+/* האתר ציבורי למנועי חיפוש גם בהגדרות וורדפרס (״קריאה״ ← ״נראות במנועי חיפוש״). לפני ההשקה ההגדרה כובתה */
+add_action('init', function () {
+	if (get_option('blog_public') !== '1') {
+		update_option('blog_public', '1');
+	}
+});
 add_action('template_redirect', function () {
 	if (is_robots() || is_favicon() || is_customize_preview()) {
 		return;
@@ -91,8 +104,8 @@ add_action('template_redirect', function () {
 	$slug = trim($path, '/');
 	$map = [
 		'הופעות' => '/#stage', 'הופעות-2' => '/#stage',
-		'השירים-שלנו' => '/#music', 'שירים' => '/#music',
-		'חוגים' => '/#join', 'צור-קשר' => '/#join',
+		'השירים-שלנו' => '/songs/', 'שירים' => '/songs/',
+		'חוגים' => '/classes/', 'צור-קשר' => '/#join',
 		'אודות' => '/#about', 'דף-הבית' => '/',
 	];
 	if (isset($map[$slug])) {
@@ -193,6 +206,10 @@ add_action('rest_api_init', function () {
 	register_rest_route('ps/v1', '/inquiry', ['methods' => 'POST', 'callback' => 'ps_rest_inquiry', 'permission_callback' => '__return_true']);
 	register_rest_route('ps/v1', '/subscribe', ['methods' => 'POST', 'callback' => 'ps_rest_subscribe', 'permission_callback' => '__return_true']);
 	register_rest_route('ps/v1', '/confirm', ['methods' => 'GET', 'callback' => 'ps_rest_confirm', 'permission_callback' => '__return_true']);
+	// מצב ציבורי לבדיקה מבחוץ: האם האתר פתוח למנועי חיפוש בהגדרות וורדפרס
+	register_rest_route('ps/v1', '/status', ['methods' => 'GET', 'permission_callback' => '__return_true', 'callback' => function () {
+		return new WP_REST_Response(['search_engines_allowed' => get_option('blog_public') === '1'], 200);
+	}]);
 });
 
 function ps_fail($code, $status = 400, $errors = []) {
