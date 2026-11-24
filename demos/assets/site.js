@@ -49,6 +49,17 @@
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && header.classList.contains('menu-open')) { setMenu(false); menuBtn.focus(); } });
   window.matchMedia('(min-width: 1181px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
 
+  /* כלל המדגש: כפתור טורקיז אחד בכל מסך. כפתור הכותרת נדלק רק כשאין כפתור טורקיז אחר בתצוגה */
+  const headCta = $('.header-cta');
+  if (headCta && 'IntersectionObserver' in window) {
+    const inView = new Set();
+    const mio = new IntersectionObserver((entries) => {
+      entries.forEach((en) => (en.isIntersecting ? inView.add(en.target) : inView.delete(en.target)));
+      headCta.classList.toggle('is-quiet', inView.size > 0);
+    });
+    $$('.btn-mint').forEach((b) => { if (b !== headCta) mio.observe(b); });
+  } else if (headCta) headCta.classList.remove('is-quiet');
+
   /* קישור השפה שומר על המקום בעמוד */
   $$('[data-lang-link]').forEach((a) => a.addEventListener('click', () => {
     if (location.hash) a.href = a.getAttribute('href').split('#')[0] + location.hash;
@@ -106,6 +117,20 @@
     setTimeout(() => $('#f-parent').focus({ preventScroll: true }), motionOn() ? 450 : 0);
   }));
   branchSelect.addEventListener('change', () => { markSelected(branchSelect.value); clearError(branchSelect); });
+
+  /* ---------- בדיקת גיל מהירה: תשובה מיידית, עוד לפני שמשאירים פרטים ---------- */
+  const fitBtns = $$('.fit-age');
+  const fitOut = $('[data-fit-result]');
+  fitBtns.forEach((b) => b.addEventListener('click', () => {
+    const n = Number(b.dataset.age);
+    const ok = n >= 8 && n <= 12;
+    fitBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    fitOut.textContent = ok ? fill(data.fit.ok, { n }) : (n < 8 ? data.fit.young : data.fit.old);
+    fitOut.classList.toggle('is-ok', ok);
+    fitOut.classList.toggle('is-out', !ok);
+    const age = $('#f-age');
+    if (ok && age) { age.value = n; clearError(age); }
+  }));
 
   /* ---------- הטופס ---------- */
   const form = $('#join-form');

@@ -9,7 +9,7 @@ import { PLANS, planConfig, planText, exclusiveText } from './plans.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '2';
+const VERSION = '3';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -59,7 +59,7 @@ function page(t, plan) {
   const pageData = {
     lang, dir: t.dir, plan, form: cfg.form, choirEmail: CHOIR_EMAIL, assetBase: A,
     js: t.js, player: t.player, music: { showAll: t.music.showAll, showLess: t.music.showLess, count: t.music.count },
-    motionOn: t.motionOn, motionOff: t.motionOff, cities: t.join.cities, chosen: t.join.chosen, choose: t.join.choose,
+    motionOn: t.motionOn, motionOff: t.motionOff, cities: t.join.cities, chosen: t.join.chosen, choose: t.join.choose, fit: t.join.fit,
     emailForm: P.emailForm, account: P.account, club: P.club, topics: P.topics,
     branches: branches.map((b) => ({ id: b.id, city: b.city, name: b[lang].name, reg: b[lang].reg })),
     videos: Object.fromEntries([...songs.map((s) => [s.id, s[lang]]), ...shorts.map((s) => [s.id, s[lang]])]),
@@ -153,7 +153,7 @@ ${sprite}
     <div class="header-actions">
       <a class="lang-link" href="${t.otherHref}" hreflang="${t.other}" lang="${t.other}" aria-label="${esc(t.langAria)}" data-lang-link>${t.langShort}</a>
       <button class="icon-btn motion-btn" type="button" data-motion-toggle aria-pressed="false" aria-label="${esc(t.motionOff)}" title="${esc(t.motionOff)}">${icon('motion')}</button>
-      <a class="btn btn-mint btn-sm header-cta" href="#join">${t.headerCta}</a>
+      <a class="btn btn-mint btn-sm header-cta is-quiet" href="#join">${t.headerCta}</a>
       <button class="icon-btn menu-btn" type="button" aria-controls="main-nav" aria-expanded="false" data-menu-toggle><span class="sr">${t.menu}</span>${icon('menu', 'ico-menu')}${icon('close', 'ico-close')}</button>
     </div>
   </div>
@@ -208,6 +208,12 @@ ${sprite}
           <ol class="stepper" aria-label="${lang === 'he' ? 'שלבי ההצטרפות' : 'How to join'}">
             ${t.join.steps.map((s, i) => `<li${i === 0 ? ' class="is-current"' : ''}><span class="step-num">${i + 1}</span>${esc(s)}</li>`).join('\n            ')}
           </ol>
+        </div>
+
+        <div class="fit" role="group" aria-labelledby="fit-q">
+          <p class="fit-q" id="fit-q"><b>${esc(t.join.fit.q)}</b> <span>${esc(t.join.fit.note)}</span></p>
+          <div class="fit-ages">${[7, 8, 9, 10, 11, 12, 13].map((n) => `<button type="button" class="chip fit-age" data-age="${n}" aria-pressed="false" aria-label="${esc(t.join.fit.label)}: ${n === 13 ? t.join.fit.older : n}"><bdi dir="ltr">${n === 13 ? t.join.fit.older : n}</bdi></button>`).join('')}</div>
+          <p class="fit-result" data-fit-result aria-live="polite"></p>
         </div>
 
         <div class="city-filter" role="group" aria-label="${esc(t.join.filterLabel)}">
@@ -321,8 +327,8 @@ ${sprite}
 
   <section class="why" id="why" aria-labelledby="why-title">
     <div class="wrap">
-      <p class="kicker" data-reveal>${esc(t.why.kicker)}</p>
-      <h2 id="why-title" data-reveal>${esc(t.why.title)}</h2>
+      <p class="kicker">${esc(t.why.kicker)}</p>
+      <h2 id="why-title">${esc(t.why.title)}</h2>
       <ul class="why-grid">
         ${t.why.items.map(([h, p], i) => `<li class="why-card" data-reveal style="--d:${i * 90}ms"><span class="why-ico">${icon(['heart', 'wave', 'mic', 'book'][i])}</span><h3>${esc(h)}</h3><p>${esc(p)}</p></li>`).join('\n        ')}
       </ul>
@@ -335,9 +341,9 @@ ${sprite}
   <section class="program" id="program" aria-labelledby="program-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker" data-reveal>${esc(t.program.kicker)}</p>
-        <h2 id="program-title" data-reveal>${esc(t.program.title)}</h2>
-        <p class="section-lead" data-reveal>${esc(t.program.lead)}</p>
+        <p class="kicker">${esc(t.program.kicker)}</p>
+        <h2 id="program-title">${esc(t.program.title)}</h2>
+        <p class="section-lead">${esc(t.program.lead)}</p>
       </div>
       <div class="journey" data-journey>
         <svg class="journey-wave" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true">
@@ -360,9 +366,9 @@ ${sprite}
     <div class="wrap">
       <div class="section-head section-head-row">
         <div>
-          <p class="kicker" data-reveal>${esc(t.music.kicker)}</p>
-          <h2 id="music-title" data-reveal>${esc(t.music.title)}</h2>
-          <p class="section-lead" data-reveal>${esc(cfg.tools ? t.music.lead : t.music.lead.split('.')[0] + '.')}</p>
+          <p class="kicker">${esc(t.music.kicker)}</p>
+          <h2 id="music-title">${esc(t.music.title)}</h2>
+          <p class="section-lead">${esc(cfg.tools ? t.music.lead : t.music.lead.split('.')[0] + '.')}</p>
         </div>
         <a class="text-link" href="${CHANNEL_URL}" target="_blank" rel="noopener">${icon('youtube')}<span>${esc(t.music.channel)}</span></a>
       </div>
@@ -388,8 +394,8 @@ ${cfg.stage ? `
   <section class="stage" id="stage" aria-labelledby="stage-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker" data-reveal>${esc(t.stage.kicker)}</p>
-        <h2 id="stage-title" data-reveal>${esc(t.stage.title)}</h2>
+        <p class="kicker">${esc(t.stage.kicker)}</p>
+        <h2 id="stage-title">${esc(t.stage.title)}</h2>
       </div>
       <div class="stage-grid">
         <article class="upcoming" data-reveal>
@@ -404,7 +410,7 @@ ${cfg.stage ? `
           </ul>
         </div>
       </div>
-      <div class="booking" data-reveal>
+      <div class="booking">
         <div><h3>${esc(t.stage.bookingTitle)}</h3><p>${esc(t.stage.bookingText)}</p></div>
         <a class="btn btn-outline" href="mailto:${CHOIR_EMAIL}?subject=${encodeURIComponent(t.stage.bookingSubject)}">${icon('mail')}${esc(t.stage.bookingCta)}</a>
       </div>
@@ -422,15 +428,15 @@ ${cfg.stage ? `
         </div>
       </div>
       <div class="mk-copy">
-        <p class="kicker" data-reveal>${esc(t.makhalolam.kicker)}</p>
-        <h2 id="mk-title" data-reveal>${esc(t.makhalolam.title)} <span class="h2-sub">${esc(t.makhalolam.subtitle)}</span></h2>
-        <p data-reveal>${esc(t.makhalolam.text)}</p>
-        <ul class="ticks" data-reveal>${t.makhalolam.points.map((p) => `<li>${icon('check')}${esc(p)}</li>`).join('')}</ul>
+        <p class="kicker">${esc(t.makhalolam.kicker)}</p>
+        <h2 id="mk-title">${esc(t.makhalolam.title)} <span class="h2-sub">${esc(t.makhalolam.subtitle)}</span></h2>
+        <p>${esc(t.makhalolam.text)}</p>
+        <ul class="ticks">${t.makhalolam.points.map((p) => `<li>${icon('check')}${esc(p)}</li>`).join('')}</ul>
         <div class="mk-videos" data-reveal>
           <button class="mk-video" type="button" data-play="n6tLDS_ioYk"><img src="${A}img/covers/n6tLDS_ioYk-s.webp" alt="" width="360" height="203" loading="lazy" decoding="async"><span>${icon('play')}${esc(t.makhalolam.videoMain)}</span></button>
           <button class="mk-video" type="button" data-play="eSJg_mli2y8"><img src="${A}img/covers/eSJg_mli2y8-s.webp" alt="" width="360" height="203" loading="lazy" decoding="async"><span>${icon('play')}${esc(t.makhalolam.videoPromo)}</span></button>
         </div>
-        <a class="btn btn-outline" data-reveal href="mailto:${CHOIR_EMAIL}?subject=${encodeURIComponent(t.makhalolam.subject)}">${icon('mail')}${esc(t.makhalolam.cta)}</a>
+        <a class="btn btn-outline" href="mailto:${CHOIR_EMAIL}?subject=${encodeURIComponent(t.makhalolam.subject)}">${icon('mail')}${esc(t.makhalolam.cta)}</a>
       </div>
     </div>
   </section>
@@ -439,9 +445,9 @@ ${cfg.behind ? `
     <div class="wrap">
       <div class="excl-head">
         <p class="excl-badge">${icon('star')}${esc(X.badge)}</p>
-        <p class="kicker" data-reveal>${esc(X.kicker)}</p>
-        <h2 id="behind-title" data-reveal>${esc(X.title)}</h2>
-        <p class="section-lead" data-reveal>${esc(X.lead)}</p>
+        <p class="kicker">${esc(X.kicker)}</p>
+        <h2 id="behind-title">${esc(X.title)}</h2>
+        <p class="section-lead">${esc(X.lead)}</p>
       </div>
       <ul class="excl-grid">
         ${X.items.map((it, i) => {
@@ -472,9 +478,9 @@ ${cfg.club ? `
   <section class="club" id="club" aria-labelledby="club-title">
     <div class="wrap club-grid">
       <div class="club-copy">
-        <p class="kicker" data-reveal>${esc(P.club.kicker)}</p>
-        <h2 id="club-title" data-reveal>${esc(P.club.title)}</h2>
-        <p class="section-lead" data-reveal>${esc(P.club.lead)}</p>
+        <p class="kicker">${esc(P.club.kicker)}</p>
+        <h2 id="club-title">${esc(P.club.title)}</h2>
+        <p class="section-lead">${esc(P.club.lead)}</p>
         <div class="club-bells" aria-hidden="true">${Object.values(P.topics).map((v, i) => `<span class="bell" style="--i:${i}">${icon('bell')}${esc(v)}</span>`).join('')}</div>
       </div>
       <div class="club-card">
@@ -510,10 +516,10 @@ ${cfg.club ? `
     <div class="wrap about-grid">
       <div class="about-logo" data-reveal><img src="${A}img/logo-full.webp" alt="${esc(t.about.logoAlt)}" width="720" height="508" loading="lazy" decoding="async"></div>
       <div class="about-copy">
-        <p class="kicker" data-reveal>${esc(t.about.kicker)}</p>
-        <h2 id="about-title" data-reveal>${esc(t.about.title)}</h2>
-        ${t.about.paras.map((p) => `<p data-reveal>${esc(p)}</p>`).join('\n        ')}
-        <p class="conductor" data-reveal><b>${esc(t.about.conductor)}</b><span>${esc(t.about.conductorRole)}</span></p>
+        <p class="kicker">${esc(t.about.kicker)}</p>
+        <h2 id="about-title">${esc(t.about.title)}</h2>
+        ${t.about.paras.map((p) => `<p>${esc(p)}</p>`).join('\n        ')}
+        <p class="conductor"><b>${esc(t.about.conductor)}</b><span>${esc(t.about.conductorRole)}</span></p>
       </div>
     </div>
     <div class="wrap">
@@ -525,7 +531,7 @@ ${cfg.club ? `
   </section>
 
   <section class="final" aria-labelledby="final-title">
-    <div class="wrap final-in" data-reveal>
+    <div class="wrap final-in">
       <h2 id="final-title">${esc(t.final.title)}</h2>
       <p>${esc(t.final.text)}</p>
       <a class="btn btn-mint btn-lg" href="#join">${esc(t.final.cta)}${icon('arrow', 'ico-dir')}</a>

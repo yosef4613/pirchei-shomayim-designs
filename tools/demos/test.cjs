@@ -68,6 +68,12 @@ async function fillJoin(page, lang, branch, name) {
           assert.strictEqual(await page.locator('#f-account').count(), plan === 3 ? 1 : 0);
           assert.strictEqual(await page.locator('.plan-switch a[aria-current="page"]').textContent(), String(plan));
         });
+        await t(`${L} one lit registration button per screen, text never waits (rules 2+4)`, async () => {
+          const lit = await page.$$eval('.btn-mint', (bs) => bs.filter((b) => { const r = b.getBoundingClientRect(); return r.width && r.bottom > 0 && r.top < innerHeight && getComputedStyle(b).display !== 'none' && !b.classList.contains('is-quiet'); }).length);
+          assert.strictEqual(lit, 1);
+          assert.strictEqual(await page.locator('h2[data-reveal], p[data-reveal], .btn[data-reveal]').count(), 0);
+          assert.ok(await page.locator('[data-motion-toggle]').isVisible(), 'motion off-switch must be reachable');
+        });
         await t(`${L} one button per class card`, async () => {
           const counts = await page.$$eval('.branch', (cards) => cards.map((c) => c.querySelectorAll('a, button').length));
           assert.deepStrictEqual(counts, [1, 1, 1, 1]);
@@ -82,6 +88,15 @@ async function fillJoin(page, lang, branch, name) {
           await page.selectOption('#f-branch', '');
           await page.click('#join-form button[type="submit"]');
           assert.strictEqual(await page.locator('#join-form [aria-invalid="true"]').count(), 9);
+        });
+        await t(`${L} age check answers at once and fills the age (rule 5)`, async () => {
+          await page.click('.fit-age[data-age="10"]');
+          assert.ok((await page.textContent('[data-fit-result]')).includes('10'));
+          assert.strictEqual(await page.inputValue('#f-age'), '10');
+          assert.strictEqual(await page.getAttribute('#f-age', 'aria-invalid'), null);
+          await page.click('.fit-age[data-age="7"]');
+          assert.ok(await page.locator('[data-fit-result].is-out').isVisible());
+          assert.strictEqual(await page.inputValue('#f-age'), '10', 'out-of-range age must not overwrite the form');
         });
         const parent = lang === 'he' ? 'בדיקה הורה' : 'Test Parent';
         if (plan === 1) {

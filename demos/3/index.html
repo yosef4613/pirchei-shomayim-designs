@@ -21,9 +21,9 @@
   <link rel="preload" href="../assets/fonts/heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/img/stage/hero-1.webp" as="image" media="(min-width: 721px)" fetchpriority="high">
   <link rel="preload" href="../assets/img/stage/hero-1-m.webp" as="image" media="(max-width: 720px)" fetchpriority="high">
-  <link rel="stylesheet" href="../assets/site.css?v=2">
+  <link rel="stylesheet" href="../assets/site.css?v=3">
   <script>document.documentElement.classList.add('js');try{var m=localStorage.getItem('ps-motion');if(m==='reduce'||(!m&&matchMedia('(prefers-reduced-motion: reduce)').matches))document.documentElement.dataset.motion='reduce'}catch(e){if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.dataset.motion='reduce'}</script>
-  <script defer src="../assets/site.js?v=2"></script>
+  <script defer src="../assets/site.js?v=3"></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -73,7 +73,7 @@
     <div class="header-actions">
       <a class="lang-link" href="en/" hreflang="en" lang="en" aria-label="Switch to English" data-lang-link>EN</a>
       <button class="icon-btn motion-btn" type="button" data-motion-toggle aria-pressed="false" aria-label="עצירת אנימציות" title="עצירת אנימציות"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-motion"/></svg></button>
-      <a class="btn btn-mint btn-sm header-cta" href="#join">השאירו פרטים</a>
+      <a class="btn btn-mint btn-sm header-cta is-quiet" href="#join">השאירו פרטים</a>
       <button class="icon-btn menu-btn" type="button" aria-controls="main-nav" aria-expanded="false" data-menu-toggle><span class="sr">תפריט</span><svg class="ico ico-menu" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg><svg class="ico ico-close" aria-hidden="true" focusable="false"><use href="#i-close"/></svg></button>
     </div>
   </div>
@@ -132,6 +132,12 @@
             <li><span class="step-num">2</span>משאירים פרטים</li>
             <li><span class="step-num">3</span>מתאמים מבדק</li>
           </ol>
+        </div>
+
+        <div class="fit" role="group" aria-labelledby="fit-q">
+          <p class="fit-q" id="fit-q"><b>בן כמה הבן?</b> <span>בדיקה מהירה, בלי להשאיר פרטים</span></p>
+          <div class="fit-ages"><button type="button" class="chip fit-age" data-age="7" aria-pressed="false" aria-label="גיל הבן: 7"><bdi dir="ltr">7</bdi></button><button type="button" class="chip fit-age" data-age="8" aria-pressed="false" aria-label="גיל הבן: 8"><bdi dir="ltr">8</bdi></button><button type="button" class="chip fit-age" data-age="9" aria-pressed="false" aria-label="גיל הבן: 9"><bdi dir="ltr">9</bdi></button><button type="button" class="chip fit-age" data-age="10" aria-pressed="false" aria-label="גיל הבן: 10"><bdi dir="ltr">10</bdi></button><button type="button" class="chip fit-age" data-age="11" aria-pressed="false" aria-label="גיל הבן: 11"><bdi dir="ltr">11</bdi></button><button type="button" class="chip fit-age" data-age="12" aria-pressed="false" aria-label="גיל הבן: 12"><bdi dir="ltr">12</bdi></button><button type="button" class="chip fit-age" data-age="13" aria-pressed="false" aria-label="גיל הבן: 13+"><bdi dir="ltr">13+</bdi></button></div>
+          <p class="fit-result" data-fit-result aria-live="polite"></p>
         </div>
 
         <div class="city-filter" role="group" aria-label="סינון לפי עיר">
@@ -280,8 +286,8 @@
 
   <section class="why" id="why" aria-labelledby="why-title">
     <div class="wrap">
-      <p class="kicker" data-reveal>למה פרחי שמיים</p>
-      <h2 id="why-title" data-reveal>מקהלה שמלמדת באמת לשיר</h2>
+      <p class="kicker">למה פרחי שמיים</p>
+      <h2 id="why-title">מקהלה שמלמדת באמת לשיר</h2>
       <ul class="why-grid">
         <li class="why-card" data-reveal style="--d:0ms"><span class="why-ico"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-heart"/></svg></span><h3>יחס אישי לכל ילד</h3><p>כל ילד מקבל הקשבה, הכוונה ומקום משלו בתוך המקהלה — ויוצא עם ביטחון בכישרון שלו.</p></li>
         <li class="why-card" data-reveal style="--d:90ms"><span class="why-ico"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-wave"/></svg></span><h3>פיתוח קול מקצועי</h3><p>עבודה קולית שיטתית בשיטתו של משה בערק: נשימה, טכניקה וביטחון בשירה.</p></li>
@@ -300,9 +306,9 @@
   <section class="program" id="program" aria-labelledby="program-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker" data-reveal>מה לומדים בחוג</p>
-        <h2 id="program-title" data-reveal>מהצליל הראשון — ועד השיר הגמור</h2>
-        <p class="section-lead" data-reveal>שנה בחוג היא מסע. כל שלב בונה את הביטחון לשלב הבא.</p>
+        <p class="kicker">מה לומדים בחוג</p>
+        <h2 id="program-title">מהצליל הראשון — ועד השיר הגמור</h2>
+        <p class="section-lead">שנה בחוג היא מסע. כל שלב בונה את הביטחון לשלב הבא.</p>
       </div>
       <div class="journey" data-journey>
         <svg class="journey-wave" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true">
@@ -349,9 +355,9 @@
     <div class="wrap">
       <div class="section-head section-head-row">
         <div>
-          <p class="kicker" data-reveal>השירים שלנו</p>
-          <h2 id="music-title" data-reveal>האזינו למקהלה</h2>
-          <p class="section-lead" data-reveal>קליפים, הופעות ומחרוזות מהערוץ הרשמי. שיר חדש שעולה לפלייליסט מופיע כאן אוטומטית.</p>
+          <p class="kicker">השירים שלנו</p>
+          <h2 id="music-title">האזינו למקהלה</h2>
+          <p class="section-lead">קליפים, הופעות ומחרוזות מהערוץ הרשמי. שיר חדש שעולה לפלייליסט מופיע כאן אוטומטית.</p>
         </div>
         <a class="text-link" href="https://www.youtube.com/@-pircheishomayimboyschoir7232" target="_blank" rel="noopener"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-youtube"/></svg><span>כל הסרטונים בערוץ</span></a>
       </div>
@@ -425,8 +431,8 @@
   <section class="stage" id="stage" aria-labelledby="stage-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker" data-reveal>על הבמה</p>
-        <h2 id="stage-title" data-reveal>רגעים מהבמה, שבונים ביטחון ומרגשים את הקהל</h2>
+        <p class="kicker">על הבמה</p>
+        <h2 id="stage-title">רגעים מהבמה, שבונים ביטחון ומרגשים את הקהל</h2>
       </div>
       <div class="stage-grid">
         <article class="upcoming" data-reveal>
@@ -443,7 +449,7 @@
           </ul>
         </div>
       </div>
-      <div class="booking" data-reveal>
+      <div class="booking">
         <div><h3>מקהלה לאירוע או למופע קהילתי?</h3><p>ספרו לנו על האירוע במייל, ונחזור אליכם עם הצעה.</p></div>
         <a class="btn btn-outline" href="mailto:mordi.gordon@gmail.com?subject=%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%94%D7%96%D7%9E%D7%A0%D7%AA%20%D7%94%D7%95%D7%A4%D7%A2%D7%94%20%E2%80%93%20%D7%9E%D7%A7%D7%94%D7%9C%D7%AA%20%D7%A4%D7%A8%D7%97%D7%99%20%D7%A9%D7%9E%D7%99%D7%99%D7%9D"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-mail"/></svg>בקשה להזמנת הופעה</a>
       </div>
@@ -461,15 +467,15 @@
         </div>
       </div>
       <div class="mk-copy">
-        <p class="kicker" data-reveal>לקהילות, למתנ״סים ולעיריות</p>
-        <h2 id="mk-title" data-reveal>מקהלולם <span class="h2-sub">מקהלה מלמדת קהל</span></h2>
-        <p data-reveal>מופע שבו הקהל הופך לחלק מהמקהלה. המקהלה והמנצח מלמדים את הקהל את התפקידים, ובסוף כולם שרים יחד. חוויה קהילתית, חינוכית ומוזיקלית — שמתאימה במיוחד למתנ״סים ולאירועי קהילה.</p>
-        <ul class="ticks" data-reveal><li><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-check"/></svg>הקהל לא רק צופה — הוא שר</li><li><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-check"/></svg>מתאים לאולמות ולמתנ״סים</li><li><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-check"/></svg>חוויה משותפת לכל המשפחה</li></ul>
+        <p class="kicker">לקהילות, למתנ״סים ולעיריות</p>
+        <h2 id="mk-title">מקהלולם <span class="h2-sub">מקהלה מלמדת קהל</span></h2>
+        <p>מופע שבו הקהל הופך לחלק מהמקהלה. המקהלה והמנצח מלמדים את הקהל את התפקידים, ובסוף כולם שרים יחד. חוויה קהילתית, חינוכית ומוזיקלית — שמתאימה במיוחד למתנ״סים ולאירועי קהילה.</p>
+        <ul class="ticks"><li><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-check"/></svg>הקהל לא רק צופה — הוא שר</li><li><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-check"/></svg>מתאים לאולמות ולמתנ״סים</li><li><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-check"/></svg>חוויה משותפת לכל המשפחה</li></ul>
         <div class="mk-videos" data-reveal>
           <button class="mk-video" type="button" data-play="n6tLDS_ioYk"><img src="../assets/img/covers/n6tLDS_ioYk-s.webp" alt="" width="360" height="203" loading="lazy" decoding="async"><span><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-play"/></svg>מקהלולם · שמע קולינו</span></button>
           <button class="mk-video" type="button" data-play="eSJg_mli2y8"><img src="../assets/img/covers/eSJg_mli2y8-s.webp" alt="" width="360" height="203" loading="lazy" decoding="async"><span><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-play"/></svg>מקהלולם · הסרטון הראשון</span></button>
         </div>
-        <a class="btn btn-outline" data-reveal href="mailto:mordi.gordon@gmail.com?subject=%D7%9E%D7%A7%D7%94%D7%9C%D7%95%D7%9C%D7%9D%20%D7%9C%D7%A7%D7%94%D7%99%D7%9C%D7%94%20%D7%A9%D7%9C%D7%A0%D7%95%20%E2%80%93%20%D7%A4%D7%A0%D7%99%D7%99%D7%94%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-mail"/></svg>הזמנת מקהלולם לקהילה שלכם</a>
+        <a class="btn btn-outline" href="mailto:mordi.gordon@gmail.com?subject=%D7%9E%D7%A7%D7%94%D7%9C%D7%95%D7%9C%D7%9D%20%D7%9C%D7%A7%D7%94%D7%99%D7%9C%D7%94%20%D7%A9%D7%9C%D7%A0%D7%95%20%E2%80%93%20%D7%A4%D7%A0%D7%99%D7%99%D7%94%20%D7%9E%D7%94%D7%90%D7%AA%D7%A8"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-mail"/></svg>הזמנת מקהלולם לקהילה שלכם</a>
       </div>
     </div>
   </section>
@@ -478,9 +484,9 @@
     <div class="wrap">
       <div class="excl-head">
         <p class="excl-badge"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-star"/></svg>רק באתר</p>
-        <p class="kicker" data-reveal>מאחורי הקולות · רק באתר</p>
-        <h2 id="behind-title" data-reveal>מה שלא תמצאו ביוטיוב</h2>
-        <p class="section-lead" data-reveal>תיעוד מהחזרות ומהאולפן, הסברים של ר׳ מרדכי על העבודה הקולית, וטעימות מהשיר הבא — לפני כולם, ורק כאן באתר.</p>
+        <p class="kicker">מאחורי הקולות · רק באתר</p>
+        <h2 id="behind-title">מה שלא תמצאו ביוטיוב</h2>
+        <p class="section-lead">תיעוד מהחזרות ומהאולפן, הסברים של ר׳ מרדכי על העבודה הקולית, וטעימות מהשיר הבא — לפני כולם, ורק כאן באתר.</p>
       </div>
       <ul class="excl-grid">
         <li class="excl-card" data-reveal style="--d:0ms">
@@ -539,9 +545,9 @@
   <section class="club" id="club" aria-labelledby="club-title">
     <div class="wrap club-grid">
       <div class="club-copy">
-        <p class="kicker" data-reveal>מועדון העדכונים</p>
-        <h2 id="club-title" data-reveal>שיר חדש? חוג שנפתח? הופעה? תדעו ראשונים.</h2>
-        <p class="section-lead" data-reveal>מצטרפים בחינם, בוחרים מה מעניין אתכם, ומקבלים עדכון קצר במייל. אפשר להסיר בכל עת.</p>
+        <p class="kicker">מועדון העדכונים</p>
+        <h2 id="club-title">שיר חדש? חוג שנפתח? הופעה? תדעו ראשונים.</h2>
+        <p class="section-lead">מצטרפים בחינם, בוחרים מה מעניין אתכם, ומקבלים עדכון קצר במייל. אפשר להסיר בכל עת.</p>
         <div class="club-bells" aria-hidden="true"><span class="bell" style="--i:0"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-bell"/></svg>שירים חדשים ביוטיוב</span><span class="bell" style="--i:1"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-bell"/></svg>חוגים חדשים והרשמה</span><span class="bell" style="--i:2"><svg class="ico " aria-hidden="true" focusable="false"><use href="#i-bell"/></svg>הופעות והרשמה להופעות</span></div>
       </div>
       <div class="club-card">
@@ -577,11 +583,11 @@
     <div class="wrap about-grid">
       <div class="about-logo" data-reveal><img src="../assets/img/logo-full.webp" alt="לוגו מקהלת הילדים פרחי שמיים" width="720" height="508" loading="lazy" decoding="async"></div>
       <div class="about-copy">
-        <p class="kicker" data-reveal>בואו להכירנו מקרוב</p>
-        <h2 id="about-title" data-reveal>מקהלת פרחי שמיים</h2>
-        <p data-reveal>פרחי שמיים היא מקהלת ילדים וחוג מוזיקלי שפועל בכמה ערים בארץ. המטרה שלנו: לעודד ילדים מוזיקליים, לתת להם הרגשה טובה ולנסוך בהם ביטחון בכישרון שהקב״ה חנן אותם — כך שיתחזקו גם בלימודם בחיידר, ולא להפך.</p>
-        <p data-reveal>המקהלה מוציאה שירים וקליפים ומופיעה מעת לעת, והשירים יוצאים כדי שכולם יוכלו ליהנות ולהתחזק מהם בעבודת הבורא.</p>
-        <p class="conductor" data-reveal><b>ר׳ מרדכי גורדון</b><span>מנצח המקהלה, מלחין ומעבד קולי</span></p>
+        <p class="kicker">בואו להכירנו מקרוב</p>
+        <h2 id="about-title">מקהלת פרחי שמיים</h2>
+        <p>פרחי שמיים היא מקהלת ילדים וחוג מוזיקלי שפועל בכמה ערים בארץ. המטרה שלנו: לעודד ילדים מוזיקליים, לתת להם הרגשה טובה ולנסוך בהם ביטחון בכישרון שהקב״ה חנן אותם — כך שיתחזקו גם בלימודם בחיידר, ולא להפך.</p>
+        <p>המקהלה מוציאה שירים וקליפים ומופיעה מעת לעת, והשירים יוצאים כדי שכולם יוכלו ליהנות ולהתחזק מהם בעבודת הבורא.</p>
+        <p class="conductor"><b>ר׳ מרדכי גורדון</b><span>מנצח המקהלה, מלחין ומעבד קולי</span></p>
       </div>
     </div>
     <div class="wrap">
@@ -595,7 +601,7 @@
   </section>
 
   <section class="final" aria-labelledby="final-title">
-    <div class="wrap final-in" data-reveal>
+    <div class="wrap final-in">
       <h2 id="final-title">הקול שלו מחכה לבמה.</h2>
       <p>השאירו פרטים בדקה, ונחזור אליכם לתיאום מבדק התאמה.</p>
       <a class="btn btn-mint btn-lg" href="#join">מצאו חוג באזור שלכם<svg class="ico ico-dir" aria-hidden="true" focusable="false"><use href="#i-arrow"/></svg></a>
@@ -978,6 +984,6 @@
   </div>
 </div>
 
-<script type="application/json" id="page-data">{"lang":"he","dir":"rtl","plan":3,"form":"site","choirEmail":"mordi.gordon@gmail.com","assetBase":"../assets/","js":{"required":"שדה חובה","email":"כתובת המייל לא תקינה","phone":"מספר טלפון לא תקין","age":"גיל בין 5 ל־16","branch":"בחרו חוג","consent":"יש לאשר את הפנייה","summary":"יש לתקן {n} שדות לפני השליחה","successTitle":"תודה, {parent}! הפנייה התקבלה.","successText":"צוות המקהלה יחזור אליכם בימים הקרובים לגבי {child} וחוג {branch}.","emailLabel":"כך נראה מייל האישור שתקבלו","emailFrom":"מקהלת פרחי שמיים","emailSubject":"קיבלנו את הפנייה שלכם · מקהלת פרחי שמיים","emailLines":["שלום {parent},","תודה על הפנייה לגבי {child} לחוג {branch}.","צוות המקהלה יחזור אליכם בימים הקרובים לתיאום מבדק התאמה קצר.","אחרי המבדק: {reg}.","מחכים לשמוע את הקול שלו!","צוות מקהלת פרחי שמיים"],"toAdmin":"צפייה בפנייה באזור הניהול","again":"פנייה נוספת","branchFormat":"{name} · {city}"},"player":{"label":"נגן המקהלה","close":"סגירת הנגן","prev":"השיר הקודם","next":"השיר הבא","youtube":"לצפייה ביוטיוב","note":"אם הנגן לא נטען אצלכם, אפשר לצפות ישירות ביוטיוב."},"music":{"showAll":"הצגת כל השירים","showLess":"הצגת פחות","count":"{n} שירים"},"motionOn":"הפעלת אנימציות","motionOff":"עצירת אנימציות","cities":{"jerusalem":"ירושלים","beit-shemesh":"בית שמש"},"chosen":"החוג נבחר","choose":"לחוג הזה","emailForm":{"submit":"שליחה במייל","privacy":"הפרטים נשלחים מהמייל שלכם ישירות למקהלה.","demoNote":"במסלול הזה הטופס פותח את תוכנת המייל עם הודעה מוכנה. אין שמירה באתר ואין לוח ניהול.","next":["ההודעה יוצאת מהמייל שלכם ישירות למקהלה.","צוות המקהלה חוזר אליכם לתיאום מבדק התאמה קצר.","אחרי המבדק מקבלים הנחיות לרישום הרשמי בחוג."],"successTitle":"ההודעה מוכנה לשליחה","successText":"תוכנת המייל נפתחה עם כל הפרטים. נשאר רק ללחוץ ״שליחה״.","reopen":"לא נפתח? פתחו את ההודעה שוב","subject":"פנייה לחוג {branch} – {child}","labels":{"parent":"שם ההורה","phone":"טלפון","email":"מייל","child":"שם הילד","age":"גיל","cheder":"חיידר","grade":"כיתה","notes":"הערות"},"intro":"שלום, אשמח לפרטים על חוג המקהלה:"},"account":{"legend":"חשבון באתר ועדכונים (רשות)","optIn":"פתחו לי חשבון באתר ושלחו לי עדכונים במייל","hint":"אותה כתובת מייל. אפשר לשנות או להסיר בכל עת.","successExtra":"שלחנו גם קישור לאישור החשבון והעדכונים שבחרתם.","confirm":"אישור הכתובת"},"club":{"nav":"עדכונים","kicker":"מועדון העדכונים","title":"שיר חדש? חוג שנפתח? הופעה? תדעו ראשונים.","lead":"מצטרפים בחינם, בוחרים מה מעניין אתכם, ומקבלים עדכון קצר במייל. אפשר להסיר בכל עת.","name":"שם (רשות)","email":"מייל","topicsLabel":"על מה לעדכן אתכם?","consent":"אני מאשר/ת לקבל עדכונים במייל ממקהלת פרחי שמיים.","submit":"הצטרפות למועדון","errTopics":"בחרו לפחות נושא אחד","successTitle":"כמעט סיימנו!","successText":"שלחנו מייל ל־{email}. לחיצה על הקישור שבו תאשר את ההצטרפות.","emailSubject":"אישור ההצטרפות למועדון העדכונים · פרחי שמיים","emailLines":["שלום{name},","תודה שהצטרפתם למועדון העדכונים של מקהלת פרחי שמיים.","בחרתם לקבל: {topics}.","כדי להתחיל לקבל עדכונים, אשרו את הכתובת:"],"again":"הרשמה של כתובת נוספת","demoNote":"בהדגמה לא נשלח מייל. ההרשמה תופיע בלוח הניהול, בלשונית המנויים."},"topics":{"songs":"שירים חדשים ביוטיוב","classes":"חוגים חדשים והרשמה","shows":"הופעות והרשמה להופעות"},"branches":[{"id":"ramat-eshkol","city":"jerusalem","name":"רמת אשכול","reg":"הרישום נעשה ישירות מול צוות המקהלה"},{"id":"neve-yaakov","city":"jerusalem","name":"נווה יעקב","reg":"הרישום הרשמי נעשה במינהל הקהילתי נווה יעקב"},{"id":"ramah-a","city":"beit-shemesh","name":"רמה א׳","reg":"הרישום הרשמי נעשה במתנ״ס גוונים"},{"id":"ramah-d","city":"beit-shemesh","name":"רמה ד׳","reg":"הרישום הרשמי נעשה במרכז הקהילתי דורות"}],"videos":{"-4sE-rfQI1k":"אתה בחרתנו","rWHE6woblu4":"אור חדש","aFhQjhm1if8":"פתח ליבי","yjBQLelJDKw":"מחרוזת שמחת תורה","sAeFaXlxv0E":"מחרוזת שירי תשובה","n6tLDS_ioYk":"מקהלולם: שמע קולינו","eSJg_mli2y8":"מקהלולם — הסרטון הראשון","s_CNJzzsA8g":"כי הם חיינו","_owLJAU6yx8":"אם היו בני אדם","_eX_k4H5WHo":"אהבת תורה","Jboco7s9T2I":"שישו ושמחו","WJEaMpIPNWM":"בזכות התורה","NnokjYF8JvI":"בעבור אבותינו","y4BIVTB0MY4":"התנערי · בהופעה חיה","FzzkmO2WIhg":"ויהי זרעי","1k5nTf6ppAY":"מופע משותף · המופע המלא","YQ9De5UZt84":"נר לרגלי","tGtW5cxt5oY":"ויהי נועם","oUmK0zXEw2E":"שערי שמים","atwgGKj6Y9I":"ירא שמים","ajZDXwC5jBI":"לב טהור","zZWHpRHyAbs":"אנעים זמירות","7-AmDfqfrok":"המרחם","PHbWcgVHTSQ":"ירושלים תתן קולה · המופע המלא","XGaDjl3KRh0":"עוד ישבו · מהמופע","Y_ErdPnw5Kc":"על נהרות בבל · מהמופע","9--ZpQoS3AQ":"יבנה המקדש · מהמופע","-YVq0aOq93w":"תשאלו אותי · מהמופע","6Qws8NivelM":"אם אשכחך · מהמופע","um36ZZ_t4mo":"הוא יבנה · מהמופע","kwvhIhsS_xE":"אורו של עולם · מהמופע","-HOL1_oerL4":"הרים סביב לה · מהמופע","jtdnDpvR28Y":"השמים","SMaJPYSJYcw":"התעוררי · סולני המקהלה","WaYXAWNG8NU":"מופע קומזיץ · המופע המלא","Ut1gk8aJJNw":"צאצאינו","Sc-5oBrQUMM":"אל ינום שומריך","wXBTCtf1J2k":"הללו","lqDnD8YW_Tg":"מה גדלו","1Q4bhHmNr5E":"צבא השמים","YXJ0u05ttNE":"פותח","GHTjw3OqKjA":"יזכרם · סולו מהמופע","8Rqvt2fKKgg":"הזמנה למופע","msGYIMeWm7A":"בך בטחנו · מהבמה","f_hTQft3Iig":"כי לישועתך · מתוך המופע","XvpJspILYYo":"דואט סולנים מהמופע","GQssCbEjlEk":"בחזרות לקראת המופע","c0K4HqAjGaI":"חזרה פתוחה בפארק","ecYCW85qXEQ":"רגע לפני שעולים לבמה"},"adminHref":"admin/","vertical":["msGYIMeWm7A","f_hTQft3Iig","XvpJspILYYo","GQssCbEjlEk","c0K4HqAjGaI","ecYCW85qXEQ"]}</script>
+<script type="application/json" id="page-data">{"lang":"he","dir":"rtl","plan":3,"form":"site","choirEmail":"mordi.gordon@gmail.com","assetBase":"../assets/","js":{"required":"שדה חובה","email":"כתובת המייל לא תקינה","phone":"מספר טלפון לא תקין","age":"גיל בין 5 ל־16","branch":"בחרו חוג","consent":"יש לאשר את הפנייה","summary":"יש לתקן {n} שדות לפני השליחה","successTitle":"תודה, {parent}! הפנייה התקבלה.","successText":"צוות המקהלה יחזור אליכם בימים הקרובים לגבי {child} וחוג {branch}.","emailLabel":"כך נראה מייל האישור שתקבלו","emailFrom":"מקהלת פרחי שמיים","emailSubject":"קיבלנו את הפנייה שלכם · מקהלת פרחי שמיים","emailLines":["שלום {parent},","תודה על הפנייה לגבי {child} לחוג {branch}.","צוות המקהלה יחזור אליכם בימים הקרובים לתיאום מבדק התאמה קצר.","אחרי המבדק: {reg}.","מחכים לשמוע את הקול שלו!","צוות מקהלת פרחי שמיים"],"toAdmin":"צפייה בפנייה באזור הניהול","again":"פנייה נוספת","branchFormat":"{name} · {city}"},"player":{"label":"נגן המקהלה","close":"סגירת הנגן","prev":"השיר הקודם","next":"השיר הבא","youtube":"לצפייה ביוטיוב","note":"אם הנגן לא נטען אצלכם, אפשר לצפות ישירות ביוטיוב."},"music":{"showAll":"הצגת כל השירים","showLess":"הצגת פחות","count":"{n} שירים"},"motionOn":"הפעלת אנימציות","motionOff":"עצירת אנימציות","cities":{"jerusalem":"ירושלים","beit-shemesh":"בית שמש"},"chosen":"החוג נבחר","choose":"לחוג הזה","fit":{"q":"בן כמה הבן?","note":"בדיקה מהירה, בלי להשאיר פרטים","older":"13+","label":"גיל הבן","ok":"בגיל {n} הוא בדיוק בגיל החוגים. בחרו חוג קרוב, והגיל כבר ימולא בטופס.","young":"החוגים מיועדים לגילאי ⁦8–12⁩. אפשר להשאיר פרטים כבר עכשיו, וצוות המקהלה יחזור אליכם.","old":"החוגים מיועדים לגילאי ⁦8–12⁩. השאירו פרטים, וצוות המקהלה יבדוק איתכם מה מתאים."},"emailForm":{"submit":"שליחה במייל","privacy":"הפרטים נשלחים מהמייל שלכם ישירות למקהלה.","demoNote":"במסלול הזה הטופס פותח את תוכנת המייל עם הודעה מוכנה. אין שמירה באתר ואין לוח ניהול.","next":["ההודעה יוצאת מהמייל שלכם ישירות למקהלה.","צוות המקהלה חוזר אליכם לתיאום מבדק התאמה קצר.","אחרי המבדק מקבלים הנחיות לרישום הרשמי בחוג."],"successTitle":"ההודעה מוכנה לשליחה","successText":"תוכנת המייל נפתחה עם כל הפרטים. נשאר רק ללחוץ ״שליחה״.","reopen":"לא נפתח? פתחו את ההודעה שוב","subject":"פנייה לחוג {branch} – {child}","labels":{"parent":"שם ההורה","phone":"טלפון","email":"מייל","child":"שם הילד","age":"גיל","cheder":"חיידר","grade":"כיתה","notes":"הערות"},"intro":"שלום, אשמח לפרטים על חוג המקהלה:"},"account":{"legend":"חשבון באתר ועדכונים (רשות)","optIn":"פתחו לי חשבון באתר ושלחו לי עדכונים במייל","hint":"אותה כתובת מייל. אפשר לשנות או להסיר בכל עת.","successExtra":"שלחנו גם קישור לאישור החשבון והעדכונים שבחרתם.","confirm":"אישור הכתובת"},"club":{"nav":"עדכונים","kicker":"מועדון העדכונים","title":"שיר חדש? חוג שנפתח? הופעה? תדעו ראשונים.","lead":"מצטרפים בחינם, בוחרים מה מעניין אתכם, ומקבלים עדכון קצר במייל. אפשר להסיר בכל עת.","name":"שם (רשות)","email":"מייל","topicsLabel":"על מה לעדכן אתכם?","consent":"אני מאשר/ת לקבל עדכונים במייל ממקהלת פרחי שמיים.","submit":"הצטרפות למועדון","errTopics":"בחרו לפחות נושא אחד","successTitle":"כמעט סיימנו!","successText":"שלחנו מייל ל־{email}. לחיצה על הקישור שבו תאשר את ההצטרפות.","emailSubject":"אישור ההצטרפות למועדון העדכונים · פרחי שמיים","emailLines":["שלום{name},","תודה שהצטרפתם למועדון העדכונים של מקהלת פרחי שמיים.","בחרתם לקבל: {topics}.","כדי להתחיל לקבל עדכונים, אשרו את הכתובת:"],"again":"הרשמה של כתובת נוספת","demoNote":"בהדגמה לא נשלח מייל. ההרשמה תופיע בלוח הניהול, בלשונית המנויים."},"topics":{"songs":"שירים חדשים ביוטיוב","classes":"חוגים חדשים והרשמה","shows":"הופעות והרשמה להופעות"},"branches":[{"id":"ramat-eshkol","city":"jerusalem","name":"רמת אשכול","reg":"הרישום נעשה ישירות מול צוות המקהלה"},{"id":"neve-yaakov","city":"jerusalem","name":"נווה יעקב","reg":"הרישום הרשמי נעשה במינהל הקהילתי נווה יעקב"},{"id":"ramah-a","city":"beit-shemesh","name":"רמה א׳","reg":"הרישום הרשמי נעשה במתנ״ס גוונים"},{"id":"ramah-d","city":"beit-shemesh","name":"רמה ד׳","reg":"הרישום הרשמי נעשה במרכז הקהילתי דורות"}],"videos":{"-4sE-rfQI1k":"אתה בחרתנו","rWHE6woblu4":"אור חדש","aFhQjhm1if8":"פתח ליבי","yjBQLelJDKw":"מחרוזת שמחת תורה","sAeFaXlxv0E":"מחרוזת שירי תשובה","n6tLDS_ioYk":"מקהלולם: שמע קולינו","eSJg_mli2y8":"מקהלולם — הסרטון הראשון","s_CNJzzsA8g":"כי הם חיינו","_owLJAU6yx8":"אם היו בני אדם","_eX_k4H5WHo":"אהבת תורה","Jboco7s9T2I":"שישו ושמחו","WJEaMpIPNWM":"בזכות התורה","NnokjYF8JvI":"בעבור אבותינו","y4BIVTB0MY4":"התנערי · בהופעה חיה","FzzkmO2WIhg":"ויהי זרעי","1k5nTf6ppAY":"מופע משותף · המופע המלא","YQ9De5UZt84":"נר לרגלי","tGtW5cxt5oY":"ויהי נועם","oUmK0zXEw2E":"שערי שמים","atwgGKj6Y9I":"ירא שמים","ajZDXwC5jBI":"לב טהור","zZWHpRHyAbs":"אנעים זמירות","7-AmDfqfrok":"המרחם","PHbWcgVHTSQ":"ירושלים תתן קולה · המופע המלא","XGaDjl3KRh0":"עוד ישבו · מהמופע","Y_ErdPnw5Kc":"על נהרות בבל · מהמופע","9--ZpQoS3AQ":"יבנה המקדש · מהמופע","-YVq0aOq93w":"תשאלו אותי · מהמופע","6Qws8NivelM":"אם אשכחך · מהמופע","um36ZZ_t4mo":"הוא יבנה · מהמופע","kwvhIhsS_xE":"אורו של עולם · מהמופע","-HOL1_oerL4":"הרים סביב לה · מהמופע","jtdnDpvR28Y":"השמים","SMaJPYSJYcw":"התעוררי · סולני המקהלה","WaYXAWNG8NU":"מופע קומזיץ · המופע המלא","Ut1gk8aJJNw":"צאצאינו","Sc-5oBrQUMM":"אל ינום שומריך","wXBTCtf1J2k":"הללו","lqDnD8YW_Tg":"מה גדלו","1Q4bhHmNr5E":"צבא השמים","YXJ0u05ttNE":"פותח","GHTjw3OqKjA":"יזכרם · סולו מהמופע","8Rqvt2fKKgg":"הזמנה למופע","msGYIMeWm7A":"בך בטחנו · מהבמה","f_hTQft3Iig":"כי לישועתך · מתוך המופע","XvpJspILYYo":"דואט סולנים מהמופע","GQssCbEjlEk":"בחזרות לקראת המופע","c0K4HqAjGaI":"חזרה פתוחה בפארק","ecYCW85qXEQ":"רגע לפני שעולים לבמה"},"adminHref":"admin/","vertical":["msGYIMeWm7A","f_hTQft3Iig","XvpJspILYYo","GQssCbEjlEk","c0K4HqAjGaI","ecYCW85qXEQ"]}</script>
 </body>
 </html>
