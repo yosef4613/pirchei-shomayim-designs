@@ -23,6 +23,11 @@ async function scrollThrough(page) {
   await page.evaluate(async () => {
     for (let y = 0; y < document.documentElement.scrollHeight; y += Math.round(innerHeight * 0.7)) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 110)); }
     window.scrollTo(0, document.documentElement.scrollHeight); await new Promise((r) => setTimeout(r, 400));
+    // ממתינים (עד 4 שניות) שכל התמונות הנראות יסיימו להיטען, כדי שהבדיקה לא תיכשל על תזמון
+    const t0 = Date.now();
+    while (Date.now() - t0 < 4000 && [...document.images].some((i) => i.getAttribute('src') && i.offsetParent !== null && !i.complete)) {
+      await new Promise((r) => setTimeout(r, 150));
+    }
   });
 }
 async function fillJoin(page, lang, branch, name) {
@@ -193,12 +198,14 @@ async function fillJoin(page, lang, branch, name) {
           assert.deepStrictEqual(broken, []);
           await noOverflow(page, 'after scroll');
         });
-        if (dev === 'desktop' && plan !== 1) {
-          await t(`${L} behind-the-scenes strip moves sideways`, async () => {
-            const top = await page.locator('[data-strip]').evaluate((e) => e.getBoundingClientRect().top + scrollY);
-            await page.evaluate((y) => window.scrollTo(0, y + 600), top); await page.waitForTimeout(250);
-            const tx = parseFloat(await page.locator('.strip-track').evaluate((e) => e.style.getPropertyValue('--tx')));
-            assert.ok(lang === 'he' ? tx > 0 : tx < 0, 'tx ' + tx);
+        if (plan !== 1) {
+          await t(`${L} site-exclusive behind-the-scenes section is reachable from the menu`, async () => {
+            assert.strictEqual(await page.locator('.main-nav a.nav-excl[href="#behind"]').count(), 1);
+            assert.strictEqual(await page.locator('#behind .excl-card').count(), 4);
+            assert.ok((await page.textContent('#behind .excl-badge')).trim().length > 0);
+            assert.strictEqual(await page.locator('#behind .excl-lock').count(), plan === 3 ? 1 : 0);
+            if (plan === 3) assert.strictEqual(await page.getAttribute('#behind .excl-card.is-teaser a', 'href'), '#club');
+            assert.strictEqual(await page.locator('#behind .strip-short').count(), 5);
           });
         }
         if (dev === 'mobile') {

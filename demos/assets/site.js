@@ -47,7 +47,7 @@
   menuBtn.addEventListener('click', () => setMenu(!header.classList.contains('menu-open')));
   $$('.main-nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && header.classList.contains('menu-open')) { setMenu(false); menuBtn.focus(); } });
-  window.matchMedia('(min-width: 901px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+  window.matchMedia('(min-width: 1181px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
 
   /* קישור השפה שומר על המקום בעמוד */
   $$('[data-lang-link]').forEach((a) => a.addEventListener('click', () => {

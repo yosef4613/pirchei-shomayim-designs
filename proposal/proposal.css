@@ -370,3 +370,5 @@ td:nth-child(2) { white-space: nowrap; }
   .mail-templates { padding: 3mm; margin-top: 3mm; }
   .update-grid p, .template-grid p { font-size: 9pt; }
 }
+.host-costs h3 { margin-bottom: 12px; }
+.host-costs td small { color: var(--muted); }

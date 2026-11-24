@@ -114,3 +114,37 @@ export const planText = {
     hub: {}, adminLink: 'Sample admin area',
   },
 };
+
+// מדור ״מאחורי הקלעים — רק באתר״: תוכן בלעדי שלא עולה ליוטיוב
+export const exclusiveText = {
+  he: {
+    nav: 'רק באתר',
+    kicker: 'מאחורי הקולות · רק באתר',
+    title: 'מה שלא תמצאו ביוטיוב',
+    lead: 'תיעוד מהחזרות ומהאולפן, הסברים של ר׳ מרדכי על העבודה הקולית, וטעימות מהשיר הבא — לפני כולם, ורק כאן באתר.',
+    badge: 'רק באתר', soon: 'יעלה מחומרי המקהלה', members: 'לחברי המועדון', joinClub: 'הצטרפו למועדון כדי לצפות',
+    items: [
+      { type: 'מחזרה לבמה', title: 'איך נולד ״אתה בחרתנו״', text: 'הקלטה מהחזרה הראשונה לצד הביצוע הסופי — לשמוע איך הקולות נבנים לאורך העבודה.', img: 'FzzkmO2WIhg', icon: 'wave' },
+      { type: 'באולפן', title: 'בונים הרמוניה', text: 'ר׳ מרדכי מסביר איך כל קבוצה לומדת את התפקיד שלה, ואיך הכול מתחבר לצליל אחד.', img: 'tGtW5cxt5oY', icon: 'mic' },
+      { type: 'טעימה לפני כולם', title: '30 שניות מהשיר הבא', text: 'הצצה לשיר שעוד לא יצא — רק כאן, לפני שהוא עולה ליוטיוב.', img: '-4sE-rfQI1k', icon: 'star', teaser: true },
+      { type: 'יומן הפקה', title: 'פתח ליבי · מהכותל לבית המדרש', text: 'רגעים מהצילומים, וההחלטות שמאחורי כל סצנה — מספרים הילדים והצוות.', img: 'aFhQjhm1if8', icon: 'book' },
+    ],
+    fromChannel: 'ובינתיים, מהערוץ: רגעים מהבמה ומהחזרות',
+    note: 'בהדגמה המקום מוכן לתכנים. מרדכי מוסיף אותם מלוח הניהול, מסמן ״בלעדי לאתר״, והם מופיעים כאן בלבד.',
+  },
+  en: {
+    nav: 'Exclusive',
+    kicker: 'Behind the voices · only on this site',
+    title: 'What you won’t find on YouTube',
+    lead: 'Rehearsal and studio footage, R’ Mordechai explaining the vocal work, and previews of the next song — before anyone else, and only here.',
+    badge: 'Only here', soon: 'Coming from the choir', members: 'For club members', joinClub: 'Join the club to watch',
+    items: [
+      { type: 'From rehearsal to stage', title: 'How “Ata Bechartanu” was born', text: 'The first rehearsal recording next to the final performance — hear how the voices come together.', img: 'FzzkmO2WIhg', icon: 'wave' },
+      { type: 'In the studio', title: 'Building the harmony', text: 'R’ Mordechai explains how each group learns its part, and how it all becomes one sound.', img: 'tGtW5cxt5oY', icon: 'mic' },
+      { type: 'First listen', title: '30 seconds of the next song', text: 'A sneak peek at a song that isn’t out yet — only here, before it reaches YouTube.', img: '-4sE-rfQI1k', icon: 'star', teaser: true },
+      { type: 'Production diary', title: 'Pesach Libi · from the Kotel to the beis midrash', text: 'Moments from the shoot and the choices behind each scene — told by the boys and the team.', img: 'aFhQjhm1if8', icon: 'book' },
+    ],
+    fromChannel: 'Meanwhile, from the channel: moments on stage and in rehearsal',
+    note: 'In this demo the space is ready for content. Mordechai adds it from the admin area, marks it “site exclusive”, and it appears only here.',
+  },
+};

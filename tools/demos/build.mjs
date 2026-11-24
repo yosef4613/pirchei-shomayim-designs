@@ -4,7 +4,7 @@ import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dict, branches, songs, shorts, CHOIR_EMAIL, CHANNEL_URL } from './content.mjs';
-import { PLANS, planConfig, planText } from './plans.mjs';
+import { PLANS, planConfig, planText, exclusiveText } from './plans.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
@@ -67,12 +67,15 @@ function page(t, plan) {
     // סרטונים אנכיים (שורטס) נפתחים בנגן אנכי — גם מספריית השירים וגם מרצועת מאחורי הקלעים
     vertical: [...new Set([...songs.filter((s) => s.vertical).map((s) => s.id), ...shorts.map((s) => s.id)])],
   };
+  const X = exclusiveText[lang];
+  // ״מאחורי הקלעים״ מסומן בתפריט כתוכן שיש רק באתר
   const navItems = [['join', t.nav.classes], ['music', t.nav.music]]
     .concat(cfg.stage ? [['stage', t.nav.stage]] : [])
+    .concat(cfg.behind ? [['behind', lang === 'he' ? 'מאחורי הקלעים' : 'Behind the scenes', 'nav-excl']] : [])
     .concat([['makhalolam', t.nav.makhalolam]])
     .concat(cfg.club ? [['club', P.club.nav]] : [])
     .concat([['about', t.nav.about]]);
-  const navHtml = navItems.map(([id, label]) => `<li><a href="#${id}">${esc(label)}</a></li>`).join('\n        ');
+  const navHtml = navItems.map(([id, label, cls]) => `<li><a href="#${id}"${cls ? ` class="${cls}" title="${esc(X.badge)}"` : ''}>${esc(label)}</a></li>`).join('\n        ');
 
   // deferred=true: התמונה נטענת רק כשפותחים את ספריית השירים, כדי שהדף יישאר קל
   const songCard = (s, deferred = false) => `
@@ -432,21 +435,36 @@ ${cfg.stage ? `
     </div>
   </section>
 ${cfg.behind ? `
-  <section class="behind" id="behind" aria-labelledby="behind-title">
-    <div class="strip-outer" data-strip>
-      <div class="strip-sticky">
-        <div class="wrap"><div class="section-head">
-          <p class="kicker">${esc(t.behind.kicker)}</p>
-          <h2 id="behind-title">${esc(t.behind.title)}</h2>
-          <p class="section-lead">${esc(t.behind.lead)}</p>
-        </div></div>
-        <div class="strip-viewport">
-          <ul class="strip-track">
-            <li class="strip-item strip-exclusive"><span class="tag">${esc(t.behind.exclusiveTag)}</span><span class="excl-ico">${icon('mic')}</span><h3>${esc(t.behind.exclusiveTitle)}</h3><p>${esc(t.behind.exclusiveText)}</p></li>
-            ${shorts.map((s) => `<li class="strip-item strip-short"><button type="button" data-play="${s.id}"><img src="${A}img/shorts/${s.id}.webp" alt="" width="360" height="640" loading="lazy" decoding="async"><span class="short-cap">${icon('play')}${esc(s[lang])}</span></button></li>`).join('\n            ')}
-            ${t.behind.stories.map((s) => `<li class="strip-item strip-story"><img src="${A}img/covers/${s.img}.webp" alt="" width="640" height="360" loading="lazy" decoding="async"><div class="story-copy"><h3>${esc(s.title)}</h3><p>${esc(s.text)}</p><button type="button" class="text-link" data-play="${s.img}">${icon('play')}<span>${esc(t.behind.watch)}</span></button></div></li>`).join('\n            ')}
-          </ul>
-        </div>
+  <section class="exclusive" id="behind" aria-labelledby="behind-title">
+    <div class="wrap">
+      <div class="excl-head">
+        <p class="excl-badge">${icon('star')}${esc(X.badge)}</p>
+        <p class="kicker" data-reveal>${esc(X.kicker)}</p>
+        <h2 id="behind-title" data-reveal>${esc(X.title)}</h2>
+        <p class="section-lead" data-reveal>${esc(X.lead)}</p>
+      </div>
+      <ul class="excl-grid">
+        ${X.items.map((it, i) => {
+          const locked = it.teaser && cfg.club;
+          return `<li class="excl-card${it.teaser ? ' is-teaser' : ''}" data-reveal style="--d:${i * 80}ms">
+          <div class="excl-media"><img src="${A}img/covers/${it.img}.webp" alt="" width="640" height="360" loading="lazy" decoding="async"><span class="excl-tag">${esc(X.badge)}</span>${locked ? `<span class="excl-lock">${icon('bell')}${esc(X.members)}</span>` : ''}</div>
+          <div class="excl-body">
+            <p class="excl-type">${icon(it.icon)}${esc(it.type)}</p>
+            <h3>${esc(it.title)}</h3>
+            <p>${esc(it.text)}</p>
+            ${locked ? `<a class="text-link" href="#club">${esc(X.joinClub)}${icon('arrow', 'ico-dir')}</a>` : `<span class="soon-dark">${esc(X.soon)}</span>`}
+          </div>
+        </li>`;
+        }).join('\n        ')}
+      </ul>
+      <p class="excl-note">${esc(X.note)}</p>
+    </div>
+    <div class="channel-strip">
+      <div class="wrap"><h3 class="strip-title">${icon('youtube')}${esc(X.fromChannel)}</h3></div>
+      <div class="strip-viewport">
+        <ul class="strip-track">
+          ${shorts.map((s) => `<li class="strip-item strip-short"><button type="button" data-play="${s.id}"><img src="${A}img/shorts/${s.id}.webp" alt="" width="360" height="640" loading="lazy" decoding="async"><span class="short-cap">${icon('play')}${esc(s[lang])}</span></button></li>`).join('\n          ')}
+        </ul>
       </div>
     </div>
   </section>` : ''}
