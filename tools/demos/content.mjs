@@ -285,7 +285,7 @@ const he = {
   footer: {
     contact: 'יצירת קשר במייל', youtube: 'הערוץ ביוטיוב',
     access: 'הצהרת נגישות', privacy: 'מדיניות פרטיות',
-    rights: '© מקהלת פרחי שמיים', demo: 'הדגמה לאתר · התוכן והעיצוב להמחשה',
+    rights: '© מקהלת פרחי שמיים', demo: 'הדגמה לאתר · התוכן והעיצוב להמחשה', builtBy: 'עיצוב ובניית האתר:',
   },
 
   js: {
@@ -504,7 +504,7 @@ const en = {
   footer: {
     contact: 'Contact us by email', youtube: 'Our YouTube channel',
     access: 'Accessibility statement', privacy: 'Privacy policy',
-    rights: '© Pirchei Shomayim Boys’ Choir', demo: 'Website demo · content and design for illustration',
+    rights: '© Pirchei Shomayim Boys’ Choir', demo: 'Website demo · content and design for illustration', builtBy: 'Website design & build:',
   },
 
   js: {

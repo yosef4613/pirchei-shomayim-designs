@@ -9,11 +9,14 @@ import { PLANS, planConfig, planText, exclusiveText } from './plans.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '4';
+const VERSION = '5';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
 const LIVE_PLAN = 3;
+// מי בנה את האתר — מופיע בתחתית כל עמוד ובנתונים לגוגל
+const BUILDER = { name: 'YYG', url: 'https://yosef4613.github.io/pirchei-shomayim-designs/yyg/' };
+const credit = (t) => `<span class="footer-credit">${esc(t.footer.builtBy)} <a href="${BUILDER.url}" target="_blank" rel="noopener">${BUILDER.name}</a></span>`;
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const catShort = {
@@ -145,7 +148,7 @@ function page(t, plan, live = false) {
         knowsLanguage: ['he', 'en'],
         sameAs: [CHANNEL_URL],
       },
-      { '@type': 'WebSite', '@id': `${ROOTURL}#website`, url: ROOTURL, name: lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir', inLanguage: ['he', 'en'], publisher: { '@id': `${ROOTURL}#choir` } },
+      { '@type': 'WebSite', '@id': `${ROOTURL}#website`, url: ROOTURL, name: lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir', inLanguage: ['he', 'en'], publisher: { '@id': `${ROOTURL}#choir` }, creator: { '@type': 'Organization', name: BUILDER.name, url: BUILDER.url } },
       { '@type': 'WebPage', '@id': `${PAGEURL}#page`, url: PAGEURL, name: t.title, description: t.description, inLanguage: lang, isPartOf: { '@id': `${ROOTURL}#website` }, about: { '@id': `${ROOTURL}#choir` }, primaryImageOfPage: `${IMGURL}og.jpg` },
     ],
   }).replace(/</g, '\\u003c')}</script>
@@ -588,6 +591,7 @@ ${cfg.club ? `
     <a href="${live ? legal + '#accessibility' : '#top'}">${esc(t.footer.access)}</a>
     <a href="${legal}">${esc(t.footer.privacy)}</a>
     ${live ? '' : `<span class="footer-demo">${esc(t.footer.demo)}</span>`}
+    ${credit(t)}
   </div>
 </footer>
 
@@ -802,7 +806,7 @@ function simplePage(key, { title, description, path, robots, body }) {
     <a class="btn btn-ghost btn-sm" href="${home}">${esc(L.back)}</a>
   </div></header>
   <main class="wrap legal">${body}</main>
-  <footer class="wrap simple-foot"><span>${esc(t.footer.rights)}</span> · <a href="mailto:${CHOIR_EMAIL}">${CHOIR_EMAIL}</a></footer>
+  <footer class="wrap simple-foot"><span>${esc(t.footer.rights)}</span> · <a href="mailto:${CHOIR_EMAIL}">${CHOIR_EMAIL}</a>${credit(t)}</footer>
 </body>
 </html>`;
 }

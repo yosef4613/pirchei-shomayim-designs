@@ -801,3 +801,10 @@ button[aria-busy="true"] { opacity: .7; cursor: progress; }
 .nf { display: grid; justify-items: center; text-align: center; gap: 14px; padding-block: 40px; }
 .nf-code { font-size: clamp(5rem, 16vw, 9rem); font-weight: 800; line-height: 1; background: linear-gradient(100deg, var(--lilac), var(--purple-500)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .nf-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 10px; }
+
+/* ---------- מי בנה את האתר ---------- */
+.footer-credit { margin-inline-start: auto; color: var(--muted-2); }
+.footer-demo + .footer-credit { margin-inline-start: 0; }
+.footer-credit a { color: var(--lilac-2); font-weight: 700; text-decoration: none; }
+.footer-credit a:hover { color: #fff; text-decoration: underline; }
+.simple-foot { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
