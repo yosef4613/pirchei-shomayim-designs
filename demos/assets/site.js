@@ -424,7 +424,7 @@
   const titleEl = $('#player-title');
   const ytLink = $('[data-player-yt]', player);
   const bgImg = $('[data-player-bg]', player);
-  const shortIds = new Set($$('.strip-short [data-play]').map((b) => b.dataset.play));
+  const shortIds = new Set(data.vertical || []);
   let queue = []; let qi = 0; let lastFocus = null;
   const coverFor = (id) => (shortIds.has(id) ? `img/shorts/${id}.webp` : `img/covers/${id}.webp`);
   const assetBase = data.assetBase;

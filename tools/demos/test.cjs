@@ -128,8 +128,21 @@ async function fillJoin(page, lang, branch, name) {
             assert.strictEqual(await page.locator('.song:visible').count(), 1);
             await page.fill('#song-search', '');
             await page.click('[data-songs-more]');
-            assert.strictEqual(await page.locator('.song:visible').count(), 28);
+            // כל הסרטונים בערוץ, בלי הסרטון הכפול של ״פותח״
+            assert.strictEqual(await page.locator('.song:visible').count(), 49);
             await page.click('[data-songs-more]');
+          });
+          await t(`${L} short clips open in a visible vertical player`, async () => {
+            await page.click('[data-filter="short"]');
+            assert.strictEqual(await page.locator('.song:visible').count(), 6);
+            const btn = page.locator('.song:visible .song-btn').first();
+            await btn.scrollIntoViewIfNeeded(); await btn.click();
+            const box = await page.locator('#player .player-frame').boundingBox();
+            assert.ok(box && box.width > 150 && box.height > box.width, 'vertical frame box ' + JSON.stringify(box));
+            const ifr = await page.locator('#player iframe').boundingBox();
+            assert.ok(ifr && ifr.width > 150 && ifr.height > 250, 'iframe box ' + JSON.stringify(ifr));
+            await page.keyboard.press('Escape');
+            await page.click('[data-filter="all"]');
           });
         }
         if (plan === 3) {
@@ -156,6 +169,8 @@ async function fillJoin(page, lang, branch, name) {
           await btn.scrollIntoViewIfNeeded(); await btn.click();
           assert.ok(await page.locator('#player').isVisible());
           assert.ok((await page.getAttribute('#player iframe', 'src')).includes('youtube-nocookie.com/embed/'));
+          const fb = await page.locator('#player iframe').boundingBox();
+          assert.ok(fb && fb.width > 200 && fb.height > 100, 'landscape iframe box ' + JSON.stringify(fb));
           await page.keyboard.press('Escape');
           assert.ok(!(await page.locator('#player').isVisible()));
         });

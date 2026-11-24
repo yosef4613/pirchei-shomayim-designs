@@ -14,8 +14,8 @@ const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const catShort = {
-  he: { clip: 'קליפ', live: 'מהבמה', medley: 'מחרוזת · מופע', makhalolam: 'מקהלולם' },
-  en: { clip: 'Music video', live: 'Live', medley: 'Medley · concert', makhalolam: 'Makhalolam' },
+  he: { clip: 'קליפ', live: 'מהבמה', medley: 'מחרוזת · מופע', makhalolam: 'מקהלולם', short: 'קטע קצר' },
+  en: { clip: 'Music video', live: 'Live', medley: 'Medley · concert', makhalolam: 'Makhalolam', short: 'Short clip' },
 };
 const icon = (id, cls = '') => `<svg class="ico ${cls}" aria-hidden="true" focusable="false"><use href="#i-${id}"/></svg>`;
 
@@ -60,6 +60,8 @@ function page(t, plan) {
     branches: branches.map((b) => ({ id: b.id, city: b.city, name: b[lang].name, reg: b[lang].reg })),
     videos: Object.fromEntries([...songs.map((s) => [s.id, s[lang]]), ...shorts.map((s) => [s.id, s[lang]])]),
     adminHref: cfg.admin ? `${B}admin/` : '',
+    // סרטונים אנכיים (שורטס) נפתחים בנגן אנכי — גם מספריית השירים וגם מרצועת מאחורי הקלעים
+    vertical: [...new Set([...songs.filter((s) => s.vertical).map((s) => s.id), ...shorts.map((s) => s.id)])],
   };
   const navItems = [['join', t.nav.classes], ['music', t.nav.music]]
     .concat(cfg.stage ? [['stage', t.nav.stage]] : [])
