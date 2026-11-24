@@ -1,0 +1,483 @@
+/* פרחי שמיים · הדגמת מסלול 2 — התנהגות העמוד */
+(() => {
+  'use strict';
+  const doc = document.documentElement;
+  const data = JSON.parse(document.getElementById('page-data').textContent);
+  const T = data.js;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const fill = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => (o[k] != null ? o[k] : ''));
+  const motionOn = () => doc.dataset.motion !== 'reduce';
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+  };
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  /* ---------- הפחתת תנועה ---------- */
+  const motionBtn = $('[data-motion-toggle]');
+  const syncMotionBtn = () => {
+    if (!motionBtn) return;
+    const reduced = !motionOn();
+    motionBtn.setAttribute('aria-pressed', String(reduced));
+    const label = reduced ? data.motionOn : data.motionOff;
+    motionBtn.setAttribute('aria-label', label);
+    motionBtn.title = label;
+  };
+  syncMotionBtn();
+  motionBtn && motionBtn.addEventListener('click', () => {
+    doc.dataset.motion = motionOn() ? 'reduce' : 'full';
+    store.set('ps-motion', doc.dataset.motion);
+    syncMotionBtn();
+    document.dispatchEvent(new CustomEvent('motionchange'));
+  });
+
+  /* ---------- כותרת ותפריט ---------- */
+  const header = $('.site-header');
+  const onScrollHeader = () => header.classList.toggle('is-solid', window.scrollY > 30 || header.classList.contains('menu-open'));
+  onScrollHeader();
+  window.addEventListener('scroll', onScrollHeader, { passive: true });
+  const menuBtn = $('[data-menu-toggle]');
+  const setMenu = (open) => {
+    header.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('is-locked', open);
+    onScrollHeader();
+  };
+  menuBtn.addEventListener('click', () => setMenu(!header.classList.contains('menu-open')));
+  $$('.main-nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && header.classList.contains('menu-open')) { setMenu(false); menuBtn.focus(); } });
+  window.matchMedia('(min-width: 901px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
+
+  /* קישור השפה שומר על המקום בעמוד */
+  $$('[data-lang-link]').forEach((a) => a.addEventListener('click', () => {
+    if (location.hash) a.href = a.getAttribute('href').split('#')[0] + location.hash;
+  }));
+
+  /* ---------- פתיחה: גלריית במה מתחלפת בעדינות ---------- */
+  const slides = $$('.hero-slide');
+  let slideIdx = 0; let slideTimer = null;
+  const loadSlides = () => slides.forEach((p) => {
+    $$('[data-srcset]', p).forEach((s) => { s.srcset = s.dataset.srcset; s.removeAttribute('data-srcset'); });
+    $$('img[data-src]', p).forEach((i) => { i.src = i.dataset.src; i.removeAttribute('data-src'); });
+  });
+  const runSlides = () => {
+    clearInterval(slideTimer); slideTimer = null;
+    if (!motionOn() || slides.length < 2) return;
+    slideTimer = setInterval(() => {
+      if (document.hidden) return;
+      slides[slideIdx].classList.remove('is-active');
+      slideIdx = (slideIdx + 1) % slides.length;
+      slides[slideIdx].classList.add('is-active');
+    }, 7000);
+  };
+  window.addEventListener('load', () => { loadSlides(); runSlides(); });
+  document.addEventListener('motionchange', runSlides);
+
+  /* ---------- מציאת חוג ---------- */
+  const cards = $$('[data-branch-card]');
+  const cityBtns = $$('.city-filter [data-city]');
+  const branchSelect = $('#f-branch');
+  const stepper = $$('.stepper li');
+  const setStep = (n) => stepper.forEach((li, i) => { li.classList.toggle('is-current', i === n); li.classList.toggle('is-done', i < n); });
+  cityBtns.forEach((b) => b.addEventListener('click', () => {
+    cityBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    const c = b.dataset.city;
+    cards.forEach((card) => { card.hidden = !(c === 'all' || card.dataset.city === c); });
+  }));
+  const markSelected = (id) => {
+    cards.forEach((card) => {
+      const on = card.dataset.branchCard === id;
+      card.classList.toggle('is-selected', on);
+      const btn = $('.branch-choose', card);
+      btn.setAttribute('aria-pressed', String(on));
+      $('.choose-label', btn).textContent = on ? data.chosen : data.choose;
+    });
+    setStep(id ? 1 : 0);
+  };
+  $$('[data-choose]').forEach((btn) => btn.addEventListener('click', () => {
+    const id = btn.dataset.choose;
+    branchSelect.value = id;
+    clearError(branchSelect);
+    markSelected(id);
+    showForm();
+    const area = $('#join-form-area');
+    area.scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto', block: 'start' });
+    setTimeout(() => $('#f-parent').focus({ preventScroll: true }), motionOn() ? 450 : 0);
+  }));
+  branchSelect.addEventListener('change', () => { markSelected(branchSelect.value); clearError(branchSelect); });
+
+  /* ---------- הטופס ---------- */
+  const form = $('#join-form');
+  const success = $('#join-success');
+  const summary = $('.form-error-summary', form);
+  const fields = ['branch', 'parent', 'phone', 'email', 'child', 'age', 'cheder', 'grade', 'consent'].map((n) => form.elements[n]);
+  const errorEl = (input) => document.getElementById('e-' + input.name);
+  function setError(input, msg) { input.setAttribute('aria-invalid', 'true'); errorEl(input).textContent = msg; }
+  function clearError(input) { input.removeAttribute('aria-invalid'); const e = errorEl(input); if (e) e.textContent = ''; }
+  const validators = {
+    branch: (v) => (v ? '' : T.branch),
+    email: (v) => (!v ? T.required : /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? '' : T.email),
+    phone: (v) => { const d = v.replace(/[\s\-().+]/g, ''); return !v ? T.required : /^\d{9,12}$/.test(d) ? '' : T.phone; },
+    age: (v) => { const n = Number(v); return v === '' ? T.required : Number.isInteger(n) && n >= 5 && n <= 16 ? '' : T.age; },
+    consent: (_, el) => (el.checked ? '' : T.consent),
+  };
+  const validate = (input) => {
+    const v = (input.value || '').trim();
+    const msg = validators[input.name] ? validators[input.name](v, input) : (v ? '' : T.required);
+    if (msg) setError(input, msg); else clearError(input);
+    return !msg;
+  };
+  fields.forEach((input) => {
+    const ev = input.type === 'checkbox' || input.tagName === 'SELECT' ? 'change' : 'blur';
+    input.addEventListener(ev, () => { if (input.getAttribute('aria-invalid') === 'true' || ev === 'change') validate(input); });
+    input.addEventListener('input', () => { if (input.getAttribute('aria-invalid') === 'true') validate(input); });
+  });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (form.elements.website.value) return; // מלכודת לרובוטים
+    const bad = fields.filter((f) => !validate(f));
+    if (bad.length) {
+      summary.hidden = false;
+      summary.textContent = fill(T.summary, { n: bad.length });
+      bad[0].focus();
+      return;
+    }
+    summary.hidden = true;
+    const val = (n) => form.elements[n].value.trim();
+    const b = data.branches.find((x) => x.id === val('branch'));
+    const entry = {
+      id: 'w' + Date.now(), date: new Date().toISOString(), lang: data.lang,
+      branch: b.id, parent: val('parent'), phone: val('phone'), email: val('email'),
+      child: val('child'), age: Number(val('age')), cheder: val('cheder'), grade: val('grade'), notes: val('notes'), status: 'new',
+    };
+    const branchLabel = fill(T.branchFormat, { name: b.name, city: data.cities[b.city] });
+    // מסלול 1: בלי שרת — פותחים את תוכנת המייל עם הודעה מוכנה למקהלה
+    if (data.form === 'email') {
+      const E = data.emailForm; const L = E.labels;
+      const body = [E.intro, '', `${L.parent}: ${entry.parent}`, `${L.phone}: ${entry.phone}`, `${L.email}: ${entry.email}`, `${L.child}: ${entry.child}`, `${L.age}: ${entry.age}`, `${L.cheder}: ${entry.cheder}`, `${L.grade}: ${entry.grade}`]
+        .concat(entry.notes ? [`${L.notes}: ${entry.notes}`] : []).join('\n');
+      const href = `mailto:${data.choirEmail}?subject=${encodeURIComponent(fill(E.subject, { branch: branchLabel, child: entry.child }))}&body=${encodeURIComponent(body)}`;
+      renderEmailSuccess(href);
+      try { window.location.href = href; } catch (err) { /* הקישור בהודעה נשאר זמין */ }
+      return;
+    }
+    let list = [];
+    try { list = JSON.parse(store.get('ps-inquiries') || '[]'); if (!Array.isArray(list)) list = []; } catch (err) { list = []; }
+    list.unshift(entry);
+    store.set('ps-inquiries', JSON.stringify(list.slice(0, 50)));
+    // מסלול 3: אותו טופס פותח גם חשבון ועדכונים, רק אם ההורה בחר בכך
+    let joined = false;
+    const acc = form.elements.account;
+    if (acc && acc.checked) {
+      const topics = $$('[name="a-topic"]:checked', form).map((x) => x.value);
+      if (topics.length) { addSubscriber({ name: entry.parent, email: entry.email, topics, source: 'class' }); joined = true; }
+    }
+    renderSuccess(entry, branchLabel, b, joined);
+  });
+  function renderSuccess(entry, branchLabel, b, joined) {
+    const vars = { parent: escapeHtml(entry.parent), child: escapeHtml(entry.child), branch: escapeHtml(branchLabel), reg: escapeHtml(b.reg) };
+    const lines = T.emailLines.map((l, i) => `<p${i === 0 ? ' style="font-weight:700"' : ''}>${fill(l, vars)}</p>`).join('');
+    const extra = joined ? `<p class="email-extra">${escapeHtml(data.account.successExtra)}</p><span class="email-btn">${escapeHtml(data.account.confirm)}</span>` : '';
+    success.innerHTML = `
+      <div class="success-head"><span class="success-ico"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>
+        <div><h3>${fill(T.successTitle, vars)}</h3><p>${fill(T.successText, vars)}</p></div></div>
+      <div><p class="email-label">${T.emailLabel}</p>
+        <div class="email-preview">
+          <div class="email-meta"><span><b>${T.emailFrom}</b></span><span>${T.emailSubject}</span></div>
+          <div class="email-body"><div class="email-brand"><img src="${data.assetBase}img/icon-64.png" alt="" width="34" height="34">${T.emailFrom}</div>${lines}${extra}</div>
+        </div></div>
+      <div class="success-actions">
+        <a class="btn btn-purple" href="${data.adminHref}">${T.toAdmin}</a>
+        <button type="button" class="btn btn-outline" data-again>${T.again}</button>
+      </div>`;
+    showSuccess();
+  }
+  function renderEmailSuccess(href) {
+    const E = data.emailForm;
+    success.innerHTML = `
+      <div class="success-head"><span class="success-ico"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg></span>
+        <div><h3>${escapeHtml(E.successTitle)}</h3><p>${escapeHtml(E.successText)}</p></div></div>
+      <div class="success-actions">
+        <a class="btn btn-purple" data-mailto href="${escapeHtml(href)}">${escapeHtml(E.reopen)}</a>
+        <button type="button" class="btn btn-outline" data-again>${T.again}</button>
+      </div>`;
+    showSuccess();
+  }
+  function addSubscriber(s) {
+    let subs = [];
+    try { subs = JSON.parse(store.get('ps-subscribers') || '[]'); if (!Array.isArray(subs)) subs = []; } catch (err) { subs = []; }
+    subs = subs.filter((x) => x.email !== s.email);
+    subs.unshift({ id: 'c' + Date.now(), date: new Date().toISOString(), verified: false, ...s });
+    store.set('ps-subscribers', JSON.stringify(subs.slice(0, 100)));
+  }
+  function showSuccess() {
+    form.hidden = true;
+    success.hidden = false;
+    setStep(2);
+    success.focus({ preventScroll: true });
+    success.scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto', block: 'start' });
+    $('[data-again]', success).addEventListener('click', () => {
+      form.reset(); fields.forEach(clearError); markSelected('');
+      if (accountTopicsBox()) accountTopicsBox().hidden = true;
+      success.hidden = true; success.innerHTML = ''; form.hidden = false;
+      $('#form-title').focus();
+    });
+  }
+  function showForm() { if (!success.hidden) { success.hidden = true; form.hidden = false; } }
+  function accountTopicsBox() { return document.querySelector('[data-account-topics]'); }
+
+  /* ---------- הופעה הדרגתית ומספרים רצים ---------- */
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (!en.isIntersecting) return;
+      en.target.classList.add('is-visible');
+      const c = en.target.querySelector('[data-count]');
+      if (c) countUp(c);
+      io.unobserve(en.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }) : null;
+  $$('[data-reveal]').forEach((el) => (io ? io.observe(el) : el.classList.add('is-visible')));
+  function countUp(el) {
+    const end = Number(el.dataset.count); const suf = el.dataset.suffix || '';
+    if (!motionOn()) { el.textContent = end + suf; return; }
+    const t0 = performance.now(); const dur = 1400;
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / dur); const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(end * e) + suf;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    el.textContent = '0' + suf;
+    requestAnimationFrame(tick);
+  }
+
+  /* ---------- המסע: קו הקול מצטייר לפי הגלילה ---------- */
+  const journey = $('[data-journey]');
+  const steps = $$('.journey-step');
+  const updateJourney = () => {
+    if (!journey) return;
+    let p;
+    if (!motionOn()) p = 1;
+    else {
+      const r = journey.getBoundingClientRect(); const vh = window.innerHeight;
+      p = (vh * 0.85 - r.top) / (r.height + vh * 0.25);
+      p = Math.max(0, Math.min(1, p));
+    }
+    journey.style.setProperty('--p', p.toFixed(4));
+    const steps2 = $('.journey-steps');
+    if (steps2) steps2.style.setProperty('--p', p.toFixed(4));
+    steps.forEach((s, i) => s.classList.toggle('is-on', p >= (i + 0.35) / steps.length || p >= 0.999));
+  };
+
+  /* ---------- מאחורי הקלעים: רצועה אופקית במחשב ---------- */
+  const strip = $('[data-strip]');
+  const track = strip && $('.strip-track', strip);
+  const stickyEl = strip && $('.strip-sticky', strip);
+  const desktop = window.matchMedia('(min-width: 901px) and (hover: hover)');
+  let overflow = 0;
+  const setupStrip = () => {
+    if (!strip) return;
+    const pin = desktop.matches && motionOn();
+    strip.classList.toggle('is-pinned', pin);
+    if (!pin) { strip.style.height = ''; track.style.removeProperty('--tx'); return; }
+    overflow = Math.max(0, track.scrollWidth - stickyEl.clientWidth);
+    if (overflow < 40) { strip.classList.remove('is-pinned'); strip.style.height = ''; return; }
+    strip.style.height = (window.innerHeight + overflow) + 'px';
+    updateStrip();
+  };
+  const updateStrip = () => {
+    if (!strip || !strip.classList.contains('is-pinned')) return;
+    const r = strip.getBoundingClientRect();
+    const total = strip.offsetHeight - window.innerHeight;
+    const p = total > 0 ? Math.max(0, Math.min(1, -r.top / total)) : 0;
+    const dir = doc.dir === 'rtl' ? 1 : -1;
+    track.style.setProperty('--tx', (dir * p * overflow).toFixed(1) + 'px');
+  };
+
+  /* ---------- מקהלולם: קריאה ותשובה בזמן שהאזור נראה ---------- */
+  const cr = $('.cr');
+  if (cr) {
+    $$('.cr-dots', cr).forEach((row) => $$('i', row).forEach((d, i) => d.style.setProperty('--i', i)));
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((en) => en.forEach((x) => cr.classList.toggle('is-playing', x.isIntersecting)), { threshold: 0.3 }).observe(cr);
+    }
+  }
+
+  /* מסלול 3: פעמוני העדכונים מצלצלים רק כשהאזור נראה */
+  const clubSec = $('.club');
+  if (clubSec && 'IntersectionObserver' in window) {
+    new IntersectionObserver((en) => en.forEach((x) => clubSec.classList.toggle('is-in', x.isIntersecting)), { threshold: 0.25 }).observe(clubSec);
+  }
+
+  /* ---------- גלילה אחת לכל האפקטים ---------- */
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => { updateJourney(); updateStrip(); ticking = false; });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  let rT;
+  window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => { setupStrip(); updateJourney(); }, 120); });
+  window.addEventListener('load', () => { setupStrip(); updateJourney(); });
+  document.addEventListener('motionchange', () => { setupStrip(); updateJourney(); });
+  updateJourney();
+
+  /* ---------- שירים: סינון, חיפוש, הצגת עוד ---------- */
+  const songs = $$('.song');
+  const moreBtn = $('[data-songs-more]');
+  const countEl = $('[data-song-count]');
+  const emptyEl = $('.songs-empty');
+  const search = $('#song-search');
+  let filter = 'all'; let expanded = false;
+  const norm = (s) => s.toLowerCase().replace(/[֑-ׇ]/g, '').replace(/[׳'’"״.,:·\-–—()]/g, ' ').replace(/\s+/g, ' ').trim();
+  const applySongs = () => {
+    const q = norm(search.value || '');
+    const searching = q.length > 0 || filter !== 'all';
+    let n = 0;
+    songs.forEach((li) => {
+      const match = (filter === 'all' || li.dataset.cat === filter) && (!q || norm(li.dataset.title).includes(q));
+      li.hidden = !match;
+      li.classList.toggle('is-shown', match && (searching || expanded));
+      if (match) n++;
+    });
+    countEl.textContent = fill(data.music.count, { n });
+    emptyEl.hidden = n !== 0;
+    moreBtn.parentElement.hidden = searching || songs.filter((li) => li.classList.contains('is-extra')).length === 0;
+    moreBtn.textContent = expanded ? data.music.showLess : data.music.showAll + ` (${songs.length})`;
+    moreBtn.setAttribute('aria-expanded', String(expanded));
+  };
+  $$('[data-filter]').forEach((b) => b.addEventListener('click', () => {
+    filter = b.dataset.filter;
+    $$('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    applySongs();
+  }));
+  // בדף הנחיתה (מסלול 1) אין חיפוש וסינון — רק מבחר שירים
+  if (search && moreBtn) {
+    search.addEventListener('input', applySongs);
+    moreBtn.addEventListener('click', () => {
+      expanded = !expanded; applySongs();
+      if (!expanded) $('#music').scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto' });
+    });
+    applySongs();
+  }
+
+  /* ---------- מסלול 3: חשבון ועדכונים בטופס החוג ---------- */
+  const accountBox = form.elements.account;
+  const accountTopics = $('[data-account-topics]');
+  if (accountBox && accountTopics) {
+    accountBox.addEventListener('change', () => { accountTopics.hidden = !accountBox.checked; });
+  }
+
+  /* ---------- מסלול 3: מועדון העדכונים ---------- */
+  const clubForm = $('#club-form');
+  const clubSuccess = $('#club-success');
+  if (clubForm && clubSuccess) {
+    const C = data.club;
+    const cErr = (id, msg, el) => { $('#' + id).textContent = msg; if (el) { if (msg) el.setAttribute('aria-invalid', 'true'); else el.removeAttribute('aria-invalid'); } };
+    clubForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = clubForm.elements.email; const consent = clubForm.elements.consent;
+      const topics = $$('[name="c-topic"]:checked', clubForm).map((x) => x.value);
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+      cErr('ce-email', email.value.trim() ? (emailOk ? '' : T.email) : T.required, email);
+      cErr('ce-topics', topics.length ? '' : C.errTopics);
+      cErr('ce-consent', consent.checked ? '' : T.consent, consent);
+      const firstBad = !emailOk ? email : !topics.length ? $('[name="c-topic"]', clubForm) : !consent.checked ? consent : null;
+      if (firstBad) { firstBad.focus(); return; }
+      const name = clubForm.elements.name.value.trim();
+      addSubscriber({ name, email: email.value.trim(), topics, source: 'club' });
+      const topicNames = topics.map((k) => data.topics[k]).join(data.lang === 'he' ? ', ' : ', ');
+      const lines = C.emailLines.map((l, i) => `<p${i === 0 ? ' style="font-weight:700"' : ''}>${fill(l, { name: name ? ' ' + escapeHtml(name) : '', topics: escapeHtml(topicNames) })}</p>`).join('');
+      clubSuccess.innerHTML = `
+        <div class="success-head"><span class="success-ico"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>
+          <div><h3>${escapeHtml(C.successTitle)}</h3><p>${fill(escapeHtml(C.successText), { email: escapeHtml(email.value.trim()) })}</p></div></div>
+        <div class="email-preview"><div class="email-meta"><span><b>${T.emailFrom}</b></span><span>${escapeHtml(C.emailSubject)}</span></div>
+          <div class="email-body"><div class="email-brand"><img src="${data.assetBase}img/icon-64.png" alt="" width="34" height="34">${T.emailFrom}</div>${lines}<span class="email-btn">${escapeHtml(data.account.confirm)}</span></div></div>
+        <div class="success-actions">${data.adminHref ? `<a class="btn btn-purple" href="${data.adminHref}#subscribers">${escapeHtml(data.lang === 'he' ? 'צפייה בלוח הניהול' : 'View in the admin area')}</a>` : ''}<button type="button" class="btn btn-outline" data-club-again>${escapeHtml(C.again)}</button></div>`;
+      clubForm.hidden = true; clubSuccess.hidden = false; clubSuccess.focus({ preventScroll: true });
+      $('[data-club-again]', clubSuccess).addEventListener('click', () => {
+        clubForm.reset(); ['ce-email', 'ce-topics', 'ce-consent'].forEach((id) => cErr(id, ''));
+        $$('[aria-invalid]', clubForm).forEach((x) => x.removeAttribute('aria-invalid'));
+        clubSuccess.hidden = true; clubSuccess.innerHTML = ''; clubForm.hidden = false; email.focus();
+      });
+    });
+  }
+
+  /* הטיה עדינה של כרטיס השיר מול העכבר */
+  if (window.matchMedia('(hover: hover)').matches) {
+    $$('.song-btn').forEach((btn) => {
+      const cover = $('.song-cover', btn);
+      btn.addEventListener('pointermove', (e) => {
+        if (!motionOn()) return;
+        const r = cover.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5; const y = (e.clientY - r.top) / r.height - 0.5;
+        cover.style.setProperty('--ry', (x * 10).toFixed(2) + 'deg');
+        cover.style.setProperty('--rx', (-y * 8).toFixed(2) + 'deg');
+      });
+      btn.addEventListener('pointerleave', () => { cover.style.removeProperty('--rx'); cover.style.removeProperty('--ry'); });
+    });
+  }
+
+  /* ---------- נגן במסך מלא ---------- */
+  const player = $('#player');
+  const frame = $('[data-player-frame]', player);
+  const titleEl = $('#player-title');
+  const ytLink = $('[data-player-yt]', player);
+  const bgImg = $('[data-player-bg]', player);
+  const shortIds = new Set($$('.strip-short [data-play]').map((b) => b.dataset.play));
+  let queue = []; let qi = 0; let lastFocus = null;
+  const coverFor = (id) => (shortIds.has(id) ? `img/shorts/${id}.webp` : `img/covers/${id}.webp`);
+  const assetBase = data.assetBase;
+  function load(id) {
+    const vertical = shortIds.has(id);
+    frame.classList.toggle('is-vertical', vertical);
+    frame.innerHTML = '';
+    const ifr = document.createElement('iframe');
+    ifr.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&modestbranding=1&playsinline=1&hl=${data.lang}`;
+    ifr.title = data.videos[id] || data.player.label;
+    ifr.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    ifr.allowFullscreen = true;
+    ifr.referrerPolicy = 'strict-origin-when-cross-origin';
+    frame.appendChild(ifr);
+    titleEl.textContent = data.videos[id] || '';
+    ytLink.href = vertical ? `https://www.youtube.com/shorts/${id}` : `https://www.youtube.com/watch?v=${id}`;
+    bgImg.src = assetBase + coverFor(id);
+    const multi = queue.length > 1;
+    $('[data-player-prev]', player).hidden = !multi;
+    $('[data-player-next]', player).hidden = !multi;
+  }
+  function openPlayer(id, trigger) {
+    const visibleSongs = $$('.song:not([hidden]) [data-play]').map((b) => b.dataset.play);
+    queue = visibleSongs.includes(id) ? visibleSongs : [id];
+    qi = queue.indexOf(id);
+    lastFocus = trigger || document.activeElement;
+    player.hidden = false;
+    document.body.classList.add('is-locked');
+    load(id);
+    $('.player-close', player).focus();
+  }
+  function closePlayer() {
+    if (player.hidden) return;
+    player.hidden = true;
+    frame.innerHTML = '';
+    document.body.classList.remove('is-locked');
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  }
+  const step = (d) => { qi = (qi + d + queue.length) % queue.length; load(queue[qi]); };
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-play]');
+    if (t) { e.preventDefault(); openPlayer(t.dataset.play, t); return; }
+    if (e.target.closest('[data-player-close]')) closePlayer();
+  });
+  $('[data-player-prev]', player).addEventListener('click', () => step(doc.dir === 'rtl' ? -1 : -1));
+  $('[data-player-next]', player).addEventListener('click', () => step(1));
+  player.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { e.preventDefault(); closePlayer(); return; }
+    if (e.key !== 'Tab') return;
+    const f = $$('button:not([hidden]), a[href], iframe', player).filter((el) => el.offsetParent !== null || el.tagName === 'IFRAME');
+    if (!f.length) return;
+    const first = f[0]; const last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+})();

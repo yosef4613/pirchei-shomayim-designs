@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>לוח הניהול · מקהלת פרחי שמיים (הדגמה, מסלול {{PLAN}})</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f7f4fc">
+  <link rel="icon" href="../../assets/img/icon-64.png" type="image/png">
+  <link rel="preload" href="../../assets/fonts/heebo-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/admin.css?v={{V}}">
+  <script defer src="../../assets/admin.js?v={{V}}"></script>
+</head>
+<body data-plan="{{PLAN}}">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13l2.5-7.5A2 2 0 0 1 8.4 4h7.2a2 2 0 0 1 1.9 1.5L20 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM4 13h4.5l1.5 2.5h4L15.5 13H20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8L3.5 9.7l5.9-.8z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.5" cy="16" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 3.5h2.6l1.4 4-2 1.3a12 12 0 0 0 6.6 6.6l1.3-2 4 1.4v2.6a2 2 0 0 1-2.2 2A16 16 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.3-4.6L4 8M4 13a8 8 0 0 0 14.3 4.6L20 16M4 4v4h4M20 20v-4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+</svg>
+<a class="skip" href="#panel">דילוג לתוכן</a>
+
+<div class="demo-strip">הדגמה · כך ייראה לוח הניהול שייבנה בוורדפרס למסלול {{PLAN}}. הנתונים בדויים ונשמרים רק בדפדפן שלכם. <a href="../">חזרה לאתר</a></div>
+
+<div class="layout">
+  <aside class="side">
+    <div class="side-brand">
+      <img src="../../assets/img/icon-64.png" alt="" width="40" height="40">
+      <div><b>פרחי שמיים</b><small>לוח הניהול</small></div>
+    </div>
+    <nav aria-label="אזורי הניהול">
+      <ul class="tabs" role="tablist" aria-orientation="vertical">
+        <li><button role="tab" id="tab-inquiries" aria-controls="panel-inquiries" aria-selected="true" data-tab="inquiries"><svg class="ico" aria-hidden="true"><use href="#i-inbox"/></svg><span>פניות לחוגים</span><span class="count" data-new-count></span></button></li>
+<!--P3-->
+        <li><button role="tab" id="tab-subscribers" aria-controls="panel-subscribers" aria-selected="false" tabindex="-1" data-tab="subscribers"><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg><span>מנויים</span></button></li>
+        <li><button role="tab" id="tab-mailing" aria-controls="panel-mailing" aria-selected="false" tabindex="-1" data-tab="mailing"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg><span>דיוור</span></button></li>
+<!--/P3-->
+        <li><button role="tab" id="tab-branches" aria-controls="panel-branches" aria-selected="false" tabindex="-1" data-tab="branches"><svg class="ico" aria-hidden="true"><use href="#i-pin"/></svg><span>החוגים</span></button></li>
+        <li><button role="tab" id="tab-shows" aria-controls="panel-shows" aria-selected="false" tabindex="-1" data-tab="shows"><svg class="ico" aria-hidden="true"><use href="#i-star"/></svg><span>הופעות</span></button></li>
+        <li><button role="tab" id="tab-behind" aria-controls="panel-behind" aria-selected="false" tabindex="-1" data-tab="behind"><svg class="ico" aria-hidden="true"><use href="#i-mic"/></svg><span>מאחורי הקלעים</span></button></li>
+        <li><button role="tab" id="tab-songs" aria-controls="panel-songs" aria-selected="false" tabindex="-1" data-tab="songs"><svg class="ico" aria-hidden="true"><use href="#i-music"/></svg><span>שירים</span></button></li>
+      </ul>
+    </nav>
+    <div class="side-user">
+      <span class="avatar" aria-hidden="true">מ</span>
+      <div><b>מרדכי</b><small>מנהל המקהלה</small></div>
+      <a class="icon-link" href="../" aria-label="יציאה מלוח הניהול"><svg class="ico" aria-hidden="true"><use href="#i-out"/></svg></a>
+    </div>
+  </aside>
+
+  <main class="panel" id="panel" tabindex="-1">
+
+    <section id="panel-inquiries" role="tabpanel" aria-labelledby="tab-inquiries">
+      <header class="panel-head">
+        <div>
+          <h1>פניות לחוגים</h1>
+          <p>כל פנייה מהאתר מגיעה לכאן ובמקביל למייל. סמנו סטטוס כדי לדעת מה מחכה לטיפול.</p>
+        </div>
+        <button type="button" class="btn btn-primary" data-export>
+          <svg class="ico" aria-hidden="true"><use href="#i-download"/></svg>ייצוא לאקסל</button>
+      </header>
+
+      <div class="funnel" role="group" aria-label="סינון מהיר לפי סטטוס">
+        <button type="button" class="funnel-card" data-status-card="new"><span class="f-num" data-stat="new">0</span><span>פניות חדשות</span></button>
+        <button type="button" class="funnel-card" data-status-card="contacted"><span class="f-num" data-stat="contacted">0</span><span>נוצר קשר</span></button>
+        <button type="button" class="funnel-card" data-status-card="audition"><span class="f-num" data-stat="audition">0</span><span>נקבע מבדק</span></button>
+        <button type="button" class="funnel-card" data-status-card="accepted"><span class="f-num" data-stat="accepted">0</span><span>התקבלו לחוג</span></button>
+      </div>
+
+      <div class="toolbar">
+        <div class="search">
+          <label class="sr" for="q">חיפוש לפי שם, טלפון או מייל</label>
+          <svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>
+          <input id="q" type="search" placeholder="חיפוש לפי שם, טלפון או מייל" autocomplete="off">
+        </div>
+        <label class="sel"><span class="sr">סינון לפי חוג</span>
+          <select id="f-branch"><option value="">כל החוגים</option></select>
+        </label>
+        <label class="sel"><span class="sr">סינון לפי סטטוס</span>
+          <select id="f-status"><option value="">כל הסטטוסים</option></select>
+        </label>
+      </div>
+      <p class="result-line" aria-live="polite" data-result-line></p>
+
+      <div class="table-wrap">
+        <table class="inq-table">
+          <caption class="sr">רשימת הפניות לחוגים</caption>
+          <thead><tr><th scope="col">תאריך</th><th scope="col">הורה</th><th scope="col">ילד</th><th scope="col">חוג</th><th scope="col">סטטוס</th><th scope="col">הערה פנימית</th></tr></thead>
+          <tbody data-rows></tbody>
+        </table>
+      </div>
+      <p class="empty" data-empty hidden>אין פניות שמתאימות לסינון.</p>
+      <p class="foot-note">המייל לכל פנייה חדשה נשלח לכתובת של המקהלה, ולהורה נשלח אישור אוטומטי. <button type="button" class="link-btn" data-reset>איפוס נתוני ההדגמה</button></p>
+    </section>
+<!--P3-->
+    <section id="panel-subscribers" role="tabpanel" aria-labelledby="tab-subscribers" hidden>
+      <header class="panel-head">
+        <div>
+          <h1>מנויים</h1>
+          <p>כל מי שהצטרף לעדכונים, מהטופס לחוג או ממועדון העדכונים. מנוי מקבל רק את הנושאים שבחר, ויכול להסיר את עצמו בכל עת.</p>
+        </div>
+        <button type="button" class="btn btn-primary" data-export-subs>
+          <svg class="ico" aria-hidden="true"><use href="#i-download"/></svg>ייצוא לאקסל</button>
+      </header>
+      <div class="funnel funnel-3" role="group" aria-label="סינון לפי נושא">
+        <button type="button" class="funnel-card" data-topic-card="songs"><span class="f-num" data-topic-count="songs">0</span><span>שירים חדשים</span></button>
+        <button type="button" class="funnel-card" data-topic-card="classes"><span class="f-num" data-topic-count="classes">0</span><span>חוגים חדשים</span></button>
+        <button type="button" class="funnel-card" data-topic-card="shows"><span class="f-num" data-topic-count="shows">0</span><span>הופעות</span></button>
+      </div>
+      <p class="result-line" aria-live="polite" data-subs-line></p>
+      <div class="table-wrap">
+        <table class="inq-table">
+          <caption class="sr">רשימת המנויים</caption>
+          <thead><tr><th scope="col">הצטרף</th><th scope="col">שם ומייל</th><th scope="col">נושאים</th><th scope="col">מקור</th><th scope="col">מצב</th></tr></thead>
+          <tbody data-subs></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="panel-mailing" role="tabpanel" aria-labelledby="tab-mailing" hidden>
+      <header class="panel-head">
+        <div>
+          <h1>דיוור</h1>
+          <p>בוחרים תבנית, ממלאים פעם אחת את הפרטים, ובודקים את המייל לפני השליחה. העדכון יוצא רק למנויים שבחרו בנושא.</p>
+        </div>
+      </header>
+      <div class="mail-grid">
+        <form class="add-form" data-mail-form novalidate>
+          <fieldset class="tpl-pick">
+            <legend>סוג העדכון</legend>
+            <label class="tpl"><input type="radio" name="tpl" value="songs" checked><span>שיר חדש</span></label>
+            <label class="tpl"><input type="radio" name="tpl" value="classes"><span>חוג חדש</span></label>
+            <label class="tpl"><input type="radio" name="tpl" value="shows"><span>הופעה</span></label>
+          </fieldset>
+          <div class="grid" data-tpl-fields></div>
+          <label class="wide">מסמך PDF לצירוף (רשות)<input name="pdf" type="file" accept="application/pdf"></label>
+          <p class="form-msg" role="status"></p>
+          <button class="btn btn-primary" type="submit"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg><span data-send-label>שליחה</span></button>
+        </form>
+        <div class="mail-preview" aria-live="polite">
+          <p class="preview-label">תצוגה מקדימה של המייל</p>
+          <div class="mail-card" data-mail-preview></div>
+        </div>
+      </div>
+    </section>
+<!--/P3-->
+    <section id="panel-branches" role="tabpanel" aria-labelledby="tab-branches" hidden>
+      <header class="panel-head">
+        <div>
+          <h1>החוגים</h1>
+          <p>מה שמעדכנים כאן מופיע מיד בכרטיסי החוגים באתר, בעברית ובאנגלית.</p>
+        </div>
+      </header>
+      <ul class="cards" data-branch-list></ul>
+    </section>
+
+    <section id="panel-shows" role="tabpanel" aria-labelledby="tab-shows" hidden>
+      <header class="panel-head">
+        <div>
+          <h1>הופעות</h1>
+          <p>כשיש הופעה, מוסיפים אותה כאן והיא מופיעה באתר באזור ״ההופעה הבאה״. אחרי התאריך היא עוברת לבד להופעות קודמות. בשנה בלי הופעה האזור פשוט מציג את ההופעות הקודמות.</p>
+        </div>
+      </header>
+      <form class="add-form" data-add="shows" novalidate>
+        <h2>הוספת הופעה</h2>
+        <div class="grid">
+          <label>שם ההופעה<input name="title" required></label>
+          <label>תאריך<input name="date" type="date" required></label>
+          <label>שעה<input name="time" type="time"></label>
+          <label>מקום<input name="place" required></label>
+          <label class="wide">קישור להרשמה (רשות)<input name="link" type="url" dir="ltr" placeholder="https://"></label>
+          <label class="wide">מודעה (PDF, רשות)<input name="pdf" type="file" accept="application/pdf"></label>
+        </div>
+        <p class="form-msg" role="status"></p>
+        <button class="btn btn-primary" type="submit"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>הוספה לאתר</button>
+      </form>
+      <ul class="cards" data-list="shows"></ul>
+    </section>
+
+    <section id="panel-behind" role="tabpanel" aria-labelledby="tab-behind" hidden>
+      <header class="panel-head">
+        <div>
+          <h1>מאחורי הקלעים</h1>
+          <p>תיעודים והסברים מהחזרות ומהאולפן. סמנו ״בלעדי לאתר״ כדי שיופיע עם תווית מיוחדת.</p>
+        </div>
+      </header>
+      <form class="add-form" data-add="behind" novalidate>
+        <h2>הוספת תיעוד</h2>
+        <div class="grid">
+          <label class="wide">כותרת<input name="title" required></label>
+          <label class="wide">הסבר קצר<textarea name="text" rows="3" required></textarea></label>
+          <label class="wide">קישור לסרטון או תמונה<input name="link" type="url" dir="ltr" placeholder="https://"></label>
+          <label class="check"><input name="exclusive" type="checkbox" checked> בלעדי לאתר</label>
+        </div>
+        <p class="form-msg" role="status"></p>
+        <button class="btn btn-primary" type="submit"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>פרסום באתר</button>
+      </form>
+      <ul class="cards" data-list="behind"></ul>
+    </section>
+
+    <section id="panel-songs" role="tabpanel" aria-labelledby="tab-songs" hidden>
+      <header class="panel-head">
+        <div>
+          <h1>שירים</h1>
+          <p>השירים נמשכים אוטומטית מהפלייליסט הרשמי ביוטיוב. כאן אפשר רק לבחור שיר מומלץ ולהסתיר שיר מהאתר.</p>
+        </div>
+        <span class="sync"><svg class="ico" aria-hidden="true"><use href="#i-sync"/></svg><span data-sync-time></span></span>
+      </header>
+      <ul class="song-list" data-song-list></ul>
+    </section>
+  </main>
+</div>
+<div class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
