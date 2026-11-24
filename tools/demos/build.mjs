@@ -1032,3 +1032,6 @@ ${urlEntry('songs/', false)}
 ${urlEntry('privacy/', false)}
 </urlset>
 `);
+
+// אימות הבעלות ב־Google Search Console — הקובץ חייב להישאר באתר תמיד
+write(join(DIST, 'google188571416ee15586.html'), 'google-site-verification: google188571416ee15586.html');
