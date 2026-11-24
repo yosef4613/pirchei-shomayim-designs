@@ -236,6 +236,27 @@ function ps_mail($to, $subject, $lines, $reply_to = '') {
 	return $ok;
 }
 
+/* מיילים יוצאים דרך תיבת המייל של המקהלה (SMTP). פרטי הכניסה בקובץ בשרת בלבד:
+ * wp-content/ps-mail-config.php שמחזיר ['user' => ..., 'pass' => ...]. בלי הקובץ — שליחה רגילה של השרת */
+add_action('phpmailer_init', function ($m) {
+	$f = WP_CONTENT_DIR . '/ps-mail-config.php';
+	if (!is_readable($f)) {
+		return;
+	}
+	$c = include $f;
+	if (!is_array($c) || empty($c['user']) || empty($c['pass'])) {
+		return;
+	}
+	$m->isSMTP();
+	$m->Host = isset($c['host']) ? $c['host'] : 'smtp.hostinger.com';
+	$m->Port = isset($c['port']) ? (int) $c['port'] : 465;
+	$m->SMTPSecure = $m->Port === 465 ? 'ssl' : 'tls';
+	$m->SMTPAuth = true;
+	$m->Username = $c['user'];
+	$m->Password = $c['pass'];
+	$m->setFrom($c['user'], 'מקהלת פרחי שמיים', false);
+});
+
 function ps_rest_inquiry(WP_REST_Request $req) {
 	$p = (array) $req->get_json_params();
 	if (ps_is_bot($p)) {
