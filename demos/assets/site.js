@@ -313,7 +313,7 @@
       if (c) countUp(c);
       io.unobserve(en.target);
     });
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }) : null;
+  }, { rootMargin: '0px 0px -18% 0px', threshold: 0.15 }) : null;
   $$('[data-reveal]').forEach((el) => (io ? io.observe(el) : el.classList.add('is-visible')));
   function countUp(el) {
     const end = Number(el.dataset.count); const suf = el.dataset.suffix || '';
@@ -337,7 +337,7 @@
     if (!motionOn()) p = 1;
     else {
       const r = journey.getBoundingClientRect(); const vh = window.innerHeight;
-      p = (vh * 0.85 - r.top) / (r.height + vh * 0.25);
+      p = (vh * 0.7 - r.top) / (r.height + vh * 0.15);
       p = Math.max(0, Math.min(1, p));
     }
     journey.style.setProperty('--p', p.toFixed(4));
@@ -402,7 +402,7 @@
     $$('.final-beam', finalSec).forEach((bm) => {
       const a1 = -Math.atan2(tx - (bm.offsetLeft + bm.offsetWidth / 2), ty - bm.offsetTop) * 180 / Math.PI;
       bm.style.setProperty('--a1', a1.toFixed(1) + 'deg');
-      bm.style.setProperty('--a0', (a1 + (a1 < 0 ? 38 : -38)).toFixed(1) + 'deg');
+      bm.style.setProperty('--a0', (a1 + (a1 < 0 ? 58 : -58)).toFixed(1) + 'deg');
     });
   };
   const updateLower = () => {
@@ -419,14 +419,14 @@
       curtain.classList.toggle('is-open', open > 0.995);
     }
     if (finalSec) {
-      if (on) finalSec.style.setProperty('--p', ease(clamp01((vh - fTop) / (vh * 0.7))).toFixed(4));
+      if (on) finalSec.style.setProperty('--p', ease(clamp01((vh * 0.78 - fTop) / (vh * 0.4))).toFixed(4));
       else finalSec.style.removeProperty('--p');
     }
     showImgs.forEach((img, i) => {
       const r = shows[i];
       if (!on) { img.style.removeProperty('--py'); return; }
       if (r.bottom < -100 || r.top > vh + 100) return;
-      img.style.setProperty('--py', (((r.top + r.height / 2) - vh / 2) / vh * -7).toFixed(2) + '%');
+      img.style.setProperty('--py', (((r.top + r.height / 2) - vh / 2) / vh * -14).toFixed(2) + '%');
     });
   };
 

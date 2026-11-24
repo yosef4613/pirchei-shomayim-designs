@@ -353,7 +353,7 @@ html[data-motion="reduce"] .eq i { height: 60%; }
 .show { position: relative; width: 100%; display: block; padding: 0; border: 0; border-radius: var(--radius); overflow: hidden; aspect-ratio: 4 / 3.4; background: var(--plum); text-align: start; color: #fff; }
 .show img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
 .show::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(11, 8, 18, .92) 8%, rgba(11, 8, 18, .1) 60%); }
-.show:hover img { transform: translateY(var(--py, 0)) scale(1.18); }
+.show:hover img { transform: translateY(var(--py, 0)) scale(1.3); }
 .show-copy { position: absolute; z-index: 1; inset-inline: 18px; bottom: 16px; display: grid; gap: 2px; }
 .show-copy b { font-size: 1.25rem; }
 .show-copy small { color: #d6cce8; font-size: .9rem; }
@@ -471,7 +471,7 @@ html[data-motion="full"] .player:not([hidden]) .player-box { animation: rise .45
 body.is-locked { overflow: hidden; }
 
 /* ---------- הופעה הדרגתית בגלילה — רק מתחת לפתיחה ---------- */
-html.js[data-motion="full"] [data-reveal] { opacity: 0; transform: translateY(26px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: var(--d, 0ms); }
+html.js[data-motion="full"] [data-reveal] { opacity: 0; transform: translateY(44px) scale(.97); transition: opacity .9s var(--ease), transform .9s var(--ease); transition-delay: var(--d, 0ms); }
 html.js[data-motion="full"] [data-reveal].is-visible { opacity: 1; transform: none; }
 
 /* ---------- רספונסיביות ---------- */
@@ -778,7 +778,7 @@ html.js[data-motion="full"] .curtain.is-open { visibility: hidden; }
 .final h2 { text-shadow: 0 0 calc(var(--p, 1) * 36px) rgba(203, 184, 255, .35); }
 
 /* ---------- על הבמה: עומק — התמונות זזות לאט יותר מהדף ---------- */
-.show img { transform: translateY(var(--py, 0)) scale(1.12); transition: transform .35s var(--ease); }
+.show img { transform: translateY(var(--py, 0)) scale(1.24); transition: transform .35s var(--ease); }
 
 /* ---------- האתר החי: הודעת אישור אחרי שליחה ---------- */
 .live-note { display: grid; gap: 6px; padding: 16px 18px; border-radius: 14px; background: rgba(107, 63, 214, .09); }
@@ -913,3 +913,14 @@ html.js[data-motion="full"] .curtain { transition: visibility 0s; }
 html.js[data-motion="full"] .curtain.is-open { transition: visibility 0s .6s; }
 .curtain-l, .curtain-r { transition: transform .55s cubic-bezier(.22, .7, .2, 1); }
 .curtain::before { transition: opacity .55s; }
+
+/* ---------- זרקורי הפתיחה: נכנסים בתנופה ואז מתנדנדים לאט, כמו על במה אמיתית ---------- */
+.beam { opacity: .6; }
+html[data-motion="full"] .beam-a { animation: beam-in-a 2.2s cubic-bezier(.2, .7, .2, 1) both, beam-sway-a 7s ease-in-out 2.2s infinite alternate; }
+html[data-motion="full"] .beam-b { animation: beam-in-b 2.4s cubic-bezier(.2, .7, .2, 1) .15s both, beam-sway-b 8s ease-in-out 2.55s infinite alternate; }
+@keyframes beam-in-a { 0% { opacity: 0; rotate: calc(var(--flip, 1) * 30deg); } 55% { opacity: .75; } 100% { opacity: .6; rotate: 0deg; } }
+@keyframes beam-in-b { 0% { opacity: 0; rotate: calc(var(--flip, 1) * -32deg); } 55% { opacity: .75; } 100% { opacity: .6; rotate: 0deg; } }
+@keyframes beam-sway-a { from { rotate: 0deg; } to { rotate: calc(var(--flip, 1) * -11deg); } }
+@keyframes beam-sway-b { from { rotate: 0deg; } to { rotate: calc(var(--flip, 1) * 12deg); } }
+@media (max-width: 720px) { .beam { opacity: .5; } }
+.beam { will-change: rotate, opacity; }

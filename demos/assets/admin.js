@@ -285,7 +285,7 @@
       <td data-label="הצטרף">${esc(fmtDate(s.date))}</td>
       <td data-label="שם ומייל"><div class="cell-main">${esc(s.name || '—')}</div><div class="cell-sub"><a href="mailto:${esc(s.email)}" dir="ltr">${esc(s.email)}</a></div></td>
       <td data-label="נושאים"><div class="chips-row">${s.topics.map((k) => `<span class="mini-chip">${esc(TOPICS[k] || k)}</span>`).join('')}</div></td>
-      <td data-label="מקור">${s.source === 'class' ? 'טופס החוג' : 'מועדון העדכונים'}</td>
+      <td data-label="מקור">${s.source === 'class' ? 'טופס החוג' : 'הרשמה לעדכונים'}</td>
       <td data-label="מצב"><span class="state ${s.verified ? 'ok' : 'wait'}">${s.verified ? 'מאושר' : 'ממתין לאישור המייל'}</span></td>
     </tr>`).join('');
   }
@@ -293,7 +293,7 @@
   $('[data-export-subs]').addEventListener('click', () => {
     const cell = (v) => { let s = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
     const lines = [['הצטרף', 'שם', 'מייל', 'נושאים', 'מקור', 'מצב'].map(cell).join(',')]
-      .concat(subsView.map((s) => [fmtDate(s.date), s.name, s.email, s.topics.map((k) => TOPICS[k]).join(' / '), s.source === 'class' ? 'טופס החוג' : 'מועדון', s.verified ? 'מאושר' : 'ממתין'].map(cell).join(',')));
+      .concat(subsView.map((s) => [fmtDate(s.date), s.name, s.email, s.topics.map((k) => TOPICS[k]).join(' / '), s.source === 'class' ? 'טופס החוג' : 'הרשמה לעדכונים', s.verified ? 'מאושר' : 'ממתין'].map(cell).join(',')));
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }));
     a.download = `pirchei-shomayim-subscribers-${new Date().toISOString().slice(0, 10)}.csv`;

@@ -156,7 +156,7 @@ function ps_meta_value($post_id, $key) {
 		return $v ? 'כן' : 'לא';
 	}
 	if ($key === 'source') {
-		return $v === 'class' ? 'טופס החוגים' : 'מועדון העדכונים';
+		return $v === 'class' ? 'טופס החוגים' : 'הרשמה לעדכונים';
 	}
 	return (string) $v;
 }
@@ -413,8 +413,8 @@ function ps_rest_subscribe(WP_REST_Request $req) {
 	if ($url) {
 		$names = implode(', ', array_map(function ($t) use ($lang) { return PS_TOPICS[$t][$lang]; }, $topics));
 		$mail = $lang === 'en'
-			? ['Hello,', '', 'Thank you for joining the Pirchei Shomayim Choir updates.', 'You chose: ' . $names . '.', '', 'To start receiving updates, please confirm your email:', $url, '', 'Didn’t ask for this? Just ignore this email.']
-			: ['שלום,', '', 'תודה שהצטרפתם לעדכונים של מקהלת פרחי שמיים.', 'בחרתם לקבל: ' . $names . '.', '', 'כדי להתחיל לקבל עדכונים, אשרו את הכתובת:', $url, '', 'לא נרשמתם? אפשר פשוט להתעלם מהמייל הזה.'];
+			? ['Hello,', '', 'Thank you for signing up for Pirchei Shomayim Choir updates.', 'You chose: ' . $names . '.', '', 'To start receiving updates, please confirm your email:', $url, '', 'Didn’t ask for this? Just ignore this email.']
+			: ['שלום,', '', 'תודה שנרשמתם לעדכונים של מקהלת פרחי שמיים.', 'בחרתם לקבל: ' . $names . '.', '', 'כדי להתחיל לקבל עדכונים, אשרו את הכתובת:', $url, '', 'לא נרשמתם? אפשר פשוט להתעלם מהמייל הזה.'];
 		ps_mail($email, $lang === 'en' ? 'Please confirm your updates · Pirchei Shomayim' : 'אישור ההרשמה לעדכונים · מקהלת פרחי שמיים', $mail, PS_CHOIR_EMAIL);
 	}
 	return new WP_REST_Response(['ok' => true], 200);
