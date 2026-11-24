@@ -8,6 +8,7 @@
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const fill = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => (o[k] != null ? o[k] : ''));
   const motionOn = () => doc.dataset.motion !== 'reduce';
+  const pageStart = Date.now(); // טופס שנשלח תוך שנייה מהטעינה הוא כמעט תמיד רובוט
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
@@ -187,6 +188,8 @@
       try { window.location.href = href; } catch (err) { /* הקישור בהודעה נשאר זמין */ }
       return;
     }
+    // באתר החי: שליחה אמיתית לשרת. לא שומרים פרטים אישיים בדפדפן
+    if (data.live) { sendLive(entry, branchLabel); return; }
     let list = [];
     try { list = JSON.parse(store.get('ps-inquiries') || '[]'); if (!Array.isArray(list)) list = []; } catch (err) { list = []; }
     list.unshift(entry);
@@ -216,6 +219,41 @@
         <a class="btn btn-purple" href="${data.adminHref}">${T.toAdmin}</a>
         <button type="button" class="btn btn-outline" data-again>${T.again}</button>
       </div>`;
+    showSuccess();
+  }
+  /* ---------- שליחה לשרת (האתר החי) ---------- */
+  async function postJSON(path, body) {
+    const res = await fetch(data.endpoint + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'omit' });
+    let json = null;
+    try { json = await res.json(); } catch (err) { json = null; }
+    if (!res.ok || !json || !json.ok) { const er = new Error('send'); er.status = res.status; throw er; }
+    return json;
+  }
+  const busy = (btn, on) => { btn.disabled = on; btn.setAttribute('aria-busy', String(on)); };
+  async function sendLive(entry, branchLabel) {
+    const btn = $('button[type="submit"]', form);
+    const acc = form.elements.account;
+    const topics = acc && acc.checked ? $$('[name="a-topic"]:checked', form).map((x) => x.value) : [];
+    busy(btn, true);
+    try {
+      await postJSON('inquiry', {
+        branch: entry.branch, parent: entry.parent, phone: entry.phone, email: entry.email, child: entry.child,
+        age: entry.age, cheder: entry.cheder, grade: entry.grade, notes: entry.notes, consent: true, topics,
+        lang: data.lang, t: Date.now() - pageStart, website: form.elements.website.value,
+      });
+      renderLiveSuccess(entry, branchLabel, topics.length > 0);
+    } catch (err) {
+      summary.hidden = false;
+      summary.textContent = err.status === 429 ? T.tooMany : fill(T.sendError, { email: data.choirEmail });
+    } finally { busy(btn, false); }
+  }
+  function renderLiveSuccess(entry, branchLabel, joined) {
+    const vars = { parent: escapeHtml(entry.parent), child: escapeHtml(entry.child), branch: escapeHtml(branchLabel), email: `<bdi>${escapeHtml(entry.email)}</bdi>` };
+    success.innerHTML = `
+      <div class="success-head"><span class="success-ico"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>
+        <div><h3>${fill(T.successTitle, vars)}</h3><p>${fill(T.successText, vars)}</p></div></div>
+      <div class="live-note"><p>${fill(T.liveSent, vars)}</p>${joined ? `<p>${escapeHtml(data.account.successExtra)}</p>` : ''}<p class="live-hint">${escapeHtml(T.spamHint)}</p></div>
+      <div class="success-actions"><button type="button" class="btn btn-outline" data-again>${T.again}</button></div>`;
     showSuccess();
   }
   function renderEmailSuccess(href) {
@@ -334,18 +372,60 @@
     new IntersectionObserver((en) => en.forEach((x) => clubSec.classList.toggle('is-in', x.isIntersecting)), { threshold: 0.25 }).observe(clubSec);
   }
 
+  /* ---------- למטה בעמוד: וילון שנפתח, זרקורים שמתכנסים, עומק בתמונות הבמה ---------- */
+  const curtain = $('[data-curtain]');
+  const behindSec = curtain && curtain.closest('section');
+  const finalSec = $('.final');
+  const showImgs = $$('.show img');
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const ease = (x) => x * x * (3 - 2 * x);
+  // הזרקורים מכוונים בדיוק אל כפתור הסיום, בכל גודל מסך
+  const aimBeams = () => {
+    if (!finalSec) return;
+    const cta = $('.btn', finalSec); if (!cta) return;
+    const sr = finalSec.getBoundingClientRect(); const cr = cta.getBoundingClientRect();
+    const tx = cr.left + cr.width / 2 - sr.left; const ty = cr.top + cr.height / 2 - sr.top;
+    $$('.final-beam', finalSec).forEach((bm) => {
+      const a1 = -Math.atan2(tx - (bm.offsetLeft + bm.offsetWidth / 2), ty - bm.offsetTop) * 180 / Math.PI;
+      bm.style.setProperty('--a1', a1.toFixed(1) + 'deg');
+      bm.style.setProperty('--a0', (a1 + (a1 < 0 ? 38 : -38)).toFixed(1) + 'deg');
+    });
+  };
+  const updateLower = () => {
+    const vh = window.innerHeight; const on = motionOn();
+    // קודם קוראים את כל המידות, ורק אחר כך כותבים, כדי לא לאלץ חישוב פריסה חוזר
+    const bTop = curtain ? behindSec.getBoundingClientRect().top : 0;
+    const fTop = finalSec ? finalSec.getBoundingClientRect().top : 0;
+    const shows = showImgs.map((img) => img.parentElement.getBoundingClientRect());
+    if (curtain) {
+      const open = on ? ease(clamp01((vh * 0.92 - bTop) / (vh * 0.5))) : 1;
+      curtain.style.setProperty('--open', open.toFixed(4));
+      curtain.classList.toggle('is-open', open > 0.995);
+    }
+    if (finalSec) {
+      if (on) finalSec.style.setProperty('--p', ease(clamp01((vh - fTop) / (vh * 0.7))).toFixed(4));
+      else finalSec.style.removeProperty('--p');
+    }
+    showImgs.forEach((img, i) => {
+      const r = shows[i];
+      if (!on) { img.style.removeProperty('--py'); return; }
+      if (r.bottom < -100 || r.top > vh + 100) return;
+      img.style.setProperty('--py', (((r.top + r.height / 2) - vh / 2) / vh * -7).toFixed(2) + '%');
+    });
+  };
+
   /* ---------- גלילה אחת לכל האפקטים ---------- */
   let ticking = false;
   const onScroll = () => {
     if (ticking) return; ticking = true;
-    requestAnimationFrame(() => { updateJourney(); updateStrip(); ticking = false; });
+    requestAnimationFrame(() => { updateJourney(); updateStrip(); updateLower(); ticking = false; });
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   let rT;
-  window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => { setupStrip(); updateJourney(); }, 120); });
-  window.addEventListener('load', () => { setupStrip(); updateJourney(); });
-  document.addEventListener('motionchange', () => { setupStrip(); updateJourney(); });
-  updateJourney();
+  window.addEventListener('resize', () => { clearTimeout(rT); rT = setTimeout(() => { setupStrip(); updateJourney(); aimBeams(); updateLower(); }, 120); });
+  window.addEventListener('load', () => { setupStrip(); updateJourney(); aimBeams(); updateLower(); });
+  document.addEventListener('motionchange', () => { setupStrip(); updateJourney(); updateLower(); });
+  updateJourney(); aimBeams(); updateLower();
 
   /* ---------- ספריית השירים: נפתחת בלחיצה, כדי שהדף יישאר קצר וקל ---------- */
   const library = $('#library');
@@ -427,6 +507,7 @@
       const firstBad = !emailOk ? email : !topics.length ? $('[name="c-topic"]', clubForm) : !consent.checked ? consent : null;
       if (firstBad) { firstBad.focus(); return; }
       const name = clubForm.elements.name.value.trim();
+      if (data.live) { liveClub(name, email, topics); return; }
       addSubscriber({ name, email: email.value.trim(), topics, source: 'club' });
       const topicNames = topics.map((k) => data.topics[k]).join(data.lang === 'he' ? ', ' : ', ');
       const lines = C.emailLines.map((l, i) => `<p${i === 0 ? ' style="font-weight:700"' : ''}>${fill(l, { name: name ? ' ' + escapeHtml(name) : '', topics: escapeHtml(topicNames) })}</p>`).join('');
@@ -443,6 +524,34 @@
         clubSuccess.hidden = true; clubSuccess.innerHTML = ''; clubForm.hidden = false; email.focus();
       });
     });
+    // באתר החי: הרשמה אמיתית, עם מייל לאישור הכתובת
+    const showClubMessage = (title, text) => {
+      clubSuccess.innerHTML = `
+        <div class="success-head"><span class="success-ico"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg></span>
+          <div><h3>${title}</h3><p>${text}</p></div></div>
+        <div class="success-actions"><button type="button" class="btn btn-outline" data-club-again>${escapeHtml(C.again)}</button></div>`;
+      clubForm.hidden = true; clubSuccess.hidden = false; clubSuccess.focus({ preventScroll: true });
+      $('[data-club-again]', clubSuccess).addEventListener('click', () => {
+        clubForm.reset(); ['ce-email', 'ce-topics', 'ce-consent'].forEach((id) => cErr(id, ''));
+        clubSuccess.hidden = true; clubSuccess.innerHTML = ''; clubForm.hidden = false; clubForm.elements.email.focus();
+      });
+    };
+    async function liveClub(name, email, topics) {
+      const btn = $('button[type="submit"]', clubForm);
+      busy(btn, true);
+      try {
+        await postJSON('subscribe', { name, email: email.value.trim(), topics, consent: true, lang: data.lang, t: Date.now() - pageStart, website: clubForm.elements.website.value });
+        showClubMessage(escapeHtml(C.successTitle), `${fill(escapeHtml(C.successText), { email: `<bdi>${escapeHtml(email.value.trim())}</bdi>` })} ${escapeHtml(T.spamHint)}`);
+      } catch (err) {
+        cErr('ce-email', err.status === 429 ? T.tooMany : fill(T.sendError, { email: data.choirEmail }));
+      } finally { busy(btn, false); }
+    }
+    // חזרה מקישור האישור שבמייל
+    if (data.live && /[?&]subscribed=1\b/.test(location.search)) {
+      showClubMessage(escapeHtml(T.confirmed), '');
+      try { history.replaceState(null, '', location.pathname + '#club'); } catch (err) { /* לא קריטי */ }
+      setTimeout(() => $('#club').scrollIntoView({ block: 'start' }), 300);
+    }
   }
 
   /* הטיה עדינה של כרטיס השיר מול העכבר */
@@ -466,6 +575,13 @@
   const titleEl = $('#player-title');
   const ytLink = $('[data-player-yt]', player);
   const bgImg = $('[data-player-bg]', player);
+  const catEl = $('[data-player-cat]', player);
+  const durEl = $('[data-player-dur]', player);
+  const aboutEl = $('[data-player-about]', player);
+  const countEl = $('[data-player-count]', player);
+  const toastEl = $('[data-player-toast]', player);
+  const queueEl = $('[data-player-queue]', player);
+  const upNextBox = $('[data-player-upnext]', player);
   const shortIds = new Set(data.vertical || []);
   let queue = []; let qi = 0; let lastFocus = null;
   const coverFor = (id) => (shortIds.has(id) ? `img/shorts/${id}.webp` : `img/covers/${id}.webp`);
@@ -484,15 +600,38 @@
     titleEl.textContent = data.videos[id] || '';
     ytLink.href = vertical ? `https://www.youtube.com/shorts/${id}` : `https://www.youtube.com/watch?v=${id}`;
     bgImg.src = assetBase + coverFor(id);
+    // פרטי השיר: סוג, משך, תיאור קצר ומיקום ברשימה
+    const [cat, dur] = (data.meta && data.meta[id]) || ['', ''];
+    const P = data.player;
+    catEl.textContent = (cat && P.cats[cat]) || '';
+    catEl.hidden = !catEl.textContent;
+    $('bdi', durEl).textContent = dur;
+    durEl.hidden = !dur;
+    aboutEl.textContent = (cat && P.about[cat]) || '';
     const multi = queue.length > 1;
     $('[data-player-prev]', player).hidden = !multi;
     $('[data-player-next]', player).hidden = !multi;
+    countEl.textContent = multi ? fill(P.count, { i: qi + 1, n: queue.length }) : '';
+    toastEl.textContent = '';
+    renderQueue();
+    // קישור ישיר לשיר, כדי שאפשר לשלוח אותו הלאה
+    try { history.replaceState(null, '', '#play=' + id); } catch (e) { /* לא קריטי */ }
+  }
+  function renderQueue() {
+    const next = [];
+    for (let k = 1; k < queue.length && next.length < 3; k++) next.push((qi + k) % queue.length);
+    upNextBox.hidden = !next.length;
+    queueEl.innerHTML = next.map((idx) => {
+      const id = queue[idx]; const m = (data.meta && data.meta[id]) || ['', ''];
+      const meta = [m[0] && data.player.cats[m[0]], m[1]].filter(Boolean).map(escapeHtml).join(' · ');
+      return `<li><button type="button" class="q-item" data-q="${idx}"><span class="q-thumb"><img src="${assetBase}img/covers/${encodeURIComponent(id)}-s.webp" alt="" width="160" height="90" loading="lazy" decoding="async"></span><span class="q-copy"><span class="q-title">${escapeHtml(data.videos[id] || '')}</span><span class="q-meta">${meta}</span></span></button></li>`;
+    }).join('');
   }
   function openPlayer(id, trigger) {
-    // ״הבא״ ו״הקודם״ עוברים בין השירים שמוצגים באותו מקום: בספרייה או בדף הבית
-    const scope = (trigger && trigger.closest('#library')) || $('.music') || document;
-    const visibleSongs = $$('.song:not([hidden]) [data-play]', scope).map((b) => b.dataset.play);
-    queue = visibleSongs.includes(id) ? visibleSongs : [id];
+    // ״הבא בתור״ מגיע מאותו מקום שממנו לחצו: הספרייה, רצועת הערוץ או רשימת השירים בדף
+    const scope = (trigger && (trigger.closest('#library') || trigger.closest('.channel-strip'))) || $('.music') || document;
+    const list = $$(scope.classList && scope.classList.contains('channel-strip') ? '[data-play]' : '.song:not([hidden]) [data-play]', scope).map((b) => b.dataset.play);
+    queue = list.includes(id) ? list : [id].concat(list.filter((x) => x !== id));
     qi = queue.indexOf(id);
     lastFocus = trigger || document.activeElement;
     player.hidden = false;
@@ -505,18 +644,39 @@
     player.hidden = true;
     frame.innerHTML = '';
     setLock();
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* לא קריטי */ }
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
   }
   const step = (d) => { qi = (qi + d + queue.length) % queue.length; load(queue[qi]); };
   document.addEventListener('click', (e) => {
     const t = e.target.closest('[data-play]');
     if (t) { e.preventDefault(); openPlayer(t.dataset.play, t); return; }
+    const q = e.target.closest('[data-q]');
+    if (q) { qi = Number(q.dataset.q); load(queue[qi]); $('.player-close', player).focus(); return; }
+    if (e.target.closest('[data-player-join]')) { closePlayer(); return; }
     if (e.target.closest('[data-player-close]')) closePlayer();
   });
-  $('[data-player-prev]', player).addEventListener('click', () => step(doc.dir === 'rtl' ? -1 : -1));
+  $('[data-player-prev]', player).addEventListener('click', () => step(-1));
   $('[data-player-next]', player).addEventListener('click', () => step(1));
+  $('[data-player-share]', player).addEventListener('click', async () => {
+    const id = queue[qi]; const title = data.videos[id] || '';
+    const url = location.origin + location.pathname + '#play=' + id;
+    if (navigator.share) {
+      try { await navigator.share({ title, text: fill(data.player.shareText, { title }), url }); return; } catch (err) { if (err && err.name === 'AbortError') return; }
+    }
+    try { await navigator.clipboard.writeText(url); toastEl.textContent = data.player.copied; } catch (err) { toastEl.textContent = url; }
+  });
+  // פתיחה ישירה מקישור ששיתפו: ‎#play=מזהה
+  const deep = /^#play=([\w-]{11})$/.exec(location.hash);
+  if (deep && data.videos[deep[1]]) openPlayer(deep[1], null);
   player.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { e.preventDefault(); closePlayer(); return; }
+    if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && queue.length > 1 && !e.target.closest('input, textarea')) {
+      e.preventDefault();
+      const forward = (e.key === 'ArrowLeft') === (doc.dir === 'rtl');
+      step(forward ? 1 : -1);
+      return;
+    }
     if (e.key !== 'Tab') return;
     const f = $$('button:not([hidden]), a[href], iframe', player).filter((el) => el.offsetParent !== null || el.tagName === 'IFRAME');
     if (!f.length) return;

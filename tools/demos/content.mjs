@@ -91,7 +91,7 @@ export const shorts = [
 
 const he = {
   lang: 'he', dir: 'rtl', other: 'en', otherHref: 'en/', base: '',
-  title: 'מקהלת פרחי שמיים · חוגי מקהלה ופיתוח קול לבנים',
+  title: 'מקהלת פרחי שמיים · חוגי מקהלה לבנים בירושלים ובבית שמש',
   description: 'חוגי מקהלה ופיתוח קול מקצועי לבנים בגילאי 8–12 בירושלים ובבית שמש, ביחס אישי לכל ילד. מצאו חוג באזור שלכם והשאירו פרטים בדקה.',
   demoBar: 'הדגמה · מסלול 2: אתר והרשמה לחוגים · העיצוב להמחשה',
   demoAdmin: 'אזור הניהול לדוגמה',
@@ -197,8 +197,20 @@ const he = {
   },
 
   player: {
-    label: 'נגן המקהלה', close: 'סגירת הנגן', prev: 'השיר הקודם', next: 'השיר הבא',
-    youtube: 'לצפייה ביוטיוב', note: 'אם הנגן לא נטען אצלכם, אפשר לצפות ישירות ביוטיוב.',
+    label: 'נגן המקהלה', close: 'סגירת הנגן', prev: 'השיר הקודם', next: 'השיר הבא', prevShort: 'הקודם', nextShort: 'הבא',
+    youtube: 'ביוטיוב', note: 'אם הנגן לא נטען אצלכם, אפשר לצפות ישירות ביוטיוב.',
+    nowPlaying: 'מתנגן עכשיו', count: '{i} מתוך {n}', upNext: 'הבא בתור', share: 'שיתוף', copied: 'הקישור לשיר הועתק',
+    shareText: 'מקהלת פרחי שמיים · {title}', by: 'בניצוח ר׳ מרדכי גורדון',
+    cats: { clip: 'קליפ רשמי', live: 'מהבמה', medley: 'מחרוזת ומופע', makhalolam: 'מקהלולם', short: 'קטע קצר' },
+    about: {
+      clip: 'קליפ רשמי של המקהלה — הקלטת אולפן וצילום מיוחד.',
+      live: 'צילום מהופעה חיה של המקהלה על הבמה.',
+      medley: 'מחרוזת שירים או מופע שלם, ברצף אחד.',
+      makhalolam: 'מתוך מקהלולם — המופע שבו הקהל לומד את התפקידים ושר יחד עם המקהלה.',
+      short: 'רגע קצר מהערוץ: מהחזרות, מאחורי הקלעים ומהבמה.',
+    },
+    ctaTitle: 'רוצים שגם הבן שלכם ישיר כך?', cta: 'מצאו חוג באזור שלכם',
+    keys: 'החצים במקלדת עוברים בין השירים, ומקש Esc סוגר',
   },
 
   stage: {
@@ -280,6 +292,12 @@ const he = {
     required: 'שדה חובה', email: 'כתובת המייל לא תקינה', phone: 'מספר טלפון לא תקין',
     age: 'גיל בין 5 ל־16', branch: 'בחרו חוג', consent: 'יש לאשר את הפנייה',
     summary: 'יש לתקן {n} שדות לפני השליחה',
+    // באתר החי: שליחה אמיתית לשרת
+    sending: 'שולחים…', liveSent: 'שלחנו לכם מייל אישור לכתובת {email}.',
+    spamHint: 'לא הגיע תוך כמה דקות? כדאי להציץ בתיקיית הספאם.',
+    sendError: 'השליחה לא הצליחה. נסו שוב בעוד רגע, או כתבו לנו ל־{email}.',
+    tooMany: 'נשלחו כבר כמה פניות מהמכשיר הזה. נסו שוב בעוד כמה דקות.',
+    confirmed: 'ההרשמה לעדכונים אושרה. תודה!',
     successTitle: 'תודה, {parent}! הפנייה התקבלה.',
     successText: 'צוות המקהלה יחזור אליכם בימים הקרובים לגבי {child} וחוג {branch}.',
     emailLabel: 'כך נראה מייל האישור שתקבלו',
@@ -293,7 +311,7 @@ const he = {
 
 const en = {
   lang: 'en', dir: 'ltr', other: 'he', otherHref: '../', base: '../',
-  title: 'Pirchei Shomayim Boys’ Choir · Choir classes & voice training for boys',
+  title: 'Pirchei Shomayim Boys’ Choir · Classes in Jerusalem & Beit Shemesh',
   description: 'Choir classes and professional voice training for boys aged 8–12 in Jerusalem and Beit Shemesh, with personal attention for every child. Find a class near you and leave your details in a minute.',
   demoBar: 'Demo · Option 2: website with class sign-up · design for illustration',
   demoAdmin: 'Sample admin area',
@@ -398,8 +416,20 @@ const en = {
   },
 
   player: {
-    label: 'Choir player', close: 'Close player', prev: 'Previous song', next: 'Next song',
-    youtube: 'Watch on YouTube', note: 'If the player doesn’t load for you, you can watch directly on YouTube.',
+    label: 'Choir player', close: 'Close player', prev: 'Previous song', next: 'Next song', prevShort: 'Previous', nextShort: 'Next',
+    youtube: 'YouTube', note: 'If the player doesn’t load for you, you can watch directly on YouTube.',
+    nowPlaying: 'Now playing', count: '{i} of {n}', upNext: 'Up next', share: 'Share', copied: 'Link to the song copied',
+    shareText: 'Pirchei Shomayim Boys’ Choir · {title}', by: 'Conducted by R’ Mordechai Gordon',
+    cats: { clip: 'Music video', live: 'Live', medley: 'Medley & concert', makhalolam: 'Makhalolam', short: 'Short clip' },
+    about: {
+      clip: 'An official choir music video — studio recording, filmed specially.',
+      live: 'Filmed live, with the choir on stage.',
+      medley: 'A medley or a full concert, in one sitting.',
+      makhalolam: 'From Makhalolam — the concert where the audience learns the parts and sings along with the choir.',
+      short: 'A short moment from the channel: rehearsals, backstage and the stage.',
+    },
+    ctaTitle: 'Would your son love to sing like this?', cta: 'Find a class near you',
+    keys: 'Arrow keys: next and previous · Esc: close',
   },
 
   stage: {
@@ -481,6 +511,11 @@ const en = {
     required: 'Required', email: 'Please enter a valid email', phone: 'Please enter a valid phone number',
     age: 'Age between 5 and 16', branch: 'Please choose a class', consent: 'Please confirm to continue',
     summary: 'Please fix {n} fields before sending',
+    sending: 'Sending…', liveSent: 'We’ve sent a confirmation email to {email}.',
+    spamHint: 'Not there in a few minutes? It’s worth checking your spam folder.',
+    sendError: 'Sending didn’t work. Please try again in a moment, or email us at {email}.',
+    tooMany: 'Several inquiries were already sent from this device. Please try again in a few minutes.',
+    confirmed: 'Your updates subscription is confirmed. Thank you!',
     successTitle: 'Thank you, {parent}! We received your inquiry.',
     successText: 'The choir team will get back to you soon about {child} and the {branch} class.',
     emailLabel: 'This is the confirmation email you will receive',

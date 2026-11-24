@@ -122,7 +122,7 @@ export const exclusiveText = {
     kicker: 'מאחורי הקולות · רק באתר',
     title: 'מה שלא תמצאו ביוטיוב',
     lead: 'תיעוד מהחזרות ומהאולפן, הסברים של ר׳ מרדכי על העבודה הקולית, וטעימות מהשיר הבא — לפני כולם, ורק כאן באתר.',
-    badge: 'רק באתר', soon: 'יעלה מחומרי המקהלה', members: 'לחברי המועדון', joinClub: 'הצטרפו למועדון כדי לצפות',
+    badge: 'רק באתר', soon: 'יעלה מחומרי המקהלה', soonLive: 'בקרוב באתר', notify: 'קבלו הודעה כשזה עולה', members: 'לחברי המועדון', joinClub: 'הצטרפו למועדון כדי לצפות',
     items: [
       { type: 'מחזרה לבמה', title: 'איך נולד ״אתה בחרתנו״', text: 'הקלטה מהחזרה הראשונה לצד הביצוע הסופי — לשמוע איך הקולות נבנים לאורך העבודה.', img: 'FzzkmO2WIhg', icon: 'wave' },
       { type: 'באולפן', title: 'בונים הרמוניה', text: 'ר׳ מרדכי מסביר איך כל קבוצה לומדת את התפקיד שלה, ואיך הכול מתחבר לצליל אחד.', img: 'tGtW5cxt5oY', icon: 'mic' },
@@ -137,7 +137,7 @@ export const exclusiveText = {
     kicker: 'Behind the voices · only on this site',
     title: 'What you won’t find on YouTube',
     lead: 'Rehearsal and studio footage, R’ Mordechai explaining the vocal work, and previews of the next song — before anyone else, and only here.',
-    badge: 'Only here', soon: 'Coming from the choir', members: 'For club members', joinClub: 'Join the club to watch',
+    badge: 'Only here', soon: 'Coming from the choir', soonLive: 'Coming soon', notify: 'Get notified when it’s up', members: 'For club members', joinClub: 'Join the club to watch',
     items: [
       { type: 'From rehearsal to stage', title: 'How “Ata Bechartanu” was born', text: 'The first rehearsal recording next to the final performance — hear how the voices come together.', img: 'FzzkmO2WIhg', icon: 'wave' },
       { type: 'In the studio', title: 'Building the harmony', text: 'R’ Mordechai explains how each group learns its part, and how it all becomes one sound.', img: 'tGtW5cxt5oY', icon: 'mic' },

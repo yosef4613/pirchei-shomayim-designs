@@ -1,6 +1,6 @@
 // בונה את שלוש הדגמות המסלולים (דף נחיתה, אתר חוגים, אתר ומועדון) בעברית ובאנגלית מאותו מקור,
 // ואת עמוד הבחירה ואת לוחות הניהול לדוגמה.  הרצה מתיקיית המאגר: node tools/demos/build.mjs
-import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, cpSync, rmSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dict, branches, songs, shorts, CHOIR_EMAIL, CHANNEL_URL } from './content.mjs';
@@ -9,8 +9,11 @@ import { PLANS, planConfig, planText, exclusiveText } from './plans.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '3';
+const VERSION = '4';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
+// האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
+const LIVE = 'https://xn--cebeaqd7a2ak.com/';
+const LIVE_PLAN = 3;
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const catShort = {
@@ -38,17 +41,22 @@ const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden=
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 21H20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.5" cy="16" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v5a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
 </svg>`;
 
-function page(t, plan) {
+function page(t, plan, live = false) {
   const cfg = planConfig[plan];
   const P = planText[t.lang];
   const lang = t.lang;
   const B = lang === 'he' ? '' : '../';          // שורש המסלול (demos/N/)
-  const A = `${B}../assets/`;                     // נכסים משותפים (demos/assets/)
-  const PDF = `${B}../../assets/`;                // מודעות החוג בשורש המאגר
+  const A = live ? '/ps/assets/' : `${B}../assets/`;          // נכסים משותפים
+  const PDF = live ? '/ps/flyers/' : `${B}../../assets/`;      // מודעות החוג
   const langSuffix = lang === 'he' ? '' : 'en/';
+  const ROOTURL = live ? LIVE : `${SITE}${plan}/`;
+  const PAGEURL = ROOTURL + langSuffix;
+  const IMGURL = live ? `${LIVE}ps/assets/img/` : `${SITE}assets/img/`;
+  const legal = live ? `/${langSuffix}privacy/` : '#top';
   const branchName = (b) => `${b[lang].name} · ${t.join.cities[b.city]}`;
   // בדף הבית: מבחר קצר. כל השירים נפתחים בלחיצה בספרייה נפרדת (במסלולים 2 ו־3)
   const homeSongs = songs.filter((s) => !s.isNew && !s.vertical).slice(0, 8);
@@ -57,13 +65,14 @@ function page(t, plan) {
     : { libOpen: `All ${songs.length} songs & videos`, libTitle: 'All songs & videos', libClose: 'Close the song library' };
   const featured = songs.find((s) => s.isNew);
   const pageData = {
-    lang, dir: t.dir, plan, form: cfg.form, choirEmail: CHOIR_EMAIL, assetBase: A,
+    lang, dir: t.dir, plan, form: cfg.form, choirEmail: CHOIR_EMAIL, assetBase: A, live, endpoint: live ? '/wp-json/ps/v1/' : '',
     js: t.js, player: t.player, music: { showAll: t.music.showAll, showLess: t.music.showLess, count: t.music.count },
     motionOn: t.motionOn, motionOff: t.motionOff, cities: t.join.cities, chosen: t.join.chosen, choose: t.join.choose, fit: t.join.fit,
-    emailForm: P.emailForm, account: P.account, club: P.club, topics: P.topics,
+    emailForm: live ? undefined : P.emailForm, account: P.account, club: live ? { ...P.club, demoNote: undefined } : P.club, topics: P.topics,
     branches: branches.map((b) => ({ id: b.id, city: b.city, name: b[lang].name, reg: b[lang].reg })),
-    videos: Object.fromEntries([...songs.map((s) => [s.id, s[lang]]), ...shorts.map((s) => [s.id, s[lang]])]),
-    adminHref: cfg.admin ? `${B}admin/` : '',
+    videos: Object.fromEntries([...t.stage.shows.map((s) => [s.video, s.title]), ...songs.map((s) => [s.id, s[lang]]), ...shorts.map((s) => [s.id, s[lang]])]),
+    meta: Object.fromEntries([...t.stage.shows.map((s) => [s.video, ['live', '']]), ...songs.map((s) => [s.id, [s.vertical ? 'short' : s.cat, s.dur || '']]), ...shorts.map((s) => [s.id, ['short', '']])]),
+    adminHref: cfg.admin && !live ? `${B}admin/` : '',
     // סרטונים אנכיים (שורטס) נפתחים בנגן אנכי — גם מספריית השירים וגם מרצועת מאחורי הקלעים
     vertical: [...new Set([...songs.filter((s) => s.vertical).map((s) => s.id), ...shorts.map((s) => s.id)])],
   };
@@ -101,29 +110,44 @@ function page(t, plan) {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>${esc(t.title)}</title>
   <meta name="description" content="${esc(t.description)}">
-  <meta name="robots" content="noindex, nofollow">
+  <meta name="robots" content="${live ? 'index, follow, max-image-preview:large, max-video-preview:-1' : 'noindex, nofollow'}">
   <meta name="theme-color" content="#0b0812">
-  <link rel="alternate" hreflang="he" href="${SITE}${plan}/">
-  <link rel="alternate" hreflang="en" href="${SITE}${plan}/en/">
+  <link rel="canonical" href="${PAGEURL}">
+  <link rel="alternate" hreflang="he" href="${ROOTURL}">
+  <link rel="alternate" hreflang="en" href="${ROOTURL}en/">
+  <link rel="alternate" hreflang="x-default" href="${ROOTURL}">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="${lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir'}">
+  <meta property="og:url" content="${PAGEURL}">
   <meta property="og:title" content="${esc(t.title)}">
   <meta property="og:description" content="${esc(t.description)}">
-  <meta property="og:image" content="${SITE}assets/img/og.jpg">
+  <meta property="og:image" content="${IMGURL}og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${esc(t.hero.alts[0])}">
   <meta property="og:locale" content="${lang === 'he' ? 'he_IL' : 'en_US'}">
-  <link rel="canonical" href="${SITE}${plan}/${langSuffix}">
+  <meta property="og:locale:alternate" content="${lang === 'he' ? 'en_US' : 'he_IL'}">
+  <meta name="twitter:card" content="summary_large_image">
   <script type="application/ld+json">${JSON.stringify({
     '@context': 'https://schema.org',
-    '@type': 'MusicGroup',
-    name: lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir',
-    alternateName: lang === 'he' ? 'Pirchei Shomayim Boys’ Choir' : 'מקהלת פרחי שמיים',
-    description: t.description,
-    url: `${SITE}${plan}/${langSuffix}`,
-    logo: `${SITE}assets/img/icon-180.png`,
-    image: `${SITE}assets/img/og.jpg`,
-    email: CHOIR_EMAIL,
-    genre: lang === 'he' ? 'מוזיקה יהודית, מקהלת ילדים' : 'Jewish music, boys’ choir',
-    areaServed: lang === 'he' ? ['ירושלים', 'בית שמש'] : ['Jerusalem', 'Beit Shemesh'],
-    sameAs: [CHANNEL_URL],
+    '@graph': [
+      {
+        '@type': 'MusicGroup', '@id': `${ROOTURL}#choir`,
+        name: lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir',
+        alternateName: lang === 'he' ? ['Pirchei Shomayim Boys’ Choir', 'פרחי שמיים'] : ['מקהלת פרחי שמיים', 'Pirchei Shomayim'],
+        description: t.description,
+        url: ROOTURL,
+        logo: { '@type': 'ImageObject', url: `${IMGURL}icon-256.png`, width: 256, height: 256 },
+        image: `${IMGURL}og.jpg`,
+        email: CHOIR_EMAIL,
+        genre: lang === 'he' ? 'מוזיקה יהודית, מקהלת ילדים' : 'Jewish music, boys’ choir',
+        areaServed: (lang === 'he' ? ['ירושלים', 'בית שמש'] : ['Jerusalem', 'Beit Shemesh']).map((name) => ({ '@type': 'City', name })),
+        knowsLanguage: ['he', 'en'],
+        sameAs: [CHANNEL_URL],
+      },
+      { '@type': 'WebSite', '@id': `${ROOTURL}#website`, url: ROOTURL, name: lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir', inLanguage: ['he', 'en'], publisher: { '@id': `${ROOTURL}#choir` } },
+      { '@type': 'WebPage', '@id': `${PAGEURL}#page`, url: PAGEURL, name: t.title, description: t.description, inLanguage: lang, isPartOf: { '@id': `${ROOTURL}#website` }, about: { '@id': `${ROOTURL}#choir` }, primaryImageOfPage: `${IMGURL}og.jpg` },
+    ],
   }).replace(/</g, '\\u003c')}</script>
   <link rel="icon" href="${A}img/icon-64.png" type="image/png">
   <link rel="apple-touch-icon" href="${A}img/icon-180.png">
@@ -139,7 +163,7 @@ ${sprite}
 <a class="skip" href="#main">${t.skip}</a>
 
 <header class="site-header" id="top">
-  ${demoBar}
+  ${live ? '' : demoBar}
   <div class="wrap header-in">
     <a class="brand" href="#main" aria-label="${esc(t.brand + ' · ' + t.brandSub)}">
       <img class="brand-icon" src="${A}img/icon-180.png" alt="" width="44" height="44">
@@ -308,7 +332,7 @@ ${sprite}
               <button class="btn btn-mint btn-lg" type="submit">${esc(cfg.form === 'email' ? P.emailForm.submit : t.form.submit)}${icon(cfg.form === 'email' ? 'mail' : 'arrow', cfg.form === 'email' ? '' : 'ico-dir')}</button>
               <p class="form-privacy">${esc(cfg.form === 'email' ? P.emailForm.privacy : t.form.privacy)}</p>
             </div>
-            <p class="demo-note">${esc(cfg.form === 'email' ? P.emailForm.demoNote : t.form.demoNote)}</p>
+            ${live ? '' : `<p class="demo-note">${esc(cfg.form === 'email' ? P.emailForm.demoNote : t.form.demoNote)}</p>`}
           </form>
 
           <div class="join-success" id="join-success" hidden tabindex="-1" aria-live="polite"></div>
@@ -442,6 +466,7 @@ ${cfg.stage ? `
   </section>
 ${cfg.behind ? `
   <section class="exclusive" id="behind" aria-labelledby="behind-title">
+    <div class="curtain" data-curtain aria-hidden="true"><span class="curtain-l"></span><span class="curtain-r"></span></div>
     <div class="wrap">
       <div class="excl-head">
         <p class="excl-badge">${icon('star')}${esc(X.badge)}</p>
@@ -458,12 +483,12 @@ ${cfg.behind ? `
             <p class="excl-type">${icon(it.icon)}${esc(it.type)}</p>
             <h3>${esc(it.title)}</h3>
             <p>${esc(it.text)}</p>
-            ${locked ? `<a class="text-link" href="#club">${esc(X.joinClub)}${icon('arrow', 'ico-dir')}</a>` : `<span class="soon-dark">${esc(X.soon)}</span>`}
+            ${locked ? `<a class="text-link" href="#club">${esc(live ? X.notify : X.joinClub)}${icon('arrow', 'ico-dir')}</a>` : `<span class="soon-dark">${esc(live ? X.soonLive : X.soon)}</span>`}
           </div>
         </li>`;
         }).join('\n        ')}
       </ul>
-      <p class="excl-note">${esc(X.note)}</p>
+      ${live ? '' : `<p class="excl-note">${esc(X.note)}</p>`}
     </div>
     <div class="channel-strip">
       <div class="wrap"><h3 class="strip-title">${icon('youtube')}${esc(X.fromChannel)}</h3></div>
@@ -504,8 +529,9 @@ ${cfg.club ? `
             <label for="c-consent">${esc(P.club.consent)}</label>
             <p class="field-error" id="ce-consent"></p>
           </div>
+          <div class="hp" aria-hidden="true"><label for="c-website">Website</label><input id="c-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
           <button class="btn btn-purple btn-lg" type="submit">${icon('bell')}${esc(P.club.submit)}</button>
-          <p class="demo-note">${esc(P.club.demoNote)}</p>
+          ${live ? '' : `<p class="demo-note">${esc(P.club.demoNote)}</p>`}
         </form>
         <div class="club-success" id="club-success" hidden tabindex="-1" aria-live="polite"></div>
       </div>
@@ -522,15 +548,16 @@ ${cfg.club ? `
         <p class="conductor"><b>${esc(t.about.conductor)}</b><span>${esc(t.about.conductorRole)}</span></p>
       </div>
     </div>
-    <div class="wrap">
+    ${live ? '' : `<div class="wrap">
       <ul class="about-cards">
         ${t.about.cards.map(([h, p]) => `<li data-reveal><h3>${esc(h)}</h3><p>${esc(p)}</p><span class="soon">${esc(t.about.soon)}</span></li>`).join('\n        ')}
         <li class="testimonials" data-reveal><span class="quote-mark" aria-hidden="true">”</span><h3>${esc(t.about.testimonialsTitle)}</h3><p>${esc(t.about.testimonialsText)}</p><span class="soon">${esc(t.about.soon)}</span></li>
       </ul>
-    </div>
+    </div>`}
   </section>
 
   <section class="final" aria-labelledby="final-title">
+    <span class="final-beam fb-a" aria-hidden="true"></span><span class="final-beam fb-b" aria-hidden="true"></span><span class="final-pool" aria-hidden="true"></span>
     <div class="wrap final-in">
       <h2 id="final-title">${esc(t.final.title)}</h2>
       <p>${esc(t.final.text)}</p>
@@ -558,9 +585,9 @@ ${cfg.club ? `
   </div>
   <div class="wrap footer-legal">
     <span>${esc(t.footer.rights)}</span>
-    <a href="#top">${esc(t.footer.access)}</a>
-    <a href="#top">${esc(t.footer.privacy)}</a>
-    <span class="footer-demo">${esc(t.footer.demo)}</span>
+    <a href="${live ? legal + '#accessibility' : '#top'}">${esc(t.footer.access)}</a>
+    <a href="${legal}">${esc(t.footer.privacy)}</a>
+    ${live ? '' : `<span class="footer-demo">${esc(t.footer.demo)}</span>`}
   </div>
 </footer>
 
@@ -595,17 +622,40 @@ ${cfg.tools ? `<div class="library" id="library" role="dialog" aria-modal="true"
   <div class="player-bg" aria-hidden="true"><img alt="" data-player-bg></div>
   <div class="player-box">
     <div class="player-top">
-      <span class="eq eq-live" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-      <h2 id="player-title" class="player-title"></h2>
+      <span class="player-now"><span class="eq eq-live" aria-hidden="true"><i></i><i></i><i></i><i></i></span>${esc(t.player.nowPlaying)}</span>
+      <span class="player-count" data-player-count></span>
       <button type="button" class="icon-btn player-close" data-player-close aria-label="${esc(t.player.close)}">${icon('close')}</button>
     </div>
-    <div class="player-frame" data-player-frame></div>
-    <div class="player-bottom">
-      <button type="button" class="icon-btn" data-player-prev aria-label="${esc(t.player.prev)}">${icon('arrow', 'ico-prev')}</button>
-      <a class="text-link" data-player-yt href="#" target="_blank" rel="noopener">${icon('youtube')}<span>${esc(t.player.youtube)}</span></a>
-      <button type="button" class="icon-btn" data-player-next aria-label="${esc(t.player.next)}">${icon('arrow', 'ico-dir')}</button>
+    <div class="player-main">
+      <div class="player-stage">
+        <div class="player-frame" data-player-frame></div>
+        <p class="player-note">${esc(t.player.note)}</p>
+      </div>
+      <aside class="player-side" aria-label="${esc(t.player.label)}">
+        <div class="player-info">
+          <p class="player-tags"><span class="player-cat" data-player-cat></span><span class="player-dur" data-player-dur>${icon('clock')}<bdi dir="ltr"></bdi></span></p>
+          <h2 id="player-title" class="player-title"></h2>
+          <p class="player-about" data-player-about></p>
+          <p class="player-by">${icon('music')}<span>${esc(t.player.by)}</span></p>
+        </div>
+        <div class="player-actions">
+          <button type="button" class="btn btn-ghost btn-sm" data-player-prev aria-label="${esc(t.player.prev)}">${icon('arrow', 'ico-prev')}<span>${esc(t.player.prevShort)}</span></button>
+          <button type="button" class="btn btn-ghost btn-sm" data-player-next aria-label="${esc(t.player.next)}"><span>${esc(t.player.nextShort)}</span>${icon('arrow', 'ico-dir')}</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-player-share>${icon('share')}<span>${esc(t.player.share)}</span></button>
+          <a class="btn btn-ghost btn-sm" data-player-yt href="#" target="_blank" rel="noopener">${icon('youtube')}<span>${esc(t.player.youtube)}</span></a>
+        </div>
+        <p class="player-toast" data-player-toast role="status" aria-live="polite"></p>
+        <div class="player-upnext" data-player-upnext>
+          <h3 class="player-h3">${esc(t.player.upNext)}</h3>
+          <ol class="player-queue" data-player-queue></ol>
+        </div>
+        <div class="player-cta">
+          <p>${esc(t.player.ctaTitle)}</p>
+          <a class="btn btn-mint" href="#join" data-player-join>${esc(t.player.cta)}${icon('arrow', 'ico-dir')}</a>
+        </div>
+        <p class="player-keys">${esc(t.player.keys)}</p>
+      </aside>
     </div>
-    <p class="player-note">${esc(t.player.note)}</p>
   </div>
 </div>
 
@@ -680,3 +730,151 @@ for (const plan of PLANS) {
   }
 }
 write(join(OUT, 'index.html'), bidi(hub()));
+
+// ===================================================================
+// האתר החי: מסלול 3 בעברית ובאנגלית, לתיקייה dist/live — בדיוק במבנה של public_html בשרת
+// ===================================================================
+const legalText = {
+  he: {
+    title: 'מדיניות פרטיות והצהרת נגישות · מקהלת פרחי שמיים', description: 'איך אנחנו שומרים על הפרטים שמשאירים באתר, ומה עשינו כדי שהאתר יהיה נגיש לכולם.',
+    back: 'חזרה לאתר', h1: 'מדיניות פרטיות',
+    privacy: [
+      ['אילו פרטים נאספים', 'כשמשאירים פרטים לחוג: שם ההורה, טלפון, מייל, שם הילד, גיל, חיידר וכיתה, והערות אם נכתבו. כשנרשמים לעדכונים: כתובת מייל, שם אם נכתב, והנושאים שבחרתם.'],
+      ['למה הם משמשים', 'כדי לחזור אליכם לגבי החוג ולתאם מבדק התאמה, ולשלוח רק את העדכונים שביקשתם ואישרתם במייל.'],
+      ['מי רואה אותם', 'צוות המקהלה בלבד. הפרטים לא נמכרים ולא מועברים לאף גורם אחר.'],
+      ['איפה הם נשמרים', 'בשרת האתר, ובהודעת מייל שנשלחת לצוות המקהלה.'],
+      ['צפייה, תיקון ומחיקה', 'אפשר לבקש בכל עת לראות, לתקן או למחוק את הפרטים במייל {email}. אפשר להפסיק לקבל עדכונים בכל עת באותו מייל.'],
+      ['סרטונים ועוגיות', 'הסרטונים באתר מוטמעים מיוטיוב במצב פרטיות מוגברת, ונטענים רק כשלוחצים לנגן. האתר לא משתמש בעוגיות מעקב או פרסום. בדפדפן נשמרת רק ההעדפה אם להציג אנימציות.'],
+    ],
+    a11yTitle: 'הצהרת נגישות',
+    a11y: [
+      'האתר נבנה במטרה לעמוד בתקן הישראלי 5568 ובהנחיות WCAG 2.1 ברמה AA.',
+      'מה עשינו: ניווט מלא במקלדת, טקסט חלופי לתמונות, ניגודיות צבעים גבוהה, טפסים עם הודעות שגיאה ברורות, התאמה מלאה לנייד, מתג לעצירת אנימציות, וכיבוד הגדרת ״הפחתת תנועה״ של המכשיר.',
+      'נתקלתם בקושי או בתקלת נגישות? כתבו לנו ל־{email}, ונטפל בהקדם.',
+    ],
+    updated: 'עודכן בנובמבר 2026',
+    nf: { title: 'הדף לא נמצא · מקהלת פרחי שמיים', h1: 'הדף הזה לא נמצא', text: 'ייתכן שהכתובת השתנתה כשהאתר התחדש. כל מה שחיפשתם נמצא בעמוד הראשי.', home: 'לעמוד הראשי', classes: 'למציאת חוג' },
+  },
+  en: {
+    title: 'Privacy policy & accessibility · Pirchei Shomayim Boys’ Choir', description: 'How we look after the details you leave on the site, and what we did to make the site accessible to everyone.',
+    back: 'Back to the site', h1: 'Privacy policy',
+    privacy: [
+      ['What we collect', 'When you leave details for a class: parent’s name, phone, email, child’s name, age, cheder and grade, and notes if you wrote any. When you sign up for updates: your email, your name if given, and the topics you chose.'],
+      ['What it is used for', 'To get back to you about the class and arrange an audition, and to send only the updates you asked for and confirmed by email.'],
+      ['Who sees it', 'Only the choir team. Your details are never sold or passed on to anyone else.'],
+      ['Where it is kept', 'On the website’s server, and in an email sent to the choir team.'],
+      ['Viewing, correcting and deleting', 'You can ask at any time to see, correct or delete your details by emailing {email}. You can stop receiving updates at any time the same way.'],
+      ['Videos and cookies', 'Videos are embedded from YouTube in privacy-enhanced mode and load only when you press play. The site uses no tracking or advertising cookies. Your browser only remembers whether to show animations.'],
+    ],
+    a11yTitle: 'Accessibility statement',
+    a11y: [
+      'The site was built with the aim of meeting Israeli Standard 5568 and WCAG 2.1 at level AA.',
+      'What we did: full keyboard navigation, text alternatives for images, strong colour contrast, forms with clear error messages, full mobile support, a switch to stop animations, and respect for the device’s “reduce motion” setting.',
+      'Ran into a difficulty or an accessibility problem? Email us at {email} and we’ll take care of it promptly.',
+    ],
+    updated: 'Updated November 2026',
+    nf: { title: 'Page not found · Pirchei Shomayim Boys’ Choir', h1: 'We couldn’t find this page', text: 'The address may have changed when the site was renewed. Everything you were looking for is on the home page.', home: 'To the home page', classes: 'Find a class' },
+  },
+};
+
+function simplePage(key, { title, description, path, robots, body }) {
+  const t = dict[key]; const L = legalText[key];
+  const home = key === 'he' ? '/' : '/en/';
+  const alt = path === null ? '' : `
+  <link rel="canonical" href="${LIVE}${(key === 'he' ? '' : 'en/') + path}">
+  <link rel="alternate" hreflang="he" href="${LIVE}${path}">
+  <link rel="alternate" hreflang="en" href="${LIVE}en/${path}">`;
+  return `<!doctype html>
+<html lang="${key}" dir="${t.dir}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(title)}</title>
+  <meta name="description" content="${esc(description)}">
+  <meta name="robots" content="${robots}">
+  <meta name="theme-color" content="#0b0812">${alt}
+  <link rel="icon" href="/ps/assets/img/icon-64.png" type="image/png">
+  <link rel="stylesheet" href="/ps/assets/site.css?v=${VERSION}">
+</head>
+<body class="simple">
+  <header class="simple-head"><div class="wrap simple-head-in">
+    <a class="brand" href="${home}"><img class="brand-icon" src="/ps/assets/img/icon-180.png" alt="" width="44" height="44"><span class="brand-text"><b>${t.brand}</b><small>${t.brandSub}</small></span></a>
+    <a class="btn btn-ghost btn-sm" href="${home}">${esc(L.back)}</a>
+  </div></header>
+  <main class="wrap legal">${body}</main>
+  <footer class="wrap simple-foot"><span>${esc(t.footer.rights)}</span> · <a href="mailto:${CHOIR_EMAIL}">${CHOIR_EMAIL}</a></footer>
+</body>
+</html>`;
+}
+
+const DIST = join(ROOT, 'dist', 'live');
+rmSync(DIST, { recursive: true, force: true });
+const today = '2026-11-24';
+for (const key of ['he', 'en']) {
+  const L = legalText[key];
+  const fixed = (h) => (key === 'he' ? bidi(h) : h);
+  write(join(DIST, 'ps', 'pages', `${key}.html`), fixed(page(dict[key], LIVE_PLAN, true)));
+  const mail = `<a href="mailto:${CHOIR_EMAIL}">${CHOIR_EMAIL}</a>`;
+  write(join(DIST, 'ps', 'pages', `privacy-${key}.html`), fixed(simplePage(key, {
+    title: L.title, description: L.description, path: 'privacy/', robots: 'index, follow',
+    body: `<h1>${esc(L.h1)}</h1>${L.privacy.map(([h, p]) => `<h2>${esc(h)}</h2><p>${esc(p).replace('{email}', mail)}</p>`).join('')}
+      <h1 id="accessibility" class="legal-h1-2">${esc(L.a11yTitle)}</h1>${L.a11y.map((p) => `<p>${esc(p).replace('{email}', mail)}</p>`).join('')}
+      <p class="legal-updated">${esc(L.updated)}</p>`,
+  })));
+  write(join(DIST, 'ps', 'pages', `404-${key}.html`), fixed(simplePage(key, {
+    title: L.nf.title, description: L.nf.text, path: null, robots: 'noindex',
+    body: `<div class="nf"><p class="nf-code" aria-hidden="true">404</p><h1>${esc(L.nf.h1)}</h1><p>${esc(L.nf.text)}</p>
+      <div class="nf-actions"><a class="btn btn-mint btn-lg" href="${key === 'he' ? '/' : '/en/'}#join">${esc(L.nf.classes)}</a><a class="btn btn-ghost btn-lg" href="${key === 'he' ? '/' : '/en/'}">${esc(L.nf.home)}</a></div></div>`,
+  })));
+}
+// דפי ה־HTML נקראים רק דרך התוסף, לא ישירות
+write(join(DIST, 'ps', 'pages', '.htaccess'), '<IfModule mod_authz_core.c>\n  Require all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n  Order allow,deny\n  Deny from all\n</IfModule>\n');
+cpSync(join(OUT, 'assets'), join(DIST, 'ps', 'assets'), { recursive: true, filter: (src) => !/admin\.(css|js)$/.test(src) });
+for (const f of ['jerusalem-hebrew.pdf', 'jerusalem-english.pdf']) cpSync(join(ROOT, 'assets', f), join(DIST, 'ps', 'flyers', f));
+cpSync(join(ROOT, 'tools', 'live', 'pirchei-site.php'), join(DIST, 'wp-content', 'mu-plugins', 'pirchei-site.php'));
+write(join(DIST, 'robots.txt'), `User-agent: *
+Disallow: /wp-admin/
+Allow: /wp-admin/admin-ajax.php
+Disallow: /ps/pages/
+
+Sitemap: ${LIVE}sitemap.xml
+`);
+const urlEntry = (path, img) => ['', 'en/'].map((pre) => `  <url>
+    <loc>${LIVE}${pre}${path}</loc>
+    <lastmod>${today}</lastmod>
+    <xhtml:link rel="alternate" hreflang="he" href="${LIVE}${path}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${LIVE}en/${path}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${LIVE}${path}"/>${img ? `
+    <image:image><image:loc>${LIVE}ps/assets/img/og.jpg</image:loc></image:image>
+    <image:image><image:loc>${LIVE}ps/assets/img/logo-full.webp</image:loc></image:image>` : ''}
+  </url>`).join('\n');
+write(join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${urlEntry('', true)}
+${urlEntry('privacy/', false)}
+</urlset>
+`);
+
+// תיאור האתר לכלי בינה מלאכותית (מחליף את הקובץ הישן שנוצר אוטומטית)
+write(join(DIST, 'llms.txt'), `# מקהלת פרחי שמיים · Pirchei Shomayim Boys’ Choir
+
+> מקהלת ילדים וחוגי מקהלה ופיתוח קול לבנים בגילאי 8–12 בירושלים ובבית שמש, בניצוח ר׳ מרדכי גורדון. Boys’ choir and choir classes for boys aged 8–12 in Jerusalem and Beit Shemesh, conducted by R’ Mordechai Gordon.
+
+## עמודים · Pages
+
+- [העמוד הראשי](${LIVE}): חוגים, שירים וקליפים, הופעות, מאחורי הקלעים, מקהלולם, עדכונים ואודות
+- [English home page](${LIVE}en/): classes, songs and videos, concerts, behind the scenes, Makhalolam, updates and about
+- [מדיניות פרטיות והצהרת נגישות](${LIVE}privacy/)
+- [Privacy policy and accessibility](${LIVE}en/privacy/)
+
+## חוגים · Classes
+
+- ירושלים: רמת אשכול, נווה יעקב
+- בית שמש: רמה א׳, רמה ד׳
+- קבלה במבדק התאמה קצר. ההרשמה דרך הטופס באתר.
+
+## קשר · Contact
+
+- מייל: ${CHOIR_EMAIL}
+- ערוץ היוטיוב: ${CHANNEL_URL}
+`);
