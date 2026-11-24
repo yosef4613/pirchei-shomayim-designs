@@ -843,3 +843,7 @@ button[aria-busy="true"] { opacity: .7; cursor: progress; }
   .mk-video span { padding: 18px 8px 7px; font-size: .78rem; gap: 5px; }
 }
 @media (max-width: 340px) { .branches { grid-template-columns: 1fr; } }
+
+/* שורת הפתיחה בתוך הכותרת הראשית (שם המקהלה בכותרת — חשוב לגוגל), באותו מראה כמו קודם */
+.hero h1 .eyebrow { display: flex; width: fit-content; max-width: 100%; font-size: .92rem; line-height: 1.35; letter-spacing: 0; font-weight: 600; text-wrap: wrap; }
+@media (max-width: 720px) { .hero h1 .eyebrow { font-size: .85rem; margin-bottom: 16px; } }

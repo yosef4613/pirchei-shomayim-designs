@@ -104,7 +104,7 @@ const he = {
   headerCta: 'השאירו פרטים',
 
   hero: {
-    eyebrow: 'חוגי מקהלה ופיתוח קול · לבנים בגילאי 8–12',
+    eyebrow: 'מקהלת פרחי שמיים · חוגי מקהלה לבנים בגילאי 8–12',
     h1a: 'הבן שלכם אוהב לשיר?',
     h1b: 'כאן הקול שלו עולה לבמה.',
     lead: 'פיתוח קול מקצועי, שירה בהרמוניה והקלטות באולפן — ביחס אישי לכל ילד, בניצוחו של ר׳ מרדכי גורדון.',
@@ -324,7 +324,7 @@ const en = {
   headerCta: 'Leave your details',
 
   hero: {
-    eyebrow: 'Choir classes & voice training · boys aged 8–12',
+    eyebrow: 'Pirchei Shomayim Boys’ Choir · classes for boys aged 8–12',
     h1a: 'Does your son love to sing?',
     h1b: 'Here, his voice finds its stage.',
     lead: 'Professional voice training, singing in harmony and studio recording — with personal attention for every boy, under the direction of R’ Mordechai Gordon.',

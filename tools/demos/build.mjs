@@ -9,7 +9,7 @@ import { PLANS, planConfig, planText, exclusiveText } from './plans.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '7';
+const VERSION = '8';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -137,7 +137,11 @@ function page(t, plan, live = false) {
       {
         '@type': 'MusicGroup', '@id': `${ROOTURL}#choir`,
         name: lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir',
-        alternateName: lang === 'he' ? ['Pirchei Shomayim Boys’ Choir', 'פרחי שמיים'] : ['מקהלת פרחי שמיים', 'Pirchei Shomayim'],
+        // כל צורות הכתיב שאנשים מחפשים בפועל
+        alternateName: lang === 'he'
+          ? ['Pirchei Shomayim Boys’ Choir', 'פרחי שמיים', 'פרחי שמים', 'מקהלת פרחי שמים', 'מקהלת ילדי פרחי שמים', 'מקהלת הילדים פרחי שמיים', 'Pirchei Shomayim', 'Pirchei Shamayim']
+          : ['מקהלת פרחי שמיים', 'פרחי שמים', 'Pirchei Shomayim', 'Pirchei Shamayim', 'Pirchei Shomayim Boy’s Choir', 'Pirchei Shomayim Choir'],
+        member: [{ '@type': 'OrganizationRole', roleName: t.about.conductorRole, member: { '@type': 'Person', name: lang === 'he' ? 'מרדכי גורדון' : 'Mordechai Gordon', alternateName: lang === 'he' ? ['ר׳ מרדכי גורדון', 'מרדי גורדון', 'Mordechai Gordon', 'Mordi Gordon'] : ['R’ Mordechai Gordon', 'Mordi Gordon', 'מרדכי גורדון', 'מרדי גורדון'], jobTitle: t.about.conductorRole } }],
         description: t.description,
         url: ROOTURL,
         logo: { '@type': 'ImageObject', url: `${IMGURL}icon-256.png`, width: 256, height: 256 },
@@ -208,8 +212,7 @@ ${sprite}
     </div>
     <div class="wrap hero-in">
       <div class="hero-copy">
-        <p class="eyebrow">${esc(t.hero.eyebrow)}</p>
-        <h1 id="hero-title"><span>${esc(t.hero.h1a)}</span> <span class="h1-accent">${esc(t.hero.h1b)}</span></h1>
+        <h1 id="hero-title"><span class="eyebrow">${esc(t.hero.eyebrow)}</span> <span>${esc(t.hero.h1a)}</span> <span class="h1-accent">${esc(t.hero.h1b)}</span></h1>
         <p class="hero-lead">${esc(t.hero.lead)}</p>
         <div class="hero-actions">
           <a class="btn btn-mint btn-lg" href="#join">${esc(t.hero.cta)}${icon('arrow', 'ico-dir')}</a>
@@ -884,3 +887,7 @@ write(join(DIST, 'llms.txt'), `# מקהלת פרחי שמיים · Pirchei Shoma
 - מייל: ${CHOIR_EMAIL}
 - ערוץ היוטיוב: ${CHANNEL_URL}
 `);
+
+// IndexNow: קובץ המפתח שמאשר לבינג ולמנועים נוספים שאנחנו בעלי האתר (המפתח ציבורי מעצם הגדרתו)
+const INDEXNOW_KEY = '9710292b37ca4dba4d27677b90ea89e6';
+write(join(DIST, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
