@@ -412,7 +412,9 @@
     const fTop = finalSec ? finalSec.getBoundingClientRect().top : 0;
     const shows = showImgs.map((img) => img.parentElement.getBoundingClientRect());
     if (curtain) {
-      const open = on ? ease(clamp01((vh * 0.92 - bTop) / (vh * 0.5))) : 1;
+      // הווילון נשאר סגור עד שהוא תופס חלק נכבד מהמסך, ונפתח לאט לאורך גלילה ארוכה — עד שהאזור מגיע לראש המסך
+      const x = clamp01((vh * 0.72 - bTop) / (vh * 0.72));
+      const open = on ? x * x * x * (x * (x * 6 - 15) + 10) : 1;
       curtain.style.setProperty('--open', open.toFixed(4));
       curtain.classList.toggle('is-open', open > 0.995);
     }

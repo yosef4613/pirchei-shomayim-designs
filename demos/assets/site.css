@@ -907,3 +907,9 @@ button[aria-busy="true"] { opacity: .7; cursor: progress; }
 .cp-foot a { color: var(--muted); }
 @media (max-width: 860px) { .cp-nav { display: none; } .cp-branches { grid-template-columns: 1fr; } }
 @media (max-width: 420px) { .cp-song-main img { width: 92px; } .cpage .brand-text small { display: none; } }
+
+/* הווילון גולש בתנועה רכה גם כשגוללים מהר, ונעלם רק אחרי שסיים להיפתח */
+html.js[data-motion="full"] .curtain { transition: visibility 0s; }
+html.js[data-motion="full"] .curtain.is-open { transition: visibility 0s .6s; }
+.curtain-l, .curtain-r { transition: transform .55s cubic-bezier(.22, .7, .2, 1); }
+.curtain::before { transition: opacity .55s; }
