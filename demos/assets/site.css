@@ -794,7 +794,7 @@ button[aria-busy="true"] { opacity: .7; cursor: progress; }
 .legal .legal-h1-2 { margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--line-dark); }
 .legal h2 { font-size: 1.25rem; margin: 28px 0 6px; color: var(--lilac-2); }
 .legal p { color: var(--muted); margin-bottom: 10px; }
-.legal a { color: var(--lilac-2); }
+.legal a:not(.btn) { color: var(--lilac-2); }
 .legal-updated { margin-top: 28px; font-size: .9rem; opacity: .8; }
 .simple-foot { padding-block: 22px 30px; border-top: 1px solid var(--line-dark); color: var(--muted-2); font-size: .9rem; }
 .simple-foot a { color: inherit; }
@@ -916,11 +916,158 @@ html.js[data-motion="full"] .curtain.is-open { transition: visibility 0s .6s; }
 
 /* ---------- זרקורי הפתיחה: נכנסים בתנופה ואז מתנדנדים לאט, כמו על במה אמיתית ---------- */
 .beam { opacity: .6; }
-html[data-motion="full"] .beam-a { animation: beam-in-a 2.2s cubic-bezier(.2, .7, .2, 1) both, beam-sway-a 7s ease-in-out 2.2s infinite alternate; }
-html[data-motion="full"] .beam-b { animation: beam-in-b 2.4s cubic-bezier(.2, .7, .2, 1) .15s both, beam-sway-b 8s ease-in-out 2.55s infinite alternate; }
+html[data-motion="full"] .beam-a { animation: beam-in-a 2.2s cubic-bezier(.2, .7, .2, 1) both; }
+html[data-motion="full"] .beam-b { animation: beam-in-b 2.4s cubic-bezier(.2, .7, .2, 1) .15s both; }
 @keyframes beam-in-a { 0% { opacity: 0; rotate: calc(var(--flip, 1) * 30deg); } 55% { opacity: .75; } 100% { opacity: .6; rotate: 0deg; } }
 @keyframes beam-in-b { 0% { opacity: 0; rotate: calc(var(--flip, 1) * -32deg); } 55% { opacity: .75; } 100% { opacity: .6; rotate: 0deg; } }
 @keyframes beam-sway-a { from { rotate: 0deg; } to { rotate: calc(var(--flip, 1) * -11deg); } }
 @keyframes beam-sway-b { from { rotate: 0deg; } to { rotate: calc(var(--flip, 1) * 12deg); } }
 @media (max-width: 720px) { .beam { opacity: .5; } }
 .beam { will-change: rotate, opacity; }
+
+/* ---------- תיקונים אחרי הביקורת ---------- */
+/* הנקודה של ״מאחורי הקלעים״ צמודה לטקסט ולא עולה עליו */
+.nav-excl::after { position: static; display: inline-block; vertical-align: .45em; width: 6px; height: 6px; margin-inline-start: 5px; }
+/* הערת הנגן קריאה */
+.player-note { color: var(--muted); }
+/* תפריט הנייד אטום לגמרי — בלי ״רוחות״ של כפתורים מאחוריו */
+@media (max-width: 1180px) { .main-nav { background: #0b0812; } }
+
+/* ---------- מסלול הרשמה אחיד ---------- */
+.join-form-area { scroll-margin-top: calc(var(--header-h, 76px) + 14px); }
+.branch-chosen { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 10px 14px; border-radius: 12px; background: rgba(107, 63, 214, .12); border: 1px solid rgba(107, 63, 214, .3); font-weight: 600; }
+.branch-chosen[hidden] { display: none; }
+.link-btn { background: none; border: 0; padding: 4px 2px; color: inherit; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; cursor: pointer; }
+/* תפריט הנייד: הרשמה ומתג אנימציות */
+.nav-extra { display: none; }
+.motion-text { display: inline-flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--line-dark); border-radius: 999px; padding: 8px 14px; color: var(--muted); font: inherit; font-size: .9rem; cursor: pointer; }
+.motion-text:hover { color: #fff; border-color: var(--lilac); }
+.motion-text[aria-pressed="true"] { color: var(--lilac-2); border-color: rgba(203, 184, 255, .45); }
+.footer-motion { padding: 4px 12px; font-size: .82rem; }
+@media (max-width: 1180px) {
+  .main-nav .nav-extra { display: block; margin-top: 10px; }
+  .main-nav .nav-cta { font-size: 1.15rem; padding: 14px 26px; opacity: 1; }
+}
+@media (max-width: 900px) { .header-actions .motion-btn { display: none; } }
+/* כפתור הרשמה קבוע בתחתית — רק בנייד, ורק כשאין כפתור הרשמה אחר על המסך */
+.sticky-cta { display: none; }
+@media (max-width: 900px) {
+  .sticky-cta { display: flex; position: fixed; z-index: 40; inset-inline: 16px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); justify-content: center; transform: translateY(150%); opacity: 0; visibility: hidden; transition: transform .35s var(--ease), opacity .35s, visibility 0s .35s; box-shadow: 0 16px 36px -12px rgba(0, 0, 0, .75), 0 10px 30px -10px rgba(166, 252, 239, .5); }
+  .sticky-cta.is-on { transform: none; opacity: 1; visibility: visible; transition: transform .35s var(--ease), opacity .35s, visibility 0s; }
+  body.is-locked .sticky-cta { visibility: hidden; opacity: 0; }
+  .site-footer { padding-bottom: 96px; }
+}
+html[data-motion="reduce"] .sticky-cta { transition: none; }
+
+/* ---------- פתיחה: תמונת במה אחת וחדה. בנייד — רצועה ברורה למעלה והטקסט מתחתיה ---------- */
+.hero-slide img { object-position: 38% 55%; }
+@media (max-width: 720px) {
+  .hero { padding-top: calc(var(--header-h) + 230px); }
+  .hero-slide { inset: 0 0 auto 0; height: calc(var(--header-h) + 330px); }
+  .hero-slide img { object-position: 50% 45%; }
+  .hero-scrim { background: linear-gradient(to bottom, rgba(11, 8, 18, .55) 0, rgba(11, 8, 18, 0) calc(var(--header-h) + 10px), rgba(11, 8, 18, 0) calc(var(--header-h) + 150px), rgba(11, 8, 18, .8) calc(var(--header-h) + 270px), var(--night) calc(var(--header-h) + 330px)); }
+}
+
+/* ---------- למטה: וילון קטיפה עם קפלים ותאורה רכה ---------- */
+.curtain-l, .curtain-r {
+  background:
+    radial-gradient(140% 55% at 50% -5%, rgba(255, 255, 255, .14), transparent 60%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, .55)),
+    repeating-linear-gradient(90deg, #180538 0px, #26094f 9px, #3d138a 18px, #5a2bc0 25px, #7448d8 29px, #5a2bc0 33px, #3d138a 40px, #26094f 49px, #180538 58px);
+}
+.curtain::before {
+  height: 54px;
+  background:
+    radial-gradient(32px 22px at 50% 100%, transparent 96%, #0b0812 100%) 0 32px / 64px 22px repeat-x,
+    linear-gradient(to bottom, rgba(255, 255, 255, .12), transparent 70%),
+    repeating-linear-gradient(90deg, #2a0b5c 0 6px, #4a19a0 12px, #2a0b5c 18px);
+  -webkit-mask: radial-gradient(32px 24px at 50% 100%, transparent 97%, #000 100%) 0 30px / 64px 24px repeat-x, linear-gradient(#000, #000) 0 0 / 100% 32px no-repeat;
+          mask: radial-gradient(32px 24px at 50% 100%, transparent 97%, #000 100%) 0 30px / 64px 24px repeat-x, linear-gradient(#000, #000) 0 0 / 100% 32px no-repeat;
+  box-shadow: none;
+}
+
+/* ---------- למטה: זרקורי הסיום רכים — קונוס אור שדוהה, בלי קצוות חדים ---------- */
+.final-beam { filter: blur(16px); clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%); -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 92%); mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 92%); }
+.fb-a { background: linear-gradient(to bottom, rgba(178, 140, 255, .9), rgba(120, 72, 230, .3) 60%, transparent 92%); }
+.fb-b { background: linear-gradient(to bottom, rgba(196, 255, 247, .8), rgba(166, 252, 239, .25) 60%, transparent 92%); }
+@media (max-width: 720px) {
+  .final-beam { width: 64vw; }
+  .fb-a { left: calc(24% - 32vw); }
+  .fb-b { right: calc(24% - 32vw); }
+}
+
+/* ---------- כהה מתחילה ועד סוף: אזור ההרשמה, העדכונים ואודות בכרטיסים כהים ---------- */
+.join-panel, .club-card, .about {
+  --paper: #120d1c; --paper-2: #1b1429; --paper-ink: var(--ink); --paper-muted: var(--muted); --paper-line: rgba(203, 184, 255, .18);
+  --danger: #ff8fa3;
+  color-scheme: dark;
+}
+.join-panel { background: linear-gradient(180deg, #19122b, #110c1b 60%); color: var(--ink); box-shadow: 0 50px 100px -40px rgba(0, 0, 0, .85), 0 0 0 1px rgba(203, 184, 255, .16); color-scheme: dark; }
+.club-card { background: #15101f; color: var(--ink); border: 1px solid rgba(203, 184, 255, .16); color-scheme: dark; }
+.about { background: radial-gradient(60% 70% at 85% 20%, rgba(74, 25, 160, .28), transparent 70%), var(--night-2); color: var(--ink); color-scheme: dark; }
+.join .kicker, .about .kicker { color: var(--lilac); }
+.join :focus-visible, .about :focus-visible, .club-card :focus-visible { outline-color: var(--mint); }
+.stepper li { background: var(--paper-2); }
+.stepper li.is-done { background: rgba(203, 184, 255, .12); color: var(--lilac-2); border-color: rgba(203, 184, 255, .3); }
+.step-num { background: rgba(203, 184, 255, .14); }
+.join-panel .chip, .club-card .chip { background: var(--paper-2); color: var(--ink); border-color: var(--paper-line); }
+.join-panel .chip:hover { border-color: var(--lilac); }
+.join-panel .chip[aria-pressed="true"] { background: var(--lilac-2); color: #1a1228; border-color: var(--lilac-2); }
+.join-panel .fit-age[aria-pressed="true"] { background: var(--purple-500); border-color: var(--purple-500); color: #fff; }
+.branch { background: var(--paper-2); }
+.branch.is-selected { border-color: var(--lilac); box-shadow: 0 0 0 3px rgba(203, 184, 255, .18), 0 18px 40px -24px rgba(0, 0, 0, .7); }
+.branch-city, .flyers a, .account-box legend, .email-extra { color: var(--lilac); }
+.branch-facts .ico, .flyers .ico, .req, .branches-note .ico { color: var(--lilac); }
+.field input, .field select, .field textarea { background: #0e0a17; border-color: rgba(203, 184, 255, .24); color: var(--ink); }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--lilac); box-shadow: 0 0 0 4px rgba(203, 184, 255, .16); }
+.field [aria-invalid="true"] { box-shadow: 0 0 0 3px rgba(255, 143, 163, .15); }
+.field-check input, .optin input, .topic input { accent-color: var(--purple-500); }
+.demo-note { color: var(--lilac-2); background: rgba(203, 184, 255, .08); }
+.form-error-summary { background: rgba(255, 143, 163, .1); color: #ffc2cd; border-color: rgba(255, 143, 163, .35); }
+.fit { background: var(--paper-2); }
+.fit-result.is-ok, .form-fit { background: rgba(107, 63, 214, .22); color: var(--lilac-2); }
+.fit-result.is-out, .form-fit.is-out { background: rgba(255, 255, 255, .05); color: var(--ink); }
+.account-box { background: rgba(255, 255, 255, .03); border-color: var(--paper-line); }
+.topic { background: var(--paper-2); color: var(--ink); }
+.topic:has(input:checked) { border-color: var(--lilac); background: rgba(107, 63, 214, .22); }
+.success-actions .btn-outline, .club-success .btn-outline { color: var(--lilac-2); border-color: rgba(203, 184, 255, .4); }
+.join .text-link { color: var(--ink); border-color: rgba(203, 184, 255, .4); }
+.join .text-link:hover { color: #fff; border-color: var(--lilac); }
+.conductor { background: var(--paper-2); border-inline-start-color: var(--lilac); }
+.about-logo { max-width: 340px; justify-self: center; }
+.quote-mark { color: var(--lilac); }
+.soon { color: var(--lilac-2); background: rgba(203, 184, 255, .1); }
+.testimonials { background: rgba(255, 255, 255, .03) !important; border-color: var(--paper-line) !important; }
+.about-cards li { background: var(--paper-2); }
+/* תצוגת המייל בהדגמה נשארת ״מייל״ בהיר */
+.email-preview { --paper-2: #efe9f8; --paper-ink: #1a1228; --paper-muted: #5d5272; --paper-line: #e2d9f1; color: #1a1228; }
+.email-preview .email-label { color: var(--purple); }
+
+/* ---------- קצר יותר: ״למה פרחי שמיים״ בשורות קומפקטיות במקום כרטיסים גבוהים ---------- */
+.why-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 36px; margin-top: 26px; }
+.why-card { display: grid; grid-template-columns: 46px minmax(0, 1fr); column-gap: 14px; align-items: start; padding: 16px 0; background: none; border: 0; border-bottom: 1px solid var(--line-dark); border-radius: 0; }
+.why-card:hover { transform: none; }
+.why-ico { grid-row: span 2; width: 46px; height: 46px; margin: 0; }
+.why-card h3 { margin-bottom: 4px; font-size: 1.12rem; }
+.why-card p { font-size: .95rem; }
+.stats { margin-top: clamp(26px, 4vw, 44px); }
+@media (max-width: 720px) { .why-grid { grid-template-columns: 1fr; } .stat { padding: 18px 12px; } }
+/* על הבמה בלי ״ההופעה הבאה״ */
+.stage-grid.is-single { grid-template-columns: 1fr; }
+/* מאחורי הקלעים באתר החי: כרטיס אחד וכן */
+.excl-soon { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px 22px; align-items: center; padding: clamp(20px, 3vw, 30px); border-radius: var(--radius); background: linear-gradient(135deg, rgba(74, 25, 160, .35), rgba(22, 14, 36, .9)); border: 1px solid rgba(203, 184, 255, .22); }
+.excl-soon .excl-ico { margin: 0; }
+.excl-soon h3 { font-size: 1.3rem; margin-bottom: 6px; }
+.excl-soon p { color: var(--muted); }
+@media (max-width: 720px) { .excl-soon { grid-template-columns: 1fr; justify-items: start; } }
+
+/* ---------- טיפוגרפיה: כותרות בגופן תצוגה (פרנק רוהל) — אופי ויוקרה. גוף הטקסט וכפתורים נשארים בהיבו ---------- */
+h1, h2, .final h2, .cp-main h1, .legal h1 { font-family: var(--font-serif); font-weight: 800; letter-spacing: -.005em; }
+.hero h1 { font-weight: 900; letter-spacing: -.01em; line-height: 1.08; }
+.hero h1 .eyebrow { font-family: var(--font); }
+.h2-sub { font-family: var(--font); }
+.player-title, .library h2, .club-success h3, .faq-item summary { font-family: var(--font); }
+.motto { letter-spacing: 0; }
+/* כותרת: שם המקהלה והכפתור בשורה אחת גם באנגלית */
+.brand-text b, .header-cta { white-space: nowrap; }
+@media (max-width: 1500px) { .main-nav a { padding-inline: 11px; } .header-in { gap: 14px; } }

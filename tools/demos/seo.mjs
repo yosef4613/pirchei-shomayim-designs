@@ -3,7 +3,7 @@
 
 export const seoText = {
   he: {
-    links: { classes: 'כל החוגים בירושלים ובבית שמש', songs: 'כל השירים של המקהלה בעמוד אחד', home: 'העמוד הראשי', join: 'להרשמה' },
+    links: { classes: 'כל החוגים בירושלים ובבית שמש', songs: 'כל השירים של המקהלה בעמוד אחד', home: 'העמוד הראשי', join: 'מצאו חוג' },
     names: 'מקהלת הילדים פרחי שמיים · פרחי שמים · Pirchei Shomayim',
     faq: {
       kicker: 'שאלות נפוצות',
@@ -27,7 +27,7 @@ export const seoText = {
       branchTitle: 'חוג מקהלה ב{name}',
       facts: ['לבנים בגילאי 8–12', 'קבלה במבדק התאמה קצר', 'ימים ושעות נשלחים אליכם במייל'],
       regLabel: 'רישום רשמי:',
-      cta: 'להרשמה לחוג הזה',
+      cta: 'לחוג הזה',
       howTitle: 'איך מצטרפים',
       how: ['בוחרים חוג קרוב ומשאירים פרטים באתר — לוקח דקה.', 'צוות המקהלה חוזר אליכם לתיאום מבדק התאמה קצר.', 'אחרי המבדק מקבלים הנחיות לרישום הרשמי.'],
       endTitle: 'הקול שלו מחכה לבמה.', endCta: 'מצאו חוג באזור שלכם',
@@ -45,7 +45,7 @@ export const seoText = {
     },
   },
   en: {
-    links: { classes: 'All classes in Jerusalem & Beit Shemesh', songs: 'All the choir’s songs on one page', home: 'Home page', join: 'Join' },
+    links: { classes: 'All classes in Jerusalem & Beit Shemesh', songs: 'All the choir’s songs on one page', home: 'Home page', join: 'Find a class' },
     names: 'Pirchei Shomayim Boys’ Choir · מקהלת פרחי שמיים · פרחי שמים',
     faq: {
       kicker: 'Questions parents ask',
@@ -69,7 +69,7 @@ export const seoText = {
       branchTitle: 'Choir class in {name}',
       facts: ['For boys aged 8–12', 'Admission by a short audition', 'Days and times are sent to you by email'],
       regLabel: 'Official registration:',
-      cta: 'Join this class',
+      cta: 'Choose this class',
       howTitle: 'How to join',
       how: ['Choose a nearby class and leave your details on the site — it takes a minute.', 'The choir team gets back to you to arrange a short audition.', 'After the audition you receive instructions for official registration.'],
       endTitle: 'His voice is waiting for the stage.', endCta: 'Find a class near you',

@@ -3,14 +3,14 @@
 import { writeFileSync, mkdirSync, readFileSync, cpSync, rmSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dict, branches, songs, shorts, CHOIR_EMAIL, CHANNEL_URL } from './content.mjs';
+import { dict, branches, songs, shorts, CHOIR_EMAIL, CHOIR_EMAIL_HREF, CHANNEL_URL } from './content.mjs';
 import { PLANS, planConfig, planText, exclusiveText } from './plans.mjs';
 import { seoText } from './seo.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '14';
+const VERSION = '15';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -65,14 +65,15 @@ function page(t, plan, live = false) {
   const S = seoText[lang];
   const branchName = (b) => `${b[lang].name} · ${t.join.cities[b.city]}`;
   // בדף הבית: מבחר קצר. כל השירים נפתחים בלחיצה בספרייה נפרדת (במסלולים 2 ו־3)
-  const homeSongs = songs.filter((s) => !s.isNew && !s.vertical).slice(0, 8);
+  const homeSongs = songs.filter((s) => !s.isNew && !s.vertical).slice(0, cfg.tools ? 4 : 8);
   const L = lang === 'he'
     ? { libOpen: `לכל ${songs.length} השירים והקליפים`, libTitle: 'כל השירים והקליפים', libClose: 'סגירת ספריית השירים' }
     : { libOpen: `All ${songs.length} songs & videos`, libTitle: 'All songs & videos', libClose: 'Close the song library' };
   const featured = songs.find((s) => s.isNew);
   const pageData = {
-    lang, dir: t.dir, plan, form: cfg.form, choirEmail: CHOIR_EMAIL, assetBase: A, live, endpoint: live ? '/wp-json/ps/v1/' : '',
-    js: t.js, player: t.player, music: { showAll: t.music.showAll, showLess: t.music.showLess, count: t.music.count },
+    lang, dir: t.dir, plan, form: cfg.form, choirEmail: CHOIR_EMAIL, choirEmailHref: CHOIR_EMAIL_HREF, assetBase: A, live, endpoint: live ? '/wp-json/ps/v1/' : '',
+    js: t.js, player: t.player, music: { showAll: t.music.showAll, showLess: t.music.showLess, count: t.music.count, countOne: t.music.countOne },
+    shareOrigin: live ? 'https://פרחישמים.com' : '',
     motionOn: t.motionOn, motionOff: t.motionOff, cities: t.join.cities, chosen: t.join.chosen, choose: t.join.choose, fit: t.join.fit,
     emailForm: live ? undefined : P.emailForm, account: P.account, club: live ? { ...P.club, demoNote: undefined } : P.club, topics: P.topics,
     branches: branches.map((b) => ({ id: b.id, city: b.city, name: b[lang].name, reg: b[lang].reg })),
@@ -91,6 +92,8 @@ function page(t, plan, live = false) {
     .concat(cfg.club ? [['club', P.club.nav]] : [])
     .concat([['about', t.nav.about]]);
   const navHtml = navItems.map(([id, label, cls]) => `<li><a href="#${id}"${cls ? ` class="${cls}" title="${esc(X.badge)}"` : ''}>${esc(label)}</a></li>`).join('\n        ');
+  const motionText = `<button type="button" class="motion-text" data-motion-toggle aria-pressed="false">${icon('motion')}<span class="motion-label">${esc(t.motionOff)}</span></button>`;
+  const navExtra = `<li class="nav-extra"><a class="btn btn-mint nav-cta" href="#join">${esc(t.hero.cta)}</a></li><li class="nav-extra">${motionText}</li>`;
 
   // deferred=true: התמונה נטענת רק כשפותחים את ספריית השירים, כדי שהדף יישאר קל
   const songCard = (s, deferred = false) => `
@@ -149,7 +152,7 @@ function page(t, plan, live = false) {
         url: ROOTURL,
         logo: { '@type': 'ImageObject', url: `${IMGURL}icon-256.png`, width: 256, height: 256 },
         image: `${IMGURL}og.jpg`,
-        email: CHOIR_EMAIL,
+        email: CHOIR_EMAIL_HREF,
         genre: lang === 'he' ? 'מוזיקה יהודית, מקהלת ילדים' : 'Jewish music, boys’ choir',
         areaServed: (lang === 'he' ? ['ירושלים', 'בית שמש'] : ['Jerusalem', 'Beit Shemesh']).map((name) => ({ '@type': 'City', name })),
         knowsLanguage: ['he', 'en'],
@@ -163,8 +166,9 @@ function page(t, plan, live = false) {
   <link rel="icon" href="${A}img/icon-64.png" type="image/png">
   <link rel="apple-touch-icon" href="${A}img/icon-180.png">
   <link rel="preload" href="${A}fonts/${lang === 'he' ? 'heebo-hebrew' : 'heebo-latin'}.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="${A}img/stage/hero-1.webp" as="image" media="(min-width: 721px)" fetchpriority="high">
-  <link rel="preload" href="${A}img/stage/hero-1-m.webp" as="image" media="(max-width: 720px)" fetchpriority="high">
+  <link rel="preload" href="${A}fonts/${lang === 'he' ? 'frank-hebrew' : 'frank-latin'}.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="${A}img/stage/hero-2.webp" as="image" media="(min-width: 721px)" fetchpriority="high">
+  <link rel="preload" href="${A}img/stage/hero-stage-m.webp" as="image" media="(max-width: 720px)" fetchpriority="high">
   <link rel="stylesheet" href="${A}site.css?v=${VERSION}">
   <script>document.documentElement.classList.add('js');try{var m=localStorage.getItem('ps-motion');if(m==='reduce'||(!m&&matchMedia('(prefers-reduced-motion: reduce)').matches))document.documentElement.dataset.motion='reduce'}catch(e){if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.dataset.motion='reduce'}</script>
   <script defer src="${A}site.js?v=${VERSION}"></script>
@@ -183,6 +187,7 @@ ${sprite}
     <nav class="main-nav" id="main-nav" aria-label="${lang === 'he' ? 'ניווט ראשי' : 'Main navigation'}">
       <ul>
         ${navHtml}
+        ${navExtra}
       </ul>
     </nav>
     <div class="header-actions">
@@ -199,16 +204,8 @@ ${sprite}
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-media">
       <picture class="hero-slide is-active">
-        <source media="(max-width: 720px)" srcset="${A}img/stage/hero-1-m.webp">
-        <img src="${A}img/stage/hero-1.webp" alt="${esc(t.hero.alts[0])}" width="1280" height="720" fetchpriority="high" decoding="async">
-      </picture>
-      <picture class="hero-slide">
-        <source media="(max-width: 720px)" data-srcset="${A}img/stage/hero-2-m.webp">
-        <img data-src="${A}img/stage/hero-2.webp" alt="${esc(t.hero.alts[1])}" width="1280" height="922" decoding="async">
-      </picture>
-      <picture class="hero-slide">
-        <source media="(max-width: 720px)" data-srcset="${A}img/stage/hero-3-m.webp">
-        <img data-src="${A}img/stage/hero-3.webp" alt="${esc(t.hero.alts[2])}" width="1280" height="720" decoding="async">
+        <source media="(max-width: 720px)" srcset="${A}img/stage/hero-stage-m.webp">
+        <img src="${A}img/stage/hero-2.webp" alt="${esc(t.hero.alts[1])}" width="1280" height="922" fetchpriority="high" decoding="async">
       </picture>
       <span class="hero-scrim"></span>
       <span class="beam beam-a"></span>
@@ -276,6 +273,7 @@ ${sprite}
           <form class="join-form" id="join-form" novalidate aria-labelledby="form-title">
             <h3 id="form-title" tabindex="-1">${esc(t.form.title)}</h3>
             <p class="form-fit" data-form-fit hidden></p>
+            <p class="branch-chosen" data-branch-chosen hidden><span>${esc(t.form.chosenLabel)}</span> <b data-branch-chosen-name></b> <button type="button" class="link-btn" data-branch-change>${esc(t.form.change)}</button></p>
             <div class="form-error-summary" role="alert" hidden></div>
             <div class="field field-wide">
               <label for="f-branch">${esc(t.form.branch)} <span class="req" aria-hidden="true">*</span></label>
@@ -434,12 +432,12 @@ ${cfg.stage ? `
         <p class="kicker">${esc(t.stage.kicker)}</p>
         <h2 id="stage-title">${esc(t.stage.title)}</h2>
       </div>
-      <div class="stage-grid">
+      <div class="stage-grid${live ? ' is-single' : ''}">${live ? '' : `
         <article class="upcoming" data-reveal>
           <p class="kicker">${esc(t.stage.upcomingTitle)}</p>
           <span class="upcoming-ico">${icon('star')}</span>
           <p>${esc(t.stage.upcomingText)}</p>
-        </article>
+        </article>`}
         <div class="shows">
           <h3 class="shows-title">${esc(t.stage.pastTitle)}</h3>
           <ul>
@@ -449,7 +447,7 @@ ${cfg.stage ? `
       </div>
       <div class="booking">
         <div><h3>${esc(t.stage.bookingTitle)}</h3><p>${esc(t.stage.bookingText)}</p></div>
-        <a class="btn btn-outline" href="mailto:${CHOIR_EMAIL}?subject=${encodeURIComponent(t.stage.bookingSubject)}">${icon('mail')}${esc(t.stage.bookingCta)}</a>
+        <a class="btn btn-outline" href="mailto:${CHOIR_EMAIL_HREF}?subject=${encodeURIComponent(t.stage.bookingSubject)}">${icon('mail')}${esc(t.stage.bookingCta)}</a>
       </div>
     </div>
   </section>` : ''}
@@ -473,7 +471,7 @@ ${cfg.stage ? `
           <button class="mk-video" type="button" data-play="n6tLDS_ioYk"><img src="${A}img/covers/n6tLDS_ioYk-s.webp" alt="" width="360" height="203" loading="lazy" decoding="async"><span>${icon('play')}${esc(t.makhalolam.videoMain)}</span></button>
           <button class="mk-video" type="button" data-play="eSJg_mli2y8"><img src="${A}img/covers/eSJg_mli2y8-s.webp" alt="" width="360" height="203" loading="lazy" decoding="async"><span>${icon('play')}${esc(t.makhalolam.videoPromo)}</span></button>
         </div>
-        <a class="btn btn-outline" href="mailto:${CHOIR_EMAIL}?subject=${encodeURIComponent(t.makhalolam.subject)}">${icon('mail')}${esc(t.makhalolam.cta)}</a>
+        <a class="btn btn-outline" href="mailto:${CHOIR_EMAIL_HREF}?subject=${encodeURIComponent(t.makhalolam.subject)}">${icon('mail')}${esc(t.makhalolam.cta)}</a>
       </div>
     </div>
   </section>
@@ -483,11 +481,12 @@ ${cfg.behind ? `
     <div class="wrap">
       <div class="excl-head">
         <p class="excl-badge">${icon('star')}${esc(X.badge)}</p>
-        <p class="kicker">${esc(X.kicker)}</p>
+        <p class="kicker">${esc(live ? X.kickerLive : X.kicker)}</p>
         <h2 id="behind-title">${esc(X.title)}</h2>
-        <p class="section-lead">${esc(X.lead)}</p>
+        <p class="section-lead">${esc(live ? X.leadLive : X.lead)}</p>
       </div>
-      <ul class="excl-grid">
+      ${live ? `<div class="excl-soon" data-reveal><span class="excl-ico">${icon('star')}</span><div class="excl-soon-copy"><h3>${esc(X.soonTitle)}</h3><p>${esc(X.soonText)}</p></div><a class="btn btn-purple" href="#club">${icon('bell')}${esc(X.notify)}</a></div>` : ''}
+      <ul class="excl-grid"${live ? ' hidden' : ''}>
         ${X.items.map((it, i) => {
           const locked = it.teaser && cfg.club;
           return `<li class="excl-card${it.teaser ? ' is-teaser' : ''}" data-reveal style="--d:${i * 80}ms">
@@ -519,7 +518,6 @@ ${cfg.club ? `
         <p class="kicker">${esc(P.club.kicker)}</p>
         <h2 id="club-title">${esc(P.club.title)}</h2>
         <p class="section-lead">${esc(P.club.lead)}</p>
-        <div class="club-bells" aria-hidden="true">${Object.values(P.topics).map((v, i) => `<span class="bell" style="--i:${i}">${icon('bell')}${esc(v)}</span>`).join('')}</div>
       </div>
       <div class="club-card">
         <form class="club-form" id="club-form" novalidate>
@@ -600,7 +598,7 @@ ${cfg.club ? `
       </ul>
     </nav>
     <div class="footer-contact">
-      <a href="mailto:${CHOIR_EMAIL}">${icon('mail')}<span>${esc(t.footer.contact)}</span></a>
+      <a href="mailto:${CHOIR_EMAIL_HREF}">${icon('mail')}<span>${esc(t.footer.contact)}</span></a>
       <a href="${CHANNEL_URL}" target="_blank" rel="noopener">${icon('play')}<span>${esc(t.footer.youtube)}</span></a>
       <a href="${t.otherHref}" hreflang="${t.other}" lang="${t.other}" data-lang-link>${t.langLabel}</a>
     </div>
@@ -611,6 +609,7 @@ ${cfg.club ? `
     <a href="${legal}">${esc(t.footer.privacy)}</a>
     ${live ? `<a href="/${langSuffix}classes/">${esc(t.nav.classes)}</a><a href="/${langSuffix}songs/">${esc(t.nav.music)}</a>` : ''}
     ${live ? '' : `<span class="footer-demo">${esc(t.footer.demo)}</span>`}
+    ${motionText.replace('class="motion-text"', 'class="motion-text footer-motion"')}
     ${credit(t)}
     <p class="footer-names">${esc(S.names)}</p>
   </div>
@@ -642,7 +641,8 @@ ${cfg.tools ? `<div class="library" id="library" role="dialog" aria-modal="true"
     </div>
   </div>
 </div>
-` : ''}<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
+` : ''}<a class="btn btn-mint sticky-cta" href="#join" data-sticky-cta>${esc(t.hero.cta)}${icon('arrow', 'ico-dir')}</a>
+<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
   <div class="player-backdrop" data-player-close></div>
   <div class="player-bg" aria-hidden="true"><img alt="" data-player-bg></div>
   <div class="player-box">
@@ -778,7 +778,7 @@ const legalText = {
       'נתקלתם בקושי או בתקלת נגישות? כתבו לנו ל־{email}, ונטפל בהקדם.',
     ],
     updated: 'עודכן בנובמבר 2026',
-    nf: { title: 'הדף לא נמצא · מקהלת פרחי שמיים', h1: 'הדף הזה לא נמצא', text: 'ייתכן שהכתובת השתנתה כשהאתר התחדש. כל מה שחיפשתם נמצא בעמוד הראשי.', home: 'לעמוד הראשי', classes: 'למציאת חוג' },
+    nf: { title: 'הדף לא נמצא · מקהלת פרחי שמיים', h1: 'הדף הזה לא נמצא', text: 'ייתכן שהכתובת השתנתה כשהאתר התחדש. כל מה שחיפשתם נמצא בעמוד הראשי.', home: 'לעמוד הראשי', classes: 'מצאו חוג באזור שלכם' },
   },
   en: {
     title: 'Privacy policy & accessibility · Pirchei Shomayim Boys’ Choir', description: 'How we look after the details you leave on the site, and what we did to make the site accessible to everyone.',
@@ -798,7 +798,7 @@ const legalText = {
       'Ran into a difficulty or an accessibility problem? Email us at {email} and we’ll take care of it promptly.',
     ],
     updated: 'Updated November 2026',
-    nf: { title: 'Page not found · Pirchei Shomayim Boys’ Choir', h1: 'We couldn’t find this page', text: 'The address may have changed when the site was renewed. Everything you were looking for is on the home page.', home: 'To the home page', classes: 'Find a class' },
+    nf: { title: 'Page not found · Pirchei Shomayim Boys’ Choir', h1: 'We couldn’t find this page', text: 'The address may have changed when the site was renewed. Everything you were looking for is on the home page.', home: 'To the home page', classes: 'Find a class near you' },
   },
 };
 
@@ -827,7 +827,7 @@ function simplePage(key, { title, description, path, robots, body }) {
     <a class="btn btn-ghost btn-sm" href="${home}">${esc(L.back)}</a>
   </div></header>
   <main class="wrap legal">${body}</main>
-  <footer class="wrap simple-foot"><span>${esc(t.footer.rights)}</span> · <a href="mailto:${CHOIR_EMAIL}">${CHOIR_EMAIL}</a>${credit(t)}</footer>
+  <footer class="wrap simple-foot"><span>${esc(t.footer.rights)}</span> · <a href="mailto:${CHOIR_EMAIL_HREF}">${CHOIR_EMAIL}</a>${credit(t)}</footer>
 </body>
 </html>`;
 }
@@ -839,7 +839,7 @@ for (const key of ['he', 'en']) {
   const L = legalText[key];
   const fixed = (h) => (key === 'he' ? bidi(h) : h);
   write(join(DIST, 'ps', 'pages', `${key}.html`), fixed(page(dict[key], LIVE_PLAN, true)));
-  const mail = `<a href="mailto:${CHOIR_EMAIL}">${CHOIR_EMAIL}</a>`;
+  const mail = `<a href="mailto:${CHOIR_EMAIL_HREF}">${CHOIR_EMAIL}</a>`;
   write(join(DIST, 'ps', 'pages', `privacy-${key}.html`), fixed(simplePage(key, {
     title: L.title, description: L.description, path: 'privacy/', robots: 'index, follow',
     body: `<h1>${esc(L.h1)}</h1>${L.privacy.map(([h, p]) => `<h2>${esc(h)}</h2><p>${esc(p).replace('{email}', mail)}</p>`).join('')}
@@ -956,6 +956,7 @@ function contentPage(key, { path, title, description, crumb, body, ld }) {
   <link rel="icon" href="/ps/assets/img/icon-64.png" type="image/png">
   <link rel="apple-touch-icon" href="/ps/assets/img/icon-180.png">
   <link rel="preload" href="/ps/assets/fonts/${key === 'he' ? 'heebo-hebrew' : 'heebo-latin'}.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/ps/assets/fonts/${key === 'he' ? 'frank-hebrew' : 'frank-latin'}.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/ps/assets/site.css?v=${VERSION}">
   <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [
     { '@type': 'WebPage', '@id': `${url}#page`, url, name: title, description, inLanguage: key, isPartOf: { '@type': 'WebSite', '@id': `${LIVE}#website`, url: LIVE }, about: { '@id': `${LIVE}#choir` } },
@@ -976,7 +977,7 @@ ${sprite}
   <footer class="wrap simple-foot cp-foot">
     <span>${esc(t.footer.rights)}</span>
     <a href="${home}">${esc(S.links.home)}</a><a href="/${pre}classes/">${esc(t.nav.classes)}</a><a href="/${pre}songs/">${esc(t.nav.music)}</a><a href="/${pre}privacy/">${esc(t.footer.privacy)}</a>
-    <a href="mailto:${CHOIR_EMAIL}">${CHOIR_EMAIL}</a><a href="${CHANNEL_URL}" target="_blank" rel="noopener">${esc(t.footer.youtube)}</a>
+    <a href="mailto:${CHOIR_EMAIL_HREF}">${CHOIR_EMAIL}</a><a href="${CHANNEL_URL}" target="_blank" rel="noopener">${esc(t.footer.youtube)}</a>
     ${credit(t)}
     <p class="footer-names">${esc(S.names)}</p>
   </footer>
@@ -994,7 +995,7 @@ for (const key of ['he', 'en']) {
           <h3>${esc(C.branchTitle.replace('{name}', b[key].name))}</h3>
           <ul class="cp-list">${C.facts.map((f) => `<li>${icon('check')}${esc(f)}</li>`).join('')}</ul>
           <p class="cp-reg"><b>${esc(C.regLabel)}</b> ${esc(b[key].venue)}</p>
-          <a class="btn btn-purple" href="${home}?branch=${b.id}#join">${esc(C.cta)}${icon('arrow', 'ico-dir')}</a>
+          <a class="btn btn-purple" href="${home}?branch=${b.id}#join-form-area">${esc(C.cta)}${icon('arrow', 'ico-dir')}</a>
         </article>`;
   const classesBody = `<h1>${esc(C.h1)}</h1>
     <p class="cp-lead">${esc(C.lead)}</p>

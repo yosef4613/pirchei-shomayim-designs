@@ -16,22 +16,31 @@
   const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   /* ---------- הפחתת תנועה ---------- */
-  const motionBtn = $('[data-motion-toggle]');
+  // כמה מתגים (בכותרת, בתפריט ובתחתית), כולם מסונכרנים. מתג עם טקסט גלוי לא מקבל aria-label
+  const motionBtns = $$('[data-motion-toggle]');
   const syncMotionBtn = () => {
-    if (!motionBtn) return;
     const reduced = !motionOn();
-    motionBtn.setAttribute('aria-pressed', String(reduced));
     const label = reduced ? data.motionOn : data.motionOff;
-    motionBtn.setAttribute('aria-label', label);
-    motionBtn.title = label;
+    motionBtns.forEach((b) => {
+      b.setAttribute('aria-pressed', String(reduced));
+      const txt = $('.motion-label', b);
+      if (txt) txt.textContent = label; else b.setAttribute('aria-label', label);
+      b.title = label;
+    });
   };
   syncMotionBtn();
-  motionBtn && motionBtn.addEventListener('click', () => {
+  motionBtns.forEach((b) => b.addEventListener('click', () => {
     doc.dataset.motion = motionOn() ? 'reduce' : 'full';
     store.set('ps-motion', doc.dataset.motion);
     syncMotionBtn();
     document.dispatchEvent(new CustomEvent('motionchange'));
-  });
+  }));
+
+  /* כפתור ״חזרה״ בטלפון סוגר את מה שפתוח (נגן, ספרייה, תפריט) במקום לצאת מהאתר */
+  const pushOverlay = (name, url) => { try { history.pushState({ psOverlay: name }, '', url || location.href); } catch (e) { /* לא קריטי */ } };
+  // כשהאתר עצמו מבצע ״חזרה״ כדי לנקות את ההיסטוריה — מתעלמים מהאירוע שחוזר, כדי לא לסגור עוד שכבה
+  let selfPop = 0;
+  const popOverlay = (name) => { try { if (history.state && history.state.psOverlay === name) { selfPop++; history.back(); } } catch (e) { /* לא קריטי */ } };
 
   /* ---------- כותרת ותפריט ---------- */
   const header = $('.site-header');
@@ -39,15 +48,33 @@
   onScrollHeader();
   window.addEventListener('scroll', onScrollHeader, { passive: true });
   const menuBtn = $('[data-menu-toggle]');
-  const setMenu = (open) => {
+  const menuIsOverlay = () => getComputedStyle(menuBtn).display !== 'none';
+  const setMenu = (open, opts = {}) => {
+    const was = header.classList.contains('menu-open');
     header.classList.toggle('menu-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
     document.body.classList.toggle('is-locked', open);
     onScrollHeader();
+    if (open && !was) {
+      pushOverlay('menu');
+      const first = $('.main-nav a');
+      if (first && menuIsOverlay()) setTimeout(() => first.focus(), 60);
+    }
+    if (!open && was && !opts.fromPop && !opts.keepHistory) popOverlay('menu');
   };
   menuBtn.addEventListener('click', () => setMenu(!header.classList.contains('menu-open')));
-  $$('.main-nav a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && header.classList.contains('menu-open')) { setMenu(false); menuBtn.focus(); } });
+  // לחיצה על קישור בתפריט: סוגרים בלי ״חזרה״, כדי לא לבטל את המעבר לאזור שנבחר
+  $$('.main-nav a').forEach((a) => a.addEventListener('click', () => setMenu(false, { keepHistory: true })));
+  document.addEventListener('keydown', (e) => {
+    if (!header.classList.contains('menu-open')) return;
+    if (e.key === 'Escape') { setMenu(false); menuBtn.focus(); return; }
+    // המקלדת נשארת בתוך התפריט הפתוח: הקישורים ואז כפתור הסגירה, במעגל
+    if (e.key !== 'Tab' || !menuIsOverlay()) return;
+    const f = $$('.main-nav a, .main-nav button').filter((el) => el.offsetParent !== null).concat(menuBtn);
+    const i = f.indexOf(document.activeElement);
+    e.preventDefault();
+    f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+  });
   window.matchMedia('(min-width: 1181px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
 
   /* כלל המדגש: כפתור טורקיז אחד בכל מסך. כפתור הכותרת נדלק רק כשאין כפתור טורקיז אחר בתצוגה */
@@ -58,7 +85,7 @@
       entries.forEach((en) => (en.isIntersecting ? inView.add(en.target) : inView.delete(en.target)));
       headCta.classList.toggle('is-quiet', inView.size > 0);
     });
-    $$('.btn-mint').forEach((b) => { if (b !== headCta) mio.observe(b); });
+    $$('.btn-mint').forEach((b) => { if (b !== headCta && !b.closest('.main-nav') && !b.classList.contains('sticky-cta')) mio.observe(b); });
   } else if (headCta) headCta.classList.remove('is-quiet');
 
   /* קישור השפה שומר על המקום בעמוד */
@@ -97,6 +124,7 @@
     const c = b.dataset.city;
     cards.forEach((card) => { card.hidden = !(c === 'all' || card.dataset.city === c); });
   }));
+  const chosenBox = $('[data-branch-chosen]');
   const markSelected = (id) => {
     cards.forEach((card) => {
       const on = card.dataset.branchCard === id;
@@ -105,8 +133,19 @@
       btn.setAttribute('aria-pressed', String(on));
       $('.choose-label', btn).textContent = on ? data.chosen : data.choose;
     });
+    // בראש הטופס רואים איזה חוג נבחר, עם אפשרות להחליף
+    if (chosenBox) {
+      const b = data.branches.find((x) => x.id === id);
+      chosenBox.hidden = !b;
+      if (b) $('[data-branch-chosen-name]', chosenBox).textContent = fill(T.branchFormat, { name: b.name, city: data.cities[b.city] });
+    }
     setStep(id ? 1 : 0);
   };
+  const changeBtn = $('[data-branch-change]');
+  changeBtn && changeBtn.addEventListener('click', () => {
+    $('#join').scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto', block: 'start' });
+    setTimeout(() => { const c = $('.city-filter .chip[aria-pressed="true"]') || $('.city-filter .chip'); c && c.focus({ preventScroll: true }); }, motionOn() ? 450 : 0);
+  });
   $$('[data-choose]').forEach((btn) => btn.addEventListener('click', () => {
     const id = btn.dataset.choose;
     branchSelect.value = id;
@@ -121,8 +160,13 @@
   // הגעה מעמוד החוגים (‎?branch=…) — החוג כבר נבחר בטופס
   const qBranch = new URLSearchParams(location.search).get('branch');
   if (qBranch && data.branches.some((x) => x.id === qBranch)) {
+    const qb = data.branches.find((x) => x.id === qBranch);
+    const cb = cityBtns.find((x) => x.dataset.city === qb.city);
+    if (cb) cb.click();
     branchSelect.value = qBranch; markSelected(qBranch);
     try { history.replaceState(null, '', location.pathname + location.hash); } catch (err) { /* לא קריטי */ }
+    // הדף נוחת על הטופס (‎#join-form-area), והסמן מחכה בשדה הראשון שעוד לא מולא
+    window.addEventListener('load', () => setTimeout(() => $('#f-parent').focus({ preventScroll: true }), 150));
   }
 
   /* ---------- בדיקת גיל מהירה: תשובה מיידית, עוד לפני שמשאירים פרטים ---------- */
@@ -197,7 +241,7 @@
       const E = data.emailForm; const L = E.labels;
       const body = [E.intro, '', `${L.parent}: ${entry.parent}`, `${L.phone}: ${entry.phone}`, `${L.email}: ${entry.email}`, `${L.child}: ${entry.child}`, `${L.age}: ${entry.age}`, `${L.cheder}: ${entry.cheder}`, `${L.grade}: ${entry.grade}`]
         .concat(entry.notes ? [`${L.notes}: ${entry.notes}`] : []).join('\n');
-      const href = `mailto:${data.choirEmail}?subject=${encodeURIComponent(fill(E.subject, { branch: branchLabel, child: entry.child }))}&body=${encodeURIComponent(body)}`;
+      const href = `mailto:${data.choirEmailHref || data.choirEmail}?subject=${encodeURIComponent(fill(E.subject, { branch: branchLabel, child: entry.child }))}&body=${encodeURIComponent(body)}`;
       renderEmailSuccess(href);
       try { window.location.href = href; } catch (err) { /* הקישור בהודעה נשאר זמין */ }
       return;
@@ -449,6 +493,7 @@
   const setLock = () => document.body.classList.toggle('is-locked',
     header.classList.contains('menu-open') || (library && !library.hidden) || !$('#player').hidden);
   let libReturn = null;
+  let closeLibraryFn = null;
   if (library && libOpenBtn) {
     const songs = $$('.song', library);
     const countEl = $('[data-song-count]', library);
@@ -464,7 +509,7 @@
         li.hidden = !match;
         if (match) n++;
       });
-      countEl.textContent = fill(data.music.count, { n });
+      countEl.textContent = n === 1 && data.music.countOne ? data.music.countOne : fill(data.music.count, { n });
       emptyEl.hidden = n !== 0;
     };
     $$('[data-filter]', library).forEach((b) => b.addEventListener('click', () => {
@@ -480,12 +525,15 @@
       library.hidden = false; setLock(); applySongs();
       library.scrollTop = 0; $('.library-in', library).scrollTop = 0;
       search.focus({ preventScroll: true });
+      pushOverlay('library');
     };
-    const closeLibrary = () => {
+    const closeLibrary = (opts = {}) => {
       if (library.hidden) return;
       library.hidden = true; setLock();
+      if (!opts.fromPop) popOverlay('library');
       if (libReturn && document.contains(libReturn)) libReturn.focus();
     };
+    closeLibraryFn = closeLibrary;
     libOpenBtn.addEventListener('click', openLibrary);
     $('[data-library-close]', library).addEventListener('click', closeLibrary);
     library.addEventListener('click', (e) => { if (e.target === library) closeLibrary(); });
@@ -631,7 +679,7 @@
     toastEl.textContent = '';
     renderQueue();
     // קישור ישיר לשיר, כדי שאפשר לשלוח אותו הלאה
-    try { history.replaceState(null, '', '#play=' + id); } catch (e) { /* לא קריטי */ }
+    try { history.replaceState(history.state, '', '#play=' + id); } catch (e) { /* לא קריטי */ }
   }
   function renderQueue() {
     const next = [];
@@ -643,24 +691,36 @@
       return `<li><button type="button" class="q-item" data-q="${idx}"><span class="q-thumb"><img src="${assetBase}img/covers/${encodeURIComponent(id)}-s.webp" alt="" width="160" height="90" loading="lazy" decoding="async"></span><span class="q-copy"><span class="q-title">${escapeHtml(data.videos[id] || '')}</span><span class="q-meta">${meta}</span></span></button></li>`;
     }).join('');
   }
+  let deepOpened = false;
   function openPlayer(id, trigger) {
-    // ״הבא בתור״ מגיע מאותו מקום שממנו לחצו: הספרייה, רצועת הערוץ או רשימת השירים בדף
-    const scope = (trigger && (trigger.closest('#library') || trigger.closest('.channel-strip'))) || $('.music') || document;
+    // ״הבא בתור״ מגיע מאותו מקום שממנו לחצו: הספרייה, רצועת הערוץ או רשימת השירים בדף.
+    // מקישור ישיר (למשל מעמוד השירים) — כל השירים, כדי שהמונה והסדר יהיו נכונים
+    const scope = (trigger && (trigger.closest('#library') || trigger.closest('.channel-strip'))) || (!trigger && $('#library')) || $('.music') || document;
     const list = $$(scope.classList && scope.classList.contains('channel-strip') ? '[data-play]' : '.song:not([hidden]) [data-play]', scope).map((b) => b.dataset.play);
     queue = list.includes(id) ? list : [id].concat(list.filter((x) => x !== id));
     qi = queue.indexOf(id);
     lastFocus = trigger || document.activeElement;
+    deepOpened = !trigger;
+    if (trigger) pushOverlay('player', '#play=' + id);
     player.hidden = false;
     setLock();
     load(id);
     $('.player-close', player).focus();
   }
-  function closePlayer() {
+  function closePlayer(opts = {}) {
     if (player.hidden) return;
     player.hidden = true;
     frame.innerHTML = '';
     setLock();
-    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* לא קריטי */ }
+    if (deepOpened) {
+      deepOpened = false;
+      // הגיעו מעמוד השירים — חוזרים אליו, לאותו מקום ברשימה
+      try {
+        const ref = document.referrer ? new URL(document.referrer) : null;
+        if (!opts.keepHistory && ref && ref.origin === location.origin && /\/songs\/$/.test(ref.pathname)) { history.back(); return; }
+      } catch (e) { /* לא קריטי */ }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* לא קריטי */ }
+    } else if (!opts.fromPop && !opts.keepHistory) popOverlay('player');
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
   }
   const step = (d) => { qi = (qi + d + queue.length) % queue.length; load(queue[qi]); };
@@ -669,14 +729,22 @@
     if (t) { e.preventDefault(); openPlayer(t.dataset.play, t); return; }
     const q = e.target.closest('[data-q]');
     if (q) { qi = Number(q.dataset.q); load(queue[qi]); $('.player-close', player).focus(); return; }
-    if (e.target.closest('[data-player-join]')) { closePlayer(); return; }
+    if (e.target.closest('[data-player-join]')) {
+      // ״מצאו חוג״ מתוך הנגן: סוגרים ועוברים לאזור החוגים, בלי ״חזרה״ שיבטל את המעבר
+      e.preventDefault();
+      closePlayer({ keepHistory: true });
+      try { history.replaceState(null, '', '#join'); } catch (err) { /* לא קריטי */ }
+      $('#join').scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto', block: 'start' });
+      return;
+    }
     if (e.target.closest('[data-player-close]')) closePlayer();
   });
   $('[data-player-prev]', player).addEventListener('click', () => step(-1));
   $('[data-player-next]', player).addEventListener('click', () => step(1));
   $('[data-player-share]', player).addEventListener('click', async () => {
     const id = queue[qi]; const title = data.videos[id] || '';
-    const url = location.origin + location.pathname + '#play=' + id;
+    // באתר החי: הכתובת בעברית (פרחישמים.com), שנראית אמינה בוואטסאפ ולא כמו xn--…
+    const url = (data.shareOrigin || location.origin) + location.pathname + '#play=' + id;
     if (navigator.share) {
       try { await navigator.share({ title, text: fill(data.player.shareText, { title }), url }); return; } catch (err) { if (err && err.name === 'AbortError') return; }
     }
@@ -685,6 +753,37 @@
   // פתיחה ישירה מקישור ששיתפו: ‎#play=מזהה
   const deep = /^#play=([\w-]{11})$/.exec(location.hash);
   if (deep && data.videos[deep[1]]) openPlayer(deep[1], null);
+  /* נייד: כפתור הרשמה קבוע בתחתית — רק אחרי הפתיחה, ורק כשאין על המסך את אזור החוגים או כפתור טורקיז אחר */
+  const sticky = $('[data-sticky-cta]');
+  if (sticky && 'IntersectionObserver' in window) {
+    const seen = new Set();
+    const heroEl = $('.hero');
+    const updateSticky = () => {
+      const past = window.scrollY > (heroEl ? heroEl.offsetHeight * 0.75 : 500);
+      // בזמן הקלדה בשדה כלשהו (המקלדת פתוחה) הכפתור לא מכסה את הטופס
+      const typing = document.activeElement && document.activeElement.matches('input, select, textarea');
+      sticky.classList.toggle('is-on', past && seen.size === 0 && !typing);
+    };
+    document.addEventListener('focusin', updateSticky);
+    document.addEventListener('focusout', () => setTimeout(updateSticky, 50));
+    const sio = new IntersectionObserver((entries) => {
+      entries.forEach((en) => (en.isIntersecting ? seen.add(en.target) : seen.delete(en.target)));
+      updateSticky();
+    });
+    $$('.btn-mint').filter((b) => b !== sticky && !b.closest('.main-nav') && !b.classList.contains('header-cta') && !b.closest('.player')).forEach((b) => sio.observe(b));
+    // גם כשטופס העדכונים על המסך — כדי לא לכסות את כפתור השליחה שלו
+    ['#join', '.club-card'].forEach((s) => { const el = $(s); if (el) sio.observe(el); });
+    window.addEventListener('scroll', updateSticky, { passive: true });
+    updateSticky();
+  }
+
+  // ״חזרה״ בטלפון: סוגר את השכבה העליונה שפתוחה
+  window.addEventListener('popstate', () => {
+    if (selfPop) { selfPop--; return; }
+    if (!player.hidden) { closePlayer({ fromPop: true }); return; }
+    if (library && !library.hidden && closeLibraryFn) { closeLibraryFn({ fromPop: true }); return; }
+    if (header.classList.contains('menu-open')) setMenu(false, { fromPop: true });
+  });
   player.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { e.preventDefault(); closePlayer(); return; }
     if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && queue.length > 1 && !e.target.closest('input, textarea')) {

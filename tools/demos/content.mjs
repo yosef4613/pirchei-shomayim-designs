@@ -1,7 +1,9 @@
 // תוכן שלוש הדגמות המסלולים — מקור אחד לעברית ולאנגלית.
 // כל פרט כאן מבוסס על הערוץ, המודעות ותשובות מרדכי לשאלון. פרטים שעדיין חסרים מסומנים בטקסט עצמו.
 
-export const CHOIR_EMAIL = 'mordi.gordon@gmail.com';
+// כתובת המקהלה באתר: בעברית לתצוגה, ובקידוד הבינלאומי לקישורי מייל (עובד בכל תוכנת דואר)
+export const CHOIR_EMAIL = 'info@פרחישמים.com';
+export const CHOIR_EMAIL_HREF = 'info@xn--cebeaqd7a2ak.com';
 export const CHANNEL_URL = 'https://www.youtube.com/@-pircheishomayimboyschoir7232';
 
 export const branches = [
@@ -101,7 +103,7 @@ const he = {
   langLabel: 'English', langShort: 'EN', langAria: 'Switch to English',
   motionOff: 'עצירת אנימציות', motionOn: 'הפעלת אנימציות',
   menu: 'תפריט', close: 'סגירה',
-  headerCta: 'השאירו פרטים',
+  headerCta: 'מצאו חוג',
 
   hero: {
     eyebrow: 'מקהלת פרחי שמיים · חוגי מקהלה לבנים בגילאי 8–12',
@@ -137,7 +139,7 @@ const he = {
 
   form: {
     title: 'השאירו פרטים — נחזור אליכם',
-    branch: 'החוג', branchPlaceholder: 'בחרו חוג',
+    branch: 'החוג', branchPlaceholder: 'בחרו חוג', chosenLabel: 'החוג שנבחר:', change: 'החלפה',
     parent: 'שם ההורה', phone: 'טלפון', email: 'מייל',
     child: 'שם הילד', age: 'גיל', cheder: 'חיידר / תלמוד תורה', grade: 'כיתה', gradePlaceholder: 'בחרו כיתה',
     grades: ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ז׳', 'ח׳'],
@@ -162,7 +164,7 @@ const he = {
   },
 
   stats: [
-    { value: 40, suffix: '+', label: 'שירים וקליפים' },
+    { value: songs.length, suffix: '', label: 'שירים וקליפים' },
     { value: 4, suffix: '', label: 'חוגים בירושלים ובבית שמש' },
     { value: 125, suffix: ' אלף', label: 'צפיות בערוץ' },
     { text: '8–12', label: 'גילאי החוג' },
@@ -191,8 +193,8 @@ const he = {
     searchLabel: 'חיפוש שיר', searchPlaceholder: 'חיפוש שיר…',
     showAll: 'הצגת כל השירים', showLess: 'הצגת פחות',
     empty: 'לא נמצאו שירים. נסו מילה אחרת.',
-    play: 'ניגון', newBadge: 'חדש',
-    count: '{n} שירים',
+    play: 'האזינו', newBadge: 'חדש',
+    count: '{n} שירים', countOne: 'שיר אחד',
     channel: 'כל הסרטונים בערוץ',
   },
 
@@ -261,7 +263,7 @@ const he = {
     kicker: 'בואו להכירנו מקרוב',
     title: 'מקהלת פרחי שמיים',
     paras: [
-      'פרחי שמיים היא מקהלת ילדים וחוג מוזיקלי שפועל בכמה ערים בארץ. המטרה שלנו: לעודד ילדים מוזיקליים, לתת להם הרגשה טובה ולנסוך בהם ביטחון בכישרון שהקב״ה חנן אותם — כך שיתחזקו גם בלימודם בחיידר, ולא להפך.',
+      'פרחי שמיים היא מקהלת ילדים וחוג מוזיקלי שפועל בירושלים ובבית שמש. המטרה שלנו: לעודד ילדים מוזיקליים, לתת להם הרגשה טובה ולנסוך בהם ביטחון בכישרון שהקב״ה חנן אותם — כך שיתחזקו גם בלימודם בחיידר, ולא להפך.',
       'המקהלה מוציאה שירים וקליפים ומופיעה מעת לעת, והשירים יוצאים כדי שכולם יוכלו ליהנות ולהתחזק מהם בעבודת הבורא.',
     ],
     conductor: 'ר׳ מרדכי גורדון', conductorRole: 'מנצח המקהלה, מלחין ומעבד קולי',
@@ -321,7 +323,7 @@ const en = {
   langLabel: 'עברית', langShort: 'עב', langAria: 'מעבר לעברית',
   motionOff: 'Pause animations', motionOn: 'Play animations',
   menu: 'Menu', close: 'Close',
-  headerCta: 'Leave your details',
+  headerCta: 'Find a class',
 
   hero: {
     eyebrow: 'Pirchei Shomayim Boys’ Choir · classes for boys aged 8–12',
@@ -356,7 +358,7 @@ const en = {
 
   form: {
     title: 'Leave your details — we’ll get back to you',
-    branch: 'Class', branchPlaceholder: 'Choose a class',
+    branch: 'Class', branchPlaceholder: 'Choose a class', chosenLabel: 'Chosen class:', change: 'Change',
     parent: 'Parent’s name', phone: 'Phone', email: 'Email',
     child: 'Child’s name', age: 'Age', cheder: 'Cheder / Talmud Torah', grade: 'Grade', gradePlaceholder: 'Choose a grade',
     grades: ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th'],
@@ -381,7 +383,7 @@ const en = {
   },
 
   stats: [
-    { value: 40, suffix: '+', label: 'songs and music videos' },
+    { value: songs.length, suffix: '', label: 'songs and music videos' },
     { value: 4, suffix: '', label: 'classes in Jerusalem & Beit Shemesh' },
     { value: 125, suffix: 'K+', label: 'views on our channel' },
     { text: '8–12', label: 'ages in the class' },
@@ -410,8 +412,8 @@ const en = {
     searchLabel: 'Search songs', searchPlaceholder: 'Search songs…',
     showAll: 'Show all songs', showLess: 'Show fewer',
     empty: 'No songs found. Try another word.',
-    play: 'Play', newBadge: 'New',
-    count: '{n} songs',
+    play: 'Listen', newBadge: 'New',
+    count: '{n} songs', countOne: 'One song',
     channel: 'All videos on the channel',
   },
 
@@ -480,7 +482,7 @@ const en = {
     kicker: 'Get to know us',
     title: 'Pirchei Shomayim Boys’ Choir',
     paras: [
-      'Pirchei Shomayim is a boys’ choir and music class active in several cities in Israel. Our goal: to encourage musical children, give them a good feeling and instill confidence in the talent Hashem has blessed them with — so that they grow stronger in their learning in cheder, not the other way around.',
+      'Pirchei Shomayim is a boys’ choir and music class active in Jerusalem and Beit Shemesh. Our goal: to encourage musical children, give them a good feeling and instill confidence in the talent Hashem has blessed them with — so that they grow stronger in their learning in cheder, not the other way around.',
       'The choir releases songs and music videos and performs from time to time, so that everyone can enjoy them and be strengthened in avodas Hashem.',
     ],
     conductor: 'R’ Mordechai Gordon', conductorRole: 'Conductor, composer and vocal arranger',

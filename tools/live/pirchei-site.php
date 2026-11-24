@@ -9,7 +9,8 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-const PS_CHOIR_EMAIL = 'mordi.gordon@gmail.com';
+const PS_CHOIR_EMAIL = 'mordi.gordon@gmail.com'; // לכאן מגיעות ההודעות על פניות חדשות (לא מוצג לציבור)
+const PS_PUBLIC_EMAIL = 'info@xn--cebeaqd7a2ak.com'; // הכתובת שההורים רואים ועונים אליה
 const PS_BRANCHES = [
 	'ramat-eshkol' => ['he' => 'רמת אשכול · ירושלים', 'en' => 'Ramat Eshkol · Jerusalem'],
 	'neve-yaakov'  => ['he' => 'נווה יעקב · ירושלים', 'en' => 'Neve Yaakov · Jerusalem'],
@@ -352,7 +353,7 @@ function ps_rest_inquiry(WP_REST_Request $req) {
 		$mail = array_merge($mail, ['', $lang === 'en' ? 'To confirm the updates you asked for:' : 'לאישור העדכונים שביקשתם:', $confirm_url]);
 	}
 	$mail = array_merge($mail, ['', $lang === 'en' ? 'Questions? Just reply to this email.' : 'שאלות? אפשר פשוט להשיב למייל הזה.', '', $lang === 'en' ? 'Pirchei Shomayim Boys’ Choir' : 'מקהלת פרחי שמיים', $home]);
-	ps_mail($d['email'], $lang === 'en' ? 'We received your inquiry · Pirchei Shomayim' : 'קיבלנו את הפנייה · מקהלת פרחי שמיים', $mail, PS_CHOIR_EMAIL);
+	ps_mail($d['email'], $lang === 'en' ? 'We received your inquiry · Pirchei Shomayim' : 'קיבלנו את הפנייה · מקהלת פרחי שמיים', $mail, PS_PUBLIC_EMAIL);
 
 	return new WP_REST_Response(['ok' => true], 200);
 }
@@ -415,7 +416,7 @@ function ps_rest_subscribe(WP_REST_Request $req) {
 		$mail = $lang === 'en'
 			? ['Hello,', '', 'Thank you for signing up for Pirchei Shomayim Choir updates.', 'You chose: ' . $names . '.', '', 'To start receiving updates, please confirm your email:', $url, '', 'Didn’t ask for this? Just ignore this email.']
 			: ['שלום,', '', 'תודה שנרשמתם לעדכונים של מקהלת פרחי שמיים.', 'בחרתם לקבל: ' . $names . '.', '', 'כדי להתחיל לקבל עדכונים, אשרו את הכתובת:', $url, '', 'לא נרשמתם? אפשר פשוט להתעלם מהמייל הזה.'];
-		ps_mail($email, $lang === 'en' ? 'Please confirm your updates · Pirchei Shomayim' : 'אישור ההרשמה לעדכונים · מקהלת פרחי שמיים', $mail, PS_CHOIR_EMAIL);
+		ps_mail($email, $lang === 'en' ? 'Please confirm your updates · Pirchei Shomayim' : 'אישור ההרשמה לעדכונים · מקהלת פרחי שמיים', $mail, PS_PUBLIC_EMAIL);
 	}
 	return new WP_REST_Response(['ok' => true], 200);
 }

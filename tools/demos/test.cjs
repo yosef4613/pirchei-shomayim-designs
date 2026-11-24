@@ -69,10 +69,10 @@ async function fillJoin(page, lang, branch, name) {
           assert.strictEqual(await page.locator('.plan-switch a[aria-current="page"]').textContent(), String(plan));
         });
         await t(`${L} one lit registration button per screen, text never waits (rules 2+4)`, async () => {
-          const lit = await page.$$eval('.btn-mint', (bs) => bs.filter((b) => { const r = b.getBoundingClientRect(); return r.width && r.bottom > 0 && r.top < innerHeight && getComputedStyle(b).display !== 'none' && !b.classList.contains('is-quiet'); }).length);
+          const lit = await page.$$eval('.btn-mint', (bs) => bs.filter((b) => { const r = b.getBoundingClientRect(); return r.width && r.bottom > 0 && r.top < innerHeight && getComputedStyle(b).display !== 'none' && getComputedStyle(b).visibility !== 'hidden' && !b.classList.contains('is-quiet'); }).length);
           assert.strictEqual(lit, 1);
           assert.strictEqual(await page.locator('h2[data-reveal], p[data-reveal], .btn[data-reveal]').count(), 0);
-          assert.ok(await page.locator('[data-motion-toggle]').isVisible(), 'motion off-switch must be reachable');
+          assert.ok(await page.locator('[data-motion-toggle]:visible').count() >= 1 || await page.locator('[data-menu-toggle]').isVisible(), 'motion off-switch must be reachable');
         });
         await t(`${L} one button per class card`, async () => {
           const counts = await page.$$eval('.branch', (cards) => cards.map((c) => c.querySelectorAll('a, button').length));
@@ -112,7 +112,7 @@ async function fillJoin(page, lang, branch, name) {
             await page.waitForTimeout(400);
             assert.ok(await page.locator('#join-success').isVisible());
             const href = await page.getAttribute('[data-mailto]', 'href');
-            assert.ok(href.startsWith('mailto:mordi.gordon@gmail.com?subject='), href);
+            assert.ok(href.startsWith('mailto:info@xn--cebeaqd7a2ak.com?subject='), href);
             assert.ok(decodeURIComponent(href).includes(parent), 'body missing parent');
             assert.strictEqual(await page.evaluate(() => localStorage.getItem('ps-inquiries')), null);
             await page.click('[data-again]');
@@ -145,8 +145,8 @@ async function fillJoin(page, lang, branch, name) {
             await page.click('[data-again]');
             assert.strictEqual(await page.inputValue('#f-parent'), '');
           });
-          await t(`${L} home page stays short: 8 songs, library images not loaded yet`, async () => {
-            assert.strictEqual(await page.locator('.songs-home .song:visible').count(), 8);
+          await t(`${L} home page stays short: 4 songs, library images not loaded yet`, async () => {
+            assert.strictEqual(await page.locator('.songs-home .song:visible').count(), 4);
             assert.ok(!(await page.locator('#library').isVisible()));
             assert.strictEqual(await page.locator('#library img[src]').count(), 0);
           });
