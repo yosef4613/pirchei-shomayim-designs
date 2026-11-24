@@ -41,7 +41,7 @@ export const planText = {
       successExtra: 'שלחנו גם קישור לאישור החשבון והעדכונים שבחרתם.',
       confirm: 'אישור הכתובת',
     },
-    topics: { songs: 'שירים חדשים ביוטיוב', classes: 'חוגים חדשים והרשמה', shows: 'הופעות והרשמה להופעות' },
+    topics: { songs: 'שירים חדשים', classes: 'חוגים חדשים והרשמה', shows: 'הופעות והרשמה להופעות' },
     club: {
       nav: 'עדכונים',
       kicker: 'עדכונים מהמקהלה',
@@ -94,7 +94,7 @@ export const planText = {
       successExtra: 'We’ve also sent a link to confirm your account and the updates you chose.',
       confirm: 'Confirm my email',
     },
-    topics: { songs: 'New songs on YouTube', classes: 'New classes & sign-up', shows: 'Concerts & sign-up' },
+    topics: { songs: 'New songs', classes: 'New classes & sign-up', shows: 'Concerts & sign-up' },
     club: {
       nav: 'Updates',
       kicker: 'Choir updates',

@@ -198,7 +198,7 @@ const he = {
 
   player: {
     label: 'נגן המקהלה', close: 'סגירת הנגן', prev: 'השיר הקודם', next: 'השיר הבא', prevShort: 'הקודם', nextShort: 'הבא',
-    youtube: 'ביוטיוב', note: 'אם הנגן לא נטען אצלכם, אפשר לצפות ישירות ביוטיוב.',
+    youtube: 'בחלון חדש', note: 'אם הנגן לא נטען אצלכם, אפשר לפתוח את השיר בחלון חדש.',
     nowPlaying: 'מתנגן עכשיו', count: '{i} מתוך {n}', upNext: 'הבא בתור', share: 'שיתוף', copied: 'הקישור לשיר הועתק',
     shareText: 'מקהלת פרחי שמיים · {title}', by: 'בניצוח ר׳ מרדכי גורדון',
     cats: { clip: 'קליפ רשמי', live: 'מהבמה', medley: 'מחרוזת ומופע', makhalolam: 'מקהלולם', short: 'קטע קצר' },
@@ -283,7 +283,7 @@ const he = {
   },
 
   footer: {
-    contact: 'יצירת קשר במייל', youtube: 'הערוץ ביוטיוב',
+    contact: 'יצירת קשר במייל', youtube: 'ערוץ הסרטונים שלנו',
     access: 'הצהרת נגישות', privacy: 'מדיניות פרטיות',
     rights: '© מקהלת פרחי שמיים', demo: 'הדגמה לאתר · התוכן והעיצוב להמחשה', builtBy: 'עיצוב ובניית האתר:',
   },
@@ -417,7 +417,7 @@ const en = {
 
   player: {
     label: 'Choir player', close: 'Close player', prev: 'Previous song', next: 'Next song', prevShort: 'Previous', nextShort: 'Next',
-    youtube: 'YouTube', note: 'If the player doesn’t load for you, you can watch directly on YouTube.',
+    youtube: 'New window', note: 'If the player doesn’t load for you, you can open the song in a new window.',
     nowPlaying: 'Now playing', count: '{i} of {n}', upNext: 'Up next', share: 'Share', copied: 'Link to the song copied',
     shareText: 'Pirchei Shomayim Boys’ Choir · {title}', by: 'Conducted by R’ Mordechai Gordon',
     cats: { clip: 'Music video', live: 'Live', medley: 'Medley & concert', makhalolam: 'Makhalolam', short: 'Short clip' },
@@ -502,7 +502,7 @@ const en = {
   },
 
   footer: {
-    contact: 'Contact us by email', youtube: 'Our YouTube channel',
+    contact: 'Contact us by email', youtube: 'Our video channel',
     access: 'Accessibility statement', privacy: 'Privacy policy',
     rights: '© Pirchei Shomayim Boys’ Choir', demo: 'Website demo · content and design for illustration', builtBy: 'Website design & build:',
   },

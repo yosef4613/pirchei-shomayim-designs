@@ -10,7 +10,7 @@ import { seoText } from './seo.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '13';
+const VERSION = '14';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -46,6 +46,7 @@ const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden=
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.5" cy="16" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v5a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
 </svg>`;
 
@@ -406,7 +407,7 @@ ${sprite}
           <h2 id="music-title">${esc(t.music.title)}</h2>
           <p class="section-lead">${esc(cfg.tools ? t.music.lead : t.music.lead.split('.')[0] + '.')}</p>
         </div>
-        <a class="text-link" href="${CHANNEL_URL}" target="_blank" rel="noopener">${icon('youtube')}<span>${esc(t.music.channel)}</span></a>
+        <a class="text-link" href="${CHANNEL_URL}" target="_blank" rel="noopener">${icon('play')}<span>${esc(t.music.channel)}</span></a>
       </div>
 
       <article class="featured" data-reveal>
@@ -503,7 +504,7 @@ ${cfg.behind ? `
       ${live ? '' : `<p class="excl-note">${esc(X.note)}</p>`}
     </div>
     <div class="channel-strip">
-      <div class="wrap"><h3 class="strip-title">${icon('youtube')}${esc(X.fromChannel)}</h3></div>
+      <div class="wrap"><h3 class="strip-title">${icon('play')}${esc(X.fromChannel)}</h3></div>
       <div class="strip-viewport">
         <ul class="strip-track">
           ${shorts.map((s) => `<li class="strip-item strip-short"><button type="button" data-play="${s.id}"><img src="${A}img/shorts/${s.id}.webp" alt="" width="360" height="640" loading="lazy" decoding="async"><span class="short-cap">${icon('play')}${esc(s[lang])}</span></button></li>`).join('\n          ')}
@@ -600,7 +601,7 @@ ${cfg.club ? `
     </nav>
     <div class="footer-contact">
       <a href="mailto:${CHOIR_EMAIL}">${icon('mail')}<span>${esc(t.footer.contact)}</span></a>
-      <a href="${CHANNEL_URL}" target="_blank" rel="noopener">${icon('youtube')}<span>${esc(t.footer.youtube)}</span></a>
+      <a href="${CHANNEL_URL}" target="_blank" rel="noopener">${icon('play')}<span>${esc(t.footer.youtube)}</span></a>
       <a href="${t.otherHref}" hreflang="${t.other}" lang="${t.other}" data-lang-link>${t.langLabel}</a>
     </div>
   </div>
@@ -666,7 +667,7 @@ ${cfg.tools ? `<div class="library" id="library" role="dialog" aria-modal="true"
           <button type="button" class="btn btn-ghost btn-sm" data-player-prev aria-label="${esc(t.player.prev)}">${icon('arrow', 'ico-prev')}<span>${esc(t.player.prevShort)}</span></button>
           <button type="button" class="btn btn-ghost btn-sm" data-player-next aria-label="${esc(t.player.next)}"><span>${esc(t.player.nextShort)}</span>${icon('arrow', 'ico-dir')}</button>
           <button type="button" class="btn btn-ghost btn-sm" data-player-share>${icon('share')}<span>${esc(t.player.share)}</span></button>
-          <a class="btn btn-ghost btn-sm" data-player-yt href="#" target="_blank" rel="noopener">${icon('youtube')}<span>${esc(t.player.youtube)}</span></a>
+          <a class="btn btn-ghost btn-sm" data-player-yt href="#" target="_blank" rel="noopener">${icon('external')}<span>${esc(t.player.youtube)}</span></a>
         </div>
         <p class="player-toast" data-player-toast role="status" aria-live="polite"></p>
         <div class="player-upnext" data-player-upnext>
@@ -768,7 +769,7 @@ const legalText = {
       ['מי רואה אותם', 'צוות המקהלה בלבד. הפרטים לא נמכרים ולא מועברים לאף גורם אחר.'],
       ['איפה הם נשמרים', 'בשרת האתר, ובהודעת מייל שנשלחת לצוות המקהלה.'],
       ['צפייה, תיקון ומחיקה', 'אפשר לבקש בכל עת לראות, לתקן או למחוק את הפרטים במייל {email}. אפשר להפסיק לקבל עדכונים בכל עת באותו מייל.'],
-      ['סרטונים ועוגיות', 'הסרטונים באתר מוטמעים מיוטיוב במצב פרטיות מוגברת, ונטענים רק כשלוחצים לנגן. האתר לא משתמש בעוגיות מעקב או פרסום. בדפדפן נשמרת רק ההעדפה אם להציג אנימציות.'],
+      ['סרטונים ועוגיות', 'הסרטונים באתר מוטמעים משירות וידאו חיצוני של גוגל, במצב פרטיות מוגברת, ונטענים רק כשלוחצים לנגן. האתר לא משתמש בעוגיות מעקב או פרסום. בדפדפן נשמרת רק ההעדפה אם להציג אנימציות.'],
     ],
     a11yTitle: 'הצהרת נגישות',
     a11y: [
@@ -788,7 +789,7 @@ const legalText = {
       ['Who sees it', 'Only the choir team. Your details are never sold or passed on to anyone else.'],
       ['Where it is kept', 'On the website’s server, and in an email sent to the choir team.'],
       ['Viewing, correcting and deleting', 'You can ask at any time to see, correct or delete your details by emailing {email}. You can stop receiving updates at any time the same way.'],
-      ['Videos and cookies', 'Videos are embedded from YouTube in privacy-enhanced mode and load only when you press play. The site uses no tracking or advertising cookies. Your browser only remembers whether to show animations.'],
+      ['Videos and cookies', 'Videos are embedded from an external video service run by Google, in privacy-enhanced mode, and load only when you press play. The site uses no tracking or advertising cookies. Your browser only remembers whether to show animations.'],
     ],
     a11yTitle: 'Accessibility statement',
     a11y: [
@@ -904,7 +905,7 @@ write(join(DIST, 'llms.txt'), `# מקהלת פרחי שמיים · Pirchei Shoma
 ## קשר · Contact
 
 - מייל: ${CHOIR_EMAIL}
-- ערוץ היוטיוב: ${CHANNEL_URL}
+- ערוץ הסרטונים: ${CHANNEL_URL}
 `);
 
 // IndexNow: קובץ המפתח שמאשר לבינג ולמנועים נוספים שאנחנו בעלי האתר (המפתח ציבורי מעצם הגדרתו)
@@ -1012,7 +1013,7 @@ for (const key of ['he', 'en']) {
   // ---- עמוד השירים ----
   const order = ['clip', 'medley', 'live', 'makhalolam', 'short'];
   const catOf = (s) => (s.vertical ? 'short' : s.cat);
-  const songItem = (s) => `<li class="cp-song"><a class="cp-song-main" href="${home}#play=${s.id}"><img src="/ps/assets/img/covers/${s.id}-s.webp" alt="" width="160" height="90" loading="lazy" decoding="async"><span class="cp-song-text"><span class="cp-song-title">${esc(s[key])}${s.isNew ? ` <b class="cp-new">${esc(G.newLabel)}</b>` : ''}</span><span class="cp-song-meta">${esc(catShort[key][catOf(s)])}${s.dur ? ` · <bdi dir="ltr">${s.dur}</bdi>` : ''}</span></span></a><a class="cp-song-yt" href="${ytUrl(s)}" target="_blank" rel="noopener" aria-label="${esc(s[key] + ' · ' + G.youtube)}">${icon('youtube')}</a></li>`;
+  const songItem = (s) => `<li class="cp-song"><a class="cp-song-main" href="${home}#play=${s.id}"><img src="/ps/assets/img/covers/${s.id}-s.webp" alt="" width="160" height="90" loading="lazy" decoding="async"><span class="cp-song-text"><span class="cp-song-title">${esc(s[key])}${s.isNew ? ` <b class="cp-new">${esc(G.newLabel)}</b>` : ''}</span><span class="cp-song-meta">${esc(catShort[key][catOf(s)])}${s.dur ? ` · <bdi dir="ltr">${s.dur}</bdi>` : ''}</span></span></a><a class="cp-song-yt" href="${ytUrl(s)}" target="_blank" rel="noopener" aria-label="${esc(s[key] + ' · ' + G.youtube)}" title="${esc(G.youtube)}">${icon('external')}</a></li>`;
   const n = songs.length;
   const songsBody = `<h1>${esc(G.h1)}</h1>
     <p class="cp-lead">${esc(G.lead.replace('{n}', n))}</p>

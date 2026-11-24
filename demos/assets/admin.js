@@ -304,7 +304,7 @@
 
   /* ---------- דיוור: שלוש תבניות אחידות ---------- */
   const TPL = {
-    songs: { tag: 'שיר חדש', cta: 'להאזנה ביוטיוב', fields: [['title', 'שם השיר', true], ['link', 'קישור ליוטיוב', true, 'url'], ['credits', 'קרדיטים (רשות)', false], ['lyrics', 'מילים (רשות)', false, 'textarea']] },
+    songs: { tag: 'שיר חדש', cta: 'להאזנה לשיר', fields: [['title', 'שם השיר', true], ['link', 'קישור ליוטיוב', true, 'url'], ['credits', 'קרדיטים (רשות)', false], ['lyrics', 'מילים (רשות)', false, 'textarea']] },
     classes: { tag: 'חוג חדש', cta: 'לפרטים ולהשארת פרטים', fields: [['title', 'שם החוג', true], ['place', 'עיר ומקום', true], ['ages', 'גילאים', true], ['times', 'ימים ושעות', false], ['link', 'קישור להרשמה', false, 'url']] },
     shows: { tag: 'הופעה', cta: 'לפרטים ולהרשמה', fields: [['title', 'שם ההופעה', true], ['date', 'תאריך', true, 'date'], ['time', 'שעה', false, 'time'], ['place', 'מקום', true], ['link', 'קישור להרשמה', false, 'url']] },
   };
