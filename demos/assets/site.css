@@ -638,3 +638,18 @@ html[data-motion="full"] .club.is-in .bell .ico { animation: ring 2.4s ease-in-o
 /* תיבות סימון בתוך שדות: לא לרשת את גודל שדות הטקסט */
 .field .topic input, .field .optin input { width: 18px; height: 18px; min-height: 0; padding: 0; border-radius: 4px; box-shadow: none; flex: none; }
 .field .optin input { width: 22px; height: 22px; }
+
+/* ---------- ספריית השירים: חלון מלא שנפתח בלחיצה ---------- */
+.library { position: fixed; inset: 0; z-index: 80; background: rgba(7, 5, 12, .72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.library-in { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; background: radial-gradient(70% 50% at 85% 0%, rgba(74, 25, 160, .35), transparent 70%), var(--night-2); }
+html[data-motion="full"] .library:not([hidden]) .library-in { animation: rise .4s var(--ease) both; }
+.library-head { position: sticky; top: 0; z-index: 2; background: rgba(17, 11, 27, .94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line-dark); padding-block: 16px 12px; }
+.library-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.library-bar h2 { font-size: clamp(1.4rem, 3vw, 2rem); }
+.library-bar .song-count { margin: 0; flex: 1; }
+.library .music-tools { margin-bottom: 0; }
+.library-body { padding-block: 24px 60px; }
+.lib-songs { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.songs-more .btn .ico-dir { margin-inline-start: 4px; }
+@media (max-width: 1080px) { .lib-songs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 720px) { .lib-songs { grid-template-columns: 1fr 1fr; } .songs-more .btn { width: 100%; } .library .chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; } .library .chip { white-space: nowrap; } }

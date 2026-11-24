@@ -120,29 +120,42 @@ async function fillJoin(page, lang, branch, name) {
             await page.click('[data-again]');
             assert.strictEqual(await page.inputValue('#f-parent'), '');
           });
-          await t(`${L} songs: filter, search, show all`, async () => {
-            await page.click('[data-filter="makhalolam"]');
-            assert.strictEqual(await page.locator('.song:visible').count(), 2);
-            await page.click('[data-filter="all"]');
-            await page.fill('#song-search', lang === 'he' ? 'אור חדש' : 'Or Chadash');
-            assert.strictEqual(await page.locator('.song:visible').count(), 1);
-            await page.fill('#song-search', '');
-            await page.click('[data-songs-more]');
-            // כל הסרטונים בערוץ, בלי הסרטון הכפול של ״פותח״
-            assert.strictEqual(await page.locator('.song:visible').count(), 49);
-            await page.click('[data-songs-more]');
+          await t(`${L} home page stays short: 8 songs, library images not loaded yet`, async () => {
+            assert.strictEqual(await page.locator('.songs-home .song:visible').count(), 8);
+            assert.ok(!(await page.locator('#library').isVisible()));
+            assert.strictEqual(await page.locator('#library img[src]').count(), 0);
           });
-          await t(`${L} short clips open in a visible vertical player`, async () => {
-            await page.click('[data-filter="short"]');
-            assert.strictEqual(await page.locator('.song:visible').count(), 6);
-            const btn = page.locator('.song:visible .song-btn').first();
-            await btn.scrollIntoViewIfNeeded(); await btn.click();
+          await t(`${L} library: opens on click with all songs, filter and search`, async () => {
+            const open = page.locator('[data-library-open]');
+            await open.scrollIntoViewIfNeeded(); await open.click();
+            assert.ok(await page.locator('#library').isVisible());
+            assert.strictEqual(await page.evaluate(() => document.activeElement.id), 'song-search');
+            // כל הסרטונים בערוץ, בלי הסרטון הכפול של ״פותח״
+            assert.strictEqual(await page.locator('#library .song:visible').count(), 49);
+            await page.click('#library [data-filter="makhalolam"]');
+            assert.strictEqual(await page.locator('#library .song:visible').count(), 2);
+            await page.click('#library [data-filter="all"]');
+            await page.fill('#song-search', lang === 'he' ? 'אור חדש' : 'Or Chadash');
+            assert.strictEqual(await page.locator('#library .song:visible').count(), 1);
+            await page.fill('#song-search', 'zzzz');
+            assert.ok(await page.locator('#library .songs-empty').isVisible());
+            await page.fill('#song-search', '');
+          });
+          await t(`${L} short clips open in a visible vertical player above the library`, async () => {
+            await page.click('#library [data-filter="short"]');
+            assert.strictEqual(await page.locator('#library .song:visible').count(), 6);
+            await page.locator('#library .song:visible .song-btn').first().click();
             const box = await page.locator('#player .player-frame').boundingBox();
             assert.ok(box && box.width > 150 && box.height > box.width, 'vertical frame box ' + JSON.stringify(box));
             const ifr = await page.locator('#player iframe').boundingBox();
             assert.ok(ifr && ifr.width > 150 && ifr.height > 250, 'iframe box ' + JSON.stringify(ifr));
             await page.keyboard.press('Escape');
-            await page.click('[data-filter="all"]');
+            assert.ok(!(await page.locator('#player').isVisible()));
+            assert.ok(await page.locator('#library').isVisible(), 'Esc on the player should keep the library open');
+            await page.click('#library [data-filter="all"]');
+            await page.keyboard.press('Escape');
+            assert.ok(!(await page.locator('#library').isVisible()));
+            assert.ok(!(await page.evaluate(() => document.body.classList.contains('is-locked'))));
           });
         }
         if (plan === 3) {

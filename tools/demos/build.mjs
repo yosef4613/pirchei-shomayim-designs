@@ -37,6 +37,7 @@ const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden=
   <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 21H20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.5" cy="16" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
 </svg>`;
 
@@ -49,8 +50,11 @@ function page(t, plan) {
   const PDF = `${B}../../assets/`;                // מודעות החוג בשורש המאגר
   const langSuffix = lang === 'he' ? '' : 'en/';
   const branchName = (b) => `${b[lang].name} · ${t.join.cities[b.city]}`;
-  const visible = cfg.songsLimit;
-  const listSongs = cfg.tools ? songs : songs.filter((s) => !s.isNew).slice(0, visible);
+  // בדף הבית: מבחר קצר. כל השירים נפתחים בלחיצה בספרייה נפרדת (במסלולים 2 ו־3)
+  const homeSongs = songs.filter((s) => !s.isNew && !s.vertical).slice(0, 8);
+  const L = lang === 'he'
+    ? { libOpen: `לכל ${songs.length} השירים והקליפים`, libTitle: 'כל השירים והקליפים', libClose: 'סגירת ספריית השירים' }
+    : { libOpen: `All ${songs.length} songs & videos`, libTitle: 'All songs & videos', libClose: 'Close the song library' };
   const featured = songs.find((s) => s.isNew);
   const pageData = {
     lang, dir: t.dir, plan, form: cfg.form, choirEmail: CHOIR_EMAIL, assetBase: A,
@@ -70,10 +74,11 @@ function page(t, plan) {
     .concat([['about', t.nav.about]]);
   const navHtml = navItems.map(([id, label]) => `<li><a href="#${id}">${esc(label)}</a></li>`).join('\n        ');
 
-  const songCard = (s, i) => `
-          <li class="song${cfg.tools && i >= visible ? ' is-extra' : ''}" data-cat="${s.cat}" data-title="${esc(s.he + ' ' + s.en)}">
+  // deferred=true: התמונה נטענת רק כשפותחים את ספריית השירים, כדי שהדף יישאר קל
+  const songCard = (s, deferred = false) => `
+          <li class="song" data-cat="${s.cat}" data-title="${esc(s.he + ' ' + s.en)}">
             <button class="song-btn" type="button" data-play="${s.id}" aria-label="${esc(t.music.play + ': ' + s[lang])}">
-              <span class="song-cover"><img src="${A}img/covers/${s.id}-s.webp" alt="" width="360" height="203" loading="lazy" decoding="async"><span class="song-play">${icon('play')}</span><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>${s.isNew ? `<span class="badge-new">${t.music.newBadge}</span>` : ''}</span>
+              <span class="song-cover"><img ${deferred ? 'data-src' : 'src'}="${A}img/covers/${s.id}-s.webp" alt="" width="360" height="203" loading="lazy" decoding="async"><span class="song-play">${icon('play')}</span><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>${s.isNew ? `<span class="badge-new">${t.music.newBadge}</span>` : ''}</span>
               <span class="song-info"><span class="song-title">${esc(s[lang])}</span><span class="song-meta">${catShort[lang][s.cat]} · <bdi>${s.dur}</bdi></span></span>
             </button>
           </li>`;
@@ -102,6 +107,21 @@ function page(t, plan) {
   <meta property="og:description" content="${esc(t.description)}">
   <meta property="og:image" content="${SITE}assets/img/og.jpg">
   <meta property="og:locale" content="${lang === 'he' ? 'he_IL' : 'en_US'}">
+  <link rel="canonical" href="${SITE}${plan}/${langSuffix}">
+  <script type="application/ld+json">${JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'MusicGroup',
+    name: lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir',
+    alternateName: lang === 'he' ? 'Pirchei Shomayim Boys’ Choir' : 'מקהלת פרחי שמיים',
+    description: t.description,
+    url: `${SITE}${plan}/${langSuffix}`,
+    logo: `${SITE}assets/img/icon-180.png`,
+    image: `${SITE}assets/img/og.jpg`,
+    email: CHOIR_EMAIL,
+    genre: lang === 'he' ? 'מוזיקה יהודית, מקהלת ילדים' : 'Jewish music, boys’ choir',
+    areaServed: lang === 'he' ? ['ירושלים', 'בית שמש'] : ['Jerusalem', 'Beit Shemesh'],
+    sameAs: [CHANNEL_URL],
+  }).replace(/</g, '\\u003c')}</script>
   <link rel="icon" href="${A}img/icon-64.png" type="image/png">
   <link rel="apple-touch-icon" href="${A}img/icon-180.png">
   <link rel="preload" href="${A}fonts/${lang === 'he' ? 'heebo-hebrew' : 'heebo-latin'}.woff2" as="font" type="font/woff2" crossorigin>
@@ -356,22 +376,9 @@ ${sprite}
           <button class="btn btn-ghost" type="button" data-play="${featured.id}">${icon('play')}${esc(t.music.play)} · <bdi>${featured.dur}</bdi></button>
         </div>
       </article>
-${cfg.tools ? `
-      <div class="music-tools">
-        <div class="chips" role="group" aria-label="${lang === 'he' ? 'סינון שירים' : 'Filter songs'}">
-          ${Object.entries(t.music.filters).map(([k, v], i) => `<button type="button" class="chip chip-dark" data-filter="${k}" aria-pressed="${i === 0}">${esc(v)}</button>`).join('\n          ')}
-        </div>
-        <div class="search">
-          <label class="sr" for="song-search">${esc(t.music.searchLabel)}</label>
-          ${icon('search')}
-          <input id="song-search" type="search" placeholder="${esc(t.music.searchPlaceholder)}" autocomplete="off">
-        </div>
-      </div>
-      <p class="song-count" aria-live="polite" data-song-count></p>` : ''}
-      <ul class="songs" data-songs>${listSongs.map(songCard).join('')}
+      <ul class="songs songs-home">${homeSongs.map((s) => songCard(s)).join('')}
       </ul>${cfg.tools ? `
-      <p class="songs-empty" hidden>${esc(t.music.empty)}</p>
-      <div class="songs-more"><button type="button" class="btn btn-ghost" data-songs-more aria-expanded="false">${esc(t.music.showAll)}</button></div>` : ''}
+      <div class="songs-more"><button type="button" class="btn btn-ghost btn-lg" data-library-open aria-haspopup="dialog" aria-controls="library">${icon('music')}${esc(L.libOpen)}${icon('arrow', 'ico-dir')}</button></div>` : ''}
     </div>
   </section>
 ${cfg.stage ? `
@@ -533,7 +540,33 @@ ${cfg.club ? `
   </div>
 </footer>
 
-<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
+${cfg.tools ? `<div class="library" id="library" role="dialog" aria-modal="true" aria-labelledby="library-title" hidden>
+  <div class="library-in">
+    <div class="library-head">
+      <div class="wrap library-bar">
+        <h2 id="library-title">${esc(L.libTitle)}</h2>
+        <p class="song-count" aria-live="polite" data-song-count></p>
+        <button type="button" class="icon-btn library-close" data-library-close aria-label="${esc(L.libClose)}">${icon('close')}</button>
+      </div>
+      <div class="wrap music-tools">
+        <div class="chips" role="group" aria-label="${lang === 'he' ? 'סינון שירים' : 'Filter songs'}">
+          ${Object.entries(t.music.filters).map(([k, v], i) => `<button type="button" class="chip chip-dark" data-filter="${k}" aria-pressed="${i === 0}">${esc(v)}</button>`).join('\n          ')}
+        </div>
+        <div class="search">
+          <label class="sr" for="song-search">${esc(t.music.searchLabel)}</label>
+          ${icon('search')}
+          <input id="song-search" type="search" placeholder="${esc(t.music.searchPlaceholder)}" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <div class="wrap library-body">
+      <ul class="songs lib-songs">${songs.map((s) => songCard(s, true)).join('')}
+      </ul>
+      <p class="songs-empty" hidden>${esc(t.music.empty)}</p>
+    </div>
+  </div>
+</div>
+` : ''}<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
   <div class="player-backdrop" data-player-close></div>
   <div class="player-bg" aria-hidden="true"><img alt="" data-player-bg></div>
   <div class="player-box">

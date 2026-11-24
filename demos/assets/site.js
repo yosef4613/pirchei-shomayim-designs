@@ -322,43 +322,60 @@
   document.addEventListener('motionchange', () => { setupStrip(); updateJourney(); });
   updateJourney();
 
-  /* ---------- שירים: סינון, חיפוש, הצגת עוד ---------- */
-  const songs = $$('.song');
-  const moreBtn = $('[data-songs-more]');
-  const countEl = $('[data-song-count]');
-  const emptyEl = $('.songs-empty');
-  const search = $('#song-search');
-  let filter = 'all'; let expanded = false;
-  const norm = (s) => s.toLowerCase().replace(/[֑-ׇ]/g, '').replace(/[׳'’"״.,:·\-–—()]/g, ' ').replace(/\s+/g, ' ').trim();
-  const applySongs = () => {
-    const q = norm(search.value || '');
-    const searching = q.length > 0 || filter !== 'all';
-    let n = 0;
-    songs.forEach((li) => {
-      const match = (filter === 'all' || li.dataset.cat === filter) && (!q || norm(li.dataset.title).includes(q));
-      li.hidden = !match;
-      li.classList.toggle('is-shown', match && (searching || expanded));
-      if (match) n++;
-    });
-    countEl.textContent = fill(data.music.count, { n });
-    emptyEl.hidden = n !== 0;
-    moreBtn.parentElement.hidden = searching || songs.filter((li) => li.classList.contains('is-extra')).length === 0;
-    moreBtn.textContent = expanded ? data.music.showLess : data.music.showAll + ` (${songs.length})`;
-    moreBtn.setAttribute('aria-expanded', String(expanded));
-  };
-  $$('[data-filter]').forEach((b) => b.addEventListener('click', () => {
-    filter = b.dataset.filter;
-    $$('[data-filter]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-    applySongs();
-  }));
-  // בדף הנחיתה (מסלול 1) אין חיפוש וסינון — רק מבחר שירים
-  if (search && moreBtn) {
+  /* ---------- ספריית השירים: נפתחת בלחיצה, כדי שהדף יישאר קצר וקל ---------- */
+  const library = $('#library');
+  const libOpenBtn = $('[data-library-open]');
+  const setLock = () => document.body.classList.toggle('is-locked',
+    header.classList.contains('menu-open') || (library && !library.hidden) || !$('#player').hidden);
+  let libReturn = null;
+  if (library && libOpenBtn) {
+    const songs = $$('.song', library);
+    const countEl = $('[data-song-count]', library);
+    const emptyEl = $('.songs-empty', library);
+    const search = $('#song-search');
+    let filter = 'all';
+    const norm = (s) => s.toLowerCase().replace(/[֑-ׇ]/g, '').replace(/[׳'’"״.,:·\-–—()]/g, ' ').replace(/\s+/g, ' ').trim();
+    const applySongs = () => {
+      const q = norm(search.value || '');
+      let n = 0;
+      songs.forEach((li) => {
+        const match = (filter === 'all' || li.dataset.cat === filter) && (!q || norm(li.dataset.title).includes(q));
+        li.hidden = !match;
+        if (match) n++;
+      });
+      countEl.textContent = fill(data.music.count, { n });
+      emptyEl.hidden = n !== 0;
+    };
+    $$('[data-filter]', library).forEach((b) => b.addEventListener('click', () => {
+      filter = b.dataset.filter;
+      $$('[data-filter]', library).forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      applySongs();
+    }));
     search.addEventListener('input', applySongs);
-    moreBtn.addEventListener('click', () => {
-      expanded = !expanded; applySongs();
-      if (!expanded) $('#music').scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto' });
+    const openLibrary = () => {
+      // התמונות נטענות רק עכשיו, בפתיחה הראשונה
+      $$('img[data-src]', library).forEach((i) => { i.src = i.dataset.src; i.removeAttribute('data-src'); });
+      libReturn = document.activeElement;
+      library.hidden = false; setLock(); applySongs();
+      library.scrollTop = 0; $('.library-in', library).scrollTop = 0;
+      search.focus({ preventScroll: true });
+    };
+    const closeLibrary = () => {
+      if (library.hidden) return;
+      library.hidden = true; setLock();
+      if (libReturn && document.contains(libReturn)) libReturn.focus();
+    };
+    libOpenBtn.addEventListener('click', openLibrary);
+    $('[data-library-close]', library).addEventListener('click', closeLibrary);
+    library.addEventListener('click', (e) => { if (e.target === library) closeLibrary(); });
+    library.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $('#player').hidden) { e.preventDefault(); closeLibrary(); return; }
+      if (e.key !== 'Tab' || !$('#player').hidden) return;
+      const f = $$('button:not([hidden]), input, a[href]', library).filter((el) => el.offsetParent !== null);
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
     });
-    applySongs();
   }
 
   /* ---------- מסלול 3: חשבון ועדכונים בטופס החוג ---------- */
@@ -447,12 +464,14 @@
     $('[data-player-next]', player).hidden = !multi;
   }
   function openPlayer(id, trigger) {
-    const visibleSongs = $$('.song:not([hidden]) [data-play]').map((b) => b.dataset.play);
+    // ״הבא״ ו״הקודם״ עוברים בין השירים שמוצגים באותו מקום: בספרייה או בדף הבית
+    const scope = (trigger && trigger.closest('#library')) || $('.music') || document;
+    const visibleSongs = $$('.song:not([hidden]) [data-play]', scope).map((b) => b.dataset.play);
     queue = visibleSongs.includes(id) ? visibleSongs : [id];
     qi = queue.indexOf(id);
     lastFocus = trigger || document.activeElement;
     player.hidden = false;
-    document.body.classList.add('is-locked');
+    setLock();
     load(id);
     $('.player-close', player).focus();
   }
@@ -460,7 +479,7 @@
     if (player.hidden) return;
     player.hidden = true;
     frame.innerHTML = '';
-    document.body.classList.remove('is-locked');
+    setLock();
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
   }
   const step = (d) => { qi = (qi + d + queue.length) % queue.length; load(queue[qi]); };
