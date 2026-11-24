@@ -9,13 +9,13 @@ import { PLANS, planConfig, planText, exclusiveText } from './plans.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '5';
+const VERSION = '7';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
 const LIVE_PLAN = 3;
 // מי בנה את האתר — מופיע בתחתית כל עמוד ובנתונים לגוגל
-const BUILDER = { name: 'YYG', url: 'https://yosef4613.github.io/pirchei-shomayim-designs/yyg/' };
+const BUILDER = { name: 'YYG', url: 'https://yosef4613.github.io/yyg-site/' };
 const credit = (t) => `<span class="footer-credit">${esc(t.footer.builtBy)} <a href="${BUILDER.url}" target="_blank" rel="noopener">${BUILDER.name}</a></span>`;
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -249,6 +249,7 @@ ${sprite}
           <button type="button" class="chip" data-city="beit-shemesh" aria-pressed="false">${esc(t.join.cities['beit-shemesh'])}</button>
         </div>
 
+        <p class="branches-note"><span>${icon('star')}${esc(t.join.ages)} · ${esc(t.join.audition)}</span><span>${icon('clock')}${esc(t.join.times)}</span></p>
         <ul class="branches">
           ${branches.map((b) => `<li class="branch" data-city="${b.city}" data-branch-card="${b.id}">
             <p class="branch-city">${icon('pin')}${esc(t.join.cities[b.city])}</p>
@@ -266,6 +267,7 @@ ${sprite}
         <div class="join-form-area" id="join-form-area">
           <form class="join-form" id="join-form" novalidate aria-labelledby="form-title">
             <h3 id="form-title" tabindex="-1">${esc(t.form.title)}</h3>
+            <p class="form-fit" data-form-fit hidden></p>
             <div class="form-error-summary" role="alert" hidden></div>
             <div class="field field-wide">
               <label for="f-branch">${esc(t.form.branch)} <span class="req" aria-hidden="true">*</span></label>

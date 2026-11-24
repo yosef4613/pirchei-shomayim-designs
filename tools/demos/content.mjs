@@ -128,7 +128,7 @@ const he = {
     // טעימה לפני פרטים (כלל 5): תשובה מיידית אם החוג מתאים, בלי להשאיר כלום
     fit: {
       q: 'בן כמה הבן?', note: 'בדיקה מהירה, בלי להשאיר פרטים', older: '13+', label: 'גיל הבן',
-      ok: 'בגיל {n} הוא בדיוק בגיל החוגים. בחרו חוג קרוב, והגיל כבר ימולא בטופס.',
+      ok: 'בגיל {n} הוא בדיוק בגיל החוגים. הגיל כבר מולא — נשאר לבחור חוג ולהשאיר פרטים.',
       young: 'החוגים מיועדים לגילאי 8–12. אפשר להשאיר פרטים כבר עכשיו, וצוות המקהלה יחזור אליכם.',
       old: 'החוגים מיועדים לגילאי 8–12. השאירו פרטים, וצוות המקהלה יבדוק איתכם מה מתאים.',
     },
@@ -347,7 +347,7 @@ const en = {
     regLabel: 'Official registration:', choose: 'Choose this class', chosen: 'Class selected',
     fit: {
       q: 'How old is your son?', note: 'A quick check, no details needed', older: '13+', label: 'Your son’s age',
-      ok: 'At {n} he is right in the class age range. Pick a nearby class and his age is already filled in on the form.',
+      ok: 'At {n} he is right in the class age range. His age is already filled in — just choose a class and leave your details.',
       young: 'Classes are for ages 8–12. You can leave your details now and the choir team will get back to you.',
       old: 'Classes are for ages 8–12. Leave your details and the choir team will see with you what fits.',
     },

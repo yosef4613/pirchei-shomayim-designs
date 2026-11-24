@@ -122,15 +122,23 @@
   /* ---------- בדיקת גיל מהירה: תשובה מיידית, עוד לפני שמשאירים פרטים ---------- */
   const fitBtns = $$('.fit-age');
   const fitOut = $('[data-fit-result]');
+  const formFit = $('[data-form-fit]');
   fitBtns.forEach((b) => b.addEventListener('click', () => {
     const n = Number(b.dataset.age);
     const ok = n >= 8 && n <= 12;
     fitBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-    fitOut.textContent = ok ? fill(data.fit.ok, { n }) : (n < 8 ? data.fit.young : data.fit.old);
-    fitOut.classList.toggle('is-ok', ok);
-    fitOut.classList.toggle('is-out', !ok);
+    const msg = ok ? fill(data.fit.ok, { n }) : (n < 8 ? data.fit.young : data.fit.old);
+    // התשובה מופיעה גם כאן וגם בראש הטופס, ומשם ממשיכים ישר להרשמה
+    [fitOut, formFit].forEach((el) => {
+      if (!el) return;
+      el.textContent = msg; el.hidden = false;
+      el.classList.toggle('is-ok', ok); el.classList.toggle('is-out', !ok);
+    });
     const age = $('#f-age');
     if (ok && age) { age.value = n; clearError(age); }
+    showForm();
+    $('#join-form-area').scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto', block: 'start' });
+    setTimeout(() => (branchSelect.value ? $('#f-parent') : branchSelect).focus({ preventScroll: true }), motionOn() ? 450 : 0);
   }));
 
   /* ---------- הטופס ---------- */
@@ -281,7 +289,7 @@
     success.focus({ preventScroll: true });
     success.scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto', block: 'start' });
     $('[data-again]', success).addEventListener('click', () => {
-      form.reset(); fields.forEach(clearError); markSelected('');
+      form.reset(); fields.forEach(clearError); markSelected(''); if (formFit) formFit.hidden = true;
       if (accountTopicsBox()) accountTopicsBox().hidden = true;
       success.hidden = true; success.innerHTML = ''; form.hidden = false;
       $('#form-title').focus();

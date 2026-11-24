@@ -94,6 +94,11 @@ async function fillJoin(page, lang, branch, name) {
           assert.ok((await page.textContent('[data-fit-result]')).includes('10'));
           assert.strictEqual(await page.inputValue('#f-age'), '10');
           assert.strictEqual(await page.getAttribute('#f-age', 'aria-invalid'), null);
+          await page.waitForTimeout(700);
+          const box = await page.locator('#join-form-area').boundingBox();
+          assert.ok(box && box.y < vh * 0.4, 'choosing an age should bring the form into view ' + JSON.stringify(box));
+          assert.ok(['f-branch', 'f-parent'].includes(await page.evaluate(() => document.activeElement.id)), 'focus should be in the form');
+          assert.ok((await page.textContent('[data-form-fit]')).includes('10'), 'the answer shows at the top of the form');
           await page.click('.fit-age[data-age="7"]');
           assert.ok(await page.locator('[data-fit-result].is-out').isVisible());
           assert.strictEqual(await page.inputValue('#f-age'), '10', 'out-of-range age must not overwrite the form');

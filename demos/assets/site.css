@@ -808,3 +808,38 @@ button[aria-busy="true"] { opacity: .7; cursor: progress; }
 .footer-credit a { color: var(--lilac-2); font-weight: 700; text-decoration: none; }
 .footer-credit a:hover { color: #fff; text-decoration: underline; }
 .simple-foot { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+
+/* ---------- תשובת בדיקת הגיל גם בראש הטופס ---------- */
+.form-fit { grid-column: 1 / -1; padding: 10px 14px; border-radius: 12px; font-weight: 600; background: #f1ecff; color: #3a1680; }
+.form-fit.is-out { background: #f6f4fa; color: var(--paper-ink); }
+.form-fit[hidden] { display: none; }
+/* בנייד: שלושת כפתורי הערים בשורה אחת */
+@media (max-width: 560px) {
+  .city-filter { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .city-filter .chip { min-width: 0; padding: 8px 6px; white-space: nowrap; font-size: .95rem; }
+}
+
+/* ---------- נייד: עמוד קצר יותר, בלי להוריד תוכן ---------- */
+.branches-note { display: none; }
+@media (max-width: 720px) {
+  /* החוגים: שניים בשורה, והפרטים המשותפים מופיעים פעם אחת מעליהם */
+  .branches-note { display: grid; gap: 6px; margin: -4px 0 12px; color: var(--paper-muted); font-size: .92rem; }
+  .branches-note span { display: flex; gap: 8px; align-items: flex-start; }
+  .branches-note .ico { color: var(--purple-500); margin-top: .3em; flex: none; }
+  .branches { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .branch { padding: 14px; gap: 8px; }
+  .branch .branch-facts { display: none; }
+  .branch-name { font-size: 1.15rem; }
+  .branch-reg { font-size: .85rem; }
+  .branch-choose { width: 100%; padding-inline: 10px; font-size: .95rem; margin-top: auto; }
+  /* על הבמה ומאחורי הקלעים: שורה שגוללים הצידה, כמו רצועת הקטעים הקצרים */
+  .shows ul, .excl-grid { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; margin-inline: calc(-1 * var(--gutter)); padding: 0 var(--gutter) 10px; scrollbar-width: thin; scrollbar-color: rgba(203, 184, 255, .3) transparent; }
+  .shows li { flex: 0 0 78%; scroll-snap-align: start; }
+  .excl-grid > li { flex: 0 0 84%; scroll-snap-align: start; }
+  .shows ul { grid-template-columns: none; }
+  .excl-grid { grid-template-columns: none; }
+  /* מקהלולם: שני הסרטונים זה לצד זה */
+  .mk-videos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .mk-video span { padding: 18px 8px 7px; font-size: .78rem; gap: 5px; }
+}
+@media (max-width: 340px) { .branches { grid-template-columns: 1fr; } }
