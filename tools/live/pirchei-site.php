@@ -52,6 +52,10 @@ function ps_serve_static() {
 		header('Location: ' . $path . '/' . $q, true, 301);
 		exit;
 	}
+	// גרסת Markdown של עמוד (לסוכני בינה מלאכותית): ‎/index.md, ‏/classes/index.md וכו׳
+	if (substr($path, -8) === 'index.md' && isset($map[substr($path, 0, -8)])) {
+		ps_send_file(PS_PAGES . ps_md_name($map[substr($path, 0, -8)]), 200, $method === 'HEAD', 'text/markdown; charset=UTF-8');
+	}
 	if (!isset($map[$path])) {
 		return;
 	}
@@ -59,7 +63,21 @@ function ps_serve_static() {
 	if (isset($_GET['ps_admin'])) {
 		return;
 	}
+	// סוכן שמבקש Markdown מקבל את גרסת ה־Markdown של העמוד, באותה כתובת
+	$accept = isset($_SERVER['HTTP_ACCEPT']) ? strtolower((string) $_SERVER['HTTP_ACCEPT']) : '';
+	if (strpos($accept, 'text/markdown') !== false && is_readable(PS_PAGES . ps_md_name($map[$path]))) {
+		header('Cache-Control: private, no-store'); // לא נשמר במטמון — כדי שדפדפנים תמיד יקבלו את העמוד הרגיל
+		header('Vary: Accept');
+		ps_send_file(PS_PAGES . ps_md_name($map[$path]), 200, $method === 'HEAD', 'text/markdown; charset=UTF-8', false);
+	}
+	// קישורים למשאבים לסוכנים: הסיכום לבינה מלאכותית וגרסת ה־Markdown של העמוד
+	header('Link: </llms.txt>; rel="describedby"; type="text/plain", <' . $path . 'index.md>; rel="alternate"; type="text/markdown"');
+	header('Vary: Accept');
 	ps_send_file(PS_PAGES . $map[$path], 200, $method === 'HEAD');
+}
+
+function ps_md_name($html_name) {
+	return preg_replace('/\.html$/', '.md', $html_name);
 }
 
 function ps_page_map() {
@@ -68,6 +86,8 @@ function ps_page_map() {
 		'/classes/' => 'classes-he.html', '/en/classes/' => 'classes-en.html',
 		'/songs/' => 'songs-he.html', '/en/songs/' => 'songs-en.html',
 		'/privacy/' => 'privacy-he.html', '/en/privacy/' => 'privacy-en.html',
+		'/about/' => 'about-he.html', '/en/about/' => 'about-en.html',
+		'/contact/' => 'contact-he.html', '/en/contact/' => 'contact-en.html',
 	];
 }
 
@@ -87,14 +107,16 @@ function ps_notify_email() {
 	return (!empty($c['notify']) && is_email($c['notify'])) ? $c['notify'] : PS_CHOIR_EMAIL;
 }
 
-function ps_send_file($file, $status = 200, $head_only = false) {
+function ps_send_file($file, $status = 200, $head_only = false, $type = 'text/html; charset=UTF-8', $cache = true) {
 	if (!is_readable($file)) {
 		return;
 	}
 	$etag = '"' . md5_file($file) . '"';
 	http_response_code($status);
-	header('Content-Type: text/html; charset=UTF-8');
-	header('Cache-Control: public, max-age=300');
+	header('Content-Type: ' . $type);
+	if ($cache) {
+		header('Cache-Control: public, max-age=300');
+	}
 	header('X-Content-Type-Options: nosniff');
 	header('Referrer-Policy: strict-origin-when-cross-origin');
 	header('ETag: ' . $etag);
@@ -111,7 +133,7 @@ function ps_send_file($file, $status = 200, $head_only = false) {
 ps_serve_static();
 
 // מכאן — רק כשוורדפרס ממשיך לטעון (טפסים, כניסה, אזור הניהול). הדפים הקבועים כבר הוגשו למעלה
-foreach (['mail', 'auth', 'manage', 'mailing'] as $ps_mod) {
+foreach (['mail', 'auth', 'manage', 'mailing', 'agents'] as $ps_mod) {
 	require_once __DIR__ . '/pirchei/' . $ps_mod . '.php';
 }
 
@@ -135,8 +157,8 @@ add_action('template_redirect', function () {
 	$map = [
 		'הופעות' => '/#stage', 'הופעות-2' => '/#stage',
 		'השירים-שלנו' => '/songs/', 'שירים' => '/songs/',
-		'חוגים' => '/classes/', 'צור-קשר' => '/#join',
-		'אודות' => '/#about', 'דף-הבית' => '/',
+		'חוגים' => '/classes/', 'צור-קשר' => '/contact/',
+		'אודות' => '/about/', 'דף-הבית' => '/',
 	];
 	if (isset($map[$slug])) {
 		wp_redirect(home_url($map[$slug]), 301);

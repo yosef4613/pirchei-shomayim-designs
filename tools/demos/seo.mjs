@@ -43,6 +43,35 @@ export const seoText = {
       cats: { clip: 'קליפים', medley: 'מחרוזות ומופעים משותפים', live: 'מהבמה', makhalolam: 'מקהלולם', short: 'קטעים קצרים' },
       endTitle: 'רוצים שגם הבן שלכם ישיר כך?', endCta: 'מצאו חוג באזור שלכם',
     },
+    info: {
+      aboutLink: 'אודות', contactLink: 'צור קשר',
+      about: {
+        title: 'אודות מקהלת פרחי שמיים · מקהלת ילדים בירושלים ובבית שמש',
+        description: 'מקהלת הילדים פרחי שמיים בניצוח ר׳ מרדכי גורדון: חוגי מקהלה ופיתוח קול לבנים בגילאי 8–12 בירושלים ובבית שמש, שירים וקליפים, הופעות ומקהלולם.',
+        h1: 'אודות מקהלת פרחי שמיים',
+        conductorTitle: 'המנצח', conductorText: 'ר׳ מרדכי גורדון — מנצח המקהלה, מלחין ומעבד קולי.',
+        doTitle: 'מה אנחנו עושים',
+        do: [
+          'חוגי מקהלה ופיתוח קול לבנים בגילאי 8–12: ברמת אשכול ובנווה יעקב בירושלים, וברמה א׳ וברמה ד׳ בבית שמש.',
+          'שירים וקליפים — {n} שירים במקום אחד, להאזנה ישירה באתר.',
+          'הופעות, ומקהלולם — מופע לקהילות, למתנ״סים ולעיריות שבו הקהל לומד את התפקידים ושר יחד עם המקהלה.',
+        ],
+        more: 'לפרטים נוספים',
+      },
+      contact: {
+        title: 'צור קשר · מקהלת פרחי שמיים',
+        description: 'יצירת קשר עם מקהלת הילדים פרחי שמיים: השארת פרטים לחוג, הזמנת הופעה או מקהלולם, ושאלות במייל.',
+        h1: 'צור קשר',
+        lead: 'נשמח לשמוע מכם. כך הכי מהיר:',
+        items: [
+          ['הצטרפות לחוג', 'משאירים פרטים בטופס באתר, וצוות המקהלה חוזר אליכם לתיאום מבדק התאמה קצר.', 'לטופס החוגים', 'join'],
+          ['הזמנת הופעה או מקהלולם', 'כתבו לנו במייל על האירוע, ונחזור אליכם עם הצעה.', 'כתיבת מייל', 'mail-show'],
+          ['שאלות', 'אפשר לכתוב לנו בכל שאלה, ונחזור אליכם בהקדם.', 'כתיבת מייל', 'mail'],
+          ['שירים וקליפים', 'כל השירים של המקהלה במקום אחד, וגם בערוץ הסרטונים של המקהלה.', 'לעמוד השירים', 'songs'],
+        ],
+        emailLabel: 'מייל', showSubject: 'הזמנת הופעה',
+      },
+    },
   },
   en: {
     links: { classes: 'All classes in Jerusalem & Beit Shemesh', songs: 'All the choir’s songs on one page', home: 'Home page', join: 'Find a class' },
@@ -84,6 +113,35 @@ export const seoText = {
       youtube: 'Open in a new window',
       cats: { clip: 'Music videos', medley: 'Medleys & joint concerts', live: 'Live', makhalolam: 'Makhalolam', short: 'Short clips' },
       endTitle: 'Would your son love to sing like this?', endCta: 'Find a class near you',
+    },
+    info: {
+      aboutLink: 'About', contactLink: 'Contact',
+      about: {
+        title: 'About the Pirchei Shomayim Boys’ Choir · Jerusalem & Beit Shemesh',
+        description: 'The Pirchei Shomayim Boys’ Choir, conducted by R’ Mordechai Gordon: choir and voice-training classes for boys aged 8–12 in Jerusalem and Beit Shemesh, songs and music videos, concerts and Makhalolam.',
+        h1: 'About the Pirchei Shomayim Boys’ Choir',
+        conductorTitle: 'The conductor', conductorText: 'R’ Mordechai Gordon — choir conductor, composer and vocal arranger.',
+        doTitle: 'What we do',
+        do: [
+          'Choir and voice-training classes for boys aged 8–12: Ramat Eshkol and Neve Yaakov in Jerusalem, Ramah A and Ramah D in Beit Shemesh.',
+          'Songs and music videos — {n} songs in one place, to play right on the site.',
+          'Concerts, and Makhalolam — a concert for communities, community centers and municipalities where the audience learns the parts and sings along with the choir.',
+        ],
+        more: 'More',
+      },
+      contact: {
+        title: 'Contact · Pirchei Shomayim Boys’ Choir',
+        description: 'Contact the Pirchei Shomayim Boys’ Choir: leave details for a class, book a concert or Makhalolam, or ask a question by email.',
+        h1: 'Contact us',
+        lead: 'We’d love to hear from you. The quickest ways:',
+        items: [
+          ['Joining a class', 'Leave your details in the form on the site, and the choir team will get back to you to arrange a short audition.', 'Go to the class form', 'join'],
+          ['Booking a concert or Makhalolam', 'Email us about the event and we’ll get back to you with an offer.', 'Write an email', 'mail-show'],
+          ['Questions', 'Write to us with any question and we’ll get back to you soon.', 'Write an email', 'mail'],
+          ['Songs and videos', 'All the choir’s songs in one place, and on the choir’s video channel.', 'Go to the songs page', 'songs'],
+        ],
+        emailLabel: 'Email', showSubject: 'Booking a concert',
+      },
     },
   },
 };

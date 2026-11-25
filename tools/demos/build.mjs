@@ -10,7 +10,7 @@ import { seoText } from './seo.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '22';
+const VERSION = '23';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -72,7 +72,7 @@ function page(t, plan, live = false) {
     : { libOpen: `All ${songs.length} songs & videos`, libTitle: 'All songs & videos', libClose: 'Close the song library' };
   const featured = songs.find((s) => s.isNew);
   const pageData = {
-    lang, dir: t.dir, plan, form: cfg.form, choirEmail: CHOIR_EMAIL, choirEmailHref: CHOIR_EMAIL_HREF, assetBase: A, live, endpoint: live ? '/wp-json/ps/v1/' : '',
+    lang, dir: t.dir, plan, form: cfg.form, choirEmail: `\u2066${CHOIR_EMAIL}\u2069`, choirEmailHref: CHOIR_EMAIL_HREF, assetBase: A, live, endpoint: live ? '/wp-json/ps/v1/' : '',
     js: t.js, player: t.player, music: { showAll: t.music.showAll, showLess: t.music.showLess, count: t.music.count, countOne: t.music.countOne },
     shareOrigin: live ? 'https://פרחישמים.com' : '',
     member: live ? memberText[lang] : undefined,
@@ -124,7 +124,8 @@ function page(t, plan, live = false) {
   <meta name="description" content="${esc(t.description)}">
   <meta name="robots" content="${live ? 'index, follow, max-image-preview:large, max-video-preview:-1' : 'noindex, nofollow'}">
   <meta name="theme-color" content="#0b0812">
-  <link rel="canonical" href="${PAGEURL}">
+  <link rel="canonical" href="${PAGEURL}">${live ? `
+  <link rel="alternate" type="text/markdown" href="${PAGEURL}index.md">` : ''}
   <link rel="alternate" hreflang="he" href="${ROOTURL}">
   <link rel="alternate" hreflang="en" href="${ROOTURL}en/">
   <link rel="alternate" hreflang="x-default" href="${ROOTURL}">
@@ -144,7 +145,7 @@ function page(t, plan, live = false) {
     '@context': 'https://schema.org',
     '@graph': [
       {
-        '@type': 'MusicGroup', '@id': `${ROOTURL}#choir`,
+        '@type': ['Organization', 'MusicGroup'], '@id': `${ROOTURL}#choir`,
         name: lang === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir',
         // כל צורות הכתיב שאנשים מחפשים בפועל
         alternateName: lang === 'he'
@@ -156,6 +157,7 @@ function page(t, plan, live = false) {
         logo: { '@type': 'ImageObject', url: `${IMGURL}icon-256.png`, width: 256, height: 256 },
         image: `${IMGURL}og.jpg`,
         email: CHOIR_EMAIL_HREF,
+        contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: CHOIR_EMAIL_HREF, availableLanguage: ['he', 'en'], ...(live ? { url: `${PAGEURL}contact/` } : {}) },
         genre: lang === 'he' ? 'מוזיקה יהודית, מקהלת ילדים' : 'Jewish music, boys’ choir',
         areaServed: (lang === 'he' ? ['ירושלים', 'בית שמש'] : ['Jerusalem', 'Beit Shemesh']).map((name) => ({ '@type': 'City', name })),
         knowsLanguage: ['he', 'en'],
@@ -274,7 +276,7 @@ ${sprite}
         <p class="more-link"><a class="text-link" href="/${langSuffix}classes/">${esc(S.links.classes)}${icon('arrow', 'ico-dir')}</a></p>` : ''}
 
         <div class="join-form-area" id="join-form-area">
-          <form class="join-form" id="join-form" novalidate aria-labelledby="form-title">
+          <form class="join-form" id="join-form" novalidate aria-labelledby="form-title"${live ? ` toolname="request_choir_class" tooldescription="${esc(lang === 'he' ? 'השארת פרטים לחוג מקהלה לבנים בגילאי 8–12 (ירושלים או בית שמש). צוות המקהלה חוזר לתיאום מבדק התאמה קצר.' : 'Leave details for a boys’ choir class (ages 8–12, Jerusalem or Beit Shemesh). The choir team calls back to arrange a short audition.')}"` : ''}>
             <h3 id="form-title" tabindex="-1">${esc(t.form.title)}</h3>
             <p class="form-fit" data-form-fit hidden></p>
             <p class="branch-chosen" data-branch-chosen hidden><span>${esc(t.form.chosenLabel)}</span> <b data-branch-chosen-name></b> <button type="button" class="link-btn" data-branch-change>${esc(t.form.change)}</button></p>
@@ -612,7 +614,7 @@ ${cfg.club ? `
     <span>${esc(t.footer.rights)}</span>
     <a href="${live ? legal + '#accessibility' : '#top'}">${esc(t.footer.access)}</a>
     <a href="${legal}">${esc(t.footer.privacy)}</a>
-    ${live ? `<a href="/${langSuffix}classes/">${esc(t.nav.classes)}</a><a href="/${langSuffix}songs/">${esc(t.nav.music)}</a>` : ''}
+    ${live ? `<a href="/${langSuffix}classes/">${esc(t.nav.classes)}</a><a href="/${langSuffix}songs/">${esc(t.nav.music)}</a><a href="/${langSuffix}about/">${esc(S.info.aboutLink)}</a><a href="/${langSuffix}contact/">${esc(S.info.contactLink)}</a>` : ''}
     ${live ? '' : `<span class="footer-demo">${esc(t.footer.demo)}</span>`}
     ${motionText.replace('class="motion-text"', 'class="motion-text footer-motion"')}
     ${credit(t)}
@@ -851,6 +853,7 @@ function simplePage(key, { title, description, path, robots, body }) {
   const home = key === 'he' ? '/' : '/en/';
   const alt = path === null ? '' : `
   <link rel="canonical" href="${LIVE}${(key === 'he' ? '' : 'en/') + path}">
+  <link rel="alternate" type="text/markdown" href="${LIVE}${(key === 'he' ? '' : 'en/') + path}index.md">
   <link rel="alternate" hreflang="he" href="${LIVE}${path}">
   <link rel="alternate" hreflang="en" href="${LIVE}en/${path}">`;
   return `<!doctype html>
@@ -871,7 +874,7 @@ function simplePage(key, { title, description, path, robots, body }) {
     <a class="btn btn-ghost btn-sm" href="${home}">${esc(L.back)}</a>
   </div></header>
   <main class="wrap legal">${body}</main>
-  <footer class="wrap simple-foot"><span>${esc(t.footer.rights)}</span> · <a href="mailto:${CHOIR_EMAIL_HREF}">${CHOIR_EMAIL}</a>${credit(t)}</footer>
+  <footer class="wrap simple-foot"><span>${esc(t.footer.rights)}</span> · <a href="/${key === 'he' ? '' : 'en/'}about/">${esc(seoText[key].info.aboutLink)}</a> · <a href="/${key === 'he' ? '' : 'en/'}contact/">${esc(seoText[key].info.contactLink)}</a> · <a href="mailto:${CHOIR_EMAIL_HREF}" dir="ltr">${CHOIR_EMAIL}</a>${credit(t)}</footer>
 </body>
 </html>`;
 }
@@ -883,7 +886,7 @@ for (const key of ['he', 'en']) {
   const L = legalText[key];
   const fixed = (h) => (key === 'he' ? bidi(h) : h);
   write(join(DIST, 'ps', 'pages', `${key}.html`), fixed(page(dict[key], LIVE_PLAN, true)));
-  const mail = `<a href="mailto:${CHOIR_EMAIL_HREF}">${CHOIR_EMAIL}</a>`;
+  const mail = `<a href="mailto:${CHOIR_EMAIL_HREF}" dir="ltr">${CHOIR_EMAIL}</a>`;
   write(join(DIST, 'ps', 'pages', `privacy-${key}.html`), fixed(simplePage(key, {
     title: L.title, description: L.description, path: 'privacy/', robots: 'index, follow',
     body: `<h1>${esc(L.h1)}</h1>${L.privacy.map(([h, p]) => `<h2>${esc(h)}</h2><p>${esc(p).replace('{email}', mail)}</p>`).join('')}
@@ -905,6 +908,7 @@ for (const f of ['jerusalem-hebrew.pdf', 'jerusalem-english.pdf']) cpSync(join(R
 cpSync(join(ROOT, 'tools', 'live', 'pirchei-site.php'), join(DIST, 'wp-content', 'mu-plugins', 'pirchei-site.php'));
 cpSync(join(ROOT, 'tools', 'live', 'pirchei'), join(DIST, 'wp-content', 'mu-plugins', 'pirchei'), { recursive: true });
 write(join(DIST, 'robots.txt'), `User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Disallow: /wp-admin/
 Allow: /wp-admin/admin-ajax.php
 Disallow: /ps/pages/
@@ -942,6 +946,13 @@ write(join(DIST, 'llms.txt'), `# מקהלת פרחי שמיים · Pirchei Shoma
 - [All songs (English)](${LIVE}en/songs/)
 - [מדיניות פרטיות והצהרת נגישות](${LIVE}privacy/)
 - [Privacy policy and accessibility](${LIVE}en/privacy/)
+- [אודות המקהלה](${LIVE}about/) · [About](${LIVE}en/about/)
+- [צור קשר](${LIVE}contact/) · [Contact](${LIVE}en/contact/)
+
+## לסוכני בינה מלאכותית · For AI agents
+
+- כל עמוד זמין גם כ־Markdown: מוסיפים index.md לכתובת (למשל ${LIVE}classes/index.md), או שולחים Accept: text/markdown. Every page is also available as Markdown: append index.md, or send Accept: text/markdown.
+- שרת MCP לקריאה בלבד · Read-only MCP server: ${LIVE}mcp (Streamable HTTP, JSON-RPC 2.0) — tools: get_choir_info, list_classes, search_songs, get_faq. Server card: ${LIVE}.well-known/mcp/server-card.json
 
 ## חוגים · Classes
 
@@ -964,7 +975,7 @@ write(join(DIST, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
 // ===================================================================
 const isoDur = (d) => { if (!d) return undefined; const p = d.split(':').map(Number); const [h, m, s] = p.length === 3 ? p : [0, p[0], p[1]]; return 'PT' + (h ? h + 'H' : '') + (m ? m + 'M' : '') + (s ? s + 'S' : ''); };
 const ytUrl = (s) => (s.vertical ? `https://www.youtube.com/shorts/${s.id}` : `https://www.youtube.com/watch?v=${s.id}`);
-const choirRef = (key) => ({ '@type': 'MusicGroup', '@id': `${LIVE}#choir`, name: key === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir', url: LIVE });
+const choirRef = (key) => ({ '@type': ['Organization', 'MusicGroup'], '@id': `${LIVE}#choir`, name: key === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir', url: LIVE });
 const crumbsLd = (key, name, url) => ({ '@type': 'BreadcrumbList', itemListElement: [
   { '@type': 'ListItem', position: 1, name: dict[key].brand, item: LIVE + (key === 'he' ? '' : 'en/') },
   { '@type': 'ListItem', position: 2, name, item: url },
@@ -987,6 +998,7 @@ function contentPage(key, { path, title, description, crumb, body, ld }) {
   <meta name="robots" content="index, follow, max-image-preview:large, max-video-preview:-1">
   <meta name="theme-color" content="#0b0812">
   <link rel="canonical" href="${url}">
+  <link rel="alternate" type="text/markdown" href="${url}index.md">
   <link rel="alternate" hreflang="he" href="${LIVE}${path}">
   <link rel="alternate" hreflang="en" href="${LIVE}en/${path}">
   <link rel="alternate" hreflang="x-default" href="${LIVE}${path}">
@@ -1023,8 +1035,8 @@ ${sprite}
   </main>
   <footer class="wrap simple-foot cp-foot">
     <span>${esc(t.footer.rights)}</span>
-    <a href="${home}">${esc(S.links.home)}</a><a href="/${pre}classes/">${esc(t.nav.classes)}</a><a href="/${pre}songs/">${esc(t.nav.music)}</a><a href="/${pre}privacy/">${esc(t.footer.privacy)}</a>
-    <a href="mailto:${CHOIR_EMAIL_HREF}">${CHOIR_EMAIL}</a><a href="${CHANNEL_URL}" target="_blank" rel="noopener">${esc(t.footer.youtube)}</a>
+    <a href="${home}">${esc(S.links.home)}</a><a href="/${pre}classes/">${esc(t.nav.classes)}</a><a href="/${pre}songs/">${esc(t.nav.music)}</a><a href="/${pre}about/">${esc(S.info.aboutLink)}</a><a href="/${pre}contact/">${esc(S.info.contactLink)}</a><a href="/${pre}privacy/">${esc(t.footer.privacy)}</a>
+    <a href="mailto:${CHOIR_EMAIL_HREF}" dir="ltr">${CHOIR_EMAIL}</a><a href="${CHANNEL_URL}" target="_blank" rel="noopener">${esc(t.footer.youtube)}</a>
     ${credit(t)}
     <p class="footer-names">${esc(S.names)}</p>
   </footer>
@@ -1078,9 +1090,119 @@ write(join(DIST, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 ${urlEntry('', true)}
 ${urlEntry('classes/', false)}
 ${urlEntry('songs/', false)}
+${urlEntry('about/', false)}
+${urlEntry('contact/', false)}
 ${urlEntry('privacy/', false)}
 </urlset>
 `);
 
 // אימות הבעלות ב־Google Search Console — הקובץ חייב להישאר באתר תמיד
 write(join(DIST, 'google188571416ee15586.html'), 'google-site-verification: google188571416ee15586.html');
+
+// ===================================================================
+// עמודי אודות וצור קשר, גרסאות Markdown לכל עמוד (לסוכני בינה מלאכותית),
+// נתונים לשרת ה־MCP של האתר וכרטיס השרת
+// ===================================================================
+const ABS = (p) => LIVE + p.replace(/^\//, '');
+for (const key of ['he', 'en']) {
+  const t = dict[key]; const S = seoText[key]; const I = S.info; const L = legalText[key];
+  const pre = key === 'he' ? '' : 'en/'; const home = '/' + pre;
+  const fixed = (h) => (key === 'he' ? bidi(h) : h);
+  const n = songs.length;
+  const mailShow = `mailto:${CHOIR_EMAIL_HREF}?subject=${encodeURIComponent(I.contact.showSubject)}`;
+  const hrefOf = (k) => ({ join: `${home}#join`, 'mail-show': mailShow, mail: `mailto:${CHOIR_EMAIL_HREF}`, songs: `/${pre}songs/` }[k]);
+
+  // ---- אודות ----
+  const A = I.about;
+  write(join(DIST, 'ps', 'pages', `about-${key}.html`), fixed(simplePage(key, {
+    title: A.title, description: A.description, path: 'about/', robots: 'index, follow',
+    body: `<h1>${esc(A.h1)}</h1>${t.about.paras.map((p) => `<p>${esc(p)}</p>`).join('')}
+      <h2>${esc(A.conductorTitle)}</h2><p>${esc(A.conductorText)}</p>
+      <h2>${esc(A.doTitle)}</h2><ul>${A.do.map((d) => `<li>${esc(d.replace('{n}', n))}</li>`).join('')}</ul>
+      <h2>${esc(A.more)}</h2><ul><li><a href="/${pre}classes/">${esc(S.links.classes)}</a></li><li><a href="/${pre}songs/">${esc(S.links.songs)}</a></li><li><a href="/${pre}contact/">${esc(I.contactLink)}</a></li></ul>`,
+  })));
+  // ---- צור קשר ----
+  const K = I.contact;
+  write(join(DIST, 'ps', 'pages', `contact-${key}.html`), fixed(simplePage(key, {
+    title: K.title, description: K.description, path: 'contact/', robots: 'index, follow',
+    body: `<h1>${esc(K.h1)}</h1><p>${esc(K.lead)}</p>
+      ${K.items.map(([h, p, link, k]) => `<h2>${esc(h)}</h2><p>${esc(p)} <a href="${hrefOf(k)}">${esc(link)}</a></p>`).join('')}
+      <p><b>${esc(K.emailLabel)}:</b> <a href="mailto:${CHOIR_EMAIL_HREF}" dir="ltr">${CHOIR_EMAIL}</a></p>`,
+  })));
+
+  // ---- גרסאות Markdown ----
+  const md = (lines) => lines.filter((x) => x !== null && x !== undefined).join('\n') + '\n';
+  const branchLines = branches.map((b) => `- **${b[key].name}** (${t.join.cities[b.city]}) — ${S.classes.regLabel} ${b[key].venue}. ${ABS(`${home}?branch=${b.id}#join-form-area`)}`);
+  const faqLines = S.faq.items.flatMap(([q, a]) => [`### ${q}`, '', a, '']);
+  const songLine = (s) => `- [${s[key]}](${ABS(`${home}#play=${s.id}`)})${s.dur ? ` · ${s.dur}` : ''}`;
+  const contactLines = [`## ${I.contactLink}`, '', `- ${K.emailLabel}: ${CHOIR_EMAIL}`, `- ${S.links.join}: ${ABS(`${home}#join`)}`, `- ${I.contactLink}: ${ABS(`/${pre}contact/`)}`];
+  write(join(DIST, 'ps', 'pages', `${key}.md`), md([
+    `# ${t.title}`, '', `> ${t.description}`, '',
+    `## ${t.about.title}`, '', ...t.about.paras.flatMap((p) => [p, '']), A.conductorText, '',
+    `## ${S.classes.h1}`, '', S.classes.lead, '', ...branchLines, '', `### ${S.classes.howTitle}`, '', ...S.classes.how.map((h, i) => `${i + 1}. ${h}`), '',
+    `## ${S.songs.h1}`, '', ...songs.slice(0, 12).map(songLine), `- ${S.links.songs}: ${ABS(`/${pre}songs/`)}`, '',
+    `## ${S.faq.title}`, '', ...faqLines, ...contactLines,
+  ]));
+  write(join(DIST, 'ps', 'pages', `classes-${key}.md`), md([
+    `# ${S.classes.h1}`, '', `> ${S.classes.description}`, '', S.classes.lead, '', ...branchLines, '',
+    `## ${S.classes.howTitle}`, '', ...S.classes.how.map((h, i) => `${i + 1}. ${h}`), '', `## ${S.faq.title}`, '', ...faqLines, ...contactLines,
+  ]));
+  const order = ['clip', 'medley', 'live', 'makhalolam', 'short'];
+  const catOf = (s) => (s.vertical ? 'short' : s.cat);
+  write(join(DIST, 'ps', 'pages', `songs-${key}.md`), md([
+    `# ${S.songs.h1}`, '', `> ${S.songs.description.replace('{n}', n)}`, '', S.songs.lead.replace('{n}', n), '',
+    ...order.flatMap((cat) => { const list = songs.filter((s) => catOf(s) === cat); return list.length ? [`## ${S.songs.cats[cat]}`, '', ...list.map(songLine), ''] : []; }),
+    ...contactLines,
+  ]));
+  write(join(DIST, 'ps', 'pages', `about-${key}.md`), md([
+    `# ${A.h1}`, '', `> ${A.description}`, '', ...t.about.paras.flatMap((p) => [p, '']),
+    `## ${A.conductorTitle}`, '', A.conductorText, '', `## ${A.doTitle}`, '', ...A.do.map((d) => `- ${d.replace('{n}', n)}`), '', ...contactLines,
+  ]));
+  write(join(DIST, 'ps', 'pages', `contact-${key}.md`), md([
+    `# ${K.h1}`, '', K.lead, '', ...K.items.flatMap(([h, p, link, k]) => [`## ${h}`, '', `${p} ${link}: ${hrefOf(k).startsWith('mailto:') ? CHOIR_EMAIL : ABS(hrefOf(k))}`, '']),
+    `- ${K.emailLabel}: ${CHOIR_EMAIL}`,
+  ]));
+  write(join(DIST, 'ps', 'pages', `privacy-${key}.md`), md([
+    `# ${L.h1}`, '', ...L.privacy.flatMap(([h, p]) => [`## ${h}`, '', p.replace('{email}', CHOIR_EMAIL), '']),
+    `# ${L.a11yTitle}`, '', ...L.a11y.flatMap((p) => [p.replace('{email}', CHOIR_EMAIL), '']),
+  ]));
+}
+
+// נתונים לשרת ה־MCP של האתר (קריאה בלבד): המקהלה, החוגים, השירים ושאלות נפוצות
+const agentData = Object.fromEntries(['he', 'en'].map((key) => {
+  const t = dict[key]; const S = seoText[key]; const pre = key === 'he' ? '' : 'en/'; const home = '/' + pre;
+  return [key, {
+    choir: {
+      name: key === 'he' ? 'מקהלת פרחי שמיים' : 'Pirchei Shomayim Boys’ Choir', description: t.description,
+      about: t.about.paras, conductor: S.info.about.conductorText, ages: '8–12', cities: Object.values(t.join.cities),
+      website: ABS(home), join: ABS(`${home}#join`), contact: ABS(`/${pre}contact/`), email: CHOIR_EMAIL, channel: CHANNEL_URL,
+      offers: S.info.about.do.map((d) => d.replace('{n}', songs.length)),
+    },
+    classes: branches.map((b) => ({ id: b.id, city: t.join.cities[b.city], name: b[key].name, registration: b[key].venue, ages: '8–12', join: ABS(`${home}?branch=${b.id}#join-form-area`) })),
+    how_to_join: S.classes.how,
+    songs: songs.map((s) => ({ id: s.id, title: s[key], category: S.songs.cats[s.vertical ? 'short' : s.cat], duration: s.dur || '', play: ABS(`${home}#play=${s.id}`) })),
+    faq: S.faq.items.map(([q, a]) => ({ q, a })),
+  }];
+}));
+write(join(DIST, 'ps', 'pages', 'agent-data.json'), JSON.stringify(agentData));
+
+// כרטיס שרת ה־MCP: ‎/.well-known/mcp/server-card.json
+const mcpTools = [
+  { name: 'get_choir_info', description: 'About the Pirchei Shomayim boys’ choir (Jerusalem & Beit Shemesh): who we are, the conductor, ages, contact.', inputSchema: { type: 'object', properties: { lang: { type: 'string', enum: ['he', 'en'] } } } },
+  { name: 'list_classes', description: 'Choir classes for boys aged 8–12, by city, with the link to leave details.', inputSchema: { type: 'object', properties: { city: { type: 'string', description: 'Jerusalem / Beit Shemesh (or in Hebrew)' }, lang: { type: 'string', enum: ['he', 'en'] } } } },
+  { name: 'search_songs', description: 'The choir’s songs and music videos, with a link to play each one on the site.', inputSchema: { type: 'object', properties: { query: { type: 'string' }, limit: { type: 'integer', minimum: 1, maximum: 60 }, lang: { type: 'string', enum: ['he', 'en'] } } } },
+  { name: 'get_faq', description: 'Questions parents ask before joining, with answers.', inputSchema: { type: 'object', properties: { lang: { type: 'string', enum: ['he', 'en'] } } } },
+];
+write(join(DIST, 'ps', 'pages', 'mcp-tools.json'), JSON.stringify(mcpTools));
+write(join(DIST, '.well-known', 'mcp', 'server-card.json'), JSON.stringify({
+  name: 'pirchei-shomayim', title: 'Pirchei Shomayim Boys’ Choir · מקהלת פרחי שמיים', version: '1.0.0',
+  description: 'Read-only information about the Pirchei Shomayim boys’ choir: choir classes for boys aged 8–12 in Jerusalem and Beit Shemesh, songs and music videos, and FAQ. Hebrew and English.',
+  serverInfo: { name: 'pirchei-shomayim', title: 'Pirchei Shomayim Boys’ Choir', version: '1.0.0' },
+  protocolVersion: '2025-06-18',
+  endpoint: `${LIVE}mcp`,
+  transport: { type: 'streamable-http', endpoint: `${LIVE}mcp` },
+  capabilities: { tools: { listChanged: false } },
+  authentication: { required: false },
+  tools: mcpTools,
+  documentation: `${LIVE}llms.txt`, website: LIVE, contact: CHOIR_EMAIL,
+}, null, 2));

@@ -996,6 +996,60 @@
     }
   }
 
+  /* ---------- כלים לעוזרי בינה מלאכותית בדפדפן (WebMCP) — רק בדפדפן שתומך בזה ---------- */
+  // קריאה ועזרה בניווט בלבד: השליחה עצמה של הטופס נשארת בידי ההורה
+  const mc = navigator.modelContext;
+  if (data.live && mc && (typeof mc.registerTool === 'function' || typeof mc.provideContext === 'function')) {
+    const asText = (obj) => ({ content: [{ type: 'text', text: JSON.stringify(obj) }] });
+    const homePath = data.lang === 'he' ? '/' : '/en/';
+    const lc = (x) => String(x || '').toLowerCase();
+    const agentTools = [
+      {
+        name: 'list_classes',
+        description: 'Choir classes for boys aged 8–12 (Jerusalem and Beit Shemesh) with the link to leave details.',
+        inputSchema: { type: 'object', properties: { city: { type: 'string', description: 'Jerusalem / Beit Shemesh, or in Hebrew' } } },
+        execute: async ({ city } = {}) => asText(data.branches
+          .filter((b) => !city || lc(data.cities[b.city]).includes(lc(city)) || lc(b.city).includes(lc(city).replace(/\s+/g, '-')))
+          .map((b) => ({ id: b.id, city: data.cities[b.city], name: b.name, registration: b.reg, ages: '8–12', join: `${location.origin}${homePath}?branch=${b.id}#join-form-area` }))),
+      },
+      {
+        name: 'search_songs',
+        description: 'Search the choir’s songs and music videos; each result has a link that plays it on the site.',
+        inputSchema: { type: 'object', properties: { query: { type: 'string' }, limit: { type: 'integer', minimum: 1, maximum: 60 } } },
+        execute: async ({ query = '', limit = 20 } = {}) => asText(Object.entries(data.videos)
+          .filter(([, title]) => !query || lc(title).includes(lc(query)))
+          .slice(0, Math.max(1, Math.min(60, Number(limit) || 20)))
+          .map(([id, title]) => ({ id, title, play: `${location.origin}${homePath}#play=${id}` }))),
+      },
+      {
+        name: 'play_song',
+        description: 'Open one of the choir’s songs in the site’s player (use an id from search_songs).',
+        inputSchema: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] },
+        execute: async ({ id } = {}) => {
+          if (!data.videos[id]) return asText({ ok: false, error: 'unknown song id' });
+          openPlayer(id, null);
+          return asText({ ok: true, title: data.videos[id] });
+        },
+      },
+      {
+        name: 'choose_class',
+        description: 'Pick a class (and optionally the boy’s age) in the join form and scroll to it. The parent fills in the details and presses send.',
+        inputSchema: { type: 'object', properties: { branch: { type: 'string', enum: data.branches.map((b) => b.id) }, age: { type: 'integer', minimum: 5, maximum: 16 } }, required: ['branch'] },
+        execute: async ({ branch, age } = {}) => {
+          const chip = $(`[data-choose="${branch}"]`);
+          if (!chip) return asText({ ok: false, error: 'unknown class' });
+          if (age) { const a = $(`.fit-age[data-age="${Number(age)}"]`); if (a) a.click(); }
+          chip.click();
+          return asText({ ok: true, next: 'The form is open on the page; the parent fills in name, phone and email, and presses send.' });
+        },
+      },
+    ];
+    try {
+      if (typeof mc.registerTool === 'function') agentTools.forEach((tool) => mc.registerTool(tool));
+      else mc.provideContext({ tools: agentTools });
+    } catch (e) { /* לא קריטי */ }
+  }
+
   // ״חזרה״ בטלפון: סוגר את השכבה העליונה שפתוחה
   window.addEventListener('popstate', () => {
     if (selfPop) { selfPop--; return; }
