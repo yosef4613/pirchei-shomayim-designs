@@ -111,7 +111,7 @@ function ps_send_file($file, $status = 200, $head_only = false) {
 ps_serve_static();
 
 // מכאן — רק כשוורדפרס ממשיך לטעון (טפסים, כניסה, אזור הניהול). הדפים הקבועים כבר הוגשו למעלה
-foreach (['mail', 'auth', 'manage'] as $ps_mod) {
+foreach (['mail', 'auth', 'manage', 'mailing'] as $ps_mod) {
 	require_once __DIR__ . '/pirchei/' . $ps_mod . '.php';
 }
 

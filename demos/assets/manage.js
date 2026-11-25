@@ -110,14 +110,15 @@
   };
   const today = () => new Date().toISOString().slice(0, 10);
 
-  let D = { inquiries: [], subscribers: [], members: [], exclusive: [] };
+  let D = { inquiries: [], subscribers: [], members: [], exclusive: [], mailings: [] };
   const loadErr = $('[data-load-error]');
   async function load() {
     try {
       D = await api('admin/data');
+      ['inquiries', 'subscribers', 'members', 'exclusive', 'mailings'].forEach((k) => { if (!Array.isArray(D[k])) D[k] = []; });
       loadErr.hidden = true;
       $$('[data-notify]').forEach((el) => { el.textContent = D.notify || ''; });
-      renderInquiries(); renderSubs(); renderMembers(); renderExcl();
+      renderInquiries(); renderSubs(); renderMembers(); renderExcl(); renderMailings(); refreshPreview();
     } catch (err) {
       loadErr.hidden = false;
       loadErr.textContent = err.status === 403 || err.status === 401 ? 'פג תוקף הכניסה. רעננו את הדף (ואם צריך — היכנסו שוב).' : 'לא הצלחנו לטעון את הנתונים. בדקו את החיבור ורעננו את הדף.';
@@ -341,6 +342,152 @@
       catch (err) { toast('המחיקה לא הצליחה.'); }
     }
   });
+
+  /* ---------- שליחת דיוור ---------- */
+  const TPL = {
+    songs: { topic: 'songs', fields: [['title', 'שם השיר', true], ['video', 'קישור לשיר (הקליפ)', true, 'url', 'https://youtu.be/…'], ['text', 'כמה מילים על השיר (רשות)', false, 'textarea'], ['credits', 'קרדיטים (רשות)', false, 'text', 'למשל: לחן ועיבוד…']] },
+    shows: { topic: 'shows', fields: [['title', 'שם ההופעה', true], ['date', 'תאריך', true, 'date'], ['time', 'שעה (רשות)', false, 'time'], ['place', 'מקום', true], ['text', 'פרטים נוספים (רשות)', false, 'textarea'], ['link', 'קישור לכרטיסים או להרשמה (רשות)', false, 'url', 'https://'], ['button', 'טקסט הכפתור (רשות)', false, 'text', 'לפרטים ולהרשמה']] },
+    classes: { topic: 'classes', fields: [['title', 'שם החוג', true, 'text', 'למשל: חוג מקהלה בגבעת שאול'], ['place', 'מקום', true], ['ages', 'גילאים', true, 'text', '8–12'], ['times', 'ימים ושעות (רשות)', false], ['text', 'פרטים נוספים (רשות)', false, 'textarea'], ['link', 'קישור להרשמה (רשות — אחרת: טופס החוגים באתר)', false, 'url', 'https://'], ['button', 'טקסט הכפתור (רשות)', false, 'text', 'לפרטים ולהשארת פרטים']] },
+    general: { topic: '', fields: [['subject', 'נושא המייל', true], ['title', 'כותרת בתוך המייל (רשות)', false], ['text', 'התוכן — שורה ריקה מתחילה פסקה חדשה', true, 'textarea'], ['link', 'קישור (רשות)', false, 'url', 'https://'], ['button', 'טקסט הכפתור (רשות)', false, 'text', 'לפרטים']] },
+  };
+  const TPL_LABEL = { songs: 'שיר חדש', shows: 'הופעה', classes: 'חוג חדש', general: 'עדכון כללי' };
+  const mf = $('[data-mail-form]'); const mBox = $('[data-tpl-fields]'); const mMsg = $('[data-mail-msg]');
+  const frame = $('[data-mail-frame]'); const sendBtn = $('[data-mail-send]');
+  let mFile = { url: '', kind: '', name: '' }; let mCount = 0; let mSubject = '';
+  const tplNow = () => mf.elements.tpl.value;
+  const drafts = {}; // מה שכבר הוקלד בכל תבנית נשמר כשעוברים ביניהן
+  function buildMailFields() {
+    const t = TPL[tplNow()];
+    mBox.innerHTML = t.fields.map(([name, label, req, type, ph]) => `<label class="${type === 'textarea' || name === 'video' || name === 'link' ? 'wide' : ''}">${esc(label)}${type === 'textarea'
+      ? `<textarea name="${name}" rows="${name === 'text' && tplNow() === 'general' ? 6 : 3}"${req ? ' required' : ''}></textarea>`
+      : `<input name="${name}" type="${type || 'text'}"${type === 'url' ? ' dir="ltr"' : ''}${ph ? ` placeholder="${esc(ph)}"` : ''}${req ? ' required' : ''}>`}</label>`).join('');
+    const d = drafts[tplNow()] || {};
+    $$('input, textarea', mBox).forEach((el) => { if (d[el.name]) el.value = d[el.name]; });
+    mMsg.textContent = ''; mMsg.classList.remove('is-error');
+    refreshPreview();
+  }
+  const mailFields = () => {
+    const f = {}; $$('input, textarea', mBox).forEach((el) => { f[el.name] = el.value.trim(); });
+    if (mFile.url) { f.file = mFile.url; f.file_kind = mFile.kind; }
+    return f;
+  };
+  let pvT; let pvSeq = 0;
+  function refreshPreview() {
+    clearTimeout(pvT);
+    pvT = setTimeout(async () => {
+      const seq = ++pvSeq;
+      try {
+        const r = await api('admin/mailing/preview', { tpl: tplNow(), fields: mailFields() });
+        if (seq !== pvSeq) return;
+        mCount = r.count; mSubject = r.subject;
+        frame.srcdoc = r.html;
+        $('[data-preview-subject]').textContent = r.subject;
+        const topic = TPL[tplNow()].topic;
+        $('[data-mail-to]').textContent = mCount
+          ? `יישלח אל ${mCount} ${mCount === 1 ? 'רשום שאישר' : 'רשומים שאישרו'} את הכתובת${topic ? ` ובחרו ב״${TOPICS[topic]}״` : ''}.`
+          : `אין עדיין רשומים מאושרים${topic ? ` לנושא ״${TOPICS[topic]}״` : ''}. אפשר לשלוח בדיקה אליכם.`;
+        $('[data-send-label]').textContent = mCount ? `שליחה ל־${mCount} ${mCount === 1 ? 'רשום' : 'רשומים'}` : 'אין למי לשלוח';
+        sendBtn.disabled = !mCount;
+      } catch (err) { /* התצוגה תתעדכן בפעם הבאה */ }
+    }, 350);
+  }
+  frame.addEventListener('load', () => {
+    try { frame.style.height = (frame.contentDocument.documentElement.scrollHeight + 4) + 'px'; } catch (e) { /* */ }
+  });
+  mf.addEventListener('change', (e) => {
+    if (e.target.name === 'tpl') { drafts[mf.dataset.last || 'songs'] = mailFields(); mf.dataset.last = tplNow(); buildMailFields(); }
+  });
+  mf.addEventListener('input', (e) => { if (e.target.closest('[data-tpl-fields]')) refreshPreview(); });
+  // מודעה או PDF
+  const fileInput = $('[data-mail-file]'); const fileLine = $('[data-file-line]');
+  const showFile = () => {
+    fileLine.hidden = !mFile.url;
+    fileLine.innerHTML = mFile.url ? `${mFile.kind === 'pdf' ? 'מסמך PDF' : 'תמונה'} מצורף: <b>${esc(mFile.name)}</b> <button type="button" class="link-btn" data-file-remove>הסרה</button>` : '';
+  };
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0]; if (!file) return;
+    if (file.size > 6 * 1024 * 1024) { toast('הקובץ גדול מדי (עד 6MB)'); fileInput.value = ''; return; }
+    fileLine.hidden = false; fileLine.textContent = 'מעלה את הקובץ…';
+    try {
+      const data = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+      const up = await api('admin/upload', { name: file.name, data });
+      mFile = { url: up.url, kind: up.kind, name: file.name }; showFile(); refreshPreview();
+    } catch (err) {
+      mFile = { url: '', kind: '', name: '' }; fileLine.hidden = false;
+      fileLine.textContent = err.status === 415 ? 'אפשר לצרף רק תמונה (JPG או PNG) או PDF.' : 'ההעלאה לא הצליחה. נסו שוב.';
+    } finally { fileInput.value = ''; }
+  });
+  fileLine.addEventListener('click', (e) => { if (e.target.closest('[data-file-remove]')) { mFile = { url: '', kind: '', name: '' }; showFile(); refreshPreview(); } });
+  const checkMail = () => {
+    const bad = $$('[required]', mBox).filter((el) => !el.value.trim());
+    $$('input[type="url"]', mBox).forEach((el) => { if (el.value.trim() && !/^https?:\/\/\S+$/i.test(el.value.trim())) bad.push(el); });
+    if (tplNow() === 'songs') { const v = mBox.querySelector('[name="video"]'); if (v.value.trim() && !ytId(v.value)) bad.push(v); }
+    $$('input, textarea', mBox).forEach((el) => (bad.includes(el) ? el.setAttribute('aria-invalid', 'true') : el.removeAttribute('aria-invalid')));
+    if (bad.length) { mMsg.classList.add('is-error'); mMsg.textContent = 'יש למלא את השדות המסומנים (ובקישור — כתובת מלאה).'; bad[0].focus(); return false; }
+    mMsg.classList.remove('is-error'); mMsg.textContent = ''; return true;
+  };
+  $('[data-mail-test]').addEventListener('click', async (e) => {
+    if (!checkMail()) return;
+    const btn = e.currentTarget; btn.disabled = true;
+    try { const r = await api('admin/mailing/test', { tpl: tplNow(), fields: mailFields() }); toast(`מייל בדיקה נשלח אל ${r.to}`); mMsg.textContent = `מייל בדיקה נשלח אל ${r.to}. בדקו איך הוא נראה אצלכם לפני השליחה לכולם.`; }
+    catch (err) { mMsg.classList.add('is-error'); mMsg.textContent = 'שליחת הבדיקה לא הצליחה. נסו שוב בעוד רגע.'; }
+    finally { btn.disabled = false; }
+  });
+  const progress = $('[data-mail-progress]');
+  const showProgress = (m) => {
+    progress.hidden = false;
+    const done = Math.min(m.pos, m.total);
+    $('[data-bar]').style.width = (m.total ? Math.round((done / m.total) * 100) : 0) + '%';
+    $('[data-progress-text]').textContent = m.status === 'done' ? `נשלח ל־${m.ok} מתוך ${m.total}${m.fail ? ` (${m.fail} לא נשלחו)` : ''}.`
+      : m.status === 'paused' ? `שרת המייל עצר את השליחה אחרי ${m.ok} מיילים (כנראה מגבלה יומית). אפשר להמשיך מאוחר יותר מהרשימה למטה.`
+        : `שולח… ${done} מתוך ${m.total}. אפשר להמשיך לעבוד, רק לא לסגור את הדף.`;
+  };
+  async function runMailing(m) {
+    showProgress(m);
+    let guard = 0;
+    while (m.status === 'sending' && guard++ < 2000) {
+      try { const r = await api(`admin/mailing/${m.id}/batch`, {}); m = r.mailing; if (r.busy) await new Promise((res) => setTimeout(res, 3000)); }
+      catch (err) { await new Promise((res) => setTimeout(res, 4000)); if (guard > 5 && err.status >= 400 && err.status < 500) break; }
+      showProgress(m);
+      D.mailings = [m, ...D.mailings.filter((x) => x.id !== m.id)]; renderMailings();
+    }
+    if (m.status === 'done') toast(`הדיוור נשלח ל־${m.ok} רשומים`);
+    return m;
+  }
+  mf.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!checkMail() || !mCount) return;
+    if (!confirm(`לשלוח את ״${mSubject}״ ל־${mCount} ${mCount === 1 ? 'רשום' : 'רשומים'}?\nמומלץ לשלוח קודם בדיקה אליכם.`)) return;
+    sendBtn.disabled = true;
+    try {
+      const r = await api('admin/mailing/send', { tpl: tplNow(), fields: mailFields() });
+      D.mailings = [r.mailing, ...D.mailings]; renderMailings();
+      const m = await runMailing(r.mailing);
+      if (m.status === 'done') { drafts[tplNow()] = {}; mFile = { url: '', kind: '', name: '' }; showFile(); buildMailFields(); }
+    } catch (err) {
+      mMsg.classList.add('is-error'); mMsg.textContent = err.message === 'no_recipients' ? 'אין למי לשלוח.' : 'השליחה לא התחילה. נסו שוב.';
+    } finally { sendBtn.disabled = !mCount; }
+  });
+  const STATUS_LABEL = { sending: 'בשליחה', paused: 'נעצר', done: 'נשלח' };
+  function renderMailings() {
+    const all = D.mailings || [];
+    $('[data-mailings-empty]').hidden = all.length > 0;
+    $('[data-mailings]').innerHTML = all.map((m) => `<tr>
+      <td data-label="תאריך">${esc(fmtDate(m.date))}</td>
+      <td data-label="נושא"><div class="cell-main">${esc(m.subject)}</div>${m.by ? `<div class="cell-sub"><span>נשלח ע״י ${esc(m.by)}</span></div>` : ''}</td>
+      <td data-label="סוג">${esc(TPL_LABEL[m.tpl] || '')}</td>
+      <td data-label="נשלח">${m.ok} מתוך ${m.total}${m.fail ? ` <span class="mail-flag">(${m.fail} נכשלו)</span>` : ''}</td>
+      <td data-label="מצב"><span class="state ${m.status === 'done' ? 'ok' : 'wait'}">${esc(STATUS_LABEL[m.status] || m.status)}</span>${m.status !== 'done' ? ` <button type="button" class="link-btn" data-resume="${m.id}">המשך שליחה</button>` : ''}</td>
+    </tr>`).join('');
+  }
+  $('[data-mailings]').addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-resume]'); if (!b) return;
+    const m = D.mailings.find((x) => String(x.id) === b.dataset.resume); if (!m) return;
+    b.disabled = true;
+    await runMailing({ ...m, status: 'sending' });
+  });
+  $('[data-go-mailing]').addEventListener('click', () => select($('#tab-mailing'), true));
+  buildMailFields();
 
   load();
 })();

@@ -755,6 +755,15 @@
   });
   // פתיחה ישירה מקישור ששיתפו: ‎#play=מזהה
   const deep = /^#play=([\w-]{11})$/.exec(location.hash);
+  if (deep && !data.videos[deep[1]]) {
+    // שיר חדש מהדיוור במייל: ‎?song=שם השיר — נפתח בנגן גם לפני שנוסף לרשימת השירים באתר
+    const fresh = new URLSearchParams(location.search).get('song');
+    if (fresh) {
+      data.videos[deep[1]] = fresh.slice(0, 120); data.meta[deep[1]] = ['fresh', ''];
+      data.player.cats.fresh = (data.member && data.member.newSong) || '';
+      thumbs[deep[1]] = `https://i.ytimg.com/vi/${deep[1]}/hqdefault.jpg`;
+    }
+  }
   if (deep && data.videos[deep[1]]) openPlayer(deep[1], null);
   /* נייד: כפתור הרשמה קבוע בתחתית — רק אחרי הפתיחה, ורק כשאין על המסך את אזור החוגים או כפתור טורקיז אחר */
   const sticky = $('[data-sticky-cta]');
@@ -834,12 +843,12 @@
     const isOpen = () => !acct.hidden;
     const openAcct = (opts = {}) => {
       acctTo = opts.to || '';
-      if (me.logged) meView(); else loginView(opts.lead);
+      if (opts.view) { /* התצוגה כבר הוכנה (למשל: אישור הסרה מהרשימה) */ } else if (me.logged) meView(); else loginView(opts.lead);
       acctReturn = opts.trigger || document.activeElement;
       if (header.classList.contains('menu-open')) setMenu(false, { keepHistory: true });
       acct.hidden = false; setLock();
       pushOverlay('acct');
-      setTimeout(() => { const f = me.logged ? $('.acct-actions .btn:not([hidden])', acct) : acctEmail; if (f) f.focus(); }, 40);
+      setTimeout(() => { const f = opts.view ? $(`[data-acct-view="${opts.view}"] .btn`, acct) : me.logged ? $('.acct-actions .btn:not([hidden])', acct) : acctEmail; if (f) f.focus(); }, 40);
     };
     const closeAcct = (opts = {}) => {
       if (acct.hidden) return;
@@ -961,7 +970,22 @@
         siteToast(MT.welcome);
         if (res.to === 'behind' && behindSec) setTimeout(() => behindSec.scrollIntoView({ block: 'start' }), 250);
       }).catch(() => { openAcct({ lead: MT.expired, to: wantedTo }); });
-    } else if (hasHint()) {
+    }
+    const unsub = /^(\d+)\.([A-Za-z0-9]{20,})$/.exec(params.get('unsub') || '');
+    if (unsub) {
+      try { history.replaceState(null, '', location.pathname + location.hash); } catch (err) { /* לא קריטי */ }
+      titleEl2.textContent = MT.unsubTitle; leadEl.textContent = MT.unsubLead; leadEl.hidden = false; showView('unsub');
+      openAcct({ view: 'unsub' });
+      $('[data-unsub-yes]', acct).addEventListener('click', async (e) => {
+        const btn = e.currentTarget; busy(btn, true);
+        try {
+          await api('unsubscribe', { id: Number(unsub[1]), t: unsub[2] });
+          titleEl2.textContent = MT.unsubDone; leadEl.textContent = MT.unsubDoneLead;
+        } catch (err) { titleEl2.textContent = MT.unsubTitle; leadEl.textContent = MT.unsubFail; }
+        busy(btn, false); showView('done'); $('.acct-close', acct).focus();
+      }, { once: true });
+    }
+    if (token) { /* כבר טופל למעלה */ } else if (hasHint()) {
       api('me').then((res) => {
         me = res && res.logged ? res : { logged: false };
         if (!me.logged) clearHint();

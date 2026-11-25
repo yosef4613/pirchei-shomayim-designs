@@ -8,7 +8,8 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * $o: title, paras[], rows[[label, value, href?]], button[text, url], link[text, url], note, kicker
+ * $o: title, paras[], rows[[label, value, href?]], button[text, url], link[text, url], note, kicker,
+ *     image[src, href, alt] (תמונה גדולה בראש המייל), unsub[text, linkText, url] (הסרה מרשימת התפוצה, בתחתית)
  */
 function ps_mail_html($lang, $o) {
 	$he = $lang !== 'en';
@@ -28,6 +29,11 @@ function ps_mail_html($lang, $o) {
 	$h .= '<td><div style="font-size:13px;color:#a6fcef;font-weight:bold;">' . $e(!empty($o['kicker']) ? $o['kicker'] : $brand) . '</div>';
 	$h .= '<div style="font-size:22px;line-height:1.3;color:#ffffff;font-weight:bold;margin-top:4px;">' . $e($o['title']) . '</div></td>';
 	$h .= '</tr></table></td></tr>';
+	// תמונה גדולה (שיר חדש, מודעת הופעה)
+	if (!empty($o['image'][0])) {
+		$img = '<img src="' . esc_url($o['image'][0]) . '" width="600" alt="' . esc_attr(isset($o['image'][2]) ? $o['image'][2] : '') . '" style="display:block;width:100%;max-width:600px;height:auto;border:0;">';
+		$h .= '<tr><td style="padding:0;background:#0b0812;">' . (!empty($o['image'][1]) ? '<a href="' . esc_url($o['image'][1]) . '">' . $img . '</a>' : $img) . '</td></tr>';
+	}
 	// גוף
 	$h .= '<tr><td style="padding:24px 26px 8px;font-size:16px;line-height:1.7;color:#3b3350;">';
 	foreach ((array) (isset($o['paras']) ? $o['paras'] : []) as $p) {
@@ -60,6 +66,9 @@ function ps_mail_html($lang, $o) {
 	// תחתית
 	$h .= '<tr><td style="padding:14px 26px 20px;border-top:1px solid #ece6f7;font-size:13px;color:#7b7290;line-height:1.7;">';
 	$h .= '<a href="' . esc_url($site) . '" style="color:#4a19a0;">' . $e($brand) . '</a>' . ($he ? ' · מקהלת ילדים בירושלים ובבית שמש' : ' · Boys’ choir in Jerusalem & Beit Shemesh');
+	if (!empty($o['unsub'])) {
+		$h .= '<br>' . $e($o['unsub'][0]) . ' <a href="' . esc_url($o['unsub'][2]) . '" style="color:#7b7290;">' . $e($o['unsub'][1]) . '</a>';
+	}
 	$h .= '</td></tr></table></td></tr></table></body></html>';
 	return $h;
 }
@@ -88,12 +97,15 @@ function ps_mail_text($lang, $o) {
 	}
 	$t[] = '';
 	$t[] = ($lang === 'en' ? 'Pirchei Shomayim Boys’ Choir' : 'מקהלת פרחי שמיים') . ' · ' . home_url('/');
+	if (!empty($o['unsub'])) {
+		$t[] = $o['unsub'][0] . ' ' . $o['unsub'][1] . ': ' . $o['unsub'][2];
+	}
 	return implode("\n", $t);
 }
 
 /** שליחת מייל מעוצב. מחזיר true אם שרת המייל קיבל אותו */
-function ps_send_mail($to, $subject, $lang, $o, $reply_to = '') {
-	$headers = ['Content-Type: text/html; charset=UTF-8'];
+function ps_send_mail($to, $subject, $lang, $o, $reply_to = '', $extra_headers = []) {
+	$headers = array_merge(['Content-Type: text/html; charset=UTF-8'], $extra_headers);
 	if ($reply_to && is_email($reply_to)) {
 		$headers[] = 'Reply-To: ' . $reply_to;
 	}

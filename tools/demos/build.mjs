@@ -10,7 +10,7 @@ import { seoText } from './seo.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '18';
+const VERSION = '19';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -718,6 +718,13 @@ ${live ? `<div class="acct" id="acct" role="dialog" aria-modal="true" aria-label
         <button type="button" class="btn btn-ghost" data-acct-logout>${esc(M.logout)}</button>
       </div>
     </div>
+    <div class="acct-me" data-acct-view="unsub" hidden>
+      <div class="acct-actions">
+        <button type="button" class="btn btn-purple" data-unsub-yes>${esc(M.unsubYes)}</button>
+        <button type="button" class="btn btn-ghost" data-acct-close>${esc(M.unsubNo)}</button>
+      </div>
+    </div>
+    <div data-acct-view="done" hidden></div>
   </div>
 </div>
 <p class="site-toast" data-site-toast role="status" aria-live="polite" hidden></p>

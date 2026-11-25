@@ -171,6 +171,9 @@ export const memberText = {
     join: 'הרשמה / כניסה', have: 'כבר רשומים? כניסה',
     soonTitle: 'אתם רשומים — התכנים בדרך', soonText: 'התכנים הראשונים יעלו כאן בקרוב, ואתם תראו אותם ראשונים.',
     watch: 'צפייה', only: 'רק לרשומים', video: 'סרטון', note: 'עדכון',
+    unsubTitle: 'הסרה מרשימת העדכונים', unsubLead: 'להפסיק לקבל מאיתנו עדכונים במייל?', unsubYes: 'כן, להסיר אותי', unsubNo: 'לא, להישאר ברשימה',
+    unsubDone: 'הוסרתם מהרשימה', unsubDoneLead: 'לא תקבלו מאיתנו עוד עדכונים במייל. תמיד אפשר להירשם מחדש באתר.', unsubFail: 'לא מצאנו את הכתובת ברשימה — ייתכן שכבר הוסרה.',
+    newSong: 'שיר חדש',
   },
   en: {
     login: 'Sign in', loginAria: 'Sign in or sign up', account: 'My account',
@@ -188,5 +191,8 @@ export const memberText = {
     join: 'Sign up / Sign in', have: 'Already registered? Sign in',
     soonTitle: 'You’re registered — content is on its way', soonText: 'The first items will appear here soon, and you’ll see them first.',
     watch: 'Watch', only: 'For registered visitors', video: 'Video', note: 'Update',
+    unsubTitle: 'Unsubscribe from updates', unsubLead: 'Stop receiving email updates from us?', unsubYes: 'Yes, unsubscribe me', unsubNo: 'No, keep me on the list',
+    unsubDone: 'You’re unsubscribed', unsubDoneLead: 'You won’t get any more email updates from us. You can always sign up again on the site.', unsubFail: 'We couldn’t find this address on the list — it may already have been removed.',
+    newSong: 'New song',
   },
 };

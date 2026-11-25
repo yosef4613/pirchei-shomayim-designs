@@ -97,6 +97,7 @@ function ps_admin_data() {
 				'last' => (string) get_user_meta($u->ID, 'ps_last_login', true), 'manager' => ps_is_manager($u), 'wp' => user_can($u, 'edit_posts')];
 		}, $users),
 		'exclusive' => array_map('ps_exclusive_item', $excl),
+		'mailings' => function_exists('ps_mailing_list') ? ps_mailing_list() : [],
 		'notify' => ps_notify_email(),
 	]);
 }

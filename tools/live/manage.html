@@ -62,7 +62,8 @@
     <nav aria-label="אזורי הניהול">
       <ul class="tabs" role="tablist" aria-orientation="vertical">
         <li><button role="tab" id="tab-inquiries" aria-controls="panel-inquiries" aria-selected="true" data-tab="inquiries"><svg class="ico" aria-hidden="true"><use href="#i-inbox"/></svg><span>פניות לחוגים</span><span class="count" data-new-count></span></button></li>
-        <li><button role="tab" id="tab-subscribers" aria-controls="panel-subscribers" aria-selected="false" tabindex="-1" data-tab="subscribers"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span>עדכונים במייל</span></button></li>
+        <li><button role="tab" id="tab-subscribers" aria-controls="panel-subscribers" aria-selected="false" tabindex="-1" data-tab="subscribers"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span>רשימות תפוצה</span></button></li>
+        <li><button role="tab" id="tab-mailing" aria-controls="panel-mailing" aria-selected="false" tabindex="-1" data-tab="mailing"><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg><span>שליחת דיוור</span></button></li>
         <li><button role="tab" id="tab-members" aria-controls="panel-members" aria-selected="false" tabindex="-1" data-tab="members"><svg class="ico" aria-hidden="true"><use href="#i-users"/></svg><span>רשומים לאתר</span></button></li>
         <li><button role="tab" id="tab-behind" aria-controls="panel-behind" aria-selected="false" tabindex="-1" data-tab="behind"><svg class="ico" aria-hidden="true"><use href="#i-star"/></svg><span>מאחורי הקלעים</span></button></li>
       </ul>
@@ -121,12 +122,13 @@
     <section id="panel-subscribers" role="tabpanel" aria-labelledby="tab-subscribers" hidden>
       <header class="panel-head">
         <div>
-          <h1>עדכונים במייל</h1>
+          <h1>רשימות תפוצה</h1>
           <p>מי שביקש עדכונים — מטופס החוגים או מההרשמה לעדכונים. מקבלים עדכונים רק מי שאישרו את הכתובת במייל, ורק בנושאים שבחרו.</p>
         </div>
         <div class="head-actions">
+          <button type="button" class="btn btn-primary" data-go-mailing><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg>שליחת עדכון לרשימה</button>
           <button type="button" class="btn btn-light" data-copy-emails><svg class="ico" aria-hidden="true"><use href="#i-copy"/></svg>העתקת המיילים המאושרים</button>
-          <button type="button" class="btn btn-primary" data-export-subs><svg class="ico" aria-hidden="true"><use href="#i-download"/></svg>ייצוא לאקסל</button>
+          <button type="button" class="btn btn-light" data-export-subs><svg class="ico" aria-hidden="true"><use href="#i-download"/></svg>ייצוא לאקסל</button>
         </div>
       </header>
       <div class="funnel funnel-3" role="group" aria-label="סינון לפי נושא">
@@ -152,6 +154,52 @@
       </div>
       <p class="empty" data-subs-empty hidden>אין עדיין רשומים לעדכונים.</p>
       <p class="foot-note">״העתקת המיילים״ מעתיקה את הכתובות המאושרות שמוצגות כרגע (לפי הנושא שבחרתם) — להדבקה בשדה ״עותק מוסתר״ (Bcc) במייל.</p>
+    </section>
+
+    <section id="panel-mailing" role="tabpanel" aria-labelledby="tab-mailing" hidden>
+      <header class="panel-head">
+        <div>
+          <h1>שליחת דיוור</h1>
+          <p>בוחרים סוג עדכון, ממלאים את הפרטים, ורואים בדיוק איך המייל ייראה. העדכון נשלח רק למי שאישר את הכתובת ובחר בנושא, ובכל מייל יש קישור להסרה מהרשימה.</p>
+        </div>
+      </header>
+      <div class="mail-grid">
+        <form class="add-form" data-mail-form novalidate>
+          <fieldset class="tpl-pick">
+            <legend>סוג העדכון</legend>
+            <label class="tpl"><input type="radio" name="tpl" value="songs" checked><span>שיר חדש</span></label>
+            <label class="tpl"><input type="radio" name="tpl" value="shows"><span>הופעה</span></label>
+            <label class="tpl"><input type="radio" name="tpl" value="classes"><span>חוג חדש</span></label>
+            <label class="tpl"><input type="radio" name="tpl" value="general"><span>עדכון כללי</span></label>
+          </fieldset>
+          <p class="mail-to" data-mail-to aria-live="polite"></p>
+          <div class="grid" data-tpl-fields></div>
+          <div class="file-pick">
+            <label>מודעה או מסמך (רשות) — תמונה (JPG / PNG) שתופיע במייל, או קובץ PDF לקישור<input name="file" type="file" accept="image/jpeg,image/png,application/pdf" data-mail-file></label>
+            <p class="file-line" data-file-line hidden></p>
+          </div>
+          <p class="form-msg" role="status" data-mail-msg></p>
+          <div class="card-actions">
+            <button class="btn btn-light" type="button" data-mail-test><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg>שליחת בדיקה אליי</button>
+            <button class="btn btn-primary" type="submit" data-mail-send><svg class="ico" aria-hidden="true"><use href="#i-send"/></svg><span data-send-label>שליחה</span></button>
+          </div>
+          <div class="progress" data-mail-progress hidden><div class="bar"><span data-bar></span></div><p data-progress-text></p></div>
+        </form>
+        <div class="mail-preview">
+          <p class="preview-label">תצוגה מקדימה — בדיוק כך ייראה המייל</p>
+          <p class="preview-subject"><span>נושא:</span> <b data-preview-subject></b></p>
+          <iframe class="mail-frame" title="תצוגה מקדימה של המייל" data-mail-frame sandbox="allow-same-origin"></iframe>
+        </div>
+      </div>
+      <h2 class="hist-title">דיוורים שנשלחו</h2>
+      <div class="table-wrap">
+        <table class="inq-table">
+          <caption class="sr">היסטוריית הדיוורים</caption>
+          <thead><tr><th scope="col">תאריך</th><th scope="col">נושא</th><th scope="col">סוג</th><th scope="col">נשלח</th><th scope="col">מצב</th></tr></thead>
+          <tbody data-mailings></tbody>
+        </table>
+      </div>
+      <p class="empty" data-mailings-empty hidden>עוד לא נשלחו דיוורים.</p>
     </section>
 
     <section id="panel-members" role="tabpanel" aria-labelledby="tab-members" hidden>
