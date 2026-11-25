@@ -953,12 +953,14 @@
     const token = params.get('login');
     if (token) {
       try { history.replaceState(null, '', location.pathname + location.hash); } catch (err) { /* לא קריטי */ }
+      const wantedTo = params.get('to') === 'manage' ? 'manage' : '';
       api('verify', { token }).then((res) => {
         me = res; updateHeader(); refreshMembers();
-        if (res.to === 'manage' && res.manager && res.manage) { location.href = res.manage; return; }
+        // מנהל נכנס — ישר לאזור הניהול, אלא אם ביקש לראות את התכנים מאחורי הקלעים
+        if (res.manager && res.manage && res.to !== 'behind') { location.href = res.manage; return; }
         siteToast(MT.welcome);
         if (res.to === 'behind' && behindSec) setTimeout(() => behindSec.scrollIntoView({ block: 'start' }), 250);
-      }).catch(() => { openAcct({ lead: MT.expired }); });
+      }).catch(() => { openAcct({ lead: MT.expired, to: wantedTo }); });
     } else if (hasHint()) {
       api('me').then((res) => {
         me = res && res.logged ? res : { logged: false };

@@ -27,6 +27,15 @@ function ps_is_manager($user = null) {
 	return user_can($u, 'manage_options') || in_array(strtolower($u->user_email), ps_admin_emails(), true);
 }
 
+/** האם המייל שייך למנהל (לפי קובץ ההגדרות, או משתמש וורדפרס עם הרשאות ניהול) */
+function ps_email_is_manager($email) {
+	if (in_array(strtolower($email), ps_admin_emails(), true)) {
+		return true;
+	}
+	$u = get_user_by('email', $email);
+	return $u ? ps_is_manager($u) : false;
+}
+
 /** בקשה שמגיעה מהאתר עצמו (ולא מאתר זר שמנסה לקרוא את פרטי המחובר) */
 function ps_same_origin() {
 	$host = strtolower((string) parse_url(home_url(), PHP_URL_HOST));
@@ -165,6 +174,10 @@ function ps_rest_login(WP_REST_Request $req) {
 		return ps_fail('invalid', 400, ['email' => 'invalid']);
 	}
 	$to = isset($p['to']) && in_array($p['to'], ['manage', 'behind'], true) ? $p['to'] : '';
+	// מנהל שנכנס — הקישור מוביל תמיד לאזור הניהול (ומשם יש קישור לאתר)
+	if ($to === '' && ps_email_is_manager($email)) {
+		$to = 'manage';
+	}
 	if ($req->get_param('dry_run')) {
 		return new WP_REST_Response(['ok' => true, 'dry_run' => true], 200);
 	}
