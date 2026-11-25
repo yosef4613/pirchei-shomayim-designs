@@ -79,3 +79,4 @@
 .video-info span { display: grid; gap: 2px; }
 .video-info small { font-weight: 500; color: #2b6b62; }
 .video-info.is-error { background: #fdecef; color: var(--danger); }
+.preview-note { font-size: .85rem; color: var(--muted); background: #fff; border: 1px dashed var(--line); border-radius: 10px; padding: 6px 10px; margin-bottom: 8px; }
