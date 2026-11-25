@@ -10,7 +10,7 @@ import { seoText } from './seo.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '21';
+const VERSION = '22';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -303,8 +303,8 @@ ${sprite}
               <p class="field-error" id="e-email"></p>
             </div>
             <div class="field">
-              <label for="f-child">${esc(t.form.child)} <span class="req" aria-hidden="true">*</span></label>
-              <input id="f-child" name="child" type="text" autocomplete="off" required aria-describedby="e-child">
+              <label for="f-child">${esc(t.form.child)} <span class="opt">(${lang === 'he' ? 'רשות' : 'optional'})</span></label>
+              <input id="f-child" name="child" type="text" autocomplete="off" aria-describedby="e-child">
               <p class="field-error" id="e-child"></p>
             </div>
             <div class="field field-third">
@@ -313,13 +313,13 @@ ${sprite}
               <p class="field-error" id="e-age"></p>
             </div>
             <div class="field">
-              <label for="f-cheder">${esc(t.form.cheder)} <span class="req" aria-hidden="true">*</span></label>
-              <input id="f-cheder" name="cheder" type="text" autocomplete="off" required aria-describedby="e-cheder">
+              <label for="f-cheder">${esc(t.form.cheder)} <span class="opt">(${lang === 'he' ? 'רשות' : 'optional'})</span></label>
+              <input id="f-cheder" name="cheder" type="text" autocomplete="off" aria-describedby="e-cheder">
               <p class="field-error" id="e-cheder"></p>
             </div>
             <div class="field field-third">
-              <label for="f-grade">${esc(t.form.grade)} <span class="req" aria-hidden="true">*</span></label>
-              <select id="f-grade" name="grade" required aria-describedby="e-grade">
+              <label for="f-grade">${esc(t.form.grade)} <span class="opt">(${lang === 'he' ? 'רשות' : 'optional'})</span></label>
+              <select id="f-grade" name="grade" aria-describedby="e-grade">
                 <option value="">${esc(t.form.gradePlaceholder)}</option>
                 ${t.form.grades.map((g) => `<option>${esc(g)}</option>`).join('')}
               </select>

@@ -206,9 +206,11 @@
     age: (v) => { const n = Number(v); return v === '' ? T.required : Number.isInteger(n) && n >= 5 && n <= 16 ? '' : T.age; },
     consent: (_, el) => (el.checked ? '' : T.consent),
   };
+  // טופס קצר: שם הילד, החיידר והכיתה — רשות (אפשר לברר במבדק)
+  const optional = new Set(['child', 'cheder', 'grade']);
   const validate = (input) => {
     const v = (input.value || '').trim();
-    const msg = validators[input.name] ? validators[input.name](v, input) : (v ? '' : T.required);
+    const msg = validators[input.name] ? validators[input.name](v, input) : (v || optional.has(input.name) ? '' : T.required);
     if (msg) setError(input, msg); else clearError(input);
     return !msg;
   };

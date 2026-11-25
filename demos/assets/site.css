@@ -1125,3 +1125,4 @@ html[data-motion="full"] .acct:not([hidden]) .acct-box { animation: rise .35s va
 .member-card.is-note .excl-media .ico { width: 54px; height: 54px; color: var(--lilac-2); }
 .acct-text { display: inline-flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--line-dark); border-radius: 999px; padding: 8px 16px; color: var(--lilac-2); font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; }
 .acct-text:hover { color: #fff; border-color: var(--lilac); }
+.opt { color: var(--muted-2); font-weight: 500; font-size: .88em; }

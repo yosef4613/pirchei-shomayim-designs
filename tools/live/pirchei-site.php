@@ -327,9 +327,7 @@ function ps_rest_inquiry(WP_REST_Request $req) {
 	];
 	$err = [];
 	if (!isset(PS_BRANCHES[$d['branch']])) { $err['branch'] = 'required'; }
-	foreach (['parent', 'child', 'cheder', 'grade'] as $k) {
-		if ($d[$k] === '') { $err[$k] = 'required'; }
-	}
+	if ($d['parent'] === '') { $err['parent'] = 'required'; } // שם הילד, החיידר והכיתה — רשות
 	if (!preg_match('/^\d{9,12}$/', preg_replace('/[\s\-().+]/', '', $d['phone']))) { $err['phone'] = 'invalid'; }
 	if (!is_email($d['email'])) { $err['email'] = 'invalid'; }
 	if ($d['age'] < 5 || $d['age'] > 16) { $err['age'] = 'invalid'; }
@@ -348,7 +346,7 @@ function ps_rest_inquiry(WP_REST_Request $req) {
 	$test = !empty($p['test']) ? '[בדיקה] ' : '';
 	$id = wp_insert_post([
 		'post_type' => 'ps_inquiry', 'post_status' => 'private',
-		'post_title' => $test . $d['parent'] . ' · ' . $d['child'] . ' (' . $d['age'] . ') · ' . $branch_he,
+		'post_title' => $test . $d['parent'] . ' · ' . ($d['child'] !== '' ? $d['child'] : 'בן') . ' (' . $d['age'] . ') · ' . $branch_he,
 	], true);
 	if (is_wp_error($id)) {
 		return ps_fail('store', 500);
@@ -358,14 +356,17 @@ function ps_rest_inquiry(WP_REST_Request $req) {
 	}
 
 	// מייל לצוות המקהלה — ״השב״ עונה ישר להורה
+	$kid = $d['child'] !== '' ? $d['child'] : 'בן';
 	$rows = [['חוג', $branch_he], ['הורה', $d['parent']], ['טלפון', $d['phone'], 'tel:' . preg_replace('/[^\d+]/', '', $d['phone'])], ['מייל', $d['email'], 'mailto:' . $d['email']],
-		['ילד', $d['child'] . ', בן ' . $d['age']], ['תלמוד תורה', $d['cheder'] . ' · כיתה ' . $d['grade']]];
+		['ילד', $d['child'] !== '' ? $d['child'] . ', בן ' . $d['age'] : 'בן ' . $d['age']]];
+	$school = trim($d['cheder'] . ($d['grade'] !== '' ? ' · כיתה ' . $d['grade'] : ''), ' ·');
+	if ($school !== '') { $rows[] = ['תלמוד תורה', $school]; }
 	if ($d['notes'] !== '') { $rows[] = ['הערות', $d['notes']]; }
 	if ($d['topics']) { $rows[] = ['עדכונים שביקשו', ps_meta_value($id, 'topics')]; }
 	if ($lang === 'en') { $rows[] = ['שפת האתר', 'אנגלית']; }
-	$mailed = ps_send_mail(ps_notify_email(), $test . 'פנייה חדשה לחוג ' . $branch_he . ': ' . $d['child'] . ' (' . $d['age'] . ')', 'he', [
+	$mailed = ps_send_mail(ps_notify_email(), $test . 'פנייה חדשה לחוג ' . $branch_he . ': ' . $kid . ' (' . $d['age'] . ')', 'he', [
 		'kicker' => 'פנייה חדשה מהאתר' . ($test ? ' · בדיקה' : ''),
-		'title' => $d['child'] . ' (' . $d['age'] . ') · ' . $branch_he,
+		'title' => $kid . ' (' . $d['age'] . ') · ' . $branch_he,
 		'paras' => ['״השב״ במייל הזה עונה ישר להורה.'],
 		'rows' => $rows,
 		'button' => ['לכל הפניות באזור הניהול', home_url('/manage/')],

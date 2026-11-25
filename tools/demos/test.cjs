@@ -84,10 +84,10 @@ async function fillJoin(page, lang, branch, name) {
           assert.strictEqual(await page.inputValue('#f-branch'), 'neve-yaakov');
           assert.strictEqual(await page.evaluate(() => document.activeElement.id), 'f-parent');
         });
-        await t(`${L} empty submit shows 9 errors`, async () => {
+        await t(`${L} empty submit shows 6 errors (child, cheder and grade are optional)`, async () => {
           await page.selectOption('#f-branch', '');
           await page.click('#join-form button[type="submit"]');
-          assert.strictEqual(await page.locator('#join-form [aria-invalid="true"]').count(), 9);
+          assert.strictEqual(await page.locator('#join-form [aria-invalid="true"]').count(), 6);
         });
         await t(`${L} age check answers at once and fills the age (rule 5)`, async () => {
           await page.click('.fit-age[data-age="10"]');

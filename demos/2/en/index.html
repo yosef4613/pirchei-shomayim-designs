@@ -30,9 +30,9 @@
   <link rel="preload" href="../../assets/fonts/frank-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../assets/img/stage/hero-2.webp" as="image" media="(min-width: 721px)" fetchpriority="high">
   <link rel="preload" href="../../assets/img/stage/hero-stage-m.webp" as="image" media="(max-width: 720px)" fetchpriority="high">
-  <link rel="stylesheet" href="../../assets/site.css?v=21">
+  <link rel="stylesheet" href="../../assets/site.css?v=22">
   <script>document.documentElement.classList.add('js');try{var m=localStorage.getItem('ps-motion');if(m==='reduce'||(!m&&matchMedia('(prefers-reduced-motion: reduce)').matches))document.documentElement.dataset.motion='reduce'}catch(e){if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.dataset.motion='reduce'}</script>
-  <script defer src="../../assets/site.js?v=21"></script>
+  <script defer src="../../assets/site.js?v=22"></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -228,8 +228,8 @@
               <p class="field-error" id="e-email"></p>
             </div>
             <div class="field">
-              <label for="f-child">Child’s name <span class="req" aria-hidden="true">*</span></label>
-              <input id="f-child" name="child" type="text" autocomplete="off" required aria-describedby="e-child">
+              <label for="f-child">Child’s name <span class="opt">(optional)</span></label>
+              <input id="f-child" name="child" type="text" autocomplete="off" aria-describedby="e-child">
               <p class="field-error" id="e-child"></p>
             </div>
             <div class="field field-third">
@@ -238,13 +238,13 @@
               <p class="field-error" id="e-age"></p>
             </div>
             <div class="field">
-              <label for="f-cheder">Cheder / Talmud Torah <span class="req" aria-hidden="true">*</span></label>
-              <input id="f-cheder" name="cheder" type="text" autocomplete="off" required aria-describedby="e-cheder">
+              <label for="f-cheder">Cheder / Talmud Torah <span class="opt">(optional)</span></label>
+              <input id="f-cheder" name="cheder" type="text" autocomplete="off" aria-describedby="e-cheder">
               <p class="field-error" id="e-cheder"></p>
             </div>
             <div class="field field-third">
-              <label for="f-grade">Grade <span class="req" aria-hidden="true">*</span></label>
-              <select id="f-grade" name="grade" required aria-describedby="e-grade">
+              <label for="f-grade">Grade <span class="opt">(optional)</span></label>
+              <select id="f-grade" name="grade" aria-describedby="e-grade">
                 <option value="">Choose a grade</option>
                 <option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option>
               </select>

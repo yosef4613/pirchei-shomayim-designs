@@ -152,7 +152,7 @@
         <td data-label="תאריך">${esc(fmtDate(x.date))}${x.mailed ? '' : '<div class="mail-flag">המייל לא נשלח</div>'}</td>
         <td data-label="הורה"><div class="cell-main">${esc(x.parent)}${x.status === 'new' ? '<span class="tag-new">חדש</span>' : ''}${x.test ? '<span class="tag-test">בדיקה</span>' : ''}${x.lang === 'en' ? '<span class="tag-en">EN</span>' : ''}</div>
           <div class="cell-sub"><a href="tel:${esc(tel)}" dir="ltr">${icon('phone')}${esc(x.phone)}</a><a href="mailto:${esc(x.email)}" dir="ltr">${icon('mail')}${esc(x.email)}</a></div></td>
-        <td data-label="ילד"><div class="cell-main">${esc(x.child)}, ${esc(x.age)}</div><div class="cell-sub"><span>${esc(x.cheder)} · כיתה ${esc(x.grade)}</span></div>
+        <td data-label="ילד"><div class="cell-main">${x.child ? `${esc(x.child)}, ${esc(x.age)}` : `בן ${esc(x.age)}`}</div>${x.cheder || x.grade ? `<div class="cell-sub"><span>${esc([x.cheder, x.grade ? 'כיתה ' + x.grade : ''].filter(Boolean).join(' · '))}</span></div>` : ''}
           ${x.notes ? `<p class="parent-note">״${esc(x.notes)}״</p>` : ''}</td>
         <td data-label="חוג"><div class="cell-main">${esc(bn)}</div><div class="cell-sub"><span>${esc(bc)}</span></div></td>
         <td data-label="סטטוס"><label class="sr" for="st-${x.id}">סטטוס הפנייה של ${esc(x.parent)}</label>
