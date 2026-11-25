@@ -27,6 +27,7 @@ add_action('rest_api_init', function () {
 	register_rest_route('ps/v1', '/admin/mailing/send', ['methods' => 'POST', 'callback' => 'ps_mailing_start', 'permission_callback' => $can]);
 	register_rest_route('ps/v1', '/admin/mailing/(?P<id>\d+)/batch', ['methods' => 'POST', 'callback' => 'ps_mailing_batch', 'permission_callback' => $can]);
 	register_rest_route('ps/v1', '/admin/upload', ['methods' => 'POST', 'callback' => 'ps_admin_upload', 'permission_callback' => $can]);
+	register_rest_route('ps/v1', '/admin/video-info', ['methods' => 'POST', 'callback' => 'ps_admin_video_info', 'permission_callback' => $can]);
 	// הסרה מהרשימה: POST בלבד (לחיצה אחת בג׳ימייל, או אישור בחלון באתר). GET מעביר לאתר לאישור
 	register_rest_route('ps/v1', '/unsubscribe', ['methods' => ['GET', 'POST'], 'callback' => 'ps_rest_unsubscribe', 'permission_callback' => '__return_true']);
 });
@@ -270,6 +271,44 @@ function ps_mailing_row($p) {
 
 function ps_mailing_list() {
 	return array_map('ps_mailing_row', get_posts(['post_type' => 'ps_mailing', 'post_status' => 'private', 'numberposts' => 100, 'orderby' => 'date', 'order' => 'DESC']));
+}
+
+/* ------------------------------------------------------------------
+ * שיר חדש: מדביקים קישור — שם השיר והתמונה נשלפים לבד (דרך הממשק הרשמי והפתוח של שירות הווידאו)
+ * ------------------------------------------------------------------ */
+/** שם נקי מתוך כותרת הסרטון: בלי שם המקהלה, בלי סוגריים ובלי האנגלית */
+function ps_clean_video_title($t) {
+	$t = html_entity_decode((string) $t, ENT_QUOTES, 'UTF-8');
+	$t = preg_replace('/[\(\[][^\)\]]*[\)\]]/u', ' ', $t);
+	$t = preg_replace('/(מקהלת\s+)?פרחי\s+שמי?ים/u', ' | ', $t);
+	foreach (preg_split('/\s+-\s+|[|\/,&]|\s{2,}/u', $t) as $part) {
+		if (!preg_match('/\p{Hebrew}/u', $part)) {
+			continue;
+		}
+		$part = preg_replace('/[A-Za-z][A-Za-z0-9\'’.]*/u', '', $part);
+		$part = preg_replace(['/\s+/u', '/^[\s\-–—:,.]+|[\s\-–—:,.]+$/u'], [' ', ''], $part); // לא trim — הוא חותך בתים של אותיות עבריות
+		if (mb_strlen($part) >= 2) {
+			return $part;
+		}
+	}
+	return trim($t, " |");
+}
+
+function ps_admin_video_info(WP_REST_Request $req) {
+	$p = (array) $req->get_json_params();
+	$id = ps_video_id(isset($p['url']) ? $p['url'] : '');
+	if (!$id) {
+		return ps_private(ps_fail('invalid', 400));
+	}
+	$r = wp_remote_get('https://www.youtube.com/oembed?format=json&url=' . rawurlencode('https://www.youtube.com/watch?v=' . $id), ['timeout' => 8]);
+	$j = (is_wp_error($r) || wp_remote_retrieve_response_code($r) !== 200) ? null : json_decode(wp_remote_retrieve_body($r), true);
+	if (!is_array($j) || empty($j['title'])) {
+		return ps_private(ps_fail('not_found', 404));
+	}
+	return ps_admin_ok([
+		'id' => $id, 'title' => ps_clean_video_title($j['title']), 'raw' => (string) $j['title'], 'thumb' => ps_video_thumb($id),
+		'vertical' => !empty($j['width']) && !empty($j['height']) && (int) $j['height'] > (int) $j['width'],
+	]);
 }
 
 /* ------------------------------------------------------------------

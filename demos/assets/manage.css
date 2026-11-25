@@ -74,3 +74,8 @@
 .progress p { font-weight: 600; color: var(--ink); }
 .hist-title { font-size: 1.25rem; margin: 30px 0 12px; }
 [data-mail-send]:disabled { opacity: .55; cursor: not-allowed; }
+.video-info { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px; background: #e3fbf7; color: #0f5f55; font-weight: 600; }
+.video-info img { border-radius: 8px; object-fit: cover; flex: none; }
+.video-info span { display: grid; gap: 2px; }
+.video-info small { font-weight: 500; color: #2b6b62; }
+.video-info.is-error { background: #fdecef; color: var(--danger); }

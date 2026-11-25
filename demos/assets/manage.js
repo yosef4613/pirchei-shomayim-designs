@@ -345,7 +345,7 @@
 
   /* ---------- שליחת דיוור ---------- */
   const TPL = {
-    songs: { topic: 'songs', fields: [['title', 'שם השיר', true], ['video', 'קישור לשיר (הקליפ)', true, 'url', 'https://youtu.be/…'], ['text', 'כמה מילים על השיר (רשות)', false, 'textarea'], ['credits', 'קרדיטים (רשות)', false, 'text', 'למשל: לחן ועיבוד…']] },
+    songs: { topic: 'songs', fields: [['video', 'קישור לשיר (הקליפ) — מדביקים, והשם והתמונה נשלפים לבד', true, 'url', 'https://youtu.be/…'], ['title', 'שם השיר', true], ['text', 'כמה מילים על השיר (רשות)', false, 'textarea'], ['credits', 'קרדיטים (רשות)', false, 'text', 'למשל: לחן ועיבוד…']] },
     shows: { topic: 'shows', fields: [['title', 'שם ההופעה', true], ['date', 'תאריך', true, 'date'], ['time', 'שעה (רשות)', false, 'time'], ['place', 'מקום', true], ['text', 'פרטים נוספים (רשות)', false, 'textarea'], ['link', 'קישור לכרטיסים או להרשמה (רשות)', false, 'url', 'https://'], ['button', 'טקסט הכפתור (רשות)', false, 'text', 'לפרטים ולהרשמה']] },
     classes: { topic: 'classes', fields: [['title', 'שם החוג', true, 'text', 'למשל: חוג מקהלה בגבעת שאול'], ['place', 'מקום', true], ['ages', 'גילאים', true, 'text', '8–12'], ['times', 'ימים ושעות (רשות)', false], ['text', 'פרטים נוספים (רשות)', false, 'textarea'], ['link', 'קישור להרשמה (רשות — אחרת: טופס החוגים באתר)', false, 'url', 'https://'], ['button', 'טקסט הכפתור (רשות)', false, 'text', 'לפרטים ולהשארת פרטים']] },
     general: { topic: '', fields: [['subject', 'נושא המייל', true], ['title', 'כותרת בתוך המייל (רשות)', false], ['text', 'התוכן — שורה ריקה מתחילה פסקה חדשה', true, 'textarea'], ['link', 'קישור (רשות)', false, 'url', 'https://'], ['button', 'טקסט הכפתור (רשות)', false, 'text', 'לפרטים']] },
@@ -363,8 +363,39 @@
       : `<input name="${name}" type="${type || 'text'}"${type === 'url' ? ' dir="ltr"' : ''}${ph ? ` placeholder="${esc(ph)}"` : ''}${req ? ' required' : ''}>`}</label>`).join('');
     const d = drafts[tplNow()] || {};
     $$('input, textarea', mBox).forEach((el) => { if (d[el.name]) el.value = d[el.name]; });
+    if (tplNow() === 'songs') {
+      const v = mBox.querySelector('[name="video"]');
+      v.closest('label').insertAdjacentHTML('afterend', '<p class="video-info wide" data-video-info aria-live="polite" hidden></p>');
+      v.addEventListener('input', () => { clearTimeout(vidT); vidT = setTimeout(fetchVideoInfo, 450); });
+      lastVid = '';
+      if (v.value) fetchVideoInfo();
+    }
     mMsg.textContent = ''; mMsg.classList.remove('is-error');
     refreshPreview();
+  }
+  // שיר חדש: מהקישור נשלפים שם השיר ותמונה (השם נכנס רק אם השדה ריק או מולא קודם אוטומטית)
+  let vidT; let lastVid = ''; let autoTitle = '';
+  async function fetchVideoInfo() {
+    const v = mBox.querySelector('[name="video"]'); const info = mBox.querySelector('[data-video-info]');
+    if (!v || !info) return;
+    const id = ytId(v.value);
+    if (!id) { info.hidden = !v.value.trim(); info.className = 'video-info wide is-error'; info.textContent = v.value.trim() ? 'הקישור לא מזוהה — מדביקים קישור מלא לקליפ.' : ''; lastVid = ''; return; }
+    if (id === lastVid) return;
+    lastVid = id;
+    info.hidden = false; info.className = 'video-info wide'; info.textContent = 'שולף את פרטי השיר…';
+    try {
+      const r = await api('admin/video-info', { url: v.value.trim() });
+      if (lastVid !== id) return;
+      const title = mBox.querySelector('[name="title"]');
+      if (!title.value.trim() || title.value.trim() === autoTitle) { title.value = r.title; title.setAttribute('aria-invalid', 'false'); }
+      autoTitle = r.title;
+      info.innerHTML = `<img src="${esc(r.thumb)}" alt="" width="96" height="54"><span><b>נמצא: ${esc(r.title)}</b><small>השם והתמונה נכנסו למייל. אפשר לשנות את השם, ולהוסיף כמה מילים אם רוצים.</small></span>`;
+      refreshPreview();
+    } catch (err) {
+      if (lastVid !== id) return;
+      info.className = 'video-info wide is-error';
+      info.textContent = 'לא הצלחנו לשלוף את פרטי השיר. אפשר למלא את השם ידנית — המייל יישלח כרגיל.';
+    }
   }
   const mailFields = () => {
     const f = {}; $$('input, textarea', mBox).forEach((el) => { f[el.name] = el.value.trim(); });
