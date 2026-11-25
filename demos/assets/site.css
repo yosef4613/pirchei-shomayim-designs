@@ -1071,3 +1071,57 @@ h1, h2, .final h2, .cp-main h1, .legal h1 { font-family: var(--font-serif); font
 /* כותרת: שם המקהלה והכפתור בשורה אחת גם באנגלית */
 .brand-text b, .header-cta { white-space: nowrap; }
 @media (max-width: 1500px) { .main-nav a { padding-inline: 11px; } .header-in { gap: 14px; } }
+
+/* ---------- כניסה לאתר (באתר החי): כפתור בכותרת, חלון כניסה, תכנים לרשומים ---------- */
+.acct-btn { position: relative; color: var(--lilac-2); }
+.acct-btn:hover { background: rgba(255, 255, 255, .08); }
+.acct-initial { display: none; }
+.acct-btn.is-in { background: rgba(107, 63, 214, .35); border-color: rgba(203, 184, 255, .45); }
+.acct-btn.is-in .ico { display: none; }
+.acct-btn.is-in .acct-initial { display: block; font-weight: 800; font-size: 1.05rem; color: #fff; }
+.acct-btn.is-manager::after { content: ""; position: absolute; top: 6px; inset-inline-end: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 2px var(--night); }
+@media (max-width: 900px) { .header-actions .acct-btn { display: none; } }
+.acct-text .ico { width: 1.1em; height: 1.1em; }
+
+.acct { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 16px; --danger: #ff8fa3; color-scheme: dark; }
+.acct-backdrop { position: absolute; inset: 0; background: rgba(7, 5, 12, .78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.acct-box { position: relative; width: min(460px, 100%); max-height: calc(100dvh - 32px); overflow: auto; overscroll-behavior: contain; display: grid; gap: 12px; padding: 30px clamp(20px, 5vw, 32px) 26px; border-radius: var(--radius-lg); background: linear-gradient(180deg, #1d1430, #120d1c 70%); border: 1px solid rgba(203, 184, 255, .22); box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .9), 0 0 60px -20px rgba(107, 63, 214, .55); color: var(--ink); text-align: center; }
+html[data-motion="full"] .acct:not([hidden]) .acct-box { animation: rise .35s var(--ease) both; }
+.acct-close { position: absolute; top: 12px; inset-inline-end: 12px; }
+.acct-ico { justify-self: center; width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; background: rgba(107, 63, 214, .3); color: var(--lilac-2); border: 1px solid rgba(203, 184, 255, .3); }
+.acct-ico .ico { width: 28px; height: 28px; }
+.acct h2 { font-family: var(--font-serif); font-size: clamp(1.5rem, 4vw, 1.9rem); line-height: 1.2; }
+.acct-lead { color: var(--muted); }
+.acct-form { display: grid; gap: 8px; text-align: start; margin-top: 6px; }
+.acct-form label { font-weight: 600; }
+.acct-form input[type="email"] { width: 100%; min-height: 52px; padding: 11px 14px; border-radius: 12px; border: 1px solid rgba(203, 184, 255, .28); background: #0e0a17; color: var(--ink); font: inherit; font-size: 1.05rem; text-align: start; }
+.acct-form input[type="email"]:focus { outline: none; border-color: var(--lilac); box-shadow: 0 0 0 4px rgba(203, 184, 255, .16); }
+.acct-form input[aria-invalid="true"] { border-color: var(--danger); }
+.acct-form .btn { width: 100%; justify-content: center; margin-top: 6px; }
+.acct-privacy { font-size: .85rem; color: var(--muted-2); text-align: center; }
+.acct-privacy a { color: var(--lilac); }
+.acct-sent { display: grid; gap: 10px; justify-items: center; }
+.acct-sent p:first-child { font-size: 1.05rem; color: var(--lilac-2); }
+.acct-hint { color: var(--muted); font-size: .92rem; }
+.acct-who { color: var(--muted); }
+.acct-actions { display: grid; gap: 10px; margin-top: 4px; }
+.acct-actions .btn { width: 100%; justify-content: center; }
+.acct :focus-visible { outline-color: var(--mint); }
+
+.site-toast { position: fixed; z-index: 96; inset-inline: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); margin: 0 auto; width: fit-content; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; background: #241638; color: #fff; font-weight: 600; border: 1px solid rgba(203, 184, 255, .35); box-shadow: 0 20px 50px -20px rgba(0, 0, 0, .8); }
+
+.excl-soon-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.excl-soon-actions .btn[hidden] { display: none; }
+@media (max-width: 720px) { .excl-soon-actions, .excl-soon-actions .btn { width: 100%; justify-content: center; } }
+.members-grid { margin-top: 26px; }
+.member-card .excl-media { cursor: pointer; }
+.member-card .excl-media button { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; border: 0; padding: 0; background: linear-gradient(180deg, transparent 40%, rgba(7, 5, 12, .55)); color: #fff; cursor: pointer; }
+.member-card .excl-media button .ico { width: 58px; height: 58px; padding: 16px; border-radius: 50%; background: rgba(166, 252, 239, .92); color: var(--mint-ink); transition: transform .3s var(--ease); }
+.member-card .excl-media button:hover .ico, .member-card .excl-media button:focus-visible .ico { transform: scale(1.08); }
+.member-card.is-vertical .excl-media img { object-position: center 30%; }
+.member-card .excl-date { color: var(--muted-2); font-size: .85rem; }
+.member-card .excl-body p.member-text { white-space: pre-line; }
+.member-card.is-note .excl-media { display: grid; place-items: center; background: radial-gradient(70% 70% at 50% 30%, rgba(107, 63, 214, .5), var(--plum)); }
+.member-card.is-note .excl-media .ico { width: 54px; height: 54px; color: var(--lilac-2); }
+.acct-text { display: inline-flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--line-dark); border-radius: 999px; padding: 8px 16px; color: var(--lilac-2); font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; }
+.acct-text:hover { color: #fff; border-color: var(--lilac); }

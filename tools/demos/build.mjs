@@ -4,13 +4,13 @@ import { writeFileSync, mkdirSync, readFileSync, cpSync, rmSync, existsSync } fr
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dict, branches, songs, shorts, CHOIR_EMAIL, CHOIR_EMAIL_HREF, CHANNEL_URL } from './content.mjs';
-import { PLANS, planConfig, planText, exclusiveText } from './plans.mjs';
+import { PLANS, planConfig, planText, exclusiveText, memberText } from './plans.mjs';
 import { seoText } from './seo.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '16';
+const VERSION = '17';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -29,6 +29,7 @@ const icon = (id, cls = '') => `<svg class="ico ${cls}" aria-hidden="true" focus
 const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" fill="currentColor"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-motion" viewBox="0 0 24 24"><path d="M3 12c2.5-5 5.5-5 8 0s5.5 5 8 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="12" r="1.3" fill="currentColor"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 7l8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
@@ -74,6 +75,7 @@ function page(t, plan, live = false) {
     lang, dir: t.dir, plan, form: cfg.form, choirEmail: CHOIR_EMAIL, choirEmailHref: CHOIR_EMAIL_HREF, assetBase: A, live, endpoint: live ? '/wp-json/ps/v1/' : '',
     js: t.js, player: t.player, music: { showAll: t.music.showAll, showLess: t.music.showLess, count: t.music.count, countOne: t.music.countOne },
     shareOrigin: live ? 'https://פרחישמים.com' : '',
+    member: live ? memberText[lang] : undefined,
     motionOn: t.motionOn, motionOff: t.motionOff, cities: t.join.cities, chosen: t.join.chosen, choose: t.join.choose, fit: t.join.fit,
     emailForm: live ? undefined : P.emailForm, account: P.account, club: live ? { ...P.club, demoNote: undefined } : P.club, topics: P.topics,
     branches: branches.map((b) => ({ id: b.id, city: b.city, name: b[lang].name, reg: b[lang].reg })),
@@ -84,6 +86,7 @@ function page(t, plan, live = false) {
     vertical: [...new Set([...songs.filter((s) => s.vertical).map((s) => s.id), ...shorts.map((s) => s.id)])],
   };
   const X = exclusiveText[lang];
+  const M = memberText[lang];
   // ״מאחורי הקלעים״ מסומן בתפריט כתוכן שיש רק באתר
   const navItems = [['join', t.nav.classes], ['music', t.nav.music]]
     .concat(cfg.stage ? [['stage', t.nav.stage]] : [])
@@ -93,7 +96,7 @@ function page(t, plan, live = false) {
     .concat([['about', t.nav.about]]);
   const navHtml = navItems.map(([id, label, cls]) => `<li><a href="#${id}"${cls ? ` class="${cls}" title="${esc(X.badge)}"` : ''}>${esc(label)}</a></li>`).join('\n        ');
   const motionText = `<button type="button" class="motion-text" data-motion-toggle aria-pressed="false">${icon('motion')}<span class="motion-label">${esc(t.motionOff)}</span></button>`;
-  const navExtra = `<li class="nav-extra"><a class="btn btn-mint nav-cta" href="#join">${esc(t.hero.cta)}</a></li><li class="nav-extra">${motionText}</li>`;
+  const navExtra = `<li class="nav-extra"><a class="btn btn-mint nav-cta" href="#join">${esc(t.hero.cta)}</a></li>${live ? `<li class="nav-extra"><button type="button" class="acct-text" data-acct aria-haspopup="dialog">${icon('user')}<span class="acct-label">${esc(M.login)}</span></button></li>` : ''}<li class="nav-extra">${motionText}</li>`;
 
   // deferred=true: התמונה נטענת רק כשפותחים את ספריית השירים, כדי שהדף יישאר קל
   const songCard = (s, deferred = false) => `
@@ -191,6 +194,7 @@ ${sprite}
       </ul>
     </nav>
     <div class="header-actions">
+      ${live ? `<button type="button" class="icon-btn acct-btn" data-acct aria-haspopup="dialog" aria-label="${esc(M.loginAria)}" title="${esc(M.login)}">${icon('user')}<span class="acct-initial" aria-hidden="true"></span></button>` : ''}
       <a class="lang-link" href="${t.otherHref}" hreflang="${t.other}" lang="${t.other}" aria-label="${esc(t.langShort + ' · ' + t.langAria)}" data-lang-link>${t.langShort}</a>
       <button class="icon-btn motion-btn" type="button" data-motion-toggle aria-pressed="false" aria-label="${esc(t.motionOff)}" title="${esc(t.motionOff)}">${icon('motion')}</button>
       <a class="btn btn-mint btn-sm header-cta is-quiet" href="#join">${t.headerCta}</a>
@@ -485,8 +489,9 @@ ${cfg.behind ? `
         <h2 id="behind-title">${esc(X.title)}</h2>
         <p class="section-lead">${esc(live ? X.leadLive : X.lead)}</p>
       </div>
-      ${live ? `<div class="excl-soon" data-reveal><span class="excl-ico">${icon('star')}</span><div class="excl-soon-copy"><h3>${esc(X.soonTitle)}</h3><p>${esc(X.soonText)}</p></div><a class="btn btn-purple" href="#club">${icon('bell')}${esc(X.notify)}</a></div>` : ''}
-      <ul class="excl-grid"${live ? ' hidden' : ''}>
+      ${live ? `<div class="excl-soon" data-reveal data-members-card><span class="excl-ico">${icon('star')}</span><div class="excl-soon-copy"><h3 data-members-title>${esc(X.soonTitle)}</h3><p data-members-text>${esc(X.soonText)}</p></div><div class="excl-soon-actions"><button type="button" class="btn btn-purple" data-acct data-members-join hidden>${icon('user')}${esc(M.join)}</button><a class="btn btn-purple" href="#club" data-members-notify>${icon('bell')}${esc(X.notify)}</a></div></div>
+      <ul class="excl-grid members-grid" data-members-grid hidden></ul>` : `
+      <ul class="excl-grid">
         ${X.items.map((it, i) => {
           const locked = it.teaser && cfg.club;
           return `<li class="excl-card${it.teaser ? ' is-teaser' : ''}" data-reveal style="--d:${i * 80}ms">
@@ -499,7 +504,7 @@ ${cfg.behind ? `
           </div>
         </li>`;
         }).join('\n        ')}
-      </ul>
+      </ul>`}
       ${live ? '' : `<p class="excl-note">${esc(X.note)}</p>`}
     </div>
     <div class="channel-strip">
@@ -684,7 +689,39 @@ ${cfg.tools ? `<div class="library" id="library" role="dialog" aria-modal="true"
   </div>
 </div>
 
-<script type="application/json" id="page-data">${JSON.stringify(pageData).replace(/</g, '\\u003c')}</script>
+${live ? `<div class="acct" id="acct" role="dialog" aria-modal="true" aria-labelledby="acct-title" hidden>
+  <div class="acct-backdrop" data-acct-close></div>
+  <div class="acct-box">
+    <button type="button" class="icon-btn acct-close" data-acct-close aria-label="${esc(M.close)}">${icon('close')}</button>
+    <span class="acct-ico" aria-hidden="true">${icon('user')}</span>
+    <h2 id="acct-title" data-acct-title>${esc(M.title)}</h2>
+    <p class="acct-lead" data-acct-lead>${esc(M.lead)}</p>
+    <form class="acct-form" id="acct-form" data-acct-view="login" novalidate>
+      <label for="acct-email">${esc(M.email)}</label>
+      <input id="acct-email" name="email" type="email" autocomplete="email" inputmode="email" dir="ltr" required aria-describedby="acct-err">
+      <p class="field-error" id="acct-err" role="alert"></p>
+      <div class="hp" aria-hidden="true"><label for="acct-website">Website</label><input id="acct-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <button class="btn btn-purple btn-lg" type="submit">${icon('mail')}${esc(M.send)}</button>
+      <p class="acct-privacy">${esc(M.privacy)} <a href="${legal}">${esc(M.privacyLink)}</a></p>
+    </form>
+    <div class="acct-sent" data-acct-view="sent" hidden>
+      <p data-acct-sent></p>
+      <p class="acct-hint">${esc(M.spam)}</p>
+      <button type="button" class="link-btn" data-acct-again>${esc(M.again)}</button>
+    </div>
+    <div class="acct-me" data-acct-view="me" hidden>
+      <p class="acct-who" data-acct-who></p>
+      <div class="acct-actions">
+        <a class="btn btn-purple" href="/manage/" data-acct-manage hidden>${esc(M.manage)}</a>
+        <a class="btn btn-ghost" href="/?ps_admin=1#join" data-acct-test hidden>${esc(M.test)}</a>
+        <a class="btn btn-ghost" href="#behind" data-acct-behind>${icon('star')}${esc(M.behind)}</a>
+        <button type="button" class="btn btn-ghost" data-acct-logout>${esc(M.logout)}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="site-toast" data-site-toast role="status" aria-live="polite" hidden></p>
+` : ''}<script type="application/json" id="page-data">${JSON.stringify(pageData).replace(/</g, '\\u003c')}</script>
 </body>
 </html>
 `;
@@ -764,12 +801,12 @@ const legalText = {
     title: 'מדיניות פרטיות והצהרת נגישות · מקהלת פרחי שמיים', description: 'איך אנחנו שומרים על הפרטים שמשאירים באתר, ומה עשינו כדי שהאתר יהיה נגיש לכולם.',
     back: 'חזרה לאתר', h1: 'מדיניות פרטיות',
     privacy: [
-      ['אילו פרטים נאספים', 'כשמשאירים פרטים לחוג: שם ההורה, טלפון, מייל, שם הילד, גיל, חיידר וכיתה, והערות אם נכתבו. כשנרשמים לעדכונים: כתובת מייל, שם אם נכתב, והנושאים שבחרתם.'],
+      ['אילו פרטים נאספים', 'כשמשאירים פרטים לחוג: שם ההורה, טלפון, מייל, שם הילד, גיל, חיידר וכיתה, והערות אם נכתבו. כשנרשמים לעדכונים: כתובת מייל, שם אם נכתב, והנושאים שבחרתם. כשנכנסים לאתר כדי לצפות בתכנים מאחורי הקלעים: כתובת המייל, השם אם ידוע, ומועד הכניסה האחרונה.'],
       ['למה הם משמשים', 'כדי לחזור אליכם לגבי החוג ולתאם מבדק התאמה, ולשלוח רק את העדכונים שביקשתם ואישרתם במייל.'],
       ['מי רואה אותם', 'צוות המקהלה בלבד. הפרטים לא נמכרים ולא מועברים לאף גורם אחר.'],
       ['איפה הם נשמרים', 'בשרת האתר, ובהודעת מייל שנשלחת לצוות המקהלה.'],
       ['צפייה, תיקון ומחיקה', 'אפשר לבקש בכל עת לראות, לתקן או למחוק את הפרטים במייל {email}. אפשר להפסיק לקבל עדכונים בכל עת באותו מייל.'],
-      ['סרטונים ועוגיות', 'הסרטונים באתר מוטמעים משירות וידאו חיצוני של גוגל, במצב פרטיות מוגברת, ונטענים רק כשלוחצים לנגן. האתר לא משתמש בעוגיות מעקב או פרסום. בדפדפן נשמרת רק ההעדפה אם להציג אנימציות.'],
+      ['סרטונים ועוגיות', 'הסרטונים באתר מוטמעים משירות וידאו חיצוני של גוגל, במצב פרטיות מוגברת, ונטענים רק כשלוחצים לנגן. האתר לא משתמש בעוגיות מעקב או פרסום. בדפדפן נשמרת רק ההעדפה אם להציג אנימציות. מי שנכנס לאתר מקבל עוגיית כניסה, כדי להישאר מחובר עד שבועיים או עד שיוצא.'],
     ],
     a11yTitle: 'הצהרת נגישות',
     a11y: [
@@ -784,12 +821,12 @@ const legalText = {
     title: 'Privacy policy & accessibility · Pirchei Shomayim Boys’ Choir', description: 'How we look after the details you leave on the site, and what we did to make the site accessible to everyone.',
     back: 'Back to the site', h1: 'Privacy policy',
     privacy: [
-      ['What we collect', 'When you leave details for a class: parent’s name, phone, email, child’s name, age, cheder and grade, and notes if you wrote any. When you sign up for updates: your email, your name if given, and the topics you chose.'],
+      ['What we collect', 'When you leave details for a class: parent’s name, phone, email, child’s name, age, cheder and grade, and notes if you wrote any. When you sign up for updates: your email, your name if given, and the topics you chose. When you sign in to watch behind-the-scenes content: your email, your name if known, and when you last signed in.'],
       ['What it is used for', 'To get back to you about the class and arrange an audition, and to send only the updates you asked for and confirmed by email.'],
       ['Who sees it', 'Only the choir team. Your details are never sold or passed on to anyone else.'],
       ['Where it is kept', 'On the website’s server, and in an email sent to the choir team.'],
       ['Viewing, correcting and deleting', 'You can ask at any time to see, correct or delete your details by emailing {email}. You can stop receiving updates at any time the same way.'],
-      ['Videos and cookies', 'Videos are embedded from an external video service run by Google, in privacy-enhanced mode, and load only when you press play. The site uses no tracking or advertising cookies. Your browser only remembers whether to show animations.'],
+      ['Videos and cookies', 'Videos are embedded from an external video service run by Google, in privacy-enhanced mode, and load only when you press play. The site uses no tracking or advertising cookies. Your browser only remembers whether to show animations. If you sign in, a sign-in cookie keeps you signed in for up to two weeks or until you sign out.'],
     ],
     a11yTitle: 'Accessibility statement',
     a11y: [
@@ -854,9 +891,12 @@ for (const key of ['he', 'en']) {
 }
 // דפי ה־HTML נקראים רק דרך התוסף, לא ישירות
 write(join(DIST, 'ps', 'pages', '.htaccess'), '<IfModule mod_authz_core.c>\n  Require all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\n  Order allow,deny\n  Deny from all\n</IfModule>\n');
-cpSync(join(OUT, 'assets'), join(DIST, 'ps', 'assets'), { recursive: true, filter: (src) => !/admin\.(css|js)$/.test(src) });
+// לוח ההדגמה (admin.js) לא עולה לאתר החי. העיצוב שלו (admin.css) משמש גם את אזור הניהול החי
+cpSync(join(OUT, 'assets'), join(DIST, 'ps', 'assets'), { recursive: true, filter: (src) => !/admin\.js$/.test(src) });
+write(join(DIST, 'ps', 'pages', 'manage.html'), readFileSync(join(ROOT, 'tools', 'live', 'manage.html'), 'utf8').replace(/\{\{V\}\}/g, VERSION));
 for (const f of ['jerusalem-hebrew.pdf', 'jerusalem-english.pdf']) cpSync(join(ROOT, 'assets', f), join(DIST, 'ps', 'flyers', f));
 cpSync(join(ROOT, 'tools', 'live', 'pirchei-site.php'), join(DIST, 'wp-content', 'mu-plugins', 'pirchei-site.php'));
+cpSync(join(ROOT, 'tools', 'live', 'pirchei'), join(DIST, 'wp-content', 'mu-plugins', 'pirchei'), { recursive: true });
 write(join(DIST, 'robots.txt'), `User-agent: *
 Disallow: /wp-admin/
 Allow: /wp-admin/admin-ajax.php

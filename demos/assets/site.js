@@ -492,7 +492,7 @@
   const library = $('#library');
   const libOpenBtn = $('[data-library-open]');
   const setLock = () => document.body.classList.toggle('is-locked',
-    header.classList.contains('menu-open') || (library && !library.hidden) || !$('#player').hidden);
+    header.classList.contains('menu-open') || (library && !library.hidden) || !$('#player').hidden || ($('#acct') && !$('#acct').hidden));
   let libReturn = null;
   let closeLibraryFn = null;
   if (library && libOpenBtn) {
@@ -651,6 +651,7 @@
   let queue = []; let qi = 0; let lastFocus = null;
   const coverFor = (id) => (shortIds.has(id) ? `img/shorts/${id}.webp` : `img/covers/${id}.webp`);
   const assetBase = data.assetBase;
+  const thumbs = {}; // תכנים לרשומים: תמונה מהסרטון עצמו
   function load(id) {
     const vertical = shortIds.has(id);
     frame.classList.toggle('is-vertical', vertical);
@@ -664,7 +665,7 @@
     frame.appendChild(ifr);
     titleEl.textContent = data.videos[id] || '';
     ytLink.href = vertical ? `https://www.youtube.com/shorts/${id}` : `https://www.youtube.com/watch?v=${id}`;
-    bgImg.src = assetBase + coverFor(id);
+    bgImg.src = thumbs[id] || assetBase + coverFor(id);
     // פרטי השיר: סוג, משך, תיאור קצר ומיקום ברשימה
     const [cat, dur] = (data.meta && data.meta[id]) || ['', ''];
     const P = data.player;
@@ -689,15 +690,16 @@
     queueEl.innerHTML = next.map((idx) => {
       const id = queue[idx]; const m = (data.meta && data.meta[id]) || ['', ''];
       const meta = [m[0] && data.player.cats[m[0]], m[1]].filter(Boolean).map(escapeHtml).join(' · ');
-      return `<li><button type="button" class="q-item" data-q="${idx}"><span class="q-thumb"><img src="${assetBase}img/covers/${encodeURIComponent(id)}-s.webp" alt="" width="160" height="90" loading="lazy" decoding="async"></span><span class="q-copy"><span class="q-title">${escapeHtml(data.videos[id] || '')}</span><span class="q-meta">${meta}</span></span></button></li>`;
+      return `<li><button type="button" class="q-item" data-q="${idx}"><span class="q-thumb"><img src="${thumbs[id] || `${assetBase}img/covers/${encodeURIComponent(id)}-s.webp`}" alt="" width="160" height="90" loading="lazy" decoding="async"></span><span class="q-copy"><span class="q-title">${escapeHtml(data.videos[id] || '')}</span><span class="q-meta">${meta}</span></span></button></li>`;
     }).join('');
   }
   let deepOpened = false;
   function openPlayer(id, trigger) {
     // ״הבא בתור״ מגיע מאותו מקום שממנו לחצו: הספרייה, רצועת הערוץ או רשימת השירים בדף.
     // מקישור ישיר (למשל מעמוד השירים) — כל השירים, כדי שהמונה והסדר יהיו נכונים
-    const scope = (trigger && (trigger.closest('#library') || trigger.closest('.channel-strip'))) || (!trigger && $('#library')) || $('.music') || document;
-    const list = $$(scope.classList && scope.classList.contains('channel-strip') ? '[data-play]' : '.song:not([hidden]) [data-play]', scope).map((b) => b.dataset.play);
+    const scope = (trigger && (trigger.closest('#library') || trigger.closest('.channel-strip') || trigger.closest('[data-members-grid]'))) || (!trigger && $('#library')) || $('.music') || document;
+    const plain = scope.classList && (scope.classList.contains('channel-strip') || scope.hasAttribute('data-members-grid'));
+    const list = $$(plain ? '[data-play]' : '.song:not([hidden]) [data-play]', scope).map((b) => b.dataset.play);
     queue = list.includes(id) ? list : [id].concat(list.filter((x) => x !== id));
     qi = queue.indexOf(id);
     lastFocus = trigger || document.activeElement;
@@ -778,9 +780,198 @@
     updateSticky();
   }
 
+
+  /* ---------- כניסה לאתר (רק באתר החי): קישור כניסה במייל, בלי סיסמה ---------- */
+  let acctApi = null;
+  const acct = $('#acct');
+  if (data.live && acct && data.member) {
+    const MT = data.member;
+    const api = async (path, body) => {
+      const res = await fetch(data.endpoint + path, body === undefined
+        ? { credentials: 'same-origin', cache: 'no-store' }
+        : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), credentials: 'same-origin' });
+      let json = null;
+      try { json = await res.json(); } catch (err) { json = null; }
+      if (!res.ok || !json) { const er = new Error('api'); er.status = res.status; throw er; }
+      return json;
+    };
+    const toastBox = $('[data-site-toast]');
+    let toastT;
+    const siteToast = (msg) => { toastBox.textContent = msg; toastBox.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { toastBox.hidden = true; }, 5000); };
+    const hasHint = () => /(?:^|;\s*)ps_m=1/.test(document.cookie);
+    const clearHint = () => { document.cookie = 'ps_m=; Max-Age=0; path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : ''); };
+    let me = { logged: false };
+    let acctTo = ''; let acctReturn = null;
+    const titleEl2 = $('[data-acct-title]', acct); const leadEl = $('[data-acct-lead]', acct);
+    const views = $$('[data-acct-view]', acct);
+    const showView = (v) => views.forEach((x) => { x.hidden = x.dataset.acctView !== v; });
+    const acctForm = $('#acct-form'); const acctEmail = $('#acct-email'); const acctErr = $('#acct-err');
+    const setErr = (msg) => { acctErr.textContent = msg; if (msg) acctEmail.setAttribute('aria-invalid', 'true'); else acctEmail.removeAttribute('aria-invalid'); };
+    const loginView = (lead) => {
+      titleEl2.textContent = MT.title; leadEl.textContent = lead || MT.lead; leadEl.hidden = false;
+      setErr(''); showView('login');
+    };
+    const meView = () => {
+      titleEl2.textContent = fill(MT.hello, { name: me.name || '' });
+      leadEl.textContent = fill(MT.signedAs, { email: me.email || '' }); leadEl.hidden = false;
+      $('[data-acct-manage]', acct).hidden = !me.manager;
+      $('[data-acct-test]', acct).hidden = !me.manager;
+      showView('me');
+    };
+    const updateHeader = () => {
+      $$('[data-acct]').forEach((b) => {
+        if (b.classList.contains('acct-btn')) {
+          b.classList.toggle('is-in', !!me.logged);
+          b.classList.toggle('is-manager', !!(me.logged && me.manager));
+          $('.acct-initial', b).textContent = me.logged ? (me.name || me.email || '?').trim().charAt(0).toUpperCase() : '';
+          const lbl = me.logged ? `${MT.account} · ${me.name || me.email}` : MT.loginAria;
+          b.setAttribute('aria-label', lbl); b.title = me.logged ? (me.name || me.email) : MT.login;
+        } else if (b.classList.contains('acct-text')) {
+          $('.acct-label', b).textContent = me.logged ? (me.name || MT.account) : MT.login;
+        }
+      });
+    };
+    const isOpen = () => !acct.hidden;
+    const openAcct = (opts = {}) => {
+      acctTo = opts.to || '';
+      if (me.logged) meView(); else loginView(opts.lead);
+      acctReturn = opts.trigger || document.activeElement;
+      if (header.classList.contains('menu-open')) setMenu(false, { keepHistory: true });
+      acct.hidden = false; setLock();
+      pushOverlay('acct');
+      setTimeout(() => { const f = me.logged ? $('.acct-actions .btn:not([hidden])', acct) : acctEmail; if (f) f.focus(); }, 40);
+    };
+    const closeAcct = (opts = {}) => {
+      if (acct.hidden) return;
+      acct.hidden = true; setLock();
+      if (!opts.fromPop && !opts.keepHistory) popOverlay('acct');
+      if (acctReturn && document.contains(acctReturn) && acctReturn.offsetParent !== null) acctReturn.focus();
+    };
+    acctApi = { isOpen, close: closeAcct };
+    document.addEventListener('click', (e) => {
+      const opener = e.target.closest('[data-acct]');
+      if (opener) { e.preventDefault(); openAcct({ trigger: opener, to: opener.closest('#behind') ? 'behind' : '' }); return; }
+      if (e.target.closest('[data-acct-close]')) closeAcct();
+    });
+    acct.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); closeAcct(); return; }
+      if (e.key !== 'Tab') return;
+      const f = $$('button:not([hidden]), a[href]:not([hidden]), input:not([tabindex="-1"])', acct).filter((el) => el.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0]; const last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    acctForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = acctEmail.value.trim();
+      if (!email) { setErr(T.required); acctEmail.focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { setErr(T.email); acctEmail.focus(); return; }
+      setErr('');
+      const btn = $('button[type="submit"]', acctForm);
+      busy(btn, true);
+      try {
+        await api('login', { email, lang: data.lang, to: acctTo, t: Date.now() - pageStart, website: acctForm.elements.website.value });
+        titleEl2.textContent = MT.sentTitle; leadEl.hidden = true;
+        $('[data-acct-sent]', acct).innerHTML = fill(escapeHtml(MT.sentText), { email: `<bdi>${escapeHtml(email)}</bdi>` });
+        showView('sent');
+        $('[data-acct-again]', acct).focus();
+      } catch (err) {
+        setErr(err.status === 429 ? T.tooMany : err.status === 400 ? T.email : MT.error);
+      } finally { busy(btn, false); }
+    });
+    $('[data-acct-again]', acct).addEventListener('click', () => { loginView(); acctEmail.select(); acctEmail.focus(); });
+    $('[data-acct-behind]', acct).addEventListener('click', (e) => {
+      e.preventDefault(); closeAcct({ keepHistory: true });
+      try { history.replaceState(null, '', '#behind'); } catch (err) { /* לא קריטי */ }
+      const b = $('#behind'); if (b) b.scrollIntoView({ behavior: motionOn() ? 'smooth' : 'auto', block: 'start' });
+    });
+    $('[data-acct-logout]', acct).addEventListener('click', async (e) => {
+      const btn = e.currentTarget; busy(btn, true);
+      try { await api('logout', {}); } catch (err) { /* יוצאים בכל מקרה מהתצוגה */ }
+      busy(btn, false);
+      me = { logged: false }; clearHint(); updateHeader(); closeAcct(); siteToast(MT.loggedOut);
+      refreshMembers();
+    });
+
+    /* תכנים מאחורי הקלעים: נטענים רק כשמתקרבים לאזור — כדי לא לפנות לשרת סתם */
+    const mCard = $('[data-members-card]'); const mGrid = $('[data-members-grid]');
+    const mTitle = $('[data-members-title]'); const mText = $('[data-members-text]'); const mJoin = $('[data-members-join]');
+    const mOrig = mTitle ? [mTitle.textContent, mText.textContent] : null;
+    let membersWanted = false;
+    const icon = (id) => `<svg class="ico" aria-hidden="true" focusable="false"><use href="#i-${id}"/></svg>`;
+    const fmtDay = (iso) => { try { return new Intl.DateTimeFormat(data.lang === 'he' ? 'he-IL' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso)); } catch (e) { return ''; } };
+    const memberCard = (it) => {
+      const en = data.lang === 'en';
+      const title = (en && it.title_en) || it.title || '';
+      const text = (en && it.text_en) || it.text || '';
+      const vid = /^[\w-]{11}$/.test(it.video || '') ? it.video : '';
+      if (vid) {
+        data.videos[vid] = title; data.meta[vid] = ['behind', ''];
+        thumbs[vid] = `https://i.ytimg.com/vi/${vid}/mqdefault.jpg`;
+        if (it.vertical) shortIds.add(vid);
+      }
+      const media = vid
+        ? `<img src="${thumbs[vid]}" alt="" width="320" height="180" loading="lazy" decoding="async"><span class="excl-tag">${escapeHtml(MT.only)}</span><button type="button" data-play="${vid}" aria-label="${escapeHtml(MT.watch + ': ' + title)}">${icon('play')}</button>`
+        : `${icon('star')}<span class="excl-tag">${escapeHtml(MT.only)}</span>`;
+      return `<li class="excl-card member-card${vid ? '' : ' is-note'}${it.vertical ? ' is-vertical' : ''}">
+        <div class="excl-media">${media}</div>
+        <div class="excl-body"><p class="excl-type">${icon(vid ? 'play' : 'star')}${escapeHtml(vid ? MT.video : MT.note)}</p>
+          <h3>${escapeHtml(title)}</h3>${text ? `<p class="member-text">${escapeHtml(text)}</p>` : ''}<p class="excl-date">${escapeHtml(fmtDay(it.date))}</p></div></li>`;
+    };
+    const renderMembers = (res) => {
+      if (!mCard) return;
+      data.player.cats.behind = MT.only;
+      if (res.member && res.items && res.items.length) {
+        mGrid.innerHTML = res.items.map(memberCard).join('');
+        // סרטון שהוסר או הוסתר ביוטיוב — בלי סמל ״תמונה שבורה״
+        $$('img', mGrid).forEach((img) => img.addEventListener('error', () => { img.hidden = true; }, { once: true }));
+        mGrid.hidden = false; mCard.hidden = true;
+        return;
+      }
+      mGrid.hidden = true; mGrid.innerHTML = ''; mCard.hidden = false;
+      if (res.member) { mTitle.textContent = MT.soonTitle; mText.textContent = MT.soonText; mJoin.hidden = true; }
+      else if (res.count > 0) { mTitle.textContent = MT.lockedTitle; mText.textContent = res.count === 1 ? MT.lockedOne : fill(MT.lockedText, { n: res.count }); mJoin.hidden = false; }
+      else { mTitle.textContent = mOrig[0]; mText.textContent = mOrig[1]; mJoin.hidden = true; }
+    };
+    const refreshMembers = async () => {
+      if (!membersWanted) return;
+      try { renderMembers(await api('members')); } catch (err) { /* נשאר הכרטיס הרגיל */ }
+    };
+    const behindSec = $('#behind');
+    if (behindSec && mCard) {
+      if ('IntersectionObserver' in window) {
+        const mio = new IntersectionObserver((en) => {
+          if (en.some((x) => x.isIntersecting)) { mio.disconnect(); membersWanted = true; refreshMembers(); }
+        }, { rootMargin: '700px 0px' });
+        mio.observe(behindSec);
+      } else { membersWanted = true; refreshMembers(); }
+    }
+
+    /* חזרה מקישור הכניסה שבמייל: ‎?login=… */
+    const params = new URLSearchParams(location.search);
+    const token = params.get('login');
+    if (token) {
+      try { history.replaceState(null, '', location.pathname + location.hash); } catch (err) { /* לא קריטי */ }
+      api('verify', { token }).then((res) => {
+        me = res; updateHeader(); refreshMembers();
+        if (res.to === 'manage' && res.manager && res.manage) { location.href = res.manage; return; }
+        siteToast(MT.welcome);
+        if (res.to === 'behind' && behindSec) setTimeout(() => behindSec.scrollIntoView({ block: 'start' }), 250);
+      }).catch(() => { openAcct({ lead: MT.expired }); });
+    } else if (hasHint()) {
+      api('me').then((res) => {
+        me = res && res.logged ? res : { logged: false };
+        if (!me.logged) clearHint();
+        updateHeader(); refreshMembers();
+      }).catch(() => { /* נשאר כאורח */ });
+    }
+  }
+
   // ״חזרה״ בטלפון: סוגר את השכבה העליונה שפתוחה
   window.addEventListener('popstate', () => {
     if (selfPop) { selfPop--; return; }
+    if (acctApi && acctApi.isOpen()) { acctApi.close({ fromPop: true }); return; }
     if (!player.hidden) { closePlayer({ fromPop: true }); return; }
     if (library && !library.hidden && closeLibraryFn) { closeLibraryFn({ fromPop: true }); return; }
     if (header.classList.contains('menu-open')) setMenu(false, { fromPop: true });

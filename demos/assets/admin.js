@@ -18,7 +18,8 @@
   ];
   const STATUSES = [['new', 'חדשה'], ['contacted', 'נוצר קשר'], ['audition', 'נקבע מבדק'], ['accepted', 'התקבל לחוג'], ['declined', 'לא התאים']];
   const statusLabel = Object.fromEntries(STATUSES);
-  const daysAgo = (d, h = 10) => { const x = new Date(); x.setDate(x.getDate() - d); x.setHours(h, 15, 0, 0); return x.toISOString(); };
+  // תאריך לדוגמה בעבר — גם כשבודקים בלילה, לפני השעה שנקבעה
+  const daysAgo = (d, h = 10) => { const x = new Date(); x.setDate(x.getDate() - d); x.setHours(h, 15, 0, 0); if (x.getTime() > Date.now()) x.setDate(x.getDate() - 1); return x.toISOString(); };
   // נתוני דוגמה בדויים בלבד
   const SEED = [
     { id: 's1', date: daysAgo(0, 9), branch: 'ramah-a', parent: 'ישראל כהן (דוגמה)', phone: '050-0000001', email: 'example1@example.com', child: 'יוסף', age: 9, cheder: 'תלמוד תורה לדוגמה', grade: 'ג׳', notes: 'אוהב לשיר בבית כל היום', status: 'new' },

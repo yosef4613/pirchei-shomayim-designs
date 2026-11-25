@@ -152,3 +152,41 @@ export const exclusiveText = {
     note: 'In this demo the space is ready for content. Mordechai adds it from the admin area, marks it “site exclusive”, and it appears only here.',
   },
 };
+
+// כניסה לאתר (באתר החי): קישור כניסה במייל, בלי סיסמה. אותה דרך גם להרשמה
+export const memberText = {
+  he: {
+    login: 'כניסה', loginAria: 'כניסה או הרשמה לאתר', account: 'החשבון שלי',
+    title: 'כניסה לאתר', lead: 'בלי סיסמה: מזינים מייל ומקבלים קישור כניסה. פעם ראשונה? נרשמים באותה דרך.',
+    email: 'כתובת מייל', send: 'שליחת קישור כניסה', close: 'סגירה',
+    sentTitle: 'שלחנו לכם קישור', sentText: 'קישור כניסה נשלח אל {email}. הקישור תקף לחצי שעה.',
+    spam: 'לא הגיע תוך דקה? כדאי להציץ בתיקיית הספאם.', again: 'שליחה לכתובת אחרת',
+    privacy: 'הכתובת משמשת רק לכניסה לאתר.', privacyLink: 'מדיניות הפרטיות',
+    hello: 'שלום, {name}', signedAs: 'מחוברים עם {email}',
+    manage: 'אזור הניהול', test: 'בדיקת הטפסים באתר', behind: 'לתכנים מאחורי הקלעים', logout: 'יציאה',
+    welcome: 'נכנסתם בהצלחה. ברוכים הבאים!', loggedOut: 'יצאתם מהחשבון.',
+    expired: 'הקישור כבר נוצל או שפג תוקפו. אפשר לשלוח קישור חדש.', error: 'משהו השתבש. נסו שוב בעוד רגע.',
+    lockedTitle: 'יש כאן תכנים לרשומים', lockedText: '{n} תכנים מאחורי הקלעים מחכים לכם. נרשמים בחינם עם המייל — בלי סיסמה.',
+    lockedOne: 'תוכן אחד מאחורי הקלעים מחכה לכם. נרשמים בחינם עם המייל — בלי סיסמה.',
+    join: 'הרשמה / כניסה', have: 'כבר רשומים? כניסה',
+    soonTitle: 'אתם רשומים — התכנים בדרך', soonText: 'התכנים הראשונים יעלו כאן בקרוב, ואתם תראו אותם ראשונים.',
+    watch: 'צפייה', only: 'רק לרשומים', video: 'סרטון', note: 'עדכון',
+  },
+  en: {
+    login: 'Sign in', loginAria: 'Sign in or sign up', account: 'My account',
+    title: 'Sign in', lead: 'No password: enter your email and we’ll send you a sign-in link. First time? It signs you up too.',
+    email: 'Email address', send: 'Send me a sign-in link', close: 'Close',
+    sentTitle: 'Check your email', sentText: 'We sent a sign-in link to {email}. It works for 30 minutes.',
+    spam: 'Nothing after a minute? Check your spam folder.', again: 'Use a different email',
+    privacy: 'Your email is used only to sign you in.', privacyLink: 'Privacy policy',
+    hello: 'Hello, {name}', signedAs: 'Signed in as {email}',
+    manage: 'Admin area', test: 'Test the site forms', behind: 'Go to behind the scenes', logout: 'Sign out',
+    welcome: 'You’re signed in. Welcome!', loggedOut: 'You’ve signed out.',
+    expired: 'This link was already used or has expired. You can get a new one.', error: 'Something went wrong. Please try again in a moment.',
+    lockedTitle: 'Content for registered visitors', lockedText: '{n} behind-the-scenes items are waiting for you. Sign up free with your email — no password.',
+    lockedOne: 'One behind-the-scenes item is waiting for you. Sign up free with your email — no password.',
+    join: 'Sign up / Sign in', have: 'Already registered? Sign in',
+    soonTitle: 'You’re registered — content is on its way', soonText: 'The first items will appear here soon, and you’ll see them first.',
+    watch: 'Watch', only: 'For registered visitors', video: 'Video', note: 'Update',
+  },
+};
