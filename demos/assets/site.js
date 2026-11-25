@@ -298,6 +298,7 @@
         branch: entry.branch, parent: entry.parent, phone: entry.phone, email: entry.email, child: entry.child,
         age: entry.age, cheder: entry.cheder, grade: entry.grade, notes: entry.notes, consent: true, topics,
         lang: data.lang, t: Date.now() - pageStart, website: form.elements.website.value,
+        test: form.dataset.test === '1', // מולא בכפתור הבדיקה של המנהל — יסומן [בדיקה]
       });
       renderLiveSuccess(entry, branchLabel, topics.length > 0);
     } catch (err) {
@@ -604,7 +605,7 @@
       const btn = $('button[type="submit"]', clubForm);
       busy(btn, true);
       try {
-        await postJSON('subscribe', { name, email: email.value.trim(), topics, consent: true, lang: data.lang, t: Date.now() - pageStart, website: clubForm.elements.website.value });
+        await postJSON('subscribe', { name, email: email.value.trim(), topics, consent: true, lang: data.lang, t: Date.now() - pageStart, website: clubForm.elements.website.value, test: clubForm.dataset.test === '1' });
         showClubMessage(escapeHtml(C.successTitle), `${fill(escapeHtml(C.successText), { email: `<bdi>${escapeHtml(email.value.trim())}</bdi>` })} ${escapeHtml(T.spamHint)}`);
       } catch (err) {
         cErr('ce-email', err.status === 429 ? T.tooMany : fill(T.sendError, { email: data.choirEmail }));

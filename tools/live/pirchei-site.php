@@ -45,12 +45,7 @@ function ps_serve_static() {
 	}
 	$path = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/', PHP_URL_PATH);
 	$path = $path ? $path : '/';
-	$map = [
-		'/' => 'he.html', '/en/' => 'en.html',
-		'/classes/' => 'classes-he.html', '/en/classes/' => 'classes-en.html',
-		'/songs/' => 'songs-he.html', '/en/songs/' => 'songs-en.html',
-		'/privacy/' => 'privacy-he.html', '/en/privacy/' => 'privacy-en.html',
-	];
+	$map = ps_page_map();
 	// כתובת בלי לוכסן בסוף — הפניה קבועה לגרסה עם לוכסן
 	if (substr($path, -1) !== '/' && isset($map[$path . '/'])) {
 		$q = isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] !== '' ? '?' . $_SERVER['QUERY_STRING'] : '';
@@ -60,7 +55,36 @@ function ps_serve_static() {
 	if (!isset($map[$path])) {
 		return;
 	}
+	// מצב בדיקה למנהלים — וורדפרס צריך להיטען כדי לדעת מי מחובר (סעיף 5 למטה)
+	if (isset($_GET['ps_admin'])) {
+		return;
+	}
 	ps_send_file(PS_PAGES . $map[$path], 200, $method === 'HEAD');
+}
+
+function ps_page_map() {
+	return [
+		'/' => 'he.html', '/en/' => 'en.html',
+		'/classes/' => 'classes-he.html', '/en/classes/' => 'classes-en.html',
+		'/songs/' => 'songs-he.html', '/en/songs/' => 'songs-en.html',
+		'/privacy/' => 'privacy-he.html', '/en/privacy/' => 'privacy-en.html',
+	];
+}
+
+/** הגדרות שנשמרות רק בשרת (לא במאגר הקוד): wp-content/ps-site-config.php שמחזיר ['notify' => מייל] */
+function ps_site_config() {
+	static $c = null;
+	if ($c === null) {
+		$f = WP_CONTENT_DIR . '/ps-site-config.php';
+		$c = is_readable($f) ? (array) include $f : [];
+	}
+	return $c;
+}
+
+/** לאן נשלחת ההתראה על פנייה חדשה */
+function ps_notify_email() {
+	$c = ps_site_config();
+	return (!empty($c['notify']) && is_email($c['notify'])) ? $c['notify'] : PS_CHOIR_EMAIL;
 }
 
 function ps_send_file($file, $status = 200, $head_only = false) {
@@ -314,9 +338,10 @@ function ps_rest_inquiry(WP_REST_Request $req) {
 	}
 
 	$branch_he = PS_BRANCHES[$d['branch']]['he'];
+	$test = !empty($p['test']) ? '[בדיקה] ' : '';
 	$id = wp_insert_post([
 		'post_type' => 'ps_inquiry', 'post_status' => 'private',
-		'post_title' => $d['parent'] . ' · ' . $d['child'] . ' (' . $d['age'] . ') · ' . $branch_he,
+		'post_title' => $test . $d['parent'] . ' · ' . $d['child'] . ' (' . $d['age'] . ') · ' . $branch_he,
 	], true);
 	if (is_wp_error($id)) {
 		return ps_fail('store', 500);
@@ -334,13 +359,13 @@ function ps_rest_inquiry(WP_REST_Request $req) {
 	}
 	$lines[] = '';
 	$lines[] = 'כל הפניות: ' . admin_url('edit.php?post_type=ps_inquiry');
-	$mailed = ps_mail(PS_CHOIR_EMAIL, 'פנייה חדשה לחוג ' . $branch_he . ': ' . $d['child'] . ' (' . $d['age'] . ')', $lines, $d['email']);
+	$mailed = ps_mail(ps_notify_email(), $test . 'פנייה חדשה לחוג ' . $branch_he . ': ' . $d['child'] . ' (' . $d['age'] . ')', $lines, $d['email']);
 	update_post_meta($id, '_ps_mailed', $mailed ? 1 : 0);
 
 	// עדכונים שביקשו בטופס (מסלול 3) — נשמרים כמנוי שממתין לאישור
 	$confirm_url = '';
 	if ($d['topics']) {
-		$confirm_url = ps_upsert_subscriber($d['email'], $d['parent'], $d['topics'], 'class', $lang);
+		$confirm_url = ps_upsert_subscriber($d['email'], $d['parent'], $d['topics'], 'class', $lang, $test);
 	}
 
 	// מייל אישור להורה. בלי טקסט חופשי מהטופס, כדי שאי אפשר לנצל אותו לשליחת ספאם
@@ -353,13 +378,13 @@ function ps_rest_inquiry(WP_REST_Request $req) {
 		$mail = array_merge($mail, ['', $lang === 'en' ? 'To confirm the updates you asked for:' : 'לאישור העדכונים שביקשתם:', $confirm_url]);
 	}
 	$mail = array_merge($mail, ['', $lang === 'en' ? 'Questions? Just reply to this email.' : 'שאלות? אפשר פשוט להשיב למייל הזה.', '', $lang === 'en' ? 'Pirchei Shomayim Boys’ Choir' : 'מקהלת פרחי שמיים', $home]);
-	ps_mail($d['email'], $lang === 'en' ? 'We received your inquiry · Pirchei Shomayim' : 'קיבלנו את הפנייה · מקהלת פרחי שמיים', $mail, PS_PUBLIC_EMAIL);
+	ps_mail($d['email'], $test . ($lang === 'en' ? 'We received your inquiry · Pirchei Shomayim' : 'קיבלנו את הפנייה · מקהלת פרחי שמיים'), $mail, PS_PUBLIC_EMAIL);
 
 	return new WP_REST_Response(['ok' => true], 200);
 }
 
 /** יוצר או מעדכן מנוי, ומחזיר קישור אישור (אם עוד לא אושר) */
-function ps_upsert_subscriber($email, $name, $topics, $source, $lang) {
+function ps_upsert_subscriber($email, $name, $topics, $source, $lang, $test = '') {
 	$found = get_posts(['post_type' => 'ps_subscriber', 'post_status' => 'private', 'numberposts' => 1, 'fields' => 'ids', 'meta_key' => '_ps_email', 'meta_value' => $email]);
 	if ($found) {
 		$id = $found[0];
@@ -369,7 +394,7 @@ function ps_upsert_subscriber($email, $name, $topics, $source, $lang) {
 			update_post_meta($id, '_ps_name', $name);
 		}
 	} else {
-		$id = wp_insert_post(['post_type' => 'ps_subscriber', 'post_status' => 'private', 'post_title' => $name ? $name . ' · ' . $email : $email]);
+		$id = wp_insert_post(['post_type' => 'ps_subscriber', 'post_status' => 'private', 'post_title' => $test . ($name ? $name . ' · ' . $email : $email)]);
 		if (!$id || is_wp_error($id)) {
 			return '';
 		}
@@ -410,13 +435,14 @@ function ps_rest_subscribe(WP_REST_Request $req) {
 	if (ps_rate_limited('sub')) {
 		return ps_fail('too_many', 429);
 	}
-	$url = ps_upsert_subscriber($email, $name, $topics, 'club', $lang);
+	$test = !empty($p['test']) ? '[בדיקה] ' : '';
+	$url = ps_upsert_subscriber($email, $name, $topics, 'club', $lang, $test);
 	if ($url) {
 		$names = implode(', ', array_map(function ($t) use ($lang) { return PS_TOPICS[$t][$lang]; }, $topics));
 		$mail = $lang === 'en'
 			? ['Hello,', '', 'Thank you for signing up for Pirchei Shomayim Choir updates.', 'You chose: ' . $names . '.', '', 'To start receiving updates, please confirm your email:', $url, '', 'Didn’t ask for this? Just ignore this email.']
 			: ['שלום,', '', 'תודה שנרשמתם לעדכונים של מקהלת פרחי שמיים.', 'בחרתם לקבל: ' . $names . '.', '', 'כדי להתחיל לקבל עדכונים, אשרו את הכתובת:', $url, '', 'לא נרשמתם? אפשר פשוט להתעלם מהמייל הזה.'];
-		ps_mail($email, $lang === 'en' ? 'Please confirm your updates · Pirchei Shomayim' : 'אישור ההרשמה לעדכונים · מקהלת פרחי שמיים', $mail, PS_PUBLIC_EMAIL);
+		ps_mail($email, $test . ($lang === 'en' ? 'Please confirm your updates · Pirchei Shomayim' : 'אישור ההרשמה לעדכונים · מקהלת פרחי שמיים'), $mail, PS_PUBLIC_EMAIL);
 	}
 	return new WP_REST_Response(['ok' => true], 200);
 }
@@ -438,3 +464,48 @@ function ps_rest_confirm(WP_REST_Request $req) {
 	wp_redirect($ok ? add_query_arg('subscribed', '1', $base) . '#club' : $base, 302);
 	exit;
 }
+
+/* ------------------------------------------------------------------
+ * 5. מצב בדיקה למנהלים: ‎/?ps_admin=1 — מנהל מחובר רואה כפתור ״מילוי אוטומטי לבדיקה״.
+ *    השליחה אמיתית (נשמרת ונשלחת במייל), ומסומנת [בדיקה] כדי שיהיה קל למחוק.
+ * ------------------------------------------------------------------ */
+add_action('template_redirect', function () {
+	if (!isset($_GET['ps_admin'])) {
+		return;
+	}
+	$path = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/', PHP_URL_PATH);
+	$path = $path ? $path : '/';
+	$map = ps_page_map();
+	if (!isset($map[$path]) || !is_readable(PS_PAGES . $map[$path])) {
+		return;
+	}
+	if (!current_user_can('edit_posts')) {
+		wp_safe_redirect(wp_login_url(home_url($path . '?ps_admin=1')));
+		exit;
+	}
+	$u = wp_get_current_user();
+	$cfg = ['email' => $u->user_email, 'name' => $u->display_name, 'notify' => ps_notify_email(), 'lang' => strpos($path, '/en/') === 0 ? 'en' : 'he'];
+	$inject = '<script>window.PS_ADMIN=' . wp_json_encode($cfg) . ';</script><script src="/ps/assets/admin-test.js?v=1" defer></script>';
+	$html = str_replace('</body>', $inject . '</body>', (string) file_get_contents(PS_PAGES . $map[$path]));
+	nocache_headers();
+	header('Cache-Control: private, no-store, max-age=0');
+	header('Content-Type: text/html; charset=UTF-8');
+	header('X-Robots-Tag: noindex, nofollow');
+	echo $html;
+	exit;
+}, -1);
+
+// קישור למצב הבדיקה בסרגל העליון של וורדפרס ובמסכי הפניות והמנויים
+add_action('admin_bar_menu', function ($bar) {
+	if (!current_user_can('edit_posts')) {
+		return;
+	}
+	$bar->add_node(['id' => 'ps-test', 'title' => 'בדיקת הטפסים באתר', 'href' => home_url('/?ps_admin=1#join'), 'meta' => ['target' => '_blank']]);
+}, 90);
+add_action('admin_notices', function () {
+	$screen = function_exists('get_current_screen') ? get_current_screen() : null;
+	if (!$screen || !in_array($screen->post_type, ['ps_inquiry', 'ps_subscriber'], true) || !current_user_can('edit_posts')) {
+		return;
+	}
+	echo '<div class="notice notice-info"><p><b>בדיקת הטפסים:</b> <a href="' . esc_url(home_url('/?ps_admin=1#join')) . '" target="_blank">פתיחת האתר במצב בדיקה</a> · <a href="' . esc_url(home_url('/en/?ps_admin=1#join')) . '" target="_blank">English</a> — שם מופיע כפתור ״מילוי אוטומטי לבדיקה״. פניות בדיקה מסומנות [בדיקה], ואפשר להעביר אותן לפח. התראות על פניות נשלחות אל: <b>' . esc_html(ps_notify_email()) . '</b></p></div>';
+});
