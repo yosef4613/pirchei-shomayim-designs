@@ -51,7 +51,7 @@
         // כניסה עם Google — בחירת חשבון בלחיצה
         const gWrap = $('[data-gate-google]');
         const sc = document.createElement('script');
-        sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true;
+        sc.src = 'https://accounts.google.com/gsi/client?hl=he'; sc.async = true;
         sc.onload = () => {
           try {
             window.google.accounts.id.initialize({ client_id: boot.google, ux_mode: 'popup', auto_select: false, context: 'signin', itp_support: true,

@@ -1131,3 +1131,6 @@ html[data-motion="full"] .acct:not([hidden]) .acct-box { animation: rise .35s va
 .acct-google-btn { min-height: 44px; display: grid; place-items: center; width: 100%; }
 .acct-or { width: 100%; display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .9rem; }
 .acct-or::before, .acct-or::after { content: ""; flex: 1; height: 1px; background: rgba(203, 184, 255, .22); }
+/* הכפתור של Google מוצג בתוך מסגרת בהירה; בלי זה הדפדפן מוסיף רקע לבן סביבו בחלון הכהה */
+.acct-google-btn { color-scheme: light; }
+.acct-google-btn iframe { color-scheme: light; }

@@ -846,7 +846,7 @@
       try {
         const cfg = await api('auth-config');
         if (!cfg.google) { gState = 'off'; return; }
-        await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+        await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = `https://accounts.google.com/gsi/client?hl=${data.lang}`; sc.async = true; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
         window.google.accounts.id.initialize({ client_id: cfg.google, callback: onGoogle, ux_mode: 'popup', auto_select: false, context: 'signin', itp_support: true });
         const w = Math.max(220, Math.min(360, ($('.acct-box', acct).clientWidth || 360) - 64));
         window.google.accounts.id.renderButton(gBtn, { type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', logo_alignment: 'left', width: w, locale: data.lang });
