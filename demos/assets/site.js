@@ -384,13 +384,24 @@
     if (!motionOn()) p = 1;
     else {
       const r = journey.getBoundingClientRect(); const vh = window.innerHeight;
-      p = (vh * 0.7 - r.top) / (r.height + vh * 0.15);
+      const wave = $('.journey-wave', journey);
+      if (wave && getComputedStyle(wave).display !== 'none') {
+        // מחשב (קו אופקי): מתחיל כשהאזור נכנס למסך, ומגיע ל־5 כשכל חמשת הכרטיסים עדיין גלויים —
+        // כשראש האזור מגיע לשליש העליון של המסך, או כשתחתית הכרטיסים נכנסת למסך (מה שקודם)
+        const start = vh * 0.9;
+        const end = Math.max(0, Math.min(vh * 0.3, vh * 0.97 - r.height)); // גם במסך נמוך — כל הכרטיסים בפנים
+        p = (start - r.top) / Math.max(vh * 0.2, start - end);
+      } else {
+        // טלפון (שלבים אחד מתחת לשני): כל שלב נדלק כשהוא מגיע לאמצע המסך
+        p = (vh * 0.62 - r.top) / Math.max(1, r.height);
+      }
       p = Math.max(0, Math.min(1, p));
     }
     journey.style.setProperty('--p', p.toFixed(4));
     const steps2 = $('.journey-steps');
     if (steps2) steps2.style.setProperty('--p', p.toFixed(4));
-    steps.forEach((s, i) => s.classList.toggle('is-on', p >= (i + 0.35) / steps.length || p >= 0.999));
+    // שלב 1 נדלק כשהאזור נכנס, ושלב 5 בדיוק כשהקו מגיע אליו
+    steps.forEach((s, i) => s.classList.toggle('is-on', p >= 0.02 + (steps.length > 1 ? i / (steps.length - 1) : 0) * 0.96 || p >= 0.999));
   };
 
   /* ---------- מאחורי הקלעים: רצועה אופקית במחשב ---------- */
