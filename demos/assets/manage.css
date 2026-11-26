@@ -83,3 +83,7 @@
 .gate-google { width: 100%; display: grid; gap: 12px; justify-items: center; }
 .gate-or { width: 100%; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: .9rem; }
 .gate-or::before, .gate-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+/* חזרה לאתר — בולט בראש הקישורים */
+.side-links a.back-site { background: rgba(166, 252, 239, .14); color: #fff; font-weight: 700; }
+.side-links a.back-site:hover { background: rgba(166, 252, 239, .24); }
+/* בעברית חץ ימינה = חזרה */

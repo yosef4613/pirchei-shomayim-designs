@@ -10,7 +10,7 @@ import { seoText } from './seo.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '25';
+const VERSION = '26';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -29,6 +29,7 @@ const icon = (id, cls = '') => `<svg class="ico ${cls}" aria-hidden="true" focus
 const sprite = `<svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" fill="currentColor"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 2.8v2.4M12 18.8v2.4M4.2 7.5l2.1 1.2M17.7 15.3l2.1 1.2M4.2 16.5l2.1-1.2M17.7 8.7l2.1-1.2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.9"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-motion" viewBox="0 0 24 24"><path d="M3 12c2.5-5 5.5-5 8 0s5.5 5 8 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="12" r="1.3" fill="currentColor"/></symbol>
@@ -96,7 +97,7 @@ function page(t, plan, live = false) {
     .concat([['about', t.nav.about]]);
   const navHtml = navItems.map(([id, label, cls]) => `<li><a href="#${id}"${cls ? ` class="${cls}" title="${esc(X.badge)}"` : ''}>${esc(label)}</a></li>`).join('\n        ');
   const motionText = `<button type="button" class="motion-text" data-motion-toggle aria-pressed="false">${icon('motion')}<span class="motion-label">${esc(t.motionOff)}</span></button>`;
-  const navExtra = `<li class="nav-extra"><a class="btn btn-mint nav-cta" href="#join">${esc(t.hero.cta)}</a></li>${live ? `<li class="nav-extra"><button type="button" class="acct-text" data-acct aria-haspopup="dialog">${icon('user')}<span class="acct-label">${esc(M.login)}</span></button></li>` : ''}<li class="nav-extra">${motionText}</li>`;
+  const navExtra = `<li class="nav-extra"><a class="btn btn-mint nav-cta" href="#join">${esc(t.hero.cta)}</a></li>${live ? `<li class="nav-extra" data-manage-li hidden><a class="acct-text" href="/manage/">${icon('gear')}<span>${esc(M.manage)}</span></a></li><li class="nav-extra"><button type="button" class="acct-text" data-acct aria-haspopup="dialog">${icon('user')}<span class="acct-label">${esc(M.login)}</span></button></li>` : ''}<li class="nav-extra">${motionText}</li>`;
 
   // deferred=true: התמונה נטענת רק כשפותחים את ספריית השירים, כדי שהדף יישאר קל
   const songCard = (s, deferred = false) => `
@@ -196,6 +197,7 @@ ${sprite}
       </ul>
     </nav>
     <div class="header-actions">
+      ${live ? `<a class="btn btn-ghost btn-sm manage-link" href="/manage/" data-manage-link hidden>${icon('gear')}<span>${esc(M.manageShort)}</span></a>` : ''}
       ${live ? `<button type="button" class="icon-btn acct-btn" data-acct aria-haspopup="dialog" aria-label="${esc(M.loginAria)}" title="${esc(M.login)}">${icon('user')}<span class="acct-initial" aria-hidden="true"></span></button>` : ''}
       <a class="lang-link" href="${t.otherHref}" hreflang="${t.other}" lang="${t.other}" aria-label="${esc(t.langShort + ' · ' + t.langAria)}" data-lang-link>${t.langShort}</a>
       <button class="icon-btn motion-btn" type="button" data-motion-toggle aria-pressed="false" aria-label="${esc(t.motionOff)}" title="${esc(t.motionOff)}">${icon('motion')}</button>

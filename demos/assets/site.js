@@ -863,6 +863,8 @@
       showView('me');
     };
     const updateHeader = () => {
+      // מנהל מחובר: כפתור ״ניהול״ גלוי בכותרת, ו״אזור הניהול״ בתפריט הנייד
+      $$('[data-manage-link], [data-manage-li]').forEach((el) => { el.hidden = !(me.logged && me.manager); });
       $$('[data-acct]').forEach((b) => {
         if (b.classList.contains('acct-btn')) {
           b.classList.toggle('is-in', !!me.logged);

@@ -1134,3 +1134,7 @@ html[data-motion="full"] .acct:not([hidden]) .acct-box { animation: rise .35s va
 /* הכפתור של Google מוצג בתוך מסגרת בהירה; בלי זה הדפדפן מוסיף רקע לבן סביבו בחלון הכהה */
 .acct-google-btn { color-scheme: light; }
 .acct-google-btn iframe { color-scheme: light; }
+/* מנהל מחובר: כפתור ״ניהול״ בכותרת */
+.manage-link { gap: 6px; white-space: nowrap; }
+.manage-link .ico { width: 1.1em; height: 1.1em; }
+@media (max-width: 900px) { .header-actions .manage-link { display: none; } }
