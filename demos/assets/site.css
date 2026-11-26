@@ -1126,3 +1126,8 @@ html[data-motion="full"] .acct:not([hidden]) .acct-box { animation: rise .35s va
 .acct-text { display: inline-flex; align-items: center; gap: 8px; background: none; border: 1px solid var(--line-dark); border-radius: 999px; padding: 8px 16px; color: var(--lilac-2); font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; }
 .acct-text:hover { color: #fff; border-color: var(--lilac); }
 .opt { color: var(--muted-2); font-weight: 500; font-size: .88em; }
+/* כניסה עם Google */
+.acct-google { display: grid; gap: 14px; justify-items: center; margin-top: 4px; }
+.acct-google-btn { min-height: 44px; display: grid; place-items: center; width: 100%; }
+.acct-or { width: 100%; display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .9rem; }
+.acct-or::before, .acct-or::after { content: ""; flex: 1; height: 1px; background: rgba(203, 184, 255, .22); }

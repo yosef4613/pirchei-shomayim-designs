@@ -33,6 +33,7 @@ add_action('template_redirect', function () {
 		'user' => $u->exists() ? ['name' => $u->display_name, 'email' => $u->user_email] : null,
 		'notify' => $state === 'ok' ? ps_notify_email() : '',
 		'wpadmin' => current_user_can('manage_options') ? admin_url() : '',
+		'google' => $state === 'login' ? ps_google_client_id() : '',
 	];
 	status_header(200);
 	nocache_headers();

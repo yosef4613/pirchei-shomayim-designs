@@ -145,7 +145,7 @@ function ps_exclusive_item($p) {
  * נקודות הכניסה
  * ------------------------------------------------------------------ */
 add_action('rest_api_init', function () {
-	foreach ([['/login', 'POST', 'ps_rest_login'], ['/verify', 'POST', 'ps_rest_verify'], ['/me', 'GET', 'ps_rest_me'], ['/logout', 'POST', 'ps_rest_logout'], ['/members', 'GET', 'ps_rest_members']] as $r) {
+	foreach ([['/login', 'POST', 'ps_rest_login'], ['/verify', 'POST', 'ps_rest_verify'], ['/me', 'GET', 'ps_rest_me'], ['/logout', 'POST', 'ps_rest_logout'], ['/members', 'GET', 'ps_rest_members'], ['/auth-config', 'GET', 'ps_rest_auth_config'], ['/google', 'POST', 'ps_rest_google']] as $r) {
 		register_rest_route('ps/v1', $r[0], ['methods' => $r[1], 'callback' => $r[2], 'permission_callback' => '__return_true']);
 	}
 });
@@ -161,6 +161,72 @@ function ps_login_mail($email, $url, $lang, $to) {
 		'button' => [$manage ? ($he ? 'כניסה לאזור הניהול' : 'Open the admin area') : ($he ? 'כניסה לאתר' : 'Sign in'), $url],
 		'note' => $he ? 'הקישור תקף לחצי שעה ולכניסה אחת. לא ביקשתם להיכנס? אפשר פשוט להתעלם מהמייל הזה.' : 'The link works once, for 30 minutes. Didn’t ask to sign in? Just ignore this email.',
 	]);
+}
+
+/* ------------------------------------------------------------------
+ * כניסה עם חשבון Google (בחירת חשבון בלחיצה). פועל רק כשמוגדר מזהה לקוח
+ * בקובץ ההגדרות שבשרת: 'google_client_id' => '….apps.googleusercontent.com'
+ * ------------------------------------------------------------------ */
+function ps_google_client_id() {
+	$c = ps_site_config();
+	$id = isset($c['google_client_id']) ? trim((string) $c['google_client_id']) : '';
+	return preg_match('/^[\w.-]+\.apps\.googleusercontent\.com$/', $id) ? $id : '';
+}
+
+function ps_rest_auth_config() {
+	return new WP_REST_Response(['google' => ps_google_client_id()], 200);
+}
+
+/** אימות האסימון שגוגל נתן לדפדפן — מול גוגל עצמה, ולא סומכים על הדפדפן */
+function ps_google_verify($jwt) {
+	$client = ps_google_client_id();
+	if (!$client || !preg_match('/^[\w-]+\.[\w-]+\.[\w-]+$/', $jwt)) {
+		return null;
+	}
+	$r = wp_remote_get('https://oauth2.googleapis.com/tokeninfo?id_token=' . rawurlencode($jwt), ['timeout' => 8]);
+	if (is_wp_error($r) || wp_remote_retrieve_response_code($r) !== 200) {
+		return null;
+	}
+	$t = json_decode(wp_remote_retrieve_body($r), true);
+	if (!is_array($t) || (isset($t['aud']) ? $t['aud'] : '') !== $client) {
+		return null;
+	}
+	if (!in_array(isset($t['iss']) ? $t['iss'] : '', ['accounts.google.com', 'https://accounts.google.com'], true)) {
+		return null;
+	}
+	if ((int) (isset($t['exp']) ? $t['exp'] : 0) < time() || !in_array(isset($t['email_verified']) ? $t['email_verified'] : '', [true, 'true'], true)) {
+		return null;
+	}
+	$email = strtolower(sanitize_email(isset($t['email']) ? $t['email'] : ''));
+	return is_email($email) ? ['email' => $email, 'name' => ps_text(isset($t['name']) ? $t['name'] : ''), 'sub' => (string) (isset($t['sub']) ? $t['sub'] : '')] : null;
+}
+
+function ps_rest_google(WP_REST_Request $req) {
+	if (!ps_same_origin()) {
+		return ps_private(ps_fail('origin', 403));
+	}
+	if (ps_rate_limited('google')) {
+		return ps_private(ps_fail('too_many', 429));
+	}
+	$p = (array) $req->get_json_params();
+	$g = ps_google_verify(isset($p['credential']) ? (string) $p['credential'] : '');
+	if (!$g) {
+		return ps_private(ps_fail('google', 401));
+	}
+	$uid = ps_member_for_email($g['email'], $g['name']);
+	if (!$uid) {
+		return ps_private(ps_fail('store', 500));
+	}
+	if ($g['sub'] !== '') {
+		update_user_meta($uid, 'ps_google_sub', $g['sub']);
+	}
+	ps_login_session($uid);
+	ps_verify_subscriber_email($g['email']);
+	$out = ps_me_payload($uid);
+	$out['ok'] = true;
+	$to = isset($p['to']) && in_array($p['to'], ['manage', 'behind'], true) ? $p['to'] : '';
+	$out['to'] = ($to === '' && $out['manager']) ? 'manage' : $to;
+	return ps_private(new WP_REST_Response($out, 200));
 }
 
 function ps_rest_login(WP_REST_Request $req) {

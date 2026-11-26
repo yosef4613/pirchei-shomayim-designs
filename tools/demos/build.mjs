@@ -10,7 +10,7 @@ import { seoText } from './seo.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const OUT = join(ROOT, 'demos');
-const VERSION = '23';
+const VERSION = '24';
 const SITE = 'https://yosef4613.github.io/pirchei-shomayim-designs/demos/';
 // האתר החי (הדומיין העברי בקידוד הבינלאומי). לכאן מפנות הכתובות הקנוניות בגרסה החיה
 const LIVE = 'https://xn--cebeaqd7a2ak.com/';
@@ -698,6 +698,7 @@ ${live ? `<div class="acct" id="acct" role="dialog" aria-modal="true" aria-label
     <span class="acct-ico" aria-hidden="true">${icon('user')}</span>
     <h2 id="acct-title" data-acct-title>${esc(M.title)}</h2>
     <p class="acct-lead" data-acct-lead>${esc(M.lead)}</p>
+    <div class="acct-google" data-acct-google hidden><div class="acct-google-btn" data-google-btn></div><p class="acct-or"><span>${esc(M.or)}</span></p></div>
     <form class="acct-form" id="acct-form" data-acct-view="login" novalidate>
       <label for="acct-email">${esc(M.email)}</label>
       <input id="acct-email" name="email" type="email" autocomplete="email" inputmode="email" dir="ltr" required aria-describedby="acct-err">
@@ -815,6 +816,7 @@ const legalText = {
       ['מי רואה אותם', 'צוות המקהלה בלבד. הפרטים לא נמכרים ולא מועברים לאף גורם אחר.'],
       ['איפה הם נשמרים', 'בשרת האתר, ובהודעת מייל שנשלחת לצוות המקהלה.'],
       ['צפייה, תיקון ומחיקה', 'אפשר לבקש בכל עת לראות, לתקן או למחוק את הפרטים במייל {email}. אפשר להפסיק לקבל עדכונים בכל עת באותו מייל.'],
+      ['כניסה עם חשבון Google', 'מי שבוחר להיכנס עם חשבון Google — אנחנו מקבלים מגוגל רק את השם וכתובת המייל, כדי ליצור את החשבון באתר. לא מקבלים סיסמה ולא גישה לשום דבר אחר בחשבון.'],
       ['סרטונים ועוגיות', 'הסרטונים באתר מוטמעים משירות וידאו חיצוני של גוגל, במצב פרטיות מוגברת, ונטענים רק כשלוחצים לנגן. האתר לא משתמש בעוגיות מעקב או פרסום. בדפדפן נשמרת רק ההעדפה אם להציג אנימציות. מי שנכנס לאתר מקבל עוגיית כניסה, כדי להישאר מחובר עד שבועיים או עד שיוצא.'],
     ],
     a11yTitle: 'הצהרת נגישות',
@@ -835,6 +837,7 @@ const legalText = {
       ['Who sees it', 'Only the choir team. Your details are never sold or passed on to anyone else.'],
       ['Where it is kept', 'On the website’s server, and in an email sent to the choir team.'],
       ['Viewing, correcting and deleting', 'You can ask at any time to see, correct or delete your details by emailing {email}. You can stop receiving updates at any time the same way.'],
+      ['Signing in with Google', 'If you choose to sign in with your Google account, we receive only your name and email address from Google, to create your account on the site. We never get your password or access to anything else in your account.'],
       ['Videos and cookies', 'Videos are embedded from an external video service run by Google, in privacy-enhanced mode, and load only when you press play. The site uses no tracking or advertising cookies. Your browser only remembers whether to show animations. If you sign in, a sign-in cookie keeps you signed in for up to two weeks or until you sign out.'],
     ],
     a11yTitle: 'Accessibility statement',

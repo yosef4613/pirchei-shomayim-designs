@@ -815,13 +815,46 @@
     let acctTo = ''; let acctReturn = null;
     const titleEl2 = $('[data-acct-title]', acct); const leadEl = $('[data-acct-lead]', acct);
     const views = $$('[data-acct-view]', acct);
-    const showView = (v) => views.forEach((x) => { x.hidden = x.dataset.acctView !== v; });
+    // כניסה עם Google: הכפתור מופיע רק בתצוגת הכניסה, ורק אם הוגדר באתר
+    const gBox = $('[data-acct-google]', acct); const gBtn = $('[data-google-btn]', acct);
+    let gState = ''; // '' | 'loading' | 'ready' | 'off'
+    const showView = (v) => {
+      views.forEach((x) => { x.hidden = x.dataset.acctView !== v; });
+      if (gBox) gBox.hidden = v !== 'login' || gState !== 'ready';
+    };
     const acctForm = $('#acct-form'); const acctEmail = $('#acct-email'); const acctErr = $('#acct-err');
     const setErr = (msg) => { acctErr.textContent = msg; if (msg) acctEmail.setAttribute('aria-invalid', 'true'); else acctEmail.removeAttribute('aria-invalid'); };
     const loginView = (lead) => {
-      titleEl2.textContent = MT.title; leadEl.textContent = lead || MT.lead; leadEl.hidden = false;
+      titleEl2.textContent = MT.title; leadEl.textContent = lead || (gState === 'ready' ? MT.leadGoogle : MT.lead); leadEl.hidden = false;
       setErr(''); showView('login');
     };
+    async function onGoogle(resp) {
+      setErr('');
+      try {
+        const res = await api('google', { credential: resp && resp.credential, to: acctTo });
+        me = res; updateHeader(); refreshMembers();
+        if (res.manager && res.manage && res.to !== 'behind') { location.href = res.manage; return; }
+        closeAcct(); siteToast(MT.welcome);
+        const sec = $('#behind');
+        if (res.to === 'behind' && sec) sec.scrollIntoView({ block: 'start' });
+      } catch (err) { setErr(err.status === 429 ? T.tooMany : MT.googleError); }
+    }
+    // הספרייה של גוגל נטענת רק כשפותחים את חלון הכניסה — כדי שהאתר יישאר מהיר
+    async function setupGoogle() {
+      if (gState || !gBox) return;
+      gState = 'loading';
+      try {
+        const cfg = await api('auth-config');
+        if (!cfg.google) { gState = 'off'; return; }
+        await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); });
+        window.google.accounts.id.initialize({ client_id: cfg.google, callback: onGoogle, ux_mode: 'popup', auto_select: false, context: 'signin', itp_support: true });
+        const w = Math.max(220, Math.min(360, ($('.acct-box', acct).clientWidth || 360) - 64));
+        window.google.accounts.id.renderButton(gBtn, { type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', logo_alignment: 'left', width: w, locale: data.lang });
+        gState = 'ready';
+        const loginOpen = !acct.hidden && !$('[data-acct-view="login"]', acct).hidden;
+        if (loginOpen) { gBox.hidden = false; if (leadEl.textContent === MT.lead) leadEl.textContent = MT.leadGoogle; }
+      } catch (e) { gState = 'off'; }
+    }
     const meView = () => {
       titleEl2.textContent = fill(MT.hello, { name: me.name || '' });
       leadEl.textContent = fill(MT.signedAs, { email: me.email || '' }); leadEl.hidden = false;
@@ -845,7 +878,7 @@
     const isOpen = () => !acct.hidden;
     const openAcct = (opts = {}) => {
       acctTo = opts.to || '';
-      if (opts.view) { /* התצוגה כבר הוכנה (למשל: אישור הסרה מהרשימה) */ } else if (me.logged) meView(); else loginView(opts.lead);
+      if (opts.view) { /* התצוגה כבר הוכנה (למשל: אישור הסרה מהרשימה) */ } else if (me.logged) meView(); else { loginView(opts.lead); setupGoogle(); }
       acctReturn = opts.trigger || document.activeElement;
       if (header.classList.contains('menu-open')) setMenu(false, { keepHistory: true });
       acct.hidden = false; setLock();

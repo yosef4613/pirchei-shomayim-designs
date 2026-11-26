@@ -43,8 +43,29 @@
       $('[data-gate-logout]').hidden = false;
       $('[data-gate-logout]').addEventListener('click', logout);
     } else {
-      gateText.textContent = 'כניסה בלי סיסמה: מזינים את המייל, ומקבלים קישור כניסה. הכניסה פתוחה רק למנהלי המקהלה.';
+      gateText.textContent = boot.google
+        ? 'כניסה בלחיצה עם חשבון Google, או בקישור למייל — בלי סיסמה. הכניסה פתוחה רק למנהלי המקהלה.'
+        : 'כניסה בלי סיסמה: מזינים את המייל, ומקבלים קישור כניסה. הכניסה פתוחה רק למנהלי המקהלה.';
       gateForm.hidden = false;
+      if (boot.google) {
+        // כניסה עם Google — בחירת חשבון בלחיצה
+        const gWrap = $('[data-gate-google]');
+        const sc = document.createElement('script');
+        sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true;
+        sc.onload = () => {
+          try {
+            window.google.accounts.id.initialize({ client_id: boot.google, ux_mode: 'popup', auto_select: false, context: 'signin', itp_support: true,
+              callback: async (resp) => {
+                gateErr.textContent = '';
+                try { await api('google', { credential: resp && resp.credential, to: 'manage' }); location.reload(); }
+                catch (err) { gateErr.textContent = err.status === 429 ? 'יותר מדי ניסיונות. נסו שוב בעוד כמה דקות.' : 'הכניסה עם Google לא הצליחה. אפשר לנסות שוב, או להיכנס בקישור למייל.'; }
+              } });
+            window.google.accounts.id.renderButton($('[data-gate-google-btn]'), { type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', logo_alignment: 'left', width: 320, locale: 'he' });
+            gWrap.hidden = false;
+          } catch (e) { /* נשארת הכניסה במייל */ }
+        };
+        document.head.appendChild(sc);
+      }
       const started = Date.now();
       gateForm.addEventListener('submit', async (e) => {
         e.preventDefault();
